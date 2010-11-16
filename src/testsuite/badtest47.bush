@@ -1,0 +1,4 @@
+# This should fail
+
+subtype if is integer; -- reserved word
+

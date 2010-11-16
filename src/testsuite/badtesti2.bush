@@ -1,0 +1,6 @@
+# This should fail
+
+pragma ada_95;
+
+c : constant command := "/bin/ls"; -- not allowed
+

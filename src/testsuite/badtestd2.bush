@@ -1,0 +1,4 @@
+# This should fail
+
+j : integer := 1 / 0; -- division by zero exception
+

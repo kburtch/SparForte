@@ -1,0 +1,4 @@
+# This should fail
+
+use not_implemented;
+

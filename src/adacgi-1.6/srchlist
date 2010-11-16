@@ -1,0 +1,17 @@
+# This is a demonstration Search File list for search.adb.
+# You'll need to put this in a directory that can be accessed
+# by the "search" sample CGI program.
+# If you don't change "search.adb", this search file list
+# must be placed in "/home/httpd/srchlist".
+#
+# Obviously, comments in this file begin with '#' and end at the end-of-line.
+#
+# The format of this file is:
+#     <FILENAME>,<EXTERNAL NAME>
+# where <FILENAME> is the local filename, and <EXTERNAL NAME> is the
+# name that the user will see.  The comma is the separator; that means that
+# filenames can't have commas in them, sorry.
+#
+/usr/dict/words,English Word List
+/home/httpd/public/phone_list/my.phone.list,Phone List
+/home/httpd/public/addresses/acronyms,Acronyms

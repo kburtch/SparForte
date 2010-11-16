@@ -1,0 +1,7 @@
+# This should fail
+
+integer j; -- deliberate error
+for i in 1..j loop
+  null;
+end while;
+

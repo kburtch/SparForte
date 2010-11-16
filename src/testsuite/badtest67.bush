@@ -1,0 +1,5 @@
+# This should fail
+
+f : file_type;
+put_line( f, 5 ); -- file not open
+

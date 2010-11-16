@@ -1,0 +1,151 @@
+<HEAD><TITLE>count_statements.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : count_statements.bush</H1></DIV><HR>
+<P>Estimate the number of BUSH or Ada statements in a source code file</P>
+<PRE>
+
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- Estimate the number of BUSH or Ada statements in a source code file</EM></FONT>
+
+<b>pragma</b> annotate( "Count Statements" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Estimate the number of BUSH or Ada statements in a source code file" );
+<b>pragma</b> annotate( "by William A. Whitaker  WIS JPMO   3 March 1984" );
+<b>pragma</b> annotate( "adapted to bush by Ken O. Burtch" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> count_statements <b>is</b>
+
+  FILE_NAME_TO_CHECK  : string;
+
+  <b>function</b> LOC (FILE_NAME  : string) <b>return</b> integer <b>is</b>
+  <FONT COLOR=green><EM>--  This function calculates the "lines of code" of a valid Ada fragment</EM></FONT>
+  <FONT COLOR=green><EM>--  specified by a FILE_NAME string parameter</EM></FONT>
+  <FONT COLOR=green><EM>--  It need not be a complete compilation unit</EM></FONT>
+  <FONT COLOR=green><EM>--  but it must have closed all open parentheses and string brackets</EM></FONT>
+  <FONT COLOR=green><EM>--  The number of lines of code is returned as an INTEGER</EM></FONT>
+
+  <FONT COLOR=green><EM>--  The line of code is defined by a semicolon terminator</EM></FONT>
+  <FONT COLOR=green><EM>--  outside of comments, parentheses, or string or character literals</EM></FONT>
+  <FONT COLOR=green><EM>--  This definition is insensitive to formatting or layout of the source</EM></FONT>
+
+  <FONT COLOR=green><EM>--  This source code of function LOC has 31 lines by this definition</EM></FONT>
+  <FONT COLOR=green><EM>--  It has 107 physical lines in its initial formatted form</EM></FONT>
+  <FONT COLOR=green><EM>--  including 39 lines containing only comment and 18 blank lines</EM></FONT>
+
+  <FONT COLOR=green><EM>--  There are exotic cases for which this will give the wrong answer</EM></FONT>
+
+    INPUT   : file_type;
+    C       : character := ' ';
+    LINES   : integer := 0;
+    LEVEL   : integer := 0;
+
+  <b>begin</b>
+
+    open (INPUT, in_file, FILE_NAME);
+
+    <b>loop</b>
+      <b>exit</b> <b>when</b> end_of_file( INPUT );
+      get (INPUT, C);
+
+      <FONT COLOR=green><EM>--  Check for comment on the line</EM></FONT>
+      <b>if</b> C = '-' <b>then</b>
+        <b>exit</b> <b>when</b> end_of_file( INPUT );
+        get (INPUT, C);
+        <FONT COLOR=green><EM>--  Which is signaled by the '-' following a '-'</EM></FONT>
+        <b>if</b> C = '-' <b>then</b>
+          <FONT COLOR=green><EM>--  Then just skip the rest of the line and go to the next</EM></FONT>
+          skip_line (INPUT);
+        <b>end</b> <b>if</b>;
+      <b>end</b> <b>if</b>;
+
+      <FONT COLOR=green><EM>--  Check for one of the characters which introduce code constructs</EM></FONT>
+      <FONT COLOR=green><EM>--  like string or character literal or formal parameter list</EM></FONT>
+      <FONT COLOR=green><EM>--  within which a ';' does not terminate a "line of code"</EM></FONT>
+      <b>if</b> C = '(' <b>or</b> C = '"' <b>or</b> C = '%' <b>or</b> C = ''' <b>or</b> C = '`' <b>then</b>
+
+        <FONT COLOR=green><EM>--  Check for opening parentheses</EM></FONT>
+        <FONT COLOR=green><EM>--  Every ';' within is in a formal parameter list</EM></FONT>
+        <b>if</b> C = '(' <b>then</b>
+          <FONT COLOR=green><EM>--  Count the number of levels of parentheses</EM></FONT>
+          LEVEL := @ + 1;
+          <FONT COLOR=green><EM>--  Read ahead until the whole construct is closed, LEVEL = 0</EM></FONT>
+          <b>while</b> LEVEL &gt; 0 <b>loop</b>
+            <b>exit</b> <b>when</b> end_of_file( INPUT );
+            get (INPUT, C);
+            <b>if</b> C = '(' <b>then</b>
+              <FONT COLOR=green><EM>--  Increase the level if another '(' is found</EM></FONT>
+              LEVEL := @ + 1;
+            <b>elsif</b> C = ')' <b>then</b>
+              <FONT COLOR=green><EM>--  Decrease the level if a ')' is found</EM></FONT>
+              LEVEL := @ - 1;
+            <b>end</b> <b>if</b>;
+          <b>end</b> <b>loop</b>;
+
+        <FONT COLOR=green><EM>--  Now check for string brackets of either kind, " or %</EM></FONT>
+        <b>elsif</b> C = '"' or C = '%' <b>then</b>
+          <FONT COLOR=green><EM>--  Treat them in parallel, one must lead off</EM></FONT>
+          <b>if</b> C = '"' <b>then</b>
+            <b>loop</b>
+              <b>exit</b> <b>when</b> end_of_file( INPUT );
+              get (INPUT, C);
+              <FONT COLOR=green><EM>--  Loop until the close comes</EM></FONT>
+              <FONT COLOR=green><EM>--  If there is a doubled character it just starts again</EM></FONT>
+              <b>exit</b> <b>when</b> C = '"';
+            <b>end</b> <b>loop</b>;
+          <FONT COLOR=green><EM>--  The '%' is handled exactly the same way as '"'</EM></FONT>
+          <b>elsif</b> C = '`' <b>then</b>
+            <b>loop</b>
+              <b>exit</b> <b>when</b> end_of_file( INPUT );
+              get (INPUT, C);
+              <FONT COLOR=green><EM>--  Loop until the close comes</EM></FONT>
+              <FONT COLOR=green><EM>--  If there is a doubled character it just starts again</EM></FONT>
+              <b>exit</b> <b>when</b> C = '`';
+            <b>end</b> <b>loop</b>;
+          <FONT COLOR=green><EM>--  The '%' is handled exactly the same way as '"'</EM></FONT>
+          <b>elsif</b> C = ''' <b>then</b>
+            <b>loop</b>
+              <b>exit</b> <b>when</b> end_of_file( INPUT );
+              get (INPUT, C);
+              <FONT COLOR=green><EM>--  Loop until the close comes</EM></FONT>
+              <FONT COLOR=green><EM>--  If there is a doubled character it just starts again</EM></FONT>
+              <b>exit</b> <b>when</b> C = ''';
+            <b>end</b> <b>loop</b>;
+          <FONT COLOR=green><EM>--  The '%' is handled exactly the same way as '"'</EM></FONT>
+          <b>elsif</b> C = '%' <b>then</b>
+            <b>loop</b>
+              <b>exit</b> <b>when</b> end_of_file( INPUT );
+              get (INPUT, C);
+              <b>exit</b> <b>when</b> C = '%';
+            <b>end</b> <b>loop</b>;
+          <b>end</b> <b>if</b>;
+
+        <b>end</b> <b>if</b>;
+
+      <FONT COLOR=green><EM>--  Any ';' that can be found at this point after all exclusions</EM></FONT>
+      <FONT COLOR=green><EM>--  must be a valid "line of code" terminator</EM></FONT>
+      <b>elsif</b> C = ';' <b>then</b>
+        LINES := @ + 1;
+
+      <b>end</b> <b>if</b>;
+
+    <b>end</b> <b>loop</b>;
+
+    <b>return</b> LINES;
+
+  <b>end</b> LOC;
+
+
+<b>begin</b>
+  put("Input file name terminated by <RETURN> =&gt; ");
+  FILE_NAME_TO_CHECK := get_line;
+  new_line; new_line;
+  put (LOC (FILE_NAME_TO_CHECK));
+  put (" STATEMENTS IN SCRIPT " ) @ (FILE_NAME_TO_CHECK); 
+  new_line; 
+<b>end</b> count_statements;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+</PRE></BODY></HTML>

@@ -1,0 +1,170 @@
+# $Id: Makefile.win32,v 1.2 2005/02/11 02:59:42 ken Exp $
+# Warren W. Gay VE3WWG
+#
+# Licensed under the ACL (Ada Community License)
+# or GPL2 :
+
+include config.win32
+
+DISTDIR=apq-$(VERSION)
+DISTFILE=apq-$(VERSION).tar.gz
+
+#DBG=-g
+#OPTZ=-O0
+
+CC=gcc
+
+ZOPTS=$(DBG) $(OPTZ)
+COPTS=-Wall $(ZOPTS) -D__CYGWIN__
+CLMACH=-G5 # Optimize to Pentium (G6 for Pentium Pro)
+CLOPTS=-nologo -W3 $(CLMACH) -O2 -DNDEBUG -DDBUG_OFF -D_WINDOWS -DUSE_TLS 
+AOPTS=-gnata -gnatf -gnato -gnatwp $(ZOPTS)
+
+.c.o:
+	$(CC) -c $(COPTS) $(ZOPTS) $(PG_INCL) $(MY_INCL) $< -o $*.o
+
+all:	build distribution 
+	@echo "Now 'make install'"
+
+build:	setup$(HAVE_MY) mysql$(HAVE_MY) postgresql$(HAVE_PG) libapq.a finish
+
+tmysql::
+	rm -f tmysql mysql.trc
+	gnatmake -gnatf tmysql -largs -lapq $(MY_LIBS) 
+
+
+setup0:        # MySQL support is not being included
+mysql0:        # MySQL support is not being included
+postgresql0:   # PostgreSQL is not being included
+
+
+setup1:	mysql_xcr mysql_xcr2 mysql_xcr3 mysql_incl
+	chmod u+x mysql_xcr mysql_xcr2 mysql_xcr3 mysql_incl mysql_xty mysql_linker_options
+	rm -fr dll.d
+
+apq-mysql.ads: apq-mysql.ads-in mysql_generr.c mysql_xcr2 mysql_xcr3
+	@rm -f mysql_errmsg.h mysql_generr
+	./mysql_xcr >mysql_errmsg.h
+	./mysql_xty >mysql_type_codes.h
+	$(CC) $(COPTS) $(MY_INCL) mysql_generr.c -o mysql_generr
+	$(CC) $(COPTS) $(MY_INCL) mysql_gentyp.c -o mysql_gentyp
+	$(CC) $(COPTS) $(MY_INCL) mysqlopts.c -o mysql_opts
+	./mysql_opts >opts.tmp
+	./mysql_generr | sort -k1,1n | ./mysql_xcr2 >gen.tmp
+	./mysql_gentyp | sort -k1,1n | ./mysql_xcr3
+	@rm -f mysql_generr mysql_errmsg.h mysql_gentyp mysql_type_codes.h gen.tmp opts.tmp mysql_opts
+
+c_mysql.obj: c_mysql.c config.win32
+	cl -c $(MY_INCL) $(CLOPTS) -MD c_mysql.c -o c_mysql.obj
+
+apq_myadapter.exp:  c_mysql.obj
+	lib -nologo -machine:i386 -out:apq_myadapter.lib c_mysql.obj
+
+apq_myadapter.lib: apq_myadapter.exp
+
+apq_myadapter.dll: apq_myadapter.exp apq_myadapter.lib c_mysql.obj
+	link -nologo -machine:i386 -entry:DllMain@12 -dll -out:apq_myadapter.dll c_mysql.obj $(MY_WIMP)
+
+mydll1:
+	@if [ ! -f apq_myadapter.dll ] ; then echo "You need to download apq_myadapter.dll" >/dev/tty; false; fi
+
+mydll0: apq_myadapter.dll
+
+mysql1: apq-mysql.ads mydll$(MSTOOLS)
+	ADA_INCLUDE_PATH=. ADA_OBJECTS_PATH=. gnatmake -c $(AOPTS) comp_mysql
+	dll2def apq_myadapter.dll >dll.def
+	dlltool --def dll.def --dllname apq_myadapter.dll --output-lib libmysql.a
+	@rm -fr ./mysql.d dll.def
+	mkdir ./mysql.d
+	[ ! -d ./dll.d ] && mkdir dll.d || true
+	( cd ./mysql.d && ar x ../libmysql.a && for f in *.o ; do mv $$f apq_mysql_$$f; done; mv -f *.o ../dll.d/. )
+	rm -fr libmysql.a mysql.d
+
+postgresql1: numeric.o notices.o
+	ADA_INCLUDE_PATH=. ADA_OBJECTS_PATH=. gnatmake -c $(AOPTS) comp_pg
+	dll2def $$(cygpath -w "$(PG_DLL)") >dll.def
+	dlltool --def dll.def --dllname $$(basename "$(PG_DLL)") --output-lib libpq.a
+	@rm -fr dll.def ./pq.d dll.def
+	mkdir ./pq.d
+	@[ ! -d ./dll.d ] && mkdir dll.d || true
+	( cd ./pq.d && ar x ../libpq.a ; for f in *.o ; do mv $$f apq_pq_$$f; done; mv -f *.o ../dll.d/.)
+	@rm -fr libpq.a pq.d
+
+libapq.a: apq.o $(PG_OBJS) $(MY_OBJS) dll.d
+	@rm -f libapq.a
+	ar cr libapq.a apq.o $(PG_OBJS) $(MY_OBJS) dll.d/*.o
+	@ls -l libapq.a
+
+finish:
+	@echo "--"
+	@echo "Now do 'make install' to install the library"
+	@echo
+
+install: installer
+	./installer
+
+uninstall:
+	@echo "Use the Control Panel: Add/Remove Programs"
+	@echo "Look for 'APQ-$(VERSION) (remove only)'"
+
+cleanmy0: # Have ability to create dll
+	rm -f apq_adapter.dll apq_adapter.lib
+
+cleanmy1: # keep apq_adapter.dll
+
+clean:  cleanmy$(MSTOOLS)
+	rm -f *.o c_mysql.obj *.ali *.core b~*.ad[sb] errs.t libapq.a mysql.trc comp_pg comp_mysql
+	rm -fr ./dll.d 
+	rm -f mysql_errmsg.h mysql_type_codes.h 
+	rm -f mysql_generr.exe mysql_gentyp.exe mysql_opts.exe 
+	rm -f Makeincl tmysql apq-mysql.ads
+	rm -f apq_myadapter.exp apq_myadapter.lib
+	rm -f libapq.a apq_myadapter.exp nsis.log
+
+clobmy0:
+clobmy1:
+	rm -f apq_myadapter.dll
+
+clobber: clean clobmy$(HAVE_MY)
+	rm -f config.win32 installer.exe gnat_info.exe apq-$(VERSION).exe
+	@[ -h GNUmakefile ] && rm GNUmakefile || true
+
+distribution:
+	@echo "CREATING DISTRIBUTION :"
+	rm -f APQ-$(VERSION).exe installer.exe
+	[ ! -d ./win32-$(VERSION) ] && mkdir -p ./win32-$(VERSION)/adainclude || true
+	[ ! -d ./win32-$(VERSION)/adalib ] && mkdir ./win32-$(VERSION)/adalib || true
+	[ ! -d ./win32-$(VERSION)/bin ] && mkdir ./win32-$(VERSION)/bin || true
+	cp -fp apq-manual.pdf ./win32-$(VERSION)/APQ-Manual.pdf
+	cp -fp ACL.txt  ./win32-$(VERSION)/APQ_ACL_LICENSE.txt
+	cp -fp GPL.txt  ./win32-$(VERSION)/APQ_GPL_LICENSE.txt
+	cp -fp win32_copying.rtf  ./win32-$(VERSION)/APQ_LICENSE.rtf
+	cp -fp PG_COPYRIGHT ./win32-$(VERSION)/APQ_PG_COPYRIGHT.txt
+	cp -fp libapq.a ./win32-$(VERSION)/adalib/.
+	cp -fp apq*.ali ./win32-$(VERSION)/adalib/.
+	cp -fp apq*.ad[sb] ./win32-$(VERSION)/adainclude/.
+	cp -fp apq_myadapter.dll ./win32-$(VERSION)/bin/.
+	cp -fp $(MY_DLL) ./win32-$(VERSION)/bin/libmysql.dll
+	cp -fp $(PG_DLL) ./win32-$(VERSION)/bin/libpq.dll
+	cp -fp win32_test.adb ./win32-$(VERSION)/win32_test.adb
+	find ./win32-$(VERSION) -type f -exec chmod 444 {} \;
+
+installer:: installer.nsi # distribution
+	@echo "CREATING WIN32 INSTALLER :"
+	makensis /Onsis.log /V2 /DVERS=$(VERSION) installer.nsi || (cat nsis.log; false)
+	@cat nsis.log
+	ls -l installer.exe
+	@echo
+	@echo "READY TO RUN OR SHIP INSTALLER:"
+	@echo
+
+distclean:
+	rm -f ./win32-$(VERSION)/adalib/*.a
+	rm -f ./win32-$(VERSION)/adalib/*.ali
+	rm -f ./win32-$(VERSION)/adainclude/*.ads
+	rm -f ./win32-$(VERSION)/adainclude/*.adb
+	rm -f ./win32-$(VERSION)/bin/apq_myadapter.dll
+	rm -f ./win32-$(VERSION)/bin/libmysql.dll
+	rm -f ./win32-$(VERSION)/bin/libpq.dll
+
+# End $Source: /home/cvsroot/bush/src/apq-2.1/Makefile.win32,v $

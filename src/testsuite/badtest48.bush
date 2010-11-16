@@ -1,0 +1,4 @@
+# This should fail
+
+subtype s is 1; -- bad type
+

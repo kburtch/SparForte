@@ -1,0 +1,5 @@
+# This should fail
+
+i : integer;
+unset i; -- not allowed
+

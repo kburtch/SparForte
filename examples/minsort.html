@@ -1,0 +1,71 @@
+<HEAD><TITLE>minsort.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : minsort.bush</H1></DIV><HR>
+<IMG SRC="minsort.gif">
+<P>Basic integer min sort, the simplest and slowest kind of sort</P>
+<PRE>
+
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- Basic integer min sort, the simplest and slowest kind of sort</EM></FONT>
+
+<b>pragma</b> annotate( "Min Sort" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "A simple, slow sort of integers" );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+<b>procedure</b> minsort <b>is</b>
+
+  <b>type</b> data_type <b>is</b> <b>new</b> integer;
+  <b>type</b> data_array is <b>array</b>( 1..100 ) <b>of</b> data_type;
+
+  best_value : data_type;
+  best       : integer;
+  data       : data_array;
+  data_cnt   : integer := arrays.first( data );
+  s          : string;
+
+<b>begin</b>
+
+<FONT COLOR=green><EM>-- Read data</EM></FONT>
+
+  <b>loop</b>
+    put( "Data? (Enter nothing to sort): " );
+    s := get_line;
+    <b>exit</b> <b>when</b> s = "";
+    data( data_cnt ) := numerics.value( s );
+    data_cnt := data_cnt + 1;
+    <b>exit</b> <b>when</b> data_cnt &gt; arrays.last( data );
+  <b>end</b> <b>loop</b>;
+  data_cnt := data_cnt - 1;
+
+<FONT COLOR=green><EM>-- Sort data</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Start with the lowest array position and try to find a better value</EM></FONT>
+<FONT COLOR=green><EM>-- for this position.  Continue for all positions (except that last</EM></FONT>
+<FONT COLOR=green><EM>-- because it will be sorted when last-1 is sorted)</EM></FONT>
+  
+  <b>for</b> i <b>in</b> arrays.first(data)..data_cnt-1 <b>loop</b>
+    best_value := data(i);
+    best := i;
+    <b>for</b> j <b>in</b> i+1..data_cnt <b>loop</b>
+      <b>if</b> data(j) < best_value <b>then</b> best := j;
+         best_value := data(j);
+      <b>end</b> <b>if</b>;
+    <b>end</b> <b>loop</b>;
+    <b>if</b> best /= i <b>then</b>
+       data(best) := data(i);
+       data(i) := best_value;
+    <b>end</b> <b>if</b>;
+  <b>end</b> <b>loop</b>;
+
+<FONT COLOR=green><EM>-- Show data</EM></FONT>
+
+  <b>for</b> i <b>in</b> arrays.first(data)..data_cnt <b>loop</b>
+      put_line( data(i) );
+  <b>end</b> <b>loop</b>;
+
+<b>end</b> minsort;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+</PRE></BODY></HTML>

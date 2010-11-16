@@ -1,0 +1,674 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Ken Burtch">
+   <meta name="GENERATOR" content="Mozilla/4.78 [en] (X11; U; Linux 2.4.7-10 i686) [Netscape]">
+   <title>Business Shell (BUSH) Guide</title>
+</head>
+<body bgcolor="#CCCC99">
+
+<center>
+<img src="bush_title_bar.gif" alt="[BUSH User Guide]" width="710" height="99">
+</center>
+<!-- h2>
+<font color="#777700">
+Bush Guide: Part 4 - Built-in Packages</font></h2 -->
+
+<table summary="menu" border="0" cellpadding="0" cellspacing="0"
+ width="100%">
+<tr>
+<td valign="bottom" bgcolor="white">&nbsp;</td>
+</tr><tr>
+<td valign="bottom" bgcolor="white">
+<table summary="menu" border="0" cellpadding="0" cellspacing="0"
+ width="100%">
+  <tbody>
+    <tr bgcolor="white">
+      <td align="center"><a href="http://www.pegasoft.ca/bush.html">Home Page</a></td>
+      <td align="center"><a href="bushintro.html">Introduction</a></td>
+      <td align="center"><a href="bushtutorial.html">Tutorials</a></td>
+      <td align="center"><a href="bushref.html">Reference</a></td>
+      <td valign="bottom" align="center" bgcolor="#CCCC99"><font size="+1" color="#777700"><b>Packages</b></font></td>
+      <td align="center"><a href="bushdetails.html">Hacking</a></td>
+    </tr>
+  </tbody>
+</table>
+</td>
+</tr>
+</table>
+
+<table summary="menu" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top" width="25%">
+&nbsp;<br>
+<table summary="menu" border="0" cellpadding="0" cellspacing="0">
+  <tr><td>
+      <table summary="menu" border="0" cellpadding="0" cellspacing="0">
+      <tr>
+      <td valign="bottom" align="center" bgcolor="white"><font size="+1" color="#777700"><b>&nbsp;&nbsp;Packages&nbsp;&nbsp;</b></font></td>
+      </tr>
+      </table>
+  </td></tr>
+  <tr><td bgcolor="white"><a href="bushpackages.html#4.1">4.1 Using Packages</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_text_io.html#4.2">4.2 text_io (Console I/O)</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_text_io.html#4.3">4.3 text_io (File I/O)</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_sound.html#4.4">4.4 sound</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_source_info.html#4.5">4.5 source_info</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_system.html#4.6">4.6 System</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_numerics.html#4.7">4.7 numerics</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_strings.html#4.8">4.8 strings</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_command_line.html#4.9">4.9 command_line</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_lock_files.html#4.10">4.10 lock_files</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_cgi.html#4.11">4.11 cgi</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_calendar.html#4.12">4.12 calendar</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_units.html#4.13">4.13 units</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_arrays.html#4.14">4.14 arrays</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_files.html#4.15">4.15 files</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_db.html#4.16">4.16 db (Database)</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_stats.html#4.17">4.17 stats</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_pen.html#4.18">4.18 pen</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_mysql.html#4.19">4.19 mysql</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_os.html#4.20">4.20 os</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_dirops.html#4.21">4.21 directory_operations</a></td></tr>
+</table>
+</td>
+<td>
+&nbsp;<br>
+
+This part of the guide contains detailed descriptions of the
+BUSH built-in packages.
+<br>&nbsp;
+<h3>
+<a NAME="4.15"></a><font color="#777700">4.15 Files Package</font></h3>
+The files package provides general functions pretaining to files.
+<p><u>GCC Ada Equivalent</u>: GNAT.OS_Lib, GNAT.IO_Aux
+<p>The routines include:</p>
+<ul>
+<li><b>Pathnames</b>: basename, dirname, is_absolute_path</li>
+<li><b>Access rights</b>: exists, is_executable, is_executable_file,
+is_readable, is_readable_file, is_writable, is_writable_file</li>
+<li><b>File type</b>: is_regular_file, is_directory
+<li><b>Misc</b>: is_waiting_file, last_modified, length
+</ul>
+<p>
+<hr><b>b := files.basename( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the filename for the path p.
+<br>Example: b := files.basename( "/tmp/myfile.txt" ); -- returns "myfile.txt"
+<br>Ada Equivalent: none (AdaScript extension)
+<br>See Also: directory_operations.base_name
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>s</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the filename</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.dirname( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the directory portion of the path p.
+<br>Example: s := files.dirname( "/tmp/myfile.txt" ); -- returns "/tmp"
+<br>Ada Equivalent: none (AdaScript extension)
+<br>See Also: directory_operations.dir_name
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>s</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the directory portion of the path (without a trailing directory separator)</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.exists( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file at path p exists.  The function works on directories and other special files.
+<br>Example: b := files.exists( "/tmp/myfile.txt" );
+<br>Ada Equivalent: GNAT.IO_Aux.File_Exists
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file exists</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_absolute_path( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the path p is an absolute path.
+<br>Example: b := files.is_absolute_path( "/tmp/myfile.txt" ); -- returns true
+<br>Ada Equivalent: GNAT.OS_Lib.Is_Absolute_Path
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the path is not a relative path</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_directory( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file at path p exists and is a directory.
+<br>Example: b := files.is_directory( "/tmp/myfile.txt" ); -- returns false
+<br>Ada Equivalent: GNAT.OS_Lib.Is_Directory
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file is a directory</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_executable( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file or special file  at path p exists and is executable.
+<br>Example: b := files.is_executable( "home_directory" );
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file is executable</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_executable_file( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file at path p exists, is regular and is executable.
+<br>Example: b := files.is_executable_file( "myscript.bush" );
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file is not a special file and is executable</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_readable( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file or special file at path p exists and is readable.
+<br>Example: b := files.is_readable( "home_directory" );
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file is readable</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_readable_file( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file at path p exists, is regular and is readable.
+<br>Example: b := files.is_readable_file( "/tmp/myfile.txt" );
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file is not a special file and is readable</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_regular_file( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file at path p exists and is a regular file.
+<br>Example: b := files.is_regular_file( "/tmp/myfile.txt" ); -- returns true
+<br>Ada Equivalent: GNAT.IO_Aux.File_Exists (but GNAT doesn't check for regular)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file is not a special file</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_waiting_file( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file at path p exists, is regular, is_readable and is
+not empty.
+<br>Example: b := files.is_waiting_file( "/tmp/myfile.txt" );
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file has waiting data to process</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_writable( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file or special file at path p exists and is writable.
+<br>Example: b := files.is_writable( "home_directory" );
+<br>Ada Equivalent: GNAT.OS_Lib.Is_Writable_File
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file is writable</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_writable_file( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file at path p exists, is regular and is writable.
+<br>Example: b := files.is_writable_file( "/tmp/myfile.txt" );
+<br>Ada Equivalent: GNAT.OS_Lib.Is_Writable_File (but GNAT doesn't check for regular)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file is not a special file and is writable</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.last_modified( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the time a file was last changed.
+<br>Example: t := files.last_modified( "/tmp/myfile.txt" );
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>t</td>
+
+<td>return value</td>
+
+<td>calendar.time</td>
+
+<td>required</td>
+
+<td>the time of the last change</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>l := files.size( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the size of the file at path p in bytes.  The function works on directories and other special files.
+<br>Example: b := files.size( "/tmp/myfile.txt" );
+<br>Ada Equivalent: GNAT.OS_Lib.File_Length (without opening file)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>l</td>
+
+<td>return value</td>
+
+<td>long_integer</td>
+
+<td>required</td>
+
+<td>the length of the file</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+<p>If a file doesn't exist or is not accessible, an error will occur.
+
+<p>&nbsp;<a href="#top">Back to Top</a></p>
+</td>
+</tr>
+</table>
+
+</body>
+</html>

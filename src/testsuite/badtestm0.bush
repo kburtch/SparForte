@@ -1,0 +1,4 @@
+# This should fail
+
+m, : integer -- missing variable
+

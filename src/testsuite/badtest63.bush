@@ -1,0 +1,4 @@
+# This should fail
+
+put_line( ); -- missing parameter
+

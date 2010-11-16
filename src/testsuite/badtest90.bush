@@ -1,0 +1,6 @@
+# This should fail
+
+f : file_type;
+create( f, out_file, "./test.txt" );
+close( out_file ); -- missing closing paranthesis
+

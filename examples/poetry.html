@@ -1,0 +1,329 @@
+<HEAD><TITLE>poetry.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : poetry.bush </H1></DIV><HR>
+<IMG SRC="poetry.gif">
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> ada_95;
+
+<b>procedure</b> poetry <b>is</b>
+
+  <FONT COLOR=green><EM>-- Ken's Business Shell Poetry Generator</EM></FONT>
+  <FONT COLOR=green><EM>-- created for PegaSoft Summer Programming Challenge</EM></FONT>
+
+  nouns        : string;
+  verbs        : string;
+  adverbs      : string;
+  adjectives   : string;
+  prepositions : string;
+  conjunctions : string;
+  separator    : <b>constant</b> character := ASCII.NUL;
+  noun_count        : natural := 1;
+  verb_count        : natural := 1;
+  adverb_count      : natural := 1;
+  adjective_count   : natural := 1;
+  preposition_count : natural := 1;
+  conjunction_count : natural := 1;
+
+  poem         : string;
+<b>begin</b>
+
+  put_line( "Creating word lists and counting items..." );
+
+  nouns := "apple" &amp; separator &amp;
+           "albatross" &amp; separator &amp;
+           "bed" &amp; separator &amp;
+           "brow" &amp; separator &amp;
+           "butterfly" &amp; separator &amp;
+           "castle" &amp; separator &amp;
+           "chocolate" &amp; separator &amp;
+           "cottage" &amp; separator &amp;
+           "dragonfly" &amp; separator &amp;
+           "dawn" &amp; separator &amp;
+           "day" &amp; separator &amp;
+           "evening" &amp; separator &amp;
+           "eye" &amp; separator &amp;
+           "ear" &amp; separator &amp;
+           "fire" &amp; separator &amp;
+           "frost" &amp; separator &amp;
+           "ghost" &amp; separator &amp;
+           "glare" &amp; separator &amp;
+           "house" &amp; separator &amp;
+           "horse" &amp; separator &amp;
+           "island" &amp; separator &amp;
+           "jewel" &amp; separator &amp;
+           "jaguar" &amp; separator &amp;
+           "king" &amp; separator &amp;
+           "kitten" &amp; separator &amp;
+           "knight" &amp; separator &amp;
+           "light" &amp; separator &amp;
+           "lip" &amp; separator &amp;
+           "moon" &amp; separator &amp;
+           "morn" &amp; separator &amp;
+           "night" &amp; separator &amp;
+           "nibble" &amp; separator &amp;
+           "nose" &amp; separator &amp;
+           "ode" &amp; separator &amp;
+           "orchard" &amp; separator &amp;
+           "petunia" &amp; separator &amp;
+           "pond" &amp; separator &amp;
+           "princess" &amp; separator &amp;
+           "quest" &amp; separator &amp;
+           "quandry" &amp; separator &amp;
+           "room" &amp; separator &amp;
+           "rabbit" &amp; separator &amp;
+           "rose" &amp; separator &amp;
+           "stream" &amp; separator &amp;
+           "stick" &amp; separator &amp;
+           "thicket" &amp; separator &amp;
+           "tree" &amp; separator &amp;
+           "turret" &amp; separator &amp;
+           "umbrella" &amp; separator &amp;
+           "unicorn" &amp; separator &amp;
+           "violin" &amp; separator &amp;
+           "vinyard" &amp; separator &amp;
+           "waterlily" &amp; separator &amp;
+           "waterfall" &amp; separator &amp;
+           "yarn" &amp; separator &amp;
+           "zebra";
+
+verbs :=   "arrived" &amp; separator &amp;
+           "began" &amp; separator &amp;
+           "broke" &amp; separator &amp;
+           "called" &amp; separator &amp;
+           "chastened" &amp; separator &amp;
+           "danced" &amp; separator &amp;
+           "dove" &amp; separator &amp;
+           "drank" &amp; separator &amp;
+           "dug" &amp; separator &amp;
+           "elevated" &amp; separator &amp;
+           "evicted" &amp; separator &amp;
+           "foiled" &amp; separator &amp;
+           "frisked" &amp; separator &amp;
+           "galloped" &amp; separator &amp;
+           "glared" &amp; separator &amp;
+           "harnessed" &amp; separator &amp;
+           "harassed" &amp; separator &amp;
+           "ignored" &amp; separator &amp;
+           "jumped" &amp; separator &amp;
+           "kissed" &amp; separator &amp;
+           "lapped" &amp; separator &amp;
+           "left" &amp; separator &amp;
+           "made" &amp; separator &amp;
+           "mangled" &amp; separator &amp;
+           "named" &amp; separator &amp;
+           "nudged" &amp; separator &amp;
+           "oogled" &amp; separator &amp;
+           "ousted" &amp; separator &amp;
+           "pooled" &amp; separator &amp;
+           "practiced" &amp; separator &amp;
+           "quieted" &amp; separator &amp;
+           "recalled" &amp; separator &amp;
+           "sang" &amp; separator &amp;
+           "swam" &amp; separator &amp;
+           "tapped" &amp; separator &amp;
+           "urged" &amp; separator &amp;
+           "visited" &amp; separator &amp;
+           "weeped" &amp; separator &amp;
+           "wanted" &amp; separator &amp;
+           "yielded" &amp; separator &amp;
+           "yodelled";
+
+adverbs := "very" &amp; separator &amp;
+           "quite" &amp; separator &amp;
+           "almost" &amp; separator &amp;
+           "somewhat" &amp; separator &amp;
+           "hardly" &amp; separator &amp;
+           "mostly" &amp; separator &amp;
+           "completely" &amp; separator &amp;
+           "seldom" &amp; separator &amp;
+           "ever" &amp; separator &amp;
+           "never";
+
+adjectives := "white" &amp; separator &amp;
+           "black" &amp; separator &amp;
+           "blue" &amp; separator &amp;
+           "brown" &amp; separator &amp;
+           "red" &amp; separator &amp;
+           "green" &amp; separator &amp;
+           "orange" &amp; separator &amp;
+           "yellow" &amp; separator &amp;
+           "pink" &amp; separator &amp;
+           "glistening" &amp; separator &amp;
+           "smouldering" &amp; separator &amp;
+           "bright" &amp; separator &amp;
+           "dark" &amp; separator &amp;
+           "loud" &amp; separator &amp;
+           "soft" &amp; separator &amp;
+           "hard" &amp; separator &amp;
+           "quiet" &amp; separator &amp;
+           "bouncing" &amp; separator &amp;
+           "boasting" &amp; separator &amp;
+           "angry" &amp; separator &amp;
+           "sad" &amp; separator &amp;
+           "happy" &amp; separator &amp;
+           "still" &amp; separator &amp;
+           "rapid" &amp; separator &amp;
+           "snarky" &amp; separator &amp;
+           "snooty" &amp; separator &amp;
+           "naughty" &amp; separator &amp;
+           "pleasant" &amp; separator &amp;
+           "proud" &amp; separator &amp;
+           "pretty" &amp; separator &amp;
+           "proper" &amp; separator &amp;
+           "boring" &amp; separator &amp;
+           "chatty" &amp; separator &amp;
+           "slow";
+
+prepositions := "through" &amp; separator &amp;
+           "in" &amp; separator &amp;
+           "over" &amp; separator &amp;
+           "under" &amp; separator &amp;
+           "behind" &amp; separator &amp;
+           "before" &amp; separator &amp;
+           "beyond" &amp; separator &amp;
+           "beneath" &amp; separator &amp;
+           "above" &amp; separator &amp;
+           "beside" &amp; separator &amp;
+           "since" &amp; separator &amp;
+           "ere" &amp; separator &amp;
+           "out" &amp; separator &amp;
+           "within" &amp; separator &amp;
+           "despite";
+
+conjunctions := "and" &amp; separator &amp;
+           "or" &amp; separator &amp;
+           "but" &amp; separator &amp;
+           "though" &amp; separator &amp;
+           "thus";
+
+
+<FONT COLOR=green><EM>-- Count Items Lists</EM></FONT>
+<FONT COLOR=green><EM>-- Variables start as "1" to count the final item (no separator)</EM></FONT>
+
+<b>for</b> i <b>in</b> 1..strings.length( nouns ) <b>loop</b>
+    <b>if</b> strings.element( nouns, i ) = separator <b>then</b>
+       noun_count := noun_count + 1;
+    <b>end</b> <b>if</b>;
+<b>end</b> <b>loop</b>;
+
+<b>for</b> i <b>in</b> 1..strings.length( verbs ) <b>loop</b>
+    <b>if</b> strings.element( verbs, i ) = separator <b>then</b>
+       verb_count := verb_count + 1;
+    <b>end</b> <b>if</b>;
+<b>end</b> <b>loop</b>;
+
+<b>for</b> i <b>in</b> 1..strings.length( adjectives ) <b>loop</b>
+    <b>if</b> strings.element( adjectives, i ) = separator <b>then</b>
+       adjective_count := adjective_count + 1;
+    <b>end</b> <b>if</b>;
+<b>end</b> <b>loop</b>;
+
+<b>for</b> i <b>in</b> 1..strings.length( adverbs ) <b>loop</b>
+    <b>if</b> strings.element( adverbs, i ) = separator <b>then</b>
+       adverb_count := adverb_count + 1;
+    <b>end</b> <b>if</b>;
+<b>end</b> <b>loop</b>;
+
+<b>for</b> i <b>in</b> 1..strings.length( prepositions ) <b>loop</b>
+    <b>if</b> strings.element( prepositions, i ) = separator <b>then</b>
+       preposition_count := preposition_count + 1;
+    <b>end</b> <b>if</b>;
+<b>end</b> <b>loop</b>;
+
+<b>for</b> i <b>in</b> 1..strings.length( conjunctions ) <b>loop</b>
+    <b>if</b> strings.element( conjunctions, i ) = separator <b>then</b>
+       conjunction_count := conjunction_count + 1;
+    <b>end</b> <b>if</b>;
+<b>end</b> <b>loop</b>;
+
+
+<FONT COLOR=green><EM>--- Main Title</EM></FONT>
+
+new_line;
+put_line( "Poetry Generator" );
+new_line;
+put_line( "This script takes an outline of a story or a poem" );
+put_line( "and inserts random words for numbers." );
+new_line;
+put_line( "Type in a story or poem.  End with a blank line." );
+put_line( "Mark words to substitute with a number:" );
+put_line( " 1 = noun (" &amp; strings.image( noun_count ) &amp; ")" );
+put_line( " 2 = verb (" &amp; strings.image( verb_count ) &amp; ")" );
+put_line( " 3 = adverb (" &amp; strings.image( adverb_count ) &amp; ")" );
+put_line( " 4 = adjective (" &amp; strings.image( adjective_count ) &amp; ")" );
+put_line( " 5 = preposition (" &amp; strings.image( preposition_count ) &amp; ")" );
+put_line( " 6 = conjunction (" &amp; strings.image( conjunction_count ) &amp; ")" );
+new_line;
+
+
+<FONT COLOR=green><EM>-- read the poem</EM></FONT>
+
+<b>declare</b>
+  line : string;
+<b>begin</b>
+  <b>loop</b>
+    line := get_line;
+    <b>exit</b> <b>when</b> strings.length( line ) = 0;
+    poem := poem &amp; line &amp; ASCII.LF;
+  <b>end</b> <b>loop</b>;
+<b>end</b>;
+<b>if</b> strings.length( poem ) = 0 <b>then</b>
+   put_line( "Not today? Bye" );
+   <b>return</b>;
+<b>end</b> <b>if</b>;
+
+
+<FONT COLOR=green><EM>-- Generate New Poems</EM></FONT>
+
+<b>declare</b>
+  new_poem : string;
+  ch       : character;
+  reply    : string;
+<b>begin</b>
+  <b>loop</b>
+    new_poem := "";
+    <b>for</b> poem_pos <b>in</b> 1..strings.length( poem ) <b>loop</b>
+       ch := strings.element( poem, poem_pos );
+       <b>case</b> ch <b>is</b>
+       <b>when</b> '1' =&gt;
+          new_poem := new_poem &amp; strings.field( nouns,
+             numerics.truncation( float( noun_count ) * numerics.random ) + 1,
+             separator );
+       <b>when</b> '2' =&gt;
+          new_poem := new_poem &amp; strings.field( verbs,
+             numerics.truncation( float( verb_count ) * numerics.random ) + 1,
+             separator );
+       <b>when</b> '3' =&gt;
+          new_poem := new_poem &amp; strings.field( adverbs,
+             numerics.truncation( float( adverb_count ) * numerics.random ) + 1,
+             separator );
+       <b>when</b> '4' =&gt;
+          new_poem := new_poem &amp; strings.field( adjectives,
+             numerics.truncation( float( adjective_count ) * numerics.random ) + 1,
+             separator );
+       <b>when</b> '5' =&gt;
+          new_poem := new_poem &amp; strings.field( prepositions,
+             numerics.truncation( float( preposition_count ) * numerics.random ) + 1,
+             separator );
+       <b>when</b> '6' =&gt;
+          new_poem := new_poem &amp; strings.field( conjunctions,
+             numerics.truncation( float( conjunction_count ) * numerics.random ) + 1,
+             separator );
+       <b>when</b> <b>others</b> =&gt;
+          new_poem := new_poem &amp; ch;
+       <b>end</b> <b>case</b>;
+    <b>end</b> <b>loop</b>;
+    new_line;
+    put_line( new_poem ); 
+    put_line( "Another poem? (y/n)" );
+    reply := get_line;
+    <b>exit</b> <b>when</b> reply = "n" <b>or</b> reply = "N";
+  <b>end</b> <b>loop</b>;
+<b>end</b>;
+put_line( "Bye" );
+
+<b>end</b> poetry;
+
+</PRE></BODY></HTML>

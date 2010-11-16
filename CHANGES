@@ -1,0 +1,13 @@
+pen.fill_rect - takes color or color name
+pen.paint_rect
+pen.clear
+pen.wait_to_reveal
+pen.reveal
+pen.reveal_now
+Add (lighten), subtract (darken), average (blend) added to pen mode
+for direct color screens (but not working correctly).
+Mandel.bush and Chessboard.bush
+
+- load/save canvas
+- print
+

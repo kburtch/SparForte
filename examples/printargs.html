@@ -1,0 +1,45 @@
+<HEAD><TITLE>printargs.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : printargs.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush printargs -a -bc d
+The command is '/home/ken/ada/bush-1.1/src/bush'
+Argument 1 is '-a'
+Argument 2 is '-bc'
+Argument 3 is 'd'
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- A common interview test from Rosetta Code for testing basic programming</EM></FONT>
+<FONT COLOR=green><EM>-- skills.</EM></FONT>
+
+<b>pragma</b> annotate( "printargs" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Retrieve the list of command-line arguments given to the program." );
+<b>pragma</b> annotate( "Example command line: " );
+<b>pragma</b> annotate( "myprogram -c 'alpha beta' -h 'gamma'" );
+<b>pragma</b> annotate( "translated by Ken O. Burtch" );
+
+<b>procedure</b> printargs <b>is</b>
+<b>begin</b>
+   put_line( "The command is '" &amp; command_line.command_name &amp; "'" );
+   <b>for</b> Arg <b>in</b> 1..command_line.argument_count <b>loop</b>
+      put( "Argument" ) @ (Arg ) @ ( " is '" ) @
+         ( command_line.argument(Arg) ) @ ("'");
+      new_line;
+   <b>end</b> <b>loop</b>;
+<b>end</b> printargs;
+
+</PRE></BODY></HTML>

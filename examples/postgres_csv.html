@@ -1,0 +1,141 @@
+<HEAD><TITLE>postgres_csv.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : postgres_csv.bush </H1></DIV><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-------------------------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>-- CONVERT                                                                   --</EM></FONT>
+<FONT COLOR=green><EM>--                                                                           --</EM></FONT>
+<FONT COLOR=green><EM>-- Descripton: Convert CSV comma separated value files to Postgres friendly  --</EM></FONT>
+<FONT COLOR=green><EM>-- CSV files that can be imported using Postgres' COPY command               --</EM></FONT>
+<FONT COLOR=green><EM>--                                                                           --</EM></FONT>
+<FONT COLOR=green><EM>-- Written by Ken O. Burtch &lt;ken@pegasoft.ca&gt;                                --</EM></FONT>
+<FONT COLOR=green><EM>-------------------------------------------------------------------------------</EM></FONT>
+
+<b>procedure</b> postgres_csv <b>is</b>
+  convert_source : string;
+  fieldpos   : natural;
+  firstpos   : natural;
+  quote_flag : boolean;
+  another_field_expected : boolean; <FONT COLOR=green><EM>-- to handle trailing ,</EM></FONT>
+  field      : string;
+  s          : string;
+  converted_field : string;
+  f          : file_type;
+  ch         : character;
+  first_comma : boolean;
+  record_count : natural := 0;
+<b>begin</b>
+  <FONT COLOR=green><EM>-- Usage</EM></FONT>
+  <b>if</b> command_line.argument_count = 0 <b>then</b>
+     put_line( standard_error, "Convert normal CSV to Postgres CSV file" );
+     put( standard_error, "usage: " );
+     put( standard_error, command_line.command_name );
+     put( standard_error, " original.csv &gt; postgres.csv" );
+     new_line;
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+  convert_source := command_line.argument(1);
+  open( f, in_file, convert_source );
+
+  <b>loop</b>
+    s := get_line( f );
+    <b>exit</b> <b>when</b> end_of_file( f );
+
+    <FONT COLOR=green><EM>-- Read a field</EM></FONT>
+
+    put( strings.image( record_count+1 ) &amp; ',' );
+<FONT COLOR=green><EM>--    put( "," );</EM></FONT>
+
+    fieldpos := 1;
+    first_comma := true;
+
+    <b>while</b> fieldpos &lt;= strings.length( s ) <b>loop</b>
+      quote_flag := false;
+      firstpos := fieldpos;
+      another_field_expected := false;
+
+      <b>while</b> fieldpos &lt;= strings.length( s ) <b>loop</b>
+        ch := strings.element( s, positive(fieldpos) );
+        <b>if</b> ch = ASCII.Quotation <b>then</b>
+           quote_flag := <b>not</b> quote_flag;
+        <b>elsif</b> ch = ',' <b>and</b> <b>not</b> quote_flag <b>then</b>
+           another_field_expected := true;
+           <b>exit</b>;
+        <b>end</b> <b>if</b>;
+        fieldpos := @+1;
+      <b>end</b> <b>loop</b>;
+
+      field := strings.slice( s, positive(firstpos), fieldpos-1 );
+      <b>if</b> strings.length( field ) &gt; 0 <b>then</b>
+         <b>if</b> strings.element( field, 1 ) = ASCII.Quotation <b>and</b>
+            strings.element( field, positive(strings.length( field )) )
+             = ASCII.Quotation <b>then</b>
+               field := strings.slice( field, 2, strings.length(field)-1 );
+         <b>end</b> <b>if</b>;
+      <b>end</b> <b>if</b>;
+      <FONT COLOR=green><EM>-- Backslash escapes for Postgres' COPY</EM></FONT>
+      converted_field := "";
+
+      <b>for</b> i <b>in</b> 1..strings.length( field ) <b>loop</b>
+          ch := strings.element( field, i );
+          <b>if</b> ch = ',' <b>then</b>
+             converted_field := @ &amp; "\054"; <FONT COLOR=green><EM>-- comma</EM></FONT>
+          <b>elsif</b> ch = '\' <b>then</b>
+             converted_field := @ &amp; "\134"; <FONT COLOR=green><EM>-- backslash</EM></FONT>
+          <b>elsif</b> ch = ASCII.BS <b>then</b>
+             converted_field := @ &amp; "\b"; <FONT COLOR=green><EM>-- backspace</EM></FONT>
+          <b>elsif</b> ch = ASCII.HT <b>then</b>
+             converted_field := @ &amp; "\t"; <FONT COLOR=green><EM>-- tab</EM></FONT>
+          <b>elsif</b> ch = ASCII.FF <b>then</b>
+             converted_field := @ &amp; "\f"; <FONT COLOR=green><EM>-- form feed</EM></FONT>
+          <b>elsif</b> ch = ASCII.LF <b>then</b>
+             converted_field := @ &amp; "\n"; <FONT COLOR=green><EM>-- line feed</EM></FONT>
+          <b>elsif</b> ch = ASCII.VT <b>then</b>
+             converted_field := @ &amp; "\v"; <FONT COLOR=green><EM>-- vertical tab</EM></FONT>
+          <b>elsif</b> ch = ASCII.CR <b>then</b>
+             converted_field := @ &amp; "\r"; <FONT COLOR=green><EM>-- carriage return</EM></FONT>
+          <b>elsif</b> ch &lt; ' ' <b>or</b> ch &gt; '~' <b>then</b>
+             converted_field := converted_field &amp; "[bad ?]";
+          <b>else</b>
+             converted_field := @ &amp; ch;
+          <b>end</b> <b>if</b>;
+      <b>end</b> <b>loop</b>;
+
+      <b>if</b> first_comma <b>then</b>
+         first_comma := false;
+      <b>else</b>
+         put( "," );
+      <b>end</b> <b>if</b>;
+      put( converted_field );
+      fieldpos := @+1;
+    <b>end</b> <b>loop</b>;
+
+    <b>if</b> another_field_expected <b>then</b>
+       put( "," );
+    <b>end</b> <b>if</b>;
+    new_line;
+    record_count := @+1;
+    <b>if</b> record_count <b>mod</b> 20 = 0 <b>then</b>
+       put( standard_error, "." );
+    <b>end</b> <b>if</b>;
+    <b>if</b> record_count <b>mod</b> 1000 = 0 <b>then</b>
+       put_line( standard_error, strings.image( record_count) );
+    <b>end</b> <b>if</b>;
+  <b>end</b> <b>loop</b>;
+
+  close( f );
+  new_line( standard_error );
+  put_line( standard_error, "Converted" &amp; strings.image( record_count ) &amp;
+    " rows" );
+<FONT COLOR=green><EM>-- $Log: postgres_csv.html,v $
+<FONT COLOR=green><EM>-- Revision 1.2  2005/08/23 12:27:13  ken
+<FONT COLOR=green><EM>-- Bush 1.0.2 release
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Revision 1.1.1.1  2003/10/16 03:08:34  ken</EM></FONT>
+<FONT COLOR=green><EM>-- imported by TIA</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<b>end</b> postgres_csv;
+
+</PRE></BODY></HTML>

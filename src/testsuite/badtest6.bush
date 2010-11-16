@@ -1,0 +1,4 @@
+# This should fail
+
+b : boolean := 1; -- type mismatch
+

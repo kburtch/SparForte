@@ -1,0 +1,110 @@
+<HEAD><TITLE>mandel.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : mandel.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD align="center" BGCOLOR="#000040"><SPAN STYLE="color: #00CC00">
+<img src="mandel.png" alt="[Mandelbrot Set image]">
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "mandel" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Create a color image of the Mandelbrot set" );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> mandel <b>is</b>
+
+  mandel_limit : <b>constant</b> long_float := 4.0;       <FONT COLOR=green><EM>-- reach this? it's the set</EM></FONT>
+  max_iterations : <b>constant</b> integer := 128;        <FONT COLOR=green><EM>-- quit if looped this amt</EM></FONT>
+
+  center_r : long_float := -0.75;                  <FONT COLOR=green><EM>-- center of set (x=real)</EM></FONT>
+  center_i : long_float := 0.0;                    <FONT COLOR=green><EM>-- center of set (i=imag.)</EM></FONT>
+
+  c_r : long_float;                                <FONT COLOR=green><EM>-- current point (x=real)</EM></FONT>
+  c_i : long_float;                                <FONT COLOR=green><EM>-- current point (i=imag.)</EM></FONT>
+
+  loop_count : integer;                            <FONT COLOR=green><EM>-- number of iterations</EM></FONT>
+
+  z_r  : long_float;                               <FONT COLOR=green><EM>-- mandelbot set formula</EM></FONT>
+  z_i  : long_float;                               <FONT COLOR=green><EM>-- variables</EM></FONT>
+  z_r2 : long_float;
+  z_i2 : long_float;
+
+  c    : pen.canvas_id;                            <FONT COLOR=green><EM>-- bush drawing canvas</EM></FONT>
+  plot : pen.rect;                                 <FONT COLOR=green><EM>-- rectangle to draw with</EM></FONT>
+  s    : string;
+
+  bits : integer;                                  <FONT COLOR=green><EM>-- for determining color</EM></FONT>
+  red  : pen.rgbcomponent;
+  green: pen.rgbcomponent;
+  blue : pen.rgbcomponent;
+<b>begin</b>
+
+  <FONT COLOR=green><EM>-- create the drawing canvas</EM></FONT>
+
+  pen.new_window_canvas( 200, 200, 32, c );
+  pen.set_title( c, "Mandelbrot" );
+
+  <FONT COLOR=green><EM>-- loop for the size of the canvas (-50% to +50%)</EM></FONT>
+
+  <b>for</b> i <b>in</b> -50..50 <b>loop</b>
+      c_i := center_i - long_float(i)*0.025;
+      <b>for</b> r <b>in</b> -50..50 <b>loop</b>
+          c_r := center_r - long_float(r)*0.025;
+
+      <FONT COLOR=green><EM>-- Evaluatuate how close point (c_z, c_i ) in complex number space</EM></FONT>
+      <FONT COLOR=green><EM>-- is to the Mandelbrot set.  Return a number between 0 and</EM></FONT>
+      <FONT COLOR=green><EM>-- max_iterations.  A value of max_iterations implies that the point</EM></FONT>
+      <FONT COLOR=green><EM>-- is probably a member of the Mandelbrot set.</EM></FONT>
+
+      z_r := c_r;
+      z_i := c_i;
+      loop_count := 1;
+      <b>loop</b>
+         z_i2 := z_i*z_i;
+         z_r2 := z_r*z_r;
+         z_i := 2.0 * z_r * z_i + c_i;
+         z_r := z_r2 - z_i2 + c_r;
+         loop_count := @+1;
+         <b>exit</b> <b>when</b> <b>not</b> ( (z_r2 + z_i2 &lt; mandel_limit) <b>and</b> (loop_count /= max_iterations) );
+         <b>end</b> <b>loop</b>;
+
+         <FONT COLOR=green><EM>-- pick a color based on loop_count (mandelbrot set is black)</EM></FONT>
+
+         <b>if</b> loop_count = max_iterations <b>then</b>
+            red := 0.0;
+            green := 0.0;
+            blue := 0.0;
+         <b>else</b>
+            bits := (loop_count <b>and</b> 3 );
+            red := 100.0-pen.rgbcomponent((100*bits/3)); 
+            bits := (loop_count / 3 ) <b>and</b> 3;
+            green := 100.0-pen.rgbcomponent((100*bits/3)); 
+            bits := (loop_count / 27 ) <b>and</b> 2;
+            blue := 100.0-pen.rgbcomponent((100*bits)/2); 
+         <b>end</b> <b>if</b>;
+         pen.set_pen_ink( c, red, green, blue );
+
+         <FONT COLOR=green><EM>-- Draw the point, reversing the X axis</EM></FONT>
+
+         pen.set_rect( plot, 100-(r+50),i+50, 100-(r+49), i+51 );
+         pen.fill_rect( c, plot );
+      <b>end</b> <b>loop</b>;
+  <b>end</b> <b>loop</b>;
+
+  ? "Press return";
+  s := get_line;
+
+<b>end</b> mandel;
+
+</PRE></BODY></HTML>

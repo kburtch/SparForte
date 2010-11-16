@@ -1,0 +1,32 @@
+<HEAD><TITLE>fizzbuzz.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : fizzbuzz.bush </H1></DIV><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- A common interview test from Rosetta Code for testing basic programming</EM></FONT>
+<FONT COLOR=green><EM>-- skills.</EM></FONT>
+
+<b>pragma</b> annotate( "fizzbuzz" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Write a program that prints the numbers from 1 to 100. But for multiples of" );
+<b>pragma</b> annotate( "three print 'Fizz' instead of the number and for the multiples of five print" );
+<b>pragma</b> annotate( "'Buzz'. For numbers which are multiples of both three and five print" );
+<b>pragma</b> annotate( "'FizzBuzz'" );
+<b>pragma</b> annotate( "translated by Ken O. Burtch" );
+
+<b>procedure</b> fizzbuzz <b>is</b>
+<b>begin</b>
+   <b>for</b> i <b>in</b> 1..100 <b>loop</b>
+      <b>if</b> i <b>mod</b> 15 = 0 <b>then</b>
+         ? "FizzBuzz";
+      <b>elsif</b> I <b>mod</b> 5 = 0 <b>then</b>
+         ? "Buzz";
+      <b>elsif</b> I <b>mod</b> 3 = 0 <b>then</b>
+         ? "Fizz";
+      <b>else</b>
+         ? i;
+      <b>end</b> <b>if</b>;
+   <b>end</b> <b>loop</b>;
+<b>end</b> fizzbuzz;
+</PRE></BODY></HTML>

@@ -1,0 +1,6 @@
+# This should fail
+
+s : socket_type;
+
+create( s, "localhost" ); -- this should fail
+

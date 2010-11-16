@@ -1,0 +1,7 @@
+i : integer := 2;
+case i is
+when 'a'|1 => null; -- mixed types
+when 2 => null;
+when others => null;
+end case;
+

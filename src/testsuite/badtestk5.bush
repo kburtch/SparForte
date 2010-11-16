@@ -1,0 +1,4 @@
+# This should fail
+
+set_error( standard_input ); -- only output to an out_file
+

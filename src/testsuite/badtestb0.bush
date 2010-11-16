@@ -1,0 +1,8 @@
+# This should fail
+
+if true then
+  null;
+elsif true loop -- bad keyword
+  null;
+end if;
+

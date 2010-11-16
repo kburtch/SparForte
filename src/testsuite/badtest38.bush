@@ -1,0 +1,5 @@
+# This should fail
+
+s1: string;
+s : string := s1'; -- no opening quote mark
+

@@ -1,0 +1,4 @@
+# This should fail
+
+m : character := calendar.month( calendar.clock ); -- wrong type
+

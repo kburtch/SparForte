@@ -1,0 +1,9 @@
+# This should fail
+
+i : integer := 1;
+
+case i is
+when 1 => null;
+others => null;              --> missing when for others
+end case;
+

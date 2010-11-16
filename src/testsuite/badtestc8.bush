@@ -1,0 +1,5 @@
+# This should fail
+
+apple : integer;
+type enum1 is ( apple ); -- missing enumerated
+

@@ -1,0 +1,36 @@
+<HEAD><TITLE>env.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : random.cgi </H1></DIV><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "random.cgi" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Display a random number when the page is loaded" );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+<FONT COLOR=green><EM>-- run env and get ther results</EM></FONT>
+
+random_number : positive := numerics.rnd(100);
+
+<FONT COLOR=green><EM>-- display the results using this template</EM></FONT>
+
+<b>pragma</b> template( html, "random.tmpl" );
+
+</PRE>
+<HR>
+<pre>
+&lt;!-- random.tmpl: Display a random number when the page is loaded --&gt;
+&lt;<b>html</b>&gt;
+&lt;<b>head</b>&gt;
+&lt;<b>title</b>&gt;random.cgi example&lt;<b>/title</b>&gt;
+&lt;<b>/head</b>&gt;
+&lt;<b>body</b>&gt;
+&lt;<b>h1</b>&gt;Your random number between 1 and 100 is&lt;/<b>h1</b>&gt;
+&lt;<b>p</b>&gt;&lt;?bush ? random_number; ?&gt;&lt;/<b>p</b>&gt;
+&lt;<b>/body</b>&gt;
+&lt;<b>/html</b>&gt;
+</pre>
+<HR>
+
+</BODY></HTML>

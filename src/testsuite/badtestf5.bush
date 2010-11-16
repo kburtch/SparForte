@@ -1,0 +1,7 @@
+# This should fail
+
+i : integer := 1;
+
+case i is
+end case; -- no case body
+

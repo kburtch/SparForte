@@ -1,0 +1,6 @@
+# This should fail
+
+if true loop -- bad keyword
+  null;
+end if;
+

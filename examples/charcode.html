@@ -1,0 +1,44 @@
+<HEAD><TITLE>charcode.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : charcode.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ /bush charcode
+character code 97 = character a
+character a = character code 97
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- From Rosetta Code</EM></FONT>
+
+<b>pragma</b> annotate( "charcode" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Given a character value in your language, print its code (could be" );
+<b>pragma</b> annotate( "ASCII code, Unicode code, or whatever your language uses). For example," );
+<b>pragma</b> annotate( "the character 'a' (lowercase letter A) has a code of 97 in ASCII (as" );
+<b>pragma</b> annotate( "well as Unicode, as ASCII forms the beginning of Unicode). Conversely," );
+<b>pragma</b> annotate( "given a code, print out the corresponding character. " );
+<b>pragma</b> annotate( "by Ken O. Burtch");
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> charcode <b>is</b>
+  code : natural := 97;
+  char : character := 'a';
+<b>begin</b>
+  put_line( "character code" &amp; strings.image( code ) &amp; " = character " &amp; strings.val( code ) );
+  put_line( "character " &amp; char &amp; " = character code" &amp; strings.image( numerics.pos( char ) ) );
+<b>end</b> charcode;
+
+</PRE></BODY></HTML>

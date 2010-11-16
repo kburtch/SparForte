@@ -1,0 +1,4 @@
+# This should fail
+
+logout; -- not in scripts
+

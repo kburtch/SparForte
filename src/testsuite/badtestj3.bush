@@ -1,0 +1,4 @@
+# This should fail
+
+echo | head ( "-1" )&; -- not allowed
+

@@ -1,0 +1,4 @@
+# This should fail
+
+:= 1 + 1; -- missing identifier
+

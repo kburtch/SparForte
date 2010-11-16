@@ -1,0 +1,148 @@
+<HEAD><TITLE>archive.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : archive.bush</H1></DIV><HR>
+<PRE>
+
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- Basic Directory Archive/Backup Script</EM></FONT>
+
+<b>pragma</b> annotate( "Backup" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "A basic directory archive and backup script" );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+<b>procedure</b> archive <b>is</b>
+
+  <FONT COLOR=green><EM>-- Global constants</EM></FONT>
+
+  expire_period_days : <b>constant</b> natural := 30;
+  <FONT COLOR=green><EM>-- number of days to hold files in the archive directory</EM></FONT>
+
+  <b>procedure</b> usage <b>is</b>
+    <FONT COLOR=green><EM>-- show help</EM></FONT>
+  <b>begin</b>
+    put( "usage: " ) @ ( source_info.file );
+    put_line( " source-dir archive-dir" );
+    new_line;
+    put_line( "Backup files in source directory in the archive directory." );
+    put_line( "Subdirectories are not searched.  Archive directory files" );
+    put_line( "will be cleaned." );
+    new_line;
+  <b>end</b> usage;
+
+<b>begin</b>
+
+  <FONT COLOR=green><EM>-- There should be two parameters.  Any other number of parameters, or</EM></FONT>
+  <FONT COLOR=green><EM>-- -h or --help, should show script usage</EM></FONT>
+
+command_line.set_exit_status( 0 );                            -- status OK
+
+<b>if</b> $# /= 2 <b>then</b>                                               -- not 2 params?
+   usage;                                                     -- show usage
+   <b>return</b>;                                                    -- and quit
+<b>elsif</b> $1 = "-h" <b>or</b> $1 = "--help" <b>then</b>                         -- help request?
+   usage;                                                     -- show usage
+   <b>return</b>;                                                    -- and quit
+<b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- main block that does the work</EM></FONT>
+
+<b>declare</b>
+  source_directory  : <b>constant</b> string := directory_operations.format_pathname( $1 );
+  -- first param - convert path to operating system format
+  archive_directory : <b>constant</b> string := directory_operations.format_pathname( $2 );
+  -- second param - convert to operating system format
+  file_name         : string;                                 -- file to bckup
+  target_name       : string;                                 -- backup name
+  backup_file_list  : string;                                 -- files to bckup
+  i                 : natural;
+<b>begin</b>
+
+  <FONT COLOR=green><EM>-- Verify the source and archive directories exist and that they are</EM></FONT>
+  <FONT COLOR=green><EM>-- directories</EM></FONT>
+
+  <b>if</b> <b>not</b> files.is_directory( source_directory ) <b>then</b>
+     put( standard_error, source_info.file )
+         @( standard_error, ": source is not a directory" );
+     command_line.set_exit_status( 192 );
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+  <b>if</b> <b>not</b> files.is_directory( archive_directory ) <b>then</b>
+     put( standard_error, source_info.file )
+         @( standard_error, ": archive is not a directory" );
+     command_line.set_exit_status( 192 );
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- Since there is no files.is_readable (yet), try to cd to the directory</EM></FONT>
+  <FONT COLOR=green><EM>-- to make sure BUSH can read the directories.</EM></FONT>
+
+  <b>if</b> <b>not</b> files.is_readable( source_directory ) <b>then</b>
+     put( standard_error, source_info.file )
+         @( standard_error, ": cannot access archive directory" );
+     command_line.set_exit_status( 192 );
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  <b>if</b> <b>not</b> files.is_writable( archive_directory ) <b>then</b>
+     put( standard_error, source_info.file )
+         @( standard_error, ": cannot access source directory" );
+     command_line.set_exit_status( 192 );
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- Directories look good.  Create a lock file, waiting until any other</EM></FONT>
+  <FONT COLOR=green><EM>-- copies of the script are finished running.</EM></FONT>
+
+  lock_files.lock_file( source_info.file &amp; ".lck" );
+
+  <FONT COLOR=green><EM>-- Expire the archive directory</EM></FONT>
+
+  <b>cd</b> "$archive_directory" ;
+  find . -type f -mtime +$expire_period_days -exec rm {} \; ;
+  <b>cd</b> - ;
+
+  <FONT COLOR=green><EM>-- Move to the source directory.  Get a list of files to back up.  Each</EM></FONT>
+  <FONT COLOR=green><EM>-- line will be separated by a line feed.</EM></FONT>
+
+  <b>cd</b> "$source_directory" ;
+  backup_file_list := `ls -1 ;` ;
+
+  <FONT COLOR=green><EM>-- Loop through the names of all the files to back up.  strings.field will</EM></FONT>
+  <FONT COLOR=green><EM>-- return an empty string when the loop has examined all the files.</EM></FONT>
+
+  i := 1;
+  <b>loop</b>
+    file_name := strings.field( backup_file_list, i, ASCII.LF );
+    <b>exit</b> <b>when</b> file_name = "";
+
+    <FONT COLOR=green><EM>-- The target name will have the date appended to the base filename.</EM></FONT>
+    <FONT COLOR=green><EM>-- For example, "test.log" becomes "test-year:month:day.tgz".</EM></FONT>
+
+    target_name := archive_directory &amp; directory_operations.dir_separator &amp;
+      file_name &amp; "-" &amp;
+      strings.trim( strings.image( calendar.year( calendar.clock ) ), trim_end.left ) &amp; ":" &amp;
+      strings.trim( strings.image( calendar.month( calendar.clock ) ), trim_end.left ) &amp; ":" &amp;
+      strings.trim( strings.image( calendar.day( calendar.clock ) ), trim_end.left ) & amp;
+      ".tgz";
+
+    <FONT COLOR=green><EM>-- If the file is readable, back it up using the tar command</EM></FONT>
+
+    <b>if</b> files.is_readable_file( file_name ) <b>then</b>
+       tar cfz "$target_name" "$file_name" ;
+    <b>end</b> <b>if</b>;
+    i := @ + 1;
+  <b>end</b> <b>loop</b>;
+
+<b>end</b>;
+
+<FONT COLOR=green><EM>-- Release the lock file and return a successful status</EM></FONT>
+
+lock_files.unlock_file( source_info.file &amp; ".lck" );
+command_line.set_exit_status( 0 );
+
+<b>end</b> archive;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+</PRE></BODY></HTML>

@@ -1,0 +1,7 @@
+i : integer := 2;
+case i is
+when 1|2| => null; -- bad case
+when 3 => null;
+when others => null;
+end case;
+

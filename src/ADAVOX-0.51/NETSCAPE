@@ -1,0 +1,40 @@
+NETSCAPE SETUP :
+----------------
+
+To have adavox play *.wav files for you in NETSCAPE,
+perform the following (Netscape 4.76 is assumed)
+
+   1. Start Netscape :
+
+   2. From the menu EDIT, select "Preferences.."
+
+   3. In the "Category" box, expand the "Navigator"
+      selection (the triangle at left will point
+      down).
+
+   4. Click on "Applications" beneath "Navigator".
+
+   5. Scroll through the Applications list box,
+      to find the Description "WAV Audio". Click
+      on that line.
+
+   6. Click the "Edit" button below the list box.
+
+   7. In the "Handled By" group box, click the
+      Application radio button.
+
+   8. Type in "adavox %s" in the text box, and
+      click the OK button.
+
+   9. Click OK in the Netscape preferences dialog
+      box, and you are ready.
+
+For *.au/*.snd file support, follow the same
+general procedure, with the following exceptions:
+
+   For "ULAW Audio" use "adavox -a %s"
+
+   This will play most *.au files, including
+   PCM and a-Law files.
+   
+                     - End -

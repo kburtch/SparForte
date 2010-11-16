@@ -1,0 +1,246 @@
+<HEAD><TITLE>camel.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : camel.bush </H1></DIV><HR>
+<IMG SRC="camel.gif"><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- CAMEL</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Originally written in BASIC by David Ahl, Creative Computing</EM></FONT>
+<FONT COLOR=green><EM>-- From his book 'BASIC COmputer Games'</EM></FONT>
+<FONT COLOR=green><EM>-- At last check, Dave is at http://www.swapmeetdave.com</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- BUSH port by Ken O. Burtch</EM></FONT>
+<FONT COLOR=green><EM>-- March 2003</EM></FONT>
+
+<b>pragma</b> restriction( no_external_commands );
+
+reply   : character;
+thirst  : integer := 4;     <FONT COLOR=green><EM>-- commands until dying by thirst</EM></FONT>
+canteen : natural := 6;     <FONT COLOR=green><EM>-- drinks left, start with 6</EM></FONT>
+dist    : integer := 0;     <FONT COLOR=green><EM>-- distance travelled</EM></FONT>
+pdist   : integer := 0;     <FONT COLOR=green><EM>-- distance pygmies travelled</EM></FONT>
+pdelay  : natural := 0;     <FONT COLOR=green><EM>-- pygmy delay</EM></FONT>
+camel   : integer := 0;     <FONT COLOR=green><EM>-- camel health</EM></FONT>
+scene   : positive;
+
+<b>type</b> a_player_status <b>is</b> (alive, captured, dead, won);
+status : a_player_status := alive;
+
+put_line( "CAMEL" );
+put_line( "Originally by David Ahl, Creative Computing" );
+new_line;
+put( "WOUD YOU LIKE INSTRUCTIONS? (Y/N) " );
+reply := inkey;
+put_line( reply );
+<b>if</b> reply = 'y' <b>or</b> reply = 'Y' <b>then</b>
+   put_line( "  Welcome to Camel.  The object is to travel 200 miles" );
+   put_line( "across the great GOBI Desert." );
+   put_line( "A tribe of knocked keed pygmies will be chasing you.  You will" );
+   put_line( "be asked for commands every so often." );
+   new_line;
+   put_line( "C O M M A N D S :" );
+   put_line( "1# Drink form your canteen" );
+   put_line( "2# Ahead modrate speed" );
+   put_line( "3# ahead full speed" );
+   put_line( "4# stop for the night" );
+   put_line( "5# Status check" );
+   put_line( "6# Hope for help" );
+   new_line;
+   put_line( "You have one quart of water which will last you six drinks." );
+   put_line( "You must renew your water supply completely at an oases." );
+   put_line( "You get a half a quart if found by help." );
+   put_line( "If help does not find you after command six, you lose." );
+<b>end</b> <b>if</b>;
+put_line( "Good luck and good cameling!!!" );
+new_line;
+
+put_line("You are in the middle of the desert at an oasis." );
+
+<b>loop</b>
+  <b>loop</b>
+    <b>if</b> reply /= '5' <b>then</b> <FONT COLOR=green><EM>-- didn't move on status</EM></FONT>
+       thirst := @-1;
+       <b>if</b> thirst = 1 <b>then</b>
+          put_line( "-------------------W A R N I N G------------GET A DRINK" );
+       <b>elsif</b> thirst &lt; 0 <b>then</b>
+          put_line( "You ran out of water......sorry chum!!!" );
+          status := dead;
+       <b>end</b> <b>if</b>;
+       pdelay := @+1;
+       <b>if</b> pdelay &gt; 3 <b>then</b>
+          pdist := @+integer(numerics.rnd(10))-1;
+          <b>if</b> pdist &gt;= dist <b>then</b>
+             put_line( "The pygmies have captured you.  Camel and people soup is their" );
+             put_line( "favorite dish !!!!!!" );
+             status := dead;
+           <b>end</b> <b>if</b>;
+       <b>end</b> <b>if</b>;
+    <b>end</b> <b>if</b>;
+    <b>if</b> status /= dead <b>then</b>
+       put( "The pygmies are " );
+       put( pdist );
+       put_line( " miles behind you." );
+       put( "You have travelled " );
+       put( dist );
+       put_line( " miles altogether." );
+    <b>end</b> <b>if</b>;
+    <b>if</b> status = captured <b>then</b>
+       new_line;
+       put_line( "You have a new choice of sub-commands:" );
+       put_line( "#1 TAKE A DRINK" );
+       put_line( "#7 ATTEMPT AN ESCAPE" );
+       put_line( "#8 WAIT FOR PAYMENT" );
+       put_line( "Your sub-command? " );
+       reply := inkey;
+       put_line( reply );
+       <b>case</b> reply <b>is</b>
+       <b>when</b> '1' =&gt;
+            canteen := @-1;
+       <b>when</b> '7' =&gt;
+            <b>if</b> numerics.rnd(2) = 1 <b>then</b>
+               put_line( "CONGRADULATIONS, YOU SUCCESSFULLY ESCAPED!!!!!!!!" );
+               status := alive;
+            <b>else</b>
+               put_line( "You were mortally wounded by a pig stabber while escaping." );
+               status := dead;
+            <b>end</b> <b>if</b>;
+       <b>when</b> '8' =&gt;
+            <b>if</b> numerics.rnd(4) = 1 <b>then</b>
+               put_line( "Your ransom has been paid and you are free to go." );
+               status := alive;
+            <b>else</b>
+               put_line( "The local sultain is collecting......just wait.................." );
+            <b>end</b> <b>if</b>;
+       <b>when</b> <b>others</b> =&gt; <b>null</b>;
+       <b>end</b> <b>case</b>;
+    <b>elsif</b> status = dead <b>then</b>
+       put_line( "You died in the desert." );
+       scene := numerics.rnd( 5 );
+       <b>case</b> scene <b>is</b>
+       <b>when</b> 1 =&gt; put_line( "The National Camel's Union is not attending your funeral!!!" );
+       <b>when</b> 2 =&gt; put_line( "Your body was eaten by vultures and imported canninbals !!!" );
+       <b>when</b> 3 =&gt; put_line( "The local sheik now uses your skull for a change purse !!!!" );
+       <b>when</b> 4 =&gt; put_line( "People with little intellegence should stay out of the desert!" );
+       <b>when</b> 5 =&gt; put_line( "TURKEYS SHOULD FLY, NOT RIDE CAMELS !!!!!!!!!!!!!!!!!!!!!!" );
+       <b>when</b> <b>others</b> =&gt;
+          put( "error: unexpected scene: '" );
+          put( scene );
+          put_line( "'" );
+       <b>end</b> <b>case</b>;
+       <b>exit</b>;
+    <b>elsif</b> status = won <b>then</b>
+       put_line( "You win, a party is being given in your honor............" );
+       put_line( "............The pygmies are planning to attend..............." );
+       <b>exit</b>;
+    <b>else</b>
+      new_line;
+      put( "What is your command? " );
+      reply := inkey;
+      put_line( reply );
+      <b>case</b> reply <b>is</b>
+      <b>when</b> '1' =&gt;
+           <b>if</b> canteen = 0 <b>then</b>
+              put_line( "The canteen is empty" );
+           <b>else</b>
+              thirst := 4;
+              canteen := @-1;
+              put_line( "BETTER WATCH FOR AN OASES  !" );
+           <b>end</b> <b>if</b>;
+      <b>when</b> '2' =&gt;
+           camel := @+1;
+           <b>if</b> camel &gt; 7 <b>then</b>
+              status := dead;
+              put_line( "You dirty rapscallion!  You ran your poor camel to DEATH!!" );
+           <b>else</b>
+              dist := @+integer(numerics.rnd(10));
+              put_line( "Your camel likes this pace." );
+           <b>end</b> <b>if</b>;
+      <b>when</b> '3' =&gt;
+           camel := @+3;
+           <b>if</b> camel &gt; 7 <b>then</b>
+              status := dead;
+              put_line( "You dirty rapscallion!  You ran your poor camel to DEATH!!" );
+           <b>else</b>
+              dist := @+2*integer(numerics.rnd(10));
+              new_line;
+              put_line( "Your camel is burning across the desert sands." );
+           <b>end</b> <b>if</b>;
+      <b>when</b> '4' =&gt;
+           camel := 0;
+           put_line( "Your camel thanks you !" );
+      <b>when</b> '5' =&gt;
+           put( "Your camel has " );
+           put( 7-camel );
+           put_line( " good days left." );
+           put( "You have " );
+           put( canteen );
+           put_line( " drinks left in your canteen." );
+           put( "You can go " );
+           put( thirst );
+           put_line( " commands without drinking." );
+      <b>when</b> '6' =&gt;
+           <b>if</b> numerics.rnd(10) = 1 <b>then</b>
+              thirst := 4;
+              canteen := 3;
+              put_line( "Help has found you in a state of unconsciousness." );
+           <b>else</b>
+              status := dead;
+           <b>end</b> <b>if</b>;
+      <b>when</b> <b>others</b> =&gt; <b>null</b>;
+      <b>end</b> <b>case</b>;
+
+      <b>if</b> status = alive <b>and</b> reply /= '5' <b>then</b>
+         scene := numerics.rnd( 1000 );
+         <b>if</b> scene <b>in</b> 1..50 <b>then</b>
+            new_line;
+            put_line( "WILD BERBERS HIDDEN IN THE SAND HAVE CAPTURED YOU." );
+            put_line( "Luckily the local sheik has agreed to their ransom" );
+            put_line( "demands.....but........watch for the pygmies!!!!!!" );
+            status := captured;
+         <b>elsif</b> scene <b>in</b> 51..240 <b>then</b> 
+            thirst := 4;
+            canteen := 6;
+            new_line;
+            put_line( "You have arrived at an oases--------Your camel is filling " );
+            put_line( "your canteen and eating figs." );
+         <b>elsif</b> scene <b>in</b> 241..277 <b>then</b>
+            dist := @+integer(numerics.rnd(19)-10);
+            new_line;
+            put_line( "You have been caught in a sandstorm......GOOD LUCK!" );
+            put( "Your new postion is " );
+            put( dist );
+            put_line( " miles so far!" );
+         <b>elsif</b> scene <b>in</b> 278..312 <b>then</b>
+            pdist := @+1;
+            new_line;
+            put_line( "Your camel hurt his hump." );
+            put_line( "Luckily the pygmies were footweary  !!!" );
+         <b>end</b> <b>if</b>;
+       <b>end</b> <b>if</b>;
+     <b>end</b> <b>if</b>;
+  <b>end</b> <b>loop</b>;
+
+  new_line;
+  put( "Want a new camel and a new game? " );
+  reply := inkey;
+  put_line( reply );
+  <b>if</b> reply = 'y' <b>or</b> reply = 'Y' <b>then</b>
+     thirst := 4;
+     canteen := 6;
+     dist := 0;
+     pdist := 0;
+     pdelay := 0;
+     camel := 0;
+     status := alive;
+  <b>else</b>
+     put( "------------------" );
+     put( "     CHICKEN     " );
+     put_line( "------------------" );
+     <b>exit</b>;
+  <b>end</b> <b>if</b>;
+<b>end</b> <b>loop</b>;
+command_line.set_exit_status( 0 );
+
+</PRE></BODY></HTML>

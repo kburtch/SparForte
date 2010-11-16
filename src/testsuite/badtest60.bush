@@ -1,0 +1,4 @@
+# This should fail
+
+put( 5, 5 ); -- picture should be string, or should be file type
+

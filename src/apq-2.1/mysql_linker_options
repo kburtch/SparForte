@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# Generate pragma Linker_Options() for MySQL
+
+case "$(uname -s)" in
+CYGWIN* )	echo "   --! pragma Linker_Options(\"\");";;
+* )		for arg in $(mysql_config --libs) ; do
+			echo "   pragma Linker_Options(\"$arg\");"
+		done;;
+esac
+
+# End

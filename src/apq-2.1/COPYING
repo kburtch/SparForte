@@ -1,0 +1,40 @@
+$Id: COPYING,v 1.2 2005/02/11 02:59:41 ken Exp $
+
+	COPYING APQ
+	===========
+	Warren W. Gay VE3WWG
+	Mon Sep 22 2003
+
+I hate complicated licensing, but unfortunately it is somewhat necessary
+here:
+
+
+PostgreSQL Sources:
+-------------------
+
+The modified or unmodified copies of the PostgreSQL Database Management
+System (formerly known as Postgres, then as Postgres95) software sources
+are covered under a separate license (see file PG_COPYRIGHT for the
+precise terms).
+
+
+APQ Sources:
+------------
+
+As of Aug 4, 2002, the APQ Binding source code is available under a
+dual-license agreement. You the user or distributor, can choose one of
+the following sets of terms, that best suits your needs:
+
+	1. The ACL (Ada Community License) : see file ACL.txt
+or
+	2. The GPL2 license (GNU Public License 2) : see GPL.txt
+
+One or the other license must cover all APQ source code that is not
+otherwise covered by the PostgreSQL license.
+
+The distributor and the end user(s) can choose different licenses, if
+they wish. The intention of this dual license agreement is to protect
+your freedom to access, use and even modify the source code for your own
+use.
+
+Please enjoy, Warren.

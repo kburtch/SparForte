@@ -1,0 +1,5 @@
+# This should fail
+
+f : file_type;
+s : string := get_line( f ); -- file not open
+

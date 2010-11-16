@@ -1,0 +1,6 @@
+# This should fail
+
+n : natural;
+
+n := cgi.key_count( 1 ); -- bad types
+

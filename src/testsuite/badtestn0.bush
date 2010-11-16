@@ -1,0 +1,4 @@
+# This should fail
+
+m : calendar.month_number := calendar.month calendar.clock ); -- bad syntax
+

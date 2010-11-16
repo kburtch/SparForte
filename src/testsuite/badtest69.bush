@@ -1,0 +1,5 @@
+# This should fail
+
+f : file_type;
+new_line( f  ); -- file not open
+

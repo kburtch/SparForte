@@ -1,0 +1,6 @@
+# This should fail
+
+s : socket_type;
+
+open( s, in_file, "localhost" ); -- this should fail
+

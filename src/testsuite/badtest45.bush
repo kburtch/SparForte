@@ -1,0 +1,4 @@
+# This should fail
+
+b : boolean := not "string"; -- wrong type for not
+

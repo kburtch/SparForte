@@ -1,0 +1,126 @@
+<HEAD><TITLE>dispatch.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : dispatch.bush </H1></DIV><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "dispatch server-type remote-command" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Run a command across a pre-defined set of computers " );
+<b>pragma</b> annotate( "using Secure Shell (SSH)." );
+<b>pragma</b> annotate( "On success, returns status code 0." );
+<b>pragma</b> annotate( "192 - cannot log into a server" );
+<b>pragma</b> annotate( "193 - the ssh command failed" );
+<b>pragma</b> annotate( "by Ken. O. Burtch" );
+
+<b>procedure</b> dispatch <b>is</b>
+
+  <FONT COLOR=green><EM>-- my login account</EM></FONT>
+  LOGNAME : string := "unknown";
+  <b>pragma</b> import( shell, LOGNAME );
+
+  <FONT COLOR=green><EM>-- node_names is an enumerated list of servers</EM></FONT>
+  <FONT COLOR=green><EM>-- node_types are types of servers</EM></FONT>
+  <FONT COLOR=green><EM>-- node_type_array is a list of types for the node_names</EM></FONT>
+  <FONT COLOR=green><EM>-- node_name_array is a list of hostnames for the node_names</EM></FONT>
+
+  <b>type</b> node_names <b>is</b> ( host1, host2 );
+  <b>type</b> node_types <b>is</b> (application, database, proxy, cache, share, offline );
+  <b>type</b> node_type_array <b>is</b> <b>array</b>( host1..host2 ) <b>of</b> node_types;
+  <b>type</b> node_name_array <b>is</b> <b>array</b>( host1..host2 ) <b>of</b> string;
+
+  node_name : node_name_array;
+  node_type : node_type_array;
+
+  kindStr : string;
+  kind    : node_types;
+
+  <b>procedure</b> usage <b>is</b>
+    <FONT COLOR=green><EM>-- show help</EM></FONT>
+  <b>begin</b>
+    put( "usage: " ) @ ( source_info.file );
+    put_line( " server-type remote-command" );
+    new_line;
+    put_line( "Run a command across a pre-defined set of computers" );
+    put_line( "using Secure Shell (SSH)." );
+    new_line;
+  <b>end</b> usage;
+
+<b>begin</b>
+
+  <FONT COLOR=green><EM>-- Make a list of your hosts here</EM></FONT>
+
+  node_name( host1 ) := "localhost";   node_type( host1 ) := application;
+  node_name( host2 ) := "localhost2";  node_type( host2 ) := database;
+
+  <FONT COLOR=green><EM>-- Parameter handling</EM></FONT>
+
+  <FONT COLOR=green><EM>-- There should be two parameters.  Any other number of parameters, or</EM></FONT>
+  <FONT COLOR=green><EM>-- -h or --help, should show script usage</EM></FONT>
+
+  command_line.set_exit_status( 0 );                            <FONT COLOR=green><EM>-- status OK</EM></FONT>
+
+  <b>if</b> $# /= 2 <b>then</b>                                               <FONT COLOR=green><EM>-- not 2 params?</EM></FONT>
+     usage;                                                     <FONT COLOR=green><EM>-- show usage</EM></FONT>
+     <b>return</b>;                                                    <FONT COLOR=green><EM>-- and quit</EM></FONT>
+  <b>elsif</b> $1 = "-h" <b>or</b> $1 = "<FONT COLOR=green><EM>--help" then                         -- help request?</EM></FONT>
+     usage;                                                     <FONT COLOR=green><EM>-- show usage</EM></FONT>
+     <b>return</b>;                                                    <FONT COLOR=green><EM>-- and quit</EM></FONT>
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- Convert kind to an item of the enumerated type</EM></FONT>
+
+  kindStr := $1;
+  <b>case</b> kindStr <b>is</b>
+  <b>when</b> "application" =&gt; kind := application;
+  <b>when</b> "database" =&gt; kind := database;
+  <b>when</b> "proxy" =&gt; kind := proxy;
+  <b>when</b> "cache" =&gt; kind := cache;
+  <b>when</b> "share" =&gt; kind := share;
+  <b>when</b> <b>others</b> =&gt;
+       put( standard_error, source_info.file )
+            @( standard_error, ": Bad type of server: '" &amp; kindStr &amp; "'" );
+       <b>return</b>;
+  <b>end</b> <b>case</b>;
+
+  <FONT COLOR=green><EM>-- Verify machine access: this does not guarantee the machine will</EM></FONT>
+  <FONT COLOR=green><EM>-- be there but reduces the risk of a machine being down while</EM></FONT>
+  <FONT COLOR=green><EM>-- running the command.</EM></FONT>
+
+  <b>for</b> n <b>in</b> arrays.first( node_name )..arrays.last( node_name ) <b>loop</b>
+      <b>if</b> node_type( n ) = kind <b>then</b>
+         ssh( "-oPreferredAuthentications=publickey",
+              LOGNAME &amp; "@" &amp; node_name( n ),
+              "exit" );
+         <b>if</b> $? /= 0 <b>then</b>
+            put( standard_error, source_info.file )
+                @( standard_error, ": cannot log into '" &amp; node_name(n) &amp; "'" );
+            command_line.set_exit_status( 192 );
+            <b>return</b>;
+         <b>end</b> <b>if</b>;
+      <b>end</b> <b>if</b>;
+  <b>end</b> <b>loop</b>;
+
+  <FONT COLOR=green><EM>-- Run the command sequentially across all the computers of that kind</EM></FONT>
+  <FONT COLOR=green><EM>-- This can be improved by running ssh in the background and wait-ing</EM></FONT>
+  <FONT COLOR=green><EM>-- so that the command operate in parallel, but you lose the error</EM></FONT>
+  <FONT COLOR=green><EM>-- checking of the command results.</EM></FONT>
+
+  <b>for</b> n <b>in</b> arrays.first( node_name )..arrays.last( node_name ) <b>loop</b>
+      <b>if</b> node_type( n ) = kind <b>then</b>
+         ? "Running command on " &amp; node_name( n );
+         ssh( "-oPreferredAuthentications=publickey",
+              LOGNAME &amp; "@" &amp; node_name( n ),
+              command_line.argument(2) );
+         <b>if</b> $? /= 0 <b>then</b>
+            put( standard_error, source_info.file )
+                @( standard_error, ": command failed on '" &amp; node_name(n) &amp; "'" );
+            command_line.set_exit_status( 193 );
+            <b>return</b>;
+         <b>end</b> <b>if</b>;
+      <b>end</b> <b>if</b>;
+  <b>end</b> <b>loop</b>;
+<b>end</b> dispatch;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+</PRE></BODY></HTML>

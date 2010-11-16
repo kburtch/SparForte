@@ -1,0 +1,5 @@
+
+for ; is 1..2 loop -- symbol not variable name
+  null;
+end loop;
+

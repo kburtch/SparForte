@@ -1,0 +1,271 @@
+#!/bin/sh
+#
+# $Id: install_lib,v 1.2 2005/02/11 02:59:44 ken Exp $
+# Warren W. Gay VE3WWG
+#
+# Licensed under the ACL (Ada Community License)
+
+TMPDIR="${TMPDIR:-/tmp}"	# Temp file directory
+TMP="$TMPDIR/$$-1.tmp"		# Temp file 1
+trap "rm -f $TMP" 0		# Clean up temp file(s) on exit
+
+UNINSTALL=0
+if [ "$1" = uninstall ] ; then
+	UNINSTALL=1		# Uninstall orignal APQ stuff
+fi
+
+is_unix() {
+	if [ "${WINDIR:-UNIX}" = UNIX ] ; then
+		return 0;
+	fi
+	return 1;
+}
+
+#
+# Checks for ADA_INCLUDE_PATH or ADA_OBJECTS_PATH
+#
+check_variable() {
+	AVAR="$1"
+	AWHAT="$2"
+	eval "APATH=\"\$$AVAR\""
+
+	if [ -z "$APATH" ] ; then
+		cat <<EOF
+--------------------------------------------------------------------------------
+The environment variable $AVAR does not appear to be defined.
+
+Normally this environment variable is defined and exported to point to
+the directory(ies) for your $AWHAT.
+
+You will need to declare at least one directory this way.
+
+If you are just experimenting in your home directory, the following is
+recommended:
+
+	1. $ mkdir $HOME/adainclude
+
+	2. $ mkdir $HOME/adalib
+
+	3. $ ADA_INCLUDE_PATH="$HOME/adainclude"
+
+	4. $ ADA_OBJECTS_PATH="$HOME/adalib"
+
+	5. $ export ADA_INCLUDE_PATH ADA_OBJECTS_PATH
+
+and then try/repeat :
+
+	5. $ make install
+
+Note that this will only work until you leave your current session. You
+will need to fix your .profile file to set up ADA_INCLUDE_PATH and
+ADA_OBJECTS_PATH for the next time you login.
+
+--------------------------------------------------------------------------------
+Otherwise, if you are attempting to do a "root install", then please be
+sure to set up a ADA_INCLUDE_PATH and ADA_OBJECTS_PATH environment
+variables (perhaps in /etc/profile). See the secret GNAT users guide for
+additional information about these environment variables.
+
+Once the variables are defined, try/repeat: make install
+--------------------------------------------------------------------------------
+EOF
+		exit 1
+	fi
+}
+
+check_include() {
+	AVAR="$1"
+	eval "APATH=\"\$$AVAR\""
+	(	
+		if is_unix ; then
+			IFS=:
+		else
+			IFS=';'
+		fi
+		for dir in $APATH ; do
+			if is_unix ; then
+				echo "$dir"
+			else
+				echo $(cygpath "$dir")
+			fi
+		done
+	) | (
+		rc=1
+		while read dir ; do
+			if [ -w "$dir" ] ; then
+				rc=0
+				echo "$dir"
+			fi
+		done
+	) >$TMP
+	if [ $? -ne 0 ] ; then
+		cat <<EOF >/dev/tty
+----------------------------------------------------------------------
+None of the directories in $AVAR are writable by $LOGNAME.
+
+You will need to either gain access to one directory referenced
+by $AVAR, or you will need to create a local directory and append
+that to the list int $AVAR.
+
+Try make install again, after you take care of this issue.
+----------------------------------------------------------------------
+EOF
+		exit 1		
+	fi
+	count=$(wc -l <$TMP)
+	if [ $count -gt 1 ] ; then
+		loop=true
+		while $loop ; do
+			cat <<EOF >/dev/tty
+----------------------------------------------------------------------
+There is more than one writable directory in $AVAR that I could use.
+
+Please enter the line number you want to choose below:
+
+EOF
+			cat -n $TMP >/dev/tty
+			echo >/dev/tty
+			echo "Enter your choice below (q to quit)?" >/dev/tty
+			read selection </dev/tty
+
+			case "$selection" in
+			q* | Q* )	 echo "Try again later."; exit 1;;
+			* )		;;
+			esac
+			
+			if [ $selection -gt 0 -a $selection -le $count ] ; then
+				loop=false
+				continue
+			fi
+			echo >/dev/tty
+			echo "Choose a number between 1 and $count please." >/dev/tty
+			echo >/dev/tty
+		done
+		dir=$(sed -n ${selection}p <$TMP)
+	else
+		dir=$(cat $TMP)
+	fi
+	echo "$dir"
+}
+
+check_instfile() {
+	INSTVAR="$1"
+	eval INSTLST="\$$INSTVAR"
+	for file in $INSTLST ; do
+		if [ ! -r $file ] ; then
+			echo "Hey! File $file is not available to install."
+			echo "Are you done make?"
+			exit 1
+		fi
+	done
+}
+
+install_files() {
+	INSTVAR="$1"
+	eval INSTLST="\$$INSTVAR"
+	INSTDIR="$2"
+	INSTMODE="$3"
+	for file in $INSTLST ; do
+		if [ ! -r $file ] ; then
+			echo "Hey! File $file is not available to install!!!"
+			echo "Are files being deleted as we install?!?!?!?!?"
+			exit 13
+		fi
+		rm -f "$INSTDIR/$file"
+		cp -p "$file" "$INSTDIR/$file"
+		chmod $INSTMODE "$INSTDIR/$file"
+		ls -l "$INSTDIR/$file"
+	done
+}
+
+uninstall_files() {
+	INSTVAR="$1"
+	eval INSTLST="\$$INSTVAR"
+	INSTDIR="$2"
+	INSTMODE="$3"
+	for file in $INSTLST ; do
+		if [ -f "$INSTDIR/$file" ] ; then
+			echo "removing $INSTDIR/$file"
+			rm -f "$INSTDIR/$file"
+		fi
+	done
+}
+
+HAVE_PG="${HAVE_PG:-0}"
+HAVE_MY="${HAVE_MY:-0}"
+
+if [ $(expr $HAVE_PG + $HAVE_MY) -eq 0 ] ; then
+	cat <<EOF >&2
+
+You must run this script from a 'make install', or
+you must specify environment variables HAVE_PG and
+HAVE_MY (one of them must be true).
+
+EOF
+	exit 13
+fi
+
+check_variable ADA_INCLUDE_PATH "Ada95 specifications files"
+check_variable ADA_OBJECTS_PATH "Ada95 object files"
+
+INSTSPEC="apq.ads apq.adb"
+INSTALIS="apq.ali"
+INSTOBJS="libapq.a"
+
+if [ $HAVE_PG -gt 0 ] ; then
+	INSTSPEC="$INSTSPEC apq-postgresql.ads apq-postgresql-client.ads apq-postgresql-client.adb"
+	INSTSPEC="$INSTSPEC apq-postgresql-decimal.ads apq-postgresql-decimal.adb"
+	INSTALIS="$INSTALIS apq-postgresql.ali apq-postgresql-client.ali apq-postgresql-decimal.ali"
+fi
+
+if [ $HAVE_MY -gt 0 ] ; then
+	INSTSPEC="$INSTSPEC apq-mysql.ads apq-mysql-client.ads apq-mysql-client.adb"
+	INSTALIS="$INSTALIS apq-mysql.ali apq-mysql-client.ali"
+fi
+
+if [ $UNINSTALL -eq 0 ] ; then
+	check_instfile INSTSPEC
+	check_instfile INSTALIS
+	check_instfile INSTOBJS
+fi
+
+INCLDIR=$(check_include ADA_INCLUDE_PATH)
+if [ $? -ne 0 ] ; then
+	exit 1
+fi
+
+OBJSDIR=$(check_include ADA_OBJECTS_PATH)
+if [ $? -ne 0 ] ; then
+	exit 1
+fi
+
+echo "Using ADA_INCLUDE_PATH=$INCLDIR"
+echo "Using ADA_OBJECTS_PATH=$OBJSDIR"
+
+if [ $UNINSTALL -ne 0 ] ; then
+	uninstall_files INSTSPEC $INCLDIR 444
+	uninstall_files INSTALIS $OBJSDIR 444
+	uninstall_files INSTOBJS $OBJSDIR 444
+	echo "Uninstall complete."
+	exit 0
+fi
+
+echo
+echo "Ready to continue install? Press RETURN (Q or ^C to quit)" >/dev/tty
+read reply </dev/tty
+
+case "$reply" in
+Q* | q* )	exit 1;;
+* )		;;
+esac
+
+install_files INSTSPEC $INCLDIR 444
+install_files INSTALIS $OBJSDIR 444
+install_files INSTOBJS $OBJSDIR 444
+
+echo
+echo "Install complete."
+
+exit 0
+
+# End $Source: /home/cvsroot/bush/src/apq-2.1/install_lib,v $

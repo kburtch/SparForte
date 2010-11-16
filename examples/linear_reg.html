@@ -1,0 +1,95 @@
+<HEAD><TITLE>linear_reg.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : linear_reg.bush</H1></DIV><HR>
+<IMG SRC="linear_reg.gif">
+<P>Performan a linear regression on a series of numbers</P>
+<PRE>
+
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>--- A simple linear regression script</EM></FONT>
+
+<b>pragma</b> annotate( "linear reg" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Based on an Ada program by Dr. David G. Simpson, 2002" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "This program performs a linear regression analysis for a set of data given" );
+<b>pragma</b> annotate( "as (x,y) pairs.  The output from the program is the slope and y-intercept" );
+<b>pragma</b> annotate( "of the least-squares best fit straight line through the data points." );
+<FONT COLOR=green><EM>------------------------------------------------------------------------------</EM></FONT>
+
+<b>pragma</b> ada_95;                     <FONT COLOR=green><EM>-- enforce ada_95 restrictions</EM></FONT>
+
+<b>procedure</b> linear_reg <b>is</b>
+
+<FONT COLOR=green><EM>--  Variable declarations</EM></FONT>
+
+   b     : float;                  <FONT COLOR=green><EM>-- y-intercpt of least-squares best fit line</EM></FONT>
+   m     : float;                  <FONT COLOR=green><EM>-- slope of least-squares best fit line</EM></FONT>
+   n     : float := 0.0;           <FONT COLOR=green><EM>-- number of data points</EM></FONT>
+   r     : float;                  <FONT COLOR=green><EM>-- squared correlation coefficient</EM></FONT>
+   sumx  : float := 0.0;           <FONT COLOR=green><EM>-- sum of x</EM></FONT>
+   sumx2 : float := 0.0;           <FONT COLOR=green><EM>-- sum of x**2</EM></FONT>
+   sumxy : float := 0.0;           <FONT COLOR=green><EM>-- sum of x * y</EM></FONT>
+   sumy  : float := 0.0;           <FONT COLOR=green><EM>-- sum of y</EM></FONT>
+   sumy2 : float := 0.0;           <FONT COLOR=green><EM>-- sum of y**2</EM></FONT>
+   x     : float;                  <FONT COLOR=green><EM>-- input x data</EM></FONT>
+   y     : float;                  <FONT COLOR=green><EM>-- input y data</EM></FONT>
+
+
+<FONT COLOR=green><EM>--  Main program code</EM></FONT>
+
+<b>begin</b>
+
+   <FONT COLOR=green><EM>-- print introductory message</EM></FONT>
+
+   put_line ("LINREG - Perform linear regression");
+   put_line (" (Enter X=-9999 to stop data entry and compute linear regression.)");
+
+   <b>loop</b>                           <FONT COLOR=green><EM>-- loop for all data points</EM></FONT>
+      new_line;
+      put ("Enter x:  ");         <FONT COLOR=green><EM>-- prompt for x</EM></FONT>
+      x := numerics.value( get_line ); <FONT COLOR=green><EM>-- read x</EM></FONT>
+      <b>if</b> x = -9999.0 <b>then</b>         <FONT COLOR=green><EM>-- if no more data..</EM></FONT>
+         exit;                    <FONT COLOR=green><EM>-- ..then exit loop</EM></FONT>
+      <b>end</b> <b>if</b>;                     <FONT COLOR=green><EM>-- else prompt for y</EM></FONT>
+      put ("Enter y:  ");         <FONT COLOR=green><EM>-- prompt for y</EM></FONT>
+      y := numerics.value( get_line ); <FONT COLOR=green><EM>-- read y</EM></FONT>
+
+      n := n + 1.0;               <FONT COLOR=green><EM>-- increment number of data points by 1</EM></FONT>
+      sumx  := sumx + x;          <FONT COLOR=green><EM>-- compute sum of x</EM></FONT>
+      sumx2 := sumx2 + x * x;     <FONT COLOR=green><EM>-- compute sum of x**2</EM></FONT>
+      sumxy := sumxy + x * y;     <FONT COLOR=green><EM>-- compute sum of x * y</EM></FONT>
+      sumy  := sumy + y;          <FONT COLOR=green><EM>-- compute sum of y</EM></FONT>
+      sumy2 := sumy2 + y * y;     <FONT COLOR=green><EM>-- compute sum of y**2</EM></FONT>
+   <b>end</b> <b>loop</b>;
+
+   m := (n * sumxy  -  sumx * sumy) /
+     (n * sumx2 - sumx**2);                  <FONT COLOR=green><EM>-- compute slope</EM></FONT>
+   b := (sumy * sumx2  -  sumx * sumxy) /
+     (n * sumx2  -  sumx**2);                <FONT COLOR=green><EM>-- compute y-intercept</EM></FONT>
+   r := (sumxy - sumx * sumy / n) /          <FONT COLOR=green><EM>-- compute correlation coefficient</EM></FONT>
+            numerics.sqrt((sumx2 - sumx**2/n) * (sumy2 - sumy**2/n));
+
+   new_line;
+
+   put ("Slope        m = ");                <FONT COLOR=green><EM>-- print results: slope</EM></FONT>
+   put (m );
+
+   new_line;
+
+   put ("y-intercept  b = ");                <FONT COLOR=green><EM>-- print y-intercept</EM></FONT>
+   put (b);
+
+   new_line;
+
+   put ("Correlation  r = ");                <FONT COLOR=green><EM>-- print correlation coefficient</EM></FONT>
+   put (r);
+
+   new_line;
+
+   command_line.set_exit_status( 0 );        <FONT COLOR=green><EM>-- success</EM></FONT>
+<b>end</b> linear_reg;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+</PRE></BODY></HTML>

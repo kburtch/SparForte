@@ -1,0 +1,4 @@
+# This should fail
+
+b : integer := 1 /; -- missing operand
+

@@ -1,0 +1,65 @@
+<HEAD><TITLE>yuletide.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : yuletide.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush yuletide
+Christmas  2017 is on a Sunday
+Christmas  2023 is on a Sunday
+Christmas  2028 is on a Sunday
+Christmas  2034 is on a Sunday
+Christmas  2045 is on a Sunday
+Christmas  2051 is on a Sunday
+Christmas  2056 is on a Sunday
+Christmas  2062 is on a Sunday
+Christmas  2073 is on a Sunday
+Christmas  2079 is on a Sunday
+Christmas  2084 is on a Sunday
+Christmas  2090 is on a Sunday
+Christmas  2102 is on a Sunday
+Christmas  2113 is on a Sunday
+Christmas  2119 is on a Sunday
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- From Rosetta Code</EM></FONT>
+
+<b>pragma</b> annotate("yuletide");
+<b>pragma</b> annotate("");
+<b>pragma</b> annotate("A company decides that whenever Xmas falls on a Sunday they will give their" );
+<b>pragma</b> annotate("workers all extra paid holidays so that, together with any public holidays," );
+<b>pragma</b> annotate("workers will not have to work the following week (between the 25th of" );
+<b>pragma</b> annotate("December and the first of January)." );
+<b>pragma</b> annotate("");
+<b>pragma</b> annotate("In what years between 2008 and 2121 will the 25th of December be a Sunday?" );
+<b>pragma</b> annotate("");
+<b>pragma</b> annotate("Using any standard date handling libraries of your programming language;" );
+<b>pragma</b> annotate("compare the dates calculated with the output of other languages to discover" );
+<b>pragma</b> annotate("any anomalies in the handling of dates which may be due to, for example," );
+<b>pragma</b> annotate("overflow in types used to represent dates/times similar to y2k type" );
+<b>pragma</b> annotate("problems. ");
+<b>pragma</b> annotate("translated by Ken O. Burtch ");
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> yuletide <b>is</b>
+<b>begin</b>
+   <b>for</b> Year <b>in</b> 2008..2121 <b>loop</b>
+      <b>if</b> calendar.day_of_week ( calendar.time_of (Year, 12, 25, 0)) = 1 <b>then</b>
+         put_line( "Christmas " &amp; strings.image( Year ) &amp; " is on a Sunday" );
+      <b>end</b> <b>if</b>;
+   <b>end</b> <b>loop</b>;
+<b>end</b> yuletide;
+
+</PRE></BODY></HTML>

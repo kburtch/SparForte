@@ -1,0 +1,119 @@
+The SID for the Ada binding to CGI follows.
+
+I'd appreciate it if you would make the file
+cgi.html "visible" outside of the ZIP formatted file
+so that people can link directly to it.  I plan to
+create many links from many non-Ada places directly to
+the HTML file in the PAL.
+
+--- David
+    wheeler@ida.org
+
+=========================================================
+
+%UNIT NAME
+CGI (Common Gateway Interface)
+%VERSION
+1.0
+%REVIEW CODE
+NR
+%INET ADDRESS
+Author's email address is wheeler@ida.org
+%AUTHOR
+David A. Wheeler
+IDA
+1801 N. Beauregard St.
+Alexandria, VA 22311-1772
+(703) 845-6662
+%RIGHTS
+Approved for Public Release; Distribution Unlimited
+%COPYRIGHT
+(C) 1995 David A. Wheeler
+%DATE CREATED
+June 1995.
+%DATE RELEASED
+June 1995.
+%DATE LAST UPDATED
+June 1995.
+%LOCATION
+PAL
+%ENVIRONMENT
+Requires an Ada 95 compiler; is known to work with GNAT.
+The files are Unix-formatted text files.
+The programs run under Unix.
+%LIMITATIONS
+The CGI interface requires an operating system to support
+environment variables.
+%=CLASSIFICATION
+%CATEGORY LEVEL 1
+<I fill this in>
+%CATEGORY LEVEL 2
+<I fill this in>
+%CATEGORY LEVEL 3
+<I fill this in>
+%CATEGORY LEVEL 4
+<I fill this in>
+%KEYWORD
+CGI, Common Gateway Interface,
+World Wide Web, WWW, HTTP, Hypertext Transfer Protocol,
+binding, Ada 95.
+%INDEX
+<I fill this in>
+%TAXONOMY
+<I fill this in>
+%DEPENDENCIES
+None.
+%SEE ALSO
+
+CGI is defined at http://hoohoo.ncsa.uiuc.edu/cgi/
+
+See the documentation file, cgi.html or cgi-doc.htm
+
+%SHORT DESCRIPTION
+Ada 95 binding to CGI (Common Gateway Interface).
+%=FILE LISTING
+%FILE SPECS
+<I fill this in>
+%DIRECTORY DISPLAY
+<I fill this in>
+%=ABSTRACT
+Package CGI is an Ada 95 interface to the
+Common Gateway Interface (CGI).
+This package makes it easier to create Ada programs that can be
+invoked by World-Wide-Web (WWW) HTTP servers using the standard CGI interface.
+Using it, you can create Ada programs that perform queries or other processing
+by request from a WWW user.
+ 
+This package is copyright (C) 1995 David A. Wheeler (wheeler@ida.org).
+You are free to use it in anything you wish without restriction or payment,
+but please provide credit if you use this package.
+ 
+This Ada package provides two data access approaches from the CGI:
+* As an associative array; simply provide the key name (as a string) and the
+  value associated with that key will be returned.
+* As a sequence of key-value pairs, indexed from 1 to Argument_Count.
+This access approach is similar to the Ada library Ada.Command_Line.
+
+The main access routines support both Ada 95 types String and Unbounded_String.
+
+%=REVISION HISTORY
+Version 1.0, 26 June 1995.  Initial release.
+%=RELEASE NOTICE
+This prologue must be included in all copies of this software.
+Restrictions on use or distribution:  NONE
+However, users are requested to give credit if this package is used.
+%=DISCLAIMER
+	This software and its documentation are provided "AS IS" and
+without any expressed or implied warranties whatsoever.  No warranties
+as to performance, merchantability, or fitness for a particular
+purpose exist.
+	The user is advised to test the software thoroughly before
+relying on it.  The user must assume the entire risk and liability of
+using this software.  In no event shall any person or organization of
+people be held responsible for any direct, indirect, consequential or
+inconsequential damages or lost profits.
+        This software is not endorsed by the Institute for Defense Analyses
+(IDA) or the U.S. Department of Defense (DoD).
+
+
+

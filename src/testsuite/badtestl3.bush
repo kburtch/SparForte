@@ -1,0 +1,4 @@
+# This should fail
+
+set_output standard_output ); -- missing parenthesis
+

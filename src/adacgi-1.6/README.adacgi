@@ -1,0 +1,42 @@
+
+This directory contains AdaCGI, an Ada 95 interface to the
+Common Gateway Interface (CGI).  To see its current status,
+go to the AdaCGI website at:
+
+  http://www.dwheeler.com/adacgi
+
+The following files are included in the AdaCGI distribution:
+
+cgi.html      - Documentation for AdaCGI.
+                (Older versions of this package included a duplicate file
+                named cgi-doc.htm; now just consult cgi.html).
+cgi.ads       - The Ada 95 package specification (declaration) for the
+                main CGI Ada package.
+cgi.adb       - The corresponding Ada 95 package body.
+minimal.adb   - A minimal demonstration of how to use CGI.
+demo.adb      - A larger demonstration of how to use CGI.
+search.adb    - Search replies with all lines that match a given pattern 
+                in a given file.  Only files listed
+                in a special srchlist file may be searched.
+makefile      - The makefile to compile the demo programs using the
+                GNAT Ada 95 compiler.
+ustrings.ads  - A package that simplifies the use of Ada's Unbounded_String.
+                It is required by the search demonstration program.
+ustrings.adb  - Its package body.
+test_get.adb  - Source for a short test program of package Ustrings.
+README        - This file.
+COPYING       - Information about copying and licensing.
+
+There are a few other demo files and related material.
+
+The entire distribution is contained in a single file named "cgi.zip",
+a zip-formatted file, and in "cgi.tar.gz", a tarball.  There's also
+an RPM packaging of it.
+
+Previously the package was available at:
+  http://wuarchive.wustl.edu/languages/ada/swcomps/cgi/cgi.html
+
+
+--- David A. Wheeler
+    dwheeler@dwheeler.com
+

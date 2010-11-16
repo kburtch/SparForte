@@ -1,0 +1,4 @@
+# This should fail
+
+s : string := "test; -- no closing quote mark
+

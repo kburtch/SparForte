@@ -1,0 +1,7 @@
+# This should fail
+
+declare
+  i : integer;
+begin
+  null;
+-- end missing;

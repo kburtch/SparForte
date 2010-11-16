@@ -1,0 +1,4 @@
+# This should fail
+
+put_line( standard_input, "bad" ); -- writing to read-only file
+

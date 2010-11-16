@@ -1,0 +1,5 @@
+
+for 12 is 1..2 loop -- numeric literal not variable name
+  null;
+end loop;
+

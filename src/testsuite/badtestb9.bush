@@ -1,0 +1,6 @@
+# This should fail
+
+else
+  null;
+end if;
+

@@ -1,0 +1,4 @@
+# This should fail
+
+s : string := calendar.clock; -- wrong type
+

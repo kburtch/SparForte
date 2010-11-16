@@ -1,0 +1,263 @@
+LOTS TO WORK ON
+---------------
+
+POST TO CHANGE LOG
+
+
+ISSUES (BUSH Environment)
+
+  * build system (BUSH Environment)
+
+  * regression test suite (BUSH Environemnt)
+    - break up good test into lesser tests (just too many for debugging
+      when there's a new error in the middle after massive changes)
+    - should test in-line for with ada and shell statements
+    - test upper ASCII escaped characters
+    - new string functions: neg tests
+    - for loops no longer confused by older vars of same name - neg test
+    - test suite test for var existence after declare block end, array & itself,
+      array casts, array subtypes, array default assignments, cmdline redirect &
+      restricted shells, -e, in / not in operator, unchecked_import tests in
+      test suite
+    - command line redirection tests in testsuite
+    - to_upper, to_lower, to_proper, to_basic, to_escaped, is_typo_of
+    - numerics.odd, numerics.even
+    - files.is_executable, files.is_readable, files.is_writable,
+      files.last_modified need positive and negative tests
+    - tests for large numbers of open/close to make sure we don't run out
+      file descriptors because of improper closures
+    - changes to allow for "i : integer := i" not tested for arrays...that is,
+      values being assigned to arrays probably can't contain the same name as
+      the array.  See ParseDeclarationPart for how to handle this.
+  - dir_separator, change_dir, remove_dir, get_current_dir, dir_name,
+    base_name, file_extension, file_name, format_pathname, expand_path & test
+
+  * sample programs
+    - update the sample programs for subprograms
+    - in morph.bush example, a single newline is output when Ada is shutting
+      down.  Is something flushed or what??...BUT a short sample script doesn't
+      have this behaviour.  Is this still an issue?
+
+ISSUES (AdaScript)
+
+  * general syntax (AdaScript Issues)
+    - implement scientific notation numeric literals
+    - implement overloadable enumerateds
+    - implement attributes (will need to change byte code compiler)
+    - do not allow declarations between begin..end in a begin block
+    - a range could be a new class.  That would allow arrays.range and a general
+      parseRange
+    - enumerateds should be upper-case, if this doesn't conflict with type-
+      sensitivity
+
+  * assignments
+    - naturals and positives compatibility (intTypesOK) not handled at
+      assignment
+
+  * pen package (AdaScript Issues)
+    - pen package fails on AMD/Linux
+    - pen package fails on FreeBSD with SDL/SVGALIB (interfers with BUSH
+      keyboard/mouse/display functions)
+    - deferred picture load
+    - locking issues
+    - null_rect, all_rect
+    - SDL/OpenGL binding
+
+  * database packages (AdaScript Issues)
+    - select statements should be pipeline-able (probably fails because the
+      child process closes database socket when the APQ library quits)
+    - db.schema can result in an error error
+    - db.users and related information procedures should be builtin commands
+      so they can be pipelined (ie. so "| less" can be used)
+    - turning off formatting in pipelines or redirection (especially SQL
+      commands which are unusable in wide layout format)
+    - \ at end of line will cause an error on SQL statements
+
+  * Text_IO package (AdaScript issues)
+    - set input/output/error cannot be redirected to an file_type in an array
+    - get_line doesn't strip ASCII.CR like I thought
+    - should "?" should trim strings?
+    - close with no filename could close all open user files (ala BASIC,
+      convenient for scripts)
+    - output numbers with alternative bases
+    - Allow standard output, etc. to be closed.  (We dup them anyway.)
+    -   Does scanner reset cause Current_Output/etc. to be double dup()'ed
+    - line count for a file doesn't work if put_line doesn't include the file
+      variable or if it's a built-in file (standard_output, current_output,
+      etc.)
+
+  * TCP/IP client sockets
+    - "file /= eof_t" is wrong: standard_input could be specified explicitly
+    - linux socket calls in bush_linux
+    - set_output, etc. redirection for sockets
+    - optimize fd - don't need to pull it out with stringField for every DoGet
+
+  * command_line package (AdaScript issues)
+    - command_line.arguement() cannot be used in open...get an error.  Expects
+      a type not a keyword...why?
+    - implement gnat command_line
+
+  * sound package (AdaScript issues)
+    - sound.mute, sound.unmute
+    - Wavplay doesn't recover gracefully from errors...need to reset defaults
+      especially after an error
+
+  * strings package (AdaScript issues)
+    - strings.replace_match/glob
+    - strings.cvs - comma separated values - 2, 3, "hello", ... fields
+
+  * files package (AdaScript Issues)
+    - should it handle ~?
+    - should restricted shell affect?
+
+  * calendar package (AdaScript Issues)
+    - to_julian / to_time not working
+
+  * System package (AdaScript Issues)
+    - System_Name should be enumerated
+
+  * template issues (AdaScript Issues)
+    - line numbering in templates - Text_IO skips blank lines.  Template
+      scripts are missing blank lines, and throws line numbers off as a
+      result.  May have to go with sequential I/O or UNIX file reading.
+
+  * subprograms (AdaScript Issues)
+    - parseFunction/ProcedureCallSemicolon requires rewriting parseGeneralStatement (that is, not one expect( ; ) for all general statements)
+    - expressions should be able to return records and arrays
+    - forward procedures broken (commented out in tests) - params are broke
+      when expecting forward subprogram
+
+  * command types (AdaScript Issues)
+    - command types are no longer working
+      - can command types be implemented using appropriate pragmas
+        instead of a special type (ie. pragma command (strvar) );?
+   - command vars should be &-able with backquotes.
+
+  * Ada package bindings
+    - switch to Ada's CGI from David Wheeler's CGI package
+    - binding to: Gnat.Directory_Operations
+    - thick binding to: Gnat.Os_Lib
+    - binding to: Byte_IO (sequential)
+
+  - aggregates (AdaScript Issues)
+    - arrays probably won't work as parameters to user-defined subprograms
+    - errors when expecting scalars
+    - assigning records to records
+    - unsetting records
+    - string should be an array type, but they are not arrays in the bush sense
+    - ideally, unbounded_strings should not be a subtype of universal strings
+      for compatibility with Ada 95.  As a result, an unbounded_string typecast
+      shouldn't work but it does in AdaScript.
+    - unconstrained arrays and forced initialization
+    - if array return values are implemented, arrays should be initialized with
+      array expression value.
+
+ISSUES (Bourne Shell)
+
+  - redirections (Shell Issues)
+    - advanced job control (control-Z, fg, bg, etc.)
+    - 2>&1 doesn't work...2>, 2>>, >, >> work OK
+    - pipelines not allowed after 2>&1
+    - errors in `..` backquotes don't terminate script - may be fixed
+    - errors in `..` don't show outer script line number
+    - line numbers and procedures: if an error occurs, the line number is not
+      the line number of the procedure but where the procedure was called plus
+      the offset into the procedure
+
+  - job control (Shell Issues)
+    - check sig child flag after every general statement (already done?)
+    - single user mode detection, disabling job control
+    - SIGHUP handler: SIGHUP should be broadcast to all children like BASH
+
+  - other shell issues (Shell Issues)
+    - pragma to disable emacs or vi mode
+    - collating order with file globbing and locales
+    - remove dependency on Ada.Command_Line.Environment -- not supported in Windows GNAT
+    - an error terminates all commands in an interactive semi-colon list, but
+      it should continue on for POSIX compatibility.  Is this resolvable?
+    - because terminal attributes are toggled on and off, slow systems
+      sometimes echo characters during input, throwing off the display
+    - prompt script: final cr being ignored because it users compileandrun
+      proc.
+    - pathname completion "/" and " " append tests should use stat(), not
+      Text_IO and GNAT Dir Ops.  Perhaps another c_os function??
+    - insert sometimes inserts characters wrong in the command line.  Backing
+      up, deleting and retyping is OK, but cursoring over and changing
+      sometimes doesn't keep line position properly. Still an issue?
+    - @ works with procedures (but not with shell commands yet): the shell
+      command identifiers might be a path "/bin/ls" or if command is an
+      identifier($command if) will it still work?
+      - should be its own identifier...maybe comma, too, to simplify code
+      - document
+   - environment problems: using putenv removes the variable from the
+     environment but GNAT's command_line package still looks for it and
+     returns a garbage value for that environment entry (as if it caches the
+     environment)
+   - now that the initial environment is loaded at scanner startup, there may
+     be environment issues...haven't thought it through
+   - hash clash in pipeline for builtin--this might be fixed, confirm
+   - Bourne shell compatibility and syntax checking: declaring variables in
+     statements.  Is it worth it?  Example:
+       while i < 2 loop
+         if i = 0 then
+           j : integer;
+         end if;
+       end loop;
+    doesn't work since declarations are always done even if skipped because
+    the symbols need to be in the symbol table when walking through the
+    syntax even when the statements aren't being executed.  This is a rare
+    case, but it also raises the issue of scope with pullBlock--technically,
+    j is a global but pullBlock treats all internal declarations as local.
+
+
+MAJOR REDESIGNS
+
+  - redesigning the symbol table to handle non-string values
+    - allows byte_io package based on sequential_io
+    - implement use clause
+    - multi-dimensional arrays
+    - records should allow nested arrays
+    - arrays should support nested arrays
+    - linked lists or other container types
+
+ - exception handling
+    - rewrite parser so that err doesn't set eof_t (ie have loops that look
+      for eof also look for error_found)
+    - save error message to err_message variable
+    - ParseExceptionPart
+    - allow raise, don't worry about declaring exceptions until later
+
+ - performance enhancements
+    - lineRead still reads as unbounded_string instead of copying directly
+      into script variable, causing double buffering and conversion slowdowns
+    - more sophisticated byte code for speed
+       - this will require the scanner and parser holding two different tables for
+         identifiers (because only the parser knowns what block(s) an identifier
+         belongs to).  Otherwise, the existing get_next_token can be used to
+         tokenize the script file.
+    - change system calls to get tput results - remove system() reliance
+    - "kind" field should be a pointer for speed, not an array index
+    - no type-checking after syntax-check stage
+    - a pragma inline should be created in order to cache other scripts
+    - DoRunTimeStatments should probably fork and use pipes to read results
+      instead of using a temp file
+      - otherwise, DoRunTimeStatements only read results one char at a time
+    - would arrays be faster as real dynamic ada arrays?
+    - instead of the fast string library, just store the first character in
+      the identifier record and (optionally) test on that?  Use a new record
+      type to prevent string assignments without updating the first character.
+    - can word_t byte code items also contain a trailing "pattern" as well as
+      "word"
+    - .list and .FieldOf can be combined as .Owner of aggregate sub item, where
+      .owner = eof_t indicates a simple variable.  This would simplify the code.
+    - review parser/child package structure.  A better way to organize?
+
+  * Platform issues
+    - ADAVOX:
+      wc-streams-endian.ads:160:04: representation item appears too late
+      wc-streams-endian.ads:183:04: representation item appears too late
+      on Fedora Core 3 - commented out (for now)
+   - BUSH hangs with vt52 40x8 login, throws exception (perhaps division by
+     zero because attributes like bold null strings??)  Also has ctrl-q's
+     so maybe a flow of control problem
+

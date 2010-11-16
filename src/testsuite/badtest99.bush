@@ -1,0 +1,6 @@
+# This should fail
+
+while loop -- missing expression
+  null;
+end while;
+

@@ -1,0 +1,4 @@
+# This should fail
+
+type t is integer; -- new missing
+

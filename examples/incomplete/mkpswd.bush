@@ -1,0 +1,137 @@
+#!/usr/local/bin/bush
+
+-- Basic Directory Archive/Backup Script
+
+pragma annotate( "Make Password" );
+pragma annotate( "" );
+pragma annotate( "Create a random, pronouncable password." );
+pragma annotate( "by Ken O. Burtch" );
+
+procedure mkpswd is
+
+  type password_type is (dipthong, word_pair);
+  -- the types of passwords this script generates
+
+  function get_dipthong_password return string is
+    -- Create a nonsense but often pronouncable password by combining single
+    -- or pairs of consonants with single or pairs of vowels.
+    consonants : constant string := "b d f g h j k l m n p qur s t v w x z blbrchgrngshslssstthtrwh";
+    vowels     : constant string := "a e i o u ayeaeeeyoaouoiooerorow";
+
+    consonant : string;                        -- a single consonant or pair
+    vowel     : string;                        -- a single vowel or pair
+    passwd    : string;                        -- the password
+    random    : positive;                      -- a random number
+  begin
+    -- A password consists of 3 consonant/vowel parts plus an 50% chance
+    -- of an ending consonant part.  Singles have a space...trim will remove
+    -- the space.
+    for i in 1..3 loop
+       random := numerics.rnd( ( strings.length( consonants ) / 2 ) );
+       consonant := strings.slice( consonants, random*2-1, random*2 );
+       consonant := strings.trim( consonant, trim_end.both );
+       random := numerics.rnd( ( strings.length( vowels ) / 2 ) );
+       vowel := strings.slice( vowels, random*2-1, random*2 );
+       vowel := strings.trim( vowel, trim_end.both );
+       passwd := passwd & consonant & vowel;
+    end loop;
+    if numerics.rnd(2) = 1 then
+       random := numerics.rnd( ( strings.length( consonants ) / 2 ) );
+       consonant := strings.slice( consonants, random*2-1, random*2 );
+       consonant := strings.trim( consonant, trim_end.both );
+       passwd := passwd & consonant;
+    end if;
+    return passwd;
+  end get_dipthong_password;
+
+  function get_wordpair_password return string is
+    -- Create a password by combining a common adjective, noun and a number.
+    type word_list is array(1..20) of string;
+    adjectives : word_list := ( "black", "blue", "brown", "cyan", "dark",
+                                "fat", "grey", "green", "light", "mauve",
+                                "orange", "pink", "purple", "red", "slow",
+                                "thin", "violet", "white", "yellow", "bald" );
+    nouns : word_list :=      ( "ape", "bat", "cat", "dog", "eagle",
+                                "fish", "goose", "hippo", "jaguar", "kite",
+                                "loon", "mink", "osprey", "parrot", "quail",
+                                "rat", "squirrel", "turtle", "walrus",
+                                "zebra" );
+    passwd : string;
+  begin
+    passwd := adjectives( numerics.rnd( positive( arrays.length(
+              adjectives ) ) ) );
+    passwd := @ & nouns( numerics.rnd( positive( arrays.length(
+              nouns ) ) ) );
+    passwd := @ & strings.trim( strings.image( 9 + numerics.rnd( 91 ) ),
+              trim_end.both );
+    return passwd;
+  end get_wordpair_password;
+
+  function is_dictionary_word( passwd : string ) return boolean is
+    -- True if the word is in the spelling dictionary.
+    -- This uses aspell but you can substitute your spelling software.
+    result : string;
+  begin
+    result := `echo $passwd | aspell list;`;
+    return strings.length( result ) = 0;
+  end is_dictionary_word;
+
+  procedure usage is
+    -- show help
+  begin
+    put( "usage: " ) @ ( source_info.file );
+    put_line( " [-d | -p]" );
+    new_line;
+    put_line( "Create a pronouncable password using dipthongs (-d, default)" );
+    put_line( "or word pairs [-p]." );
+    new_line;
+  end usage;
+
+  candidate_password : string;                                  -- our candid.
+  type_to_make : password_type := dipthong;                     -- default dip.
+
+begin
+
+  -- Determine password scheme to use
+
+  if command_line.argument_count > 1 then                       -- >2 params?
+     usage;                                                     -- show usage
+     return;                                                    -- and quit
+  elsif command_line.argument(1) = "-h" or command_line.argument(1) =
+     "--help" then                                              -- help request?
+     usage;                                                     -- show usage
+     return;                                                    -- and quit
+  elsif command_line.argument(1) = "-d"  then                   -- dipthong?
+     type_to_make := dipthong;                                  -- OK
+  elsif command_line.argument(1) = "-p"  then                   -- word_pair?
+     type_to_make := word_pair;                                 -- OK
+  else                                                          -- otherwise
+     usage;                                                     -- show usage
+     return;                                                    -- and quit
+  end if;
+
+  -- Create candidate passwords until we get one that is not a dictonary
+  -- word.
+
+  loop
+     case type_to_make is                                      -- we want...
+     when dipthong =>                                          -- dithong?
+       candidate_password := get_dipthong_password;            -- get one
+     when word_pair =>                                         -- word pair?
+       candidate_password := get_wordpair_password;            -- get one
+     when others =>                                            -- others?
+       put( standard_error, source_info.file )                 -- undefined
+         @( standard_error, ": unexpected type to make" );
+       command_line.set_exit_status( 192 );
+       return;
+     end case;
+     exit when not is_dictionary_word( candidate_password );
+  end loop;
+
+  -- Show result on standard output
+
+  put_line( candidate_password );
+  command_line.set_exit_status( 0 );
+end mkpswd;
+
+-- VIM editor formatting instructions -- vim: ft=bush

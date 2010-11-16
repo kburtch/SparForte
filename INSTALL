@@ -1,0 +1,183 @@
+BUSH (Business Shell) Installation
+
+This file contains instructions for building and installing BUSH.
+General information about BUSH can be found in the BUSH User Guide.
+
+
+SHORT VERSION
+
+Installing the Binary Version
+
+   1. gmake install
+
+Building from Sources
+
+   1. configure
+   2. gmake
+   3. gmake test (optional)
+   4. gmake install (as root user)
+
+
+LONG VERSION
+
+The primary test plaform for BUSH is Intel/Linux and AMD/Linux.  There
+is also some support for DEC Alpha, FreeBSD and Cywin.  HP-UX 
+is obsolete.
+
+Information on porting BUSH to other platforms can be found in the BUSH User
+Guide: BUSH should port to a modern Unix-compatible platform within a few
+hours by creating a bush_os interface file based on the standard C libraries
+for your operating system.  Please contribute new bush_os files to the BUSH
+project.
+
+
+REQUIREMENTS
+
+We have attempted to avoid re-inventing existing functionality wherever
+possible and tried to keep the dependency list reasonably small, but it
+still may be challenging for an inexperienced user to build and install
+BUSH from sources.  Most users are probably better served by using binary
+packages from their distributor, if they are available.
+
+The following software packages are required for BUSH:
+
+  * GNU make is required; other make programs may not work.  GNU make is often
+    installed under the name "gmake" and the BUSH makefile assumes this is the
+    name of your software building program.
+
+  * GCC is required; BUSH is written in Ada and C, both of which are available
+    with GCC 3.x or later.  If you are running GCC 2.x, use add-on Ada compiler
+    GNAT 3.15.  Most modern Linux distributions, including Red Hat,  have
+    GCC 3.x with Ada and C support active or available from an online
+    repository.
+
+  * gzip is needed to unpack the source code in the first place.  If you are
+    reading this, you know this already.
+
+  * postgresql is a required database engine for BUSH.  To verify that postgres
+    is installed, try "psql --version".  For more information, visit
+    http://www.postgresql.org.
+
+  * mysql is also required for this version.  A future version will make one
+    or both databases optional.
+
+  * SDL (Simple DirectMedia Layer) library and SDL_image
+
+  These may not be installed on your operating system, or some components
+  may be missing.  How you install these depends on your operating system.
+  For example:
+
+   - Fedora/Red Hat/Linux - yum install package-name (or use add/remove
+     software in the menus)
+   - SuSE/Novell/Linux - yast
+   - Debian/Linux - apt-get install package-name (visit packages.debian.org
+     for a list of available packages)
+   - FreeBSD - pkg_add package-name
+
+  The package name depends on your operating system.  For example:
+
+    - Debian Linux users can try gnat-3.3 (or similar)
+    - Fedora Linux users can try gcc-gnat
+    - SuSE Linux   users can try gcc-ada
+
+  Example: Debian Linux 3.1
+
+  The default Debian database is PostgreSQL.  However, Debian doesn't
+  install Ada, SDL, MySQL or the PostgreSQL development packages.  Check
+  packages.debian.org for a list of software package names.
+
+  $ apt-get install gnat-3.3
+  $ apt-get install libncurses5-dev
+  $ apt-get install libsdl1.2-dev
+  $ apt-get install libsdl-image1.2
+  $ apt-get install libpgeasy-dev
+  $ apt-get install mysql-server
+  $ apt-get install libmysqlclient12-dev
+
+  Update the locate database: Debian uses a static Ada Run-Time file so BUSH
+  will need to use locate instead of ldconfig to find it.  (Running updatedb
+  is safe even if this was not true.)
+
+  $ updatedb
+
+  SDL_image is installed but the filename contains the version number so
+  BUSH can't see it.  Create a symbolic link to the standard name.
+
+  $ ln -s /usr/lib/libSDL_image-1.2.so.0.1.3 (or similar) /usr/lib/libSDL_image.so
+  $ ldconfig
+
+
+
+INSTALLATION
+
+The latest version of BUSH is always located at the PegaSoft web site,
+http://www.pegasoft.ca.
+
+1. configure
+
+   The first step of the installation procedure is to select your operating
+   system.  Run "configure" and the configure script will identify your
+   operating system and create a new file called "bush_os.ads" containing the
+   binding for your system calls.
+
+   configure will also check for the basic tools needed to build BUSH
+   (including an Ada compiler).  When it is finished configuring BUSH,
+   configure will run the configure programs for the ADAVOX and APQ third-
+   party libraries used by BUSH. The APQ configuration script will ask
+   questions about your database software.  (Note: BUSH currently supports
+   PostgreSQL and MySQL.)
+
+   configure recognizes the following environment variables:
+
+    - ARCH - this will override the machine processor architecture (normally
+             determined by uname -p)
+    - GMAKE - use this to specify a path to GNU make if it cannot be found
+
+2. make
+
+   Use GNU make to build BUSH.  Linux users can just type "make" or "make all".
+   If GNU make is not your native make (e.g. FreeBSD), use "gmake".
+
+   If you see "ld: cannot find -lx" where x is a library name:
+
+   This means the linker cannot find a library file (usually libx.so where
+   x is a library name, but this depends on your operating system).
+
+   There are several possible reasons for this.
+
+   Either (1) You will need to install additional packages.  For example,
+   you installed a database server without the development files.
+
+   (2) Your operating system has a different name for x, typically with
+   a version number attached to the name.  This happens frequently with
+   SDL_image although it can happen with other libraries as well.
+
+   First, do a search using the "find" or "locate" commands to determine if
+   you have the library installed.  If not, install it.  If it exists but
+   has a different name, following the Debian example above: use "ln" to
+   create a link and ldconfig to register the alternative name for the
+   library.
+
+   (3) You've installed the package but need to run "ldconfig" to refresh
+   the linker's database and add the names of the new libraries.
+
+   (4) The libraries are stored in an unusual location and a "-L" switch
+   must be added to the src/GNUmakefile specifying where the libraries are
+   found.  Some packages have a "config" program to determine the proper
+   settings, such as "SDL_config", "pg_config" or "mysql_config".
+
+3. (Optional) "gmake test" to run the bush regression tests.  This make take
+   several minutes.
+
+4. (Optional) "gmake install" will copy the bush executable to the
+   /usr/local/bin/ directory so that other users can access it.  Alteratively,
+   you can copy the bush executable and man page yourself and set the
+   appropriate permission bits.
+
+You can now run the bush executable.
+
+Type "gmake help" for a list of all options.  There are more options in the
+src directory makefile.
+
+- END OF DOCUMENT -
+

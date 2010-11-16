@@ -1,0 +1,224 @@
+<HEAD><TITLE>chomp2.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : chomp2.bush </H1></DIV><HR>
+<PRE>
+#!/usr/local/bin/bush
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Morph</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Program to convert one kind of text file to another</EM></FONT>
+<FONT COLOR=green><EM>-- Created by Ken O. Burtch</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Like chomp, but using pragma ada_95</EM></FONT>
+
+<b>pragma</b> ada_95;
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> chomp2 <b>is</b>
+
+<FONT COLOR=green><EM>-- Error codes</EM></FONT>
+
+   error_syntax   : <b>constant</b> short_short_integer := 192;
+   error_no_file  : <b>constant</b> short_short_integer := 193;
+   error_internal : <b>constant</b> short_short_integer := 194;
+
+<FONT COLOR=green><EM>-- Script Flags</EM></FONT>
+
+   <b>type</b> text_types <b>is</b> ( unknown, dos, mac, unix, broken, binary, c, strip );
+   <FONT COLOR=green><EM>-- conversions we can do</EM></FONT>
+
+   target_type : text_types := unknown;
+   verbose : boolean := true; <FONT COLOR=green><EM>-- was false</EM></FONT>
+
+<FONT COLOR=green><EM>-- Files</EM></FONT>
+
+   input      : file_type;
+   sourcepath : string;
+   output     : file_type;
+   targetpath : string;
+
+<FONT COLOR=green><EM>-- Misc</EM></FONT>
+
+   textline   : string;
+   len        : natural;
+   ch         : character;
+   out_cnt    : natural := 0;
+
+   <b>procedure</b> usage <b>is</b>
+   <b>begin</b>
+     put( "usage: " );
+     put( source_info.file );
+     put_line( " -cdmsuv sourcefile targetfile" );
+     new_line;
+     put_line( "  Morph text files into different formats." );
+     new_line;
+     put_line( "  -d convert to MS-DOS or Windows (CR+LF)" );
+     put_line( "  -m convert to Apple or Mac (CR)" );
+     put_line( "  -u convert to UNIX or Linux (LF)" );
+     put_line( "  -c convert to C or C++ (NUL)" );
+     put_line( "  -s strip CR and LF" );
+     put_line( "  -v verbose" );
+   <b>end</b> usage;
+
+<b>begin</b>
+
+<FONT COLOR=green><EM>-- Usage</EM></FONT>
+
+<b>if</b> command_line.argument_count &lt; 3 <b>then</b>
+   <b>if</b> command_line.argument_count &gt; 0 <b>then</b>
+      <b>if</b> command_line.argument(1) = "-h" <b>or</b> command_line.argument(1) = "<FONT COLOR=green><EM>--help" then</EM></FONT>
+         usage;
+         command_line.set_exit_status( 192 );
+         <b>return</b>;
+      <b>end</b> <b>if</b>;
+   <b>end</b> <b>if</b>;
+   put( standard_error, source_info.file );
+   put_line( standard_error, ": use -h for help" );
+   command_line.set_exit_status( error_syntax );
+   <b>return</b>;
+<b>end</b> <b>if</b>;
+
+<FONT COLOR=green><EM>-- Process arguments</EM></FONT>
+
+<b>for</b> i <b>in</b> 1..command_line.argument_count-2 <b>loop</b>
+   <b>if</b> command_line.argument(i) = "-d" <b>then</b>
+      <b>if</b> target_type /= unknown <b>then</b>
+         put( standard_error, source_info.file );
+         put( standard_error, ":" );
+         put( standard_error, source_info.line );
+         put_line( standard_error, ": more than 1 conversion" );
+         command_line.set_exit_status( error_syntax );
+         <b>return</b>;
+      <b>end</b> <b>if</b>;
+      target_type := dos;
+   <b>elsif</b> command_line.argument(i) = "-m" <b>then</b>
+      <b>if</b> target_type /= unknown <b>then</b>
+         put( standard_error, source_info.file );
+         put( standard_error, ":" );
+         put( standard_error, source_info.line );
+         put_line( standard_error, ": more than 1 conversion" );
+         command_line.set_exit_status( error_syntax );
+         <b>return</b>;
+      <b>end</b> <b>if</b>;
+      target_type := mac;
+   <b>elsif</b> command_line.argument(i) = "-u" <b>then</b>
+      <b>if</b> target_type /= unknown <b>then</b>
+         put( standard_error, source_info.file );
+         put( standard_error, ":" );
+         put( standard_error, source_info.line );
+         put_line( standard_error, ": more than 1 conversion" );
+         command_line.set_exit_status( error_syntax );
+         <b>return</b>;
+      <b>end</b> <b>if</b>;
+      target_type := unix;
+   <b>elsif</b> command_line.argument(i) = "-c" <b>then</b>
+      <b>if</b> target_type /= unknown <b>then</b>
+         put( standard_error, source_info.file );
+         put( standard_error, ":" );
+         put( standard_error, source_info.line );
+         put_line( standard_error, ": more than 1 conversion" );
+         command_line.set_exit_status( error_syntax );
+         <b>return</b>;
+      <b>end</b> <b>if</b>;
+      target_type := c;
+   <b>elsif</b> command_line.argument(i) = "-s" <b>then</b>
+      <b>if</b> target_type /= unknown <b>then</b>
+         put( standard_error, source_info.file );
+         put( standard_error, ":" );
+         put( standard_error, source_info.line );
+         put_line( standard_error, ": more than 1 conversion" );
+         command_line.set_exit_status( error_syntax );
+         <b>return</b>;
+      <b>end</b> <b>if</b>;
+      target_type := strip;
+   <b>elsif</b> command_line.argument(i) = "-v" <b>then</b>
+      verbose := true;
+   <b>else</b>
+      put( standard_error, source_info.file );
+      put( standard_error, ":" );
+      put( standard_error, source_info.line );
+      put_line( standard_error, ": unknown option: " &amp; command_line.argument(i) );
+      command_line.set_exit_status( error_syntax );
+      <b>return</b>;
+   <b>end</b> <b>if</b>;
+<b>end</b> <b>loop</b>;
+
+<FONT COLOR=green><EM>-- Check files</EM></FONT>
+
+sourcepath := command_line.argument(command_line.argument_count-1);
+targetpath := command_line.argument(command_line.argument_count);
+<b>if</b> <b>not</b> files.is_readable_file( sourcepath ) <b>then</b>
+   put( standard_error, source_info.file );
+   put( standard_error, ":" );
+   put( standard_error, source_info.line );
+   put_line( standard_error, ": " &amp; sourcepath &amp; " doesn't exist or is not readable" );
+   command_line.set_exit_status( error_no_file );
+   <b>return</b>;
+<b>end</b> <b>if</b>;
+
+<FONT COLOR=green><EM>-- Do it</EM></FONT>
+
+create( output, out_file, targetpath );
+open( input, in_file, sourcepath );
+<b>while</b> <b>not</b> end_of_file( input ) <b>loop</b>
+   <FONT COLOR=green><EM>-- strip end-of-line terminators</EM></FONT>
+   <FONT COLOR=green><EM>-- Note: BUSH should do this automatically.</EM></FONT>
+   textline := get_line( input );
+   <b>if</b> verbose <b>then</b>
+      put( standard_error, "&lt;&lt; " );
+      put_line( standard_error, strings.to_escaped( textline ) );
+   <b>end</b> <b>if</b>;
+   len := strings.length( textline );
+   ch := strings.element( textline, positive( len ) );
+   <b>if</b> ch = ASCII.LF <b>then</b>
+      textline := strings.delete( textline, positive(len), len );
+      len := len - 1;
+      ch := strings.element( textline, positive( len ) );
+      <b>if</b> ch = ASCII.CR <b>then</b>
+         textline := strings.delete( textline, positive( len ), len );
+      <b>end</b> <b>if</b>;
+  <b>elsif</b> ch = ASCII.CR <b>then</b>
+      textline := strings.delete( textline, positive( len ), len );
+  <b>end</b> <b>if</b>;
+  <FONT COLOR=green><EM>-- now add the correct ones</EM></FONT>
+  <b>case</b> target_type <b>is</b>
+  <b>when</b> dos =&gt;
+       textline := textline &amp; ASCII.CR &amp; ASCII.LF;
+  <b>when</b> mac =&gt;
+       textline := textline &amp; ASCII.CR;
+  <b>when</b> unix =&gt;
+       textline := textline &amp; ASCII.LF;
+  <b>when</b> c =&gt;
+       textline := textline &amp; ASCII.NUL;
+  <b>when</b> strip =&gt;
+       <b>null</b>;
+  <b>when</b> <b>others</b> =&gt;
+       put( standard_error, source_info.file );
+       put( standard_error, ":" );
+       put( standard_error, source_info.line );
+       put_line( standard_error,  ": internal error: target type in case" );
+
+       command_line.set_exit_status( error_internal );
+       <b>return</b>;
+  <b>end</b> <b>case</b>;
+  <b>if</b> verbose <b>then</b>
+     put( standard_error, "&gt;&gt; " );
+     put_line( standard_error, strings.to_escaped( textline ) );
+  <b>end</b> <b>if</b>;
+  len := strings.length( textline );
+  out_cnt := out_cnt+len;
+  put( output, textline ); <FONT COLOR=green><EM>-- NOT put_line</EM></FONT>
+<b>end</b> <b>loop</b>;
+close( input );
+close( output );
+
+<b>if</b> verbose <b>then</b>
+   put( standard_error, "Wrote" );
+   put( standard_error, out_cnt );
+   put_line( standard_error, " chars" );
+<b>end</b> <b>if</b>;
+command_line.set_exit_status( 0 );
+
+<b>end</b> chomp2;
+
+</PRE></BODY></HTML>

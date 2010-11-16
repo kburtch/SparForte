@@ -1,0 +1,10 @@
+# This should fail
+
+i : integer := 1;
+j : integer := 2;
+
+case i is
+when j => null; -- j is a variable
+when others => null;
+end case;
+

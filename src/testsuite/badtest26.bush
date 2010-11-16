@@ -1,0 +1,4 @@
+# This should fail
+
+i : integer := 1 / / 1; -- duplicate operator
+

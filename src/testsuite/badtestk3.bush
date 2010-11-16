@@ -1,0 +1,4 @@
+# This should fail
+
+set_input( standard_error ); -- only input from an in_file
+

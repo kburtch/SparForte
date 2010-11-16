@@ -1,0 +1,7 @@
+# This should fail
+
+if false then
+elsif true then -- no if block/false if
+  null;
+end if;
+

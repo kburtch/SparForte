@@ -1,0 +1,6 @@
+# This should fail
+
+b : boolean;
+
+b := cgi.key_exists( "X", 1; -- syntax error
+

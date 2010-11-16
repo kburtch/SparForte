@@ -1,0 +1,26 @@
+BUSH (Business Shell) READ ME File
+----------------------------------
+
+COPYING contains information about the GPL licence.
+bushguide.html is an overview of Bush and the AdaScript language.
+
+AdaCGI is released under the GPL licence.  The only changes were to
+add the "-q" flag in the makefile for quieter makes.
+
+APQ is released under the ACL or GPL licence.
+
+If you have downloaded the binary version, you should have the bush
+binary and the BUSH manual in the doc directory and sample scripts in
+the examples directory.
+
+To install BUSH as your login shell, copy the "bush" file to the
+/usr/local/bin directory (or type "make install" to do this for you).
+Then change the /etc/passwd file accordingly.  Alternatively, change
+/etc/shells to allow users to select bush as a shell with chsh.
+You will need to be the superuser to copy or edit these files.
+
+If you have downloaded the BUSH sources, the INSTALL file contains
+instructions for compiling the sources.
+
+"Have a lot of fun!"
+

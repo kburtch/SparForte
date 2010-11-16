@@ -1,0 +1,46 @@
+<HEAD><TITLE>doors.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : doors.bush </H1></DIV><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- A common interview test from Rosetta Code for testing basic programming</EM></FONT>
+<FONT COLOR=green><EM>-- skills.</EM></FONT>
+
+<b>pragma</b> annotate( "doors" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate("Problem: You have 100 doors in a row that are all initially closed. You" );
+<b>pragma</b> annotate("make 100 passes by the doors. The first time through, you visit every door" );
+<b>pragma</b> annotate("and toggle the door (if the door is closed, you open it; if it is open, you" );
+<b>pragma</b> annotate("close it). The second time you only visit every 2nd door (door #2, #4, #6," );
+<b>pragma</b> annotate("...). The third time, every 3rd door (door #3, #6, #9, ...), etc, until you" );
+<b>pragma</b> annotate("only visit the 100th door." );
+<b>pragma</b> annotate("Question: What state are the doors in after the last pass? Which are open," );
+<b>pragma</b> annotate("which are closed?" );
+
+<b>procedure</b> Doors <b>is</b>
+   <b>type</b> Door_State <b>is</b> (Closed, Open);
+   <b>type</b> Door_List <b>is</b> <b>array</b>(1..100) <b>of</b> Door_State;
+   The_Doors : Door_List;
+<b>begin</b>
+   <b>for</b> I <b>in</b> 1..100 <b>loop</b>
+      The_Doors(I) := Closed;
+   <b>end</b> <b>loop</b>;
+   <b>for</b> I <b>in</b> 1..100 <b>loop</b>
+      <b>for</b> J <b>in</b> arrays.first(The_Doors)..arrays.last(The_Doors) <b>loop</b>
+         <b>if</b> J <b>mod</b> I = 0 <b>then</b>
+            <b>if</b> The_Doors(J) = Closed <b>then</b>
+                The_Doors(J) := Open;
+            <b>else</b>
+               The_Doors(J) := Closed;
+            <b>end</b> <b>if</b>;
+         <b>end</b> <b>if</b>;
+      <b>end</b> <b>loop</b>;
+   <b>end</b> <b>loop</b>;
+   <b>for</b> I <b>in</b> arrays.first(The_Doors)..arrays.last(The_Doors) <b>loop</b>
+      put (I) @ (" is ") @ (The_Doors(I));
+      new_line;
+   <b>end</b> <b>loop</b>;
+<b>end</b> Doors;
+
+</PRE></BODY></HTML>

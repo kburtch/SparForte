@@ -1,0 +1,6 @@
+# This should fail
+
+f : file_type;
+touch ./test.txt;
+create( , out_file, "./test.txt" ); -- missing file
+

@@ -1,0 +1,6 @@
+# This should fail
+
+while i > 0 loop -- not declared
+  null;
+end loop;
+

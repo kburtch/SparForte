@@ -1,0 +1,4 @@
+# This should fail
+
+type enum1 is ( , apple ); -- missing enumerated
+

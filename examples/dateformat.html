@@ -1,0 +1,80 @@
+<HEAD><TITLE>dateformat.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : dateformat.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush dateformat
+2010-09-23
+Saturday, September 23, 2010
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- From Rosetta Code http://rosettacode.org/wiki/Date_format</EM></FONT>
+
+<b>pragma</b> annotate( "dateformat");
+<b>pragma</b> annotate( "");
+<b>pragma</b> annotate( "Display the current date in the formats of '2007-11-10' " );
+<b>pragma</b> annotate( "and 'Sunday, November 10, 2007'." );
+<b>pragma</b> annotate( "translated by Ken O. Burtch" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> dateformat <b>is</b>
+   <b>function</b> Month_Image (Month : calendar.month_number) <b>return</b> string <b>is</b>
+   <b>begin</b>
+      <b>case</b> Month <b>is</b>
+         <b>when</b> 1  =&gt; <b>return</b> "January";
+         <b>when</b> 2  =&gt; <b>return</b> "February";
+         <b>when</b> 3  =&gt; <b>return</b> "March";
+         <b>when</b> 4  =&gt; <b>return</b> "April";
+         <b>when</b> 5  =&gt; <b>return</b> "May";
+         <b>when</b> 6  =&gt; <b>return</b> "June";
+         <b>when</b> 7  =&gt; <b>return</b> "July";
+         <b>when</b> 8  =&gt; <b>return</b> "August";
+         <b>when</b> 9  =&gt; <b>return</b> "September";
+         <b>when</b> 10 =&gt; <b>return</b> "October";
+         <b>when</b> 11 =&gt; <b>return</b> "November";
+         <b>when</b> <b>others</b> =&gt; <b>return</b> "December";
+      <b>end</b> <b>case</b>;
+   <b>end</b> Month_Image;
+   <b>function</b> Day_Image (Day : integer) <b>return</b> string <b>is</b>
+   <b>begin</b>
+      <b>case</b> Day <b>is</b>
+         <b>when</b> 0 =&gt; <b>return</b> "Monday";
+         <b>when</b> 1 =&gt; <b>return</b> "Tuesday";
+         <b>when</b> 2 =&gt; <b>return</b> "Wednesday";
+         <b>when</b> 3 =&gt; <b>return</b> "Thursday";
+         <b>when</b> 4 =&gt; <b>return</b> "Friday";
+         <b>when</b> 5 =&gt; <b>return</b> "Saturday";
+         <b>when</b> <b>others</b> =&gt; <b>return</b> "Sunday";
+      <b>end</b> <b>case</b>;
+   <b>end</b> Day_Image;
+   Today : calendar.time := calendar.clock;
+<b>begin</b>
+   <FONT COLOR=green><EM>--put_line( </EM></FONT>
+   <FONT COLOR=green><EM>--Put_Line (Image (Today) (1..10));</EM></FONT>
+
+   put( calendar.year( Today ), "9999" ) @( "-" )
+     @( calendar.month( Today ), "99" ) @( "-" )
+     @( calendar.day( Today ), "99" );
+   new_line;
+
+   put_line(
+        Day_Image( calendar.day_of_week( Today ) ) &amp; ", " &amp;
+        Month_Image( calendar.month( Today ) ) &amp;
+        strings.image( calendar.day( Today ) ) &amp; "," &amp;
+        strings.image( calendar.year( Today ) ) );
+<b>end</b> dateformat;
+
+</PRE></BODY></HTML>

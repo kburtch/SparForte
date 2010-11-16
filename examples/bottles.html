@@ -1,0 +1,45 @@
+<HEAD><TITLE>bottles.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : bottles.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush bottles
+ 99 bottles of beer on the wall
+ 99 bottles of beer
+Take one down, pass it around
+ 98 bottles of beer on the wall
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- A common interview test from Rosetta Code for testing basic programming</EM></FONT>
+<FONT COLOR=green><EM>-- skills.</EM></FONT>
+
+<b>pragma</b> annotate( "bottles" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "In this puzzle, write code to print out the entire '99 bottles of beer" );
+<b>pragma</b> annotate( "on the wall' song." );
+<b>pragma</b> annotate( "translated by Ken O. Burtch" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+ <b>procedure</b> Bottles <b>is</b>
+ <b>begin</b>
+    <b>for</b> X <b>in</b> <b>reverse</b> 1..99 <b>loop</b>
+       ? strings.image( X ) &amp; " bottles of beer on the wall";
+       ? strings.image( X ) &amp; " bottles of beer";
+       ? "Take one down, pass it around";
+       ? strings.image( X-1 ) &amp; " bottles of beer on the wall" @ "";
+    <b>end</b> <b>loop</b>;
+ <b>end</b> Bottles;
+</PRE></BODY></HTML>

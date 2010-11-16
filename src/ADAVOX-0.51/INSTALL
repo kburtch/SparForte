@@ -1,0 +1,193 @@
+		INSTALLATION OF ADAVOX 0.51
+
+PREQUESITES :
+-------------
+
+   1. Installed and functional sound card
+   2. Installed and functional O/S sound support
+   3. Sound device node :
+
+      This software will assume the device name
+      /dev/dsp. If your system uses a different
+      name, create a symlink to it (or modify the
+      source code). Optionally, you can specify the
+      option on the command line instead, to override.
+
+   4. Permissions to write to the sound device
+   5. Installed GNAT compiler (tested with 3.13p)
+
+      This is necessary to compile the Ada95 source
+      code modules.
+
+   6. GNAT packages and libraries that go with the
+      compiler. These are normally included with the
+      compiler install.
+
+
+SYSTEM CHECKS:
+--------------
+
+   1. Check existance of /dev/dsp (see #3 above)
+
+         # ls -l /dev/dsp
+
+      If it's not there, time to create a symlink:
+
+         # ln -s /dev/my_audio_device /dev/dsp   
+
+   2. Check permissions for read/write :
+
+         # ls -lL /dev/dsp
+
+      While the adavox program is installed setuid
+      root (by default), it runs under the real
+      userid after setting realtime scheduling
+      priority at startup. Therefore, the userid(s)
+      that run adavox should have read/write access
+      to the device node.
+
+   3. Check GNAT compiler:
+
+      See install step 2b, below.
+
+
+BIG ENDIAN USERS :
+------------------
+
+   If you are installing adavox on a big-endian
+   host like the Sparc/MIPS/PowerPC, I'd like to
+   hear about your experiences (good or bad). I'll
+   do my best to address issues for you.
+
+
+COMPILE AND INSTALL PROCEDURE :
+-------------------------------
+
+   NOTE : If you encountered problems and
+         need to start over, just do a
+         "make clobber" first. This will
+         eliminate all trace of a prior
+         build attempt. Repeat the build
+         process by starting at step # 3.
+
+   1. Unpack the media (compressed tar file)
+      This will create a subdirectory ./ADAVOX-0.51
+
+      $ tar xzvf adavox-0.51.tar.gz
+
+   2a.Change to directory ./ADAVOX-0.51
+
+      $ cd ./ADAVOX-0.51
+
+   2b.Optional: Test your GNAT compiler.
+
+         $ make test
+
+      If it compiles and runs successfully, you
+      should see the message:
+
+         Hello, GNAT seems to work.
+
+      The above message should confirm that your
+      GNAT (Ada95) compiler is working.
+
+      You may not have the compiler installed.
+
+      If you have GNAT installed, and still
+      this test fails, please consult with
+      comp.os.lang.ada and other support forums.
+      Site http://www.adapower.com is another
+      good starting place.
+
+      Feel free to contact me if the software has
+      compiling issues, once you have taken the
+      necessary steps to insure your compiler is
+      working properly.
+
+   3. Decide on options. Defaults are:
+
+	INSTDIR=/usr/local/bin
+	CPU=pentiumpro
+	OPTZ=
+	GNATOPTS=-gnato -gnata
+
+      which are the suggested values to use.
+
+      To compile for debug, set OPTZ=-g .
+      
+      WARNING:
+
+      Do not compile with greater optimization
+      than OPTZ=-O0 . GNAT 3.13p/gcc has a bug
+      compiling ./wc/wc-streams-endian.adb
+      when greater optimization is used.
+
+      Greatest Optimization:
+
+         OPTZ=-O0
+         GNATOPTS=-gnatp
+
+      Option -gnatp turns off all Ada checks,
+      which is not recommended. The default
+      permits software problems to be detected.
+
+      You may want full optimization after
+      considerable successful experience.
+
+   4. Make (root is discouraged here)
+
+      Default configuration:
+
+         $ make
+
+      A custom configuration example:
+
+         $ make CPU=486
+
+   5. Change to root
+
+         $ su
+
+   6. Install
+
+      The following installs /usr/local/bin/adavox
+
+         # make install
+
+      To install as /opt/local/bin/adavox
+
+         # make INSTDIR=/opt/local/bin install
+
+   7. Perform a simple command test :
+
+         $ adavox -h
+         ADAVOX Release 0.51, Warren W. Gay VE3WWG
+
+         Usage: adavox [-h] [-v] [-a file] [-w file] [-d dsp] [-R p] files...
+         where:
+            -v            Verbose
+            -a file       Play file as *.au file
+            -w file       Play file as *.wav file
+            -d dsp        Overrides default of /dev/dsp
+            -R p          Use realtime priority p
+   
+            -h            Requests this info.
+
+         All remaining files are interpreted according to the
+         file suffix.
+
+   8. Test a wave file :
+
+         $ adavox -v yahoo.wav
+         ADAVOX Release 0.51, Warren W. Gay VE3WWG
+
+         File        : yahoo.wav
+         Type        : CODEC_LINEAR_U8
+         Channels    : 1
+         Sample Rate : 8000 Hz
+         Sample Size : 8 bits
+
+
+See also the files NETSCAPE, SECURITY and FAQ.
+
+                     - End -

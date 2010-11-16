@@ -1,0 +1,6 @@
+# This should fail
+
+loop
+  exit;
+end while; -- bad keyword
+

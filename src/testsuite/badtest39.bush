@@ -1,0 +1,4 @@
+# This should fail
+
+c : character := 'too long'; -- character literal > 1 character
+

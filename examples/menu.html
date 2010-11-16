@@ -1,0 +1,58 @@
+<HEAD><TITLE>menu.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : menu.bush </H1></DIV><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+trace false;
+
+<b>declare</b>
+  reply     : universal_typeless := 0; <FONT COLOR=green><EM>-- user's reply</EM></FONT>
+  showMenu  : boolean := true;         <FONT COLOR=green><EM>-- true if menu is shown before prompt</EM></FONT>
+  directory : string := ".";           <FONT COLOR=green><EM>-- current directory to list</EM></FONT>
+<b>begin</b>
+
+<b>while</b> true <b>loop</b>
+
+  <b>if</b> showMenu <b>then</b>
+     put_line( "Main Menu" );
+     new_line;
+     put_line( "1. ls" );
+     put_line( "2. ls -l" );
+     put_line( "3. change directory" );
+     put_line( "4. BUSH tracing on" );
+     put_line( "5. BUSH tracing off" );
+     put_line( "6. quit" );
+     new_line;
+     put_line( "The current directory is " &amp; directory );
+     new_line;
+     showMenu := false;
+  <b>end</b> <b>if</b>;
+
+  put( "==&gt; " );
+  reply := get_line;
+  <b>if</b> reply = 1 <b>then</b>
+     cd (directory) ; ls;
+  <b>elsif</b> reply = 2 <b>then</b>
+     cd (directory) ; ls -l;
+  <b>elsif</b> reply = 3 <b>then</b>
+     put( "New directory?" );
+     directory := get_line;
+  <b>elsif</b> reply = 4 <b>then</b>
+     trace true;
+  <b>elsif</b> reply = 5 <b>then</b>
+     trace false;
+  <b>elsif</b> reply = 6 <b>then</b>
+     <b>exit</b>;
+  <b>else</b>
+     put_line( "Please type a number between 1 and 6" );
+     new_line;
+     showMenu := true;
+  <b>end</b> <b>if</b>;
+<b>end</b> <b>loop</b>;
+
+put_line( "Bye!" );
+
+<b>end</b>; <FONT COLOR=green><EM>-- script</EM></FONT>
+
+</PRE></BODY></HTML>

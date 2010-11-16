@@ -1,0 +1,6 @@
+# This should fail
+
+s : string;
+
+s := cgi.value( 1, 1 ); -- bad types
+

@@ -1,0 +1,4 @@
+# This should fail
+
+d : character := calendar.day( calendar.clock ); -- wrong type
+

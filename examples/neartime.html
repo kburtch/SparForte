@@ -1,0 +1,150 @@
+<HEAD><TITLE>neartime.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : neartime.bush</H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush neartime
+It's almost a quarter to Nine at night
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+
+<FONT COLOR=green><EM>
+</EM></FONT>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- neartime</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Display the time in a "relaxed" format</EM></FONT>
+<FONT COLOR=green><EM>-- based on http://www.zazzybob.com/bin/neartime.html</EM></FONT>
+<FONT COLOR=green><EM>-- Created by Ken O. Burtch</EM></FONT>
+
+<b>pragma</b> annotate( "neartime" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Display the time in a 'relaxed' format" );
+<b>pragma</b> annotate( "usage: neartime" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> neartime <b>is</b>
+
+  <b>procedure</b> usage <b>is</b>
+  <b>begin</b>
+     put( "usage: " ) @ ( source_info.file );
+     command_line.set_exit_status( 0 );
+  <b>end</b> usage;
+
+  now    : calendar.time := calendar.clock;
+  hour   : natural := numerics.floor( calendar.seconds( now ) / 3600 );
+  minute : natural := numerics.floor( ( calendar.seconds( now ) - hour * 3600 ) / 60 );
+
+  nearbefore : string;
+  nearafter  : string;
+  nearhour   : string;
+  nearampm   : string;
+
+begin
+
+<FONT COLOR=green><EM>  -- Usage</EM></FONT>
+
+  <b>if</b> $# /= 0 <b>then</b>
+     usage;
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+<FONT COLOR=green><EM>  -- 12 Hour Time</EM></FONT>
+
+  <b>if</b> minute &gt;= 38 <b>then</b>
+    -- add an hour
+    hour := @ + 1;
+    <b>if</b> hour &gt;=  24 <b>then</b>
+      hour := 00;
+    <b>end</b> <b>if</b>;
+  <b>end</b> <b>if</b>;
+
+<FONT COLOR=green><EM>  -- Hour as English Text</EM></FONT>
+
+  <b>case</b> hour <b>is</b>
+  <b>when</b> 00|12|24 =&gt; nearhour := "Twelve" ;
+  <b>when</b> 01|13 =&gt;  nearhour := "One" ;
+  <b>when</b> 02|14 =&gt;  nearhour := "Two" ;
+  <b>when</b> 03|15 =&gt;  nearhour := "Three" ;
+  <b>when</b> 04|16 =&gt;  nearhour := "Four" ;
+  <b>when</b> 05|17 =&gt;  nearhour := "Five" ;
+  <b>when</b> 06|18 =&gt;  nearhour := "Six" ;
+  <b>when</b> 07|19 =&gt;  nearhour := "Seven" ;
+  <b>when</b> 08|20 =&gt;  nearhour := "Eight" ;
+  <b>when</b> 09|21 =&gt;  nearhour := "Nine" ;
+  <b>when</b> 10|22 =&gt;  nearhour := "Ten" ;
+  <b>when</b> 11|23 =&gt;  nearhour := "Eleven" ;
+  <b>when</b> <b>others</b> =&gt;
+    put_line( standard_error, "unknown time" );
+  <b>end</b> <b>case</b>;
+
+<FONT COLOR=green><EM>  -- Determine the time of day</EM></FONT>
+
+  <b>if</b> hour &lt; 12 <b>then</b>
+    nearampm := "in the morning";
+  <b>elsif</b> hour &lt; 17 <b>then</b>
+    nearampm := "in the afternoon";
+  <b>elsif</b> hour &lt; 20 <b>then</b>
+    nearampm := "in the evening";
+  <b>else</b>
+    nearampm := "at night";
+  <b>end</b> <b>if</b>;
+
+<FONT COLOR=green><EM>  -- Approximate the minutes</EM></FONT>
+
+  <b>if</b> minute = 0 <b>then</b>
+    nearbefore := "exactly ";
+    nearafter := "o'clock ";
+  <b>elsif</b> minute &lt; 8 <b>then</b>
+    nearbefore := "just after ";
+    nearafter := "o'clock ";
+  <b>elsif</b> minute &lt; 15 <b>then</b>
+    nearbefore := "almost a quarter past ";
+    nearafter := "";
+  <b> elsif</b> minute = 15 <b>then</b>
+    nearbefore := "a quarter past ";
+    nearafter := "";
+  <b>elsif</b> minute &lt; 23 <b>then</b>
+    nearbefore := "just after a quarter past ";
+    nearafter := "";
+  <b>elsif</b> minute &lt; 30 <b>then</b>
+    nearbefore := "almost half past ";
+    nearafter := "";
+  <b>elsif</b> minute = 30 <b>then</b>
+    nearbefore := "exactly half past ";
+    nearafter := "";
+  <b>elsif</b> minute &lt; 38 <b>then</b>
+    nearbefore := "just after half past ";
+    nearafter := "";
+  <b>elsif</b> minute &lt; 45 <b>then</b>
+    nearbefore := "almost a quarter to ";
+    nearafter := "";
+  <b>elsif</b> minute &lt; 53 <b>then</b>
+    nearbefore := "just after a quarter to ";
+    nearafter := "";
+  <b>elsif</b> minute &lt;= 59 <b>then</b>
+    nearbefore := "almost ";
+    nearafter := "o'clock ";
+  <b>end</b> <b>if</b>;
+
+<FONT COLOR=green><EM>  -- Display the time</EM></FONT>
+
+  put_line( "It's " &amp; nearbefore &amp; nearhour &amp; ' ' &amp; nearafter &amp; nearampm );
+
+  command_line.set_exit_status( 0 );
+
+<b>end</b> neartime;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+</PRE></BODY></HTML>

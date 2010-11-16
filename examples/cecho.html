@@ -1,0 +1,77 @@
+<HEAD><TITLE>cecho.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : cecho.bush</H1></DIV><HR>
+<!-- IMG SRC="distance.gif" -->
+<P>An "echo" beautifier - supports colours and boldface</P>
+<PRE>
+
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- cecho</EM></FONT>
+<FONT COLOR=green><EM>-- An "echo" beautifier - supports colours and boldface</EM></FONT>
+<FONT COLOR=green><EM>-- based on http://www.zazzybob.com/bin/cecho.html</EM></FONT>
+<FONT COLOR=green><EM>-- Created by Ken O. Burtch</EM></FONT>
+
+<b>pragma</b> annotate( "cecho" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "echo with color or boldface" );
+<b>pragma</b> annotate( "usage: cecho style text" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> cecho <b>is</b>
+
+  <b>procedure</b> usage <b>is</b>
+  <b>begin</b>
+     put( "usage: " ) @ ( source_info.file );
+     put_line( " style text" );
+     command_line.set_exit_status( 0 );
+  <b>end</b> usage;
+
+  open_escape : string := ASCII.ESC & "[0m";
+  close_escape : string := ASCII.ESC & "[0m";
+
+<b>begin</b>
+
+<FONT COLOR=green><EM>  -- Usage</EM></FONT>
+
+  <b>if</b> $# /= 1 <b>then</b>
+     usage;
+     <b>return</b>;
+  <b>elsif</b> $1 = "-h" <b>or</b> $1 = "--help" <b>then</b>
+     usage;
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+<FONT COLOR=green><E>  -- Interpret the colour parameter</EM></FONT>
+
+  <b>if</b> $1 = "red" <b>then</b>
+     open_escape := ASCII.ESC &amp; "[31m";
+  <b>elsif</b> $1 = "green" <b>then</b>
+     open_escape := ASCII.ESC &amp; "[32m";
+  <b>elsif</b> $1 = "blue" <b>then</b>
+     open_escape := ASCII.ESC &amp; "[33m";
+  <b>elsif</b> $1 = "purple" <b>then</b>
+     open_escape := ASCII.ESC &amp; "[34m";
+  <b>elsif</b> $1 = "cyan" <b>then</b>
+     open_escape := ASCII.ESC &amp; "[35m";
+  <b>elsif</b> $1 = "grey" <b>then</b>
+     open_escape := ASCII.ESC &amp; "[36m";
+  <b>elsif</b> $1 = "white" <b>then</b>
+     open_escape := ASCII.ESC &amp; "[1;37m";
+  <b>elsif</b> $1 = "bold" <b>then</b>
+     open_escape := ASCII.ESC &amp; "[1m";
+  <b>else</b>
+     <b>null</b>;
+  <b>end if</b>;
+
+<FONT COLOR=green><EM>  -- Display the message with colour</EM></FONT>
+
+  put_line( open_escape & $1 & close_escape );
+
+  command_line.set_exit_status( 0 );
+
+<b>end</b> cecho;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+</PRE></BODY></HTML>

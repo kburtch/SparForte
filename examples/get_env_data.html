@@ -1,0 +1,239 @@
+<HEAD><TITLE>get_env_data.adb</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : get_env_data.bush </H1></DIV><HR>
+<P>Create an Ada package describing the software build environment.</p>
+<IMG SRC="get_env_data.gif"><HR>
+<PRE>
+#! /opt/bin/bush -gd
+<FONT COLOR=green><EM>--			   TITLE : Generate Build Environ File (ADS)</EM></FONT>
+    <FONT COLOR=green><EM>--		        LANGUAGE : AdaScript</EM></FONT>
+    <FONT COLOR=green><EM>--			  MODULE : gen_env_data</EM></FONT>
+    <FONT COLOR=green><EM>--		    COMPONENT OF : BuZco Software (Gazelle)</EM></FONT>
+    <FONT COLOR=green><EM>--	     PARENT ORGANIZATION : BuzCo Systems</EM></FONT>
+    <FONT COLOR=green><EM>--		   LATEST AUTHOR : Buz Cory</EM></FONT>
+    <FONT COLOR=green><EM>--			 $RCSfile: gen_env_data,v $</EM></FONT>
+    <FONT COLOR=green><EM>--			$Revision: 0.0 $</EM></FONT>
+    <FONT COLOR=green><EM>--			    $Date: 2003/12/22 12:34:52 $</EM></FONT>
+<FONT COLOR=green><EM>--  --------------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>--  EXTERNAL MODULES USED</EM></FONT>
+<FONT COLOR=green><EM>--  --------------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>--  PURPOSE :</EM></FONT>
+<FONT COLOR=green><EM>--  --------------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>--  OVERVIEW:</EM></FONT>
+<FONT COLOR=green><EM>--  --------------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>--  NOTICES, LICENSE follow; NOTES, HISTORY at end</EM></FONT>
+<FONT COLOR=green><EM>--  ----------------------------------------</EM></FONT>
+    <FONT COLOR=green><EM>--  This software is part of the Gazelle suite of useful,</EM></FONT>
+<FONT COLOR=green><EM>--  lightweight, fast tools, developed and distributed by BuzCo</EM></FONT>
+<FONT COLOR=green><EM>--  Systems.</EM></FONT>
+    <FONT COLOR=green><EM>--</EM></FONT>
+    <FONT COLOR=green><EM>--  UNREGISTERED COPIES OF GAZELLE SOFTWARE COME WITH NO WARRANTY,</EM></FONT>
+<FONT COLOR=green><EM>--  EXPRESSED OR IMPLIED, AND EXPRESSLY WITHOUT THE IMPLIED</EM></FONT>
+<FONT COLOR=green><EM>--  WARRANTIES OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR</EM></FONT>
+<FONT COLOR=green><EM>--  PURPOSE.</EM></FONT>
+    <FONT COLOR=green><EM>--</EM></FONT>
+    <FONT COLOR=green><EM>--  Registered users may have additional rights, depending on the</EM></FONT>
+<FONT COLOR=green><EM>--  terms under which they choose to register. See the file</EM></FONT>
+<FONT COLOR=green><EM>--  GAZELLE.REGISTER in the root directory of the distribution.</EM></FONT>
+    <FONT COLOR=green><EM>--</EM></FONT>
+    <FONT COLOR=green><EM>--  IF THE COUNTRY, STATE, OR PROVINCE IN WHICH YOU ARE USING THIS</EM></FONT>
+<FONT COLOR=green><EM>--  GAZELLE SOFTWARE DOES NOT ALLOW SUCH LIMITATIONS, YOU HAVE NO</EM></FONT>
+<FONT COLOR=green><EM>--  LEGAL RIGHT TO USE AN UNREGISTERED COPY.</EM></FONT>
+    <FONT COLOR=green><EM>--</EM></FONT>
+    <FONT COLOR=green><EM>--  GAZELLE software is distributed under the GNU General Public</EM></FONT>
+<FONT COLOR=green><EM>--  License. It may be freely copied, modified, redistributed</EM></FONT>
+<FONT COLOR=green><EM>--  under the terms of that license.</EM></FONT>
+    <FONT COLOR=green><EM>--</EM></FONT>
+    <FONT COLOR=green><EM>--  You should have gotten a copy of that license in the file</EM></FONT>
+<FONT COLOR=green><EM>--  COPYING. If not, a copy may be obtained by sending E-mail to</EM></FONT>
+<FONT COLOR=green><EM>--  BuzCo Systems or by writing:</EM></FONT>
+<FONT COLOR=green><EM>--	The Free Software Foundation</EM></FONT>
+<FONT COLOR=green><EM>--	59 Temple Place - Suite 330</EM></FONT>
+<FONT COLOR=green><EM>--	Boston, MA 02111-1307, USA.</EM></FONT>
+<FONT COLOR=green><EM>--  ====================================================================</EM></FONT>
+
+    <b>procedure</b>
+gen_env_data
+<b>is</b>
+    <b>pragma</b> ada_95 ;
+
+    New_Line                    : <b>constant</b> character    := ASCII.LF ;
+
+    body_RCSid                  : <b>constant</b> string :=
+        "$Id: gen_env_data,v 0.0 2003/12/22 12:34:52 buzCo_as_toolmakr Exp $"
+        ;
+
+    body_Copyright              : <b>constant</b> string
+        := "Gazelle .gen_env_data " &amp;  New_Line
+         &amp; "body Copyright © 2003, BuzCo Systems" &amp; New_Line
+         &amp; "Licensed under the GNU General Progam License (GPL)." &amp; New_Line
+        ;
+    <FONT COLOR=green><EM>-- pragma Unreferenced( body_RCSid, body_Copyright ) ;</EM></FONT>
+    <FONT COLOR=green><EM>--  ================================================================</EM></FONT>
+
+    Me                          : <b>constant</b> string
+        := command_line.command_name ;
+
+    <FONT COLOR=green><EM>-- Time Stuff</EM></FONT>
+        Now                             : <b>constant</b> calendar.time
+            := calendar.clock ;
+        YR                              : calendar.year_number ;
+        MO                              : calendar.month_number ;
+        DY                              : calendar.day_number ;
+        SECS                            : calendar.day_duration ;
+        Hour                            : integer ;
+        Min                             : integer ;
+        Sec                             : integer ;
+        The_Time                        : string ;
+ 
+            <b>procedure</b>
+        fix_time
+        <b>is</b>
+            Hours                       : <b>constant</b> integer      := 24 ;
+            Mins_Hr                     : <b>constant</b> integer      := 60 ;
+            Secs_Min            : <b>constant</b> integer      := 60 ;
+            Secs_Hr                     : <b>constant</b> integer      := Mins_Hr * Secs_Min ;
+        <b>begin</b>
+            calendar.split( Now, YR, MO, DY, SECS ) ;
+            Sec := integer( SECS ) ;
+            The_Time := strings.trim( strings.image( YR ), trim_end.both ) ;
+            The_Time := The_Time &amp; '-' &amp; strings.trim( strings.image( MO ), trim_end.both ) ;
+            The_Time := The_Time &amp; '-' &amp; strings.trim( strings.image( DY ), trim_end.both ) ;
+            Hour := numerics.floor( Sec / Secs_Hr ) ;
+            <b>if</b> Hour &lt; 10 <b>then</b>
+                The_Time := The_Time &amp; ":0" ;
+            <b>else</b>
+                The_Time := The_Time &amp; ':' ;
+            <b>end</b> <b>if</b> ;
+            The_Time := The_Time &amp; strings.trim( strings.image( Hour ), trim_end.both ) ;
+            Sec := Sec <b>mod</b> Secs_Hr ;
+            Min := numerics.floor( Sec / Secs_Min ) ;
+            <b>if</b> Min &lt; 10 <b>then</b>
+                The_Time := The_Time &amp; ":0" ;
+            <b>else</b>
+                The_Time := The_Time &amp; ':' ;
+            <b>end</b> <b>if</b> ;
+            The_Time := The_Time &amp; strings.trim( strings.image( Min ), trim_end.both ) ;
+            Sec := numerics.floor( Sec <b>mod</b> Secs_Min ) ;
+            <b>if</b> Sec &lt; 10 <b>then</b>
+                The_Time := The_Time &amp; ":0" ;
+            <b>else</b>
+                The_Time := The_Time &amp; ':' ;
+            <b>end</b> <b>if</b> ;
+            The_Time := The_Time &amp; strings.trim( strings.image( Sec ), trim_end.both ) ;
+        <b>end</b> fix_time ;
+
+    Pkg_Name                    : string ;
+    Pkg_File_Name               : string ;
+    Pkg_File                    : file_type ;
+    LOGNAME                     : string ;
+        <b>pragma</b> unchecked_import( shell, LOGNAME );
+    USER                        : string ;
+        <b>pragma</b> unchecked_import( shell, USER ) ;
+    Compiler                    : <b>constant</b> string
+        := `gcc( "--version" ) ;` ;
+    Plat                        : <b>constant</b> string
+        := `uname( "-m" ) ;` &amp; '-' &amp; `uname( "-s" ) ;` ;
+    HOST                        : <b>constant</b> string
+        := `uname( "-n" ) ;` ;
+
+    Sep                         : character ;
+    Idx                         : natural ;
+    Indnt                       : <b>constant</b> string       := "    " ;
+    cstr                        : <b>constant</b> string
+        := " :aliased constant Build_Info_String := " &amp; '"' ;
+    EOL                         : <b>constant</b> string       := '"' &amp; " ;" ;
+    <FONT COLOR=green><EM>--  ================================================================</EM></FONT>
+
+<b>begin</b>
+    <b>if</b> strings.length( LOGNAME ) &gt; 0 <b>then</b>
+       USER := LOGNAME;
+    <b>end</b> <b>if</b>;
+    <b>if</b> command_line.argument_count /= 1 <b>then</b>
+        put_line( current_error, Me &amp; ": Wrong Arg Count" ) ;
+        command_line.set_exit_status( 1 ) ;
+        <b>return</b> ;
+    <b>end</b> <b>if</b>;
+    <b>if</b> strings.length( command_line.argument( 1 ) ) &lt; 5 <b>then</b>
+        put_line( current_error, Me &amp; ": Expected *.ad? filename" ) ;
+        command_line.set_exit_status( 1 ) ;
+        <b>return</b> ;
+    <b>end</b> <b>if</b>;
+
+    <b>declare</b>
+        Source_Name                     : <b>constant</b> string
+            := command_line.argument( 1 ) ;
+            <FONT COLOR=green><EM>-- expected to be *.ad?</EM></FONT>
+        Base_Name                       : <b>constant</b> string
+            := files.basename( strings.head
+                ( Source_Name
+                , strings.length( Source_Name ) - 4
+                )
+            ) ;
+        Source_Path                     : <b>constant</b> string
+            := files.dirname( Source_Name ) ;
+    <b>begin</b>
+        <b>if</b> <b>not</b> strings.glob( "*.ad?", Source_Name ) <b>then</b>
+            put_line( Me &amp; ": Not a valid GNAT file name" ) ;
+            command_line.set_exit_status( 1 ) ;
+            <b>return</b> ;
+        <b>end</b> <b>if</b> ;
+        fix_time ;
+
+        <b>if</b> strings.glob( "*-*", Base_Name ) <b>then</b>
+            <FONT COLOR=green><EM>-- This is a child package.</EM></FONT>
+            Sep := '-' ;
+        <b>else</b>
+            Sep := '_' ;
+        <b>end</b> <b>if</b> ;
+        Pkg_File_Name := Base_Name &amp; Sep &amp; "comp_info" ;
+        Pkg_Name := strings.to_proper( Pkg_File_Name ) ;
+        Pkg_File_Name := Pkg_File_Name &amp; ".ads" ;
+        <b>for</b> i <b>in</b> 1 .. strings.count( Pkg_Name, "-" ) <b>loop</b>
+            Idx := strings.index( Pkg_Name, "-" ) ;
+            Pkg_Name := strings.replace_slice
+                ( Pkg_Name
+                , positive( Idx )
+                , Idx
+                , "."
+                ) ;
+            <b>end</b> <b>loop</b> ;
+
+        create( Pkg_File, out_file, Pkg_File_Name ) ;
+        put_line( "Creating " &amp; Pkg_File_Name &amp; "..." ) ;
+        set_output( Pkg_File ) ;
+        put_line( "with Gazelle ; use Gazelle ;" ) ;
+        put_line( "package " &amp; Pkg_Name &amp; " is" ) ;
+        put_line( Indnt &amp; "Source_Name" &amp; cstr &amp; Source_Name &amp; EOL ) ;
+        put_line( Indnt &amp; "Base_Name" &amp; cstr &amp; Base_Name &amp; EOL ) ;
+        put_line( Indnt &amp; "Source_Path" &amp; cstr &amp; Source_Path &amp; EOL ) ;
+        put_line( Indnt &amp; "The_Time" &amp; cstr &amp; The_Time &amp; EOL ) ;
+        put_line( Indnt &amp; "USER" &amp; cstr &amp; USER &amp; EOL ) ;
+        put( Indnt &amp; "Compiler" &amp; cstr ) ;
+        put( strings.field( Compiler, 1, ASCII.LF ) ) ;
+        put_line( EOL ) ;
+        put_line( Indnt &amp; "Plat" &amp; cstr &amp; Plat &amp; EOL ) ;
+        put_line( Indnt &amp; "HOST" &amp; cstr &amp; HOST &amp; EOL ) ;
+        put_line( "end " &amp; Pkg_Name &amp; " ;" ) ;
+        set_output( standard_output ) ;
+        close( Pkg_File ) ;
+        put_line( " ... done" ) ;
+   <b>end</b>;
+<b>end</b> gen_env_data ;
+
+<FONT COLOR=green><EM>--  ====================================================================</EM></FONT>
+    <FONT COLOR=green><EM>--  NOTES, HISTORY follow:</EM></FONT>
+<FONT COLOR=green><EM>--  ----------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>--  NOTE: The coding and comment style were chosen to provide nice</EM></FONT>
+            <FONT COLOR=green><EM>--  indent folding until the ViM syntax folding works well.</EM></FONT>
+    <FONT COLOR=green><EM>--  ================================================================</EM></FONT>
+<FONT COLOR=green><EM>--  Changelog</EM></FONT>
+<FONT COLOR=green><EM>--  -------------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>--  $Log: gen_env_data,v $</EM></FONT>
+<FONT COLOR=green><EM>--  Revision 0.0  2003/12/22 12:34:52  buzCo_as_toolmakr</EM></FONT>
+<FONT COLOR=green><EM>--  First Cut</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>--  vim: sw=4 tw=72 fdm=indent ft=ada</EM></FONT>
+
+</PRE></BODY></HTML>

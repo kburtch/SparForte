@@ -1,0 +1,1523 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Ken Burtch">
+   <meta name="GENERATOR" content="Mozilla/4.78 [en] (X11; U; Linux 2.4.7-10 i686) [Netscape]">
+   <title>Business Shell (BUSH) Guide</title>
+</head>
+<body bgcolor="#CCCC99">
+
+<center>
+<img src="bush_title_bar.gif" alt="[BUSH User Guide]" width="710" height="99">
+</center>
+<!-- h2>
+<font color="#777700">
+Bush Guide: Part 4 - Built-in Packages</font></h2 -->
+
+<table summary="menu" border="0" cellpadding="0" cellspacing="0"
+ width="100%">
+<tr>
+<td valign="bottom" bgcolor="white">&nbsp;</td>
+</tr><tr>
+<td valign="bottom" bgcolor="white">
+<table summary="menu" border="0" cellpadding="0" cellspacing="0"
+ width="100%">
+  <tbody>
+    <tr bgcolor="white">
+      <td align="center"><a href="http://www.pegasoft.ca/bush.html">Home Page</a></td>
+      <td align="center"><a href="bushintro.html">Introduction</a></td>
+      <td align="center"><a href="bushtutorial.html">Tutorials</a></td>
+      <td align="center"><a href="bushref.html">Reference</a></td>
+      <td valign="bottom" align="center" bgcolor="#CCCC99"><font size="+1" color="#777700"><b>Packages</b></font></td>
+      <td align="center"><a href="bushdetails.html">Hacking</a></td>
+    </tr>
+  </tbody>
+</table>
+</td>
+</tr>
+</table>
+
+<table summary="menu" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top" width="25%">
+&nbsp;<br>
+<table summary="menu" border="0" cellpadding="0" cellspacing="0">
+  <tr><td>
+      <table summary="menu" border="0" cellpadding="0" cellspacing="0">
+      <tr>
+      <td valign="bottom" align="center" bgcolor="white"><font size="+1" color="#777700"><b>&nbsp;&nbsp;Packages&nbsp;&nbsp;</b></font></td>
+      </tr>
+      </table>
+  </td></tr>
+  <tr><td bgcolor="white"><a href="bushpackages.html#4.1">4.1 Using Packages</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_text_io.html#4.2">4.2 text_io (Console I/O)</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_text_io.html#4.3">4.3 text_io (File I/O)</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_sound.html#4.4">4.4 sound</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_source_info.html#4.5">4.5 source_info</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_system.html#4.6">4.6 System</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_numerics.html#4.7">4.7 numerics</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_strings.html#4.8">4.8 strings</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_command_line.html#4.9">4.9 command_line</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_lock_files.html#4.10">4.10 lock_files</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_cgi.html#4.11">4.11 cgi</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_calendar.html#4.12">4.12 calendar</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_units.html#4.13">4.13 units</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_arrays.html#4.14">4.14 arrays</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_files.html#4.15">4.15 files</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_db.html#4.16">4.16 db (Database)</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_stats.html#4.17">4.17 stats</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_pen.html#4.18">4.18 pen</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_mysql.html#4.19">4.19 mysql</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_os.html#4.20">4.20 os</a></td></tr>
+</table>
+</td>
+<td>
+&nbsp;<br>
+
+This part of the guide contains detailed descriptions of the
+BUSH built-in packages.
+<br>&nbsp;
+<h3>
+<a NAME="4.18"></a><font color="#777700">4.18 Pen Package</font></h3>
+<b>NOTE: This package is under construction.  The features have not been finalized.</b>
+<P>The pen package is the BUSH drawing environment.  It is based on the
+Simple DirectMedia Layer portable drawing environment originally created
+by Loki Games, a Linux games company.  However, the SDL is strictly a
+hardware interface: it contains few drawing primitives.  The pen package
+extends the SDL for useful drawing.</p>
+<p>The drawing surface is called <i>a canvas</i>.  The canvas can be a window or
+the hardware screen, but it can also be an off-screen area in memory.  The
+drawing area is divided up into a number of rectangular pixels.</p>
+<p>To open a new canvas in a X Windows window, use:</p>
+<pre>
+<b>=&gt;</b> pen.new_window_canvas( 256, 256, 16, canvas_id )
+=&gt; (Assuming canvas_id is a new pen.canvas_id variable)
+<b>=&gt;</b> pen.set_title( canvas_id, "Drawing Area" )
+</pre>
+<p>This canvas will be 256 pixels wide, 256 pixels high, a minimum of 16-bit colour and
+it will have an X windows title of "Drawing Area".  canvas_id is the id number referring
+to the canvas.</p>
+<img src="pen_window.gif" width="266" height="284" alt="[A Window Canvas"]>
+<p>The coordinate system of the canvas has an origin point at the top-left
+corner of the drawing surface.  The coordinate lines actually fall between
+the pixels so that coordinate (0,0) is actually to the upper-left of the
+first pixel.  The coordinates are floating point numbers representing a
+percentage of the canvas.  The canvas ranges from (0,0) to (100,100).</p>
+<p>The pen package draws on the canvas using an imaginary <i>pen</i>.  The pen
+has several properties:</p>
+<ul>
+<li><b>Position</b> - the location of the pen on the canvas</li>
+<li><b>Direction</b> - the angle of rotation of the pen</li>
+<li><b>Ink</b> - the solid colour used drawing with the pencil brush</li>
+<li><b>Pattern</b> - multi-colour ink used for drawing</li>
+<li><b>Brush</b> - how the ink is spread on the canvas</li>
+<li><b>Mode</b> - how the ink is combined with the canvas pixels</li>
+</ul>
+
+<p>Pen modes include:</p>
+
+<ul>
+<li><b>Off</b> - the pen moves but no drawing takes place</li>
+<li><b>Copy</b> - the ink overwrites the existing pixels on the canvas. This
+is the normal pen mode.</li>
+<li><b>Invert</b> - the ink is exclusive-or'd with the pixels.  Where the
+ink is 0%, the canvas is unchanged.  Where the ink is 100%, the canvas pixels
+are transformed to the opposite colour.  This is useful for simple hilighting
+that doesn't lose information on the canvas.</p>
+<li><b>Add</b> - adds the canvas pixels to the ink pixels</li>
+<li><b>Subtract</b> - removes the canvas pixels from the ink pixels</li>
+<li><b>Average</b> - blends the canvas and ink pixels, taking the average value</li>
+<li><b>Fade</b> - brighten or darken the canvas pixels</li>
+<li><b>Min</b> - where the ink is not 0, choose the darker pixel between the ink and the canvas.  If the ink is 0, leave the canvas unchanged.</li>
+<li><b>Max</b> - where the ink is not 0, choose the brighter pixel between the ink and the canvas.  If the ink is 0, leave the canvas unchanged.</li>
+</ul>
+
+<p>The brush describes the pattern the pen will draw with:</p>
+
+<ul>
+<li><b>Pencil</b> - drawing by single pixels of a solid colour ink</li>
+<li><b>Smear</b> - (Not complete)</li>
+<li><b>Stamp</b> - draw with a pattern aligned to the shape</li>
+<li><b>Stretch</b> - (Not complete) Resize the pattern to fit a shape</li>
+<li><b>Tile</b> - draw with a pattern aligned to the canvas</li>
+</ul>
+
+<p>Not all pen modes are available on all kinds of canvas.</p>
+
+<p>Colors are made of percentages of red, green and blue.  pen.pen_color_name
+is an enumerated type with the standard X windows color names.</p>
+
+<pre>
+<b>=&gt;</b> pen.set_pen_mode( canvas_id, pen_mode.copy )
+<b>=&gt;</b> pen.set_pen_brush( canvas_id, pen_brush.pencil)
+<b>=&gt;</b> pen.set_pen_ink( canvas_id, 100, 0, 0 )
+</pre>
+
+<p>These commands set the pen brush to a pencil (single pixels) and the mode to copy (the
+pencil pixels will overwrite whatever pixels currently on the canvas background).  The
+pen pixels will be bright red.</p>
+
+</ul>
+
+<p>
+<hr><b>pen.fill_ellipse( c, r )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Fill ellipse bounded by rectangle r in canvas c using the current pen.
+<br>Example: pen.fill_ellipse( canvas_id, pie_graph_rect );
+<br>Ada Equivalent: N/A - Pen.fillRect (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>r</td>
+
+<td>in</td>
+
+<td>pen.rect</td>
+
+<td>required</td>
+
+<td>the rectangle surrounding ellipse to fill</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.fill_rect( c, r )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Fill rectange r in canvas c using the current pen.
+<br>Example: pen.fill_rect( canvas_id, background_rect );
+<br>Ada Equivalent: N/A - Pen.fillRect (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>r</td>
+
+<td>in</td>
+
+<td>pen.rect</td>
+
+<td>required</td>
+
+<td>the rectangle to fill</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.frame_ellipse( c, r )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Draw an outline around ellipse bounded by rectangle r in canvas c using the current pen.
+<br>Example: pen.fill_ellipse( canvas_id, pie_graph_rect );
+<br>Ada Equivalent: N/A - Pen.frameRect (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>r</td>
+
+<td>in</td>
+
+<td>pen.rect</td>
+
+<td>required</td>
+
+<td>the rectangle surrounding ellipse to border</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.frame_rect( c, r )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Draw an outline around rectange r in canvas c using the current pen.
+<br>Example: pen.frame_rect( canvas_id, background_rect );
+<br>Ada Equivalent: N/A - Pen.fillRect (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>r</td>
+
+<td>in</td>
+
+<td>pen.rect</td>
+
+<td>required</td>
+
+<td>the rectangle to border</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>b := pen.get_pen_brush( c )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the current pen brush for canvas c.
+<br>Example: pen_brush := pen.get_pen_brush( canvas_id );
+<br>Ada Equivalent: N/A - Pen.getPenBrush (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>b</td>
+
+<td>result</td>
+
+<td>pen.pen_brush</td>
+
+<td>required</td>
+
+<td>the pattern application mode</td>
+</tr><tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.get_pen_ink( c, r, g, b )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the current pen solid drawing colour in canvas c.
+<br>Example: pen.get_pen_ink( canvas_id, red, green, blue );
+<br>Ada Equivalent: N/A - Pen.getPenInk (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>r</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>required</td>
+
+<td>percentage of red in the color</td>
+</tr><tr>
+<td>g</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>required</td>
+
+<td>percentage of green in the color</td>
+</tr><tr>
+<td>b</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>required</td>
+
+<td>percentage of blue in the color</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>m := pen.get_pen_mode( c )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the current pen mode for canvas c.
+<br>Example: pen_mode := pen.get_pen_mode( canvas_id );
+<br>Ada Equivalent: N/A - Pen.getPenMode (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>m</td>
+
+<td>result</td>
+
+<td>pen.pen_mode</td>
+
+<td>required</td>
+
+<td>the pen mode</td>
+</tr><tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.hline( c, x1, x2, y )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Draw a horizontal line between (x1,y) and (x2,y) on canvas c in the current pen.  Ignores clipping region.
+<br>Example: pen.hline( canvas_id, 0, 100, 50);
+<br>Ada Equivalent: N/A - Pen.hline (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>x1</td>
+
+<td>in</td>
+
+<td>pen.coordinate</td>
+
+<td>required</td>
+
+<td>the left-most x coordinate</td>
+</tr><tr>
+<td>x2</td>
+
+<td>in</td>
+
+<td>pen.coordinate</td>
+
+<td>required</td>
+
+<td>the right-most x coordiante</td>
+</tr><tr>
+<td>y</td>
+
+<td>in</td>
+
+<td>pen.coordinate</td>
+
+<td>required</td>
+
+<td>the y coordinate</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>b := pen.in_rect( x, y, r )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>True if point (x, y) is inside of rectangle r.
+<br>Example: b := pen.in_rect( mouse_x, mouse_y, icon_rect );
+<br>Ada Equivalent: N/A - Pen.in_rect (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>b</td>
+
+<td>result</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if ir is contained in or</td>
+</tr><tr>
+<td>x</td>
+
+<td>in</td>
+
+<td>pen.coordinate</td>
+
+<td>required</td>
+
+<td>the horizontal position</td>
+</tr><tr>
+<td>yr</td>
+
+<td>in</td>
+
+<td>pen.coordinate</td>
+
+<td>required</td>
+
+<td>the vertical position</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.inset_rect( r, dx, dy )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Change the size of the rectangle by dx horizontal and dy vertical.  Negative values cause
+the rectangle to grow.  The center of the rectangle remains unchanged.
+<br>Example: pen.inset_rect( shrinking_rect, 10, 10 ); -- shrink by 10% of canvas
+<br>Ada Equivalent: N/A - Pen.inset_rect (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>r</td>
+
+<td>in out</td>
+
+<td>pen.rect</td>
+
+<td>required</td>
+
+<td>the rectangle to shift</td>
+</tr><tr>
+<td>dx</td>
+
+<td>in</td>
+
+<td>pen.coordinate</td>
+
+<td>required</td>
+
+<td>the horizontal change to the left and right</td>
+</tr><tr>
+<td>dy</td>
+
+<td>in</td>
+
+<td>pen.coordinate</td>
+
+<td>required</td>
+
+<td>the vertical change to the top and bottom</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>b := pen.inside_rect( ir, or )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>True if ir is a rectangle inside of rectangle or.
+<br>Example: b := pen.inside_rect( small_rect, big_rect );
+<br>Ada Equivalent: N/A - Pen.inside_rect (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>b</td>
+
+<td>result</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if ir is contained in or</td>
+</tr><tr>
+<td>ir</td>
+
+<td>in</td>
+
+<td>pen.rect</td>
+
+<td>required</td>
+
+<td>the inner rectangle</td>
+</tr><tr>
+<td>or</td>
+
+<td>in</td>
+
+<td>pen.rect</td>
+
+<td>required</td>
+
+<td>the outer rectangle</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.intersect_rect( r, r1, r2 )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Calculate the overlap rectangle (if any) between rectangles r1 and r2.
+<br>Example: pen.intersect_rect( overlap_rect, player_sprite, monster_sprite );
+<br>Ada Equivalent: N/A - Pen.intersect_rect (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>r</td>
+
+<td>out</td>
+
+<td>pen.rect</td>
+
+<td>required</td>
+
+<td>the intersection rect or empty rect if none</td>
+</tr><tr>
+<td>r1</td>
+
+<td>in</td>
+
+<td>pen.rect</td>
+
+<td>required</td>
+
+<td>a rectangle</td>
+</tr><tr>
+<td>r2</td>
+
+<td>in</td>
+
+<td>pen.rect</td>
+
+<td>required</td>
+
+<td>a rectangle</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>b := pen.is_empty_rect( r )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>True if r is a rectangle that contains nothing.
+<br>Example: bool := pen.is_empty_rect( some_rect );
+<br>Ada Equivalent: N/A - Pen.isEmptyRect (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>result</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if rectangle is empty</td>
+</tr><tr>
+<td>r</td>
+
+<td>in</td>
+
+<td>pen.rect</td>
+
+<td>required</td>
+
+<td>the rectangle to test</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.line( c, dx, dy )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Draw a line in the current pen from the current pen position to a new relative position
+offset by dx and dy. 
+<br>Example: pen.line( canvas_id, 0, 10 );
+<br>Ada Equivalent: N/A - Pen.line (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>dx</td>
+
+<td>in</td>
+
+<td>pen.coordiante</td>
+
+<td>required</td>
+
+<td>the horizontal change from the current pen position</td>
+</tr><tr>
+<td>dy</td>
+
+<td>in</td>
+
+<td>pen.coordiante</td>
+
+<td>required</td>
+
+<td>the vertical change from the current pen position</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.line_to( c, x, y )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Draw a line with the pen from the current pen position to a new position (x,y).
+<br>Example: pen.line_to( canvas_id, 75, 10 );
+<br>Ada Equivalent: N/A - Pen.line (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>x</td>
+
+<td>in</td>
+
+<td>pen.coordiante</td>
+
+<td>required</td>
+
+<td>the new horizontal position</td>
+</tr><tr>
+<td>y</td>
+
+<td>in</td>
+
+<td>pen.coordiante</td>
+
+<td>required</td>
+
+<td>the new vertical position</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.move( c, dx, dy )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Move the pen from the current pen position to a new relative position
+offset by dx and dy.   No line will be drawn.
+<br>Example: pen.move( canvas_id, 0, 10 );
+<br>Ada Equivalent: N/A - Pen.move (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>dx</td>
+
+<td>in</td>
+
+<td>pen.coordiante</td>
+
+<td>required</td>
+
+<td>the horizontal change from the current pen position</td>
+</tr><tr>
+<td>dy</td>
+
+<td>in</td>
+
+<td>pen.coordiante</td>
+
+<td>required</td>
+
+<td>the vertical change from the current pen position</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.move_to( c, x, y )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Move the pen from the current pen position to a new position (x,y).  No line will be
+drawn.
+<br>Example: pen.move_to( canvas_id, 75, 10 );
+<br>Ada Equivalent: N/A - Pen.move (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>x</td>
+
+<td>in</td>
+
+<td>pen.coordiante</td>
+
+<td>required</td>
+
+<td>the new horizontal position</td>
+</tr><tr>
+<td>y</td>
+
+<td>in</td>
+
+<td>pen.coordiante</td>
+
+<td>required</td>
+
+<td>the new vertical position</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.new_canvas( h, v, c, id )</b><br><b>pen.new_canvas( s, id )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Create a new drawing area canvas that does not appear on the display.  If the first
+parameter is a string, load the image file from path s into a canvas big enough to hold it.
+<br>Example: pen.new_canvas( 100, 100, 16, canvas_id );
+<br>Example: pen.new_canvas( "company_logo.png", logo_id );
+<br>Ada Equivalent: N/A - Pen.newCanvas (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>h</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the minimum horizontal size in pixels</td>
+</tr><tr>
+<td>v</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the minimum vertical size in pixels</td>
+</tr><tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the minimum pixel bits (8, 16, 24 or 32)</td>
+</tr><tr>
+<td>id</td>
+
+<td>out</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the identification number for the offscreen canvas</td>
+</tr><tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the path to a file that SDL_image can load<br>(JPEG, GIF, PNG, etc.)</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.new_screen_canvas( h, v, c, id )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Create a new drawing area canvas that covers the entire display screen.
+<br>Example: pen.new_screen_canvas( 100, 100, 16, canvas_id );
+<br>Ada Equivalent: N/A - Pen.newScreenCanvas (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>h</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the minimum horizontal size in pixels</td>
+</tr><tr>
+<td>v</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the minimum vertical size in pixels</td>
+</tr><tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the minimum pixel bits (8, 16, 24 or 32)</td>
+</tr><tr>
+<td>id</td>
+
+<td>out</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the identification number for the new canvas</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.new_window_canvas( h, v, c, id )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Create a new drawing area canvas in a separate operating system window.
+<br>Example: pen.new_window_canvas( 100, 100, 16, canvas_id );
+<br>Ada Equivalent: N/A - Pen.newWindowCanvas (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>h</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the minimum horizontal size in pixels</td>
+</tr><tr>
+<td>v</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the minimum vertical size in pixels</td>
+</tr><tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the minimum pixel bits (8, 16, 24 or 32)</td>
+</tr><tr>
+<td>id</td>
+
+<td>out</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the identification number for the new canvas</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.offset_rect( r, dx, dy )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Move rectangle by dx horizontal and dy vertical.  The size of the rectangle remains
+unchanged.
+<br>Example: pen.offset_rect( player_sprite, 1, 0 );
+<br>Ada Equivalent: N/A - Pen.offset_rect (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>r</td>
+
+<td>in out</td>
+
+<td>pen.rect</td>
+
+<td>required</td>
+
+<td>the rectangle to shift</td>
+</tr><tr>
+<td>dx</td>
+
+<td>in</td>
+
+<td>pen.coordinate</td>
+
+<td>required</td>
+
+<td>the horizontal change to the left and right</td>
+</tr><tr>
+<td>dy</td>
+
+<td>in</td>
+
+<td>pen.coordinate</td>
+
+<td>required</td>
+
+<td>the vertical change to the top and bottom</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.set_pen_brush( c, b )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Change the current pen brush (pattern application mode) for canvas c.
+<br>Example: pen.set_pen_brush( canvas_id );
+<br>Ada Equivalent: N/A - Pen.setPenBrush (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>b</td>
+
+<td>result</td>
+
+<td>pen.brush</td>
+
+<td>required</td>
+
+<td>the new pattern application mode</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.set_pen_ink( c, r, g, b )</b>
+<br><b>pen.set_pen_ink( c, n )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Change the current pen solid drawing colour in canvas c.
+<br>Example: pen.set_pen_ink( canvas_id, red, green, blue );
+<br>pen.set_pen_ink( canvas_id, pen.color_name.skyblue );
+<br>Ada Equivalent: N/A - Pen.setPenInk (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>r</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>required</td>
+
+<td>percentage of red in the color</td>
+</tr><tr>
+<td>g</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>required</td>
+
+<td>percentage of green in the color</td>
+</tr><tr>
+<td>b</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>required</td>
+
+<td>percentage of blue in the color</td>
+</tr><tr>
+<td>n</td>
+
+<td>in</td>
+
+<td>pen.pen_color_name</td>
+
+<td>required</td>
+
+<td>the name of the colour</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>m := pen.set_pen_mode( c )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Change the current pen mode for canvas c.
+<br>Example: pen_mode := pen.get_pen_mode( canvas_id );
+<br>Ada Equivalent: N/A - Pen.getPenMode (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>m</td>
+
+<td>in</td>
+
+<td>pen.pen_mode</td>
+
+<td>required</td>
+
+<td>the pen mode</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.set_pen_pattern( c, pid )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Change the drawing pattern of canvas c to canvas pid.
+<br>Example: pen.set_pen_pattern( canvas_id, company_logo_canvas_id );
+<br>Ada Equivalent: N/A - Pen.setPenPattern (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>pid</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the canvas to use as the drawing pattern</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.set_rect( r, l, t, r, b )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Assign coordinates to a rectangle.
+<br>Example: set_rect( full_canvas, 0, 0, 100, 100 );
+<br>Ada Equivalent: N/A - Pen.setRect (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>r</td>
+
+<td>in</td>
+
+<td>pen.rect</td>
+
+<td>required</td>
+
+<td>the rectangle</td>
+</tr><tr>
+<td>l</td>
+
+<td>in</td>
+
+<td>pen.coordinate</td>
+
+<td>required</td>
+
+<td>the left coordinate</td>
+</tr>
+<td>t</td>
+
+<td>in</td>
+
+<td>pen.coordinate</td>
+
+<td>required</td>
+
+<td>the top coordinate</td>
+</tr>
+<td>r</td>
+
+<td>in</td>
+
+<td>pen.coordinate</td>
+
+<td>required</td>
+
+<td>the right coordinate</td>
+</tr>
+<td>b</td>
+
+<td>in</td>
+
+<td>pen.coordinate</td>
+
+<td>required</td>
+
+<td>the bottom coordinate</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.set_title( c, t )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Change the title of canvas c to string t.  On a window canvas, update the
+window title bar.
+<br>Example: set_title( canvas_id, "Graph of Results" );
+<br>Ada Equivalent: N/A - Pen.setTitle (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>t</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the new title</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.vline( c, x, y1, y2 )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Draw a vertical line between (x,y1) and (x,y2) on canvas c in the current pen.  Ignores clipping region.
+<br>Example: pen.set_vline( canvas_id, 50, 0, 100);
+<br>Ada Equivalent: N/A - Pen.vline (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>x</td>
+
+<td>in</td>
+
+<td>pen.coordinate</td>
+
+<td>required</td>
+
+<td>the x coordinate</td>
+</tr><tr>
+<td>y1</td>
+
+<td>in</td>
+
+<td>pen.coordinate</td>
+
+<td>required</td>
+
+<td>the top-most y coordiante</td>
+</tr><tr>
+<td>y2</td>
+
+<td>in</td>
+
+<td>pen.coordinate</td>
+
+<td>required</td>
+
+<td>the bottom-most y coordinate</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>&nbsp;<a href="#top">Back to Top</a></p>
+</td>
+</tr>
+</table>
+
+</body>
+</html>

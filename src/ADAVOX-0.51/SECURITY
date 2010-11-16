@@ -1,0 +1,20 @@
+            SECURITY (setuid) NOTE:
+            -----------------------
+
+You can remove the setuid bit without causing adavox to
+fail -- it will continue to work without it. Some
+administrators do not like any more setuid programs
+than is absolutely necessary, with good security
+reason.
+
+The setuid root bit is used to permit adavox to
+set a reailtime priority for itself. This makes it
+less likely that "gap noises" will be heard when the
+system is busy.
+
+Note however, that adavox runs under its real userid
+as soon as the realtime priority has been established
+at program startup. This reduces the scope of the
+security risk.
+
+                  - End -

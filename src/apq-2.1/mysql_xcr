@@ -1,0 +1,20 @@
+# Extract MySQL Error Code Definitions
+
+PATH=".:$PATH"
+
+HDR1=$(mysql_incl)/errmsg.h
+HDR2=$(mysql_incl)/mysqld_error.h
+
+cat $HDR1 $HDR2 \
+	| sed -n '/^# *define *CR_[A-Za-z0-9_]* */p;/^# *define *ER_[A-Za-z0-9_]* */p' \
+	| sed 's|/\*.*\*/||g;s| *$||' \
+	| sed 's|# *define *||' \
+	| while read NAME VALUE ; do
+		echo "	{ \"$NAME\", $NAME },"
+	done
+	echo "#ifndef CR_NO_ERROR"
+	echo "	{ \"CR_NO_ERROR\", 0 },"
+	echo "#endif"
+	echo "	{ 0, 0 }"
+
+# End

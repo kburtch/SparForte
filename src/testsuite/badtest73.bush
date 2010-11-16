@@ -1,0 +1,7 @@
+# This should fail
+
+f : file_type;
+touch ./test.txt;
+open( f, in_file, "./test.txt" );
+open( f, in_file, "./test.txt" ); -- already open
+

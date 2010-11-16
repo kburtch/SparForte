@@ -1,0 +1,99 @@
+-- $Id: apq-mysql.ads-in,v 1.2 2005/02/11 02:59:42 ken Exp $
+-- Copyright (c) 2003, Warren W. Gay VE3WWG
+--
+-- Licensed under the ACL (Ada Community License)
+-- or
+-- GNU Public License 2 (GPL2)
+-- 
+--     This program is free software; you can redistribute it and/or modify
+--     it under the terms of the GNU General Public License as published by
+--     the Free Software Foundation; either version 2 of the License, or
+--     (at your option) any later version.
+-- 
+--     This program is distributed in the hope that it will be useful,
+--     but WITHOUT ANY WARRANTY; without even the implied warranty of
+--     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--     GNU General Public License for more details.
+-- 
+--     You should have received a copy of the GNU General Public License
+--     along with this program; if not, write to the Free Software
+--     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+--
+-- **********************************************************
+-- WARNING: The APQ.MySQL package is generated. Apply changes
+--          to input file apq-mysql.ads-in instead!!!!!!!!!!!
+-- **********************************************************
+
+package APQ.MySQL is
+
+%mysql_linker_options%
+
+   type Field_Type is (
+      %ENUM_FIELD_TYPE%
+   );
+   for Field_Type use (
+      %USE_FIELD_TYPE%
+   );
+   for Field_Type'Size use 32;
+
+   type Result_Type is (
+      %ENUM_RESULT_TYPE%
+   );
+   for Result_Type use (
+      %USE_RESULT_TYPE%
+   );
+   for Result_Type'Size use 32;
+
+private
+
+   type Return_Status is range -2 ** 31 .. 2 ** 31 - 1;
+   for Return_Status'Size use 32;
+
+   type MySQL_Oid_Type is mod 2 ** 64;
+   for MySQL_Oid_Type'Size use 64;
+
+   type u_long is mod 2 ** 32;
+   for u_long'size use 32;
+
+   Null_Row_ID : constant Row_ID_Type := 0;
+
+   -- MySQL Connection Option Argument Types
+
+   type Option_Argument_Type is (
+      ARG_NOT_USED,  -- No argument
+      ARG_UINT,      -- Argument is unsigned int
+      ARG_PTR_UINT,  -- Argument is pointer to unsigned int (weird), which is 0 or 1
+      ARG_CHAR_PTR   -- Argument is char pointer
+   );
+
+   type MySQL_Enum_Option is mod 2**32;
+
+   type MySQL_Option is
+      record
+         Name :      String(1..18);
+         Length :    Positive;
+         MySQL_Enum: MySQL_Enum_Option;
+         Argument :  Option_Argument_Type;
+      end record;
+
+   type MySQL_Options is array(Positive range <>) of MySQL_Option;
+
+   Options : constant MySQL_Options := (
+      %MYSQL_OPTIONS%
+   );
+
+   type MYSQL       is new System.Address;   -- Connection
+   type MYSQL_RES   is new System.Address;   -- Result
+   type MYSQL_ROW   is new System.Address;   -- Row
+   type MYSQL_FIELD is new System.Address;   -- Field
+
+   Null_Connection : constant MYSQL := MYSQL(System.Null_Address);
+   Null_Result :     constant MYSQL_RES := MYSQL_RES(System.Null_Address);
+   Null_Row :        constant MYSQL_ROW := MYSQL_ROW(System.Null_Address);
+   Null_Field :      constant MYSQL_FIELD := MYSQL_FIELD(System.Null_Address);
+
+   type MYSQL_ROW_NO is mod 2 ** %MYSQL_ROW_NO%;
+
+end APQ.MySQL;
+
+-- End $Source: /home/cvsroot/bush/src/apq-2.1/apq-mysql.ads-in,v $

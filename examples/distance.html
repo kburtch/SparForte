@@ -1,0 +1,57 @@
+<HEAD><TITLE>distance.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : distance.bush</H1></DIV><HR>
+<IMG SRC="distance.gif">
+<P>Calculate the distance between two points on the Earth's surface.</p>
+<PRE>
+
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>--- Calculate the distance between two points on the Earth's surface</EM></FONT>
+
+<b>pragma</b> annotate( "Distance" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Calculate the distance between two points on the Earth's surface" );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+<b>pragma</b> ada_95;
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> distance <b>is</b>
+
+  here_lat   : float;
+  here_long  : float;
+  there_lat  : float;
+  there_long : float;
+  distance_raw : float;
+
+  earth_radius : <b>constant</b> float := 3963.0;
+
+<b>begin</b>
+
+  put( " Starting Latitude: " );
+  here_lat := numerics.value( get_line );
+  put( "Starting Longitude: " );
+  here_long := numerics.value( get_line );
+
+  put( "   Ending Latitude: " );
+  there_lat := numerics.value( get_line );
+  put( "  Ending Longitude: " );
+  there_long := numerics.value( get_line );
+
+  new_line;
+
+  distance_raw :=
+    numerics.sin( here_lat, 360 ) * numerics.sin( there_lat, 360 ) +
+    numerics.cos( here_lat, 360 ) * numerics.cos( there_lat, 360 ) *
+    numerics.cos( there_long - here_long, 360 );
+
+  distance := earth_radius * numerics.arccos( distance_raw );
+
+  put_line( "Distance between the two places is" );
+  put( distance, "ZZZZZ.99999" );
+  put_line( " miles" );
+
+<b>end</b> distance;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+</PRE></BODY></HTML>

@@ -1,0 +1,7 @@
+# This should fail
+
+if true then
+  null;
+elsif true then
+end if; -- missing statements
+

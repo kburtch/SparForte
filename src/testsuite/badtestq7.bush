@@ -1,0 +1,6 @@
+# This should fail
+
+s : string;
+
+s := cgi.value( "good", 1; -- syntax error
+

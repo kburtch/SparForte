@@ -1,0 +1,14 @@
+# Extract MySQL Type Code Definitions
+
+PATH=".:$PATH"
+
+HDRFILE=$(mysql_incl)/mysql_com.h
+
+sed <$HDRFILE -n '/enum_field_types/,/};/p' | sed 's|enum||;s|enum_field_types||;s|[{};]||g;s|,|\
+|g;s|[ 	]*||g' | sed '/^$/d;s|=[0-9]*||g' \
+        | while read NAME ; do
+                echo "  { \"$NAME\", $NAME },"
+        done
+        echo "  { 0, 0 }"
+
+# End

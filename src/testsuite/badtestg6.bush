@@ -1,0 +1,11 @@
+# This should fail
+
+type e is ( a,b,c );
+
+d : e := a;
+
+case d is
+when 1 => null; -- type mismatch
+when others => null;
+end case;
+

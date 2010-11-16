@@ -1,0 +1,4 @@
+# This should fail
+
+s : character := calendar.seconds( calendar.clock ); -- wrong type
+

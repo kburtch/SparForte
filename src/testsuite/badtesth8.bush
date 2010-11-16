@@ -1,0 +1,8 @@
+# This should fail
+
+pragma ada_95;
+
+i : integer := 0;
+put_line( 1 );
+i := % + 1; -- not allowed
+

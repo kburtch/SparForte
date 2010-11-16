@@ -1,0 +1,7 @@
+# This should fail
+
+trace true;
+i : integer;
+while i > 0 loop
+end while; -- no statements
+

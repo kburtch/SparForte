@@ -1,0 +1,1905 @@
+#!/bin/bush
+trace true;
+
+-- This is a comment
+
+-- THIS IS A BASIC SYNTAX TEST FOR BUSH
+-- IT SHOULD RUN THIS WITHOUT STOPPING WITH AN ERROR
+-- Run this script with the parameters a, b and c
+
+-- universal types
+
+un : universal_numeric;
+us : universal_string;
+ut : universal_typeless;
+
+	un1 : universal_numeric; -- tab character
+  un2 : universal_numeric; -- spaces
+-- other predefined types
+
+i   : integer;
+si  : short_integer;
+ssi : short_short_integer;
+li  : long_integer;
+lli : long_long_integer;
+f   : float;
+lfv : long_float;
+sf  : short_float;
+dur : duration;
+p   : positive;
+n   : natural;
+c   : character;
+c1  : character;
+b   : boolean;
+s   : string;
+s1  : string;
+ft  : file_type;
+st  : socket_type;
+fm  : file_mode;
+j,k : integer;
+
+-- assignment during declaration (syntax only)
+
+i2  : integer := 1;
+s2  : constant string := "test";
+
+-- new types, enumerateds and subtypes
+
+subtype sub_int is integer;
+type new_int is new integer;
+type new_enum is (enum0);
+type new_enum2 is (enum1, enum2, enum3);
+
+-- assignment and expressions
+
+pragma assert( 1=1 );
+i := 0;
+pragma assert( i=0 );
+i := 1000000;
+pragma assert( i=1000000 );
+i := 1_000_000;
+pragma assert( i=1000000 );
+f := 0.0;
+pragma assert( f=0.0 );
+i := +1;
+pragma assert( i=1 );
+i := -1;
+pragma assert( i=-1 );
+i := 1 + 1;
+pragma assert( i=2 );
+i := 1 * 1;
+pragma assert( i=1 );
+i := 1 ** 1;
+pragma assert( i=1 );
+i := 1 / 1;
+pragma assert( i=1 );
+i := 1 - 1;
+pragma assert( i=0 );
+i := (1 + 1 ) / 1;
+pragma assert( i=2 );
+i := ((1 + 1 )) / 1;
+pragma assert( i=2 );
+i:=(1+1)/2;
+pragma assert( i=1 );
+i := System.Max_Int;
+pragma assert( i=System.Max_Int );
+i := System.Max_Int+0;
+pragma assert( i=System.Max_Int );
+i := System.Max_Int-0;
+pragma assert( i=System.Max_Int );
+i := System.Max_Int*1;
+pragma assert( i=System.Max_Int );
+i := System.Max_Int/1;
+pragma assert( i=System.Max_Int );
+i := System.Max_Int-1+1;
+pragma assert( i=System.Max_Int );
+i := System.Min_Int;
+pragma assert( i=System.Min_Int );
+i := System.Min_Int+0;
+pragma assert( i=System.Min_Int );
+i := System.Min_Int-0;
+pragma assert( i=System.Min_Int );
+i := System.Min_Int*1;
+pragma assert( i=System.Min_Int );
+i := System.Min_Int/1;
+pragma assert( i=System.Min_Int );
+i := System.Min_Int+1-1;
+pragma assert( i=System.Min_Int );
+s := "'";
+pragma assert( s="'" );
+s := '"';
+pragma assert( s='"' );
+s := "string1" & "string2";
+pragma assert( s="string1string2" );
+s := "string1";
+c := 'a';
+s := s & c;
+pragma assert( s="string1a" );
+s := "string1";
+c := 'a';
+s := c & s;
+pragma assert( s="astring1" );
+c := 'a';
+c1:= 'b';
+s := c&c1;
+pragma assert( s="ab" );
+c := 'a';
+s := "unistring"&c;
+pragma assert( s="unistringa" );
+b := true;
+pragma assert( b=true );
+b := false;
+pragma assert( b=false );
+b := not true;
+pragma assert( b=false );
+b := not false;
+pragma assert( b=true );
+b := true and true;
+pragma assert( b=true );
+b := true and false;
+pragma assert( b=false );
+b := false and true;
+pragma assert( b=false );
+b := false and false;
+pragma assert( b=false );
+b := true and false and true;
+pragma assert( b=false );
+b := false and true and false;
+pragma assert( b=false );
+b := true and true and true;
+pragma assert( b=true );
+b := false and false and false;
+pragma assert( b=false );
+b := true or true;
+pragma assert( b=true );
+b := true or false;
+pragma assert( b=true );
+b := false or true;
+pragma assert( b=true );
+b := false or false;
+pragma assert( b=false );
+b := true or false or true;
+pragma assert( b=true );
+b := false or true or false;
+pragma assert( b=true );
+b := true or true or true;
+pragma assert( b=true );
+b := false or false or false;
+pragma assert( b=false );
+b := true xor true;
+pragma assert( b=false );
+b := true xor false;
+pragma assert( b=true );
+b := false xor true;
+pragma assert( b=true );
+b := false xor false;
+pragma assert( b=false );
+b := 1 > 1;
+pragma assert( b=false );
+b := 1 = 1;
+pragma assert( b=true );
+b := 1 < 1;
+pragma assert( b=false );
+b := 1 >= 1;
+pragma assert( b=true );
+b := 1 <= 1;
+pragma assert( b=true );
+b := 1 = 1;
+pragma assert( b=true );
+b := 1 /= 1;
+pragma assert( b=false );
+i := 0;
+i := @ + 1;
+pragma assert( i=1 );
+i := integer(1);
+pragma assert( i=1 );
+si := short_integer(1);
+pragma assert( si=1 );
+ssi := short_short_integer(1);
+pragma assert( ssi=1 );
+li := long_integer(1);
+pragma assert( li=1 );
+lli := long_long_integer(1);
+pragma assert( lli=1 );
+f := float(i);
+pragma assert( f=1 );
+sf := short_float(i);
+pragma assert( sf=1 );
+lfv := long_float(i);
+pragma assert( lfv=1 );
+dur := duration(i);
+pragma assert( dur=1 );
+p := positive(i);
+pragma assert( p=1 );
+n := natural(i);
+pragma assert( n=1 );
+c := character( 'c' );
+pragma assert( c='c' );
+c := character( "c" );
+pragma assert( c="c" );
+s := string('c');
+pragma assert( s='c' );
+s := string("hello");
+pragma assert( s="hello" );
+i := integer(1+1);
+pragma assert( i=2 );
+i := 32 or 64;
+pragma assert( i=96 );
+i := 255 and 32;
+pragma assert( i=32 );
+j := 32;
+i := j or 64;
+pragma assert( i=96 );
+j := 255;
+i := j and 32;
+pragma assert( i=32 );
+j := 64;
+i := 32 or j;
+pragma assert( i=96 );
+j := 32;
+i := 255 and j;
+pragma assert( i=32 );
+i := 5;
+pragma assert( i in 1..10 );
+pragma assert( i in i..i );
+pragma assert( i not in 10..20 );
+pragma assert( i not in 1..4 );
+inenum : new_enum2 := enum1;
+pragma assert( inenum in enum1..enum3 );
+pragma assert( inenum in inenum..inenum );
+pragma assert( inenum not in enum2..enum3 );
+inenum := enum3;
+pragma assert( inenum not in enum1..enum2 );
+
+c := ASCII.NUL;
+c := ASCII.SOH;
+c := ASCII.STX;
+c := ASCII.ETX;
+c := ASCII.EOT;
+c := ASCII.ENQ;
+c := ASCII.ACK;
+c := ASCII.BEL;
+c := ASCII.BS;
+c := ASCII.HT;
+c := ASCII.LF;
+c := ASCII.VT;
+c := ASCII.FF;
+c := ASCII.CR;
+c := ASCII.SO;
+c := ASCII.SI;
+c := ASCII.DLE;
+c := ASCII.DC1;
+c := ASCII.DC2;
+c := ASCII.DC3;
+c := ASCII.DC4;
+c := ASCII.NAK;
+c := ASCII.SYN;
+c := ASCII.ETB;
+c := ASCII.CAN;
+c := ASCII.EM;
+c := ASCII.SUB;
+c := ASCII.ESC;
+c := ASCII.FS;
+c := ASCII.GS;
+c := ASCII.RS;
+c := ASCII.US;
+c := ASCII.DEL;
+c := ASCII.Exclam;
+c := ASCII.Quotation;
+c := ASCII.Sharp;
+c := ASCII.Dollar;
+c := ASCII.Percent;
+c := ASCII.Ampersand;
+c := ASCII.Colon;
+c := ASCII.Semicolon;
+c := ASCII.Query;
+c := ASCII.At_Sign;
+c := ASCII.L_Bracket;
+c := ASCII.Back_Slash;
+c := ASCII.R_Bracket;
+c := ASCII.Circumflex;
+c := ASCII.Underline;
+c := ASCII.Grave;
+c := ASCII.L_Brace;
+c := ASCII.Bar;
+c := ASCII.R_Brace;
+c := ASCII.Tilde;
+us:= System.System_Name;
+un:= System.Min_Int;
+un:= System.Max_Int;
+un:= System.Max_Binary_Modulus;
+un:= System.Max_Nonbinary_Modulus;
+un:= System.Max_Base_Digits;
+un:= System.Max_Digits;
+un:= System.Max_Mantissa;
+un:= System.Fine_Delta;
+un:= System.Tick;
+un:= System.Storage_Unit;
+un:= System.Word_Size;
+un:= System.Memory_Size;
+us:= System.Default_Bit_Order;
+fm := in_file;
+fm := out_file;
+fm := append_file;
+
+-- numerics functions
+
+f := numerics.sqrt( 9 );
+pragma assert( f = 3 );
+p := 9;
+f := numerics.sqrt( p );
+pragma assert( f = 3 );
+n := 9;
+f := numerics.sqrt( n );
+pragma assert( f = 3 );
+f := numerics.sqrt( 9 );
+pragma assert( f = 3 );
+f := numerics.log( 1.0 );
+pragma assert( f = 0 );
+f := numerics.log( 1.0, 2.0 );
+pragma assert( f = 0 );
+f := numerics.exp( 0 );
+pragma assert( f = 1 );
+f := numerics.random;
+pragma assert( f >= 0 and f <= 1 );
+i := numerics.shift_left( 8, 1 );
+pragma assert( i = 16 );
+p := 1;
+i := numerics.shift_left( 8, p );
+pragma assert( i = 16 );
+n := 1;
+i := numerics.shift_left( 8, n );
+pragma assert( i = 16 );
+i  := numerics.rotate_left( 8, 1 );
+pragma assert( i = 16 );
+i  := numerics.shift_right( 8, 1 );
+pragma assert( i = 4 );
+i  := numerics.rotate_right( 8, 1 );
+pragma assert( i = 4 );
+i  := numerics.shift_right_arithmetic( 8, 1 );
+pragma assert( i = 4 );
+f  := numerics.sin( 0 );
+pragma assert( f = 0 );
+f  := numerics.sin( 0, 360 );
+pragma assert( f = 0 );
+f  := numerics.cos( 0 );
+pragma assert( f = 1 );
+f  := numerics.cos( 0, 360 );
+pragma assert( f = 1 );
+f  := numerics.tan( 0 );
+pragma assert( f = 0 );
+f  := numerics.tan( 0, 360 );
+pragma assert( f = 0 );
+f  := numerics.cot( 1 );
+f  := numerics.cot( 1, 360 );
+f  := numerics.arcsin( 0 );
+f  := numerics.arcsin( 0, 360 );
+f  := numerics.arccos( 0 );
+f  := numerics.arccos( 0, 360 );
+f  := numerics.arctan( 0, 1 );
+f  := numerics.arctan( 0, 1, 360 );
+f  := numerics.arccot( 0, 1 );
+f  := numerics.arccot( 0, 1, 360 );
+f  := numerics.sinh( 0 );
+pragma assert( f = 0 );
+f  := numerics.cosh( 0 );
+pragma assert( f = 1 );
+f  := numerics.tanh( 0 );
+pragma assert( f = 0 );
+f  := numerics.coth( 1 );
+f  := numerics.arcsinh( 0 );
+f  := numerics.arccosh( 1 );
+f  := numerics.arctanh( 0 );
+f  := numerics.arccoth( 24.5 );
+f  := numerics.floor( 24.5 );
+pragma assert( f = 24 );
+f  := numerics.ceiling( 24.5 );
+pragma assert( f = 25 );
+f  := numerics.rounding( 24.5 );
+pragma assert( f = 25 );
+f  := numerics.unbiased_rounding( 24.5 );
+pragma assert( f = 24 );
+f  := numerics.truncation( 24.5 );
+pragma assert( f = 24 );
+f  := numerics.remainder( 24.5, 1.0 );
+pragma assert( f = 0.5 );
+f  := numerics.copy_sign( -1.5, 1.0 );
+pragma assert( f = 1.5 );
+f  := numerics.copy_sign( -1.5, -1.0 );
+pragma assert( f = -1.5 );
+f  := numerics.exponent( -1.5 );
+pragma assert( f = 1 );
+f  := numerics.fraction( 0 );
+pragma assert( f = 0 );
+f  := numerics.leading_part( -1.5, 1 );
+pragma assert( f = -1 );
+f  := numerics.min( 1, 2 );
+pragma assert( f = 1 );
+f  := numerics.min( 2, 1 );
+pragma assert( f = 1 );
+f  := numerics.max( 1, 2 );
+pragma assert( f = 2 );
+f  := numerics.max( 2, 1 );
+pragma assert( f = 2 );
+f  := numerics.machine( 1.5 );
+pragma assert( f = 1.5 );
+f  := numerics.scaling( 1.5, 1 );
+pragma assert( f = 3 );
+f  := numerics.scaling( 1.5, 0 );
+pragma assert( f = 1.5 );
+f  := abs( 1.5 );
+pragma assert( f = 1.5 );
+f  := abs( -1.5 );
+pragma assert( f = 1.5 );
+p  := numerics.pos( 'A' );
+pragma assert( p = 65 );
+i  := numerics.value( "65" );
+pragma assert( i = 65 );
+p  := numerics.rnd( 5 );
+pragma assert( p > 0 and p < 6 );
+n  := numerics.serial;
+pragma assert( n = 0 );
+n  := numerics.serial;
+pragma assert( n = 1 );
+
+-- match and glob functions
+
+b := strings.match( "hello", "hello" );
+pragma assert( b = true );
+b := strings.match( "ht", "hello" );
+pragma assert( b = false );
+b  := strings.match( "^h", "hello" );
+pragma assert( b = true );
+b  := strings.glob( "h*", "hello" );
+pragma assert( b = true );
+b  := strings.glob( "i*", "hello" );
+pragma assert( b = false );
+
+-- strings functions
+--
+-- Use variables to verify types
+
+test : string := "test";
+n := 1;
+p := 1;
+c := strings.element( test, p );
+pragma assert( c = 't' );
+s := strings.slice( test, p, n );
+pragma assert( s = "t" );
+n := strings.index( test, "e" );
+pragma assert( n = 2 );
+n := strings.index( test, "e", direction.forward );
+pragma assert( n = 2 );
+n := strings.index( test, "s", direction.backward );
+pragma assert( n = 3 );
+n := strings.count( test, "t" );
+pragma assert( n = 2 );
+n := strings.index_non_blank( test, direction.backward );
+pragma assert( n = 4 );
+n := strings.index_non_blank( test );
+pragma assert( n = 1 );
+n := strings.index_non_blank( test, direction.forward ); -- n is 1 again
+pragma assert( n = 1 );
+s := strings.replace_slice( test, p, n, "b" );
+pragma assert( s = "best" );
+s := strings.insert( test, p, "s" );
+pragma assert( s = "stest" );
+s := strings.overwrite( test, p, "p" );
+pragma assert( s = "pest" );
+s := strings.delete( test, p, n );
+pragma assert( s = "est" );
+s := strings.trim( "  test  ", trim_end.both );
+pragma assert( s = "test" );
+s := strings.trim( "  test  ", trim_end.left );
+pragma assert( s = "test  " );
+s := strings.trim( "  test  ", trim_end.right );
+pragma assert( s = "  test" );
+s := strings.head( test, n );
+pragma assert( s = "t" );
+s := strings.head( test, 6, '*' );
+pragma assert( s = "test**" );
+s := strings.tail( test, n );
+pragma assert( s = "t" );
+s := strings.tail( test, 6, '*' );
+pragma assert( s = "**test" );
+n := strings.length( test );
+pragma assert( n = 4 );
+s := strings.image( 65 );
+pragma assert( s = " 65" );
+c := strings.val( 65 );
+pragma assert( c = 'A' );
+s := strings.field( "a/b/c", 1, '/' );
+pragma assert( s = "a" );
+s := strings.field( "a/b/c", 3, '/' );
+pragma assert( s = "c" );
+s := strings.field( " ", 2, '/' );
+pragma assert( s = "" );
+s := strings.field( "a" & ASCII.CR & "b" & ASCII.CR & "c", 3 );
+pragma assert( s = "c" );
+s := strings.csv_field( "a/" & ASCII.Quotation & "b/c" & ASCII.Quotation &
+  "/d", 1, '/' );
+pragma assert( s = "a" );
+s := strings.csv_field( "a/" & ASCII.Quotation & "b/c" & ASCII.Quotation &
+  "/d", 2, '/' );
+pragma assert( s = "b/c" );
+s := strings.csv_field( "a/" & ASCII.Quotation & "b/c" & ASCII.Quotation &
+  "/d", 3, '/' );
+pragma assert( s = "d" );
+s := strings.csv_field( "a/" & ASCII.Quotation & "b/c" & ASCII.Quotation &
+  "/d", 4, '/' );
+pragma assert( s = "" );
+s := strings.csv_field( " ", 2, '/' );
+pragma assert( s = "" );
+s := strings.lookup( "a/b", "a", '/' );
+pragma assert( s = "b" );
+s := strings.lookup( "a/b", "c", '/' );
+pragma assert( s = "" );
+s := strings.lookup( "a/b/", "a", '/' );
+pragma assert( s = "b" );
+s := strings.lookup( "a/b/", "c", '/' );
+pragma assert( s = "" );
+s := strings.lookup( "a/b/c/d", "a", '/' );
+pragma assert( s = "b" );
+s := strings.lookup( "a/b/c/d", "b", '/' );
+pragma assert( s = "" );
+s := strings.lookup( "a/b/c/d", "c", '/' );
+pragma assert( s = "d" );
+s := "a/b/c";
+strings.replace( s, 2, "j", '/' );
+pragma assert( s = "a/j/c" );
+strings.replace( s, 1, "i", '/' );
+pragma assert( s = "i/j/c" );
+strings.replace( s, 3, "k", '/' );
+pragma assert( s = "i/j/k" );
+s := "";
+strings.replace( s, 3, "k", '/' );
+pragma assert( s = "" );
+s := "a" & ASCII.CR & "b" & ASCII.CR & "c";
+strings.replace( s, 2, "j" );
+pragma assert( s = "a" & ASCII.CR & "j" & ASCII.CR & "c" );
+s := "a/b/c";
+strings.csv_replace( s, 2, "j", '/' );
+pragma assert( s = "a/j/c" );
+strings.csv_replace( s, 1, "i", '/' );
+pragma assert( s = "i/j/c" );
+strings.csv_replace( s, 3, "k", '/' );
+pragma assert( s = "i/j/k" );
+s := "";
+strings.csv_replace( s, 3, "k", '/' );
+pragma assert( s = "" );
+s := "a,b,c";
+strings.csv_replace( s, 2, "j" );
+pragma assert( s = "a,j,c" );
+s := "a/" & ASCII.Quotation & "b" & ASCII.Quotation & "/c";
+strings.csv_replace( s, 2, "j", '/' );
+pragma assert( s = "a/j/c" );
+s := "a/" & ASCII.Quotation & "b" & ASCII.Quotation & "/c";
+strings.csv_replace( s, 3, "k", '/' );
+pragma assert( s = "a/" & ASCII.Quotation & "b" & ASCII.Quotation & "/k" );
+s := "a/b/c";
+strings.csv_replace( s, 2, "j/k", '/' );
+pragma assert( s = "a/" & ASCII.Quotation & "j/k" & ASCII.Quotation & "/c" );
+s := "a/" & ASCII.Quotation & "b" & ASCII.Quotation & "/c";
+strings.csv_replace( s, 2, "j/k", '/' );
+pragma assert( s = "a/" & ASCII.Quotation & "j/k" & ASCII.Quotation & "/c" );
+s := strings.to_lower( "TeST" );
+pragma assert( s = "test" );
+s := strings.to_lower( "" );
+pragma assert( s = "" );
+s := strings.to_upper( "tEst" );
+pragma assert( s = "TEST" );
+s := strings.to_upper( "" );
+pragma assert( s = "" );
+s := strings.to_proper( "tEst" );
+pragma assert( s = "Test" );
+s := strings.to_proper( "" );
+pragma assert( s = "" );
+s := strings.to_basic( "tEst" );
+pragma assert( s = "tEst" );
+s := strings.to_basic( "" );
+pragma assert( s = "" );
+s := strings.to_escaped( "A" & ASCII.CR );
+pragma assert( s = "A[# 13]" );
+s := strings.to_escaped( "" );
+pragma assert( s = "" );
+left_split, right_split : string;
+s := "hello there";
+strings.split( s, left_split, right_split, 0 );
+pragma assert( left_split = "" );
+pragma assert( right_split = s );
+strings.split( s, left_split, right_split, 100 );
+pragma assert( left_split = s );
+pragma assert( right_split = "" );
+strings.split( s, left_split, right_split, 9 );
+pragma assert( left_split = "hello " );
+pragma assert( right_split = "there" );
+s := "hello_there";
+strings.split( s, left_split, right_split, 9 );
+pragma assert( left_split = "hello_the" );
+pragma assert( right_split = "re" );
+strings.split( s, left_split, right_split, 9 );
+b := strings.is_control( ASCII.CR );
+pragma assert( b = true );
+b := strings.is_control( "A" );
+pragma assert( b = false );
+b := strings.is_control( ASCII.CR & ASCII.CR );
+pragma assert( b = true );
+b := strings.is_control( "A" & ASCII.CR );
+pragma assert( b = false );
+b := strings.is_graphic( ASCII.CR );
+pragma assert( b = false );
+b := strings.is_graphic( "A" );
+pragma assert( b = true );
+b := strings.is_graphic( ASCII.CR & ASCII.CR );
+pragma assert( b = false );
+b := strings.is_graphic( "A" & ASCII.CR );
+pragma assert( b = false );
+b := strings.is_letter( ASCII.CR );
+pragma assert( b = false );
+b := strings.is_letter( "A" );
+pragma assert( b = true );
+b := strings.is_letter( "Aa" );
+pragma assert( b = true );
+b := strings.is_letter( "A" & ASCII.CR );
+pragma assert( b = false );
+b := strings.is_lower( ASCII.CR );
+pragma assert( b = false );
+b := strings.is_lower( "a" );
+pragma assert( b = true );
+b := strings.is_lower( "Aa" );
+pragma assert( b = false );
+b := strings.is_lower( "A" );
+pragma assert( b = false );
+b := strings.is_upper( ASCII.CR );
+pragma assert( b = false );
+b := strings.is_upper( "A" );
+pragma assert( b = true );
+b := strings.is_upper( "Aa" );
+pragma assert( b = false );
+b := strings.is_upper( "AB" );
+pragma assert( b = true );
+b := strings.is_basic( ASCII.CR );
+pragma assert( b = false );
+b := strings.is_basic( "A" );
+pragma assert( b = true );
+b := strings.is_basic( "Aa" );
+pragma assert( b = true );
+b := strings.is_basic( "A" & ASCII.CR );
+pragma assert( b = false );
+b := strings.is_digit( ASCII.CR );
+pragma assert( b = false );
+b := strings.is_digit( "A" );
+pragma assert( b = false );
+b := strings.is_digit( "1" );
+pragma assert( b = true );
+b := strings.is_digit( "12" );
+pragma assert( b = true );
+b := strings.is_hexadecimal_digit( ASCII.CR );
+pragma assert( b = false );
+b := strings.is_hexadecimal_digit( "G" );
+pragma assert( b = false );
+b := strings.is_hexadecimal_digit( "1" );
+pragma assert( b = true );
+b := strings.is_hexadecimal_digit( "1A" );
+pragma assert( b = true );
+b := strings.is_alphanumeric( ASCII.CR );
+pragma assert( b = false );
+b := strings.is_alphanumeric( "G" );
+pragma assert( b = true );
+b := strings.is_alphanumeric( "1" );
+pragma assert( b = true );
+b := strings.is_alphanumeric( "1-" );
+pragma assert( b = false );
+b := strings.is_special( ASCII.CR );
+pragma assert( b = false );
+b := strings.is_special( "G" );
+pragma assert( b = false );
+b := strings.is_special( "1" );
+pragma assert( b = false );
+b := strings.is_special( "1-" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "1976" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "xyzzy" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "xx/xx/xx" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "xx/xx/xxxx" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "00x00/00" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "00/00x00" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "00x00/0000" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "00/00x0000" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "00/0x/00" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "00/0x/0000" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "00/00/00" );
+pragma assert( b = true );
+b := strings.is_slashed_date( "000/00/00" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "00/000/00" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "000/00/0000" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "00/000/0000" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "00/00/000" );
+pragma assert( b = false );
+b := strings.is_slashed_date( "00/00/0000" );
+pragma assert( b = true );
+b := strings.is_slashed_date( "99/99/99" );
+pragma assert( b = true );
+b := strings.is_slashed_date( "99/99/9999" );
+pragma assert( b = true );
+b := strings.is_fixed( "" );
+pragma assert( b = false );
+b := strings.is_fixed( "x" );
+pragma assert( b = false );
+b := strings.is_fixed( "x.x" );
+pragma assert( b = false );
+b := strings.is_fixed( ".0" );
+pragma assert( b = false );
+b := strings.is_fixed( "0." );
+pragma assert( b = false );
+b := strings.is_fixed( "0..0" );
+pragma assert( b = false );
+b := strings.is_fixed( "0.0" );
+pragma assert( b = true );
+b := strings.is_fixed( "999.999" );
+pragma assert( b = true );
+
+s := strings.mktemp( "test" );
+pragma assert( s /= "./test" );
+
+-- files package
+
+b := files.exists( "goodtest.bush" );
+pragma assert( b = true );
+b := files.exists( "xyzzy.foobar" );
+pragma assert( b = false );
+b := files.is_absolute_path( "/tmp/" );
+pragma assert( b = true );
+b := files.is_absolute_path( "." );
+pragma assert( b = false );
+b := files.is_absolute_path( "" );
+pragma assert( b = false );
+b := files.is_regular_file( "goodtest.bush" );
+pragma assert( b = true );
+b := files.is_regular_file( "cdtest" );
+pragma assert( b = false );
+b := files.is_regular_file( "xyzzy.foobar" );
+pragma assert( b = false );
+b := files.is_directory( "goodtest.bush" );
+pragma assert( b = false );
+b := files.is_directory( "cdtest" );
+pragma assert( b = true );
+b := files.is_directory( "xyzzy.foobar" );
+pragma assert( b = false );
+b := files.is_directory( "" );
+pragma assert( b = false );
+b := files.is_readable_file( "goodtest.bush" );
+pragma assert( b = true );
+b := files.is_readable_file( "cdtest" );
+pragma assert( b = false );
+b := files.is_readable_file( "xyzzy.foobar" );
+pragma assert( b = false );
+b := files.is_readable_file( "" );
+pragma assert( b = false );
+b := files.is_writable_file( "goodtest.bush" );
+pragma assert( b = false );
+b := files.is_writable_file( "write_only.txt" );
+pragma assert( b = true );
+b := files.is_writable_file( "cdtest" );
+pragma assert( b = false );
+b := files.is_writable_file( "xyzzy.foobar" );
+pragma assert( b = false );
+b := files.is_writable_file( "" );
+pragma assert( b = false );
+b := files.is_executable_file( "goodtest.bush" );
+pragma assert( b = false );
+b := files.is_executable_file( "cdtest" );
+pragma assert( b = false );
+b := files.is_executable_file( "exec_only.txt" );
+pragma assert( b = true );
+b := files.is_executable_file( "xyzzy.foobar" );
+pragma assert( b = false );
+b := files.is_executable_file( "" );
+pragma assert( b = false );
+s := files.basename( "dir/file" );
+pragma assert( s = "file" );
+s := files.basename( "file" );
+pragma assert( s = "file" );
+s := files.basename( "" );
+pragma assert( s = "" );
+s := files.dirname( "dir/file" );
+pragma assert( s = "dir" );
+s := files.dirname( "file" );
+pragma assert( s = "." );
+s := files.dirname( "" );
+pragma assert( s = "." );
+
+-- built-in shell functions
+
+i := $?; -- status
+i := $#; -- number of arguments
+pragma assert( i = 3 );
+i := $$; -- pid
+s := $0; -- command name
+s := $1; -- first argument
+pragma assert( s = "a" );
+
+i := command_line.argument_count;
+pragma assert( i = 3 );
+s := command_line.command_name;
+s := command_line.argument( 1 );
+pragma assert( s = "a" );
+
+s1 := PWD;
+cd .;
+pragma assert( PWD = OLDPWD );
+s := PWD & "/" & "cdtest";
+cd cdtest;
+pragma assert( PWD = s );
+pragma assert( OLDPWD = s1 );
+cd -;
+pragma assert( PWD = s1 );
+pragma assert( OLDPWD = s );
+
+-- basic text_io and % (last output)
+
+put( "this " );
+pragma assert( % = "this " );
+put( standard_output, "is " );
+pragma assert( % = "is " );
+put_line( "a test" );
+pragma assert( % = "a test" );
+put_line( standard_error, "standard error" );
+new_line;
+put( 123.45, "####9.99" );
+pragma assert( % = " $123.45" );
+
+-- null statement
+
+null;
+-- null with trailing spaces after the command
+null;   
+
+-- delay statement
+
+delay 0.5;
+
+-- more basic statements
+
+history;
+history 1;
+history 999;
+history -c;
+
+-- basic pragmas (ada_95 tested below)
+
+pragma annotate( "This is a test" );
+pragma depreciated( "<This is not an error>" );
+pragma import( shell, PATH );
+pragma export( shell, PATH );
+pragma volatile( PATH );
+foo_dummy_variable_123: string := "foo_123";
+pragma unchecked_import( shell, foo_dummy_variable_123 );
+pragma assert( foo_dummy_variable_123 = "foo_123" );
+
+-- arrays
+
+anonarray : array(1..10) of integer;
+anonarray(1) := 1;
+pragma assert( anonarray(1) = 1 );
+anonarray(10) := 2;
+pragma assert( anonarray(10) = 2 );
+
+anonarray2 : array(-10..-1) of integer;
+anonarray2(-1) := 1;
+pragma assert( anonarray2(-1) = 1 );
+anonarray2(-10) := 2;
+pragma assert( anonarray2(-10) = 2 );
+
+type arrtype is array(1900..1999) of integer;
+typedarray : arrtype;
+typedarray(1900) := 3;
+pragma assert( typedarray(1900) = 3 );
+typedarray(1999) := 4;
+pragma assert( typedarray(1999) = 4 );
+
+type shortarray is array(1..1) of integer;
+sa1 : shortarray := (5);
+pragma assert( sa1(1) = 5 );
+sa2 : shortarray := sa1;
+pragma assert( sa2(1) = 5 );
+
+type nullarray is array(1..0) of integer;
+nularr : nullarray;
+
+type arrayenum is (aenum1, aenum2, aenum3 );
+type longerarray is array(aenum1..aenum3) of integer;
+la1 : longerarray := (1,2,3);
+pragma assert( la1(aenum1) = 1 );
+pragma assert( la1(aenum2) = 2 );
+pragma assert( la1(aenum3) = 3 );
+
+subtype longerarray2 is longerarray;
+la2 : longerarray2 := la1;
+
+lae : arrayenum;
+
+lae := arrays.first( la1 );
+pragma assert( lae = aenum1 );
+lae := arrays.last( la1 );
+pragma assert( lae = aenum3 );
+n := arrays.length( la1 );
+pragma assert( n = 3 );
+i := arrays.first( sa1 );
+pragma assert( i = 1 );
+i := arrays.last( sa1 );
+pragma assert( i = 1 );
+n := arrays.length( sa1 );
+pragma assert( n = 1 );
+lae := arrays.first( la2 );
+pragma assert( lae = aenum1 );
+lae := arrays.last( la2 );
+pragma assert( lae = aenum3 );
+n := arrays.length( la2 );
+pragma assert( n = 3 );
+arrays.flip( la1 );
+pragma assert( la1(aenum3) = 3 );
+pragma assert( la1(aenum2) = 2 );
+pragma assert( la1(aenum1) = 1 );
+arrays.rotate_left( la1 );
+pragma assert( la1(aenum3) = 1 );
+pragma assert( la1(aenum2) = 3 );
+pragma assert( la1(aenum1) = 2 );
+arrays.rotate_right( la1 );
+pragma assert( la1(aenum3) = 3 );
+pragma assert( la1(aenum2) = 2 );
+pragma assert( la1(aenum1) = 1 );
+arrays.shift_left( la1 );
+pragma assert( la1(aenum3) = 3 );
+pragma assert( la1(aenum2) = 3 );
+pragma assert( la1(aenum1) = 2 );
+arrays.shift_right( la1 );
+pragma assert( la1(aenum3) = 3 );
+pragma assert( la1(aenum2) = 2 );
+pragma assert( la1(aenum1) = 2 );
+arrays.shuffle( la1 );
+-- can't do much to test shuffle
+-- make sure null array doesn't crash
+arrays.flip( nularr );
+arrays.rotate_left( nularr );
+arrays.rotate_right( nularr );
+arrays.shift_left( nularr );
+arrays.shift_right( nularr );
+arrays.shuffle( nularr );
+
+-- stats
+
+la1(aenum1) := 1;
+la1(aenum2) := 2;
+la1(aenum3) := 3;
+i := stats.average( la1 );
+pragma assert( i = 2 );
+i := stats.sum( la1 );
+pragma assert( i = 6 );
+i := stats.min( la1 );
+pragma assert( i = 1 );
+i := stats.max( la1 );
+pragma assert( i = 3 );
+
+-- record
+
+type arec1 is record
+     i : integer;
+end record;
+
+type arec2 is record
+     -- i,j : integer;
+     i   : integer;
+     j   : integer;
+     k   : character;
+end record;
+
+rec1 : arec1;
+rec2 : arec2;
+rec3 : arec1 := (5);
+rec4 : arec2 := (6,7,'8');
+rec5 : arec2 := rec4;
+rec6, rec7 : arec1 := (1);
+
+rec1.i := 1;
+rec2.i := 2;
+rec2.j := 3;
+rec2.k := '4';
+pragma assert( rec1.i = 1 );
+pragma assert( rec2.i = 2 );
+pragma assert( rec2.j = 3 );
+pragma assert( rec2.k = '4' );
+pragma assert( rec3.i = 5 );
+pragma assert( rec4.i = 6 );
+pragma assert( rec4.j = 7 );
+pragma assert( rec4.k = '8' );
+pragma assert( rec5.i = 6 );
+pragma assert( rec5.j = 7 );
+pragma assert( rec5.k = '8' );
+pragma assert( rec6.i = 1 );
+pragma assert( rec7.i = 1 );
+rec6.i := 5;
+rec7.i := 6;
+pragma assert( rec6.i = 5 );
+pragma assert( rec7.i = 6 );
+
+
+-- complex
+
+complex1 : complex;
+complex1.re := 1.0;
+complex1.im := 2.0;
+pragma assert( complex1.re = 1.0 );
+pragma assert( complex1.im = 2.0 );
+complex2 : complex := (1.0,2.0);
+pragma assert( complex2.re = 1.0 );
+pragma assert( complex2.im = 2.0 );
+numerics.set_re( complex2, 3.0 );
+numerics.set_im( complex2, 4.0 );
+pragma assert( complex2.re = 3.0 );
+pragma assert( complex2.im = 4.0 );
+real_val : long_float;
+real_val := numerics.modulus( complex1 );
+real_val := numerics.argument( complex1 );
+real_val := numerics.argument( complex1,1 );
+
+-- declare block w/out declare
+
+begin
+  null;
+end;
+
+-- declare block with nested declarations
+
+i := 0;
+declare
+  type int is new integer;
+  subtype int2 is int;
+  i : int2 := 1;
+  path2 : string := PATH; -- global path
+  PATH  : string; -- overshadows global path
+  pragma import( shell, PATH );
+  pragma assert( PATH = path2 );
+begin
+  declare
+    i : integer := 2;
+  begin
+     pragma assert( i=2 );
+  end;
+  pragma assert( i=1 );
+end;
+pragma assert( i=0 );
+
+-- user-defined procedure tests
+
+i := 0;
+declare
+   procedure proc1 is
+   begin
+     null;
+   end proc1;
+
+   procedure proc2 is
+   begin
+     i := i + 1;
+   end proc2;
+   pragma assert( i = 0 ); -- no execution of proc2
+begin
+   proc2;
+   pragma assert( i = 1 ); -- execution of proc2
+
+   proc2;
+   pragma assert( i = 2 ); -- execution of proc2
+end;
+
+declare
+  -- TEMPORARILY DISABLED
+  -- procedure proc3;
+  procedure proc3 is
+  begin
+    i := i - 1;
+  end proc3;
+  pragma assert( i = 2 ); -- no execution of proc3
+begin
+  proc3;
+  pragma assert( i = 1 ); -- execution of proc2
+end;
+
+declare
+  procedure proc4 is
+    procedure proc5 is
+    begin
+      i := i + 3;
+    end proc5;
+  begin
+    proc5;
+    i := i + 5;
+  end proc4;
+  pragma assert( i = 1 ); -- no execution of procs
+begin
+  proc4;                  -- call procedures
+  pragma assert( i = 9 ); -- execution of proc4 and proc5
+end;
+
+declare
+  procedure proc6 is
+  begin
+    begin
+       i := i + 1;
+    end;
+  end proc6;
+  pragma assert( i = 9 );
+begin
+  proc6;
+  pragma assert( i = 10 ); -- execution of proc6 and nested begin block
+end;
+
+-- self-referential variables
+
+i := 1;
+declare
+   i : integer := i+2;
+   pragma assert( i=3 );
+begin
+   null;
+end;
+
+-- if statements
+
+if i = 1 then
+  null;
+end if;
+
+if i = 1 then
+   null;
+elsif i = 2 then
+   null;
+end if;
+
+if i = 1 then
+   null;
+elsif i = 2 then
+   null;
+elsif i = 3 then
+   null;
+end if;
+
+if i = 1 then
+   null;
+else
+   null;
+end if;
+
+if i = 1 then
+   null;
+elsif i = 2 then
+   null;
+else
+   null;
+end if;
+
+-- case statements
+
+i := 1;
+i2 := 0;
+case i is
+when 1 => i2 := 1;
+when others => i2 :=2;
+end case;
+pragma assert( i2 = 1 );
+
+i := 2;
+i2 := 0;
+case i is
+when 1 => i2 := 1;
+when others => i2 :=2;
+end case;
+pragma assert( i2 = 2 );
+
+s := "a";
+i2 := 0;
+case s is
+when "a" => i2 := 1;
+when others => i2 := 2;
+end case;
+pragma assert( i2 = 1 );
+
+s := "b";
+i2 := 0;
+case s is
+when "a" => i2 := 1;
+when others => i2 := 2;
+end case;
+pragma assert( i2 = 2 );
+
+type case_enum is ( caseenum1, caseenum2 );
+
+cenum : case_enum := caseenum1;
+i2 := 0;
+case cenum is
+when caseenum1 => i2 := 1;
+when others => i2 := 2;
+end case;
+pragma assert( i2 = 1 );
+
+cenum := caseenum2;
+i2 := 0;
+case cenum is
+when caseenum1 => i2 := 1;
+when others => i2 := 2;
+end case;
+pragma assert( i2 = 2 );
+
+s := "a";
+i2 := 0;
+case s is
+when "a"|"b" => i2 := 1;
+when others => i2 := 2;
+end case;
+pragma assert( i2 = 1 );
+
+s := "b";
+i2 := 0;
+case s is
+when "a"|"b" => i2 := 1;
+when others => i2 := 2;
+end case;
+pragma assert( i2 = 1 );
+
+s := "c";
+i2 := 0;
+case s is
+when "a"|"b" => i2 := 1;
+when others => i2 := 2;
+end case;
+pragma assert( i2 = 2 );
+
+-- while loop and exit statement
+
+i := 1;
+while i /= 1 loop
+  null;
+end loop;
+pragma assert( i=1 ); -- while 1
+
+i := 1;
+while i < 5 loop
+   i := @+1;
+end loop;
+pragma assert( i=5 ); -- while 2
+
+i := 1;
+while i < 5 loop
+   exit;
+end loop;
+pragma assert( i=1 ); -- while 3
+
+i := 1;
+while i < 5 loop
+   i := @+1;
+   exit when i = 3;
+end loop;
+pragma assert( i=3 ); -- while 4
+
+i := 1;
+while i < 5 loop
+   i := @+1;
+   if i = 3 then
+      exit;
+   end if;
+end loop;
+pragma assert( i=3 ); -- while 5
+
+i := 1;
+while i < 5 loop
+   if i = 3 then
+      exit;
+   end if;
+   i := @+1;
+end loop;
+pragma assert( i=3 ); -- while 6
+
+i := 1;
+while i < 5 loop i := @+1; end loop;
+pragma assert( i = 5 );
+
+-- while block skipping/exit tests
+
+i := 1;
+if false then
+   while i < 3 loop
+      i := @+1;
+   end loop;
+end if;
+pragma assert( i = 1 );
+
+i := 1;
+if true then
+   while i < 3 loop
+      i := 2;
+      exit;
+   end loop;
+   while i < 3 loop
+      i := 3;
+      exit;
+   end loop;
+end if;
+pragma assert( i = 3 );
+
+i := 1;
+if false then
+   while i < 3 loop
+      i := 2;
+      exit;
+   end loop;
+   while i < 3 loop
+      i := 3;
+      exit;
+   end loop;
+end if;
+pragma assert( i = 1 );
+
+i := 1;
+while i < 3 loop
+  i := 2;
+  exit;
+  while i < 3 loop
+    i := 3;
+    exit;
+  end loop;
+end loop;
+pragma assert( i = 2 );
+
+-- for loop and itself operand
+
+i := 99;
+un := 0;
+for i in 1..10 loop
+    un := @+1;
+end loop;
+pragma assert( i=99 ); -- first for
+pragma assert( un=10 ); -- first for
+
+i := 99;
+un := 0;
+for i in reverse 1..10 loop
+    un := @+1;
+end loop;
+pragma assert( i=99 ); -- second for
+pragma assert( un=10 ); -- second for
+
+i := 0;
+type enum_for is (enumf1, enumf2, enumf3 );
+for e in enumf1..enumf3 loop
+  i := @+1;
+end loop;
+pragma assert( i = 3 );
+
+i := 0;
+for e in reverse enumf1..enumf3 loop
+  i := @+1;
+end loop;
+pragma assert( i = 3 );
+
+un := 0;
+for i in 1..5 loop un := @+1; end loop;
+pragma assert( un = 5 );
+
+-- for block skipping tests
+
+i := 1;
+if false then
+   for j in 1..5 loop
+      i := 2;
+   end loop;
+end if;
+pragma assert( i = 1 );
+
+i := 1;
+if true then
+   for j in 1..5 loop
+      i := 2;
+      exit;
+   end loop;
+   for j in 1..5 loop
+      i := 3;
+      exit;
+   end loop;
+end if;
+pragma assert( i = 3 );
+
+i := 1;
+if false then
+   for j in 1..5 loop
+      i := 2;
+      exit;
+   end loop;
+   for j in 1..5 loop
+      i := 3;
+      exit;
+   end loop;
+end if;
+pragma assert( i = 1 );
+
+i := 1;
+for j in 1..5 loop
+  i := 2;
+  exit;
+  for j in 1..5 loop
+    i := 3;
+    exit;
+  end loop;
+end loop;
+pragma assert( i = 2 );
+
+-- loop loop
+
+i := 0;
+loop
+  i := @+1;
+  exit when i>9;
+end loop;
+pragma assert( i = 10 );
+
+i := 0;
+loop i := @+1; exit when i>9; end loop;
+pragma assert( i = 10 );
+
+i := 1;
+if false then
+   loop
+      i := 2;
+      exit;
+   end loop;
+end if;
+pragma assert( i = 1 );
+
+i := 1;
+if true then
+   loop
+      i := 2;
+      exit;
+   end loop;
+   loop
+      i := 3;
+      exit;
+   end loop;
+end if;
+pragma assert( i = 3 );
+
+i := 1;
+if false then
+   loop
+      i := 2;
+      exit;
+   end loop;
+   loop
+      i := 3;
+      exit;
+   end loop;
+end if;
+pragma assert( i = 1 );
+
+i := 1;
+loop
+  i := 2;
+  exit;
+  loop
+    i := 3;
+    exit;
+ end loop;
+end loop;
+pragma assert( i = 2 );
+
+-- O/S commands
+
+echo;
+"echo";
+echo ";";
+echo "|";
+echo \; ;
+echo \" ;
+echo \' ;
+echo \\ ;
+echo "'";
+echo '"';
+echo '\';
+echo is;
+-- ^ compressed token ('is' is a reserved word)
+-- command echo;
+touch ./__testfile;
+rm ./__testfile;
+touch "./__testfile";
+rm "./__testfile";
+touch './__testfile';
+rm './__testfile';
+touch ("./__testfile");
+rm ("./__testfile");
+sleep (1) &;
+wait;
+sleep 1 &;
+wait;
+cmd_echo : constant command := "/bin/echo";
+echo | head;
+echo | sort | head;
+echo "test" | head;
+echo ( "test" ) | head;
+
+-- character escaping tests
+
+echo h;
+echo hello;
+echo hello hello;
+echo '*';
+echo "*";
+echo *;
+echo "'";
+echo '"';
+echo "''";
+echo '""';
+echo \*;
+echo '*';
+echo '\*';
+echo \\;
+echo \\\\;
+
+-- Shell Variable Substitution Tests
+
+i := 1;
+s := `echo $i;`;
+pragma assert( s = "1" );
+i := 2;
+s := `echo "$i";`;
+pragma assert( s = "2" );
+i := 3;
+s := `echo '$i';`;
+pragma assert( s = "$i" );
+i := 4;
+s := `echo $i"h";`;
+pragma assert( s = "4h" );
+i := 5;
+s := `echo $i'j';`;
+pragma assert( s = "5j" );
+i := 6;
+s := `echo "$i"k;`;
+pragma assert( s = "6k" );
+i := 7;
+s := `echo "$i"'l';`;
+pragma assert( s = "7l" );
+i := 8;
+s := `echo "$i""m";`;
+pragma assert( s = "8m" );
+i := 9;
+s := `echo n"$i";`;
+pragma assert( s = "n9" );
+i := 0;
+s := `echo "$i$i";`;
+pragma assert( s = "00" );
+
+-- Shell Globbing Tests
+
+s := `echo \*;`;
+pragma assert( s = "*" );
+s := `echo "*";`;
+pragma assert( s = "*" );
+s := `echo '*';`;
+pragma assert( s = "*" );
+s := "*";
+s := `echo "$s";`;
+pragma assert( s = "*" );
+s := "*";
+s := `echo '$s';`;
+pragma assert( s = "$s" );
+s := "*";
+s := `echo $s;`;
+pragma assert( s /= "*" );
+
+-- Special Substitutions
+
+s := `echo $?;`; -- status
+s := `echo $#;`; -- number of arguments
+pragma assert( s = "3" );
+s := `echo $$;`; -- pid
+s := `echo $0;`; -- command name
+s := `echo $1;`; -- first argument
+pragma assert( s = "a" );
+
+-- advanced text_io
+
+create( ft, out_file, "./__testfile" );
+close( ft );
+
+open( ft, in_file, "./__testfile" );
+b := end_of_file( ft );
+pragma assert( b = true );
+close( ft );
+
+open( ft, out_file, "./__testfile" );
+put_line( ft, "a test line" );
+close( ft );
+
+open( ft, in_file, "./__testfile" );
+b := end_of_file( ft );
+pragma assert( b = false );
+s := name( ft );
+pragma assert( s = "./__testfile" );
+fm := mode( ft );
+pragma assert( fm = in_file );
+i := line( ft );
+pragma assert( i = 0 );
+skip_line( ft );
+i := line( ft );
+pragma assert( i = 2 ); -- 1 + EOF
+b := end_of_file( ft );
+pragma assert( b = true );
+close( ft );
+
+open( ft, in_file, "./__testfile" );
+b := end_of_file( ft );
+pragma assert( b = false );
+s := name( ft );
+pragma assert( s = "./__testfile" );
+fm := mode( ft );
+pragma assert( fm = in_file );
+i := line( ft );
+pragma assert( i = 0 );
+s := get_line( ft );
+pragma assert( s = "a test line" );
+i := line( ft );
+pragma assert( i = 2 ); -- 1 + EOF
+b := end_of_file( ft );
+pragma assert( b = true );
+reset( ft );
+fm := mode( ft );
+pragma assert( fm = in_file );
+get( ft, c );
+pragma assert( c = 'a' );
+b := end_of_line( ft );
+pragma assert( b = false );
+reset( ft, out_file );
+fm := mode( ft );
+pragma assert( fm = out_file );
+delete( ft );
+
+-- trace command
+
+trace false;
+trace true;
+trace;
+
+iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii : integer; -- a very long name
+-- repeat basic checks with pragma ada_95
+
+-- output redirection
+
+create( ft, out_file, "./t.t" );
+set_output( ft );
+pragma assert( mode( current_output ) = mode( ft ) );
+pragma assert( name( current_output ) = name( ft ) );
+put_line( ft, "testing" );
+close( ft );
+open( ft, append_file, "./t.t" );
+set_output( ft );
+pragma assert( mode( current_output ) = mode( ft ) );
+pragma assert( name( current_output ) = name( ft ) );
+set_output( standard_output );
+close( ft );
+pragma assert( mode( current_output ) = mode( standard_output ) );
+pragma assert( name( current_output ) = name( standard_output ) );
+set_output( standard_output );
+pragma assert( mode( current_output ) = mode( standard_output ) );
+pragma assert( name( current_output ) = name( standard_output ) );
+set_output( current_output );
+pragma assert( mode( current_output ) = mode( standard_output ) );
+pragma assert( name( current_output ) = name( standard_output ) );
+
+-- input redirection
+
+open( ft, in_file, "./t.t" );
+set_input( ft );
+pragma assert( mode( current_input ) = mode( ft ) );
+pragma assert( name( current_input ) = name( ft ) );
+s := get_line( ft );
+pragma assert( s = "testing" );
+set_input( standard_input );
+close( ft );
+pragma assert( mode( current_input ) = mode( standard_input ) );
+pragma assert( name( current_input ) = name( standard_input ) );
+set_input( standard_input );
+pragma assert( mode( current_input ) = mode( standard_input ) );
+pragma assert( name( current_input ) = name( standard_input ) );
+set_input( current_input );
+pragma assert( mode( current_input ) = mode( standard_input ) );
+pragma assert( name( current_input ) = name( standard_input ) );
+
+-- error redirection
+
+open( ft, out_file, "./t.t" );
+set_error( ft );
+pragma assert( mode( current_error ) = mode( ft ) );
+pragma assert( name( current_error ) = name( ft ) );
+set_error( standard_error );
+close( ft );
+open( ft, append_file, "./t.t" );
+set_error( ft );
+pragma assert( mode( current_error ) = mode( ft ) );
+pragma assert( name( current_error ) = name( ft ) );
+set_error( standard_error );
+delete( ft );
+pragma assert( mode( current_error ) = mode( standard_error ) );
+pragma assert( name( current_error ) = name( standard_error ) );
+set_error( standard_error );
+pragma assert( mode( current_error ) = mode( standard_error ) );
+pragma assert( name( current_error ) = name( standard_error ) );
+set_error( current_error );
+pragma assert( mode( current_error ) = mode( standard_error ) );
+pragma assert( name( current_error ) = name( standard_error ) );
+
+-- Calendar package
+
+current_time : calendar.time := calendar.clock;
+cy : calendar.year_number := calendar.year( current_time );
+pragma assert( cy > 1900 and cy < 2200 );
+cm : calendar.month_number := calendar.month( current_time );
+pragma assert( cm > 0 and cm < 13 );
+cd1: calendar.day_number := calendar.day( current_time );
+pragma assert( cd1 > 0 and cd1 < 32 );
+cs : calendar.day_duration := calendar.seconds( current_time );
+pragma assert (cs > 0 and cs <= 86400 );
+cy2: calendar.year_number;
+cm2: calendar.month_number;
+cd2: calendar.day_number;
+cs2: calendar.day_duration;
+calendar.split( current_time, cy2, cm2, cd2, cs2 );
+pragma assert( cy = cy2 );
+pragma assert( cm = cm2 );
+pragma assert( cd1 = cd2 );
+pragma assert( cs = cs2 );
+another_time : calendar.time := calendar.time_of( cy, cm, cd1, cs );
+calendar.split( another_time, cy, cm, cd1, cs );
+pragma assert( cy = cy2 );
+pragma assert( cm = cm2 );
+pragma assert( cd1 = cd2 );
+pragma assert( cs = cs2 );
+
+-- calendar arithmetic
+
+current_time := current_time - 1.0; -- calendar arithmetic
+current_time := current_time + 1.0; -- calendar arithmetic
+b := current_time = current_time;
+pragma assert( b = true );
+b := current_time > current_time;
+pragma assert( b = false );
+b := current_time >= current_time;
+pragma assert( b = true );
+b := current_time < current_time;
+pragma assert( b = false );
+b := current_time <= current_time;
+pragma assert( b = true );
+b := current_time /= current_time;
+pragma assert( b = false );
+b := current_time in current_time..current_time;
+pragma assert( b = true );
+b := current_time not in current_time..current_time;
+pragma assert( b = false );
+
+-- CGI package
+
+b := cgi.parsing_errors;
+pragma assert( b = true );
+b := cgi.input_received;
+pragma assert( b = false );
+b := cgi.is_index;
+pragma assert( b = false );
+cgim : cgi.cgi_method_type := cgi.cgi_method;
+pragma assert( cgim = cgi.unknown );
+s := cgi.value( "xyzabc_fake", 1 ); -- hopefully non-existent!
+pragma assert( s = "" );
+s := cgi.value( "xyzabc_fake", 1, false );
+pragma assert( s = "" );
+b := cgi.key_exists( "xyzabc_fake", 1 );
+pragma assert( b = false );
+n := cgi.key_count( "xyzabc_fake" );
+pragma assert( n = 0 );
+n := cgi.argument_count;
+pragma assert( n = 5 or n = 6 ); -- return value varies between 5 and 6!
+
+-- backquotes
+
+c := `echo x;`;
+pragma assert( c = 'x' );
+s := `echo x y;`;
+pragma assert( s = "x y" );
+c := `echo x | sed 's/x/y/g';`;
+pragma assert( c = 'y' );
+
+if false then
+   return;    -- should not terminate script
+end if;
+
+-- elsif should not run if the "if" is performed
+
+i := 0;
+
+function f1 return boolean is
+begin
+  i := i + 1;
+  return true;
+end f1;
+
+begin
+
+if f1 then
+   null;
+elsif f1 then
+   null;
+end if;
+pragma assert( i = 1 );
+
+i := 0;
+if not f1 then
+   null;
+elsif not f1 then
+   null;
+end if;
+pragma assert( i = 2 );
+
+-- Pragma ada_95 tests
+
+pragma ada_95;
+
+-- This is a comment
+
+ada95_s : string;
+ada95_i : integer := 0;
+
+i := (1 + 1 ) / 1;
+pragma assert( i=2 );
+
+if i = 1 then
+   null;
+elsif i = 2 then
+   null;
+else
+   null;
+end if;
+
+i := 1;
+while i < 5 loop
+   i := i+1;
+   exit when i = 3;
+end loop;
+pragma assert( i=3 ); -- ada_95 while
+
+i := 99;
+ada95_i := 0;
+for i in 1..10 loop
+    ada95_i := ada95_i + 1;
+end loop;
+pragma assert( i=99 ); -- ada_95 for
+pragma assert( ada95_i=10 );
+
+-- end of tests (put new tests above the pragma ada_95 section
+-- unless that's what you're testing!)
+
+trace( false );
+new_line;
+put_line( "CONGRATULATIONS! BUSH HAS SUCCESSFULLY RUN THIS TEST SCRIPT" );
+
+

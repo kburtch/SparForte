@@ -1,0 +1,1025 @@
+<HEAD><TITLE>draco_ii.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : draco_ii.bush </H1></DIV><HR>
+<IMG SRC="draco_ii.gif">
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- Draco II</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Originally written in AppleSoft BASIC</EM></FONT>
+<FONT COLOR=green><EM>-- by Ken O. Burtch circa 1980</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Adapted to BUSH in April 2003</EM></FONT>
+<FONT COLOR=green><EM>-- by Ken O. Burtch</EM></FONT>
+
+<b>pragma</b> ada_95;                               <FONT COLOR=green><EM>-- enforce Ada 95 rules and style</EM></FONT>
+
+<b>procedure</b> draco_ii <b>is</b>
+
+  <FONT COLOR=green><EM>-- Terminal Control</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Linux/UNIX tput returns a string to control the terminal display</EM></FONT>
+
+  tty_inverse : <b>constant</b> string := `tput( "smso" );`;  <FONT COLOR=green><EM>-- inverse print</EM></FONT>
+  tty_normal  : <b>constant</b> string := `tput( "rmso" );`;  <FONT COLOR=green><EM>-- normal print</EM></FONT>
+
+  <b>pragma</b> restriction( no_external_commands );
+  <FONT COLOR=green><EM>-- tput was only O/S command we needed--no more past this point</EM></FONT>
+
+
+  <FONT COLOR=green><EM>-- General Player Info</EM></FONT>
+
+  LOGNAME : string;                             <FONT COLOR=green><EM>-- Linux/UNIX user login name</EM></FONT>
+  <b>pragma</b> import( shell, LOGNAME );              <FONT COLOR=green><EM>-- get it from the environment</EM></FONT>
+
+  damage_to_creature : integer;                 <FONT COLOR=green><EM>-- inflicted on creature (E)</EM></FONT>
+  damage_to_player   : integer;                 <FONT COLOR=green><EM>-- inflicted on player (D)</EM></FONT>
+
+  <b>type</b> a_status <b>is</b> (no_status, alive, dead);
+  status : a_status := alive;                   <FONT COLOR=green><EM>-- player's current status</EM></FONT>
+
+  score : integer := 0;                         <FONT COLOR=green><EM>-- the socre</EM></FONT>
+  quest_bonus : natural;                        <FONT COLOR=green><EM>-- quest bonus for level</EM></FONT>
+
+  specter_paralysis : boolean := false;         <FONT COLOR=green><EM>-- specter can paralyze player</EM></FONT>
+
+  <b>type</b> an_attribute <b>is</b> <b>new</b> float;               <FONT COLOR=green><EM>-- attributes are a unique type</EM></FONT>
+
+  dex : an_attribute;                           <FONT COLOR=green><EM>-- player dexterity</EM></FONT>
+  str : an_attribute;                           <FONT COLOR=green><EM>-- player strength</EM></FONT>
+
+  hit_points     : integer;                     <FONT COLOR=green><EM>-- hit points</EM></FONT>
+  level_distance : integer;                     <FONT COLOR=green><EM>-- total level distance</EM></FONT>
+  distance       : integer;                     <FONT COLOR=green><EM>-- distance left (DT)</EM></FONT>
+  water          : float;                       <FONT COLOR=green><EM>-- water left (W)</EM></FONT>
+
+  <FONT COLOR=green><EM>-- Player Weapon</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- There are 4 weapons: the cursed club, the bow (dexterity), the mace</EM></FONT>
+  <FONT COLOR=green><EM>-- (dexterity+strength) and the sword (strength).</EM></FONT>
+
+  <b>type</b> a_weapon <b>is</b> (no_weapon, club, bow, mace, sword);
+
+  weapon             : a_weapon;                <FONT COLOR=green><EM>-- player weapon</EM></FONT>
+  weapon_name        : string;                  <FONT COLOR=green><EM>-- name as text</EM></FONT>
+  weapon_damage      : float;                   <FONT COLOR=green><EM>-- damage (attribute adjusted)</EM></FONT>
+
+
+  <FONT COLOR=green><EM>-- Creatures</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- There are 6 creatures: a giant, a wolf, a serpent, a druid, a dragon and</EM></FONT>
+  <FONT COLOR=green><EM>-- a specter.</EM></FONT>
+
+  <b>type</b> a_creature <b>is</b> (no_creature, dork, wolf, serpent, druid, draco, specter );
+
+  creature             : a_creature; <FONT COLOR=green><EM>-- current creature (C)</EM></FONT>
+  creature_here        : boolean;    <FONT COLOR=green><EM>-- true if creature present (C1)</EM></FONT>
+  creature_hp          : integer;    <FONT COLOR=green><EM>-- creature hit points (CP)</EM></FONT>
+  creature_max         : integer;    <FONT COLOR=green><EM>-- creature's maximum hit poins (C2)</EM></FONT>
+  creature_description : string;     <FONT COLOR=green><EM>-- description when creature here (CN)</EM></FONT>
+  creature_name        : string;     <FONT COLOR=green><EM>-- the creature name as text</EM></FONT>
+  creature_evade       : string;     <FONT COLOR=green><EM>-- message when creature evades (CV)</EM></FONT>
+  creature_attack1     : string;     <FONT COLOR=green><EM>-- message for light attack (CA(0))</EM></FONT>
+  creature_attack2     : string;     <FONT COLOR=green><EM>-- message for medium attack (CA(1))</EM></FONT>
+  creature_attack3     : string;     <FONT COLOR=green><EM>-- message for fierce attack (CA(2))</EM></FONT>
+  creature_damage1     : positive;   <FONT COLOR=green><EM>-- damage for light attack (CD(0))</EM></FONT>
+  creature_damage2     : positive;   <FONT COLOR=green><EM>-- damage for medium attack (CD(1))</EM></FONT>
+  creature_damage3     : positive;   <FONT COLOR=green><EM>-- damage for fierce attack (CD(2))</EM></FONT>
+
+  <FONT COLOR=green><EM>-- Items</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- There are 4 magic items: a lightning staff, a magic spear, a potion of</EM></FONT>
+  <FONT COLOR=green><EM>-- healing and a ring of fire resistance.</EM></FONT>
+
+  <b>type</b> an_item <b>is</b> (no_item, staff, spear, potion, ring );
+  has_item : <b>array</b>( staff..ring ) <b>of</b> boolean;
+
+  staff_charge : integer; <FONT COLOR=green><EM>-- number of staff uses left (CH)</EM></FONT>
+  spear_damage : integer; <FONT COLOR=green><EM>-- amount of damage from spear (SD)</EM></FONT>
+
+
+  <FONT COLOR=green><EM>-- Game variables</EM></FONT>
+
+  round      : natural;                 <FONT COLOR=green><EM>-- round or turn (SP)</EM></FONT>
+  level      : natural := 0;            <FONT COLOR=green><EM>-- current level (L)</EM></FONT>
+  high_name  : string := "nobody";      <FONT COLOR=green><EM>-- high score player</EM></FONT>
+  high_score : integer := 0;            <FONT COLOR=green><EM>-- high score (HS)</EM></FONT>
+  high_level : integer := 0;            <FONT COLOR=green><EM>-- high score level</EM></FONT>
+  cmd        : character;               <FONT COLOR=green><EM>-- player's last command (CM)</EM></FONT>
+
+
+  <FONT COLOR=green><EM>-- get high score: retrieve high score from file (if the file exists).</EM></FONT>
+
+  <b>procedure</b> get_high_score <b>is</b>
+    f : file_type;
+  <b>begin</b>
+    <b>if</b> files.exists( "./draco_score.txt" ) <b>then</b>
+       open( f, in_file, "./draco_score.txt" );
+       high_name  := get_line( f );
+       high_score := numerics.value( get_line( f ) );
+       high_level := numerics.value( get_line( f ) );
+       close( f );
+    <b>end</b> <b>if</b>;
+  <b>end</b> get_high_score;
+
+
+  <FONT COLOR=green><EM>-- set high score: write new high score to file.  If file doesn't exist,</EM></FONT>
+  <FONT COLOR=green><EM>-- create it.</EM></FONT>
+
+  <b>procedure</b> set_high_score <b>is</b>
+    f : file_type;
+  <b>begin</b>
+    create( f, out_file, "./draco_score.txt" );
+    put_line( f, LOGNAME );
+    put_line( f, high_score );
+    put_line( f, level );
+    close( f );
+  <b>end</b> set_high_score;
+
+
+  <FONT COLOR=green><EM>-- set attributes: generate a new set of player attributes.  Where did this</EM></FONT>
+  <FONT COLOR=green><EM>-- formula come from?  I don't remember...</EM></FONT>
+
+  <b>procedure</b> set_attributes <b>is</b>
+  <b>begin</b>
+    str := -3;
+    dex := -3;
+    <b>while</b> dex &lt; -2 <b>and</b> str &lt; -2 <b>loop</b>
+      dex := (9.5 - numerics.rnd(14)+2 ) / 2;
+      str := (9.5 - numerics.rnd(14)+2 ) / 2;
+    <b>end</b> <b>loop</b>;
+  <b>end</b> set_attributes;
+
+
+  <FONT COLOR=green><EM>-- chose weapon:  allow the player to chose a weapon at the start of the</EM></FONT>
+  <FONT COLOR=green><EM>-- game or after his weapon was replaced with the cursed club.</EM></FONT>
+
+  <b>procedure</b> choose_weapon <b>is</b>
+    ch : character;
+  <b>begin</b>
+    put_line( "Strength  =" &amp; strings.image( numerics.rounding( str*2 ) ) );
+    put_line( "Dexterity =" &amp; strings.image( numerics.rounding( dex*2 ) ) );
+    new_line;
+    put_line( "Chose a weapon:" );
+    weapon := no_weapon;
+    <b>while</b> weapon = no_weapon <b>loop</b>
+      put( "Bow, Mace or Sword? (B/M/S) *" &amp; ASCII.BS );
+      ch := inkey;
+      put_line( ch );
+      <b>case</b> ch <b>is</b>
+      <b>when</b> 'b'|'B' =&gt;
+         weapon := bow;
+         weapon_name := "bow";
+         weapon_damage := 4 + dex;
+      <b>when</b> 'm'|'M' =&gt;
+         weapon := mace;
+         weapon_name := "mace";
+         weapon_damage := 6+ (str + dex)/2;
+      <b>when</b> 's'|'S' =&gt;
+         weapon := sword;
+         weapon_name := "sword";
+         weapon_damage := 8 + str;
+      <b>when</b> <b>others</b> =&gt;
+         put_line( "Pardon?" );
+      <b>end</b> <b>case</b>;
+    <b>end</b> <b>loop</b>;
+  <b>end</b> choose_weapon;
+
+
+  <FONT COLOR=green><EM>-- new level: start a new level, chose a creature.</EM></FONT>
+
+  <b>procedure</b> new_level <b>is</b>
+  <b>begin</b>
+    level := level + 1;
+    hit_points := 20;
+    water := 20;
+    creature_here := false;
+    quest_bonus := 0;
+    
+    round := 0;
+
+    <b>case</b> level <b>is</b>
+    <b>when</b> 1 =&gt; creature := dork;
+    <b>when</b> 2 =&gt; creature := wolf;
+    <b>when</b> 3 =&gt; creature := serpent;
+    <b>when</b> 4 =&gt; creature := druid;
+    <b>when</b> 5 =&gt; creature := draco;
+    <b>when</b> <b>others</b> =&gt; creature := specter;
+    <b>end</b> <b>case</b>;
+    <b>case</b> creature <b>is</b>
+    <b>when</b> dork =&gt;
+         creature_description := "Dork the Witless stalks you.";
+         creature_name := "giant";
+         creature_evade := "It bounces harmlessly off his armor.";
+         creature_attack1 := "Dork the Witless tries to stomp you.";
+         creature_damage1 := 3;
+         creature_attack2 := "He pounds you with his mighty fists!";
+         creature_damage2 := 4;
+         creature_attack3 := "He heaves a rock at your miniscule body!!";
+         creature_damage3 := 5;
+    <b>when</b> wolf =&gt;
+         creature_description := "Something lurks in the shadows.";
+         creature_name := "wolf";
+         creature_evade := "It dodges your attack.";
+         creature_attack1 := "It lashes out with its claws.";
+         creature_damage1 := 3;
+         creature_attack2 := "The wolf snaps at your arm!";
+         creature_damage2 := 4;
+         creature_attack3 := "It leaps at your chest, eyes gleaming brightly!!";
+         creature_damage3 := 6;
+    <b>when</b> serpent =&gt;
+         creature_description := "Something lurks in the shadows.";
+         creature_name := "giant serpent";
+         creature_evade := "It dodges you attack.";
+         creature_evade := "It slithers away.";
+         creature_attack1 := "It coils around you and squeezes!";
+         creature_damage1 := 5;
+         creature_attack2 := "You trip and fall, uncoordinated oaf.";
+         creature_damage2 := 3;
+         creature_attack3 := "The serpent attacks, venom burning holes in the earth!!";
+         creature_damage3 := 7;
+    <b>when</b> druid =&gt;
+         creature_description := "An evil druid smiles.";
+         creature_name := "druid";
+         creature_evade := "The druid forms a magic barrier and laughs menacingly!";
+         creature_attack1 := "He lashes out with his dagger.";
+         creature_damage1 := 4;
+         creature_attack2 := "With a sudden gesture, a fireball hurls towards you!";
+         creature_damage2 := 5;
+         creature_attack3 := "He raises his scepter and a bolt of power erupts!!";
+         creature_damage3 := 7;
+    <b>when</b> draco =&gt;
+         creature_description := "Draco the Red circles overhead.";
+         creature_name := "dragon";
+         creature_evade := "Your weapon bounces harmlessly off its scales.";
+         creature_attack1 := "It lashes out with its claws.";
+         creature_damage1 := 4;
+         creature_attack2 := "Draco rains fireballs down upon you!";
+         creature_damage2 := 6;
+         creature_attack3 := "A river of deadly fire descends!!";
+         creature_damage3 := 9;
+    <b>when</b> <b>others</b> =&gt;
+         creature_description := "A grim specter materializes. Poof!";
+         creature_name := "specter";
+         creature_evade := "He dissolves before your eyes!";
+         creature_attack1 := "A ghostly blade lashes out.";
+         creature_damage1 := 4;
+         creature_attack2 := "YOU ARE PETRIFIED WITH HORROR!";
+         creature_damage2 := 1;
+         creature_attack3 := "A cold hand reaches out for your life!!";
+         creature_damage3 := 4;
+    <b>end</b> <b>case</b>;
+    creature_hp  := 25 + (level-1) * 9;
+    creature_max := creature_hp;
+    level_distance := 50 * integer( level );
+    distance := level_distance;
+  <b>end</b> new_level;
+
+  <FONT COLOR=green><EM>-- show status: show the player's statistics (review stats).</EM></FONT>
+
+  <b>procedure</b> show_status <b>is</b>
+  <b>begin</b>
+    put_line( "You have:" );
+    put_line( strings.image( numerics.rounding( str * 2 ) ) &amp; " points of strength" );
+    put_line( strings.image( numerics.rounding( dex * 2 ) ) &amp; " points of dexterity" );
+    put_line( " carrying a " &amp; weapon_name );
+    new_line;
+    put_line( "with" &amp; strings.image( numerics.rounding( water/2*10 ) ) &amp; "% of water in your bottle" );
+    put_line( "and" &amp; strings.image( hit_points / 2 * 10 ) &amp; "% of full health" );
+  <b>end</b> show_status;
+
+
+<FONT COLOR=green><EM>-- Main Script begins</EM></FONT>
+
+<b>begin</b>
+
+  <FONT COLOR=green><EM>-- Initialize Draco II</EM></FONT>
+
+  clear;
+  put_line( tty_inverse &amp; "Draco II" &amp; tty_normal );
+  new_line;
+  put_line( "Survive a hostile wilderness and slay monsters." );
+  put_line( "Originally written by Ken O. Burtch circa 1980" );
+  new_line;
+
+  get_high_score;
+  put( "Top Dragon Slayer:" &amp; strings.image( high_score ) );
+  put( "  level" &amp; strings.image( high_level ) );
+  put_line( "  by " &amp; high_name );
+  new_line;
+
+  set_attributes;
+  choose_weapon;
+
+  <FONT COLOR=green><EM>-- Player has no magic items</EM></FONT>
+
+  <b>for</b> i <b>in</b> staff..ring <b>loop</b>
+      has_item( i ) := false;
+  <b>end</b> <b>loop</b>;
+
+  put( "Press any key to begin *" &amp; ASCII.BS );
+  ch := inkey;
+
+  <FONT COLOR=green><EM>-- Game loop: loop for each level</EM></FONT>
+
+  <b>loop</b>
+
+  <FONT COLOR=green><EM>-- Start a new level.  Player's weapon the club?  Let 'im change it.</EM></FONT>
+
+  new_level;
+  <b>if</b> weapon = club <b>then</b>
+     new_line;
+     choose_weapon;
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- Main loop: loop for each round</EM></FONT>
+
+  <b>loop</b>
+
+     <FONT COLOR=green><EM>-- clear damage from monster and player</EM></FONT>
+
+     damage_to_player := 0;
+     damage_to_creature := 0;
+
+    <FONT COLOR=green><EM>-- check to see if the creature appears every 4 rounds</EM></FONT>
+
+    <b>if</b> creature /= no_creature <b>then</b>
+       <b>if</b> float(round)/4.0 = numerics.truncation(round/4) <b>then</b>
+          creature_here := numerics.rnd(2)=1;
+       <b>end</b> <b>if</b>;
+    <b>end</b> <b>if</b>;
+
+    <FONT COLOR=green><EM>-- display menu</EM></FONT>
+
+    clear;
+    put_line( tty_inverse &amp; "Draco II" &amp; tty_normal );
+    new_line;
+    put_line( "1) Evade            2) Strike with " &amp; weapon_name );
+    put_line( "3) Search for water 4) Run like crazy" );
+    put_line( "5) Proceed          6) Surrender          R) Review stats" );
+    <b>if</b> has_item( staff ) <b>then</b>
+       put_line( "7) Wave staff" );
+    <b>end</b> <b>if</b>;
+    <b>if</b> has_item( spear ) <b>then</b>
+       put_line( "8) Throw spear" );
+    <b>end</b> <b>if</b>;
+    <b>if</b> has_item( potion ) <b>then</b>
+       put_line( "9) Drink potion" );
+    <b>end</b> <b>if</b>;
+    <b>if</b> has_item( ring ) <b>then</b>
+       put_line( "The anti-fire ring magic is automatic." );
+    <b>end</b> <b>if</b>;
+
+    new_line;
+    put( "(Level" &amp; strings.image( level ) &amp; ")" );
+    put_line( " There are" &amp; strings.image( distance ) &amp; " miles to go." );
+    new_line;
+
+    <FONT COLOR=green><EM>-- Creature not around?  Then it slowly heals...</EM></FONT>
+
+    <b>if</b> <b>not</b> creature_here <b>then</b>
+       creature_hp := creature_hp + 1;
+       <b>if</b> creature_hp &gt; creature_max <b>then</b>
+          creature_hp := creature_max;
+       <b>end</b> <b>if</b>;
+       put_line( "There is no danger to be seen." );
+    <b>end</b> <b>if</b>;
+
+    <FONT COLOR=green><EM>-- Basic stat changes that happen every round</EM></FONT>
+
+    round := round + 1;
+    water := water - 0.5;
+    hit_points := hit_points + 0.2;
+
+    <FONT COLOR=green><EM>-- Basic Stats check</EM></FONT>
+
+    <b>if</b> water &gt; 0 <b>and</b> water &lt; 7 <b>then</b>
+       put_line( tty_inverse &amp; "Water's Low" &amp; tty_normal );
+    <b>end</b> <b>if</b>;
+
+    <b>if</b> hit_points &lt; 5 <b>then</b>
+       put_line( tty_inverse &amp; "You're badly wounded" &amp; tty_normal );
+    <b>elsif</b> hit_points &lt; 10 <b>then</b>
+       put_line( tty_inverse &amp; "You're in rough shape" &amp; tty_normal );
+    <b>end</b> <b>if</b>;
+
+    <b>if</b> creature_here <b>then</b>
+       put_line( creature_description );
+       <b>if</b> creature_hp &lt; 10 <b>then</b>
+          put_line( tty_inverse &amp; "Blood gushes from its wounds" &amp; tty_normal );
+       <b>end</b> <b>if</b>;
+  
+       <FONT COLOR=green><EM>-- Creature attack</EM></FONT>
+
+       <b>declare</b>
+         attack : positive := numerics.rnd( 5 );
+       <b>begin</b>
+         <b>case</b> attack <b>is</b>
+         <b>when</b> 1|2 =&gt;
+            put_line( creature_attack1 );
+            damage_to_player := integer( numerics.rnd( creature_damage1 ) );
+         <b>when</b> 3 =&gt;
+            put_line( creature_attack2 );
+            damage_to_player := integer( numerics.rnd( creature_damage2 ) );
+            <b>if</b> (creature = druid <b>or</b> creature = draco) <b>and</b> has_item( ring ) <b>then</b>
+               damage_to_player := damage_to_player/2;
+            <b>elsif</b> creature = specter <b>then</b>
+               damage_to_player := 0;
+               damage_to_creature := damage_to_creature/2;
+               hit_points := hit_points - damage_to_player;
+               creature_hp := creature_hp + damage_to_creature;
+               specter_paralysis := true;
+            <b>end</b> <b>if</b>;
+         <b>when</b> 4 =&gt;
+            put_line( creature_attack3 );
+            damage_to_player := integer( numerics.rnd( creature_damage3 ) );
+            <b>if</b> creature = draco <b>and</b> has_item( ring ) <b>then</b>
+               damage_to_player := damage_to_player/2;
+            <b>end</b> <b>if</b>;
+            <b>if</b> creature = specter <b>and</b> numerics.rnd(20) = 1 <b>then</b>
+               put( tty_inverse );
+               put( "You scream, and your lifeless soul becomes a specter!!!" );
+               put_line( tty_normal );
+            <b>elsif</b> creature = draco <b>then</b>
+               damage_to_player := damage_to_player/2;
+            <b>end</b> <b>if</b>;
+         <b>when</b> <b>others</b> =&gt;
+            <b>null</b>;
+         <b>end</b> <b>case</b>;
+       <b>end</b>;
+    <b>else</b>
+       <b>declare</b>
+          scene : positive := numerics.rnd( 100 );
+          maybe : <b>constant</b> boolean := numerics.rnd(2)=1;
+       <b>begin</b>
+          <b>if</b> scene &lt;= 5 <b>then</b> <FONT COLOR=green><EM>-- rare scenes</EM></FONT>
+             <b>case</b> scene <b>is</b>
+             <b>when</b> 1 =&gt;
+                 <b>declare</b>
+                    gypsie_distance : positive := numerics.rnd(7)+2;
+                 <b>begin</b>
+                    put( "You travel" );
+                    put( gypsie_distance );
+                    put( " miles with a band of gypsies!" );
+                    distance := distance - integer(gypsie_distance);
+                 <b>end</b>;
+             <b>when</b> 2 =&gt;
+                 put_line( "A Ty Fighter soars through the air leaving" );
+                 put_line( "a blaze of incadescent destruction." );
+                 put_line( "It promptly vanishes into hyperspace!!" );
+                 <FONT COLOR=green><EM>-- graphics effects</EM></FONT>
+                 put_line( "WOW!" );
+             <b>when</b> 3 =&gt;
+                 put_line( "You drink from a magic spring that restores you!" );
+                 water := 20;
+                 hit_points := hit_points + integer(numerics.rnd(8))+3;
+                 <b>if</b> hit_points &gt; 20 <b>then</b>
+                    hit_points := 20;
+                 <b>end</b> <b>if</b>;
+             <b>when</b> 4 =&gt;
+                 <b>declare</b>
+                    ch : character;
+                    door : integer;
+                    reward : positive;
+                    reward_bonus : natural;
+                 <b>begin</b>
+                    put_line( "From the turret of a dark castle you hear a terrified scream" );
+                    put_line( "for help!  A strong hero is required!  What will you do?" );
+                    put_line( "1) Check it out    2) Keep going" );
+                    ch := inkey;
+                    <b>if</b> ch /= "1" <b>then</b>
+                       put_line( "Fine, you gutless swine." );
+                    <b>else</b>
+                       door := integer(numerics.rnd(15))+hit_points/8+(str+dex)/2;
+                       <b>if</b> door &lt; 10 <b>then</b>
+                          new_line;
+                          put_line( "The evil lord of the castle feeds you to his pet tiger!" );
+                          status := dead;
+                          <b>exit</b>;
+                       <b>else</b>
+                          new_line;
+                          put_line( "You attack the castle, storming through the gates." );
+                          put_line( "You rescue the beautiful princess!!" );
+                          reward := numerics.rnd( 10 );
+                          new_line;
+                          put( "Her father awards you with " );
+                          <b>case</b> reward <b>is</b>
+                          <b>when</b> 1 =&gt;
+                            put_line( "a priceless ancient crown." );
+                            reward_bonus := 99;
+                          <b>when</b> 2 =&gt;
+                            put_line( "a rare gold scepter." );
+                            reward_bonus := 70;
+                          <b>when</b> 3 =&gt;
+                            put_line( "bags of brilliant perls." );
+                            reward_bonus := 50;
+                          <b>when</b> 4 =&gt;
+                            put_line( "a gorgeous furs." );
+                            reward_bonus := 40;
+                          <b>when</b> 5 =&gt;
+                            put_line( "a beautiful ruby." );
+                            reward_bonus := 30;
+                          <b>when</b> 6 =&gt;
+                            put_line( "a dazzling emerald." );
+                            reward_bonus := 25;
+                          <b>when</b> 7 =&gt;
+                            put_line( "gold coins." );
+                            reward_bonus := 20;
+                          <b>when</b> 8 =&gt;
+                            put_line( "a sliver ring." );
+                            reward_bonus := 10;
+                          <b>when</b> 9 =&gt;
+                            put_line( "a splendid lute." );
+                            reward_bonus := 5;
+                          <b>when</b> <b>others</b> =&gt;
+                            put_line( "his thanks." );
+                            reward_bonus := 0;
+                          <b>end</b> <b>case</b>;
+                          quest_bonus := quest_bonus + reward_bonus;
+                          <b>delay</b> 1.0;
+                          put( tty_inverse &amp; "BONUS: " &amp; tty_normal );
+                          put_line( reward_bonus );
+                       <b>end</b> <b>if</b>;
+                    <b>end</b> <b>if</b>;
+                 <b>end</b>;
+              <b>when</b> 5 =&gt;
+                 put_line( "Oh, no!  An evil cleric has transformed your magificent weapon" );
+                 put_line( "into a useless stick!" );
+                 weapon := club;
+                 weapon_name := "club";
+                 weapon_damage := 3;
+              <b>when</b> <b>others</b> =&gt;
+                 <b>null</b>;
+              <b>end</b> <b>case</b>;
+          <b>else</b> <FONT COLOR=green><EM>-- common scenes</EM></FONT>
+             scene := numerics.rnd( 19 );
+             <b>case</b> scene <b>is</b>
+             <b>when</b> 1 =&gt;
+                put_line( "Oops!  Fell into a hidden pit." );
+                hit_points := hit_points - integer(numerics.rnd(3));
+             <b>when</b> 2 =&gt;
+                put_line( "You enter an enchanted forest." );
+                <b>if</b> has_item( spear ) <b>then</b>
+                   spear_damage := spear_damage/2;
+                   put_line( "*** Your spear seems weaker." );
+                <b>end</b> <b>if</b>;
+                <b>if</b> has_item( staff ) <b>then</b>
+                   staff_charge := integer(numerics.rnd(5)-numerics.rnd(positive(staff_charge)));
+                   put_line( "*** Your staff glows faintly." );
+                <b>end</b> <b>if</b>;
+             <b>when</b> 3 =&gt;
+                <b>if</b> has_item( potion ) <b>and</b> maybe <b>then</b>
+                   put_line( "You fall, and your vial shatters!" );
+                   has_item( potion ) := false;
+                <b>end</b> <b>if</b>;
+              <b>when</b> 4 =&gt;
+                put_line( "You spend the night at an inn." );
+                water := water + 3;
+                hit_points := hit_points + 1;
+                <b>if</b> score &gt; 0 <b>then</b>
+                   score := score - 1;
+                <b>end</b> <b>if</b>;
+              <b>when</b> 5 =&gt;
+                <b>if</b> <b>not</b> has_item( staff ) <b>and</b> maybe <b>then</b>
+                   put_line( "An ancient staff lies in the dust." );
+                   has_item( staff ) := true;
+                   staff_charge := integer(numerics.rnd( 4 )) + 1;
+                <b>end</b> <b>if</b>;
+              <b>when</b> 6 =&gt;
+                put_line( "You become lost in the wilderness." );
+                distance := distance + integer(numerics.rnd( 7 )) - 4;
+              <b>when</b> 7 =&gt;
+                <b>if</b> <b>not</b> has_item( potion ) <b>and</b> maybe <b>then</b>
+                  put_line( "An unopened vial lies on the ground." );
+                  has_item( potion ) := true;
+                <b>end</b> <b>if</b>;
+              <b>when</b> 8 =&gt;
+                put_line( "This is an ashen wasteland left by Draco." );
+              <b>when</b> 9 =&gt;
+                <b>if</b> <b>not</b> has_item( spear ) <b>and</b> maybe <b>then</b>
+                   put_line( "A dwarvish warrior gives you his spear to aid you on your quest." );
+                   has_item( spear ) := true;
+                   spear_damage := 10;
+                <b>end</b> <b>if</b>;
+              <b>when</b> 10 =&gt;
+                put_line( "You traverse a burning desert!" );
+                water := water - float(numerics.rnd( 3 ));
+              <b>when</b> 11 =&gt;
+                <b>if</b> <b>not</b> has_item( ring ) <b>and</b> maybe <b>then</b>
+                   put_line( "A golden ring lies on the earth." );
+                   has_item( ring ) := true;
+                <b>end</b> <b>if</b>;
+              <b>when</b> 12 =&gt;
+                <b>if</b> cmd = '3' <b>then</b>
+                   water := water + 3;
+                <b>end</b> <b>if</b>;
+                put_line( "You swim a peaceful river." );
+              <b>when</b> 13 =&gt;
+                <b>declare</b>
+                   stolen_points : <b>constant</b> positive := numerics.rnd(30);
+                <b>begin</b>
+                   put_line( "A band of thieves attacked in the night." );
+                   <b>if</b> score &lt;= 0 <b>then</b>
+                      put_line( "But you have no treasure to steal." );
+                   <b>else</b>
+                      put( "They take" &amp; tty_inverse );
+                      put( stolen_points );
+                      put_line( tty_normal &amp; " points of treasure!" );
+                      score := score - integer( stolen_points );
+                   <b>end</b> <b>if</b>;
+                 <b>end</b>;
+              <b>when</b> 14 =&gt;
+                <b>declare</b>
+                   bad_luck : positive := numerics.rnd( 4 );
+                <b>begin</b>
+                   <b>if</b> has_item( ring ) <b>then</b>
+                      <b>case</b> bad_luck <b>is</b>
+                      <b>when</b> 1 =&gt;
+                         put_line( "Your ring is lost while swimming a river." );
+                         has_item( ring ) := false;
+                      <b>when</b> 2 =&gt;
+                         put_line( "Your ring vanishes without a trace." );
+                         has_item( ring ) := false;
+                      <b>when</b> <b>others</b> =&gt;
+                         put_line( "You catch a pickpocket trying to steal your ring." );
+                      <b>end</b> <b>case</b>;
+                   <b>end</b> <b>if</b>;
+                <b>end</b>;
+               <b>when</b> 15 =&gt;
+                  put_line( "You follow a trail through the mountains." );
+                  distance := distance - 3;
+               <b>when</b> 16 =&gt;
+                  <b>if</b> cmd = '3' <b>and</b> maybe <b>then</b>
+                     put_line( "The spring from which you drink is poison." );
+                     status := dead;
+                  <b>else</b>
+                     put_line( "You avoid a foul-smelling pond." );
+                  <b>end</b> <b>if</b>;
+               <b>when</b> 17 =&gt;
+                  put_line( "You rest beneath a golden-leaved tree." );
+                  hit_points := hit_points + 0.5;
+               <b>when</b> 18 =&gt;
+                  <b>declare</b>
+                     strange_luck : positive := numerics.rnd( 7 );
+                     gold : <b>constant</b> positive := numerics.rnd( 60 )+20;
+                  <b>begin</b>
+                     <b>if</b> maybe <b>then</b>
+                        put_line( "You meet an old hermit" );
+                        <b>case</b> strange_luck <b>is</b>
+                        <b>when</b> 1 =&gt;
+                           put_line( "who gives you water!" );
+                           water := water + float(numerics.rnd(4))+5;
+                        <b>when</b> 2 =&gt;
+                           <b>if</b> creature /= no_creature <b>then</b>
+                              put_line( "who informs your pursuer of your presence." );
+                              creature_here := true;
+                           <b>else</b>
+                              put_line( "who threatens and mumbles." );
+                           <b>end</b> <b>if</b>;
+                        <b>when</b> 3 =&gt;
+                           <b>if</b> hit_points &lt; 15 <b>then</b>
+                              put_line( "who helps treat your wounds." );
+                              hit_points := hit_points + integer(numerics.rnd(4))+5;
+                              <b>if</b> hit_points &gt; 20 <b>then</b>
+                                 hit_points := 20;
+                              <b>end</b> <b>if</b>;
+                           <b>else</b>
+                              put_line( "who throws rocks at you." );
+                              hit_points := hit_points - 1;
+                           <b>end</b> <b>if</b>;
+                        <b>when</b> 4 =&gt;
+                           put_line( "who gives you directions." );
+                           distance := distance - integer(numerics.rnd(3))+3;
+                        <b>when</b> 5 =&gt;
+                           put( "who gives you" &amp; tty_inverse );
+                           put( gold );
+                           put( tty_normal &amp; " gold pieces!" );
+                        <b>when</b> 6 =&gt;
+                           put( "who tells you long-winded stories that go no where." );
+                        <b>when</b> <b>others</b> =&gt;
+                           put( "who tells you he was once a handsome frog" );
+                           put( " before some princess kissed him." );
+                        <b>end</b> <b>case</b>;
+                     <b>end</b> <b>if</b>;
+                  <b>end</b>;
+               <b>when</b> 19 =&gt;
+                  put_line( "You meet a wandering band of elves." );
+               <b>when</b> <b>others</b> =&gt;
+                  put_line( "internal error: missing scene case" );
+               <b>end</b> <b>case</b>;
+            <b>end</b> <b>if</b>;
+          <b>end</b>;
+       <b>end</b> <b>if</b>;
+
+       <FONT COLOR=green><EM>-- pre status check: if player dead, stop now.</EM></FONT>
+
+       <b>if</b> water &lt;= 0 <b>then</b>
+          put_line( tty_inverse &amp; "Gasp!! You are out of water!" &amp; tty_normal );
+          put_line( "You die alone in the wilderness." );
+          status := dead;
+       <b>elsif</b> hit_points &lt;= 0 <b>then</b>
+          status := dead;
+       <b>end</b> <b>if</b>;
+
+       <FONT COLOR=green><EM>-- Level complete or dead?  No more to do.</EM></FONT>
+
+       <b>if</b> distance &lt;= 0 <b>or</b> status = dead <b>then</b>
+          <b>exit</b>;
+       <b>end</b> <b>if</b>;
+
+       <FONT COLOR=green><EM>-- Player Command</EM></FONT>
+
+       <b>if</b> specter_paralysis <b>then</b>
+          specter_paralysis := false;
+       <b>else</b>
+       <b>loop</b>
+         new_line;
+         put( "What will you do? *" &amp; ASCII.BS );
+         cmd := inkey;
+         put_line( cmd );
+
+         <FONT COLOR=green><EM>-- Handle player's command</EM></FONT>
+
+         <b>case</b> cmd <b>is</b>
+         <b>when</b> '1' =&gt;
+           <FONT COLOR=green><EM>-- evade</EM></FONT>
+           <b>if</b> creature_here <b>then</b>
+              <b>if</b> numerics.rnd(2) = 1 <b>then</b>
+                 put_line( "You dive behind some boulders." );
+                 damage_to_player := 0.5;
+              <b>else</b>
+                 <b>if</b> damage_to_player &gt; 0 <b>then</b>
+                    damage_to_player := integer( numerics.rnd( positive( damage_to_player ) ) );
+                 <b>end</b> <b>if</b>;
+                 damage_to_player := damage_to_player - integer(dex);
+                 <b>if</b> damage_to_player &lt; 1 <b>then</b>
+                    damage_to_player := 1;
+                 <b>end</b> <b>if</b>;
+                 <b>if</b> damage_to_player &lt; 3 <b>then</b>
+                    put_line( "You avoid the worst of his attack." );
+                 <b>else</b>
+                    put_line( "There is no escape!" );
+                 <b>end</b> <b>if</b>;
+              <b>end</b> <b>if</b>;
+              <b>exit</b>;
+           <b>else</b>
+              put_line( "Why? There is no enemy." );
+           <b>end</b> <b>if</b>;
+         <b>when</b> '2' =&gt;
+           <FONT COLOR=green><EM>-- attack</EM></FONT>
+           <b>if</b> creature_here <b>then</b>
+              <b>declare</b>
+                 creature_evades : boolean;
+              <b>begin</b>
+                 <b>if</b> weapon = bow <b>then</b>
+                    creature_evades := numerics.rnd(4)=1;
+                 <b>else</b>
+                    creature_evades := numerics.rnd(3)=1;
+                 <b>end</b> <b>if</b>;
+                 damage_to_creature := integer( numerics.rnd( positive( weapon_damage ) ) );
+                 <b>if</b> creature_evades <b>then</b>
+                    put_line( creature_evade );
+                    damage_to_creature := 0;
+                 <b>elsif</b> weapon = bow <b>then</b>
+                    put_line( "Ttwwaanngg!!" );
+                    <b>if</b> damage_to_creature &gt; 3 <b>then</b>
+                       <b>delay</b> 0.5;
+                       put_line( "Good shot!!!" );
+                    <b>end</b> <b>if</b>;
+                 <b>else</b>
+                    put_line( "Pow!!" );
+                    <b>if</b> (damage_to_creature &gt; 5 <b>and</b> weapon = mace) <b>or</b>
+                       (damage_to_creature &gt; 7 <b>and</b> weapon = sword) <b>then</b>
+                       <b>delay</b> 0.5;
+                       put_line( "Great swing!!!" );
+                    <b>elsif</b> damage_to_creature = 3 <b>and</b> weapon = club <b>then</b>
+                       <b>delay</b> 0.5;
+                       put_line( "Bonk!" );
+                    <b>end</b> <b>if</b>;
+                 <b>end</b> <b>if</b>;
+              <b>end</b>;
+              <b>exit</b>;
+           <b>else</b>
+              put_line( "Why? There is no enemy." );
+           <b>end</b> <b>if</b>;
+         <b>when</b> '3' =&gt;
+           <FONT COLOR=green><EM>-- search for water</EM></FONT>
+           <b>declare</b>
+             water_found : <b>constant</b> boolean := numerics.rnd(3)=1;
+           <b>begin</b>
+             <b>if</b> water_found <b>then</b>
+                put_line( "You find a spring and fill your waterbottle." );
+                water := 20.0;
+             <b>else</b>
+                put_line( "Nothing around." );
+                water := water - 0.5;
+             <b>end</b> <b>if</b>;
+           <b>end</b>;
+           <b>exit</b>;
+         <b>when</b> '4' =&gt;
+           <FONT COLOR=green><EM>-- run like crazy</EM></FONT>
+           water := water - 2.0;
+           damage_to_player := damage_to_player * 2 / 3;
+           hit_points := hit_points - 0.2;
+           distance := numerics.rounding( distance - integer(numerics.rnd( hit_points/3) ) - hit_points/4 );
+           put_line( "OK" );
+           <b>exit</b>;
+         <b>when</b> '5' =&gt;
+           <FONT COLOR=green><EM>-- proceed</EM></FONT>
+           distance := distance - integer( numerics.rnd( 7 ) );
+           water := water - 0.5;
+           put_line( "OK" );
+           <b>exit</b>;
+         <b>when</b> '6' =&gt;
+           <FONT COLOR=green><EM>-- surrender</EM></FONT>
+           put_line( "You surrender." );
+           status := dead;
+           <b>exit</b>;
+         <b>when</b> '7' =&gt;
+           <FONT COLOR=green><EM>-- magic staff</EM></FONT>
+           <b>if</b> creature_here <b>then</b>
+              <b>if</b> has_item( staff ) <b>then</b>
+                 staff_charge := staff_charge - 1;
+                 <b>if</b> staff_charge &lt; 0 <b>then</b>
+                    staff_charge := 0;
+                    put_line( "Nothing happens!" );
+                 <b>elsif</b> creature = dork <b>then</b>
+                    put_line( "Your blast tickles Dork into fits of uncontrolled laughter." );
+                 <b>else</b>
+                    put_line( "A bolt of lightning strikes the enemy!" );
+                    damage_to_creature := integer( numerics.rnd(4) )+3;
+                    <b>if</b> creature = specter <b>then</b>
+                       damage_to_creature := damage_to_creature * 4;
+                       put_line( "The specter howls with rage!" );
+                    <b>end</b> <b>if</b>;
+                 <b>end</b> <b>if</b>;
+                 <b>exit</b>;
+              <b>else</b>
+                 put_line( "Wave what?" );
+              <b>end</b> <b>if</b>;
+           <b>else</b>
+              put_line( "Why? There is no enemy." );
+           <b>end</b> <b>if</b>;
+         <b>when</b> '8' =&gt;
+           <FONT COLOR=green><EM>-- magic spear</EM></FONT>
+           <b>if</b> creature_here <b>then</b>
+              <b>if</b> has_item( spear ) <b>then</b>
+                 has_item( spear ) := false;
+                 <b>if</b> creature = serpent <b>then</b>
+                    put_line( "The spear bounces harmlessly against its scales." );
+                 <b>else</b>
+                    put_line( "With a groan, you heave the javelin and it pierces its chest!" );
+                    damage_to_creature := integer(numerics.rnd( 4 )) + spear_damage;
+                    <b>if</b> creature = draco <b>then</b>
+                       damage_to_creature := damage_to_creature * 4;
+                       put_line( "The dragon screams in pain!" );
+                    <b>end</b> <b>if</b>;
+                 <b>end</b> <b>if</b>;
+                 <b>exit</b>;
+              <b>else</b>
+                 put_line( "Throw what?" );
+              <b>end</b> <b>if</b>;
+           <b>else</b>
+              put_line( "Why? There is no enemy." );
+           <b>end</b> <b>if</b>;
+         <b>when</b> '9' =&gt;
+           <FONT COLOR=green><EM>-- magic potion</EM></FONT>
+           <b>if</b> has_item( potion ) <b>then</b>
+              has_item( potion ) := false;
+              <b>if</b> level &gt; 2 <b>and</b> hit_points &lt; 5 <b>then</b>
+                 put_line( "As if you really had any other option..." );
+                 <b>delay</b> 2.0;
+              <b>elsif</b> level &gt; 2 <b>and</b> hit_points &gt; 15 <b>then</b>
+                 put_line( "What a waste..." );
+                 <b>delay</b> 2.0;
+              <b>end</b> <b>if</b>;
+              put_line( "Gulping down the potion, your wounds are magically healed." );
+              hit_points := 20;
+              <b>exit</b>;
+           <b>else</b>
+              put_line( "Drink what?" );
+           <b>end</b> <b>if</b>;
+         <b>when</b> 'r'|'R' =&gt;
+            <FONT COLOR=green><EM>-- review stats</EM></FONT>
+            show_status;
+         <b>when</b> <b>others</b> =&gt;
+            put_line( "Pardon?" );
+         <b>end</b> <b>case</b>;
+       <b>end</b> <b>loop</b>;
+       <b>end</b> <b>if</b>; <FONT COLOR=green><EM>-- paralysis</EM></FONT>
+
+       <FONT COLOR=green><EM>-- post command tests</EM></FONT>
+
+       hit_points := hit_points - damage_to_player;
+       <b>if</b> hit_points &lt;= 0 <b>then</b>
+          status := dead;
+       <b>end</b> <b>if</b>;
+       <b>if</b> distance &lt;= 0 <b>or</b> status = dead <b>then</b>
+          <b>exit</b>;
+       <b>end</b> <b>if</b>;
+
+       <FONT COLOR=green><EM>-- apply battle damage</EM></FONT>
+
+       <b>if</b> creature /= no_creature <b>then</b>
+          creature_hp := creature_hp - damage_to_creature;
+          <b>if</b> creature_hp &lt;= 0 <b>then</b>
+             <b>declare</b>
+                ch : character;
+                bonus_points : natural := level * 20;
+             <b>begin</b>
+                new_line;
+                put_line( "You have defeated the " &amp; creature_name &amp; "." );
+                <b>delay</b> 1.0;
+                put( tty_inverse &amp; "BONUS: " &amp; tty_normal );
+                put_line( bonus_points );
+                quest_bonus := quest_bonus + bonus_points;
+                creature := no_creature;
+                creature_here := false;
+                put( "Press any key *" &amp; ASCII.BS );
+                ch := inkey;
+             <b>end</b>;
+          <b>else</b>
+             <b>delay</b> 2.0;
+          <b>end</b> <b>if</b>;
+       <b>else</b>
+          <b>delay</b> 2.0;
+       <b>end</b> <b>if</b>;
+
+  <b>end</b> <b>loop</b>; <FONT COLOR=green><EM>-- main (round) loop</EM></FONT>
+
+  <FONT COLOR=green><EM>-- Level Complete</EM></FONT>
+
+  <b>if</b> status = alive <b>then</b>
+     <b>declare</b>
+        item_bonus  : natural := 0;
+        level_bonus : natural := 0;
+     <b>begin</b>
+        clear;
+        put_line( tty_inverse &amp; "Draco II" &amp; tty_normal );
+        new_line;
+        put( "Congratulations!  You made it through level" );
+        put( level );
+        put_line( "!!" );
+        new_line;
+        <b>for</b> i <b>in</b> staff..ring <b>loop</b>
+            <b>if</b> has_item( i ) <b>then</b>
+               item_bonus := item_bonus + 10;
+            <b>end</b> <b>if</b>;
+        <b>end</b> <b>loop</b>;
+        put( "Score:       " );
+        put( score, "ZZZZZ9" );
+        new_line;
+        new_line;
+        <b>delay</b> 1.0;
+        put( "Quest bonus: " );
+        put( quest_bonus, "ZZZZZ9" );
+        new_line;
+        <b>delay</b> 0.5;
+        put( "Item bonus:  " );
+        put( item_bonus, "ZZZZZ9" );
+        new_line;
+        level_bonus := numerics.rounding( (level_distance * 10) / round + level * 10 );
+        <b>delay</b> 0.5;
+        put( "Level bonus: " );
+        put( level_bonus, "ZZZZZ9" );
+        new_line;
+        score := score + integer( quest_bonus + item_bonus + level_bonus );
+        <b>delay</b> 0.5;
+        new_line;
+        put( "Total score: " );
+        put( score, "ZZZZZ9" );
+        new_line;
+        put( "Press any key *" &amp; ASCII.BS );
+        ch := inkey;
+        put_line( ch );
+     <b>end</b>;
+  <b>elsif</b> status = dead <b>then</b>
+
+     <FONT COLOR=green><EM>-- Player blew it</EM></FONT>
+
+     new_line;
+     <b>if</b> creature = druid <b>then</b>
+        put_line( "The druid laughs as you fall gasping to the earth." );
+     <b>else</b>
+        put_line( "You made a very nice lunch for a very hungry creature." );
+     <b>end</b> <b>if</b>;
+     <b>delay</b> 1.0;
+     new_line;
+     put( "Final score: " );
+     put( score, "ZZZZZ9" );
+     new_line;
+     <b>if</b> score &gt; high_score <b>then</b>
+        put_line( tty_inverse &amp; "NEW HIGH SCORE!" &amp; tty_normal );
+        high_score := score;
+        set_high_score;
+     <b>end</b> <b>if</b>;
+     put_line( "Do come again sometime!" );
+     new_line;
+     <b>exit</b>;
+  <b>end</b> <b>if</b>;
+
+  <b>end</b> <b>loop</b>; <FONT COLOR=green><EM>-- game (level) loop</EM></FONT>
+
+<b>end</b> draco_ii;
+</PRE></BODY></HTML>

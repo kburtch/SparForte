@@ -1,0 +1,9 @@
+# This should fail
+
+y : calendar.year_number;
+m : calendar.month_number;
+d : calendar.day_number;
+s : calendar.day_duration;
+
+calendar.split( calendar.clock, y, m, d, s; -- bad syntax
+

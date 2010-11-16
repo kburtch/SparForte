@@ -1,0 +1,47 @@
+--------------------------------------------------
+       WHAT ARE THESE wc-*.ad[sb] FILES?
+--------------------------------------------------
+            Warren W. Gay VE3WWG
+
+
+The wc-*.ad[sb] files form a subset of the
+"Warren's Components" library. Rather than tie all
+packages directly to the application program, a
+number of the packages have been collected under
+the WC umbrella for more general use.
+
+  		    - * -
+These files are protected under the terms of the GPL.
+		    - * -
+
+If you find them useful, you may link your own
+applications to them. For example, the package
+WC.Streams.Wave allows your application to read a
+wave file. Package WC.Streams.DSP allows you to
+write to the /dev/dsp device using Ada streams.
+WC.Streams.Endian allows you to build an endian
+neutral stream (for most platforms at least).
+
+There exists no current documentation for these
+packages. Its in the "someday plans" pile. ;-)
+
+Suggestions, fixes, patches, and kind comments are
+are always welcome. Send these to:
+
+	ve3wwg@home.com
+
+or if I should change ISPs someday, try :
+
+	ve3wwg@yahoo.com
+
+--------------------------------------------------
+
+All wc-*.ads specifications are subject to change
+without notice, or guarantee.
+
+This software is provided AS IS. You use this
+software at your own risk. No guarantee is
+expressed nor implied.
+
+--------------------------------------------------
+

@@ -1,0 +1,4 @@
+# This should fail
+
+s : string := "a" ** "b"; -- no such operation
+

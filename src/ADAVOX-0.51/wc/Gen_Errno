@@ -1,0 +1,98 @@
+#!/bin/sh
+# $Header: /home/cvsroot/bush/src/ADAVOX-0.51/wc/Gen_Errno,v 1.2 2005/02/11 02:59:36 ken Exp $
+# Warren W. Gay
+
+set -eu
+
+ERRNO_H=${1:-/usr/include/errno.h}
+TMPF=/tmp/$$A.tmp
+TMP2=/tmp/$$B.tmp
+
+trap "rm -f $TMPF $TMP2" 2 3 15
+
+cpp -dM $ERRNO_H | sed -n '/^# *define \{1,\}E[A-Z]* *[0-9]\{1,\} *$/p' | \
+	sed 's|^# *define *||;s| *$||' | sort -n -k2,2 >$TMPF
+
+CNT=$(wc -l <$TMPF | sed 's| ||g')
+CNT=$(expr $CNT + 1)
+
+#
+#	Now merge in (if possible) the text descriptions for each error
+#
+FIRST=0
+while read ERRNO CODE ; do
+	if [ $FIRST -eq 0 ] ; then
+		echo "ENOERR|0|No Error"
+		FIRST=1
+		if [ $CODE -eq 0 ] ; then
+			continue;		# Do not process this entry
+		fi
+		CNT=$(expr $CNT + 1)
+	fi
+	TEXT=$(grep "$ERRNO" $ERRNO_H | sed -n 1p | sed 's|^.*/\*||;s|\*/.*$||;s|^ *||;s| *$||')
+	echo "$ERRNO|$CODE|$TEXT"
+done <$TMPF >$TMP2
+
+#
+#	Now generate the package sources
+#
+
+(
+	cat <<EOF
+
+   type Errno_Type is (
+EOF
+
+	awk -v FS='|' -v CNT="$CNT" 'BEGIN { X=0; LAST=0; }
+		{
+			X = X + 1;
+			if ( Errno[$2] == "" ) {
+				printf("      %15s%s   -- %s\n",$1,X<CNT?",":"",$3);
+				Errno[$2] = $1;
+			} else	{
+				printf("      -- %s (Same as %s: %s)\n",$1,Errno[$2],$3);
+			}
+		}
+END            	{	print("      The_End"); }' $TMP2
+	cat <<EOF
+   );
+
+   for Errno_Type'size use 32;
+
+   for Errno_Type use (
+EOF
+	awk -v FS='|' -v CNT=$CNT 'BEGIN {
+			X=0;
+			THE_END=0;
+		}
+		{
+			ERROR=$1;
+			CODE=$2;
+			MESSAGE=$3;
+			X = X + 1;
+			if ( CODE > THE_END )
+				THE_END = CODE;
+			if ( Errno[CODE] == "" ) {
+				Errno[CODE] = ERROR;
+				printf("      %5d%s   -- %s : %s\n",CODE,X<CNT?",":"",ERROR,MESSAGE);
+			} else	{
+				printf("      %5s       (%d, %s is same as %s : %s)\n","--",CODE,ERROR,Errno[CODE],MESSAGE);
+			}
+		}
+END            	{
+			printf("      %5d    -- The_End\n",THE_END+1);
+		}' <$TMP2
+	cat <<EOF
+   );
+
+EOF
+)
+
+trap "" 2 3 15
+if test -f "$TMPF" ; then
+   rm -f "$TMPF"
+fi
+if test -f "$TMP2" ; then
+   rm -f "$TMP2"
+fi
+

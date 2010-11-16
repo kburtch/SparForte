@@ -1,0 +1,4 @@
+# This should fail
+
+s : string := `put_line no_bracket | xyz;` -- bad syntax
+

@@ -1,0 +1,399 @@
+<HEAD><TITLE>wumpus.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : wumpus.bush </H1></DIV><HR>
+<IMG SRC="wumpus.gif"><HR>
+<PRE>
+#!/usr/local/bin/bush
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- *** HUNT THE WUMPUS ***</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Originally for the PDP-8.</EM></FONT>
+<FONT COLOR=green><EM>-- The Timeless cave-crawling classing based on GW-BASIC source</EM></FONT>
+<FONT COLOR=green><EM>-- www.ifarchive.org.  Modified for BUSH by Ken O. Burtch.</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+
+<b>pragma</b> ada_95;                       <FONT COLOR=green><EM>-- strict programming practices</EM></FONT>
+<b>pragma</b> restriction( no_external_commands ); <FONT COLOR=green><EM>-- O/S independent</EM></FONT>
+
+<b>procedure</b> wumpus <b>is</b>
+
+LOGNAME : string := "&lt;undefined&gt;";
+<b>pragma</b> unchecked_import( shell, LOGNAME );
+
+<b>type</b> player_status <b>is</b> ( alive, won, lost );
+status : player_status := alive;     <FONT COLOR=green><EM>-- playing, winner, loser (was "f")</EM></FONT>
+
+<b>type</b> tunnel_list <b>is</b> <b>array</b>(1..20) <b>of</b> string;
+t_delim : <b>constant</b> character := ",";
+tunnels : <b>array</b>(1..20) <b>of</b> string;    <FONT COLOR=green><EM>-- adjacent room list</EM></FONT>
+
+arrows : integer;                    <FONT COLOR=green><EM>-- number of arrows (was "a")</EM></FONT>
+i : string;                          <FONT COLOR=green><EM>-- user input</EM></FONT>
+player_room : positive;              <FONT COLOR=green><EM>-- player room (was "l")</EM></FONT>
+k : natural;
+arrow_path : <b>array</b>(1..5) <b>of</b> positive; <FONT COLOR=green><EM>-- list of rooms for arrow (was "p")</EM></FONT>
+
+<b>type</b> room_contents <b>is</b> ( player, wumpus, pit1, pit2, bats1, bats2 );
+<b>type</b> room_list <b>is</b> <b>array</b>( player..bats2 ) <b>of</b> positive;
+room : room_list;                    <FONT COLOR=green><EM>-- room contents (was "l()")</EM></FONT>
+original_room : room_list;          <FONT COLOR=green><EM>-- initial contents (was "m()")</EM></FONT>
+
+good : boolean;                      <FONT COLOR=green><EM>-- for searches</EM></FONT>
+soundfx : boolean := false;
+
+<b>begin</b>
+
+put_line( "HUNT THE WUMPUS" );
+
+<b>if</b> LOGNAME = "root" <b>then</b>
+   put( "SOUND EFFECTS (Y-N)? " );
+   i := get_line;
+   <b>if</b> i = "Y" <b>or</b> i = "y" <b>then</b>
+      soundfx := true;
+   <b>end</b> <b>if</b>;
+<b>else</b>
+   put_line( "For sound effects, run as the superuser" );
+<b>end</b> <b>if</b>;
+
+put( "INSTRUCTIONS (Y-N)? " );
+i := get_line;
+<b>if</b> i = "Y" <b>or</b> i = "y" <b>then</b>
+   put_line( "WELCOME TO 'HUNT THE WUMPUS'" );
+   put_line( "  THE WUMPUS LIVES IN A CAVE OF 20 ROOMS. EACH ROOM" );
+   put_line( "HAS 3 TUNNELS LEADING TO OTHER ROOMS. (LOOK AT A" );
+   put_line( "DODECAHEDRON TO SEE HOW THIS WORKS-IF YOU DON'T KNOW" );
+   put_line( "WHAT A DODECAHEDRON IS, ASK SOMEONE)" );
+   new_line;
+   put_line( "     HAZARDS:" );
+   put_line( " BOTTOMLESS PITS - TWO ROOMS HAVE BOTTOMLESS PITS IN THEM" );
+   put_line( "     IF YOU GO THERE, YOU FALL INTO THE PIT (&amp; LOSE!)" );
+   put_line( " SUPER BATS - TWO OTHER ROOMS HAVE SUPER BATS. IF YOU" );
+   put_line( "     GO THERE, A BAT GRABS YOU AND TAKES YOU TO SOME OTHER" );
+   put_line( "     ROOM AT RANDOM. (WHICH MAY BE TROUBLESOME)" );
+   new_line;
+   put_line( "     WUMPUS:" );
+   put_line( " THE WUMPUS IS NOT BOTHERED BY HAZARDS (HE HAS SUCKER" );
+   put_line( " FEET AND IS TOO BIG FOR A BAT TO LIFT).  USUALLY" );
+   put_line( " HE IS ASLEEP.  TWO THINGS WAKE HIM UP: YOU SHOOTING AN" );
+   put_line( " ARROW OR YOU ENTERING HIS ROOM." );
+   put_line( "     IF THE WUMPUS WAKES HE MOVES (P=.75) ONE ROOM" );
+   put_line( " OR STAYS STILL (P=.25).  AFTER THAT, IF HE IS WHERE YOU" );
+   put_line( " ARE, HE EATS YOU UP AND YOU LOSE!" );
+   new_line;
+   put_line( "HIT RETURN TO CONTINUE" );
+   i := get_line;
+   put_line( "     YOU:" );
+   put_line( "   EACH TURN YOU MAY MOVE OR SHOOT A CROOKED ARROW" );
+   put_line( "   MOVING:  YOU CAN MOVE ONE ROOM (THRU ONE TUNNEL)" );
+   put_line( "   ARROWS:  YOU HAVE 5 ARROWS.  YOU LOSE WHEN YOU RUN OUT" );
+   put_line( "   EACH ARROW CAN GO FROM 1 TO 5 ROOMS. YOU AIM BY TELLING" );
+   put_line( "   THE COMPUTER THE ROOM#S YOU WANT THE ARROW TO GO TO." );
+   put_line( "   IF THE ARROW CAN'T GO THAT WAY (IF NO TUNNEL) IT MOVES" );
+   put_line( "   AT RANDOM TO THE NEXT ROOM." );
+   put_line( "     IF THE ARROW HITS THE WUMPUS, YOU WIN." );
+   put_line( "     IF THE ARROW HITS YOU, YOU LOSE." );
+   put_line( "HIT RETURN TO CONTINUE" );
+   i := get_line;
+   put_line( "    WARNINGS:" );
+   put_line( "     WHEN YOU ARE ONE ROOM AWAY FROM A WUMPUS OR HAZARD," );
+   put_line( "     THE COMPUTER SAYS:" );
+   put_line( " WUMPUS:  'I SMELL A WUMPUS'" );
+   put_line( " BAT   :  'BATS NEARBY'" );
+   put_line( " PIT   :  'I FEEL A DRAFT'" );
+<b>end</b> <b>if</b>;
+
+<FONT COLOR=green><EM>-- *** SET UP CAVE (DODECAHEDRAL NODE LIST) ***</EM></FONT>
+<FONT COLOR=green><EM>-- dim tunnels(20,3) but BUSH has no true 2-d arrays.  So we'll fake-it using</EM></FONT>
+<FONT COLOR=green><EM>-- 1-D arrays and text fields</EM></FONT>
+
+tunnels(1) := "2,5,8";
+tunnels(2) := "1,3,10";
+tunnels(3) := "2,4,12";
+tunnels(4) := "3,5,14";
+tunnels(5) := "1,4,6";
+tunnels(6) := "5,7,15";
+tunnels(7) := "6,8,17";
+tunnels(8) := "1,7,9";
+tunnels(9) := "8,10,18";
+tunnels(10) := "2,9,11";
+tunnels(11) := "10,12,19";
+tunnels(12) := "3,11,13";
+tunnels(13) := "12,14,20";
+tunnels(14) := "4,13,15";
+tunnels(15) := "6,14,16";
+tunnels(16) := "15,17,20";
+tunnels(17) := "7,16,18";
+tunnels(18) := "9,17,19";
+tunnels(19) := "11,18,20";
+tunnels(20) := "13,16,19";
+
+<FONT COLOR=green><EM>-- *** LOCATE L ARRAY ITEMS ***</EM></FONT>
+<FONT COLOR=green><EM>-- *** 1-YOU, 2-WUMPUS, 3&amp;4-PITS, 5&amp;6-BATS ***</EM></FONT>
+
+<b>loop</b>
+   good := true;
+   <b>for</b> j <b>in</b> player..bats2 <b>loop</b>
+       room(j) := numerics.rnd(20);
+       original_room(j) := room(j);
+   <b>end</b> <b>loop</b>;
+
+   <FONT COLOR=green><EM>-- *** CHECK FOR CROSSOVERS (IE la(1)=la(2), ETC) ***</EM></FONT>
+
+   <b>for</b> j <b>in</b> player..bats2 <b>loop</b>
+       <b>for</b> k <b>in</b> player..bats2 <b>loop</b>
+           <b>if</b> j /= k <b>then</b>
+              <b>if</b> room(j) = room(k) <b>then</b>
+                 good := false;
+              <b>end</b> <b>if</b>;
+           <b>end</b> <b>if</b>;
+       <b>end</b> <b>loop</b>;
+   <b>end</b> <b>loop</b>;
+   <b>exit</b> <b>when</b> good;
+<b>end</b> <b>loop</b>;
+
+<FONT COLOR=green><EM>-- *** SET NO. OF ARROWS ***</EM></FONT>
+
+arrows := 5;
+player_room := room(player);
+
+<FONT COLOR=green><EM>-- *** RUN THE GAME ***</EM></FONT>
+
+<FONT COLOR=green><EM>-- *** PRINT LOCATION &amp; HAZARD WARNINGS ***</EM></FONT>
+
+<b>loop</b>
+
+  new_line;
+  put_line( "YOU ARE IN ROOM " &amp; strings.image( room(player) ) );
+  good := false; <FONT COLOR=green><EM>-- don't play bats twice</EM></FONT>
+  <b>for</b> j <b>in</b> wumpus..bats2 <b>loop</b>
+      <b>for</b> k <b>in</b> 1..3 <b>loop</b>
+          <b>if</b> numerics.value( strings.field( tunnels(room(player)), k, t_delim ) ) = room(j) <b>then</b>
+             <b>case</b> j <b>is</b>
+             <b>when</b> wumpus =&gt; put_line( "I SMELL A WUMPUS!" );
+             <b>when</b> pit1 =&gt; put_line( "I FEEL A DRAFT" );
+             <b>when</b> pit2 =&gt; put_line( "I FEEL A DRAFT" );
+             <b>when</b> bats1 =&gt; put_line( "BATS NEARBY!" );
+                  <b>if</b> <b>not</b> good <b>and</b> soundfx <b>then</b>
+                     sound.play( "./bats.wav" );
+                     good := true;
+                  <b>end</b> <b>if</b>;
+             <b>when</b> bats2 =&gt; put_line( "BATS NEARBY!" );
+                  <b>if</b> <b>not</b> good <b>and</b> soundfx <b>then</b>
+                     sound.play( "./bats.wav" );
+                     good := true;
+                  <b>end</b> <b>if</b>;
+             <b>when</b> <b>others</b> =&gt; put_line( "&lt;&lt;unexpected case j value&gt;&gt;" );
+             <b>end</b> <b>case</b>;
+          <b>end</b> <b>if</b>;
+      <b>end</b> <b>loop</b>;
+  <b>end</b> <b>loop</b>;
+
+  put_line( "TUNNELS LEAD TO " &amp;
+     strings.field( tunnels(player_room), 1, t_delim) &amp; " " &amp;
+     strings.field( tunnels(player_room), 2, t_delim) &amp; " " &amp;
+     strings.field( tunnels(player_room), 3, t_delim) );
+  new_line;
+
+<FONT COLOR=green><EM>-- Main Loop</EM></FONT>
+<FONT COLOR=green><EM>--  *** MOVE OR SHOOT ***</EM></FONT>
+
+   <b>loop</b>
+      put( "SHOOT OR MOVE (S-M)" );
+      i := get_line;
+      <b>if</b> i = "S" <b>or</b> i = "s" <b>then</b>
+         i := "1";
+         <b>exit</b>;
+      <b>elsif</b> i = "M" <b>or</b> i = "m" <b>then</b>
+         i := "2";
+         <b>exit</b>;
+      <b>end</b> <b>if</b>;
+   <b>end</b> <b>loop</b>;
+
+   <b>if</b> i = "1" <b>then</b>
+
+      <FONT COLOR=green><EM>-- *** ARROW ROUTINE ***</EM></FONT>
+
+      <b>declare</b>
+         arrow_path_length : integer; <FONT COLOR=green><EM>-- was "j9"</EM></FONT>
+      <b>begin</b>
+         <FONT COLOR=green><EM>-- *** PATH OF ARROW ***</EM></FONT>
+         status := alive;
+         <b>loop</b>
+            put( "NO. OF ROOMS (1-5)" );
+            arrow_path_length := numerics.value( get_line );
+            <b>exit</b> <b>when</b> arrow_path_length &gt;= 1 <b>and</b> arrow_path_length &lt;= 5;
+         <b>end</b> <b>loop</b>;
+
+         <b>for</b> k <b>in</b> 1..arrow_path_length <b>loop</b>
+             <b>loop</b>
+                put( "ROOM #" );
+                arrow_path(k) := numerics.value( get_line );
+                <b>exit</b> <b>when</b> k &lt;= 2;
+                <b>exit</b> <b>when</b> arrow_path(k) /= arrow_path(k-2);
+                put_line( "ARROWS AREN'T THAT CROOKED - TRY ANOTHER ROOM" );
+             <b>end</b> <b>loop</b>;
+         <b>end</b> <b>loop</b>;
+
+         <FONT COLOR=green><EM>-- *** SHOOT ARROW ***</EM></FONT>
+
+         good := false;
+         player_room := room(player);
+         <b>for</b> k <b>in</b> 1..arrow_path_length <b>loop</b>
+             <b>for</b> k1 <b>in</b> 1..3 <b>loop</b>
+                 <b>if</b> numerics.value( strings.field( tunnels(player_room), k1, t_delim)) = arrow_path(k) <b>then</b>
+                    good := true;
+                    player_room := arrow_path(k);
+                    <b>if</b> soundfx <b>then</b>
+                       sound.play( "./arrow.wav" );
+                    <b>end</b> <b>if</b>;
+                    <b>if</b> player_room = room(wumpus) <b>then</b>
+                       put_line( "AHA! YOU GOT THE WUMPUS!" );
+                       status := won;
+                    <b>elsif</b> player_room = room(player) <b>then</b>
+                       put_line( "OUCH! ARROW GOT YOU!" );
+                       <b>if</b> soundfx <b>then</b>
+                          sound.play( "./scream.wav" );
+                       <b>end</b> <b>if</b>;
+                       status := lost;
+                    <b>end</b> <b>if</b>;
+                 <b>end</b> <b>if</b>;
+             <b>end</b> <b>loop</b>; <FONT COLOR=green><EM>-- k1</EM></FONT>
+
+             <FONT COLOR=green><EM>-- *** NO TUNNEL FOR ARROW ***</EM></FONT>
+             <FONT COLOR=green><EM>-- pick random direction</EM></FONT>
+
+             <b>if</b> <b>not</b> good <b>then</b>
+                player_room := numerics.value( strings.field( tunnels(player_room), numerics.rnd(3), t_delim ) );
+
+                <b>if</b> player_room = room(wumpus) <b>then</b>
+                    put_line( "AHA! YOU GOT THE WUMPUS!" );
+                    status := won;
+                 <b>elsif</b> player_room = room(player) <b>then</b>
+                    put_line( "OUCH! ARROW GOT YOU!" );
+                    <b>if</b> soundfx <b>then</b>
+                       sound.play( "./scream.wav" );
+                    <b>end</b> <b>if</b>;
+                    status := lost;
+                 <b>end</b> <b>if</b>;
+             <b>end</b> <b>if</b>;
+        <b>end</b> <b>loop</b>; <FONT COLOR=green><EM>-- k</EM></FONT>
+     <b>end</b>; <FONT COLOR=green><EM>-- shoot declarations</EM></FONT>
+
+     player_room := room(player);   <FONT COLOR=green><EM>-- player_room now player again</EM></FONT>
+     <b>if</b> status = alive <b>then</b>
+        put_line( "MISSED" );
+
+        <FONT COLOR=green><EM>-- MOVE THE WUMPUS</EM></FONT>
+
+        k := natural( numerics.rnd(4) );
+        <b>if</b> k /= 4 <b>then</b>
+           room(wumpus) := numerics.value( strings.field( tunnels(room(wumpus)), k, t_delim) );
+           <b>if</b> player_room = room(wumpus) <b>then</b>
+              put_line( "TSK TSK TSK - WUMPUS GOT YOU!" );
+              <b>if</b> soundfx <b>then</b>
+                 sound.play( "./scream.wav" );
+              <b>end</b> <b>if</b>;
+              status := lost;
+           <b>end</b> <b>if</b>;
+        <b>end</b> <b>if</b>;
+
+        arrows := arrows-1;
+        <b>if</b> arrows &lt; 1 <b>then</b>
+           put_line( "THE HUNT IS OVER.  THAT WAS YOUR LAST ARROW" );
+           status := lost;
+        <b>end</b> <b>if</b>;
+     <b>end</b> <b>if</b>;
+
+   <b>elsif</b> i = "2" <b>then</b> <FONT COLOR=green><EM>-- move player</EM></FONT>
+
+     <FONT COLOR=green><EM>--  *** MOVE ROUTINE ***</EM></FONT>
+     status := alive;
+     <b>loop</b>
+       <b>loop</b>
+         put( "WHERE TO?" );
+         player_room := numerics.value( get_line );
+         <b>exit</b> <b>when</b> player_room &gt;= 1 <b>and</b> player_room &lt;= 20;
+       <b>end</b> <b>loop</b>;
+     
+       <FONT COLOR=green><EM>-- *** CHECK IF LEGAL MOVE ***</EM></FONT>
+
+       <b>if</b> player_room = room(player) <b>then</b>
+          good := true;
+       <b>else</b>
+          good := false;
+          <b>for</b> k <b>in</b> 1..3 <b>loop</b>
+            <b>if</b> numerics.value( strings.field( tunnels(room(player)), k, t_delim) ) = player_room <b>then</b>
+               good := true;
+            <b>end</b> <b>if</b>;
+          <b>end</b> <b>loop</b>;
+       <b>end</b> <b>if</b>;
+       <b>if</b> good <b>then</b>
+         <b>if</b> soundfx <b>then</b>
+            sound.play( "./run.wav" );
+         <b>end</b> <b>if</b>;
+         <b>loop</b>
+           room(player) := player_room;
+           <b>if</b> player_room = room(wumpus) <b>then</b>
+              put_line( "... OOPS! BUMPED A WUMPUS!" );
+              k := natural( numerics.rnd(4) );
+              <b>if</b> k /= 4 <b>then</b>
+                 room(wumpus) := numerics.value( strings.field( tunnels(room(wumpus)), k, t_delim) );
+                 <b>if</b> player_room = room(wumpus) <b>then</b>
+                    put_line( "TSK TSK TSK - WUMPUS GOT YOU!" );
+                    <b>if</b> soundfx <b>then</b>
+                       sound.play( "./run.wav" );
+                    <b>end</b> <b>if</b>;
+                    status := lost;
+                 <b>end</b> <b>if</b>;
+              <b>end</b> <b>if</b>;
+              <b>exit</b>;
+           <b>elsif</b> player_room = room(pit1) <b>or</b> player_room = room(pit2) <b>then</b>
+              put_line( "YYYYIIIIEEEE . . . FELL IN PIT" );
+              <b>if</b> soundfx <b>then</b>
+                 sound.play( "./pit.wav" );
+              <b>end</b> <b>if</b>;
+              status := lost;
+              <b>exit</b>;
+           <b>elsif</b> player_room = room(bats1) <b>or</b> player_room = room(bats2) <b>then</b>
+              put_line( "ZAP--SUPER BAT SNATCH! ELSEWHEREVILLE FOR YOU!" );
+              <b>if</b> soundfx <b>then</b>
+                 sound.play( "./bats.wav" );
+              <b>end</b> <b>if</b>;
+              player_room := numerics.rnd(20);
+           <b>else</b>
+              <b>exit</b>;
+           <b>end</b> <b>if</b>;
+         <b>end</b> <b>loop</b>; <FONT COLOR=green><EM>-- bat loop</EM></FONT>
+         <b>exit</b>;
+       <b>else</b>
+         put( "NOT POSSIBLE -" );
+       <b>end</b> <b>if</b>;
+     <b>end</b> <b>loop</b>; <FONT COLOR=green><EM>-- good move loop</EM></FONT>
+
+   <b>end</b> <b>if</b>; <FONT COLOR=green><EM>-- if move or shoot</EM></FONT>
+
+   <b>if</b> status /= alive <b>then</b>
+      <b>if</b> status = lost <b>then</b>
+         <FONT COLOR=green><EM>-- *** LOSE ***</EM></FONT>
+         put_line( "HA HA HA - YOU LOSE!" );
+      <b>else</b>
+         <FONT COLOR=green><EM>-- *** WIN ***</EM></FONT>
+         put_line( "HEE HEE HEE - THE WUMPUS'LL GET YOU NEXT TIME!!" );
+         <b>if</b> soundfx <b>then</b>
+            sound.play( "./clap.wav" );
+         <b>end</b> <b>if</b>;
+      <b>end</b> <b>if</b>;
+      <b>for</b> j <b>in</b> player..bats2 <b>loop</b>
+          room(j) := original_room(j);
+      <b>end</b> <b>loop</b>;
+      <b>return</b>; <FONT COLOR=green><EM>-- restart not done</EM></FONT>
+      <FONT COLOR=green><EM>-- restart not done</EM></FONT>
+      <FONT COLOR=green><EM>--put( "SAME SETUP (Y-N)" );</EM></FONT>
+      <FONT COLOR=green><EM>--i := get_line;</EM></FONT>
+      <FONT COLOR=green><EM>--365 if (i$ &lt;&gt; "Y") and (i$ &lt;&gt; "y") then 170</EM></FONT>
+   <b>end</b> <b>if</b>;
+<b>end</b> <b>loop</b>; <FONT COLOR=green><EM>-- main loop</EM></FONT>
+
+<b>end</b> wumpus;
+
+</PRE></BODY></HTML>

@@ -1,0 +1,1279 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Ken Burtch">
+   <meta name="GENERATOR" content="Mozilla/4.78 [en] (X11; U; Linux 2.4.7-10 i686) [Netscape]">
+   <title>Business Shell (BUSH) Guide</title>
+</head>
+<body bgcolor="#CCCC99">
+
+<center>
+<img src="bush_title_bar.gif" alt="[BUSH User Guide]" width="710" height="99">
+</center>
+<!-- h2>
+<font color="#777700">
+Bush Guide: Part 4 - Built-in Packages</font></h2 -->
+
+<table summary="menu" border="0" cellpadding="0" cellspacing="0"
+ width="100%">
+<tr>
+<td valign="bottom" bgcolor="white">&nbsp;</td>
+</tr><tr>
+<td valign="bottom" bgcolor="white">
+<table summary="menu" border="0" cellpadding="0" cellspacing="0"
+ width="100%">
+  <tbody>
+    <tr bgcolor="white">
+      <td align="center"><a href="http://www.pegasoft.ca/bush.html">Home Page</a></td>
+      <td align="center"><a href="bushintro.html">Introduction</a></td>
+      <td align="center"><a href="bushtutorial.html">Tutorials</a></td>
+      <td align="center"><a href="bushref.html">Reference</a></td>
+      <td valign="bottom" align="center" bgcolor="#CCCC99"><font size="+1" color="#777700"><b>Packages</b></font></td>
+      <td align="center"><a href="bushdetails.html">Hacking</a></td>
+    </tr>
+  </tbody>
+</table>
+</td>
+</tr>
+</table>
+
+<table summary="menu" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top" width="25%">
+&nbsp;<br>
+<table summary="menu" border="0" cellpadding="0" cellspacing="0">
+  <tr><td>
+      <table summary="menu" border="0" cellpadding="0" cellspacing="0">
+      <tr>
+      <td valign="bottom" align="center" bgcolor="white"><font size="+1" color="#777700"><b>&nbsp;&nbsp;Packages&nbsp;&nbsp;</b></font></td>
+      </tr>
+      </table>
+  </td></tr>
+  <tr><td bgcolor="white"><a href="bushpackages.html#4.1">4.1 Using Packages</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_text_io.html#4.2">4.2 text_io (Console I/O)</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_text_io.html#4.3">4.3 text_io (File I/O)</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_sound.html#4.4">4.4 sound</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_source_info.html#4.5">4.5 source_info</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_system.html#4.6">4.6 System</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_numerics.html#4.7">4.7 numerics</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_strings.html#4.8">4.8 strings</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_command_line.html#4.9">4.9 command_line</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_lock_files.html#4.10">4.10 lock_files</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_cgi.html#4.11">4.11 cgi</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_calendar.html#4.12">4.12 calendar</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_units.html#4.13">4.13 units</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_arrays.html#4.14">4.14 arrays</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_files.html#4.15">4.15 files</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_db.html#4.16">4.16 db (Database)</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_stats.html#4.17">4.17 stats</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_pen.html#4.18">4.18 pen</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_mysql.html#4.19">4.19 mysql</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_os.html#4.20">4.20 os</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_dirops.html#4.21">4.21 directory_operations</a></td></tr>
+</table>
+</td>
+<td>
+&nbsp;<br>
+
+This part of the guide contains detailed descriptions of the
+BUSH built-in packages.
+<br>&nbsp;
+<h3>
+<a NAME="4.16"></a><font color="#777700">4.16 DB (Database) Package</font></h3>
+The database package is based on Warren Gay's APQ Postgres
+binding.  For full details on these routines, consult the APQ documentation.
+<p>There is an enumerated type that controls the verbosity of tracing:
+<p><tt>type db.trace_mode_type is ( db.trace_none, db.trace_db, db.trace_apq, db.trace_full );</tt>
+<p>There is an enumerated type that controls file access:
+<p><tt>type db.mode_type is ( db.read, db.write, db.read_write );</tt>
+<p>There is an enumerated type that controls fetch order:
+<p><tt>type db.fetch_mode_type is ( db.sequential_fetch, db.random_fetch );</tt>
+<p>There is an enumerated type that identifies the database engine:
+<p><tt>type db.database_type is ( db.engine_postgresql, db.engine_mysql, db.engine_oracle, db.engine_sybase, db.engine_db2 );</tt>
+<br>&nbsp;
+
+<p>
+<hr><b>db.append( s [, a] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Append text to an SQL query s after a (?)
+<br>Example: db.append( " where customer_no &gt; 5" );
+<br>Ada Equivalent: APQ.Append
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>SQL query</td>
+
+</tr>
+<tr>
+<td>a</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>empty string</td>
+
+<td>after (not quite sure)</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>db.append_line( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Start a new line and append line to SQL query s
+<br>Example: db.append_line( "where customer_no &gt; 5" );
+<br>Ada Equivalent: APQ.Append_Line
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>SQL query text</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>db.append_quoted( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Append text to SQL query s and surrounded text with single quotes.
+<br>Example: db.append_quoted( "customer_name" );
+<br>Ada Equivalent: APQ.Append_Quoted
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>SQL query text</td>
+
+</tr>
+
+<tr>
+<td>a</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>""</td>
+
+<td>after what query text</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>db.begin_work</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Start a database transaction, marking the position of a possible rollback.
+<br>Example: db.begin_work;
+<br>Ada Equivalent: APQ.Begin_Work
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>none</td>
+</table>
+</td>
+</tr>
+</table></center>
+<p>in_abort_state exception may be raised
+
+<p>
+<hr><b>db.clear</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Erase the current query.
+<br>Example: db.clear;
+<br>Ada Equivalent: APQ.Clear
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>none</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+<p>If a connection doesn't exist, an error will occur.
+
+<p>
+<hr><b>db.close_db_trace</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Stop tracing the database activity and close the trace file.
+<br>Example: db.close_db_trace;
+<br>Ada Equivalent: APQ.Close_DB_Trace
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>none</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+<p>If a connection doesn't exist, an error will occur.
+
+<p>
+<hr><b>i := db.column_index( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the position of a query result column.  This is the position
+in the query, not the database table.
+<br>Example: third_column_position := db.column_index( "first name" );
+<br>Ada Equivalent: APQ.Column_Name
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>the column heading</td>
+
+</tr>
+<tr>
+<td>i</td>
+
+<td>return value</td>
+
+<td>column_index_type</td>
+
+<td>the column position in the query</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+<p>no_column exception may be raised
+
+<p>
+<hr><b>s := db.column_name( c )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the name of a query result column.  The number is the position
+in the query, not the database table.
+<br>Example: third_column_heading := db.column_name( 3 );
+<br>Ada Equivalent: APQ.Column_Name
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>column_index_type</td>
+
+<td>the column position in the query results</td>
+
+</tr>
+<tr>
+<td>s</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>the column heading</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+<p>no_column exception may be raised
+
+<p>
+<hr><b>n := db.columns</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the number of columns (fields) from the last query.
+<br>Example: number_of_columns := db.columns;
+<br>Ada Equivalent: APQ.Columns
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>n</td>
+
+<td>return value</td>
+
+<td>natural</td>
+
+<td>the number of columns</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+<p>no_result exception may be raised
+
+<p>
+<hr><b>db.commit_work</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Complete a database transaction.
+<br>Example: db.commit_work;
+<br>Ada Equivalent: APQ.Commit_Work
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>none</td>
+</table>
+</td>
+</tr>
+</table></center>
+<p>in_abort_state exception may be raised
+
+<p>
+<hr><b>db.connect( d [, u, p ][, h][, p] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Connect to database d using username u, path p, hostname h and port p.
+If no hostname or port are specified, connection is made by a UNIX socket
+instead of a network socket.
+<br>Example: db.connect( "ken" );
+<br>Ada Equivalent: combines several APQ functions
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>d</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the database name</td>
+</tr>
+
+<tr>
+<td>u</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>your username</td>
+
+<td>the username to connect with</td>
+</tr>
+
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>default password</td>
+
+<td>username's password</td>
+</tr>
+
+<tr>
+<td>h</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>UNIX Socket</td>
+
+<td>hostname for network socket</td>
+</tr>
+
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>default port</td>
+
+<td>network socket port</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+<p>If a connection cannot be made, an error will occur.
+
+<p>
+<hr><b>db.databases</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Show a list of the databases available with the current connection.  This
+is the equivalent of PostgreSQL "\l".
+<br>Example: db.databases;
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>none</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+<p>If a connection doesn't exist, an error will occur.
+
+<p>
+<hr><b>db.disconnect</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Close a connection created by connect.
+<br>Example: db.disconnect;
+<br>Ada Equivalent: APQ.Disconnect;
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>none</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+<p>If a connection doesn't exist, an error will occur.
+
+<p>
+<hr><b>b := db.end_of_query</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>True if there are no more result (tuple) rows.
+<br>Example: b := db.end_of_query;
+<br>Ada Equivalent: APQ.End_Of_Query
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>true if no more rows</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := db.engine_of</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the identity of the database engine
+<br>Example: b := db.engine_of;
+<br>Ada Equivalent: APQ.Engine_Of
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>db.database_type</td>
+
+<td>db.engine_postgresql, etc.</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>s := db.error_message</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Last error message returned by database server.
+<br>Example: err := db.error_message;
+<br>Ada Equivalent: APQ.Error_Message;
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>last server message</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>db.execute</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Run a prepared database query.
+<br>Example: db.execute;
+<br>Ada Equivalent: APQ.Execute
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>none</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+<p>If a connection doesn't exist, an error will occur.
+
+<p>
+<hr><b>db.execute_checked( [ s ] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>not sure the difference with execute.
+<br>Example: db.execute_checked( "message" );
+<br>Ada Equivalent: APQ.Execute_Checked
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>empty string</td>
+
+<td>a message</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>db.fetch [ (i) ]</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Fetch the next query result tuple row, or a specific result row.
+<br>Example: db.fetch;
+<br>Ada Equivalent: APQ.Fetch
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>i</td>
+
+<td>in</td>
+
+<td>tuple_index_type</td>
+
+<td>optional</td>
+
+<td>a specific result row</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+<p>no_result or no_tuple exceptions may be raised.
+
+<p>
+<hr><b>s := db.in_abort_state</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>True if in abort state.
+<br>Example: b := db.in_abort_state;
+<br>Ada Equivalent: APQ.In_Abort_State;
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>true if in abort state</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+<p>If a connection doesn't exist, a not connected exception will occur.
+
+<p>
+<hr><b>b := db.is_connected</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>True if Bush is connected to a database.
+<br>Example: b := db.is_connected;
+<br>Ada Equivalent: APQ.Is_Connected;
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>true if connected</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+<p>If a connection doesn't exist, an error will occur.
+
+<p>
+<hr><b>b := db.is_null( c )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>True if column in the fetch result is undefined.
+<br>Example: b := db.is_null;
+<br>Ada Equivalent: APQ.Is_Null
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>db.column_index_type</td>
+
+<td>the field to check</td>
+
+</tr>
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>true if null</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+<p>no_column and no_result exceptions may be raised
+
+<p>
+<hr><b>b := db.is_trace</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>True if set_trace was true (that is, if debug tracing is enabled).
+<br>Example: b := db.is_trace;
+<br>Ada Equivalent: APQ.Is_Trace
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>tracing is enabled</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>db.list</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Show a list of the tables available in the current database.  This is the
+equivalent of PostgreSQL's "\dt".
+<br>Example: db.list;
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>none</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+<p>If a connection doesn't exist, an error will occur.
+
+<p>
+<hr><b>s := db.notice_message</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Last notice message returned by database server.
+<br>Example: err := db.notice_message;
+<br>Ada Equivalent: APQ.Notice_Message;
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>last server message</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>db.open_db_trace( f )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Begin tracing the database activity, storing the results at pathname f.
+<br>Example: db.open_db_trace( "./trace.out" );
+<br>Ada Equivalent: APQ.Open_DB_Trace
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>trace file pathname</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+<p>If a connection doesn't exist, an error will occur.
+<p>not_connected, file already open, file not found exceptions may be raised
+
+<p>
+<hr><b>s := db.options</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return database options.
+<br>Example: b := db.options;
+<br>Ada Equivalent: APQ.Options
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>database options</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>db.prepare( s [, a] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Prepare a SQL statement to execute.  If a is included, insert the
+next statement after the statement named a.
+<br>Example: db.prepare( "select * from customers" );
+<br>Ada Equivalent: APQ.Prepare
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>SQL statement</td>
+</tr>
+
+<tr>
+<td>a</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>after all others</td>
+
+<td>insert SQL statement after statement a</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+<p>If a connection cannot be made, an error will occur.
+
+<p>
+<hr><b>db.raise_exceptions( [ b ] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>True to raise exceptions on query.
+<br>Example: db.raise_exceptions( false );
+<br>Ada Equivalent: APQ.Raise_Exceptions
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>b</td>
+
+<td>in</td>
+
+<td>boolean</td>
+
+<td>true</td>
+
+<td>whether or not exceptions will occur</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>db.report_errors( b )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>True to report errors on query.
+<br>Example: db.report_errors( false );
+<br>Ada Equivalent: APQ.Report_Errors
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>b</td>
+
+<td>in</td>
+
+<td>boolean</td>
+
+<td>true</td>
+
+<td>whether or not errors will be reported</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>db.reset</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>APQ reset command (not quite sure...).  Reset the database connection.
+<br>Example: db.reset;
+<br>Ada Equivalent: APQ.Reset;
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>none</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+<p>If a connection doesn't exist, an error will occur.
+
+<p>
+<hr><b>db.rewind</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return to the start of a query's results.
+<br>Example: db.rewind;
+<br>Ada Equivalent: APQ.Rewind
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>none</td>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>db.rollback_work</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Rollback a database transaction, undoing all work since begin_work.
+<br>Example: db.rollback_work;
+<br>Ada Equivalent: APQ.Rollback_Work
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>none</td>
+</table>
+</td>
+</tr>
+</table></center>
+<p>in_abort_state exception may be raised
+
+<p>
+<hr><b>db.schema( t )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Show information about the columns available in a table.  This is the
+equivalent of PostgreSQL's "\d table".
+<br>Example: db.schema( "table" );
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>t</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>name of the table</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>db.set_rollback_on_finalize( b )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Determine if a rollback will be issued when the script ends and the
+database connection is still open (true) or no rollback (false).  Default
+is true.
+<br>Example: db.set_rollback_on_finalize( false );
+<br>Ada Equivalent: APQ.Set_Rollback_On_Finalize
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>b</td>
+
+<td>in</td>
+
+<td>boolean</td>
+
+<td>true</td>
+
+<td>whether or not rollback will occur</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>db.set_trace( b )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Determine if debug tracing is enabled.
+<br>Example: db.set_trace( false );
+<br>Ada Equivalent: APQ.Set_Trace
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>b</td>
+
+<td>in</td>
+
+<td>boolean</td>
+
+<td>true</td>
+
+<td>whether or not tracing will occur</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>db.show</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Run the prepared query and show the results in a table on standard output.
+This is often used to show the results of a SQL SELECT statement.
+<br>Example: db.show;
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>none</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+<p>If a connection doesn't exist, an error will occur.
+
+<p>
+<hr><b>t := db.tuple</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the result row (tuple) number from the last fetch.
+<br>Example: row_number := db.tuple;
+<br>Ada Equivalent: APQ.Tuple
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>t</td>
+
+<td>return value</td>
+
+<td>db.tuple_index_type</td>
+
+<td>the current row number</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+<p>no_tuple exception may be raised
+
+<p>
+<hr><b>n := db.tuples</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the number of rows (tuples) from the last query.
+<br>Example: row_number := db.tuples;
+<br>Ada Equivalent: APQ.Tuples
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>t</td>
+
+<td>return value</td>
+
+<td>db.tuple_count_type</td>
+
+<td>the number of rows</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+<p>no_result exception may be raised
+
+<p>
+<hr><b>db.users</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Show a list of database users.  This is similar to PostgreSQL's "\du".  The
+columns in the list depend on the database engine.
+<br>Example: db.users;
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>none</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+<p>If a connection doesn't exist, an error will occur.
+
+<p>
+<hr><b>s := db.value( c )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the column value as a string.
+<br>Example: first_name := db.value( 3 );
+<br>Ada Equivalent: APQ.Value
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>db.column_index_type</td>
+
+<td>the field to return</td>
+
+</tr>
+<tr>
+<td>s</td>
+
+<td>return value</td>
+
+<td>universal_typeless</td>
+
+<td>the value of the field</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+<p>no_column, no_result, null_value and no_tuple exceptions may be raised
+&nbsp;<br>
+
+<p>
+<hr><b>b := db.will_rollback_on_finalize</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>True if set_rollback_on_finalize was true (that is, that when the script
+finishes, a rollback will be issued if the connection is still open).
+<br>Example: b := db.will_rollback_on_finalize;
+<br>Ada Equivalent: APQ.Will_Rollback_On_Finalize
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>rollback will be issued on finalize</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>&nbsp;<a href="#top">Back to Top</a></p>
+</td>
+</tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+# This should fail
+
+pragma ada_95;
+
+i : integer := 0;
+i := @ + 1; -- not allowed
+

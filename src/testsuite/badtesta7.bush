@@ -1,0 +1,6 @@
+# This should fail
+
+if then -- missing expression
+  null;
+end if;
+

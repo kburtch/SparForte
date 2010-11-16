@@ -1,0 +1,135 @@
+<HEAD><TITLE>aligncols.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : aligncols.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush aligncols
+$ cat columned.txt 
+Given      a          text       file   of     many      lines,     where    fields  within  a      line  
+are        delineated by         a      single 'dollar'  character, write    a       program 
+that       aligns     each       column of     fields    by         ensuring that    words   in     each  
+column     are        separated  by     at     least     one        space.   
+Further,   allow      for        each   word   in        a          column   to      be      either left  
+justified, right      justified, or     center justified within     its      column. 
+
+   Given        a        text     file    of      many     lines,     where   fields  within    a   line  
+    are    delineated     by        a   single  'dollar' character,   write     a    program 
+   that      aligns      each    column   of     fields      by     ensuring   that   words    in   each  
+  column       are     separated   by     at     least       one     space.  
+ Further,     allow       for     each   word      in         a      column     to      be   either left  
+justified,    right   justified,   or   center justified   within      its   column. 
+
+      Given          a       text   file     of      many     lines,    where  fields  within      a line 
+        are delineated         by      a single  'dollar' character,    write       a program
+       that     aligns       each column     of    fields         by ensuring    that   words     in each 
+     column        are  separated     by     at     least        one   space.
+   Further,      allow        for   each   word        in          a   column      to      be either left 
+ justified,      right justified,     or center justified     within      its column.
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- A common interview test from Rosetta Code for testing basic programming</EM></FONT>
+<FONT COLOR=green><EM>-- skills.</EM></FONT>
+
+<b>pragma</b> annotate( "aligncols" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Given a text file of many lines, where fields within a line are delineated ");
+<b>pragma</b> annotate( "by a single 'dollar' character, write a program that aligns each column of" );
+<b>pragma</b> annotate( "fields by ensuring that words in each column are separated by at least one" );
+<b>pragma</b> annotate( "space. Further, allow for each word in a column to be either left justified," );
+<b>pragma</b> annotate( "right justified, or center justified within its column. " );
+<b>pragma</b> annotate( "A modified version of the Ada solution from Rosetta Code" );
+<b>pragma</b> annotate( "translated by Ken O. Burtch" );
+
+<b>procedure</b> aligncols <b>is</b>
+   Text : <b>constant</b> string :=
+      "Given$a$text$file$of$many$lines,$where$fields$within$a$line$" &amp; ASCII.NUL &amp;
+      "are$delineated$by$a$single$'dollar'$character,$write$a$program" &amp; ASCII.NUL &amp;
+      "that$aligns$each$column$of$fields$by$ensuring$that$words$in$each$" &amp; ASCII.NUL &amp;
+      "column$are$separated$by$at$least$one$space." &amp; ASCII.NUL &amp;
+      "Further,$allow$for$each$word$in$a$column$to$be$either$left$" &amp; ASCII.NUL &amp;
+      "justified,$right$justified,$or$center$justified$within$its$column." &amp; ASCII.NUL;
+   File : file_type;
+   Width : <b>array</b>(1..1000) <b>of</b> natural;
+   ch : character;
+   Column : positive := 1;
+   Start : positive := 1;
+   <b>type</b> Alignment <b>is</b> ( Left, Center, Right );
+   str : string;
+   padding : natural;
+<b>begin</b>
+   <FONT COLOR=green><EM>-- Zero Widths</EM></FONT>
+   <b>for</b> I <b>in</b> arrays.first( Width )..arrays.last( Width ) <b>loop</b>
+       Width(I) := 0;
+   <b>end</b> <b>loop</b>;
+   <FONT COLOR=green><EM>-- Determining the widths of columns</EM></FONT>
+   <b>for</b> I <b>in</b> 1..strings.length(Text) <b>loop</b>
+      ch := strings.element( Text, I );
+      <b>case</b> ch <b>is</b>
+         <b>when</b> '$' | ASCII.NUL =&gt;
+            Width (Column) := numerics.max(Width (Column), I - Start + 1);
+            Start  := I + 1;
+            <b>if</b> strings.element( Text, I ) = ASCII.NUL <b>then</b>
+               Column := 1;
+            <b>else</b>
+               Column := @+1;
+            <b>end</b> <b>if</b>;
+         <b>when</b> <b>others</b> =&gt;
+            <b>null</b>;
+      <b>end</b> <b>case</b>;
+   <b>end</b> <b>loop</b>;
+   create( File, out_file, "columned.txt" );
+   <FONT COLOR=green><EM>-- Formatting</EM></FONT>
+   <b>for</b> Align <b>in</b> Left..Right <b>loop</b>
+       Column := 1;
+       Start := 1;
+       <b>for</b> I <b>in</b> 1..strings.length(Text) <b>loop</b>
+          ch := strings.element( Text, I );
+          <b>case</b> ch <b>is</b>
+             <b>when</b> '$' | ASCII.NUL =&gt;
+                str := strings.slice( Text, Start, I-1 );
+                padding := (Width( Column ) - strings.length(str));
+                <b>case</b> Align <b>is</b>
+                <b>when</b> Left =&gt;
+                  str := @ &amp; (padding * ' ');
+                <b>when</b> Center =&gt;
+                  <b>declare</b>
+                     <FONT COLOR=green><EM>-- business shell 1: must trunc specifically</EM></FONT>
+                     left_padding : natural := numerics.truncation( padding/2 );
+                     right_padding : natural := padding - left_padding;
+                  <b>begin</b>
+                     str := (left_padding * ' ') &amp; @ &amp; (right_padding * ' ');
+                  <b>end</b>;
+                <b>when</b> Right =&gt;
+                  str := (padding * ' ') &amp; @;
+                <b>when</b> <b>others</b> =&gt;
+                    <b>null</b>;
+                <b>end</b> <b>case</b>;
+                put( File, str );
+                Start := I+1;
+                <b>if</b> ch = ASCII.NUL <b>then</b>
+                   new_line( File );
+                   Column := 1;
+                <b>else</b>
+                   Column := @+1;
+                <b>end</b> <b>if</b>;
+             <b>when</b> <b>others</b> =&gt;
+                <b>null</b>;
+          <b>end</b> <b>case</b>;
+       <b>end</b> <b>loop</b>;
+       new_line( File );
+   <b>end</b> <b>loop</b>;
+   close( File );
+<b>end</b> aligncols;
+
+</PRE></BODY></HTML>

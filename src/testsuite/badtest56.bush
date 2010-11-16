@@ -1,0 +1,4 @@
+# This should fail
+
+i : constant; -- missing type
+

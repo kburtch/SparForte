@@ -1,0 +1,7 @@
+# This should fail
+
+i : integer := 0;
+while i > 0 then -- bad keyword
+  null;
+end loop;
+

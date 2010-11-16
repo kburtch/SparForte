@@ -1,0 +1,3 @@
+
+procedure tmp is begin null; end not_tmp; -- name mismatch
+

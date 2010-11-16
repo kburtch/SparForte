@@ -1,0 +1,54 @@
+<HEAD><TITLE>chessboard.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : chessboard.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD align="center" BGCOLOR="#000040"><SPAN STYLE="color: #00CC00">
+<img src="chessboard.png" alt="[Chessboard image]">
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "chessboard" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Draw a chessboard with graphics using the Business Shell" );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> chessboard <b>is</b>
+
+  c    : pen.canvas_id;
+  r    : pen.rect;
+  s    : string;
+  fill : boolean;
+
+<b>begin</b>
+
+  pen.new_window_canvas( 200,200,32,c);
+
+  <b>for</b> y <b>in</b> 1..8 <b>loop</b>
+      fill := y <b>mod</b> 2 = 1;
+      pen.set_rect( r, 10, 10*y, 20, 10*(y+1) );
+      <b>for</b> x <b>in</b> 1..8 <b>loop</b>
+          pen.frame_rect( c, r );
+          <b>if</b> fill <b>then</b>
+             pen.fill_rect( c, r );
+          <b>end</b> <b>if</b>;
+          pen.offset_rect( r, 10, 0 );
+          fill := <b>not</b> @;
+      <b>end</b> <b>loop</b>;
+  <b>end</b> <b>loop</b>;
+
+  ? "Press return";
+  s := get_line;
+
+<b>end</b> chessboard;
+
+</PRE></BODY></HTML>

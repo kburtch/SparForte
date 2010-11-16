@@ -1,0 +1,4 @@
+# This should fail
+
+type t new integer; -- is missing
+

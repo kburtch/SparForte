@@ -1,0 +1,6 @@
+# This should fail
+
+elsif true then -- no if
+  null;
+end if;
+

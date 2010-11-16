@@ -1,0 +1,6 @@
+# This should fail
+
+for i in "string".."string2" loop -- wrong type
+  null;
+end while;
+

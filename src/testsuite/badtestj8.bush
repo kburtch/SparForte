@@ -1,0 +1,5 @@
+# This should fail
+
+i : integer := 1;
+j : integer := numerics.shift_left( 8, i ); -- integer superset of natural
+

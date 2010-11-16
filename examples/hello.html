@@ -1,0 +1,51 @@
+<HEAD><TITLE>hello.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : hello.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush hello
+Hello world!
+Hello world!
+Hello world!
+Hello world!
+Hello world!
+
+ ?column?   
+-------------
+ Hello world!
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- Hello world in a quick and scripty way</EM></FONT>
+? "Hello world!";
+
+<FONT COLOR=green><EM>-- Hello world in a do it again way</EM></FONT>
+?%;
+
+<FONT COLOR=green><EM>-- Hello world in a Bourne shell way</EM></FONT>
+echo Hello world!;
+
+<FONT COLOR=green><EM>-- Hello world in an AdaScript parameter shell way</EM></FONT>
+echo( "Hello world!" );
+
+<FONT COLOR=green><EM>-- Hello world in a ISO standard, scalable, structured way</EM></FONT>
+put_line( "Hello world!" );
+
+<FONT COLOR=green><EM>-- Hello world in a PostgreSQL database way</EM></FONT>
+db.connect( "ken" );
+<b>select</b> 'Hello world!';
+db.disconnect;
+
+
+</PRE></BODY></HTML>

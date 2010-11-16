@@ -1,0 +1,6 @@
+# This should fail
+
+s : string;
+
+s := cgi.value( "xyzabc_fake", 1, true ); -- force exception
+

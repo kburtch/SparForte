@@ -1,0 +1,10 @@
+# This should fail
+
+t : calendar.time;
+y : calendar.year_number := 2000;
+m : character; -- calendar.month_number := 1;
+d : calendar.day_number := 31;
+s : calendar.day_duration := 5000;
+
+t := calendar.time_of( y, m, d, s ); -- bad types
+

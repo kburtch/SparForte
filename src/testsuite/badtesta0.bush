@@ -1,0 +1,7 @@
+# This should fail
+
+integer i; -- deliberate error
+while i > 0 loop -- loop should not execute
+  null;
+end while;
+

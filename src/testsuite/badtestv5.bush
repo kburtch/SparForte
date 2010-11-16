@@ -1,0 +1,14 @@
+procedure p is
+procedure tmp is
+  procedure tmp2 is
+  begin
+    null;
+  end tmp2;
+begin
+  null;
+end tmp;
+begin
+tmp2;
+-- not defined anymore
+end p;
+

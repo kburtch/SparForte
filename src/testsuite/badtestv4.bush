@@ -1,0 +1,8 @@
+
+procedure p is
+procedure tmp;
+-- forward declaration is not complete
+begin
+  tmp;
+end p;
+

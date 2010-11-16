@@ -1,0 +1,2190 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <meta name="Author" content="Ken Burtch">
+  <meta name="GENERATOR"
+ content="Mozilla/4.78 [en] (X11; U; Linux 2.4.7-10 i686) [Netscape]">
+  <title>Business Shell (BUSH) Guide</title>
+</head>
+<body bgcolor="#cccc99">
+<center>
+<img src="bush_title_bar.gif" alt="[BUSH User Guide]" height="99"
+ width="710"></center>
+<!-- h2>
+<font color="#777700">Bush Guide: Part 2 - Tutorials</font></h2 -->
+
+<table summary="menu" border="0" cellpadding="0" cellspacing="0"
+ width="100%">
+<tr>
+<td valign="bottom" bgcolor="white">&nbsp;</td>
+</tr><tr>
+<td valign="bottom" bgcolor="white">
+<table summary="menu" border="0" cellpadding="0" cellspacing="0"
+ width="100%">
+  <tbody>
+    <tr bgcolor="white">
+      <td align="center"><a href="http://www.pegasoft.ca/bush.html">Home Page</a></td>
+      <td align="center"><a href="bushintro.html">Introduction</a></td>
+      <td valign="bottom" align="center" bgcolor="#CCCC99"><font size="+1" color="#777700"><b>Tutorials</b></font></td>
+      <td align="center"><a href="bushref.html">Reference</a></td>
+      <td align="center"><a href="bushpackages.html">Packages</a></td>
+      <td align="center"><a href="bushdetails.html">Hacking</a></td>
+    </tr>
+  </tbody>
+</table>
+</td>
+</tr>
+</table>
+
+<ul>
+  <li><a href="#2.1">2.1 Command Prompt Tutorial 1: BUSH as a Calculator</a></li>
+  <li><a href="#2.2">2.2 Command Prompt Tutorial 2: Basic Shell Commands</a></li>
+  <li><a href="#2.3">2.3 Command Prompt Tutorial 3: Working with Databases</a></li>
+  <li><a href="#2.4">2.4 Script Tutorial 1: Basic Commands Scripts</a></li>
+  <li><a href="#2.5">2.5 Script Tutorial 2: Intermediate Program Scripts</a></li>
+  <li><a href="#2.6">2.6 Template Tutorial 1: Basic Templates</a></li>
+  <li><a href="#2.7">2.7 Template Tutorial 2: Intermediate Templates</a></li>
+  <li><a href="#2.8">2.8 GCC Tutorial: Compiling BUSH Scripts</a></li>
+  <li><a href="#2.9">2.9 Debugging Tutorial - Using the BUSH Debugger</a></li>
+  <li><a href="#2.10">2.10 Creating a Profile Script</a></li>
+  <li><a href="#2.11">2.11 Calling BUSH from C: A Tutorial</a></h3>
+  <li><a href="#2.12">2.12 BUSH Best Practices</a></h3>
+</ul>
+<hr></tt></a>This section of the Bush Guide introduces the basic features
+of PegaSoft's Business Shell (or BUSH).&nbsp; Below are a series of short
+tutorials for using BUSH in different ways.&nbsp; BUSH can be used
+as an operating system shell, a database client or it can be used to run
+scripts and web templates.&nbsp; For a complete list of features, read the
+Reference section and the Packages section for a summary of the built-in
+packages.
+<p>This tutorial section assumes that you have a basic knowledge of
+computer programming.
+<p>If you are familiar with Ada, there are a few things to remember:</p>
+<ul>
+<li>Strings are variable length collections of characters, not an array.
+They are implemented as unbounded strings, not as fixed strings.</li>
+<li>The Text_IO package is always included and so that no package
+prefix is required.</li>
+<li>Bush is case-sensitive: most built-in procedures and functions are
+in lower-case letters.</li>
+</ul>
+&nbsp;<br>
+<h3><a name="2.1"></a><font color="#777700"> 2.1 Command Prompt Tutorial 1: BUSH as a Calculator<br> </font></h3>
+Thanks for taking the time to look at the Business Shell.&nbsp; This
+tutorial is a simple introduction to BUSH by using BUSH to perform
+interactive math like a pocket calculator.
+<p>When BUSH is started without an argument, it presents you with a
+welcome
+message and a command prompt, a "<tt>=&gt;</tt>". From this prompt, you
+can
+<a href="bushref.html#fundamental%20types">declare
+variables</a>, execute AdaScript statements, or run <a
+ href="bushref.html#shell%20cmds">external
+commands.</a><br>
+</p>
+<p>BUSH is case-sensitive, as are many other shells, because
+UNIX/Linux environment variables are also case-sensitive.&nbsp; This
+means that BUSH treats "IF", "if" and "If" as three different words.<br>
+</p>
+<p>BUSH will <b>terminate your session</b> by the
+command <b>return</b> (or <b>logout</b> for a login shell).&nbsp;
+You can also terminate your session by typing a Control-D (the UNIX
+end-of-file character).<br>
+</p>
+<p>The <span style="font-weight: bold;">help</span> command presents a
+short summary of recognized BUSH commands.
+</p>
+<p><img src="bush_2.gif" alt="[BUSH help command]" height="357"
+ width="591"><br>
+<b style="font-style: italic;">Figure:</b><span
+ style="font-style: italic;"> Screenshot of an interactive BUSH session</span>
+</p>
+<p>For a brief description of a particular topic or command, use <b>help</b>
+and the topic name.
+</p>
+<p><tt>=&gt; help delay</tt>
+<br>
+<tt>delay - wait (sleep) for a specific time</tt>
+<br>
+<tt>delay secs</tt>
+</p>
+<p>Complete descriptions of all of BUSH commands can be found in the
+Reference section of this manual.  Summaries of all built-in packages
+are found in the Packages section of this manual.<br>
+</p>
+<p>BUSH recognizes the console arrow keys and common key
+sequences for
+the "emacs" and "vi" text editors. The sequences are called <b>key
+bindings</b>
+and represent cursor movement and editing functions.
+</p>
+<p>The <b>emacs mode</b> key bindings are:
+</p>
+<ul>
+  <li> <b>control-b</b> - move back (left) one character</li>
+  <li> <b>control-f</b> - move forward (right) one character</li>
+  <li> <b>control-p</b> - move to the previous command line you typed</li>
+  <li> <b>control-n</b> - move to the next command line you typed</li>
+  <li> <b>control-x</b> - erase the command line</li>
+  <li> <b>control-a</b> - move to start of the line</li>
+  <li> <b>control-e</b> - move to end of the line</li>
+  <li> <b>control-r</b> - search command lines (history) backwards</li>
+  <li> <b>control-]</b> - character search forwards. (Follow with the
+key
+to search
+for.)</li>
+  <li> <b>tab</b> - complete the filename if there is a unqiue match</li>
+  <li> <b>backspace/delete</b> - delete a character</li>
+</ul>
+<p>Typing a control-c (sending a SIGINT signal) at the command prompt
+acts
+the same as a control-x: the current line will be erased.&nbsp;
+Pressing control-c while a command is running will normally cause the
+command to stop.
+</p>
+<p>If you prefer to use <b>vi cursor movement</b>, press the Escape
+key to enter <b>vi</b> mode. Press escape again to return to emacs
+mode. In vi mode, you can use lower-case 'h', 'j', 'k', 'l', '^' and
+'$'. Filename completion is accomplished with two escape key presses
+in a row.
+</p>
+<p>The <a href="bushpackages.html#consoleio">"?"
+command</a> (pronounced "print") will print the result of an
+expression. The basic
+<a href="bushref.html#basic%20assign">arithmetic
+operators</a> are the same as they are in most computer languages: +
+(add), - (subtract),
+* (multiply), and / (divide). Also available are ** (exponentiation), <b>rem</b>
+(remainder),
+<b>mod</b> (modulus), <b>and</b> (bitwise and), <b>or</b>
+(bitwise or),
+<b>xor</b> (bitwise exclusive or). Parentheses can be used
+to group subexpressions.</p>
+<p><tt>=&gt; ?5.5+2.5</tt>
+<br>
+<tt>8</tt>
+<br>
+<tt>=&gt; ? (25-4)*6</tt>
+<br>
+<tt>126</tt>
+<br>
+<tt>=&gt; ? 12/4</tt>
+<br>
+<tt>3</tt>
+</p>
+<p>Because BUSH is a shell that can run commands, if you omit the "?",
+BUSH
+assumes that the expression is the name of a Linux command and will
+attempt to run it.<br>
+</p>
+<p><tt>=&gt; 12/4</tt>
+<br>
+<tt>12/4: No such file or directory</tt>
+</p>
+In this case, BUSH attempts to run a command named "12/4" but doesn't
+find one.&nbsp; Running commands is discussed in more detail in the
+next tutorial.<br>
+<br>
+BUSH can work with strings and characters as well as numbers.
+&nbsp; Strings are surrounded by double quotes and
+characters by single quotes.  There is no limit on the length of strings
+(they are "unbounded") but single quotes must have exactly one character.<br>
+<p><tt>=&gt; ? "Hello world!"</tt>
+<br>
+<tt>Hello world!</tt>
+<br>
+<tt>=&gt; ? 'c'</tt>
+<br>
+<tt>c</tt>
+</p>
+<p>Quotation marks are sometimes treated as they appear in a UNIX
+shell.&nbsp; This is discussed in other tutorials.<br>
+</p>
+<p>The "?" command is a quick way to display a result in a readable
+format to standard output.&nbsp; BUSH has other output commands.&nbsp;
+The <b>put</b> and <b>put_line</b> procedures will also display results.&nbsp;
+These procedures have more options than "?".&nbsp; The parameters are
+enclosed in parentheses and separated by commas.&nbsp; The put
+procedure, for example, can format the result using a picture string.<br>
+</p>
+<p><tt>=&gt; put( 123.45, "####9.99" )</tt>
+<br>
+<tt>&nbsp;$123.45</tt>
+</p>
+<p>Strings operatings include "&amp;" (concatenation) and *
+(duplication).<br>
+</p>
+<p><tt>=&gt; ? "Hello " &amp; "world!"</tt>
+<br>
+<tt>Hello world!</tt>
+</p>
+<a href="bushref.html#ascii">Special string characters can be expressed
+with </a>"ASCII", a period, and the code name for the character.
+<p><tt>=&gt; ? "The tilde is " &amp; "'" &amp; ASCII.Tilde &amp; "'."</tt>
+<br>
+<tt>The tilde is '~'.</tt>
+&nbsp;
+<br>
+</p>
+<p>BUSH performs authentic Boolean arithmetic. Boolean expressions are
+logically "true" or "false".&nbsp; The expressions can be computed
+using "=", "/=", "&gt;",
+"&gt;=", "&lt;", "&lt;=", <b>in</b>, <b>not in</b>, <b>and</b>, <b>or</b>
+and <b>xor</b>.  Numbers and strings cannot be compared directly: BUSH
+assumes that you have made a mistake by trying to compare items that are
+not alike and it will not try to guess at what you meant to do.  (There
+are ways to explicitly convert numbers into strings, and strings into
+numbers.)</p>
+<p>The built-in
+constants "true" and "false" represent true and false respectively:
+unlike many scripting languages and shells, they have no numeric or
+string equivalent.  A zero is not false: it is a numeric zero.  An
+empty string is not false: it is an string with no characters.  true
+and false are a completely different type of value (an enumerated value,
+to be precise).
+</p>
+<p><tt>=&gt; ? 5=5</tt>
+<br>
+<tt>true</tt>
+<br>
+<tt>=&gt; ? (5&gt;6) or (2&lt;3)</tt>
+<br>
+<tt>true</tt>
+<br>
+<tt>=&gt; ? false</tt>
+<br>
+<tt>false<br>
+=&gt; ? 5 in 1..10<br>
+true<br>
+</tt></p>
+<p>In addition to the "?" command, another single-character word is
+the <a href="bushref.html#itself%20lastout">last outputted</a>
+value.&nbsp; This is
+represented by the "%" operand (pronounced "last output").&nbsp; This
+is the output of the last put, put_line or "?".&nbsp; This is useful
+for doing calculations without having save the intermediate results in
+a variable.<br>
+</p>
+<tt>=&gt; ? 2+2<br>
+&nbsp;4<br>
+=&gt; ? %*2<br>
+&nbsp;8<br>
+</tt><tt>=&gt; ? "Hello world!"<br>
+Hello world!<br>
+=&gt; ?% &amp; " It's good to be alive!"</tt>
+<br>
+<tt>Hello world! It's good to be alive!"<br>
+</tt><br>
+More advanced expressions can be created using BUSH's built-in
+packages.&nbsp; These packages containing routines that perform more
+complex calculations.&nbsp; For example, the strings package contains
+many routines for working with strings such as calculating the length
+of string, editing strings or performing pattern matching.<br>
+<br>
+The "strings.glob" function performs POSIX shell "globbing" pattern
+matching.&nbsp; The format for globbing patterns is discussed in the
+Packages section.&nbsp; The "strings.length" function returns the
+length of a string.<br>
+<p><tt>=&gt; ? strings.glob( "*pear*", "apple pear peach" )</tt>
+<br>
+<tt>true</tt>
+<br>
+<tt>=&gt; ? strings.glob( "*cherry*", "apple pear peach" )</tt>
+<br>
+<tt>false</tt>
+<br>
+<tt>=&gt; ? strings.length( "apple" )</tt>
+<br>
+<tt>5</tt>
+</p>
+<br>
+Intermediate results of your calculations can be saved using
+variables.&nbsp; If you are using the BUSH command prompt, BUSH can create
+variables automatically when you assign the results to a new
+name.&nbsp; The assignment operator is ":=".<br>
+<br>
+<span style="font-family: monospace;">=&gt; v := (2*3 + 5)/2</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; (Assuming v is a new
+universal_numeric variable)</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; ? v</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;5.50000000000000E+00</span><br
+ style="font-family: monospace;">
+<br>
+Like compiled languages, all variables are declared to provide protection
+against spelling mistakes and to provide the variable with a <a href="bushref.html#fundamental%20types">type</a>.
+For example, a string variable may only contain string values.&nbsp; This
+prevents variables containing fundamentally different
+values from being combined in nonsense ways.&nbsp; When BUSH declared
+"v", it was given the type of "universal_numeric" (that is, a
+variable compatible with any kind of number).&nbsp; You can explicitly declare
+a variable, giving it type of your choosing.<br>
+<p><tt>=&gt; x : integer</tt>
+<br>
+<tt>=&gt; x := 5</tt>
+<br>
+<tt>=&gt; ? x</tt>
+<br>
+<tt>5</tt>
+<br>
+<tt>=&gt; x := "hello"</tt>
+<br>
+<tt>x := "hello";</tt>
+<br>
+<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+^ type integer (a universal_numeric) is inherently different from a
+universal_string</tt>
+</p>
+<p>BUSH will not permit a string to be assigned to the variable "x"
+because x is a numeric variable.<br>
+</p>
+<p>Type <b>help type</b> to see a list of standard BUSH types.&nbsp; Besides
+the usual types like "boolean" or "string", BUSH also has 3 universal
+types.  You can use universal types to override some or all of BUSH's strong
+typing during an interactive session and create variables that are similar to
+Perl, PHP or UNIX shell variables.<br>
+</p>
+<p>A variable's type can be changed "on the fly" with the typeset
+command.
+</p>
+<p><tt>=&gt; typeset y is float</tt>
+</p>
+<p>Commands are always terminated with a semi-colon. (You do not need
+to type the semi-colon at the end of a command line because BUSH
+automatically adds one for you.)&nbsp; Using semi-colons, more than
+one command can be placed on a line.
+</p>
+<p><tt>=&gt; x := 3</tt>
+<br>
+<tt>=&gt; (Assuming x is a new universal_numeric variable)</tt>
+<br>
+<tt>=&gt; y := 4</tt>
+<br>
+<tt>=&gt; h := numerics.sqrt( x*x + y*y )</tt>
+<br>
+<tt>=&gt; (Assuming h is a new universal_numeric variable)</tt>
+<br>
+<tt>=&gt; ? "Hypoteneuse is" ; ? h</tt>
+<br>
+<tt>Hypoteneuse is</tt>
+<br>
+<tt>5</tt>
+</p>
+<p>This concludes the first BUSH tutorial.  There are more tutorials following
+this one.  Read on to learn about BUSH built-in packages, scripting, database
+access and web templating.&nbsp; To see a sample script, try running
+"eliza.bush", the BUSH version of the famous artificial intelligence program.
+This script is included in the <b>examples</b> directory and can be run with
+"bush eliza.bush".
+</p>
+<p><img src="bush_3.gif" alt="[BUSH help command]" height="331"
+ width="607"><br>
+<b>Screenshot of the example eliza.bush script</b>
+</p>
+&nbsp;<br />
+<h3><a name="2.2"></a><font color="#777700">2.2 Command Prompt Tutorial 2: Basic Shell Commands</font></h3>
+Tutorial 2.1 demonstrated how BUSH can be used to do command line
+calculations.&nbsp; It introduced the concepts of expressions, types,
+variables and built-in packages.&nbsp; BUSH can do far more that
+calculations.&nbsp; It can also run commands.&nbsp; The following
+tutorial shows how to use BUSH as an operating system shell.<br>
+<br>
+A <span style="font-weight: bold;">shell</span> is a command prompt
+from which you can run operating system commands.&nbsp; Type an <a
+ href="bushref.html#shell%20cmds">operating system command</a> to run
+it. On UNIX-based systems, the "ls"
+command lists files in the current directory.
+<p><tt>=&gt; ls</tt>
+<br>
+<tt>letter2mom.txt bushscript.bush</tt>
+</p>
+<p>Commands can be followed by parameters that change their behaviour.
+There are two methods of representing parameters. If
+the command is followed by a left parenthesis, the command is executed
+using AdaScript arguments (the same as the parameters in the first
+tutorial).&nbsp; The arguments are contained by
+parentheses, separated by commas, characters are surrounded by single
+quotes and strings have double quotes.<br>
+</p>
+<p style="font-family: monospace;">=&gt; date( "--universal" )<br>
+Sat Jan&nbsp; 1 17:23:16 UTC 2005<br>
+</p>
+<p>If there are no parentheses, the command will use
+Bourne shell (POSIX) arguments, the same as the shell that comes
+standard with operating systems like Linux and FreeBSD.<br>
+</p>
+<p><span style="font-family: monospace;">=&gt; date --universal</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">Sat Jan&nbsp; 1 17:23:16 UTC 2005</span><br>
+</p>
+The AdaScript format is primarily used for BUSH scripts.&nbsp; However,
+if you've never used a shell before, you may find this format easier to
+use because the POSIX arguments follow completely different rules.<br>
+<br>
+The POSIX arguments are useful for people already familiar with other
+UNIX-based shells.&nbsp; BUSH implements all of the basic POSIX
+features including dollar sign expansions, file globbing, and word
+quoting.<br>
+<br>
+Dollar sign ($) expansions substitute the value of a BUSH variable into
+the command.&nbsp; Unlike AdaScript arguments which evaluate
+expressions for the arguments, dollar expansions substitute the text of
+a variable into the command prior to executing the command.<br>
+<p><span style="font-family: monospace;">=&gt; s : string :=
+"--universal"</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; date $s</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">Sat Jan&nbsp; 1 17:30:08 UTC 2005</span><br
+ style="font-family: monospace;">
+</p>
+<p>Each item separated by spaces in a POSIX format command is called a <span
+ style="font-weight: bold;">shell word</span>.&nbsp; Quote marks
+control how the words are interpreted.&nbsp; Double quotes allow spaces
+to be included in the word.&nbsp; Single quotes also allow spaces in
+the word but prevent dollar expansions from taking place.&nbsp; Sets of
+quotes can be placed next to each other to form a single word.&nbsp;
+Individual letters can be escaped using a backslash (\).<br>
+</p>
+<p><span style="font-family: monospace;">=&gt; echo s&nbsp;&nbsp;
+is&nbsp;&nbsp;&nbsp; $s</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">s is --universal</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; echo "s&nbsp;&nbsp;
+is&nbsp;&nbsp;&nbsp; $s"</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">s&nbsp;&nbsp; is &nbsp;
+--universal</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; echo 's&nbsp;&nbsp;
+is&nbsp;&nbsp;&nbsp; $s'</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">s&nbsp;&nbsp; is &nbsp; $s<br>
+=&gt; echo 's is '"$s"<br>
+s is --universal<br>
+<br style="font-family: monospace;">
+</span>Each word is matched against files using a technique called <span
+ style="font-weight: bold;">file globbing<span
+ style="font-weight: bold;"><span style="font-weight: bold;">.</span></span></span>&nbsp;
+Single or double quotes prevent file globbing from occurring.&nbsp; For
+example, an asterisk (*) is a wildcard character representing zero or
+more characters.&nbsp; The word "cat*" would match "cat", "cats" or
+"catatonic", if files with these names exist.<br>
+</p>
+<p>With AdaScript arguments, quote marks follow the standard AdaScript
+rules but file globbing will occur on arguments.&nbsp; This is only true
+for commands: no file globbing takes place for "?" or "put".<br>
+</p>
+<p>To work with the results of a command, you'll need to use backquoted
+(`) strings.&nbsp; Use these strings to capture the results of a
+command.&nbsp; When backquotes are used in POSIX arguments, the results
+are substituted into the command in place of the string.&nbsp; When
+backquotes are used in AdaScript arguments, the command results can be
+used in string expressions.<br>
+</p>
+<span style="font-family: monospace;">=&gt; s : string :=
+`date;`</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; ? s</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">Sat Jan&nbsp; 1 12:50:50 EST 2005</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; echo "The date is "`date;`</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">The date is Sat Jan&nbsp; 1
+12:51:21 EST 2005</span><br style="font-family: monospace;">
+<br>
+External commands will run in the background when a trailing
+ampersand
+(&amp;) is used.&nbsp; This is often used to start X Windows
+applications (like the gimp image editing program).<br>
+<p><tt>=&gt; sleep( 5 ) &amp;</tt>
+<br>
+<tt>sleep ( 11400) has started</tt>
+</p>
+<p>The bracketed number returned is the operating system process
+id.&nbsp; Use the <span style="font-weight: bold;">jobs</span> command
+to see which background jobs are running.&nbsp; Use the <span
+ style="font-weight: bold;">history</span> command to see the commands
+you typed at the command prompt.<br>
+</p>
+<p>Like most shells, BUSH supports <b>input/output redirection</b> and
+<b>command pipelines</b>.
+</p>
+<p><tt>=&gt; ls &gt; list.txt<br>
+</tt><tt>=&gt; grep bush &lt; list.txt<br>
+</tt><span style="font-family: monospace;"><br>
+</span>The &gt; operator will write the results of a command to a
+file.&nbsp;
+If the file exists, it will be overwritten.&nbsp; If the file doesn't
+exist,
+it will be created.&nbsp; In this case, the results of the ls command
+are
+written to a file named "list.txt" in the current directory.&nbsp; The
+&gt;&gt; operator will append the results to the end of an existing
+file instead
+of overwriting it.
+</p>
+<p>Likewise the &lt; operator will read a file and use it as input to
+another
+command just as if someone had typed the file by hand.&nbsp; In this
+case,
+grep will search list.txt for the word "bush".
+</p>
+<p>Errors from a command are redirected using the 2&gt; or 2&gt;&gt;
+operators.&nbsp;
+The 2&gt; creates a new file or overwrites an old file and 2&gt;&gt;
+will append
+the errors to an existing file.
+</p>
+<p>A pipeline is a combination of two or more commands connected by a
+pipe
+symbol (|).&nbsp; The results of the first command become the input to
+the second command.&nbsp; Using a pipeline, you don't need to use an
+intermediate
+file to store the results.
+</p>
+<p><tt>=&gt; ls | grep bush<br>
+</tt><span style="font-family: monospace;"><br>
+</span>The &gt;, &gt;&gt;, &lt;, 2&gt;, 2&gt;&gt; and | features make
+it easy to work with programs
+at the command prompt.&nbsp; BUSH provides more powerful redirection
+features
+for scripting in the Text_IO package described in <span
+ style="text-decoration: underline;">the Packages section.</span>
+</p>
+<p>In UNIX-based
+operating systems, variables are shared between shells and other
+programs
+through collections of variables called an environment.&nbsp; The
+environment
+can only hold string variables.&nbsp; To get around this problem, BUSH
+variables are stored independently of the operating system
+environment.&nbsp;
+Environment variables must be "imported" into BUSH or "exported" so
+that
+the programs you run can see them.
+</p>
+<p align="center"><img src="bush_ie.gif" width="256" height="256" summary="[import and export]"></p>
+<p>On startup, BUSH automatically imports basic environment variables
+like HOME (the name of your home directory).&nbsp; You can see that
+they are imported using the env command.
+</p>
+<tt>=&gt; env HOME<br>
+HOME = "/home/ken" -- imported identifier of the type string<br>
+</tt><tt></tt><br>
+Import other environment variables using "pragma import".<br>
+<br>
+<span style="font-family: monospace;">=&gt; LOGNAME : string</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; pragma import( shell,
+LOGNAME )</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; ? LOGNAME</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">ken</span><br>
+<br>
+You can assign a new value to an environment variable but this changes
+the variable
+for the BUSH session.&nbsp; It doesn't change the environment variable
+from
+the point of view of the program that started BUSH.
+<p><tt>=&gt; LOGNAME := "monkey"</tt>
+<br>
+<tt>=&gt; env LOGNAME</tt>
+<br>
+<tt>LOGNAME = "monkey" ( imported identifier of type string)</tt>
+</p>
+<p>To restore the original value, LOGNAME must be re-imported from the
+environment variables using <b>pragma import</b>.
+</p>
+<p><tt>=&gt; pragma import( shell, LOGNAME )</tt>
+<br>
+<tt>=&gt; env LOGNAME</tt>
+<br>
+<tt>LOGNAME = "ken" ( imported identifier of type string )</tt>
+</p>
+<p>LOGNAME is restored to its original value.
+</p>
+<p>To provide a variable to a program you run, it must be exported out
+of BUSH using <b>pragma export</b>.&nbsp; BUSH will take the variable
+and
+convert it to a form that can be placed the environment of the new
+program.&nbsp;
+CVS, for example, requires a variable called CVSROOT.
+</p>
+<p><tt>=&gt; CVSROOT : string := "/home/ken/cvsroot";<br>
+</tt><tt>=&gt; pragma export( shell, CVSROOT )</tt>
+<br>
+<tt>=&gt; env CVSROOT</tt>
+<br>
+<tt>CVSROOT = "/home/ken/cvsroot" -- exported identifier of type string</tt>
+</p>
+<p>If you don't export CVSROOT, the CVS command will not be able to see
+it.&nbsp; It will be "local" to the BUSH session.
+</p>
+<p>Since environments can only hold string variables, you cannot export
+variables other than string variables.
+</p>
+<p><tt>=&gt; sum : integer</tt>
+<br>
+<tt>=&gt; pragma export( shell, sum )</tt>
+<br>
+<tt>pragma export( shell, sum );</tt>
+<br>
+<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+^ type integer (an universal_numeric) is inherently different from an
+universal_string</tt>
+</p>
+<p><br>
+</p>
+<h3><a name="2.3"></a><font color="#777700">2.3 Command Prompt Tutorial 3: Working with Databases</font></h3>
+<p>In order to work with database engines, you will need to install a database
+engine on your computer if you do not have one installed already.  The engine
+is a program that stores, sorts and retrieves data.  BUSH supports the
+PostgreSQL 7 or newer and MySQL 4 or newer.&nbsp; This tutorial uses
+the PostgreSQL database.  To use MySQL in these examples, use the "mysql."
+prefix instead of "db.".</p>
+<p>Database engines use a language called SQL.&nbsp; Since most software
+applications don't understand SQL, a special client program or library is often
+provided with the database.&nbsp; The MySQL database has a client program
+called mysql.  &nbsp;The PostgreSQL database has a program called psql.&nbsp;
+However, BUSH doesn't require a client program: it understands basic SQL
+commands and the built-in database package provides most of the additional
+features of a client program.&nbsp; (Note: Each engine uses a unique version
+of SQL.&nbsp; To create complex SQL queries, consult your database
+documentation.)<br>
+</p>
+<p>Before you can use a database, connect to software using the
+<span style="font-weight: bold;">connect</span> procedure.&nbsp; Connecting is
+similar to logging in: you will need the name of the database, a username and
+a password.&nbsp; Some of this information may be optional.&nbsp; In the
+simplest example, PostgreSQL will allow you to connect to an existing
+database with your login name by providing only the database name.<br>
+</p>
+<span style="font-family: monospace;">=&gt; db.connect( "ken" )</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; ? db.is_connected</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">true</span><br>
+<br>
+db.connect is a built-in AdaScript procedure in the db database
+package.&nbsp; It is not an operating command:
+you cannot use POSIX arguments or redirect the output.<br>
+<br>
+Database client programs do more than just run SQL commands.&nbsp; They
+also know how to display information about the database, its users and
+its tables.&nbsp; These commands are not a part of the SQL
+language.&nbsp; BUSH's db package contains <span
+ style="font-weight: bold;">db,databases</span>, <span
+ style="font-weight: bold;">db.list</span>, <span
+ style="font-weight: bold;">db.users</span> and <span
+ style="font-weight: bold;">db.schema</span> procedures to display this
+kind of information.<br>
+<br>
+The <span style="font-weight: bold;">db.list</span> procedure will
+list all the tables in a database.<br>
+<br>
+<span style="font-family: monospace;">=&gt; db.list</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;Schema |
+Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type&nbsp; | Owner</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">--------+-----------+-------+-------</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;public | guestbook | table
+| root</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;public |
+users&nbsp;&nbsp;&nbsp;&nbsp; | table | ken</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;2 Rows and 4 Columns</span><br
+ style="font-family: monospace;">
+<br>
+The <span style="font-weight: bold;">db.schema</span> procedure will
+list the contents of a table.<br>
+<br>
+<span style="font-family: monospace;">=&gt; db.schema( "users" )</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;Column |
+Type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| Not Null | Default</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">--------+-----------------------+----------+---------</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;name&nbsp;&nbsp; |
+character varying(32)
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;age&nbsp;&nbsp;&nbsp; |
+integer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;2 Rows and 5 Columns</span><br>
+<br>
+To create a new table, use the db.prepare and db.execute
+procedures.&nbsp; Use db.prepare to begin building a SQL command.&nbsp;
+Additional lines can be added with db.append, db.append_line and
+db.append_quoted.&nbsp; When the SQL command is finished, run the
+command with db.execute.<br>
+<br>
+Before we begin, we'll start a transaction.<br>
+<br>
+<span style="font-family: monospace;">=&gt; db.begin_work</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; db.prepare( "create table
+test (name varchar(20), age integer )" )</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; db.execute</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; db.list</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;Schema |
+Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type&nbsp; | Owner</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">--------+-----------+-------+-------</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;public | guestbook | table
+| root</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;public |
+test&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | table | ken</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;public |
+users&nbsp;&nbsp;&nbsp;&nbsp; | table | ken</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"><span
+ style="font-family: monospace;">&nbsp;2 Rows and 4 Columns</span><br>
+<br>
+</span>The SQL command created a new table.&nbsp; You can use
+db.prepare and db.execute to run most
+SQL commands.&nbsp; For convenience, BUSH recognizes several basic SQL
+commands
+directly on the command
+prompt: <span style="font-weight: bold;">alter</span> (change a
+table's structure), <span style="font-weight: bold;">insert</span>
+(add a row to a table), <span style="font-weight: bold;">delete</span>
+(remove rows from a table), <span style="font-weight: bold;">select</span>
+(view rows) and <span style="font-weight: bold;">update</span> (change
+rows).<br>
+<br>
+<span style="font-family: monospace;">=&gt; insert into test values
+('bob', 16 )</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; insert into test values
+('joe', 78 )</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; select * from test</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;name | age</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">------+------</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;bob&nbsp; | 16</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;joe&nbsp; | 78</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;2 Rows and 2 Columns</span><br>
+<br>
+The new rows were added to the empty table.<br>
+<br>
+The format of the SQL command, including how quoting is used, is
+determined by the database being used.&nbsp; BUSH will not perform
+file globbing (otherwise select count(*) would give very strange
+results!).&nbsp; BUSH will substitute variables with dollar sign
+expansion and the output from SQL commands can be redirected like an
+operating system command.&nbsp; For this reason you'll have to escape
+characters like "&gt;" with a backslash used with SQL on the command
+line.<br>
+<br>
+<span style="font-family: monospace;">=&gt; select * from test where
+name \&gt; 'c'</span><br style="font-family: monospace;">
+<span style="font-family: monospace;"></span><span
+ style="font-family: monospace;">=&gt; select * from test where
+name \&gt; 'c'</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;name | age</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">------+------</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;joe&nbsp; | 78</span><br>
+<br>
+In this case, the "&gt;" must be escaped to prevent BUSH from
+redirecting the output to a file called "c".<br>
+<br>
+<span style="font-family: monospace;">=&gt; select * from test where
+name &gt; temp.txt</span><br style="font-family: monospace;">
+<span style="font-family: monospace;"></span><span
+ style="font-family: monospace;">=&gt; cat temp.txt</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;name | age</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">------+------</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;bob&nbsp; | 16</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;joe&nbsp; | 78</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;2 Rows and 2 Columns</span><br>
+<br>
+Since these command are in a transaction, you can discard the table by
+rolling
+back with <span style="font-weight: bold;">db.rollback_work</span>, or
+commit the changes using <span style="font-weight: bold;">db.commit_work</span>.<br>
+<br>
+<span style="font-family: monospace;">=&gt; db.rollback_work</span><br>
+<br>
+Database errors are reported in the same way as a BUSH error.<br>
+<br>
+<span style="font-family: monospace;">=&gt; select * from test</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">select * from test;</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+^ ERROR:&nbsp; relation "test" does not exist</span><br>
+<br>
+There's a lot more that the db package can do.&nbsp; Read the
+Packages section for a full description.<br>
+<p><br>
+<h3><a name="2.4"></a><font color="#777700">2.4 Script Tutorial 1: Basic Commands Scripts</font></h3>
+</p>
+<p>BUSH <b>comments</b> begin with a double minus sign. Any text
+following
+the comment sign to the end of the line are treated as explanatory
+text.
+For example,
+</p>
+<p><tt>=&gt; -- BUSH is great</tt>
+</p>
+<p>Comments are not very useful at the command prompt but they are very
+useful in scripts.&nbsp; A script is collection of BUSH commands stored
+in a file. <br>
+</p>
+<p>One crude way to get BUSH to execute commands is to redirect the
+commands
+through standard input. For example, from BASH you could type
+</p>
+<p><tt>bash$ echo "? \"Hello World\" ; logout" | bush</tt>
+</p>
+<p>BUSH treats this as if it was an interactive session with a human
+user.
+Command prompts are written to the screen and the keyword logout is
+necessary
+to terminate the session.
+</p>
+<p>A better way to execute a set of commands is to write a script. A
+script has these
+advantages:
+</p>
+<ul>
+  <li>It will run faster because BUSH compiles scripts into its own
+internal
+byte code</li>
+  <li>Compound statements can be used on multiple lines</li>
+  <li>Command prompts and other interactive session displays will not
+appear</li>
+</ul>
+Commands typed into a script are treated slightly differently than
+those
+in an interactive session.:
+<ul>
+  <li>The semi-colon at the end of each command is required.<br>
+  </li>
+  <li>All variables must be declared before they are used. Assigning a
+value
+to an undeclared variable is an error. (In an interactive session, BUSH
+can automatically declare the variable with a warning.)</li>
+  <li> <b>logout</b> will not stop a script. Use <b>return</b> or let
+the
+script
+reach the end of file.</li>
+</ul>
+The first two items are necessary because in a script there's no user
+to
+interact with the commands. BUSH cannot not make assumptions or take
+any
+automatic actions.
+<p>By convention, BUSH shell scripts have file names ending with
+".bush".
+The following is a script called "hello.bush", a very short script to
+write
+a message on the screen.
+</p>
+<p><tt>-- hello.bush</tt>
+<br>
+<tt>-- this is my first BUSH script</tt>
+<br>
+<tt>put_line( "Hello! BUSH is wonderful." );</tt>
+<br>
+<tt>command_line.set_exit_status( 0 );</tt>
+</p>
+<p>put_line and set_exit_status are built-in procedures. put_line, part
+of
+the Text_IO package, displays a message on the screen. 
+set_exit_status(0) informs the program which ran your shell script
+that the script ran successfully.
+</p>
+<p>You can run your shell script
+</p>
+<p><tt>=&gt; bush hello.bush</tt>
+</p>
+<p>If there are no mistakes, BUSH will respond with the message.
+</p>
+<tt>Hello! BUSH is wonderful.</tt>
+<br>
+<p><b>Conditional statements</b> are BUSH constructs for making choices and
+providing alternative instructions.  Use the <b>if</b> statement to make
+choices.  The if statement can have optional <b>elsif</b> or <b>else</b>
+parts.</p>
+<tt>current_day : calendar.day_number := calendar.day( calendar.clock );</tt><br />
+<tt><b>if</b> current_day = 1 <b>then</b></tt><br />
+<tt>&nbsp;&nbsp;&nbsp;? "It is the first day of the month!";</tt><br />
+<tt><b>end if</b>;</tt><br />
+<p>The <b>case</b> statement can be used for decisions involving many
+individual values.  The final "when" must always be "when others", which
+includes all other values not covered by the other "when"'s.</p>
+<tt>current_day : calendar.day_number := calendar.day( calendar.clock );</tt><br />
+<tt>put( "It is the" );</tt><br />
+<tt><b>case</b> current_day <b>is</b></tt><br />
+<tt><b>when</b> 1 =&gt; put( " first" );</tt><br />
+<tt><b>when</b> 2 =&gt; put( " second" );</tt><br />
+<tt><b>when</b> 3 =&gt; put( " third" );</tt><br />
+<tt><b>when</b> 4 =&gt; put( " fourth" );</tt><br />
+<tt><b>when</b> 5 =&gt; put( " fifth" );</tt><br />
+<tt><b>when</b> 6 =&gt; put( " sixth" );</tt><br />
+<tt><b>when</b> 7 =&gt; put( " seventh" );</tt><br />
+<tt><b>when</b> 8 =&gt; put( " eighth" );</tt><br />
+<tt><b>when</b> 9 =&gt; put( " ninth" );</tt><br />
+<tt><b>when</b> <b>others</b> =&gt; put( current_day ) @ ( "th" );</tt><br />
+<tt><b>end case;</b></tt><br />
+<tt>put_line( " day of the month" );</tt><br />
+<p>The @ character (pronounced "itself") has two different uses in BUSH.
+When used at the end of a command or procedure call, @ will call the
+command or procedure again with a new set of parameters.  Combining parameter
+lists with @ is called a <b>chain</b>.  @ is especially useful with the
+put procedure to output several items without having to do string
+conversions and a long, hard to read expression.</p>
+<p>There are several looping statements.  The <b>for</b> loop will repeat
+a set of commands a specific number of times or over a specific range of
+numbers.  The variable in the for loop doesn't need to be declared: BUSH will
+declare it for you automatically.  A <b>while</b> loop will repeat a set of
+commands until something
+becomes true.  A <b>loop</b> loop will loop indefinitely until you break out
+of the loop with an <b>exit</b> command.</p>
+<tt><b>for</b> i <b>in</b> 1..10 <b>loop</b></tt><br />
+<tt>&nbsp;&nbsp;&nbsp;put( i ) @ ( " times 2 is" ) @ ( i * 2 );</tt><br />
+<tt>&nbsp;&nbsp;&nbsp;new_line;</tt><br />
+<tt><b>end loop</b>;</tt><br />
+<p>The <b>logout</b> command, which ends an interactive login session,
+cannot be used to stop a script. (After all, a script is not a login
+session.) Instead, use the <b>return</b> command to unconditionally
+stop a script and return control to the calling program or person. Set
+the exit status to zero to indicate there is no error.</p>
+<p>Scripts automatically stop when it reaches its end as if there was an
+implicit "return" typed there.</p>
+<p>Scripts can be paused using the built-in delay command. delay will
+suspend
+the script for a specific number of seconds after which it will wake up
+and resume the next statement after the delay command. The number of
+seconds
+can include a fractional part.
+</p>
+<p><tt><b>delay</b> 5.5; -- wait for 5 1/2 seconds</tt>
+</p>
+<p>delay is useful for putting pauses in a script, allowing the user to
+read what's been displayed. delay isn't suitable for synchronizing
+events,
+however, because how long a particular program runs on the computer
+often
+depends on the system load, the number of users, hardware upgrades and
+other factors outside of the script's control.
+<br>
+&nbsp;
+</p>
+<h3><a name="2.5"></a><font color="#777700">2.5 Script Tutorial 2: Intermediate Program Scripts</font></h3>
+<p>A script can be as simple as a list of command.&nbsp;&nbsp; Once a
+script is installed, it can grow, change and become obsolete.&nbsp;
+This tutorial discusses BUSH's features for handling the evolution of a
+script.</p>
+<p>Suppose you want to write a script that does something more useful,
+such
+as email someone with a "bob" login when there are files waiting in a
+certain
+directory. In BUSH, the following commands can do the job:
+</p>
+<p><tt>num_files : integer := numerics.value( `ls -1 incomingdir | wc -l;` );</tt>
+<br>
+<tt>if num_files &gt; 0 then</tt>
+<br>
+<tt>&nbsp;&nbsp; /bin/echo "There are files waiting in the incoming
+directory" | mail -s "waiting files" bob;</tt>
+<br>
+<tt>end if;</tt>
+</p>
+<p>But consider the following questions:
+</p>
+<ul>
+  <li>how does the operating system know that this is a BUSH script?</li>
+  <li>Is there more than one "mail" command on the computer, which one
+executes?</li>
+  <li>How does the script inform the program if it succeeds or fails?</li>
+  <li>What happens if the ls command was accidentally deleted or
+altered by
+the
+system administrator (these things happen)?</li>
+</ul>
+BUSH scripts can be more than a list of commands. BUSH has a number of
+features that allow scripts to be "well-structured". Well-structured
+scripts
+are easier to read and debug. Here's an example of a well-structured
+BUSH
+script:
+<p><tt>#!/usr/local/bin/bush</tt>
+<br>
+<tt>--</tt>
+<br>
+<tt>-- checkfiles.bush - check the files in the incoming directory
+and email someone when the files arrive.</tt>
+<br>
+<tt>--</tt>
+<br>
+<tt>-- Ken O. Burtch</tt>
+<br>
+<tt>-- CVS: $Header: /home/cvsroot/ada/bush/doc/bushtutorial.html,v
+1.1.1.1 2003/10/16 03:08:54 ken Exp $</tt>
+</p>
+<p><tt>procedure checkfiles is</tt>
+</p>
+<p><tt>-- declarations</tt>
+</p>
+<p><tt>&nbsp; num_files : integer;</tt>
+<br>
+<tt>&nbsp; ls : constant command := "/bin/ls"; -- the ls command -
+man 1 ls</tt>
+<br>
+<tt>&nbsp; mail : constant command := "/usr/bin/mail"; -- the mail
+command - man 1 ls</tt>
+<br>
+<tt>begin</tt>
+</p>
+<p><tt>-- commands begin here</tt>
+</p>
+<p><tt>&nbsp; num_files : integer := numerics.value( `ls -1
+incomingdir | wc -l;`
+);</tt>
+<br>
+<tt>&nbsp; if num_files &gt; 0 then</tt>
+<br>
+<tt>&nbsp;&nbsp;&nbsp; /bin/echo "There are files waiting in the
+incoming
+directory" | mail -s "waiting files" bob;</tt>
+<br>
+<tt>&nbsp; end if;</tt>
+</p>
+<p><tt>-- cleanup</tt>
+</p>
+<p><tt>&nbsp; command_line.set_exit_status( 0 );</tt>
+<br>
+<tt>end checkfiles;</tt>
+</p>
+<p>The first part of this script is called the header. The header
+defines
+what kind of script this is, who wrote it, what version it is, and what
+restrictions or BUSH pragmas will apply to this script.
+</p>
+<p>The very first line of a script is the header line. This line begins
+with a "#!" at the top of the script, flush with the left margin. This
+character combination identifies the kind of script. UNIX-based O/S
+users
+this information to start the right program to run the script. For BUSH
+scripts, this line contains the absolute pathname to where the BUSH
+shell
+resides. On many systems, this will be /usr/local/bin/bush.
+</p>
+<p>If you don't know the location of the BUSH shell, use the "whereis"
+command to find it:
+</p>
+<p><tt>=&gt; whereis bush</tt>
+<br>
+<tt>bush: /usr/local/bin/bush</tt>
+</p>
+<p>The header line is followed by comments describing the purpose of
+the
+script and who wrote it. This is important in case your script needs to
+be debugged in an emergency situation. The "CVS" line is used by the
+cvs
+program, if it is installed and you intend to use it.
+</p>
+<p>The main script is wrapped in a procedure statement. The procedure
+statement
+divides the script into two sections: declaring variables and commands
+to run. Putting all the declarations for a script in one place makes it
+easy for someone to refer to them while reading the script.
+</p>
+<p>The commands are declared as command variables. A command variable
+is
+a special BUSH variable type: when a command variable is declared, BUSH
+verifies that the command exists and that it can be run. If the command
+cannot be run, BUSH stops the script before any command are executed.
+</p>
+<p>Without command variables, BUSH searches several directories for the
+command you want to run. If it can't find it, the script will stop with
+an error after executing part of the script. In this circumstance, it
+is
+difficult to determine where the script left off and what needs to be
+done
+to continue. Instead, command variables and other "sanity checks"
+should
+be put at the top of the script, or in the variable declarations, to
+ensure
+that when the script fails because of these kind of errors that the
+system
+will be left in a consistent state.
+</p>
+<p>After the main portion of the script runs (the part that does the
+actual
+work), the script should clean up after itself. Any open files should
+be
+closed or deleted and the script should return a status code to the
+person
+or program running the script. In this case, there are no files to
+clean
+up. All that is necessary is the set_exit_status command( 0 ) which
+indicates
+that the script ran successfully.
+<br>
+&nbsp;
+</p>
+<p>A subprogram is a piece of a program that is given a name.&nbsp;
+Subprograms can be <span style="font-weight: bold;">functions</span>,
+routines that return a value for an expression, or <span
+ style="font-weight: bold;">procedures</span>.&nbsp; A BUSH script
+itself can be contained in a <span style="font-weight: bold;">procedure</span>.<br>
+</p>
+<p><span style="font-family: monospace;"><span
+ style="font-weight: bold;">procedure</span> p <span
+ style="font-weight: bold;">is</span></span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace; font-weight: bold;">begin</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp; put_line( "hello
+world!" );</span><br style="font-family: monospace;">
+<span style="font-family: monospace;"><span style="font-weight: bold;">end</span>
+p;</span><br>
+</p>
+<p>Additional procedures and functions can be declared in declared in
+the declaration section of the procedure.<br>
+</p>
+<p><span style="font-family: monospace;">-- math.bush: do some simple
+math</span><br style="font-family: monospace;">
+<span style="font-family: monospace;"><span style="font-weight: bold;">procedure</span>
+math <span style="font-weight: bold;">is</span></span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; <span
+ style="font-weight: bold;">function</span> double( n : integer ) <span
+ style="font-weight: bold;">return</span> integer <span
+ style="font-weight: bold;">is</span></span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; -- multiply
+the parameter by two</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; <span
+ style="font-weight: bold;">begin</span></span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; <span
+ style="font-weight: bold;">return</span> 2*n;</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; <span
+ style="font-weight: bold;">end</span> double;</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><br style="font-family: monospace;">
+<span style="font-family: monospace; font-weight: bold;">begin</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; put_line( "5 doubled is"
+&amp; strings.image( double( 5 ) ) );</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"><span style="font-weight: bold;">end</span>
+math;</span> <br>
+</p>
+<p>Comments can be placed in a script using <span
+ style="font-weight: bold;">pragma annotate</span>.&nbsp; These embedded
+comments appear when you use the help command.&nbsp; You can have more than
+one pragma annotate in a script.<br>
+</p>
+<p style="font-family: monospace;">-- math.bush: do some simple math<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br>
+<span style="font-weight: bold;">procedure</span> math <span
+ style="font-weight: bold;">is</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br>
+&nbsp; <span style="font-weight: bold;">pragma</span> annotate( "This
+script performs some simple math" );<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br>
+&nbsp; <span style="font-weight: bold;">function</span> double( n :
+integer ) <span style="font-weight: bold;">return</span> integer <span
+ style="font-weight: bold;">is</span><br>
+&nbsp;&nbsp;&nbsp; -- multiply the parameter by two<br>
+&nbsp; <span style="font-weight: bold;">begin</span><br>
+&nbsp;&nbsp;&nbsp; <span style="font-weight: bold;">return</span> 2*n;<br>
+&nbsp; <span style="font-weight: bold;">end</span> double;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br>
+<span style="font-weight: bold;">begin</span><br>
+&nbsp; put_line( "5 doubled is" &amp; strings.image( double( 5 ) ) );<br>
+<span style="font-weight: bold;">end</span> math;<br>
+</p>
+<p>View the annotations with the <span style="font-weight: bold;">help</span>
+command.<br>
+</p>
+<p><span style="font-family: monospace;">=&gt; help t.bush</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">Help for script </span><span
+ style="font-weight: bold; font-family: monospace;">t.bush</span><span
+ style="font-family: monospace;">:</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">This script performs some simple
+math</span><br style="font-family: monospace;">
+</p>
+<p>There are two pragmas for debugging.&nbsp; <span
+ style="font-weight: bold;">pragma assert</span> tests for a condition
+and stops the script if the condition is false.&nbsp; <span
+ style="font-weight: bold;">pragma debug</span> will run a backquoted
+command.&nbsp; This debugging statements only run if BUSH is in
+debugging mode with the --debug option (or pragma debug with no
+parameters).&nbsp; With these pragmas, you won't need to remove
+or comment out your debugging statements and risk changing your script's
+behavior.<br>
+</p>
+<p><span style="font-family: monospace;">&nbsp; ten : integer :=
+double( 5 );</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; <span
+ style="font-weight: bold;">pragma</span> assert( ten = 10 );</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; <span
+ style="font-weight: bold;">pragma</span> debug( `put_line( "the value
+of 10 is" &amp; strings.image( ten ) );` );</span><br
+ style="font-family: monospace;">
+</p>
+<p>To perform more complex debugging, BUSH has a built-in debugger.  You
+can find out more about using the debugger in another tutorial.</p>
+<p>BUSH scripts can be copied or moved to other tools such as GCC (for binary
+applications), JGNAT (JVM applications) or A# (.Net applets).&nbsp; Although
+tools like GCC understand most AdaScript features, they have no knowledge of
+Bourne shell commands or features only available on BUSH.  The more commands,
+pipes and other shell features you use, the more difficult it will be to port
+your scripts to other tools.&nbsp; At the same time, these special features
+make writing scripts easier.</p>
+<p>GCC, JGNAT, A# and BUSH are all designed for compatibility with ISO-standard
+Ada.  If your source code needs to be portable, use <span style="font-weight: bold;">pragma ada_95</span>.
+This pragma will disallow most of the Bourne shell features and will make
+your script as compatible as possible with the ISO-standard Ada language.&nbsp;
+This does not mean that your script can no longer perform its job but you may
+have to rewrite the parts of your script using Ada-friendly features.&nbsp; For example, you will no
+longer be able to use the "?" command, a BUSH-specific feature, but you can
+rewrite "?" commands to use put_line which is supported by GCC and other Ada-
+based tools.  You lose the convenience of some features but gain source code
+reusability without a major rewrite of your work.</p>
+<p>To further improve the portability of the script, you can turn off
+unnecessary features with <b>pragma restriction</b>.&nbsp; For example, pragma
+restriction( no_external_commands ) will prevent any external operating system
+commands from running.<br>
+</p>
+<p>The final script looks like this.<br>
+</p>
+<p><span style="font-family: monospace;">-- math.bush: do some simple
+math</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><br style="font-family: monospace;">
+<span style="font-family: monospace;"><span style="font-weight: bold;">procedure</span>
+math <span style="font-weight: bold;">is</span></span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; <span
+ style="font-weight: bold;">pragma</span> ada_95;</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; <span
+ style="font-weight: bold;">pragma</span> restriction(
+no_external_commands );</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; <span
+ style="font-weight: bold;">pragma</span> annotate( "This script
+performs some simple math" );</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; <span
+ style="font-weight: bold;">function</span> double( n : integer ) <span
+ style="font-weight: bold;">return</span> integer <span
+ style="font-weight: bold;">is</span></span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; -- multiply
+the parameter by two</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; <span
+ style="font-weight: bold;">begin</span></span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp; <span
+ style="font-weight: bold;">return</span> 2*n;</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; <span
+ style="font-weight: bold;">end</span> double;</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; ten : integer := double( 5
+);</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; <span
+ style="font-weight: bold;">pragma</span> assert( ten = 10 );</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><br style="font-family: monospace;">
+<span style="font-family: monospace; font-weight: bold;">begin</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; put_line( "5 doubled is"
+&amp; strings.image( ten ) );</span><br style="font-family: monospace;">
+<span style="font-family: monospace;"><span style="font-weight: bold;">end</span>
+math;</span><br>
+</p>
+<p>When a script becomes obsolete, use <span style="font-weight: bold;"><span
+ style="font-weight: bold;"><span style="font-weight: bold;">pragma
+depreciated</span></span></span> (or <span style="font-weight: bold;"><span
+ style="font-weight: bold;"><span style="font-weight: bold;">deprecated</span></span></span>)
+in the script.&nbsp; This pragma has one parameter, the name of the new
+script which makes the current script obsolete.&nbsp; The old script
+will continue to run but when it completes a warning message will
+announce that the script is obsolete and BUSH will give the name of the
+new script.&nbsp; In this way, old scripts can continue to run as
+programmers slowly upgrade to the new script.<br>
+<br>
+</p>
+<p></p>
+<h3><a name="2.6"></a><font color="#777700">2.6 Template Tutorial 1: Basic Templates</font></h3>
+<p>Tools like PHP can run commands embedded in a web page. BUSH scripts
+can
+also be embedded in a web page. Using BUSH instead of another tool is
+easy to learn and use since you're are already familiar with the BUSH
+language.</p>
+<h4>Running BUSH From a Web Server</h4>
+<p>CGI scripts can be written in BUSH, in the same way as they are
+written in
+in other scripting languages like PERL or PHP. Write your CGI script in
+BUSH
+and make sure that the "#!" path has the correct location of the BUSH
+interpreter. Your web server can then run the BUSH script.</p>
+<p>Using the BUSH <tt>cgi</tt> package you should now be able to write
+a CGI
+script using BUSH.</p>
+<p>To make BUSH run as a template engine like PHP, BUSH has a directive
+called
+<tt>pragma template</tt>. This pragma has two parameters: the type of
+template
+and an optional path to the template. If you don't include a path to
+the
+template, BUSH will assume that the template has the same name as your
+script
+but with a ".tmpl" file name extension. Use a template type of <tt>html</tt>.</p>
+<pre>#!/usr/local/bin/bush<br># status.bush<br><b>pragma</b> template( html );<br><b>procedure</b> status is<br>  user_count : constant integer := `who | wc -l`;<br><b>begin</b>
+  null;
+<b>end</b> status;<br></pre>
+<p>Use the main script to run operating system command, database
+queries or
+complex calculations. Once BUSH has executed this script, BUSH try will
+load a
+template called "status.tmpl".</p>
+<h4>What's in a Template File?</h4>
+<p>A template file should contain the web page BUSH will display. Embed
+BUSH
+scripts within the template using &lt;?bush tag. The output
+from the scripts is written directly into the web page. For example,
+to insert the values of BUSH variables in a web page, use the question
+mark
+command.</p>
+<pre>&lt;!-- status.tmpl: template for the status.bush script --&gt;<br>&lt;html&gt;<br>&lt;head&gt;<br>&lt;title&gt;Users on the System&lt;/title&gt;<br>&lt;/head&gt;<br>&lt;body&gt;<br>&lt;h3&gt;Users on the System&amp;&lt;h3&gt;<br>&lt;p&gt;There are &lt;?bush ?user_count; ?&gt; users on the system.&lt;/p&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;<br></pre>
+<p>This would result in a web page similar to</p>
+<hr>
+<h3>Users on the System</h3>
+There are 4 users on the system.
+<hr>
+<p>The &lt;?bush...?&gt; tag can contain any kind of BUSH script and
+can be longer
+than one line.</p>
+<p>The scripts in the template are after the main script. For security,
+scripts run in a restricted shell and are not able to run external
+operating
+system commands. (You can disable this protection with <tt>pragma
+unrestricted_template</tt> but anyone who can edit the template will be
+able to run commands with the authority of the web server--generally, a
+very bad idea.).</p>
+<p>Here is a longer example:</p>
+<table border="1" width="98%">
+  <tbody>
+    <tr>
+      <td><b>CGI Script (test.cgi)</b></td>
+      <td><b>Template (test.tmpl)</b></td>
+    </tr>
+    <tr>
+      <td valign="top">
+      <pre>#!/usr/local/bin/bush<br>pragma unrestricted_template( html );<br></pre>
+      </td>
+      <td valign="top">
+      <pre>&lt;html&gt;<br>&lt;head&gt;<br>&lt;titleBUSH Rocks!&lt;/title&gt;<br>&lt;/head&gt;<br>&lt;body&gt;<br>&lt;h2&gt;BUSH Rocks!&lt;/h2&gt;<br>&lt;h3&gt;System Info&lt;/h3&gt;<br>&lt;table border=1 summary="System Info"&gt;<br>&lt;tr&gt;<br>&lt;td align="right"&gt;&lt;b&gt;System Name:&lt;/b&gt;&lt;/td&gt;<br>&lt;td&gt;&lt;?bush uname -n; ?&gt;&lt;/td&gt;<br>&lt;/tr&gt;<br>&lt;tr&gt;<br>&lt;td align="right"&gt;&lt;b&gt;Uptime:&lt;/b&gt;&lt;/td&gt;<br>&lt;td&lt;pre&gt;&lt;?bush uptime; ?&gt;&lt;/pre&gt;&lt;/td&gt;<br>&lt;/tr&gt;<br>&lt;tr&gt;<br>&lt;td align="right"&gt;&lt;b&gt;Database Tables:&lt;/b&gt;&lt;/td&gt;<br>&lt;td&gt;&lt;pre&gt;&lt;?bush<br>   db.connect( "ken" );<br>   if not db.is_connected then<br>      put_line( "&lt;i&gt;Unable to connect to database&lt;/i&gt;" );<br>   end if;<br>   db.list; -- show a list of database tables<br>?&gt;&lt;/pre&gt;&lt;/td&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;<br></pre>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2"><b>Results in a Web Browser</b><br>
+      <img src="bush_template_1.gif" alt="[Screenshot]" height="505"
+ width="696"></td>
+    </tr>
+  </tbody>
+</table>
+<p>Like most CGI scripting languages, an error messages are written to
+the
+web server error log. If a page doesn't display properly, check the
+error
+log for possible problems.</p>
+<p>&nbsp;
+</p>
+<h3><a name="2.7"></a><font color="#777700">2.7 Template Tutorial 2: Intermediate Templates</font></h3>
+<p>Some web experts recommend using a MVC (model, view, controller) layout
+for web templates.  What they mean by that is that the business logic,
+the formatting of the web page, and the content should be separated.  In
+large organizations, the programmer will to the calculations, the web designer
+will create the look of the web page and an editor will fill in text.  By
+separating these tasks, each person can work on his/her part of the web site
+without interfering with the others.</p>
+<p>As shown in Tutorial 2.6, BUSH templates consist of a CGI script plus an
+HTML template.  By default, both files are located in the same directory.
+The template file can be located in a different directory.  <b>pragma
+template</b> can have the location of the template file as a second parameter.
+For example, if you have a web designer and programmer, place the templates
+in a different directory with different access rights so that these two
+people will not interfere with each other.</p>
+<p>There are several ways to share information between templates.  Data can be
+stored in cookies, in files, in database tables or it can be shared using HTML
+variables.  HTML variables are created by using &lt;input&gt; tags inside of
+forms.</p>
+<p>There are two ways to read HTML variables in BUSH.  The first method is to
+import the variable.  In the same way as you import shell environment variables,
+<b>pragma import</b> can import HTML variables by using "cgi" instead of
+"shell".</p>
+<tt>first_name : string;</tt><br>
+<tt><b>pragma</b> import( cgi, first_name );</tt>
+<p>The second method is to use the builtin cgi package.  <b>cgi.value</b>
+will retrieve the value of a HTML variable in a form.  The value function
+requires the name the variable, the instance (because there may be multiple
+variables with the same name), and whether or not to raise an exception if
+the variable is not there.</p>
+<tt>first_name : string := cgi.value( "first_name", 1, false );</tt><br>
+<p>The import method provides greater reliability: the name of the BUSH
+variable must be the same as the HTML variable, and if the import fails, the
+template will stop before it can execute the main script.  The CGI method
+can load HTML variables on demand to improve performance, and is compatible
+with GCC.</p>
+<b>cgi.input_received</b> is true if form data was received.  You can use this
+function to check for form data before trying to read the values.</p>
+<p>You can also use pragma import to get environment information from the web
+server using "shell" import type.  The variables available depends on the
+web server you are using. Common variables include:</p>
+<ul>
+<li>DOCUMENT_ROOT - the top-most directory containing the web site</li>
+<li>HTP_REFERER - the page that contained the form being submitted</li>
+<li>HTTP_USER_AGENT - the user's web browser</li>
+<li>PATH_INFO - extra characters after the URL</li>
+<li>QUERY_STRING - the web variables in encoded form</li>
+<li>REMOTE_ADDR - the user's IP number</li>
+<li>REMOTE_HOST - the hostname for REMOTE_ADDR</li>
+<li>SERVER_NAME - the name of the server the web page is on</li>
+</ul>
+
+  <tt>HTTP_USER_AGENT : string;</tt><br>
+  <tt>pragma import( shell, HTTP_USER_AGENT );</tt><br>
+  <tt>-- Get the name of the user's web browser</tt><br>
+  <tt>-- e.g. Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.3) Gecko/20040922</tt><br>
+<p>Here is a larger example of a simple guestbook where people can leave their
+names and a message.</p>
+<table border="1" width="98%">
+    <tr>
+      <td><b>CGI Script (guestbook.cgi)</b></td>
+    </tr>
+<tr>
+<td>
+<pre>
+#!/usr/local/bin/bush
+
+-----------------------------------------------------------------------------
+-- GUESTBOOK.CGI
+--
+-- This is a simple guest book written in BUSH.
+-- Before using this guestbook, create a "guestbook" table with "name" and
+-- "message" fields.  Make sure that the web server has permission to insert
+-- and select on the table.
+-----------------------------------------------------------------------------
+
+<b>pragma</b> template( html );
+-- this is a web template
+
+<b>pragma</b> debug;
+-- show BUSH errors on web page, enable assert/debug pragmas.  Comment this
+-- out to record errors only in the web server log.
+
+<b>pragma</b> restriction( no_external_commands );
+-- this template is self-contained
+
+-----------------------------------------------------------------------------
+-- USER CONFIGURATION AREA
+-----------------------------------------------------------------------------
+
+dbname  : <b>constant</b> string := "ken";
+-- the name of the database
+
+dbtable : <b>constant</b> string := "guestbook";
+-- the name of the guestbook table
+
+guestbook_title : <b>constant</b> string := "Our Guestbook";
+-- the title of the guestbook
+
+allowed_host_address : <b>constant</b> string := "127.0.0.1";
+-- the host computer with the CGI script that is allowed to submit things to
+-- the guestbook (a security check)
+
+-----------------------------------------------------------------------------
+-- GLOBAL VARIABLES
+-----------------------------------------------------------------------------
+
+REMOTE_ADDR : <b>constant</b> string := "";
+<b>pragma</b> import( shell, REMOTE_ADDR );
+-- Apache variable for address of requesting machine
+
+ok_to_post : boolean;
+-- true if this is the correct host for posting
+
+-----------------------------------------------------------------------------
+-- MAIN
+-----------------------------------------------------------------------------
+
+db.connect( dbname );                      -- open a connection to the database
+ok_to_post := REMOTE_ADDR = allowed_host_address;  -- is this host OK?
+
+-- VIM vi editor will show correct hilighting with this:
+-- vim: ts=8 sw=4 tw=72 fdm=indent ft=ada smarttab noexpandtab
+</pre>
+</td>
+</tr>
+<tr>
+      <td><b>Template (guestbook.tmpl)</b></td>
+</tr>
+<tr>
+<td>
+<pre>
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&lt;?bush ? guestbook_title; ?&gt;&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h2&gt;&lt;?bush ? guestbook_title; ?&gt;&lt;/h2&gt;
+&lt;form action="/cgi-bin/guestbook.cgi" method="post"&gt;
+&lt;p&gt;Please sign our guestbook.&lt;/p&gt;
+&lt;table border="1" cellspacing="2" cellpadding="1" summary="your message"&gt;
+&lt;tr&gt;
+&lt;td bgcolor="lightgrey"&gt;Your Name:&lt;/td&gt;
+&lt;td&gt;&lt;input type="input" name="name" size="40"&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td bgcolor="lightgrey"&gt;Your Message:&lt;/td&gt;
+&lt;td&gt;&lt;input type="input" name="message" size="80"&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&nbsp;&lt;br&gt;
+&lt;input type="submit" name="Submit" value="Sign"&gt;
+&lt;/form&gt;
+&lt;hr /&gt;
+&lt;h3&gt;Messages from our Guests&lt;/h3&gt;
+&lt;table border="1" cellspacing="2" cellpadding="1" width="98%" summary="other messages"&gt;
+
+&lt;?bush
+  -- if there is a new guestbook entry, insert
+  if cgi.input_received then
+     if ok_to_post then
+        if cgi.key_exists( "name", 1 ) then
+           declare
+             name    : string := cgi.value( "name", 1, false );
+             message : string := cgi.value( "message", 1, false );
+           begin
+             ? name;
+             ? message;
+             db.prepare( "insert into " &amp; dbtable &amp; " values ('" &amp;
+                name &amp; "','" &amp; message &amp; "')" );
+             db.execute;
+           end;
+        else
+          put_line( "&lt;b&gt;This remote host is not allowed to post to the guestbook&lt;/b&gt;" );
+        end if;
+     end if;
+  end if;
+
+  -- show the messages
+  db.prepare( "select name, message from " &amp; dbtable );
+  db.execute;
+  if db.tuples = 0 then
+    put_line( "&lt;tr&gt;" );
+    put_line( "&lt;td&gt;&lt;i&gt;You are the first person to sign the guestbook.&lt;/i&gt;&lt;/td&gt;" );
+    put_line( "&lt;/tr&gt;" );
+  else
+    put_line( "&lt;tr&gt;" );
+    put_line( "&lt;td bgcolor=lightgrey>&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;" );
+    put_line( "&lt;td bgcolor=lightgrey&gt;&lt;b&gt;Message&lt;/b&gt;&lt;/td&gt;" );
+    put_line( "&lt;/tr&gt;" );
+    while not db.end_of_query loop
+      db.fetch;
+      put_line( "&lt;tr&gt;" );
+      put_line( "&lt;td&gt;" &amp; db.value( 1 ) &amp; "&lt;/td&gt;" );
+      put_line( "&lt;td&gt;" &amp; db.value( 2 ) &amp; "&lt;/td&gt;" );
+      put_line( "&lt;/tr&gt;" );
+    end loop;
+  end if;
+  db.clear;
+?&gt;
+
+&lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+</td>
+</tr>
+<tr>
+      <td><b>Example Screenshot</b></td>
+</tr>
+<tr>
+<td><img src="bush_5.gif" width="777" height="667" summary="screenshot">
+</td>
+</tr>
+</table>
+
+<p>The ability to chose between pieces of HTML code is a powerful
+feature
+of web template processors, including BUSH. Since BUSH uses embedded
+shell
+scripts, it uses the status code returned from the scripts to control
+whether
+the pieces of the template are included or not. If an embedded script
+returns
+a status code of zero (success), the HTML following the script will be
+included
+in the final web page.</p>
+
+<h3><a name="2.8"></a><font color="#777700">2.8 GCC Tutorial: Compiling BUSH Scripts</font></h3>
+To compile a script as an executable program, you'll need to download
+the
+GNAT GNU Ada 95 compiler.&nbsp; This compiler is available as part of GCC 3.x
+(if your version has it enabled).  A standalone compiler is available
+from Ada Core Technologies (<a href="http://www.gnat.com">www.gnat.com</a>).
+A Linux-specific version in RPM format is available from the Ada Linux
+Team (<a href="http://www.gnuada.org/alt.html">www.gnuada.org/alt.html</a>).
+<p>AdaScript is not completely compatible with Ada 95 because Ada 95
+was
+never designed as a language for writing scripts.&nbsp; Changes must be
+made to your script, but the changes should be minimal and easily made.
+</p>
+<p>First, compile your script with the <b>pragma ada_95</b>
+directive.&nbsp;
+This will report most non-Ada 95 features as an error.&nbsp; pragma
+ada_95
+disallows the following in scripts:
+</p>
+<ul>
+  <li>use of @ - use the full variable name instead</li>
+  <li>use of % - use an intermediate variable</li>
+  <li>mixed boolean operators - that is, mixing "and", "or" and "xor"
+without
+parentheses</li>
+  <li>universal types - convert to specific types and use type casting
+where
+necessary</li>
+  <li>command types - using constant strings</li>
+  <li>? - use put_line</li>
+  <li>pipelines - separate into individual commands and use I/O
+redirection</li>
+  <li>use of return to return status codes - use the command_line
+package</li>
+  <li>Bourne shell parameters on external commands - use AdaScript
+syntax
+instead</li>
+</ul>
+Second, make sure your script is contained in a <b>procedure block </b>(see
+"script structure" below).
+<p>Third, <b>external commands</b> will have to be rewritten as Ada
+procedures
+or calls to GNAT.OS_Lib.Spawn or the POSIX system() call.&nbsp;
+You
+will have to import system() to use it.
+</p>
+<p>Finally, compile the script with GNAT compiler.&nbsp; To generate
+Java
+byte code to run on a Java Virtual Machine, use the JGNAT compiler
+instead
+of GNAT.</p>
+<p>To learn more about GCC Ada, read
+<a href="http://www.pegasoft.ca/resources/boblap/book.html">The Big Online Book of Linux Ada Programming</a>.
+<br>
+&nbsp;
+</p>
+<h3><a name="2.9"></a><font color="#666600">2.9 Debugging Tutorial - Using the BUSH Debugger</font></h3>
+A script is run by using the script name as an argument to BUSH. BUSH
+normally
+performs a syntax check before running the script.
+<p><tt>$ bush demo_script.bush</tt>
+</p>
+<p>There are several <a href="#cmdlineopt">command line options</a>
+which
+can change how the script is run.&nbsp; For example, the BUSH syntax
+check
+will sometimes report errors for a legitimate script--for example, by
+declaring
+variables inside of an&nbsp; "if" statement.&nbsp; Normally, this is a
+sign of a poorly organized script, but the syntax check can be disabled
+.&nbsp;&nbsp; To run the script without checking it, use the <b>--no-check
+</b>command
+line option.
+</p>
+<p>The execution of a script can be traced with the BUSH trace
+command.&nbsp;
+Suppose you want to trace the execution of the following script:
+</p>
+<p><tt>#!/bin/bush</tt>
+</p>
+<p><tt><b>trace true</b>;</tt>
+</p>
+<p><tt><b>procedure</b> main <b>is</b></tt>
+<br>
+<tt>&nbsp; <b>type</b> paint <b>is</b> ( black, white, blue );</tt>
+<br>
+<tt><b>begin</b></tt>
+<br>
+<tt>&nbsp; <b>for</b> p <b>in</b> black..blue <b>loop</b></tt>
+<br>
+<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put_line( p );</tt>
+<br>
+<tt>&nbsp; <b>end loop</b>;</tt>
+<br>
+<tt><b>end</b> main;</tt>
+</p>
+<p>Once tracing is turned on by <b>trace true</b> (or with --trace),
+each
+line will be shown before it's executed, with the line number in square
+brackets to the right of the line.&nbsp; Some statements will also show
+additional information.&nbsp; For example, an assignment statement will
+show the value being assigned.&nbsp; The trace information is written
+to
+standard error, so the output from the command may appear in the wrong
+order because some versions of UNIX buffer their output.
+</p>
+<p><tt>$ bush trace_demo.bush</tt>
+<br>
+<tt>Trace is on</tt>
+<br>
+<tt>=&gt; "" [ 4]</tt>
+<br>
+<tt>=&gt; "procedure main is" [ 5]</tt>
+<br>
+<tt>=&gt; "&nbsp; type paint is ( black, white, blue );" [ 6]</tt>
+<br>
+<tt>=&gt; "begin" [ 7]</tt>
+<br>
+<tt>=&gt; "&nbsp; for p in black..blue loop" [ 8]</tt>
+<br>
+<tt>=&gt; "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put_line( p );" [ 9]</tt>
+<br>
+<tt>=&gt; (p := ' 0')</tt>
+<br>
+<tt>black</tt>
+<br>
+<tt>=&gt; "&nbsp; end loop;" [ 10]</tt>
+<br>
+<tt>=&gt; "&nbsp; end loop;"</tt>
+<br>
+<tt>=&gt; "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put_line( p );" [ 9]</tt>
+<br>
+<tt>=&gt; (p := ' 1')</tt>
+<br>
+<tt>white</tt>
+<br>
+<tt>=&gt; "&nbsp; end loop;" [ 10]</tt>
+<br>
+<tt>=&gt; "&nbsp; end loop;"</tt>
+<br>
+<tt>=&gt; "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put_line( p );" [ 9]</tt>
+<br>
+<tt>=&gt; (p := ' 2')</tt>
+<br>
+<tt>blue</tt>
+<br>
+<tt>=&gt; "&nbsp; end loop;" [ 10]</tt>
+<br>
+<tt>=&gt; "&nbsp; end loop;"</tt>
+<br>
+<tt>=&gt; "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put_line( p );" [ 9]</tt>
+<br>
+<tt>=&gt; "&nbsp; end loop;" [ 10]</tt>
+<br>
+<tt>=&gt; "end main;" [ 11]</tt>
+<br>
+<tt>=&gt; "" [ 12]</tt>
+<br>
+<tt>=&gt; "[End of File]" [ 13]</tt>
+<br>
+<tt>=&gt; (Script exit status is 0)</tt>
+</p>
+<p>If a script is started with the <b>--break</b> (or <b>-b</b>)
+option,
+a SIGINT (e.g. a control-c) will pause the script and give the user a
+command
+prompt. This breakout prompt is identical to a normal interactive
+session
+except for the command to quit. "return" will retry the last statement.
+"step" will run the next statement and then stop. "logout" will
+terminate
+the script.
+</p>
+<p>Without a --break, a SIGINT will terminate the script, just as if a
+return command was executed.
+</p>
+<p><tt>$ cat breakdemo.bush</tt>
+<br>
+<tt>for i in 1..10000 loop</tt>
+<br>
+<tt>&nbsp;&nbsp;&nbsp;put_line( i );</tt>
+<br>
+<tt>&nbsp;&nbsp;&nbsp;delay 1;</tt>
+<br>
+<tt>end loop;</tt>
+<br>
+<tt>$ bush breakdemo.bush</tt>
+<br>
+<tt>1</tt>
+<br>
+<tt>2</tt>
+<br>
+<tt>3</tt>
+</p>
+<p>Since --break was not used, the script terminated.</p>
+<p><tt>$ bush --break breakdemo.bush</tt>
+<br>
+<tt>1</tt>
+<br>
+<tt>2</tt>
+<br>
+<tt>3</tt>
+<br>
+<tt>breakdemo.bush: 5: 1: While in for loop</tt>
+<br>
+<tt>&nbsp; put_line( i );</tt>
+<br>
+<tt>^ Break: return to continue, logout to quit</tt>
+<br>
+</p>
+<p>Since --break was used, BUSH breaks out of the script and provides an
+interactive prompt.</p>
+<tt>=&gt; i := 9999</tt>
+<br>
+<tt>=&gt; return</tt>
+<br>
+<tt>=&gt; (returning)</tt>
+<br>
+<tt>breakdemo.bush: 5: 1: While in for loop</tt>
+<br>
+<tt>&nbsp; put_line( i );</tt>
+<br>
+<tt>^ resuming here</tt>
+<br>
+<tt>9999</tt>
+<br>
+<tt>10000</tt>
+<br>
+<tt>$</tt>
+<br>
+&nbsp;
+</p>
+<p>To break at a specific point in a script, use <b>pragma
+inspection_point</b>.  When this pragma is reached, BUSH will stop as if you
+typed a Control-C.</p>
+<p>To monitor variables, use <b>pragma inspect</b>.  Each time the script
+stops at an inspection point or because of a Control-C, the value of all the
+variables marked for inspection will be shown.  You can also use pragma inspect
+at the breakout prompt to start inspecting a variable, or <b>pragma
+uninspect</b> to stop inspecting a variable.</p>
+<h3><a name="2.10"></a><font color="#777700">2.10 Creating a Profile Script</font></h3>
+When BUSH is started when a user first logs in, BUSH attempts to find
+and
+run "profile" scripts--a list of commands to set up a user's
+environment.
+By creating a profile script, a user can create variables or run
+programs
+every time they log in.
+<p>First, BUSH looks for a script called "/etc/bush_profile". This
+script
+should contain commands to be run by every user logging in.
+</p>
+<p>Second, BUSH looks for a script called ".bush_profile" in the user's
+home directory. This script should contain commands specific to a
+particular
+user.
+</p>
+<p>The following is a sample ".bush_profile" script:
+</p>
+<pre>
+-- Sample Red Hat Profile script
+--
+-- This is executed by the Business Shell during startup.
+
+-----------------------------------------------
+-- Define Aliases
+
+-- ls, by default, has no color.&nbsp; ls_color is a script that turns
+-- on the ls --color flag before running ls.
+
+ls : constant command := "/home/ken/bush/ls_color";
+
+
+-----------------------------------------------
+-- Define various environment variables needed by other software
+
+PATH := "/usr/gnat/bin:/home/ken/bin:/usr/java/bin:" &amp; PATH;
+pragma export( shell, PATH );
+
+ASIS_DIR : string := "/usr/lib/asis";
+pragma export( shell, ASIS_DIR );
+
+CLASSPATH : string := ".:/usr/lib/jgnat.jar";
+pragma export( shell, CLASSPATH );
+
+JGNAT_LIB : string := "/usr/lib/jgnat";
+pragma export( shell, JGNAT_LIB );
+
+KDEDIR : string := "/usr";<br>pragma export( shell, KDEDIR );
+
+LANG : constant string := "en_US";
+pragma export( shell, LANG );
+
+LESSOPEN : constant string := "|/usr/bin/lesspipe.sh %s";
+pragma export( shell, LESSOPEN );
+
+LS_COLORS : string := "no=00:fi=00:di=01;34:ln=01;36:pi=40;33:so=01;35:bd=40;33;01:cd=40;33;01:or=01;05;37;41:mi=01;05;37;41:ex=01;32:*.cmd=01;32:*.exe=01;32:*.com=01;32:*.btm=01;32:*.bat=01;32:*.sh=01;32:*.csh=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.bz=01;31:*.tz=01;31:*.rpm=01;31:*.cpio=01;31:*.jpg=01;35:*.gif=01;35:*.bmp=01;35:*.xbm=01;35:*.xpm=01;35:*.png=01;35:*.tif=01;35:";
+pragma export( shell, LS_COLORS );
+
+QTDIR : string :="/usr/lib/qt-2.3.1";
+pragma export( shell, QTDIR );
+
+SSH_ASKPASS : constant string := "/usr/libexec/openssh/gnome-ssh-askpass";
+pragma export( shell, SSH_ASKPASS );
+
+-- export DISPLAY only if it exists
+DISPLAY : string := "undefined";
+pragma unchecked_import( shell, DISPLAY );
+if DISPLAY /= "undefined" then
+  pragma export( shell, DISPLAY );
+end if;
+
+-- disable automatic declaractions if I don't like them
+pragma restriction( no_auto_declaractions );
+
+-- declare company name, but don't export beyond shell session
+company : constant string := "Compu-Global-Mega-Corp Inc.";
+
+-- show the date and time with UNIX/Linux date command
+date;
+
+-- change my BUSH prompt
+pragma prompt_script( `pwd;echo "=&gt; ";` );
+
+-- end of .bush_profile
+</pre>
+After the profile scripts are executed, the user sees the "=&gt;"
+prompt and
+can being entering commands.
+<br>
+&nbsp;
+<h3><a name="2.11"></a><font color="#666600">2.11 Calling BUSH from C: A Tutorial</font></h3>
+Certain kinds of programs, such as games or the Gimp, allow users to
+write
+their own scripts&nbsp;&nbsp; For example, there are game scripts that
+change the behavior of enemies, or Gimp scripts that apply imaging
+effects
+to a photograph.&nbsp; BUSH can be used as a scripting language for
+these
+kind of applications.
+<p>There is a special pragma, <b>pragma restriction(
+no_external_commands
+)</b>, that will disable all operating system commands.&nbsp;&nbsp; If
+you are using BUSH strictly as a scripting language, this pragma will
+guarantee
+that your BUSH scripts will be portable to other operating
+systems.&nbsp;
+In addition, if you use <b>pragma ada_95</b>, your scripts will have
+less
+errors and commonly used scripts can compiled with GCC Ada (with only
+minor
+changes) for extra speed.
+</p>
+<p>Scripts that interact with other programs must be able to share data
+with the BUSH scripts.&nbsp; In order to share variables with BUSH, you
+will have to export your variables as environment variables or add the
+appropriate declarations to the scripts before you run them with BUSH.
+</p>
+<p>A simple C example called scripting.c is included in the examples
+directory.
+</p>
+<p><tt>/* -------------------------------------------- */</tt>
+<br>
+<tt>/*
+scripting.c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</tt>
+<br>
+<tt>/*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</tt>
+<br>
+<tt>/* An example of using BUSH as a
+scripting&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</tt>
+<br>
+<tt>/* language for a C
+program.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</tt>
+<br>
+<tt>/* -------------------------------------------- */</tt>
+</p>
+<p><tt>#include &lt;stdio.h&gt;</tt>
+<br>
+<tt>#include &lt;stdlib.h&gt;</tt>
+<br>
+<tt>#include &lt;unistd.h&gt;</tt>
+<br>
+<tt>#include &lt;string.h&gt;</tt>
+<br>
+<tt>#include &lt;errno.h&gt;</tt>
+</p>
+<p><tt>int main() {</tt>
+<br>
+<tt>&nbsp; char i_string[255];</tt>
+<br>
+<tt>&nbsp;&nbsp; int i;</tt>
+<br>
+<tt>&nbsp;&nbsp; FILE *f;</tt>
+</p>
+<p><tt>/* assign a value to i */</tt>
+</p>
+<p><tt>&nbsp; i = 5;</tt>
+</p>
+<p><tt>/* export i */</tt>
+</p>
+<p><tt>&nbsp; sprintf( i_string, "i_string=%d", i ); // convert i to a
+string</tt>
+<br>
+<tt>&nbsp; if ( putenv( i_string ) != 0
+)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+// add i to the environment</tt>
+<br>
+<tt>&nbsp;&nbsp;&nbsp; printf( "putenv i_string failed: %s\n",
+strerror(
+errno ) );</tt>
+</p>
+<p><tt>/* Create the script to run */</tt>
+</p>
+<p><tt>&nbsp; f = fopen( "scripting_example.bush", "w" );</tt>
+<br>
+<tt>&nbsp; fprintf( f, "%s\n", "pragma restriction(
+no_external_commands
+);" );</tt>
+<br>
+<tt>&nbsp; fprintf( f, "%s\n", "pragma ada_95;" );</tt>
+<br>
+<tt>&nbsp; fprintf( f, "%s\n", "procedure scripting_example is" );</tt>
+<br>
+<tt>&nbsp; fprintf( f, "%s\n", "i : integer := numerics.value( i_string
+);" );</tt>
+<br>
+<tt>&nbsp; fprintf( f, "%s\n", "begin" );</tt>
+<br>
+<tt>&nbsp; fprintf( f, "%s\n", "put_line( i * 2 );" );</tt>
+<br>
+<tt>&nbsp; fprintf( f, "%s\n", "end scripting_example;" );</tt>
+<br>
+<tt>&nbsp; fclose( f );</tt>
+</p>
+<p><tt>/* Run the script. If successful, delete script */</tt>
+</p>
+&nbsp;
+<h3><a name="2.12"></a><font color="#666600">2.12 BUSH Best Practices</font></h3>
+<p>There are many theories for script layout, variable naming and so forth.
+I don't recommend or endorse any paritcular "best practices" standards.
+However, if you are looking for suggestions to base coding standards on, here
+are some ideas:</p>
+
+<ul>
+
+<li><p>If script file names are simple, with letters, numbers and underscores, they are
+easily ported to different operating systems</p></li>
+
+<li><p>Consider using a standard layout for the start of all scripts, with
+comments for who created the script and any source control elements.</p></li>
+
+<li><p>Use pragma annotate instead of comments to describe how to use a script.
+ The help command can shows these annotations.  Describe the usage: leave notes
+on the history, implementation or design as comments.  Annotate can then serve
+the same function as an Ada package specification.</p></li>
+
+<li><p>Use pragma ada_95 in scripts where you want to copy your routines to Ada
+programs.</p></li>
+
+<li><p>Variable naming in the standard Ada packages usually use words with
+beginning with upper-case and containing an underscore (e.g. Put_Line).
+Shell conventions use upper-case for variable names.  Since BUSH is
+case-sensitive, BUSH uses lower-case words with underscores to fit to the
+conventions of UNIX shell-scripting.</p></li>
+
+<li><p>Sticking to lower-case will make it easier to reuse code with Ada and BUSH</p></li>
+
+<li><p>Avoid using names that vary only in case.  (e.g. do not use "x" and "X".)</p></li>
+
+<li><p>Ada conventions use full words in functions or variable names whereever possible.
+(e.g. unbiased_rounding() .)  Avoid acronyms, especially when they can be ambiguous,
+unless the acronym is a common one.</p></li>
+
+<li><p>Don't use universal variable types in scripts.</p></li>
+
+<li><p>For unfinished sections, consider using put_line("not yet written") instead
+of a simple null.</p></li>
+
+<li><p>Use comments on a separate line to identify sections of a script, or to
+explain design decisions, potential problems or workarounds</p></li>
+
+<li><p>Don't rely on separator characters such as lines of "=" or "*" to
+make comments stand out.  Instead, use blank lines and whitespace.</p></li>
+
+<li><p>Use a usage functions and show the usage when "-h" or "--help" are
+used to run the script</p></li>
+
+<li><p>Put complicated routines into a function, procedore or a declare block.
+Declare any local variables in the local scope to improve readability and
+reduce the scope and clutter of variables.</p></li>
+
+<li><p>Declare one item per line.</p></li>
+
+<li><p>Use one mathematical operation per line.  Break up long expressions and
+use temporary variables.  This makes debugging the partial results easier.</p></li>
+
+<li><p>Use pragma assert and pragma debug during development.  These only run
+when --debug is used.</p></li>
+
+<li><p>Use the source_info package to display location information in messages.</p></li>
+
+<li><p>Apply consistent spacing and indentation throughout a script.</p></li>
+
+<hr>
+<p>&nbsp;<a href="#top">Back to Top</a></p>
+</body>
+</html>

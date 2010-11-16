@@ -1,0 +1,6 @@
+# This should fail
+
+s : string;
+
+s := cgi.key( "bad" ); -- type error
+

@@ -1,0 +1,6 @@
+# This should fail
+
+s : string;
+
+s := cgi.key( 1; -- syntax error
+

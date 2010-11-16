@@ -1,0 +1,276 @@
+<HEAD><TITLE>bjack.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : bjack.bush </H1></DIV><HR>
+<IMG SRC="bjack.gif"><HR>
+<PRE>
+#!/usr/local/bin/bush
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Basic Blackjack</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- The casino game...not that I've ever been to a casino.</EM></FONT>
+<FONT COLOR=green><EM>-- by Ken O. Burtch.</EM></FONT>
+
+<b>pragma</b> restriction( no_external_commands ); <FONT COLOR=green><EM>-- O/S independent</EM></FONT>
+
+<b>procedure</b> bjack <b>is</b>
+
+wallet : integer := 100;
+
+reply : string;
+
+<b>type</b> aCard <b>is</b> <b>new</b> positive;
+<b>type</b> aDeck <b>is</b> <b>array</b>(1..52) <b>of</b> aCard;
+
+<FONT COLOR=green><EM>-- The Deck</EM></FONT>
+
+next_card : natural := 0;
+deck : aDeck := (
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+  21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+  39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52
+);
+card_name : <b>array</b>(1..52) <b>of</b> string := (
+ "Ace of Clubs", "2 of Clubs", "3 of Clubs", "4 of Clubs",
+ "5 of Clubs", "6 of Clubs", "7 of Clubs", "8 of Clubs",
+ "9 of Clubs", "10 of Clubs", "Jack of Clubs", "Queen of Clubs",
+ "King of Clubs",
+ "Ace of Diamonds", "2 of Diamonds", "3 of Diamonds", "4 of Diamonds",
+ "5 of Diamonds", "6 of Diamonds", "7 of Diamonds", "8 of Diamonds",
+ "9 of Diamonds", "10 of Diamonds", "Jack of Diamonds", "Queen of Diamonds",
+ "King of Diamonds",
+ "Ace of Hearts", "2 of Hearts", "3 of Hearts", "4 of Hearts",
+ "5 of Hearts", "6 of Hearts", "7 of Hearts", "8 of Hearts",
+ "9 of Hearts", "10 of Hearts", "Jack of Hearts", "Queen of Hearts",
+ "King of Hearts",
+ "Ace of Spades", "2 of Spades", "3 of Spades", "4 of Spades",
+ "5 of Spades", "6 of Spades", "7 of Spades", "8 of Spades",
+ "9 of Spades", "10 of Spades", "Jack of Spades", "Queen of Spades",
+ "King of Spades"
+);
+card_value : <b>array</b>(1..52) <b>of</b> natural := (
+ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
+ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
+ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
+ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10
+);
+
+<FONT COLOR=green><EM>-- The Player Hands</EM></FONT>
+
+player_total : natural := 0;
+player_hand  : aDeck;
+player_count : natural := 0;
+ai_total     : natural := 0;
+ai_hand      : aDeck;
+ai_count     : natural := 0;
+
+<b>type</b> a_status <b>is</b> (done, player_turn, ai_turn );
+
+status : a_status := player_turn;
+
+<b>begin</b>
+
+<b>loop</b>
+
+  wallet := wallet - 10;
+
+  <FONT COLOR=green><EM>-- Shuffle Deck</EM></FONT>
+
+  <b>declare</b>
+     swap_pos : aCard;
+     swap : aCard;
+  <b>begin</b>
+     <b>for</b> i <b>in</b> 1..52 <b>loop</b>
+        swap_pos := aCard( numerics.rnd( 52 ) );
+        swap := deck(i);
+        deck(i) := deck(swap_pos);
+        deck(swap_pos) := swap;
+     <b>end</b> <b>loop</b>;
+     next_card := 52;
+  <b>end</b>;
+
+  <FONT COLOR=green><EM>-- initial cards</EM></FONT>
+
+  player_hand(1) := deck( next_card );
+  next_card := @-1;
+  ai_hand(1) := deck( next_card );
+  next_card := @-1;
+  player_hand(2) := deck( next_card );
+  next_card := @-1;
+  ai_hand(2) := deck( next_card );
+  next_card := @-1;
+  player_total := card_value( player_hand(1) ) +
+                  card_value( player_hand(2) );
+  player_count := 2;
+  ai_total := card_value( ai_hand(1) ) +
+              card_value( ai_hand(2) );
+  ai_count := 2;
+
+  <FONT COLOR=green><EM>-- Initial ace handling</EM></FONT>
+
+  <b>if</b> card_value( player_hand(1) ) = 1 <b>then</b>
+     put_line( "Player: You drew an ace." );
+     <b>loop</b>
+        put( "Player: Is the ace (1) one or (11) eleven? " );
+        reply := get_line;
+        <b>exit</b> <b>when</b> reply = "1" <b>or</b> reply = "11";
+        put_line( "Pardon?" );
+     <b>end</b> <b>loop</b>;
+     <b>if</b> reply = "11" <b>then</b>
+        player_total := @+10;
+     <b>end</b> <b>if</b>;
+  <b>end</b> <b>if</b>;
+  <b>if</b> card_value( player_hand(2) ) = 1 <b>and</b> player_total+10&lt;=21 <b>then</b>
+     put_line( "Player: You drew an ace." );
+     <b>loop</b>
+        put( "Player: Is the ace (1) one or (11) eleven? " );
+        reply := get_line;
+        <b>exit</b> <b>when</b> reply = "1" <b>or</b> reply = "11";
+        put_line( "Pardon?" );
+     <b>end</b> <b>loop</b>;
+     <b>if</b> reply = "11" <b>then</b>
+        player_total := @+10;
+     <b>end</b> <b>if</b>;
+  <b>end</b> <b>if</b>;
+
+  <b>if</b> card_value( ai_hand(1) ) = 1 <b>then</b>
+     ai_total := @+10;
+  <b>end</b> <b>if</b>;
+  <b>if</b> card_value( ai_hand(2) ) = 1 <b>and</b> ai_total+10&lt;=21 <b>then</b>
+     ai_total := @+10;
+  <b>end</b> <b>if</b>;
+  <b>if</b> ai_total = 21 <b>then</b>
+     status := done;
+  <b>else</b>
+     status := player_turn;
+  <b>end</b> <b>if</b>;
+
+  <b>loop</b>
+    <FONT COLOR=green><EM>-- show cards</EM></FONT>
+
+    <b>if</b> status /= ai_turn <b>then</b>
+       <b>declare</b>
+          width : <b>constant</b> natural := 40;
+          rows : natural := player_count;
+       <b>begin</b>
+          <b>if</b> rows &lt; ai_count <b>then</b>
+             rows := ai_count;
+          <b>end</b> <b>if</b>;
+          put_line( 78 * '-' );
+          put( strings.head( "Computer has", width ) );
+          put_line( "Player has" );
+          <b>for</b> i <b>in</b> 1..rows <b>loop</b>
+              <b>if</b> i = 1 <b>and</b> status = player_turn <b>then</b>
+                 put( strings.head( "xxx of xxxxx", width ) );
+              <b>elsif</b> i &lt;= ai_count <b>then</b>
+                 put( strings.head( card_name( ai_hand(i) ), width ) );
+              <b>else</b>
+                 put( width * ' ' );
+              <b>end</b> <b>if</b>;
+              <b>if</b> i &lt;= player_count <b>then</b>
+                 put_line( card_name( player_hand(i) ) );
+              <b>else</b>
+                 new_line;
+              <b>end</b> <b>if</b>;
+          <b>end</b> <b>loop</b>;
+          <b>if</b> status /= player_turn <b>then</b>
+             put( strings.head( "Total: " &amp; strings.image( ai_total ), width ) );
+          <b>else</b>
+             put( width * ' ' );
+          <b>end</b> <b>if</b>;
+          put_line( "Total: " &amp; strings.image( player_total ) );
+       <b>end</b>;
+    <b>end</b> <b>if</b>;
+
+    <b>if</b> status = player_turn <b>then</b>
+       <b>loop</b>
+         <b>if</b> player_total = 21 <b>then</b>
+            reply := "!";
+         <b>else</b>
+            put( "Player: (H)it, (S)tand or (Q)uit? " );
+            reply := inkey &amp; "";
+            new_line;
+         <b>end</b> <b>if</b>;
+         <b>exit</b> <b>when</b> reply = "h" <b>or</b> reply = "q" <b>or</b> reply = "s" <b>or</b> reply = "!";
+         put_line( "Pardon?" );
+       <b>end</b> <b>loop</b>;
+       <b>if</b> reply = "h" <b>then</b>
+          player_count := @+1;
+          player_hand(player_count) := deck( next_card );
+          next_card := @-1;
+          player_total := @+card_value( player_hand(player_count) );
+          put_line( "Player: drew " &amp; card_name( player_hand( player_count) ) );
+          <b>if</b> card_value( player_hand( player_count ) ) = 1 <b>and</b>
+             player_total+10&lt;=21 <b>then</b>
+             <b>loop</b>
+                put( "Player: Is the ace (1) one or (11) eleven? " );
+                reply := get_line;
+                <b>exit</b> <b>when</b> reply = "1" <b>or</b> reply = "11";
+                put_line( "Pardon?" );
+             <b>end</b> <b>loop</b>;
+             <b>if</b> reply = "11" <b>then</b>
+                player_total := @+10;
+             <b>end</b> <b>if</b>;
+          <b>end</b> <b>if</b>;
+          <b>if</b> player_total &gt; 21 <b>then</b>
+             put_line( "Player: bust" );
+             status := ai_turn;
+          <b>end</b> <b>if</b>;
+       <b>elsif</b> reply = "s" <b>then</b>
+          put_line( "Player: stand" );
+          status := ai_turn;
+       <b>elsif</b> reply = "!" <b>then</b>
+          put_line( "Player: you have 21!" );
+          status := ai_turn;
+       <b>elsif</b> reply = "q" <b>then</b>
+          put_line( "Player: quit" );
+          <b>return</b>;
+       <b>end</b> <b>if</b>;
+    <b>elsif</b> status = ai_turn <b>then</b>
+       <b>if</b> player_total &gt; 21 <b>and</b> ai_total &lt;= 21 <b>then</b>
+          put_line( "Computer: stand" );
+          status := done;
+       <b>elsif</b> ai_total &lt; player_total <b>then</b>
+          ai_count := @+1;
+          ai_hand(ai_count) := deck( next_card );
+          next_card := @-1;
+          ai_total := @+card_value( ai_hand(ai_count) );
+          <b>if</b> card_value( ai_hand( ai_count ) ) = 1 <b>and</b> ai_total+10&lt;=21 <b>then</b>
+             ai_total :=@+10;
+          <b>end</b> <b>if</b>;
+          put( "Computer: drew " &amp; card_name( ai_hand( ai_count) ) );
+          put_line( " (for" &amp; strings.image( ai_total ) &amp; ")" );
+       <b>else</b>
+          <b>if</b> ai_total &lt;= 21 <b>then</b>
+             put_line( "Computer: stand" );
+          <b>else</b>
+             put_line( "Computer: bust" );
+          <b>end</b> <b>if</b>;
+          status := done;
+       <b>end</b> <b>if</b>;       
+       <b>delay</b> 0.5; <FONT COLOR=green><EM>-- suspense</EM></FONT>
+    <b>elsif</b> status = done <b>then</b>
+       new_line;
+       <b>if</b> ai_total &gt; 21 <b>then</b>
+          put( "Player" );
+          wallet := @+20;
+       <b>elsif</b> player_total &gt; 21 <b>then</b>
+          put( "Computer" );
+       <b>elsif</b> ai_total &gt;= player_total <b>then</b>
+          put( "Computer" );
+       <b>else</b>
+          put( "Player" );
+          wallet := @+20;
+       <b>end</b> <b>if</b>;
+       put_line( " wins - wallet has $" &amp; strings.image( wallet ) );
+       <b>exit</b>;
+    <b>end</b> <b>if</b>;
+  <b>end</b> <b>loop</b>;
+  <b>if</b> wallet &lt;= 0 <b>then</b>
+     put_line( "Player: the computer has all of your money" );
+     <b>exit</b>;
+  <b>end</b> <b>if</b>;
+<b>end</b> <b>loop</b>;
+
+<b>end</b> bjack;
+
+</PRE></BODY></HTML>

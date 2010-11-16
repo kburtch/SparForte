@@ -1,0 +1,174 @@
+$Id: INSTALL,v 1.2 2005/02/11 02:59:41 ken Exp $
+Warren W. Gay VE3WWG
+
+          THE QUICK 'N EASY INSTALL GUIDE
+
+
+THIS DOCUMENT ASSUMES:
+----------------------
+
+ - you are compiling for UNIX/Linux platform
+ - you are using GNAT as the Ada compiler
+ - you are using gcc as the C compiler
+ - that you have ADA_INCLUDE_PATH defined and exported
+ - that you have ADA_OBJECTS_PATH defined and exported
+ - that you have a suitably modern version of PostgreSQL and/or..
+   MySQL database installed
+ - that the C library libpq is available (if using PostgreSQL)
+ - that the C library libmysql is available (if using MySQL)
+
+
+NOTES ABOUT OPTIMIZATION:
+-------------------------
+
+ - The Makefile that is shipped to you should have a
+   parameter OPTZ=-O0 set (if not, then you should
+   set it to that).
+ - GNAT 3.14p seems to have difficulty when the 
+   optimization level is raised beyond this. If
+   using a newer compiler, you may want to try
+   OPTZ=-O1 (test using the ./eg example build)
+
+
+USERS WITH PRIOR VERSIONS OF APQ INSTALLED
+------------------------------------------
+
+   You should either remove the references to the original
+   APQ directories (source and library), or eliminate
+   them prior to installing this version.
+
+   APQ Versions 1.92 and prior:
+    Remove all:
+      postgresql*.ad[sb] package spec and bodies
+      postgresql*.ali and .o files
+      libapq.a file
+
+   APQ Version 1.93 and later:
+    Remove all:
+      apq*.ad[sb] package spec and bodies
+      apq*.ali and .o files
+      libapq.a file
+
+   If you have the original source distribution, you
+   may do a 'make uninstall', provided that you 
+   choose the correct directory to uninstall from.
+
+
+INSTALLING APQ FOR THE FIRST TIME:
+----------------------------------
+
+ 1. Make sure your PATH gives access to all database
+    tools of interest (eg. PostgreSQL and MySQL)
+ 2. ./configure  (This creates Makeincl file)
+ 3. make
+ 4. make install (as root, if necessary)
+
+    Account root is NOT needed if your ADA_*_PATH directory(ies)
+    are directories that you have permissions on (you can delete
+    and create entries in those directories).
+
+ TO REBUILD:
+
+ 1. make uninstall
+ 2. make clobber
+ 3. Repeat the above steps
+
+ MAKE ERROR?
+
+   $ make
+   Makefile:7: Makeincl: No such file or directory
+   make: *** No rule to make target `Makeincl'.  Stop.
+
+   This indicates a ./configure needs to be run.
+
+
+CUSTOM INSTALLS:
+----------------
+
+   By default, APQ tries to compile for every database
+   supported that you have installed. The configure
+   script obtains configuration information from pg_config
+   for PostgreSQL, and mysql_config for MySQL. These
+   tools must be on your search PATH for this to work
+   obviously.
+
+   WHAT IF I WANT TO DISABLE SUPPORT?
+
+   If you have both PostgreSQL and MySQL databases
+   installed, but one of them is giving you grief
+   and you want to bypass support for it (without
+   uninstalling it), this is possible. See below.
+
+   BUILDING WITHOUT POSTGRESQL:
+
+   1. make clobber      (If necessary)
+   2. HAVE_PG=0 ./configure
+   3. make
+
+   BUILDING WITHOUT MYSQL:
+
+   1. make clobber      (If necessary)
+   2. HAVE_MY=0 ./configure
+   3. make
+
+
+TESTING THE APQ BINDING:
+------------------------
+
+   *** WARNING ***
+
+   THESE TESTS CREATE AND DROP THE FOLLOWING DATABASE NAMES:
+
+      apq_pg            in PostgreSQL
+      apq_my            in MySQL
+
+   IF YOU ALREADY HAVE DATABASES NAMED AS ABOVE, DO NOT
+   RUN THE TESTS AS THEY ARE!
+
+   *** END WARNING ***
+
+   1. cd ./eg2          (This tests MySQL and/or PostgreSQL)
+   2. make clobber
+   3. make create_pg    (PostgreSQL)
+   or make create_my    (MySQL)
+   4. make check_pg     (PostgreSQL)
+   or make check_my     (MySQL)
+   5. make release_pg   (PostgreSQL)
+   or make release_my   (MySQL)
+
+The test program may report some problems about your /etc/passwd and/or
+/etc/group files. You should follow up on any of these error reports.
+
+DISCLAIMER: Note however, this example program by no means represents a
+complete check of your /etc/passwd and /etc/group files however! It
+merely serves as an example framework.
+
+
+POSTGRESQL ONLY TEST:
+---------------------
+
+   *** WARNING ***
+
+   THESE TESTS CREATE AND DROP THE FOLLOWING DATABASE NAME:
+
+      apq_pg
+
+   IF YOU ALREADY HAVE DATABASES NAMED AS ABOVE, DO NOT
+   RUN THE TESTS AS THEY ARE!
+
+   *** END WARNING ***
+
+   1. cd ./eg		(change to test directory)
+   2. make		(compile test sources)
+   3. make create	(create & load database apq_eg)
+   4. make test		(run tests on tables in apq_eg)
+   5. make release	(discard the apq_eg database)
+
+The test program may report some problems about your /etc/passwd and/or
+/etc/group files. You should follow up on any of these error reports.
+
+DISCLAIMER: Note however, this example program by no means represents a
+complete check of your /etc/passwd and /etc/group files however! It
+merely serves as an example framework.
+
+$Source: /home/cvsroot/bush/src/apq-2.1/INSTALL,v $

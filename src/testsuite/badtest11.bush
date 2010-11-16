@@ -1,0 +1,4 @@
+# This should fail
+
+b : integer := true; -- type mismatch
+

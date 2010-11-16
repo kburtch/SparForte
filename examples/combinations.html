@@ -1,0 +1,116 @@
+<HEAD><TITLE>combinations.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : combinations.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush combinations
+ 0 1 2
+ 0 1 3
+ 0 1 4
+ 0 2 3
+ 0 2 4
+ 0 3 4
+ 1 2 3
+ 1 2 4
+ 1 3 4
+ 2 3 4
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- From Rosetta Code: http://rosettacode.org/wiki/Combinations</EM></FONT>
+
+<b>pragma</b> annotate( "combinations" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Given non-negative integers m and n, generate all size m" );
+<b>pragma</b> annotate( "combinations of the integers from 0 to n-1 in sorted" );
+<b>pragma</b> annotate( " order (each combination is sorted and the entire table" );
+<b>pragma</b> annotate( "is sorted" );
+<b>pragma</b> annotate( "translated by Ken O. Burtch" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> combinations <b>is</b>
+  combinations_found : string := "";
+  number_of_items : <b>constant</b> natural := 3;
+  max_item_value  : <b>constant</b> natural := 5;
+
+  <FONT COLOR=green><EM>-- get_first_combination</EM></FONT>
+  <FONT COLOR=green><EM>-- return the first combination (e.g. 0,1,2 for 3 items)</EM></FONT>
+
+  <b>function</b> get_first_combination <b>return</b> string <b>is</b>
+    c : string;
+  <b>begin</b>
+    <b>for</b> i <b>in</b> 1..number_of_items <b>loop</b>
+      c := @ &amp; strings.image( i-1 );
+    <b>end</b> <b>loop</b>;
+    <b>return</b> c;
+  <b>end</b> get_first_combination;
+
+  <FONT COLOR=green><EM>-- get_last_combination</EM></FONT>
+  <FONT COLOR=green><EM>-- return the highest value (e.g. 4,4,4 for 3 items</EM></FONT>
+  <FONT COLOR=green><EM>-- with a maximum value of 5).</EM></FONT>
+
+  <b>function</b> get_last_combination <b>return</b> string <b>is</b>
+    c : string;
+  <b>begin</b>
+    <b>for</b> i <b>in</b> 1..number_of_items <b>loop</b>
+      c := @ &amp; strings.image( max_item_value-1 );
+    <b>end</b> <b>loop</b>;
+    <b>return</b> c;
+  <b>end</b> get_last_combination;
+  
+  combination : string := get_first_combination;
+  last_combination : string := get_last_combination;
+  
+  item : natural; <FONT COLOR=green><EM>-- a number from the combination</EM></FONT>
+  bad : boolean; <FONT COLOR=green><EM>-- true if we know a value is too big</EM></FONT>
+  s : string;    <FONT COLOR=green><EM>-- a temp string for deleting leading space</EM></FONT>
+
+<b>begin</b>
+  <FONT COLOR=green><EM>--combination := first_combination;</EM></FONT>
+  put_line( combination );
+  <b>while</b> combination /= last_combination <b>loop</b>
+
+    <FONT COLOR=green><EM>-- the combination is 3 numbers with leading spaces</EM></FONT>
+    <FONT COLOR=green><EM>-- so the field positions start at 2 (1 is a null string)</EM></FONT>
+
+    <b>for</b> i <b>in</b> <b>reverse</b> 1..number_of_items <b>loop</b>
+        item := numerics.value( strings.field( combination, i+1, ' ') );
+        <b>if</b> item &lt; max_item_value-1 <b>then</b>
+           item := @+1;
+           s := strings.image( item );
+           s := strings.delete( s, 1, 1 );
+           strings.replace( combination, i+1, s, ' ' );
+           bad := false;
+           <b>for</b> j <b>in</b> i+1..number_of_items <b>loop</b>
+              item := numerics.value( strings.field( combination, j, ' ') );
+              <b>if</b> item &lt; max_item_value-1 <b>then</b>
+                 item := @+1;
+                 s := strings.image( item );
+                 s := strings.delete( s, 1, 1 );
+                 strings.replace( combination, j+1, s, ' ' );
+              <b>else</b>
+                 bad := true;
+                  <b>end</b> <b>if</b>;
+           <b>end</b> <b>loop</b>;
+           <b>exit</b>;
+        <b>end</b> <b>if</b>;
+    <b>end</b> <b>loop</b>;
+        <b>if</b> <b>not</b> bad <b>then</b>
+           put_line( combination );
+    <b>end</b> <b>if</b>;
+  <b>end</b> <b>loop</b>;
+<b>end</b> combinations;
+
+</PRE></BODY></HTML>

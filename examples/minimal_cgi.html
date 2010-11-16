@@ -1,0 +1,28 @@
+<HEAD><TITLE>minimal_cgi.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : minimal_cgi.bush </H1></DIV><HR>
+<PRE>
+
+<b>procedure</b> minimal_cgi <b>is</b>
+  <FONT COLOR=green><EM>-- Demonstrate Bush's CGI interface</EM></FONT>
+  <FONT COLOR=green><EM>-- based on AdaCGI's minimal.adb example</EM></FONT>
+
+  <FONT COLOR=green><EM>-- To run this script directly (without a HTTP server), set the</EM></FONT>
+  <FONT COLOR=green><EM>-- environment variable REQUEST_METHOD to "GET" and the variable</EM></FONT>
+  <FONT COLOR=green><EM>-- QUERY_STRING to either "" or "x=a&amp;y=b".</EM></FONT>
+
+<b>begin</b>
+  cgi.put_cgi_header;
+  cgi.put_html_head( "Minimal Form Demonstration" );
+  <b>if</b> cgi.input_received <b>then</b>
+     cgi.put_variables;
+  <b>else</b>
+     put_line( "&lt;form method=" &amp; ASCII.Quotation &amp; "POST" &amp; ASCII.Quotation &amp;
+       "&gt;What's your name?&lt;input name=" &amp; ASCII.Quotation &amp; "username" &amp;
+       ASCII.Quotation &amp; "&gt;&lt;input type=" &amp; ASCII.Quotation &amp; "submit" &amp;
+       ASCII.Quotation &amp; "&gt;&lt;/form&gt;" );
+  <b>end</b> <b>if</b>;
+  cgi.put_html_tail;
+<b>end</b> minimal_cgi;
+
+</PRE></BODY></HTML>

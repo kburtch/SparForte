@@ -1,0 +1,4 @@
+# This should fail
+
+f : float := ( ); -- empty subexpression
+

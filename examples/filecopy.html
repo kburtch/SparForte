@@ -1,0 +1,47 @@
+<HEAD><TITLE>filecopy.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : filecopy.bush </H1></DIV><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- From Rosetta Code - http://rosettacode.org/wiki/File_IO</EM></FONT>
+
+<b>pragma</b> annotate( "filecopy" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "The job is to create a file called 'output.txt', and place in it" );
+<b>pragma</b> annotate( "the contents of the file 'input.txt'." );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+<b>procedure</b> filecopy <b>is</b>
+
+<b>begin</b>
+  <b>if</b> <b>not</b> files.is_readable( "input.txt" ) <b>then</b>
+     put_line( standard_error, source_info.source_location &amp; ": input file is not readable" );
+     command_line.set_exit_status( 192 );
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- With standard shell commands</EM></FONT>
+
+  cp input.txt output.txt;
+
+  <FONT COLOR=green><EM>-- Using built-in capabilities</EM></FONT>
+
+  <b>pragma</b> restriction( no_external_commands );
+
+  <b>declare</b>
+    input : file_type;
+    output : file_type;
+    line : string;
+  <b>begin</b>
+    create( output, out_file, "output.txt" );
+    open( input, in_file, "input.txt" );
+    <b>while</b> <b>not</b> end_of_file( input ) <b>loop</b>
+       put_line( output, get_line( input ) );
+    <b>end</b> <b>loop</b>;
+    close( input ) @ ( output );
+  <b>end</b>;
+
+<b>end</b> filecopy;
+
+</PRE></BODY></HTML>

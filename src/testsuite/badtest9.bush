@@ -1,0 +1,4 @@
+# This should fail
+
+s : string := 3; -- type mismatch
+

@@ -1,0 +1,3 @@
+
+a : array(2..1) of integer; -- only 1..0 allowed for null array
+

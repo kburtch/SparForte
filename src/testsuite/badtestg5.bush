@@ -1,0 +1,9 @@
+# This should fail
+
+s : string := "a";
+
+case s is
+when 1 => null; -- type mismatch
+when others => null;
+end case;
+

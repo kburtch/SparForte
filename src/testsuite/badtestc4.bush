@@ -1,0 +1,11 @@
+# This should fail
+
+declare
+  declare -- declare in declare sectoin
+  begin
+    null;
+  end;
+begin
+  null;
+end;
+

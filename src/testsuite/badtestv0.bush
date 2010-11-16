@@ -1,0 +1,3 @@
+
+procedure tmp begin null; end tmp; -- missing is
+

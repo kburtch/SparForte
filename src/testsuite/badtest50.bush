@@ -1,0 +1,4 @@
+# This should fail
+
+subtype s if integer; -- wrong keyword
+

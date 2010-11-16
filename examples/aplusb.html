@@ -1,0 +1,47 @@
+<HEAD><TITLE>aplusb.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : aplusb.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush aplusb
+1 2
+ 3
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+
+
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- A common interview test from Rosetta Code for testing basic programming</EM></FONT>
+<FONT COLOR=green><EM>-- skills.</EM></FONT>
+
+<b>pragma</b> annotate( "aplusb" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "A+B - in programming contests, classic problem, which is given so" );
+<b>pragma</b> annotate( "contestants can gain familiarity with online judging system being used. " );
+<b>pragma</b> annotate( "A+B is one of few problems on contests, which traditionally lacks fabula." );
+<b>pragma</b> annotate( "Given 2 integer numbers, A and B. One needs to find their sum. " );
+<b>pragma</b> annotate( "translated by Ken O. Burtch" );
+
+<b>procedure</b> aplusb <b>is</b>
+  l : string;
+  a : integer;
+  b : integer;
+<b>begin</b>
+  <FONT COLOR=green><EM>-- get( a ) @ ( b ) doesn't work in Bush since there's no integer_io.get()</EM></FONT>
+  l := get_line;
+  a := numerics.value( strings.field( l, 1, ' ' ) );
+  b := numerics.value( strings.field( l, 2, ' ' ) );
+  ? a+b;
+<b>end</b> aplusb;
+
+</PRE></BODY></HTML>

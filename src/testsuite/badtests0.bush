@@ -1,0 +1,3 @@
+s : string := "a/b/c";
+strings.csv_replace( s, 1, 't', 1 ); -- 4th wrong type
+

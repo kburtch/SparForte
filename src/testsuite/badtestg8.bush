@@ -1,0 +1,7 @@
+# This should fail
+
+case integer is
+when 1 => null; -- type mismatch
+when others => null;
+end case;
+

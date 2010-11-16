@@ -1,0 +1,501 @@
+<HEAD><TITLE>quest.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : quest.bush </H1></DIV><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- Quest</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- An old BASIC exploration game.</EM></FONT>
+<FONT COLOR=green><EM>-- Coverted to BUSH, Ken O. Burtch, 2003</EM></FONT>
+<FONT COLOR=green><EM>-- WARNING: Conversion not finished!!</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- THIS PROGRAM WAS TAKEN FROM THE JULY 1979 BYTE MAG.</EM></FONT>
+<FONT COLOR=green><EM>-- BY LEE DUSBABEK FOR THE FAMOUS SKIP HANSON (WB6YMH)</EM></FONT>
+
+<b>pragma</b> ada_95;
+<b>pragma</b> restriction( no_external_commands );
+
+
+<b>procedure</b> quest <b>is</b>
+
+number_of_rooms : <b>constant</b> integer := 42; <FONT COLOR=green><EM>-- was M9</EM></FONT>
+first_treasure_room : <b>constant</b> integer := 23; <FONT COLOR=green><EM>-- was T1</EM></FONT>
+second_treasure_room : <b>constant</b> integer := 12; <FONT COLOR=green><EM>-- was T2</EM></FONT>
+
+room : <b>array</b>( 1..42 ) <b>of</b> integer; <FONT COLOR=green><EM>-- was W</EM></FONT>
+move : <b>array</b>( 1..42 ) <b>of</b> string; <FONT COLOR=green><EM>-- movement table, M</EM></FONT>
+<FONT COLOR=green><EM>-- since BUSH only has 1-D arrays, the 43 elements will be fields.</EM></FONT>
+move_sep : character := ',';
+
+score : integer; <FONT COLOR=green><EM>-- was S</EM></FONT>
+
+current_room  : natural := 5; <FONT COLOR=green><EM>-- was N</EM></FONT>
+save_current  : natural; <FONT COLOR=green><EM>-- was N9</EM></FONT>
+next_room     : natural; <FONT COLOR=green><EM>-- was I</EM></FONT>
+N0            : natural; <FONT COLOR=green><EM>-- was N0</EM></FONT>
+moves : integer := 0; <FONT COLOR=green><EM>-- was M0</EM></FONT>
+moves_to_find_treasure : integer := 0; <FONT COLOR=green><EM>-- was M6</EM></FONT>
+treasure_room : integer := first_treasure_room; <FONT COLOR=green><EM>-- was T</EM></FONT>
+pirate_room   : integer := 0; <FONT COLOR=green><EM>-- was P</EM></FONT>
+P1 : integer := 0;
+N8 : integer;
+debug : boolean := true; <FONT COLOR=green><EM>-- was D</EM></FONT>
+J : natural;
+
+<FONT COLOR=green><EM>-- for input</EM></FONT>
+
+a  : string;
+a1 : positive;
+a2 : natural;
+a0 : positive;
+
+<b>procedure</b> get_input <b>is</b>
+<FONT COLOR=green><EM>-- 5000 REM</EM></FONT>
+<FONT COLOR=green><EM>-- Return in a1 the user's choice from string a</EM></FONT>
+<FONT COLOR=green><EM>-- a = string containing list of characters</EM></FONT>
+<FONT COLOR=green><EM>-- a2 = length of a</EM></FONT>
+   q2 : string;
+   q : character; <FONT COLOR=green><EM>-- Q$</EM></FONT>
+<b>begin</b>
+   <b>loop</b>
+     <FONT COLOR=green><EM>--q2 := get_line;</EM></FONT>
+     <FONT COLOR=green><EM>--if strings.length( q2 ) &gt; 0 then</EM></FONT>
+     <FONT COLOR=green><EM>--   q := strings.element( q2, 1 );</EM></FONT>
+     <FONT COLOR=green><EM>--else</EM></FONT>
+     <FONT COLOR=green><EM>--   q := ' ';</EM></FONT>
+     <FONT COLOR=green><EM>--end if;</EM></FONT>
+     q := strings.to_upper( inkey );
+     put( q );
+     put( "-" );
+     put( a );
+     a2 := strings.index( a, q &amp; "" );
+     <b>exit</b> <b>when</b> a2 &gt; 0;
+  <b>end</b> <b>loop</b>;
+  a1 := positive( a2 ); <FONT COLOR=green><EM>-- WAS a1 := positive( a2 )+1;</EM></FONT>
+<b>end</b> get_input;
+
+<b>procedure</b> tally_score <b>is</b>
+<FONT COLOR=green><EM>-- 3000 REM</EM></FONT>
+<b>begin</b>
+  score := 0;
+  <b>if</b> treasure_room = -1 <b>then</b>
+     score := score + 5;
+  <b>end</b> <b>if</b>;
+  <b>if</b> pirate_room = 1 <b>then</b>
+     score := score + 10;
+  <b>end</b> <b>if</b>;
+  <b>for</b> j <b>in</b> 2..number_of_rooms <b>loop</b>
+    score := score + room(j);
+  <b>end</b> <b>loop</b>;
+<b>end</b> tally_score;
+
+<b>procedure</b> show_room <b>is</b>
+<FONT COLOR=green><EM>-- 8000 REM</EM></FONT>
+<b>begin</b>
+
+<FONT COLOR=green><EM>--8050 I=INT(N/5)</EM></FONT>
+<FONT COLOR=green><EM>--8060 J=N-5*I+1</EM></FONT>
+
+<FONT COLOR=green><EM>--8100 ON I+1 GOTO 8200,8210,8220,8230,8240,8250,8260,8270,8280,8290</EM></FONT>
+<FONT COLOR=green><EM>--8200 ON J GOTO 9000,9010,9020,9030,9040</EM></FONT>
+<FONT COLOR=green><EM>--8210 ON J GOTO 9050,9060,9070,9080,9090</EM></FONT>
+<FONT COLOR=green><EM>--8220 ON J GOTO 9100,9110,9120,9130,9140</EM></FONT>
+<FONT COLOR=green><EM>--8230 ON J GOTO 9150,9160,9170,9180,9190</EM></FONT>
+<FONT COLOR=green><EM>--8240 ON J GOTO 9200,9210,9220,9230,9240</EM></FONT>
+<FONT COLOR=green><EM>--8250 ON J GOTO 9250,9260,9270,9280,9290</EM></FONT>
+<FONT COLOR=green><EM>--8260 ON J GOTO 9300,9310,9320,9330,9340</EM></FONT>
+<FONT COLOR=green><EM>--8270 ON J GOTO 9350,9360,9370,9380,9390</EM></FONT>
+<FONT COLOR=green><EM>--8280 ON J GOTO 9400,9410,9420,9430,9440</EM></FONT>
+<FONT COLOR=green><EM>--8290 ON J GOTO 9450,9460,9470,9480,9490</EM></FONT>
+
+<b>case</b> current_room <b>is</b>
+<b>when</b> 1 =&gt; put_line( "YOU'RE AT A DEAD END!" );
+<b>when</b> 2 =&gt; put_line( "YOU CAN'T GO IN THAT DIRECTION" );
+          new_line;
+<b>when</b> 3 =&gt; put_line( "A TUNNEL GOES NORTH-SOUTH." );
+          put_line( "THERE IS AN OPENING TO THE WEST." );
+<b>when</b> 4 =&gt; put_line( "YOU'RE ON THE BRINK OF A PIT." );
+<b>when</b> 5 =&gt; put_line( "YOU'RE OUTSIDE THE CAVE." );
+          put_line( "GO SOUTH TO ENTER." );
+<b>when</b> 6 =&gt; put_line( "YOU'RE AT THE HOME OF THE GNOME-KING." );
+          put_line( "FORTUNATELY, HE'S GONE FOR THE DAY." );
+<b>when</b> 7 =&gt; put_line( "THE GNOME KING IS HERE!" );
+          put_line( "YOU'D BETTER GET OUT!" );
+          new_line;
+<b>when</b> 8 =&gt; put_line( "YOU'RE LOST IN THE WOODS." );
+<FONT COLOR=green><EM>--when 9 =&gt; null;</EM></FONT>
+<b>when</b> 10 =&gt; put_line( "YOU'RE NOT GOING TO GET FAR, DIGGING" );
+           put_line( "THROUGH ROCK." );
+           new_line;
+<b>when</b> 11 =&gt; put_line( "YOU'RE AT THE BOTTOM OF A PIT. A LITTLE" );
+           put_line( "STREAM FLOWS OVER THE ROCKS HERE." );
+<b>when</b> 12 =&gt; put_line( "YOU'RE AT A DEAD END!" );
+<b>when</b> 13 =&gt; put_line( "YOU'RE AT A WIDE SPOT.  THERE IS A SOOTY PATCH" );
+           put_line( "WHERE SOMEBODY HAS RESTED A TORCH AGAINST THE WALL." );
+           put_line( "THERE ARE JAGGED ROCKS ABOVE YOU." );
+<b>when</b> 14 =&gt; put_line( "YOU'RE IN A CANYON.  HIGH ON THE WALL ABOVE YOU" );
+           put_line( "IS SCRATCHED THE MESSAGE    'BILBO WAS HERE'" );
+<b>when</b> 15 =&gt; put_line( "YOU'RE NOT A BIRD.  YOU CAN'T FLY!" );
+           new_line;
+<b>when</b> 16 =&gt; put_line( "YOU'RE IN A LOW CHAMBER.  A TIGHT TUNNEL GOES" );
+           put_line( "EAST, AND YOU CAN WALK TO THE SOUTH OR WEST." );
+           put_line( "THERE IS LIGHT TO THE NORTH." );
+<b>when</b> 17 =&gt; put_line( "IT'S A TIGHT SQUEEZE.  YOU CAN'T GET PAST" );
+           put_line( "WITH THE TREASURE." );
+           new_line;
+<b>when</b> 18 =&gt; put_line( "I DON'T THINK YOU CAN FIND THE CAVE." );
+           put_line( "YOU'RE AT THE TOP OF A CLIMB." );
+           put_line( "BELOW YOU A MESSAGE SAYS" );
+           put_line( "     'BILBO WAS HERE'" );
+<b>when</b> 19 =&gt; put_line( "YOU'RE AT THE NORTH SIDE OF A CHASM," );
+           put_line( "TOO WIDE TO JUMP.  RINGING ECHOES FROM" );
+           put_line( "BELOW ARE THE ONLY INDICATION OF DEPTH." );
+<b>when</b> 20 =&gt; put_line( "YOU'RE IN XANADU.  BELOW YOU ALPH,  THE SACRED" );
+           put_line( "RIVER RUNS THROUGH CAVERNS MEASURELESS TO MAN," );
+           put_line( "DOWN TO A SUNLESS SEA." );
+<b>when</b> 22 =&gt; put_line( "YOU'RE ON THE LEDGE ABOVE THE GUILLOTINE ROOM." );
+<b>when</b> 23 =&gt; put_line( "I HEAR THE GIANT THERE!!!" );
+           put_line( "YOU'D BETTER GO BACK!" );
+           new_line;
+<b>when</b> 24 =&gt; put_line( "YOU'RE IN THE GIANT'S CAVERN.  BETTER" );
+           put_line( "NOT BE HERE WHEN THE GIANT COMES!" );
+<b>when</b> 25 =&gt; put_line( "YOU'RE IN THE QUEST RESEARCH AND DEVELOPMENT AREA." );
+           new_line;
+           put_line( "I'M SORRY BUT VISITORS ARE NOT ALLOWED. YOU'LL HAVE" );
+           put_line( "TO LEAVE." );
+           new_line;
+<b>when</b> 26 =&gt; put_line( "YOU'RE IN THE CRYSTAL PALACE.  THE WALLS RESONATE" );
+           put_line( "WTH AWESOME MUSIC." );
+<b>when</b> 27 =&gt; put_line( "YOU'RE AT THE TOP OF A GIANT STALACTITE." );
+           put_line( "YOU COULD SLIDE DOWN, BUT YOU COULDN'T" );
+           put_line( "CLIMB BACK UP." );
+<b>when</b> 28 =&gt; put_line( "YOU'RE IN A LITTLE GROTTO.  THERE IS A" );
+           put_line( "BOOK HERE CALLED JANE'S FIGHTING SHIPS," );
+           put_line( "DATED 1763." );
+<b>when</b> 29 =&gt; put_line( "YOU'RE IN THE GUILLOTINE ROOM.  A SHARP" );
+           put_line( "ROCK BALANCES PRECARIOUSLY ON THE" );
+           put_line( "LEDGE ABOVE YOU." );
+<b>when</b> 30 =&gt; put_line( "YOU'RE IN A CHUTE, SCRAMBLING DOWN THE" );
+           put_line( "ROCKS!  NO WAY TO STOP!!!    HANG ON!" );
+           new_line;
+<b>when</b> 31 =&gt; put_line( "THE TIGHT TUNNEL TURNS A CORNER." );
+<b>when</b> 32 =&gt; put_line( "YOU'RE IN A LITTLE TWISTY MAZE" );
+<b>when</b> 33 =&gt; put_line( "YOU'RE IN A LITTLE TWISTING MAZE." );
+<b>when</b> 34 =&gt; put_line( "YOU'RE IN A TWISTING LITTLE MAZE." );
+<b>when</b> 35 =&gt; put_line( "YOU'RE IN A TWISTY LITTLE MAZE." );
+<b>when</b> 36 =&gt; put_line( "YOU'RE IN A PREHISTORIC DWELLING.  ON" );
+           put_line( "THE WALL ARE DRAWINGS OF BISON DONE IN" );
+           put_line( "RED CLAY.  THE FLOOR IS STREWN WITH" );
+           put_line( "BONES, THE REMAINS OF ANCIENT RITUALS." );
+           put_line( "A SMALL TUNNEL GOES THROUGH THE FLOOR." );
+<b>when</b> 37 =&gt; put_line( "YOU'RE IN A BLACK HOLE.  THE" );
+           put_line( "FORCE OF GRAVITY IS OVERWHELMING." );
+<b>when</b> 38 =&gt; put_line( "YOU'RE IN THE LABYRINTHE." );
+<b>when</b> 39 =&gt; put_line( "YOU'RE IN THE LABYRINTHE." );
+           put_line( "IT'S VERY DARK IN HERE." );
+<b>when</b> 40 =&gt; put_line( "YOU'RE IN THE ASHRAM.  INCENSE IS HEAVY" );
+           put_line( "IN THE AIR, AND ALL DIRECTIONS" );
+           put_line( "SEEM THE SAME.");
+<b>when</b> <b>others</b> =&gt;
+       <b>if</b> treasure_room = integer(current_room) <b>then</b>
+          new_line;
+          put_line("  THE TREASURE IS HERE!!!!");
+       <b>elsif</b> treasure_room = second_treasure_room <b>or</b>
+            first_treasure_room /= second_treasure_room <b>or</b>
+            first_treasure_room = integer(current_room) <b>then</b>
+          new_line;
+          put_line( "A NOTE ON THE WALL SAYS PIRATES NEVER LEAVE" );
+          put_line( "THEIR TREASURE TWICE IN THE SAME PLACE!" );
+       <b>end</b> <b>if</b>;
+<b>end</b> <b>case</b>;
+<b>end</b> show_room;
+
+<b>procedure</b> check_for_pirate <b>is</b>
+<FONT COLOR=green><EM>-- was 4000 REM</EM></FONT>
+<b>begin</b>
+  <b>if</b> integer(current_room) = second_treasure_room <b>then</b>
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+  <b>if</b> pirate_room = 1 <b>then</b>
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+  <b>if</b> first_treasure_room = second_treasure_room <b>then</b>
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+  <b>if</b> treasure_room /= -1 <b>then</b>
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+  <b>if</b> current_room = 16 <b>then</b>
+     pirate_room := 160;
+  <b>end</b> <b>if</b>;
+  <b>if</b> P1 &gt; 0 <b>then</b>
+     P1 := P1+1;
+  <b>end</b> <b>if</b>;
+  <b>if</b> current_room = 3 <b>then</b>
+     P1 := P1+1;
+  <b>end</b> <b>if</b>;
+  <b>if</b> P1&lt;15 <b>then</b>
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+  new_line;
+  put_line( "SUDDENLY THE PIRATE LEAPS OUT OF THE" );
+  put_line( "GLOOM AND GRABS THE TREASURE FROM YOU!" );
+  put_line( "'HAH!', HE SHOUTS, 'YOU FOUND MY" );
+  put_line( "TREASURE, DID YOU?!   WELL, I'LL HIDE" );
+  put_line( "IT BETTER THIS TIME!'" );
+  put_line( "AND HE DISAPPEARS INTO THE DARKNESS" );
+  put_line( "WITH THE TREASURE." );
+  pirate_room := 1;
+  treasure_room := second_treasure_room;
+<b>end</b> check_for_pirate;
+
+<b>procedure</b> check_for_treasure <b>is</b>
+<b>begin</b>
+  <b>if</b> treasure_room /= integer(current_room) <b>then</b>
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+  <b>if</b> treasure_room &lt; 0 <b>then</b>
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+  <b>if</b> moves_to_find_treasure+5&gt;moves <b>then</b>
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+  put_line( "  DO YOU WANT TO TAKE IT WITH YOU" );
+  <b>loop</b>
+    a := "YN";
+    a2 := 2;
+    get_input;
+    <b>exit</b> <b>when</b> a1 <b>in</b> 1..2;
+    put_line( "WELL?....." );
+  <b>end</b> <b>loop</b>;
+  <b>if</b> a1 = 1 <b>then</b>
+     treasure_room := -1;
+     new_line;
+     put_line( "OK, LETS GET OUT OF HERE!" );
+  <b>else</b>
+     new_line;
+     put_line( "WE'LL LEAVE IT HERE AND YOU CAN EXPLORE SOME MORE." );
+     moves_to_find_treasure := moves;
+  <b>end</b> <b>if</b>;
+<b>end</b> check_for_treasure;
+
+<b>procedure</b> show_options <b>is</b>
+<FONT COLOR=green><EM>-- 7500 REM</EM></FONT>
+<b>begin</b>
+  new_line;
+  put_line( "TYPE N,S,E,W, U   OR D  FOR NORTH, SOUTH," );
+  put_line( "EAST, WEST, UP OR DOWN.  TYPE P FOR SCORE" );
+  new_line;
+<b>end</b> show_options;
+
+<b>procedure</b> get_command <b>is</b>
+<FONT COLOR=green><EM>-- 7000 REM</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+   allowed : <b>constant</b> string := "NEUDWSP"; <FONT COLOR=green><EM>-- A$</EM></FONT>
+<b>begin</b>
+  new_line;
+  put( "                      WHICH WAY" );
+  <b>loop</b>
+    <b>loop</b>
+      a2 := 7;
+      a := allowed;
+      get_input;
+      <b>exit</b> <b>when</b> a1 &lt; 8;
+      put_line( "WHICH WAY DO YOU WANT TO GO?" );
+      show_options;
+      show_room;
+    <b>end</b> <b>loop</b>;
+    <b>exit</b> <b>when</b> a1 &lt; 7;
+    tally_score;
+    put( "YOU HAVE" ); put( score ); put( " POINTS!" );
+    new_line;
+  <b>end</b> <b>loop</b>;
+<b>end</b> get_command;
+
+<FONT COLOR=green><EM>-- Main Program Begins</EM></FONT>
+
+<b>begin</b>
+
+new_line;
+put_line( "WARNING: The conversion isn't finished.  This game is not" );
+put_line( "working. <FONT COLOR=green><EM>-- KB" );</EM></FONT>
+new_line; new_line; new_line;
+put_line( "  YOU WERE WALKING THROUGH THE WOODS ONE DAY AND YOU" );
+put_line( "CAME ACROSS THE ENTRANCE OF A CAVE, COVERED WITH BRUSH." );
+put_line( "  PEOPLE SAY THAT MANY YEARS AGO A PIRATE HID HIS" );
+put_line( "TREASURE IN THESE WOODS,  BUT NO ONE HAS EVER FOUND IT." );
+put_line( "IT MAY STILL BE HERE,  FOR ALL I KNOW." );
+
+move(1) := "1,0,0,0,0,0,0";
+move(2) := "-2,101,-2,0,0,0";
+move(3) := "33,2,1,10,106,4";
+move(4) := "3,30,2,11,2,1";
+move(5) := "8,8,15,10,8,16";
+move(6) := "16,3,2,10,2,2";
+move(7) := "7,-2,101,-2,0,0,0";
+move(8) := "18,18,15,10,18,9";
+move(9) := "-2,33,5,1,0,-2";
+move(10) := "-2,101,-2,0,0,0";
+move(11) := "1,13,4,2,1,2";
+move(12) := "36,2,1,2,1,2";
+move(13) := "2,37,2,1,11,14";
+move(14) := "13,1,19,2,31,31";
+move(15) := "-2,101,-2,0,0,0";
+move(16) := "5,33,2,10,1,106";
+move(17) := "-2,101,-2,0,0,0";
+move(18) := "-2,101,8,0,0,0";
+move(19) := "224,2,2,14,1,42";
+move(20) := "226,1,2,2,25,2";
+move(21) := "1,226,2,2,38,25";
+move(22) := "-2,33,13,50,29,30";
+move(23) := "2,1,2,31,2,2";
+move(24) := "-2,101,19,0,0,0";
+move(25) := "21,20,2,2,1,19";
+move(26) := "-2,65,-2,50,11,14";
+move(27) := "2,40,2,2,21,20";
+move(28) := "-2,60,221,50,14,19";
+move(29) := "2,42,2,13,1,1";
+move(30) := "34,34,2,1,4,2";
+move(31) := "14,14,23,2,1,2";
+move(32) := "-2,101,516,0,0,0";
+move(33) := "2,1,2,1,116,3";
+move(34) := "1,35,2,1,30,30";
+move(35) := "2,1,2,37,34,36";
+move(36) := "35,2,1,37,34,12";
+move(37) := "2,1,35,2,13,2";
+move(38) := "2,21,2,116,1,2";
+move(39) := "2,40,2,32,21,26";
+move(40) := "40,40,2,2,40,41";
+move(41) := "40,40,40,2,40,39";
+move(42) := "28,28,28,28,28,28";
+
+new_line;
+
+put_line( "WHEN YOU ANSWER A QUESTION, I LOOK AT ONLY" );
+put_line( "THE FIRST LETTER, ALTHOUGH YOU CAN TYPE IN" );
+put_line( "THE WHOLE WORD IF YOU WANT TOO." );
+show_options;
+
+<FONT COLOR=green><EM>-- MASTER LOOP for restarting game</EM></FONT>
+
+<b>loop</b>
+
+<b>for</b> j <b>in</b> 1..number_of_rooms <b>loop</b>
+    room(j) := 0;
+<b>end</b> <b>loop</b>;
+
+new_line;
+
+<b>loop</b>                                               <FONT COLOR=green><EM>-- game loop</EM></FONT>
+
+  show_room;                                       <FONT COLOR=green><EM>-- show first room</EM></FONT>
+  moves := moves + 1;                              <FONT COLOR=green><EM>-- first move</EM></FONT>
+
+  save_current := current_room;                    <FONT COLOR=green><EM>-- remember where we parked</EM></FONT>
+  N8 := 0;                                         <FONT COLOR=green><EM>-- NQS</EM></FONT>
+
+  get_command;
+                                    <FONT COLOR=green><EM>-- get a command</EM></FONT>
+
+  <b>if</b> current_room /= 1 <b>then</b>
+     N0 := current_room;
+     a0 := a1;
+  <b>end</b> <b>if</b>;
+  new_line;
+  next_room := numerics.value( strings.field( move(a1), current_room, "," ) );
+
+<FONT COLOR=green><EM>--  loop</EM></FONT>
+
+    <b>loop</b>
+       <b>if</b> next_room = -2 <b>then</b>
+          next_room := save_current;
+       <b>end</b> <b>if</b>;
+       <b>if</b> debug <b>then</b>
+          put_line( standard_error, "DEBUG" &amp; strings.image(current_room) &amp;
+            " TO" &amp; strings.image(next_room) );
+       <b>end</b> <b>if</b>;
+       <b>if</b> next_room &gt;= 500 <b>then</b>
+          next_room := next_room - 500;
+          <b>delay</b> 2.0;
+       <b>else</b>
+          <b>exit</b>;
+       <b>end</b> <b>if</b>;
+    <b>end</b> <b>loop</b>;
+
+    <b>if</b> numerics.truncation(next_room/100) = 0 <b>then</b>
+       current_room := next_room;
+    <b>elsif</b> numerics.truncation(next_room/100) = 1 <b>then</b>
+       current_room := next_room-100;
+       <b>if</b> treasure_room = -1 <b>then</b>
+          current_room := current_room + 1;
+       <b>end</b> <b>if</b>;
+    <b>else</b>
+       current_room := next_room-200;
+       <b>if</b> treasure_room = -1 <b>then</b>
+          current_room := current_room + natural(pirate_room);
+       <b>end</b> <b>if</b>;
+    <b>end</b> <b>if</b>;
+
+    <b>if</b> current_room = 1 <b>then</b>
+       <b>for</b> j <b>in</b> 1..6 <b>loop</b>
+           strings.replace( move(j), current_room, "2", ',' );
+       <b>end</b> <b>loop</b>;
+    <b>end</b> <b>if</b>;
+    strings.replace( move(7-a0), current_room, strings.image(N0), ',' );
+
+<FONT COLOR=green><EM>-- 6500 REM</EM></FONT>
+
+    <b>if</b> N8 /= 2 <b>then</b>
+       show_room;
+    <b>end</b> <b>if</b>;
+
+    room( current_room ) := 1;
+    N8 := 8;
+
+    <b>if</b> numerics.value( strings.field( move( 1 ), current_room, move_sep ) ) = -2 <b>then</b>
+       next_room := numerics.value( strings.field( move( 6 ), current_room ) );
+       J := -1;
+
+       <b>if</b> numerics.value( strings.field( move(4), current_room, move_sep ) ) &gt; numerics.rnd(100) <b>then</b>
+          next_room := numerics.value( strings.field( move(5), current_room ) );
+       <b>end</b> <b>if</b>;
+       J := -1;
+       <b>if</b> numerics.value( strings.field( move(2), current_room, move_sep ) ) &gt; numerics.rnd(100) <b>then</b>
+          next_room := numerics.value( strings.field( move(3), current_room, move_sep ) );
+       <b>end</b> <b>if</b>;
+       <b>if</b> debug <b>then</b>
+          put_line( "   DEBUG BOUNCE TO" &amp; strings.image( current_room ) );
+       <b>end</b> <b>if</b>;
+    <b>end</b> <b>if</b>;
+
+<FONT COLOR=green><EM>-- end loop;</EM></FONT>
+
+  check_for_teasure;
+  check_for_pirate;
+  <b>exit</b> <b>when</b> treasure_room &lt; 0 <b>or</b> current_room = 5; <FONT COLOR=green><EM>-- goto 1400</EM></FONT>
+
+<b>end</b> <b>loop</b>; <FONT COLOR=green><EM>-- game loop</EM></FONT>
+
+tally_score;
+new_line;
+put_line( " CONGRATULATIONS!!   YOU GOT THE TREASURE" );
+put( "OUT IN" );
+put( moves );
+put( "MOVES AND YOU GOT" );
+put(score+10 );
+put_line( "POINTS!" );
+put_line( "WANT TO HUNT AGAIN?" );
+<b>loop</b>
+  a := "YN";
+  a2 := 2;
+  gosub get_input;
+  <b>exit</b> <b>when</b> a1 <b>in</b> 1..2;
+<b>end</b> <b>loop</b>;
+<b>exit</b> <b>when</b> a1 = 2;
+
+<b>end</b> <b>loop</b>; <FONT COLOR=green><EM>-- master loop here</EM></FONT>
+
+<b>end</b> quest;
+
+</PRE></BODY></HTML>

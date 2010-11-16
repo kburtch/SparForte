@@ -1,0 +1,5 @@
+# This should fail
+
+f : file_type;
+set_output( f ); -- not open
+

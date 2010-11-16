@@ -1,0 +1,5 @@
+# This should fail
+
+echo ("test") & | head &; -- not allowed
+-- but echo runs anyway
+

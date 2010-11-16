@@ -1,0 +1,10 @@
+# This should fail
+
+if true then
+  null;
+elsif false then
+  null;
+else
+  null;
+-- no ending if
+

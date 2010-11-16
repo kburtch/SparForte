@@ -1,0 +1,4 @@
+# This should fail
+
+put 5 ); -- missing opening bracket
+

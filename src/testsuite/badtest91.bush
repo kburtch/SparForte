@@ -1,0 +1,6 @@
+# This should fail
+
+for i in 1..10 then -- bad keyword
+  null;
+end loop;
+

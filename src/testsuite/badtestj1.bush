@@ -1,0 +1,4 @@
+# This should fail
+
+echo | head "test" &; -- not allowed
+

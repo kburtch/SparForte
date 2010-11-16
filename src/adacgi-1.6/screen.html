@@ -1,0 +1,92 @@
+<HTML><HEAD><TITLE>AdaCGI "Screenshot"</TITLE>
+</HEAD><BODY>
+<H1>AdaCGI "Screenshot"</H1>
+Many people like to see ``screenshots,'' but how do you show a screenshot
+of a CGI interface library?  Well, here's my attempt.
+Below is a demonstration form, followed by the code that created it
+(the code is available in the file <A HREF="demo.adb">demo.adb</A>).
+This basically demonstrates how the AdaCGI library can be used to create
+programs that work with the World Wide Web.
+The form is <I>not</I> active at this time, so selecting "submit" won't
+do anything useful.
+If you want to learn more,
+<A HREF="cgi.html">see the AdaCGI documentation</A>.
+<P>
+<HR>
+<P>
+<H1>AdaCGI Demonstration Form</H1>
+<P>This form demonstrates an Ada 95 binding to CGI.<P>
+<FORM METHOD=POST>
+What is your name: <INPUT NAME="name" SIZE=40>
+<P>What topping would you like on your pizza?<P><OL>
+<LI><INPUT TYPE="checkbox" NAME="topping" VALUE="pepperoni" CHECKED>Pepperoni.
+<LI><INPUT TYPE="checkbox" NAME="topping" VALUE="sausage">Sausage.
+<LI><INPUT TYPE="checkbox" NAME="topping" VALUE="anchovies">Anchovies.
+</OL>
+Would you like us to call ahead?
+<DL>
+<DD> <INPUT TYPE="radio" NAME="callfirst" VALUE="yes" CHECKED> <I>Yes.</I>
+<DD> <INPUT TYPE="radio" NAME="callfirst" VALUE="no"> <I>No.</I>
+</DL>
+<P> <INPUT TYPE="submit"> <INPUT TYPE="reset"> 
+</FORM>
+<P>
+<HR>
+<P>
+<PRE>
+with CGI, Text_IO; use CGI, Text_IO;
+
+procedure Demo is
+-- Demonstrate CGI interface.   See the examples at 
+-- http://www.ncsa.uiuc.edu/SDG/Software/Mosaic/Docs/fill-out-forms/overview.html
+
+-- To run this program directly (without an HTTP server), set the
+-- environment variable REQUEST_METHOD to "GET" and the variable
+-- QUERY_STRING to either "" or "name=David&amp;topping=anchovies&amp;callfirst=no".
+
+begin
+  Put_CGI_Header;
+
+  if CGI.Input_Received then
+    Put_HTML_Head("Form Result of Demo Ada 95 Binding to CGI");
+    Put_HTML_Heading("Form Result of Demo", 1);
+    Put_Line("&lt;P&gt;Your name is &lt;I&gt;" &amp; Value("name") &amp; "&lt;/I&gt;");
+    Put_Line("&lt;P&gt;The keys and values sent were:&lt;P&gt;");
+    Put_Variables;
+  else
+    Put_HTML_Head("Demonstration of Ada 95 Binding to CGI");
+    Put_HTML_Heading("AdaCGI Demonstration Form", 1);
+    Put_Line("&lt;P&gt;This form demonstrates an Ada 95 binding to CGI.&lt;P&gt;");
+
+    Put_Line("&lt;FORM METHOD=POST&gt;");
+
+    Put_Line("What is your name: &lt;INPUT NAME=""name"" SIZE=40&gt;");
+
+    Put_Line("&lt;P&gt;What topping would you like on your pizza?&lt;P&gt;&lt;OL&gt;");
+    Put_Line("&lt;LI&gt;&lt;INPUT TYPE=""checkbox"" NAME=""topping"" " &amp;
+             "VALUE=""pepperoni"" CHECKED&gt;Pepperoni.");
+    Put_Line("&lt;LI&gt;&lt;INPUT TYPE=""checkbox"" NAME=""topping"" " &amp;
+             "VALUE=""sausage""&gt;Sausage.");
+    Put_Line("&lt;LI&gt;&lt;INPUT TYPE=""checkbox"" NAME=""topping"" " &amp;
+             "VALUE=""anchovies""&gt;Anchovies.");
+    Put_Line("&lt;/OL&gt;");
+
+    Put_Line("Would you like us to call ahead?");
+    Put_Line("&lt;DL&gt;");
+    Put_Line("&lt;DD&gt; &lt;INPUT TYPE=""radio"" NAME=""callfirst"" VALUE=""yes"" " &amp;
+             "CHECKED&gt; &lt;I&gt;Yes.&lt;/I&gt;");
+    Put_Line("&lt;DD&gt; &lt;INPUT TYPE=""radio"" NAME=""callfirst"" VALUE=""no""&gt; " &amp;
+             "&lt;I&gt;No.&lt;/I&gt;");
+    Put_Line("&lt;/DL&gt;");
+
+
+    Put_Line("&lt;P&gt; &lt;INPUT TYPE=""submit""&gt; &lt;INPUT TYPE=""reset""&gt; ");
+    Put_Line("&lt;/FORM&gt;");
+  end if;
+
+  Put_HTML_Tail;
+end Demo;
+</PRE>
+</BODY>
+</HTML>
+

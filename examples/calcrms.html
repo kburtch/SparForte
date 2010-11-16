@@ -1,0 +1,45 @@
+<HEAD><TITLE>calcrms.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : calcrms.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush calcrms
+ 6.20483682299543E+00
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- From Rosetta Code</EM></FONT>
+
+<b>pragma</b> annotate( "calcrms" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Compute the Root mean square of the numbers 1..10." );
+<b>pragma</b> annotate( "The root mean square is also known by its initial RMS (or rms), and as the" );
+<b>pragma</b> annotate( "quadratic mean.  The RMS is calculated as the mean of the squares of the" );
+<b>pragma</b> annotate( "numbers, square-rooted" );
+<b>pragma</b> annotate( "translated by Ken O. Burtch" );
+
+<b>procedure</b> calcrms <b>is</b>
+  <b>type</b> float_arr <b>is</b> <b>array</b>(1..10) <b>of</b> float;
+  list : float_arr := (1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0);
+  sum  : float := 0.0;
+  rms  : float;
+<b>begin</b>
+  <b>for</b> p <b>in</b> arrays.first(list)..arrays.last(list) <b>loop</b>
+      sum := @ + list(p)**2;
+  <b>end</b> <b>loop</b>;
+  rms := numerics.sqrt( sum / float(arrays.length(list)));
+  ?  rms;
+<b>end</b> calcrms;
+
+</PRE></BODY></HTML>

@@ -1,0 +1,4 @@
+# This should fail
+
+type if is new integer; -- reserved word
+

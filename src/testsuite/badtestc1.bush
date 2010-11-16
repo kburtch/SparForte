@@ -1,0 +1,6 @@
+# This should fail
+
+declare
+begin
+end; -- no statements
+

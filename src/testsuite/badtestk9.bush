@@ -1,0 +1,11 @@
+# This should fail
+
+f : file_type;
+open( f, in_file, "t.t" );
+delete( f );
+-- erase after last test
+
+i : integer;
+
+set_input( i ); -- not a file varaible
+

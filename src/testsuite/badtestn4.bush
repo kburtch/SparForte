@@ -1,0 +1,4 @@
+# This should fail
+
+d : calendar.day_number := calendar.day( calendar.clock; -- bad syntax
+

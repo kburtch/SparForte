@@ -1,0 +1,7 @@
+# This should fail
+
+for i in 1..1 loop
+  null;
+
+-- missing end of loop
+

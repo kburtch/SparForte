@@ -1,0 +1,32 @@
+<HEAD><TITLE>file_creation.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : file_creation.bush </H1></DIV><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- A common interview test from Rosetta Code for testing basic programming</EM></FONT>
+<FONT COLOR=green><EM>-- skills.</EM></FONT>
+
+<b>pragma</b> annotate( "file_creation" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "In this task, the job is to create a new empty file called 'output.txt' of" );
+<b>pragma</b> annotate( "size 0 bytes and an empty directory called 'docs'. This should be done" );
+<b>pragma</b> annotate( "twice: once "here", i.e. in the current working directory and once in the" );
+<b>pragma</b> annotate( "filesystem root. " );
+<b>pragma</b> annotate( "translated by Ken O. Burtch" );
+
+<b>procedure</b> file_creation <b>is</b>
+   file_handle : file_type;
+<b>begin</b>
+   create (file_handle, out_file, "output.txt");
+   close (file_handle);
+   <FONT COLOR=green><EM>-- directory_operations/create_directory is not implemented in Bush.</EM></FONT>
+   mkdir "docs";
+
+   create (file_handle, out_file, "/output.txt");
+   close (file_handle);
+   <FONT COLOR=green><EM>-- directory_operations/create_directory is not implemented in Bush.</EM></FONT>
+   mkdir "/docs";
+<b>end</b> file_creation;
+
+</PRE></BODY></HTML>

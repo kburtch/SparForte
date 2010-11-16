@@ -1,0 +1,51 @@
+<HEAD><TITLE>factorial.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : factorial.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush factorial 5
+ 120
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "factorial" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Write a function to return the factorial of a number." );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> factorial <b>is</b>
+  param  : integer := numerics.value( $1 );
+  result : natural;
+  count  : natural;
+<b>begin</b>
+  <b>if</b> param &lt; 0 <b>then</b>
+     put_line( standard_error, source_info.source_location &amp; ": number must be &gt;= 0" );
+     command_line.set_exit_status( 192 );
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+  <b>if</b> param = 0 <b>then</b>
+     ? 0;
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+  result := natural( param );
+  count  := natural( param - 1 );
+  <b>for</b> i <b>in</b> <b>reverse</b> 1..count <b>loop</b>
+      result := @ * i;
+  <b>end</b> <b>loop</b>;
+  ? result;
+<b>end</b> factorial;
+
+</PRE></BODY></HTML>

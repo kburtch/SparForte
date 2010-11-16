@@ -1,0 +1,7 @@
+# This should fail
+
+while true loop
+  null;
+
+-- missing end of loop
+

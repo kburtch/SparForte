@@ -1,0 +1,343 @@
+<HEAD><TITLE>eliza.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : eliza.bush </H1></DIV><HR>
+<IMG SRC="eliza.gif"><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- Eliza</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Original author: Joseph Weizenbaum</EM></FONT>
+
+<b>procedure</b> eliza <b>is</b>
+
+<FONT COLOR=green><EM>-- Keywords</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Keywords and responses are loaded into the keywords</EM></FONT>
+<FONT COLOR=green><EM>-- variable.  Keywords are prefixed with the keyword_tag</EM></FONT>
+<FONT COLOR=green><EM>-- character, responses with the response_tag character.</EM></FONT>
+
+delimiter  : <b>constant</b> character := '~';
+nokey_marker : <b>constant</b> string := delimiter &amp; "NOKEYFOUND";
+
+<FONT COLOR=green><EM>-- keyword lists are pairs of a keyword and first reponse field</EM></FONT>
+<FONT COLOR=green><EM>-- reponses are lists of responses terminated with an empty field</EM></FONT>
+
+single_keywords : string := "";
+num_single      : natural := 0;
+multi_keywords  : string := "";
+num_multi       : natural := 0;
+responses       : string := "";
+num_responses   : natural := 0;
+
+<FONT COLOR=green><EM>-- User Input</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- i is the what the user types.  previous is the</EM></FONT>
+<FONT COLOR=green><EM>-- previous value of i, used to check if the user</EM></FONT>
+<FONT COLOR=green><EM>-- repeats his/herself.</EM></FONT>
+
+i : string := "";
+previous : string := "";
+
+<b>begin</b>
+
+<FONT COLOR=green><EM>-- initialization</EM></FONT>
+
+put_line( "Eliza" );
+new_line;
+
+<b>declare</b>
+  <b>type</b> data_type <b>is</b> ( keyword, replies );
+  data_file : file_type;
+  current_type : data_type := keyword;
+  s : string;
+  terminate_response_list : boolean := false;
+<b>begin</b>
+  put_line( "Please wait...loading keywords/responses..." );
+  open( data_file, in_file, "eliza.data" );
+  <b>while</b> <b>not</b> end_of_file( data_file ) <b>loop</b>
+       s := get_line( data_file );
+       <b>if</b> s = "." <b>then</b>
+          current_type := keyword;
+       <b>elsif</b> s = "!" <b>then</b>
+          current_type := replies;
+       <b>elsif</b> current_type = keyword <b>then</b>
+          <b>if</b> terminate_response_list <b>then</b>
+             responses := @ &amp; delimiter;
+             num_responses := @+1;
+             terminate_response_list := false;
+          <b>end</b> <b>if</b>;
+          <b>if</b> strings.index( s, ' ' ) = 0 <b>then</b>
+             single_keywords := @ &amp; s &amp; delimiter;
+             single_keywords := @ &amp; strings.image( num_responses+1 ) &amp; delimiter;
+             num_single := @+2;
+          <b>else</b>
+             multi_keywords := @ &amp; s &amp; delimiter;
+             multi_keywords := @ &amp; strings.image( num_responses+1 ) &amp; delimiter;
+             num_multi := @+2;
+          <b>end</b> <b>if</b>;
+       <b>else</b>
+          responses := @ &amp; s &amp; delimiter;
+          num_responses := @+1;
+          terminate_response_list := true;
+       <b>end</b> <b>if</b>;
+       put( "." );
+  <b>end</b> <b>loop</b>;
+  responses := @ &amp; delimiter;
+  close( data_file );
+  new_line;
+<b>end</b>;
+
+put_line( "HI!  I'M ELIZA.  LET'S TALK.  TYPE `BYE' TO END THIS SESSION." );
+
+<FONT COLOR=green><EM>-- get next line of input</EM></FONT>
+
+<b>loop</b>
+
+<FONT COLOR=green><EM>-- read user's input</EM></FONT>
+
+i := "";
+<b>while</b> i = "" <b>loop</b>
+  put( "&gt;" );
+  i := get_line;
+<b>end</b> <b>loop</b>;
+i := ' ' &amp; i &amp; ' ';
+
+<FONT COLOR=green><EM>-- clean up input</EM></FONT>
+
+<b>declare</b>
+  c : character;
+  new_i : string := "";
+  last_was_space : boolean := false;
+<b>begin</b>
+  <b>for</b> l <b>in</b> 1..strings.length( i ) <b>loop</b>
+    c := strings.element( i, l );
+    <b>if</b> c = ' ' <b>then</b>
+       <b>if</b> last_was_space <b>then</b>
+          <b>null</b>;
+       <b>else</b>
+          new_i := @ &amp; c;
+          last_was_space := true;
+       <b>end</b> <b>if</b>;
+    <b>else</b>
+       last_was_space := false;
+       <b>if</b> c &gt;= "a" <b>and</b> c &lt;= "z" <b>then</b>
+          new_i := @ &amp; strings.val(  numerics.pos( c ) - 32 );
+       <b>elsif</b> c &gt;= '0' <b>and</b> c &lt;= '9' <b>then</b>
+          new_i := @ &amp; c;
+       <b>elsif</b> c &gt;= "A" <b>and</b> c &lt;= 'Z' <b>then</b>
+          new_i := @ &amp; c;
+       <b>end</b> <b>if</b>;
+    <b>end</b> <b>if</b>;
+  <b>end</b> <b>loop</b>;
+  i := new_i;
+<b>end</b>;
+
+<FONT COLOR=green><EM>-- test for the basics</EM></FONT>
+
+<b>if</b> i = previous <b>then</b>
+   put_line( "PLEASE DON'T REPEAT YOURSELF!" );
+<b>elsif</b> i = " BYE " <b>or</b> i = " LOGOUT " <b>then</b>
+   put_line( "TALK TO YOU LATER!  BYE!" );
+   <b>exit</b>;
+<b>else</b>
+   previous := i;
+
+   <FONT COLOR=green><EM>-- look for keyword(s)</EM></FONT>
+
+   <b>declare</b>
+      looking_for_start : <b>constant</b> positive := 99999;
+      remains : string := "";
+
+      eliza_reply : string := "";
+      word_start  : positive := 1;
+      testword    : string := "";
+      first_pos   : natural := 0;
+      response_pos: natural := 0;
+      reading_word: boolean := false;
+      ch : character;
+   <b>begin</b>
+
+      <FONT COLOR=green><EM>-- look for single keywords</EM></FONT>
+
+      <b>declare</b>
+        k : positive; <FONT COLOR=green><EM>-- keyword in the user's input</EM></FONT>
+        keyword : string;
+      <b>begin</b>
+        k := 2; <FONT COLOR=green><EM>-- skip first null "field"</EM></FONT>
+        <b>loop</b>
+          testword := strings.field( i, k, ' ' );
+          <b>exit</b> <b>when</b> testword = "";
+          <FONT COLOR=green><EM>-- not 100% since doesn't take into account leading delimiter</EM></FONT>
+          <FONT COLOR=green><EM>-- since first single keyword has no leading delimiter</EM></FONT>
+          <b>if</b> strings.index( single_keywords, testword &amp; delimiter ) &gt; 0 <b>then</b>
+             <b>for</b> sk <b>in</b> 1..num_single <b>loop</b>
+                 keyword := strings.field( single_keywords, sk, delimiter );
+                 <b>if</b> keyword = testword <b>then</b>
+                    response_pos := numerics.value( strings.field( single_keywords, sk+1, delimiter ) );
+                    <b>exit</b>;
+                 <b>end</b> <b>if</b>;
+             <b>end</b> <b>loop</b>;
+          <b>end</b> <b>if</b>;
+          <b>exit</b> <b>when</b> response_pos &gt; 0;
+          k := @+1;
+        <b>end</b> <b>loop</b>;
+      <b>end</b>;
+
+      <FONT COLOR=green><EM>-- no match? look for multiple keywords</EM></FONT>
+
+      <b>if</b> response_pos = 0 <b>then</b>
+         <b>declare</b>
+           k  : positive;
+         <b>begin</b>
+           k := 1;
+           <b>while</b> k &lt; positive( num_multi ) <b>loop</b>
+               testword := strings.field( multi_keywords, k, delimiter ); 
+               <b>if</b> strings.index( i, ' ' &amp; testword &amp; ' ' ) &gt; 0 <b>then</b>
+                  response_pos := numerics.value( strings.field( multi_keywords, k+1, delimiter ) );
+                  <b>exit</b>;
+               <b>end</b> <b>if</b>;
+               k := @+1;
+           <b>end</b> <b>loop</b>;
+         <b>end</b>;
+      <b>end</b> <b>if</b>;
+
+      <FONT COLOR=green><EM>-- still no match? use fallback responses else get remainder</EM></FONT>
+      <FONT COLOR=green><EM>-- of user input after the keyword(s)</EM></FONT>
+
+      <b>if</b> response_pos = 0 <b>then</b>
+         testword := nokey_marker;
+         response_pos := numerics.value( strings.field( single_keywords, num_single, delimiter ) );
+      <b>else</b>
+         remains := strings.slice( i, positive( strings.index( i, testword ) +
+            strings.length( testword ) ), strings.length( i ) );
+      <b>end</b> <b>if</b>;
+
+      <FONT COLOR=green><EM>-- rewrite the remainder of the input</EM></FONT>
+
+      <b>declare</b>
+        c : natural;
+        p : positive;
+      <b>begin</b>
+        c := strings.index( remains, " ARE " );
+        <b>if</b> c &gt; 0 <b>then</b>
+           p := positive( c );
+           remains := strings.replace_slice( remains, p, c+4, " AM+ " );
+        <b>end</b> <b>if</b>;
+        c := strings.index( remains, " AM " );
+        <b>if</b> c &gt; 0 <b>then</b>
+           p := positive( c );
+           remains := strings.replace_slice( remains, p, c+3, " ARE+ " );
+        <b>end</b> <b>if</b>;
+        c := strings.index( remains, " WERE " );
+        <b>if</b> c &gt; 0 <b>then</b>
+           p := positive( c );
+           remains := strings.replace_slice( remains, p, c+5, " WAS+ " );
+        <b>end</b> <b>if</b>;
+        c := strings.index( remains, " WAS " );
+        <b>if</b> c &gt; 0 <b>then</b>
+           p := positive( c );
+           remains := strings.replace_slice( remains, p, c+4, " WERE+ " );
+        <b>end</b> <b>if</b>;
+        c := strings.index( remains, " YOU " );
+        <b>if</b> c &gt; 0 <b>then</b>
+           p := positive( c );
+           remains := strings.replace_slice( remains, p, c+4, " I+ " );
+        <b>end</b> <b>if</b>;
+        c := strings.index( remains, " I " );
+        <b>if</b> c &gt; 0 <b>then</b>
+           p := positive( c );
+           remains := strings.replace_slice( remains, p, c+2, " YOU+ " );
+        <b>end</b> <b>if</b>;
+        c := strings.index( remains, " YOUR " );
+        <b>if</b> c &gt; 0 <b>then</b>
+           p := positive( c );
+           remains := strings.replace_slice( remains, p, c+5, " MY+ " );
+        <b>end</b> <b>if</b>;
+        c := strings.index( remains, " MY " );
+        <b>if</b> c &gt; 0 <b>then</b>
+           p := positive( c );
+           remains := strings.replace_slice( remains, p, c+3, " YOUR+ " );
+        <b>end</b> <b>if</b>;
+        c := strings.index( remains, " IVE " );
+        <b>if</b> c &gt; 0 <b>then</b>
+           p := positive( c );
+           remains := strings.replace_slice( remains, p, c+4, " YOUVE+ " );
+        <b>end</b> <b>if</b>;
+        c := strings.index( remains, " YOUVE " );
+        <b>if</b> c &gt; 0 <b>then</b>
+           p := positive( c );
+           remains := strings.replace_slice( remains, p, c+6, " IVE+ " );
+        <b>end</b> <b>if</b>;
+        c := strings.index( remains, " IM " );
+        <b>if</b> c &gt; 0 <b>then</b>
+           p := positive( c );
+           remains := strings.replace_slice( remains, p, c+3, " YOURE+ " );
+        <b>end</b> <b>if</b>;
+        c := strings.index( remains, " ME " );
+        <b>if</b> c &gt; 0 <b>then</b>
+           p := positive( c );
+           remains := strings.replace_slice( remains, p, c+3, " YOU+ " );
+        <b>end</b> <b>if</b>;
+        c := strings.index( remains, " US " );
+        <b>if</b> c &gt; 0 <b>then</b>
+           p := positive( c );
+           remains := strings.replace_slice( remains, p, c+3, " YOU+ " );
+        <b>end</b> <b>if</b>;
+        c := strings.index( remains, " WE " );
+        <b>if</b> c &gt; 0 <b>then</b>
+           p := positive( c );
+           remains := strings.replace_slice( remains, p, c+3, " YOU+ " );
+        <b>end</b> <b>if</b>;
+        <b>loop</b>
+           c := strings.index( remains, "+" );
+           <b>exit</b> <b>when</b> c = 0;
+           remains := strings.delete( remains, positive( c ), c );
+        <b>end</b> <b>loop</b>;
+        <b>if</b> strings.tail( remains, 3 ) = " I " <b>then</b>
+           remains := strings.slice( remains, 1,
+              strings.length( remains ) - 2 )
+              &amp; "ME ";
+        <b>end</b> <b>if</b>;
+      <b>end</b>;
+<FONT COLOR=green><EM>--put_line( "Remains (after conjugation): " &amp; remains );</EM></FONT>
+
+         <FONT COLOR=green><EM>-- attach reply</EM></FONT>
+
+      <b>declare</b>
+        last_pos    : natural := 0;
+        reply_cnt   : natural := 0;
+        reply       : natural := 0;
+        ch          : character;
+        response    : string;
+      <b>begin</b>
+
+        <FONT COLOR=green><EM>-- count replies</EM></FONT>
+
+        last_pos := response_pos+1;
+        <b>loop</b>
+           response := strings.field( responses, last_pos, delimiter );
+           <b>exit</b> <b>when</b> response = "";
+           last_pos := @+1;
+        <b>end</b> <b>loop</b>;
+        reply_cnt := last_pos - response_pos;
+
+        reply := numerics.truncation(numerics.random * float(reply_cnt) );
+        eliza_reply := strings.field( responses, response_pos+reply,
+          delimiter );
+
+        ch := strings.element( eliza_reply, positive( strings.length( eliza_reply ) ) );
+        <b>if</b> ch = '*' <b>then</b>
+           eliza_reply := strings.head( eliza_reply,
+             strings.length( eliza_reply )-1 ) &amp; remains;
+        <b>end</b> <b>if</b>;
+      <b>end</b>;
+      put_line( eliza_reply );
+   <b>end</b>;
+<b>end</b> <b>if</b>;
+
+<b>end</b> <b>loop</b>;
+
+<b>end</b> eliza;
+
+</PRE></BODY></HTML>

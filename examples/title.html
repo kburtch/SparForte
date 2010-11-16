@@ -1,0 +1,56 @@
+<HEAD><TITLE>title.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : title.bush</H1></DIV><HR>
+<!-- IMG SRC="title.gif" -->
+<P>Change the title of an xterm window.</p>
+<PRE>
+
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- Title</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Change the title of an xterm window</EM></FONT>
+<FONT COLOR=green><EM>-- Created by Ken O. Burtch</EM></FONT>
+
+<b>pragma</b> annotate( "title" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Change the title of an xterm window" );
+<b>pragma</b> annotate( "usage: title new-title" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> title <b>is</b>
+
+  <b>procedure</b> usage <b>is</b>
+  <b>begin</b>
+     put( "usage: " ) @ ( source_info.file );
+     put_line( " new-title" );
+     command_line.set_exit_status( 0 );
+  <b>end</b> usage;
+
+<b>begin</b>
+
+<FONT COLOR=green><EM>  -- Usage</EM></FONT>
+
+  <b>if</b> $# /= 1 <b>then</b>
+     usage;
+     <b>return</b>;
+  <b>elsif</b> $1 = "-h" <b>or</b> $1 = "--help" <b>then</b>
+     usage;
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+<FONT COLOR=green><EM>  -- Print out the control sequence to change the title</EM></FONT>
+
+  <b>declare</b>
+    new_title : string := command_line.argument(1);
+  <b>begin</b>
+    put_line( ASCII.ESC & "]0;" & new_title & ASCII.BEL );
+  <b>end</b>;
+
+  command_line.set_exit_status( 0 );
+
+<b>end</b> title;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+</PRE></BODY></HTML>

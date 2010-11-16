@@ -1,0 +1,4 @@
+
+i : integer := 0;
+j : integer := arrays.length( i ); -- i not an array
+

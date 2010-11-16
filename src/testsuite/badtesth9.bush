@@ -1,0 +1,6 @@
+# This should fail
+
+pragma ada_95;
+
+u : universal_typeless; -- not allowed
+

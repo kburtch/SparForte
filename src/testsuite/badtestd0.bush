@@ -1,0 +1,11 @@
+# This should fail
+
+type type1 is new integer;
+type type2 is new integer;
+subtype type3 is type1;
+
+t3 : type3;
+t2 : type2;
+
+t3 := t2; -- incompatible
+

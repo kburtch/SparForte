@@ -1,0 +1,240 @@
+--------------------------------------------------
+               ADAVOX RELEASE 0.51
+
+         Written almost entirely Ada-95
+        for reliability and preciseness.
+
+            by Warren W. Gay VE3WWG
+                ve3wwg@home.com
+--------------------------------------------------
+
+INTRODUCTION:
+-------------
+
+It's been a long time since the last release of
+wavplay. This project release marks the beginning
+of the replacement for wavplay. The wavplay
+program suffers from a number of limitations,
+including the inability to play certain legal wave
+format files. Wavplay also does not currently
+support compressed (ADPCM) wave files, and does
+not handle endian differences for hosts like
+the PowerPC.
+
+The new adavox project is designed to handle wave
+files and other sound formats. The next section
+outlines ADAVOX's new features. It should also work
+for PowerPC users of Linux or FreeBSD (email me
+if you have a success story for a big-endian
+machine).
+
+Only a command line "player" is provided at this
+time. However, it should be quite useful as a
+helper application for Netscape for example.
+
+NOTE : ADAVOX 0.51 does not record sound files at
+       this time.
+
+FEATURES :
+----------
+
+   *.wav : Wave File Formats
+	- Plays standard PCM wave files
+	- Plays Microsoft ADPCM wave files
+	- Plays IMA/DVI ADPCM wave files [1]
+	- Plays u-Law wave files
+	- Plays a-Law wave files
+
+   *.au  : Sun file formats
+	- Plays standard PCM wave files
+	- Plays u-Law wave files
+	- Plays a-Law wave files
+
+   Other Features :	
+	- Plays several files in sequence [2]
+	- Endian neutral **
+	- Ada 95 sound packages provided
+	- Optional realtime scheduling [5]
+	- For Linux and BSD (FreeBSD tested)
+	- Netscape friendly
+
+   [] see notes at the bottom
+
+   Limitations :
+	- Does not record sound files yet
+	- Will not play from a pipe or socket [6]
+
+** One of the big deals about ADAVOX, which wavplay
+will never be able to compete with, is that ADAVOX
+has been designed to work on almost any endian
+machine type. [3]  While I don't have a big endian
+host to test this with, it is expected to work for
+Alpha's running Linux/FreeBSD for example.
+
+ADAVOX will detect the endian differences between
+the host it is running on, and the expected
+endianness of the file (*.wav files are
+little-endian, while *.au files are big endian.)
+The software will configure itself to make the
+necessary transformation automagically. [4]
+
+The project is also structured to permit the
+re-use of some of the WC.Streams.* Ada packages.
+This will allow developers to re-use some of
+the provided software modules.
+
+
+NOTES :
+-------
+
+[1] The CODEC has been designed to work for 2, 3,
+4, and 5 bit samples. The 2 and 5 bit formats are
+not standard formats, but are designed to be
+compatible with CoolEdit-2000. The provided CODEC
+works with all CoolEdit-2000 generated monophonic
+files. However, CoolEdit-2000 generated sterio
+files do not seem to play correctly, unless the
+4-bit format is chosen. Even though CoolEdit-2000
+plays its own files correctly, it is believed that
+CoolEdit-2000 incorrectly interleaves the samples
+for sterio files.
+
+[2] The files are played in the sequence given on
+the command line.
+
+[3] There are some older mainframe CPU types that
+use very odd endian formats that cannot be
+supported. However, it is not likely that this
+will be an issue with modern equipment.
+
+[4] The magic is localized in the source files
+wc-endian.ad[sb]. The rest of the application is
+totally unaware of the endian issue, which makes
+programming life much easier!
+
+[5] The adavox command will establish a default
+realtime priority of LO+1, where LO is the lowest
+realtime priority (on platforms that support it).
+This can be overrided on the command line with the
+-R option. For this to work, it must be installed
+setuid root (installed this way by default).
+Otherwise, the command runs at normal priorities.
+
+[6] Many people have asked me to fix wavplay to
+play files from a pipe or socket. I seriously
+looked at providing this functionality in adavox,
+but concluded that it is just too much trouble for
+the benefit gained. Some files like Microsoft's
+*.wav file are just too complex to deal with in a
+sequential fashion. Instead, the extra effort went
+into providing endian-neutral support. Look for
+server support to address streaming in the future.
+
+TESTED ON :
+-----------
+
+The adavox-0.51.tar.gz release has been tested on
+the following platforms:
+
+	- FreeBSD 4.3-RC
+	- Red Hat Linux 7.0 (Guiness), with
+		2.2.16 kernel.
+
+FUTURE DEVELOPMENT :
+--------------------
+
+There was some MP3 support started, but this port
+is a large task. I have backed away from this at
+the present time, in favour of getting adavox out
+there for others to use. It is useful for a
+Netscape helper applicaton, replacing wavplay.
+It is hoped that adavox will eventually retire
+the wavplay project.
+
+In the mean time, the next effort will be focused
+on record functionality. This will eventually
+include conversion of one wave file format to
+another (in addition to recording different
+formats).
+
+Once the foundation packages are finalized someday
+(pardon the Ada pun), I want to develop a "proper
+sound" server to allow playing multiple wave/au
+files at once etc. This will work in a
+client/server fashion.
+
+WARNING TO DEVELOPERS :
+-----------------------
+
+The packages in the WC.* tree are likely to
+undergo some changes. You are welcome to use them
+as they are, but do expect change. Improvements to
+them will also be considered ;-)  Please use 3
+character tab stops, and follow the same source
+conventions if you want to submit code/changes.
+
+MP3 SUPPORT NEEDED :
+--------------------
+
+If someone wants to submit MP3 support (in Ada),
+I will gladly integrate it into the existing code
+base. However, before submitting code, please keep
+the design goal firmly in mind. There is a minimum
+of module interaction within the current design. In
+a top level form, the interfaces are:
+
+  [SRC-FORMAT] -> [CODEC] -> [DEST-FORMAT]
+
+The [SRC-FORMAT] represents one Ada stream
+(WC.Streams.Wave or WC.Streams.AU for sound
+files) as the source stream. The [DEST-FORMAT] is
+currently only supported by WC.Streams.DSP (the
+Digital Sound Processor). Eventually the
+WC.Streams.Wave and WC.Streams.AU packages will
+also serve as destinations, when the code is
+complete (allowing recording or file format
+conversions). Obviously, in order to record
+samples, the WC.Streams.DSP package will also have
+to be finished to act as a source.
+
+In the middle of all of this is the [CODEC]. It
+simply pumps wave samples from the source to the
+destination, performing decompression as required.
+This looks conceptually simple, but the
+implementation is very tricky in Ada without
+bringing in extra inter-module dependencies and
+APIs. MPEG support is nearly a nightmare, when you
+include ID3 Tag support. Maybe this is the
+challenge you have been waiting for?
+
+
+OGG-VORBIS SUPPORT :
+--------------------
+
+It would also be nice to have Ada95 OGG-VORBIS
+support. Perhaps another ambitious person would
+like to have a go at it? Robots are also welcome
+to contribute ;-)
+
+
+HISTORY :
+---------
+
+0.51	Fixed to use the newer bc-20010513 Booch
+	components.
+0.5	Initial release
+
+
+--------------------------------------------------
+          THANK-YOU FOR USING ADAVOX
+--------------------------------------------------
+
+This software is provided AS IS. You use this
+software at your own risk. No guarantee is
+expressed or implied.
+
+This project is protected under the terms of the
+GPLv2, except where specially noted.
+
+--------------------------------------------------
+

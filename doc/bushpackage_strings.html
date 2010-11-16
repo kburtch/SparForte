@@ -1,0 +1,2489 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Ken Burtch">
+   <meta name="GENERATOR" content="Mozilla/4.78 [en] (X11; U; Linux 2.4.7-10 i686) [Netscape]">
+   <title>Business Shell (BUSH) Guide - strings package</title>
+   <link rel="contents" href="bushguide.html">
+   <link rel="index" href="bushpackages.html">
+</head>
+<body bgcolor="#CCCC99">
+
+<center>
+<img src="bush_title_bar.gif" alt="[BUSH User Guide]" width="710" height="99">
+</center>
+<!-- h2>
+<font color="#777700">
+Bush Guide: Part 4 - Built-in Packages</font></h2 -->
+
+<table summary="menu" border="0" cellpadding="0" cellspacing="0"
+ width="100%">
+<tr>
+<td valign="bottom" bgcolor="white">&nbsp;</td>
+</tr><tr>
+<td valign="bottom" bgcolor="white">
+<table summary="menu" border="0" cellpadding="0" cellspacing="0"
+ width="100%">
+  <tbody>
+    <tr bgcolor="white">
+      <td align="center"><a href="http://www.pegasoft.ca/bush.html">Home Page</a></td>
+      <td align="center"><a href="bushintro.html">Introduction</a></td>
+      <td align="center"><a href="bushtutorial.html">Tutorials</a></td>
+      <td align="center"><a href="bushref.html">Reference</a></td>
+      <td valign="bottom" align="center" bgcolor="#CCCC99"><font size="+1" color="#777700"><b>Packages</b></font></td>
+      <td align="center"><a href="bushdetails.html">Hacking</a></td>
+    </tr>
+  </tbody>
+</table>
+</td>
+</tr>
+</table>
+
+<table summary="menu" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top" width="25%">
+&nbsp;<br>
+<table summary="menu" border="0" cellpadding="0" cellspacing="0">
+  <tr><td>
+      <table summary="menu" border="0" cellpadding="0" cellspacing="0">
+      <tr>
+      <td valign="bottom" align="center" bgcolor="white"><font size="+1" color="#777700"><b>&nbsp;&nbsp;Packages&nbsp;&nbsp;</b></font></td>
+      </tr>
+      </table>
+  </td></tr>
+  <tr><td bgcolor="white"><a href="bushpackages.html#4.1">4.1 Using Packages</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_text_io.html#4.2">4.2 text_io (Console I/O)</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_text_io.html#4.3">4.3 text_io (File I/O)</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_sound.html#4.4">4.4 sound</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_source_info.html#4.5">4.5 source_info</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_system.html#4.6">4.6 System</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_numerics.html#4.7">4.7 numerics</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_strings.html#4.8">4.8 strings</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_command_line.html#4.9">4.9 command_line</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_lock_files.html#4.10">4.10 lock_files</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_cgi.html#4.11">4.11 cgi</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_calendar.html#4.12">4.12 calendar</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_units.html#4.13">4.13 units</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_arrays.html#4.14">4.14 arrays</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_files.html#4.15">4.15 files</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_db.html#4.16">4.16 db (Database)</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_stats.html#4.17">4.17 stats</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_pen.html#4.18">4.18 pen</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_mysql.html#4.19">4.19 mysql</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_os.html#4.20">4.20 os</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_dirops.html#4.21">4.21 directory_operations</a></td></tr>
+
+</table>
+</td>
+<td>
+&nbsp;<br>
+
+This part of the guide contains detailed descriptions of the
+BUSH built-in packages.
+<br>&nbsp;
+<h3>
+<a NAME="4.8"></a><font color="#777700">4.8 Strings Package</font></h3>
+The BUSH strings package provides string operations. (Character positions
+are numbered from 1.)
+<p><u>GCC Ada equivalent</u>: Ada.Strings.Unbounded, GNAT.Regexp, GNAT.Regpat
+<p>Ada implements three different kinds of strings: standard "fixed" strings,
+bounded strings and unbounded strings. They are implemented in different
+packages and are incompatible with one another. The standard strings are
+implemented as arrays and cannot be used in BUSH since AdaScript had no
+array capabilities. BUSH implements strings as Ada unbounded strings.
+<p>For ease of use, string literals (like "hello world") are universal_string
+types in AdaScript, but are fixed string types in Ada. String literals
+should properly be converted to an unbounded string using the to_unbounded_string
+(to_unbounded_string( "hello world" ) even though AdaScript doesn't enforce
+this.
+<p>Likewise unbounded strings should be declared as "unbounded_string"
+type variables. For ease of use, BUSH uses "string" instead.
+<p>When porting a script to Ada, unbounded_string types, to_unbounded_string
+and to_string functions should be used.
+<p>There are 5 enumerated types used by the string functions:
+<ul>
+<li><b>strings.alignment</b> - alignment.left, alignment.right or alignment.center</li>
+<li><b>strings.truncation</b> - truncation.left, truncation.right or truncation.error</li>
+<li><b>strings.membership</b> - membership.inside or membership.outside</li>
+<li><b>strings.direction</b> - direction.forward or direction.backward</li>
+<li><b>strings.trim_end</b> - trim_end.left, trim_end.right or trim_end.both</li>
+</ul>
+<p>
+<hr><b>n := strings.count( s, p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return the occurrences in string s of substring p
+<br>Example: n := strings.count( "baby", "b" ); -- returns 2
+<br>Ada Equivalent: Ada.Strings.Unbounded.Count
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to check</td>
+</tr>
+
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the substring to search for</td>
+</tr>
+
+<tr>
+<td>n</td>
+
+<td>return value</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>the number of occurrences (0 if none)</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.csv_field( s, c [, d] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return the natural cth substring of s delimited by character d (typically
+a comma).  Double quotes will escape the delimiter.  For use with Comma
+Separated Value files.
+<br>Example: s := strings.csv_field( "a/b/c", 2, '/' ); -- returns "b"
+<br>Ada Equivalent: none (AdaScript extension)
+<br>See Also: strings.field, strings.index, strings.lookup
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to search</td>
+</tr>
+
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>the field position (1 for first field)</td>
+</tr>
+
+<tr>
+<td>d</td>
+
+<td>in</td>
+
+<td>character</td>
+
+<td>','</td>
+
+<td>the character delimiter</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the field</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>A bad position returns an empty string (like the Linux/UNIX cut command).
+<p>
+
+<p>
+<hr><b>r := strings.csv_replace( s, f, t, [, d] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>replace the natural fth substring of s delimited by character d (typically
+a comma) with string t.  Double quotes will escape the delimiter.  For use
+with Comma Separated Value files (or ASCII.TAB for tab separated value file).
+<br>Example: strings.csv_replace( "a/b/c", 2, "x", '/' ); -- now "a/x/c"
+<br>Ada Equivalent: none (AdaScript extension)
+<br>See Also: strings.csv_replace, strings.replace_slice
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in out</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to search</td>
+</tr>
+
+<tr>
+<td>f</td>
+
+<td>in</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>the field position (1 for first field)</td>
+</tr>
+
+<tr>
+<td>t</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the new field value</td>
+</tr>
+
+<tr>
+<td>d</td>
+
+<td>in</td>
+
+<td>character</td>
+
+<td>','</td>
+
+<td>the character delimiter</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the field</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>A bad position returns an empty string (like the Linux/UNIX cut command).
+<p>
+
+<hr><b>r := strings.delete( s, l, h )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return a string with character positions positive l to natural h deleted
+<br>Example: r := strings.delete( "bowl", 4, 4 ); -- returns "bow"
+<br>Ada Equivalent: Ada.Strings.Unbounded.Delete
+<br>See Also: strings.head, strings.slice, strings.tail
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to change</td>
+</tr>
+
+<tr>
+<td>l</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>low position to delete (1 is the start of the string).</td>
+</tr>
+
+<tr>
+<td>h</td>
+
+<td>in</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>the high position to delete.</td>
+</tr>
+
+<tr>
+<td>n</td>
+
+<td>return value</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>the string with the positions removed</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>A bad position raises an exception.
+<p>
+<hr><b>c := strings.element( s, p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return the character located at positive position p
+<br>Example: c := strings.element( "baby", 2 ); -- returns 'a'
+<br>Ada Equivalent: Ada.Strings.Unbounded.Element
+<br>See Also: strings.delete, strings.head, strings.slice, strings.tail
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to search</td>
+</tr>
+
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the string position (1 is the first character).</td>
+</tr>
+
+<tr>
+<td>c</td>
+
+<td>return value</td>
+
+<td>character</td>
+
+<td>required</td>
+
+<td>the character</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>A bad position raises an exception.
+<p>
+<hr><b>r := strings.field( s, c [, d] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return the natural cth substring of s delimited by character d.  This is
+similar to PERL split.
+<br>Example: s := strings.field( "a/b/c", 2, '/' ); -- returns "b"
+<br>Ada Equivalent: none (AdaScript extension)
+<br>See Also: strings.csv_field, strings.index, strings.lookup
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to search</td>
+</tr>
+
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>the field position (1 for first field)</td>
+</tr>
+
+<tr>
+<td>d</td>
+
+<td>in</td>
+
+<td>character</td>
+
+<td>ASCII.CR</td>
+
+<td>the character delimiter</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the field</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>A bad position returns an empty string (like the Linux/UNIX cut command).
+<p>
+<hr><b>b := strings.glob( e, s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return true if string globbing expression e
+<br>Example: b := strings.glob( "app*", "apple" ); -- returns true
+<br>Ada Equivalent: GNAT.RegPat.Match (Note: Match not Glob)
+<br>See Also: strings.index, strings.match
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to search</td>
+</tr>
+
+<tr>
+<td>e</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the globbing pattern to use</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the pattern matched</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>Glob characters include:
+<ul>
+<li>
+<b>*</b> - zero or more characters</li>
+
+<li>
+<b>?</b> - a single character</li>
+
+<li>
+<b>[...]</b> - a set of characters</li>
+
+<li>
+<b>[^...]</b> - any not in set of characters</li>
+
+<li>
+<b>[c1...c2]</b> - a range of characters between c1 and c2</li>
+</ul>
+
+<hr><b>r := strings.head( s, c [, p] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return the first natural c characters of string s
+<br>Example: r := strings.head( "minimum", 3 ); -- returns "min"
+<br>Ada Equivalent: Ada.Strings.Unbounded.Head
+<br>See Also: strings.delete, strings.element, strings.slice, strings.tail
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to search</td>
+</tr>
+
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>the number of characters (0 for none)</td>
+</tr>
+
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>character</td>
+
+<td>' '</td>
+
+<td>character to pad with if string is short</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the substring</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>A bad count raises an exception.
+<p>
+<hr><b>r := strings.is_alphanumeric( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>true if the string completely contains alphanumeric chararacters (that is,
+the same as is_letter and is_digit).
+<br>Example: r := strings.is_alphanumeric( "hello" ); -- returns true
+<br>Ada Equivalent: none (AdaScript extension).
+Ada.Character_Handling.Is_Alphanumeric does the equivalent for a single
+character.
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to test</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>true if the string is alphanumeric</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.is_basic( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>true if the string completely contains basic Latin-1 letters (A..Z, a..z,
+AE Diphtong, Icelandic Eth, Icelandic Thorn, German Sharp S).   Accented
+characters are not included.
+<br>Example: r := strings.basic( "hello" ); -- returns true
+<br>Ada Equivalent: none (AdaScript extension).  Ada.Character_Handling.Is_Basic
+does the equivalent for a single character.
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to test</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>true if the string is basic</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.is_control( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>true if the string completely contains control chararacters (ASCII/Latin-1
+0..31 and 127..159).
+<br>Example: r := strings.control( "hello" ); -- returns false
+<br>Ada Equivalent: none (AdaScript extension).
+Ada.Character_Handling.Is_Control does the equivalent for a single character.
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to test</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>true if the string is control characters</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.is_digit( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>true if the string completely contains numeric digits (ASCII/Latin-1
+48..57).
+<br>Example: r := strings.is_digit( "1234567890" ); -- returns true
+<br>Ada Equivalent: none (AdaScript extension).
+Ada.Character_Handling.Is_Digit does the equivalent for a single character.
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to test</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>true if the string is digits</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.is_fixed( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>true if the string appears to be a fixed point number (that is, a number
+with a decimal point).  No check is made to see if the number is
+representable by AdaScript.
+<br>Example: r := strings.is_fixed( "340.12" ); -- returns true
+<br>Ada Equivalent: none (AdaScript extension).
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to test</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>true if the string is a number with a decimal point</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.is_graphic( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>true if the string completely contains printable characters (that is,
+not is_control).
+<br>Example: r := strings.is_graphic( "hello" ); -- returns true
+<br>Ada Equivalent: none (AdaScript extension).
+Ada.Character_Handling.Is_Graphic does the equivalent for a single character.
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to test</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>true if the string is printable</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.is_hexadecimal_digit( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>true if the string completely contains hexadecimal numeric characters.
+<br>Example: r := strings.is_hexadecimal_digit( "FE00" ); -- returns true
+<br>Ada Equivalent: none (AdaScript extension).
+Ada.Character_Handling.Is_Hexadecimal_Digit does the equivalent for a single
+character.
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to test</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>true if the string is hexadecimal</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.is_letter( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>true if the string completely contains Latin-1 letters (that is, is_basic
+plus accented characters).
+<br>Example: r := strings.is_letter( "hello" ); -- returns true
+<br>Ada Equivalent: none (AdaScript extension).
+Ada.Character_Handling.Is_Letter does the equivalent for a single character.
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to test</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>true if the string is letters</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.is_lower( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>true if the string completely contains Latin-1 lower-case letters.
+<br>Example: r := strings.is_lower( "hello" ); -- returns true
+<br>Ada Equivalent: none (AdaScript extension).
+Ada.Character_Handling.Is_Lower does the equivalent for a single character.
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to test</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>true if the string is lower-case letters</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.is_slashed_date( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>true if the string appears to be an 8 or 10 character slashed
+date.  No check is made to see if the date is a real date.
+<br>Example: r := strings.is_slashed_date( "11/22/2003" ); -- returns true
+<br>Ada Equivalent: none (AdaScript extension).
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to test</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>true if the string is a date</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.is_special( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>true if the string completely contains special printable characters such
+as punctuation marks (that is, is_graphic and not is_alphanumeric).
+<br>Example: r := strings.is_special( "!" ); -- returns true
+<br>Ada Equivalent: none (AdaScript extension).
+Ada.Character_Handling.Is_Special does the equivalent for a single character.
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to test</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>true if the string is special</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := strings.is_typo_of( s1, s2 )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>true if the string s1 is similar to s2.  false if the strings are the
+same, if the strings are too short to test or if the strings are very
+different.  The function is case-sensitive.  This is the same algorithm used
+by BUSH to check for identifiers with spelling mistakes.
+<br>Example: b := strings.is_typo_of( "apple", "app1e" ); -- returns true
+<br>Ada Equivalent: none (AdaScript extension).
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s1</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the first string to compare</td>
+</tr>
+
+<tr>
+<td>s2</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the second string to compare</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>true if the strings are a possible typo</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.is_upper( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>true if the string completely contains Latin-1 upper-case letters.
+<br>Example: r := strings.is_upper( "HELLO" ); -- returns true
+<br>Ada Equivalent: none (AdaScript extension).
+Ada.Character_Handling.Is_Upper does the equivalent for a single character.
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to test</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>true if the string is upper-case letters</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.image( n )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>convert numeric n to a string (inverse of numerics.value)
+<br>Example: r := strings.image( 35 ); -- retuns "35"
+<br>Ada Equivalent: 'image attribute
+<br>See Also: numerics.value
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>n</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the number to convert</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the value as a string</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>n := strings.index( s, p [, d] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the first position of substring p in string s.  Similar to
+PERL index and rindex.
+<br>Example: n := strings.index( "catapult", "tap" ); -- returns 3
+<br>Ada Equivalent: Ada.Strings.Unbounded.Index
+<br>See Also: strings.csv_field, strings.field, strings.glob, strings.match
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to search</td>
+</tr>
+
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the substring to find</td>
+</tr>
+
+<tr>
+<td>d</td>
+
+<td>in</td>
+
+<td>strings.direction</td>
+
+<td>direction.forward</td>
+
+<td>the direction of the search (forward from start or backward from end)</td>
+</tr>
+
+<tr>
+<td>n</td>
+
+<td>return value</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>the position of the match (0 if none)</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>n n := strings.index_non_blank( s [,d] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return the first non-blank position in string s
+<br>Example: n := strings.index_non_blank( " moon" ); -- retuns 2
+<br>Ada Equivalent: Ada.Strings.Unbounded.Index_Non_Blank
+<br>See Also: strings.index
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to search</td>
+</tr>
+
+<tr>
+<td>d</td>
+
+<td>in</td>
+
+<td>strings.direction</td>
+
+<td>direction.forward</td>
+
+<td>the direction of the search</td>
+</tr>
+
+<tr>
+<td>n</td>
+
+<td>return value</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>the position of the first character that is not a space</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.insert( s, b, n )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return a string with substring n inserted before position positive
+b
+<br>Example: r := strings.insert( "ale", 2, "pp" ); -- returns "apple"
+<br>Ada Equivalent: Ada.Strings.Unbounded.Insert
+<br>See Also: strings.overwrite
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to insert another string into</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the position to insert the substring</td>
+</tr>
+
+<tr>
+<td>n</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the substring to insert</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the new string</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>n := strings.length( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return the number of characters in the string
+<br>Example: n := strings.length( "bounce" ); -- retuns 6
+<br>Ada Equivalent: Ada.Strings.Unbounded.Length
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to count</td>
+</tr>
+
+<tr>
+<td>n</td>
+
+<td>return value</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>the number of characters</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.lookup( s, t [, d] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>s contains pairs of substrings delimited by character d.  Return the
+right-hand substring of the pair beginning with left-hand field t.
+<br>Example: s := strings.lookup( "a/b/c/d", "c", '/' ); -- returns "d" from pair "c/d"
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to search</td>
+</tr>
+
+<tr>
+<td>t</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the left-hand field of the string pairs to find</td>
+</tr>
+
+<tr>
+<td>d</td>
+
+<td>in</td>
+
+<td>character</td>
+
+<td>ASCII.CR</td>
+
+<td>the character delimiter</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the right-hand string of the pair</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>A bad position returns an empty string.
+<p>
+<hr><b>b := strings.match( e, s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return true if string matches regular expression with PERL extensions.
+This is similar to PERL m//.
+<br>Example: b := strings.match( "^app", "apple" ); -- returns true
+<br>Ada Equivalent: GNAT.RegExp.Match
+<br>See Also: strings.glob, strings.index
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to search</td>
+</tr>
+
+<tr>
+<td>e</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the regular expression with PERL extensions to use</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the pattern matched</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>Match characters include:
+<ul>
+<li>
+<b>^</b> - at beginning</li>
+
+<li>
+<b>.</b> - any character</li>
+
+<li>
+<b>$</b> - at end</li>
+
+<li>
+<b>?</b> - zero or one character</li>
+
+<li>
+<b>[s]</b> - any in set s</li>
+
+<li>
+<b>+</b> - one or more characters</li>
+
+<li>
+<b>[^s]</b> - any not in set s</li>
+
+<li>
+<b>*</b> - zero or more characters</li>
+
+<li>
+<b>\</b> - escape character</li>
+
+<li>
+<b>(e)</b> - nested expression</li>
+
+<li>
+<b>|</b> - alternative</li>
+</ul>
+
+<p><br>Note: There's a known bug in GNAT 3.12 and 3.13 which causes strings.match
+to fail.
+<p>
+<hr><b>r := strings.mktemp( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>make a temporary file name using template p (like UNIX/Linux mktemp
+command)
+<br>Example: r := strings.mktemp( "tempXXXXXX" );
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the path template ending with 6 dummy characters</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the path with the dummy characters replaced with random characters</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.overwrite( s, p, n )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return a string with substring n overwriting positions starting at
+positive p
+<br>Example: r := strings.overwrite( "goose", 2, "ee" ); -- returns "geese"
+<br>Ada Equivalent: Ada.Strings.Unbounded.Overwrite
+<br>See Also: strings.insert
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to overwrite</td>
+</tr>
+
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the position to start replacing characters</td>
+</tr>
+
+<tr>
+<td>n</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the substring to replace characters with</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the new string</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>strings.replace( s, f, t [, d] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>s contains substrings delimited by character d.  Replace the fth substring
+field with new substring t.
+<br>Example: strings.replace( s, 2, "*", '/' ); -- if s is "a/b/c", it is now "a/*/c"
+<br>Ada Equivalent: none (AdaScript extension)
+<br>See Also: strings.csv_replace, strings.replace_slice
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in out</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to change</td>
+</tr>
+
+<tr>
+<td>f</td>
+
+<td>in</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>the index of the field to change</td>
+</tr>
+
+<tr>
+<td>t</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the new substring</td>
+</tr>
+
+<tr>
+<td>d</td>
+
+<td>in</td>
+
+<td>charater</td>
+
+<td>ASCII.CR</td>
+
+<td>the character delimiter</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>A bad position returns an empty string.
+<p>
+<hr><b>r := strings.replace_slice( s, l, h, n )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return a string with positions positive l to natural h replaced by
+substring n
+<br>Example: r := strings.replace_slice( "goose", 2, 3, "ee" ); -- returns
+"geese"
+<br>Ada Equivalent: Ada.Strings.Unbounded.Replace_Slice
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to overwrite</td>
+</tr>
+
+<tr>
+<td>l</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>low position to start replacing characters</td>
+</tr>
+
+<tr>
+<td>h</td>
+
+<td>in</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>high position to finish replacing characters</td>
+</tr>
+
+<tr>
+<td>n</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the substring to replace characters with</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the new string</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+<p>A bad low position will raise an exception.
+
+<p>
+<hr><b>strings.set_unbounded_string( u, s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>set unbounded string u with the value of string s.
+<br>Example: strings.set_unbounded_string( u, "foo" ); -- u is now "foo"
+<br>Ada Equivalent: Ada.Strings.Unbounded.Set_Unbounded_String (Ada 2005)
+<br>See Also: strings.csv_replace, strings.replace_slice
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>u</td>
+
+<td>in out</td>
+
+<td>unbounded_string</td>
+
+<td>required</td>
+
+<td>the string to set</td>
+</tr>
+
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the string to provide the value</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.slice( s, l, h )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return a substring between the positions positive l and natural h
+<br>Example: r := strings.slice( "realize", 2, 4 ); -- returns "eal"
+<br>Ada Equivalent: Ada.Strings.Unbounded.Slice (Ada 2005)
+<br>See Also: strings.delete, strings.element, strings.head, strings.tail,
+strings.unbounded_slice
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to overwrite</td>
+</tr>
+
+<tr>
+<td>l</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>low position to start replacing characters</td>
+</tr>
+
+<tr>
+<td>h</td>
+
+<td>in</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>high position to finish replacing characters</td>
+</tr>
+
+<tr>
+<td>n</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the substring to replace characters with</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the new string</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>A bad low position will raise an exception.
+<hr><b>strings.split( s, l, r , p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>split string s into a left substring l and a right substring r at or to the
+left of character position p.  split will attempt to split on the nearest
+space.
+<br>Example: strings.split( "hello there", l, r, 9 ); -- l is "hello " and r is "there"
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to split</td>
+</tr>
+
+<tr>
+<td>l</td>
+
+<td>out</td>
+
+<td>unbounded_string</td>
+
+<td>required</td>
+
+<td>the left substring of s</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>out</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the right substring of s</td>
+</tr>
+
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>the maximum width of the left substring</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>A bad position will be constrained to legal values.
+<hr><b>r := strings.tail( s, c [, p] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return the last natural c characters of string s
+<br>Example: r := strings.tail( "maximum", 3 ); -- returns "mum"
+<br>Ada Equivalent: Ada.Strings.Unbounded.Head
+<br>See Also: strings.delete, strings.element, strings.head, strings.slice
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to search</td>
+</tr>
+
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>the number of characters (0 for none)</td>
+</tr>
+
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>character</td>
+
+<td>' '</td>
+
+<td>character to pad with if string is short</td>
+</tr>
+
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the substring</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>A bad count raises an exception.
+<p>
+<hr><b>r := strings.to_basic( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>convert the string to basic letters (as defined for is_basic).
+<br>Example: r := strings.to_basic( "hello" ); -- retuns "hello"
+<br>Ada Equivalent: none (AdaScript extension).
+Ada.Character_Handling.To_Basic does the equivalent for a single character.
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>string or character type</td>
+
+<td>required</td>
+
+<td>the string to change</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string or character type</td>
+
+<td>required</td>
+
+<td>the basic string</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.to_escaped( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>convert the string to printable character by replacing control characters
+with "[# n]" where n is the ASCII/Latin-1 position.
+<br>Example: r := strings.to_escaped( "hello" &amp; ASCII.CR ); -- retuns "hello[# 13]"
+<br>Ada Equivalent: none (AdaScript extension).
+<br>See Also: cgi.html_encode, cgi.url_encode
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>string or character type</td>
+
+<td>required</td>
+
+<td>the string to change</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string or character type</td>
+
+<td>required</td>
+
+<td>the escaped string</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.to_lower( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return the string in lower-case
+<br>Example: r := strings.to_lower( "bOunce" ); -- retuns "bounce"
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>string or character type</td>
+
+<td>required</td>
+
+<td>the string to change</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string or character type</td>
+
+<td>required</td>
+
+<td>the lower-case string</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.to_proper( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return the string in proper (or mixed or title) case
+<br>Example: n := strings.to_proper( "proper" ); -- retuns "Proper"
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>string or character type</td>
+
+<td>required</td>
+
+<td>the string to change</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string or character type</td>
+
+<td>required</td>
+
+<td>the proper-case string</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>s := strings.to_string( u )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>convert unbounded string s to string s
+<br>Example: s := strings.to_string( some_unbounded_string );
+<br>Ada Equivalent: Ada.Strings.Unbounded.To_String
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>u</td>
+
+<td>in</td>
+
+<td>unbounded_string</td>
+
+<td>required</td>
+
+<td>the unbounded string to covert</td>
+</tr>
+
+<tr>
+<td>s</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the fixed string</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>u := strings.to_unbounded_string( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>convert unbounded string s to string s
+<br>Example: u unbounded_string := strings.to_unbounded_string( "test"
+);
+<br>Ada Equivalent: Ada.Strings.Unbounded.To_Unbounded_String
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the fixed string to covert</td>
+</tr>
+
+<tr>
+<td>u</td>
+
+<td>return value</td>
+
+<td>unbounded_string</td>
+
+<td>required</td>
+
+<td>the unbounded string</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.to_upper( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return the string in upper-case
+<br>Example: n := strings.to_upperr( "BoUNCE" ); -- retuns "BOUNCE"
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>string or character type</td>
+
+<td>required</td>
+
+<td>the string to change</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string or character type</td>
+
+<td>required</td>
+
+<td>the upper-case string</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.trim( s [, e] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>remove leading and/or trailing spaces from string s
+<br>Example: r := strings.trim( "&nbsp; many&nbsp; " ); -- returns "many"
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to trim</td>
+</tr>
+
+<tr>
+<td>e</td>
+
+<td>in</td>
+
+<td>strings.trim_end</td>
+
+<td>trim_end.both</td>
+
+<td>the end(s) of string to trim</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the new string</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>r := strings.unbounded_slice( s, l, h )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return a substring between the positions positive l and natural h.  For
+compatibility with Ada--normally use strings.slice.
+<br>Example: r := strings.unbounded_slice( "realize", 2, 4 ); -- returns "eal"
+<br>Ada Equivalent: Ada.Strings.Unbounded.Unbounded_Slice
+<br>See Also: strings.delete, strings.element, strings.head, strings.tail
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the string to overwrite</td>
+</tr>
+
+<tr>
+<td>l</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>low position to start replacing characters</td>
+</tr>
+
+<tr>
+<td>h</td>
+
+<td>in</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>high position to finish replacing characters</td>
+</tr>
+
+<tr>
+<td>n</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the substring to replace characters with</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>unbounded_string</td>
+
+<td>required</td>
+
+<td>the new string</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>c := strings.val( n )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return the ASCII character with value n (inverse of numerics.pos)
+<br>Example: r := strings.val( 65 ); -- returns 'A'
+<br>Ada Equivalent: 'val attribute
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>n</td>
+
+<td>in</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>the ASCII value</td>
+</tr>
+
+<tr>
+<td>c</td>
+
+<td>return value</td>
+
+<td>character</td>
+
+<td>required</td>
+
+<td>the character</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>&nbsp;<a href="#top">Back to Top</a></p>
+</body>
+</html>

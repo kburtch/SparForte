@@ -1,0 +1,4 @@
+# This should fail
+
+i : integer := calendar.clock; -- wrong type
+

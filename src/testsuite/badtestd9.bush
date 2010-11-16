@@ -1,0 +1,7 @@
+# This should fail
+
+function not_implemented return boolean is
+begin
+  null;
+end not_implemented;
+

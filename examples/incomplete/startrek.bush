@@ -1,0 +1,1220 @@
+#!/usr/local/bin/bush
+
+  -- Linux/UNIX tput returns a string to control the terminal display
+
+  tty_inverse : string; -- inverse print
+  tty_normal  : string; -- normal print
+
+  ZS  : array( 0..8 ) of string; -- Z$(8,8)
+  G1S : array( 0..17) of string;
+  RS  : array(0..11) of string;
+  T   : integer;
+  T0  : integer;
+  D  : array( 0..8 ) of float;  -- time to repair (0 = no damage)
+  DS : array( 0..8 ) of string; -- name of damaged system in D
+
+  G : array( 0..8 ) of float; -- G(8,8)
+  C : array( 0..9 ) of float; -- C(9,2)
+  K : array( 0..3 ) of float; -- K(3,3)
+  N : array( 0..3 ) of float; -- N(3)
+  Z : array( 0..8 ) of float; -- Z(8,8)
+
+  T9 : integer;
+  D0 : integer; -- docked at starbase flag (1 = docked)
+  E0 : integer;
+  E  : integer; -- current energy
+  P  : integer; -- current photon torpedo count
+  P0 : integer;
+  S9 : integer;
+  S  : integer; -- shield status (0=off)
+  Q1 : integer;
+  Q2 : integer;
+  S1 : integer;
+  CS : string;  -- current alert condition (red, yellow, green, docked)
+  FAS : string;
+  ERS : string;
+  A1S : string;
+  G4S : string;
+  K3  : integer; -- Klingons present
+  R1  : float;   -- generic random numbers
+  R2  : float;
+
+  -- Inverse printing.  First try terminfo (Linux), then termcap (FreeBSD).
+
+  tty_inverse := `tput( "smso" );`;
+  if tty_inverse = "" then
+     tty_inverse := `tput( "so" );`;
+  end if;
+  tty_normal := `tput( "rmso" );`;
+  if tty_normal = "" then
+     tty_normal := `tput( "se" );`;
+  end if;
+
+clear;
+put_line( "+" );
+new_line;
+put( 14 * ' ' );
+put_line( "STAR TREK ]I[" );
+new_line;
+new_line;
+
+for i in 1..8 loop
+  ZS(i) := "   ";
+  for j in 2..8 loop
+      ZS(i) := ZS(i) & ASCII.CR & "   ";
+  end loop;
+end loop;
+
+
+T := numerics.floor( ( ( numerics.rnd( 20 ) - 1 ) + 20) * 100 );
+T0 := T;
+T9 := 30;
+D0 := 0;
+E0 := 3000;
+E  := E0;
+P  := 10;
+P0 := P;
+S9 := 200;
+S  := 0;
+B9 : integer;
+K9 := integer;
+
+
+function D( i : integer ) return float is
+  -- distance
+begin
+  return numerics.sqrt((K(i,1) - S1) ** 2 + (K(i,2) - S2) ** 2);
+end D;
+
+Q1 :=  numerics.floor( numerics.rnd( 8 ) );
+Q2 :=  numerics.floor( numerics.rnd( 8 ) );
+S1 :=  numerics.floor( numerics.rnd( 8 ) );
+S2 :=  numerics.floor( numerics.rnd( 8 ) );
+
+for i in 0..9 loop
+    C(i) := "0";
+    for j in 1..2 loop
+        C(i) := ASCII.CR & "0";
+    end loop;
+end loop;
+
+strings.replace( C(2), 1+1, -1 );
+strings.replace( C(3), 1+1, -1 );
+strings.replace( C(4), 1+1, -1 );
+strings.replace( C(4), 2+1, -1 );
+strings.replace( C(5), 2+1, -1 );
+strings.replace( C(6), 2+1, -1 );
+strings.replace( C(1), 2+1,  1 );
+strings.replace( C(2), 2+1,  1 );
+strings.replace( C(6), 1+1,  1 );
+strings.replace( C(7), 1+1,  1 );
+strings.replace( C(8), 1+1,  1 );
+strings.replace( C(8), 2+1,  1 );
+strings.replace( C(9), 2+1,  1 );
+
+for i in 1..8 loop
+  D(i) := 0:
+end loop;
+
+FAS := "FATAL";
+ERS := "ERROR!";
+A1S := "NSLPTSDCX";
+G4S := "III";
+
+G1$(1) := "ANTARES";
+G1$(2) := "SIRIUS";
+G1$(3) := "RIGEL";
+G1$(4) := "DENEB";
+G1$(5) := "PROCYON";
+G1$(6) := "CAPELLA";
+G1$(7) := "VEGA";
+G1$(8) := "BETELGEUSE";
+G1$(9) := "CANOPUS";
+G1$(10) := "ALDEBARAN";
+G1$(11) := "ALTAIR";
+G1$(12) := "REGULUS";
+G1$(13) := "SAGITTARIUS";
+G1$(14) := "ARCTURUS";
+G1$(15) := "POLLUX";
+G1$(16) := "SPICA";
+
+DS(1) := "WARP ENGINES";
+DS(2) := "SR SENSORS";
+DS(3) := "LR SENSORS";
+DS(4) := "PHASER CNTRL";
+DS(5) := "PH TUBES";
+DS(6) := "DAMAGE CNTRL";
+DS(7) := "SHIELD CNTRL";
+DS(8) := "COMPUTER";
+
+procedure load_scores is
+begin
+  --607  PRINT "BLOAD TREK ]I[-4": RETURN 
+  --608  PRINT "YOU HAVE DESTROYED "(K7 - K9)" KLINGONS"
+  --609  PRINT "IN "(T - T0)" STARDATES."
+  --610  RETURN 
+end load_scores;
+
+load_scores;
+
+B9  := 0;
+K9  := 0;
+A1S := "NSLPTSDCX":
+
+for i in 1..8 loop
+  for j in 1..8 loop
+    --R1 := numerics.rnd( RND ( -  RND (1) * 1E9):R1 =  RND (1)
+    R1 := numerics.random;
+   if R1 > .95 then
+      K3 := 3;
+      K9 := K9 + 3;
+   elsif R1 > .9 then 30
+      K3 := 2;
+      K9 := K9 + 2
+   elsif R1 > .8 then
+      K3 := 1;
+      K9 := K9 + 1;
+   else
+      K3 := 0;
+   end if;
+   R1 := numerics.random;
+   if R1 > .95 then
+      B3 := 1;
+      B9 := B9 + 1;
+   else
+      B3 := 0;
+   end if;
+   S3 := numerics.rnd( 7 );
+   strings.replace( G(i), j ) := K3 * 100 + B3 * 10 + S3;
+   strings.replace( Z(i), j ) := 0;
+  end loop;
+end loop;
+
+K7 := K9;
+XS := "";
+X0S := " IS ";
+if B9 = 0 THEN 46
+   B9 := 1;
+   if numerical.value( strings.field( G(6), 3+1 ) ) < 200 THEN 45
+      strings.replace( G(6), 3+1, strings.field( G(6), 3+1) + 100 );
+      K9 := K9 + 1;
+   end if;
+   strings.replace( G(6), 3+1, strings.field( G(6), 3+1) + 10 );
+end if;
+
+if B9 /= 1 then
+   XS := "S"
+   X0S = " ARE ";
+end if;
+put_line( "YOUR ORDERS ARE AS FOLLOWS :" );
+put_line( "DESTROY THE" & strings.image( K9 ) & " KLINGON WARSHIPS WHICH   HAVE INVADED" );
+put_line( " THE GALAXY BEFORE THEY CAN ATTACK FEDERATION HEADQUARTERS" );
+put_line( " ON STARDATE " & strings.image( T0 + T9 ) & "; THIS GIVES YOU " & strings.image( T9 ) & " DAYS."
+put( "THERE" & X0S );
+put_line( strings.image( B9 ) & " STARBASE" & X$ & " IN THE GALAXY FOR"
+put_line( "RESUPPLYING YOUR SHIP." );
+new_line;
+
+put( "HIT RETURN TO ASSUME COMMAND - - -" );
+AS := get_line;
+clear;
+
+for i in 1..15 loop
+    new_line;
+end loop;
+
+procedure htab( p : positive ) is
+begin
+  put( tty_home ); -- home / ho
+  for i in 2..p loop
+      put( tty_down );
+  end if;
+end htab;
+
+put( " " );
+put( tty_inverse );
+put( "1 2 3 4 5 6 7 8 " )
+put( tty_normal );
+-- FOR I = 1 TO 8: HTAB 1: VTAB 16 + I: PRINT I;: NEXT : VTAB 1
+for i in 1..8 loop
+    put_line( i );
+end loop;
+
+procedure status_labels is -- gosub 565
+begin
+  put( tty_home );
+  put_line( "STARDATE :" );
+  put_line( "CONDITION:" );
+  put_line( "QUADRANT :" );
+  put_line( "SECTOR   :" );
+  put_line( "ENERGY   :" );
+  put_line( "PH TORPS :" );
+  put_line( "SHIELDS  :" );
+  put( tty_home );
+end status;
+
+Z4 := Q1;
+Z5 := Q2;
+K3 := 0;
+B3 := 0;
+S3 := 0;
+G5 := 0;
+D4 := .5 * numerics.random;
+
+if Q1 < 1 or Q1 > 8 or Q2 < 1 or Q2 > 8 then -- 160 - repair report
+
+procedure unknown_527 is -- gosub 527
+begin
+  L2 := 2;
+  if Z5 < 5 then
+     L2 := 1;
+  end if;
+  L3 := 2 * (Z4 - 1) + L2;
+  I3 := 1;
+  I0 := 1;
+  G2S := G1S(L3);
+  if G5 /= 1 then
+     L3 := Z5;
+     if Z5 > 4 then
+        L3 := Z5 - 4;
+     end if;
+     G3S := "IV";
+     case L3 is
+     when 1 => G3S = "I";
+     when 2 => G3S = "][";
+     when 3 => G3S = "]I[";
+     when others => null;
+     end case;
+     G2S := G2S & " " & G3S;
+  end if;
+end unknown_527;
+
+unknown_527;
+
+put( tty_home );
+put( tty_inverse );
+put( "QUADRANT" );
+put( tty_normal );
+put( "  " );
+put( tty_inverse );
+put( G2S );
+put( tty_normal );
+new_line;
+
+if T = T0 then
+  put_line( "YOUR MISSION BEGINS IN :" );
+  put_line( "GALACTIC QUADRANT, '" & G2S & "'" );
+else
+  put_line( "NOW ENTERING " & G2S & " QUADRANT.." );
+end if;
+new_line;
+
+X  := strings.field( G(Q1), Q2+1 );
+K3 := numerics.floor( X / 100);
+B3 := numerics.floor( X / 10 - K3 * 10);
+S3 := X - B3 * 10 - K3 * 100;
+S3 := numerics.floor( S3 );
+if K3 /= 0 then
+   put( "COMBAT AREA    CONDITION " );
+   put( tty_inverse );
+   put( FLASH );
+   put( "RED" );
+   put( tty_normal );
+   new_line;
+   if S <= 200 then
+      put( tty_inverse );
+      put( "SHIELDS DANGEROUSLY LOW" );
+      put( tty_normal );
+      new_line;
+   end if;
+end if;
+
+for I in 1..3 loop
+  for J in 1..3 loop
+      strings.replace( K(I), J+1, 0 );
+  end loop;
+end loop;
+for I in 1..8 loop
+  for J in 1..8 loop
+      strings.replace( ZS(I), J+1, " " );
+  end loop;
+end loop;
+
+AS := "E";
+Z1 := S1;
+Z2 := S2;
+
+procedure unknown_520( AS : string; Z1, X2 : float ) is -- gosub 520
+begin
+  Z1 := numerics.floor( Z1 + .5 );
+  Z2 := numerics.floor( Z2 + .5 );
+  strings.replace( ZS(Z1), Z2+1, AS );
+end unknown_520;
+
+unknown_520( AS, Z1, Z2 );
+
+procedure unknown_524( AS : string; Z1, X2 : float ) is -- gosub 524
+begin
+  Z1 := numerics.floor(Z1 + .5);
+  Z2 := numerics.floor(Z2 + .5)
+  Z3 := 0;
+  if strings.field( ZS(Z1), Z2+1) = AS then
+     Z3 = 1;
+  end if;
+end unknown_524;
+
+procedure unknown_518 is -- gosub 518
+  -- random sector or coordinates?
+begin
+  loop
+     -- randomizing seed? -- R1 :=  RND ( -  RND (1) * 1E9)
+     R1 := numerics.rnd( 8 );
+     R2 := numerics.rnd( 8 );
+     AS := " ";
+     Z1 := R1;
+     Z2 := R2;
+     unknown_524( AS, Z1, Z2 );
+  exit when Z3 /= 0;
+  end loop;
+end unknown_518;
+
+-- Populating enemies?
+
+if K3 /= 0 then
+  for I in 1..K3 loop
+      unknown_518;
+      AS := "K";
+      Z1 := R1;
+      Z2 := R2;
+      unknown_520( AS, Z1, Z2 );
+      strings.replace( K(I), 1+1, R1 );
+      strings.replace( K(I), 3+1, S9 );
+  end loop;
+end if;
+
+-- Populating bases?
+
+if B3 /= 0 then
+   for I in 1..B3 loop
+       GOSUB 518
+       AS := "B";
+       Z1 := R1;
+       Z2 := R2;
+       unknown_520( AS, Z1, Z2 );
+       B4 := Z1;
+       B5 := Z2;
+   end loop;
+end if;
+
+if S3 /= 0 then
+  for I in 1..S3 loop
+      unknown_518;
+      A$ = "*";
+      Z1 := R1;
+      Z2 := R2;
+      unknown_520( AS, Z1, Z2 );
+   end loop;
+end if;
+
+procedure unknown_558 is -- gosub 558
+begin
+  put( tty_home );
+  put( tty_inverse );
+  for i in 1..8 loop
+      GOSUB 438: IF I = 8 THEN 563
+560  PRINT : NEXT 
+561  INPUT "RATING WANTED:";ER
+562  PRINT "NUMBER OF STARDATES=";: PRINT (1000 * K7) / ER: GOTO 91
+563  POKE 33,40: POKE 32,0: POKE 34,1: POKE 35,15: VTAB 15: HTAB 1
+564  NORMAL : RETURN 
+
+procedure unknown_421 is -- gosub 421
+  -- determine current state, handle docking
+begin
+  for I in S1-1..S1+1 loop
+    for J in S2-1..S2+1 loop
+        if  numerics.floor(I + .5) < 1 or numerics.floor(I + .5) > 8 or numerics.floor(J + .5) < 1 or numerics.floor(J + .5) > 8 then
+            null;
+        else
+            AS := "B";
+            Z1 := I;
+            Z2 := J;
+            unknown_524( AS, Z1, Z2 );
+            exit when Z3 = 1;
+        end if;
+     end loop;
+  end loop;
+  if Z3 /= 1 then
+     D0 := 0;
+     if K3 > 0 then
+        CS := "RED"
+     elsif E < E0 * .1 then
+        CS := "YELLOW"
+     else
+        CS := "GREEN";
+     end if; 
+  else
+     D0 := 1;
+     CS := "DOCKED";
+     E  := 3000;
+     P  := 10;
+     put_line( "SHIELDS DROPPED FOR DOCKING PURPOSES"
+  end if;
+  if D(2) < 0 then
+     new_line;
+     put_line( "*** SHORT RANGE SENSORS ARE OUT ***" );
+     new_line;
+  else
+     unknown_558;
+  end if;
+end unknown_421;
+
+procedure unknown_438 is -- gosub 438
+begin
+  put( tty_inverse );
+  for J in 1..8 loop
+      put( strings.field( Z$(I), J) & " " );
+  end loop;
+  put( tty_normal );
+end unknown_438;
+
+unknown_421;
+
+procedure show_status is -- gosub 574
+begin
+  put( tty_home );
+  put( tty_normal );
+  put_line( numerics.floor(T * 10) / 10 );
+  if CS = "RED" then
+     put( tty_inverse );
+     put( CS );
+     put( tty_normal );
+     new_line;
+  elsif CS = "YELLOW" then
+     put( tty_inverse );
+     put( CS );
+     put( tty_normal );
+     new_line;
+  else
+     put_line( CS );
+  end if;
+  put( strings.image( Q1 ) & "," );
+  put( tty_inverse );
+  put( Q2 );
+  put( tty_normal );
+  new_line;
+  put( numerics.floor(S1 + .5) );
+  put(  "," );
+  put( tty_inverse );
+  put( numerics.floor(S2 + .5) );
+  put( tty_normal );
+  new_line;
+  put_line( E + S );
+  put_line( P );
+  put_line( S );
+  -- VTAB 1
+end show_status;
+
+-- MAIN LOOP - line 91
+
+loop
+  show_status;
+  if D(2) < 0 then
+   clear;
+  end if;
+  clear;
+  if D0 = 1 then
+     if S + E > 10 then
+        if E <= 10 or D(7) < 0 then
+           clear;
+           put( tty_inverse );
+           for I in 1..5 loop
+              -- CALL 37024
+              put( strings.element( FAS, I ) );
+           end loop;
+           put( tty_normal );
+           put( " " );
+           put( tty_inverse );
+           for I in 1..6 loop
+               -- CALL 37024
+               put( strings.element( ERS, I );
+           end loop;
+           put( tty_normal );
+           new_line;
+           put_line( "YOU ARE STRANDED IN SPACE !" );
+           new_line;
+           put_line( "YOU HAVE INSUFFICIENT ENERGY FOR" );
+           put( "MANOEUVRING" );
+           if D(7) >= 0 then
+              new_line;
+              status := dead; -- GOTO 411
+           else
+              put_line( " AND SHIELD CONTROL IS" );
+              put_line( "CURRENTLY INCAPABLE OF CROSSCIRCUITING" );
+              put_line( "TO ENGINE ROOM" );
+              new_line;
+              status := dead; -- GOTO 411
+           end if;
+       end if;
+     end if;
+  end if;
+
+  -- CALL 37024
+  put( "COMMAND ?" );
+  AS = get_line;
+  strings.replace( Z(Q1), Q2+1, strings.field( G(Q1), Q2+1 ) );
+
+  for I in 1..9 loop
+    if strings.head( AS,1 ) = strings.element( A1S,I ) then
+       if I /= 2 and strings.length( AS ) < 2 and strings.element( AS, 2 ) /= 'R' then
+          I := 6; --not allowed in Ada for loop
+       end if;
+       case I is
+       when 1 => -- goto 124, NAV, set course
+            set_course;
+       when 2 => -- goto 90
+       when 3 => -- goto 224
+       when 4 => -- goto 244
+       when 5 => -- goto 286
+       when 6 => -- goto 344
+       when 7 => -- goto 353
+       when 8 => -- goto 440
+       when others =>
+         if AS = "XXX" then -- resign
+            --- goto 413; -- die
+         end if;
+         put( tty_clear ); -- line 111
+         put_line( "ENTER ONE OF THE FOLLOWING:" );
+         put_line( "NAV (TO SET COURSE)" );
+         put_line( "SRS (FOR SHORT RANGE SENSOR SCAN)" );
+         put_line( "LRS (FOR LONG RANGE SENSOR SCAN)" );
+         put_line( "PHA (TO FIRE PHASERS)" );
+         put_line( "TOR (TO FIRE PHOTON TORPEDOES)" );
+         put_line( "SHE (TO SET SHIELD ENERGY)" );
+         put_line( "DAM (FOR DAMAGE CONTROL REPORT)" );
+         put_line( "COM (TO CALL ON LIBRARY- COMPUTER)" );
+         put_line( "XXX (TO RESIGN YOUR COMMAND)" );
+         new_line; 
+       end case;
+    end if;
+  end loop;
+end loop; -- main loop
+
+procedure unknown_586 is -- gosub 586
+begin
+  if D(2) > 0 then
+  -- HTAB Y3 * 2: VTAB X3 + 16: PRINT A$;: HTAB 1: VTAB 15: RETURN 
+     put_line( AS );
+     -- : HTAB 1: VTAB 15
+  end if;
+end unknown_586;
+
+procedure unknown_518 is -- gosub 518
+begin
+  -- R1 :=  RND ( -  RND (1) * 1E9)
+  loop
+    R1 := numerics.rnd( 8 );
+    R2 := numerics.rnd( 8 );
+    AS = " ";
+    Z1 := R1;
+    Z2 := R2;
+    unknown_524( AS, Z1, Z2 );
+    exit when Z3 /= 0;
+  end loop;
+end unknown_518;
+
+procedure show_damaged_section -- gosub 523
+begin
+  put( DS(R1) );
+end show_damaged_section;
+
+procedure klingon_attack is -- gosub 384
+begin
+  if K3 <= 0 then
+     return
+  end if;
+  if D0 /= 0 then
+     put_line( "STAR BASE SHIELDS PROTECT ENTERPRISE" );
+     return;
+  end if;
+  for I in 1..3 loop
+      if strings.field( K(I), 3+1 ) > 0 then
+         if D(2) >= 0 then
+            -- HTAB S2 * 2: VTAB S1 + 16
+            put( "E" );
+            H := numerics.floor((strings.field(K(I),3+1)) /  FN_D(0)) * (2 + numerics.random));
+            -- H = damage (hit)
+            S := S - H;
+            if D(2) >= 0 then
+               put( tty_inverse );
+               -- VTAB S1 + 16: HTAB S2 * 2
+               put( "E" );
+               put( tty_normal );
+               -- CALL 37072
+               -- VTAB 15: HTAB 1
+               put( tty_inverse );
+               put( strings.image( H ) & " UNIT HIT " );
+               put( tty_normal );
+               put( "FROM SECTOR " & strings.image( strings.field( K(I), 1+1) & "," );
+               put( tty_inverse );
+               put( strings.field( K(I), 2+1);
+               put( tty_normal );
+               new_line;
+               -- 397  CALL 36864
+               if S >= 0 then
+                  put( tty_inverse );
+                  put( "SHIELDS DOWN TO " & strings.image( S ) & " UNITS" );
+                  put( tty_normal );
+                  new_line;
+               end if;
+               if H >= 20 and numerics.random <= .6 and H/S > .02 then
+                  D2 := H / S + .5 *  numerics.random;
+                  R1 := numerics.rnd( 8 )
+                  D(R1) := D(R1) - D2;
+                  put( "DAMAGE REPORT: " );
+                  put( tty_inverse );
+                  show_damaged_section;
+                  put( " DAMAGED!" );
+                  put( tty_normal );
+                  new_line;
+               end if;
+             end if;
+         end if;
+      end if;
+   end loop;
+end klingon_attack;
+
+procedure set_course is -- line 124
+begin
+loop
+  put( "COURSE (1-9) ?" );
+  C1 := numerics.value( get_line );
+  if C1 < 1 then
+     put_line( "INCORRECT COURSE DATA " );
+  elsif C1 >= 9 then
+     if C1 = 9 then
+        C1 := 1;
+     end if;
+     put( "WARP FACTOR (0-8) ?" );
+     W1 := numerics.value( get_line );
+     if W1 <= 0 or W1 > 8 then
+        put( "THE ENGINES WON'T TAKE WARP" & strings.image( W1 ) & " !";
+     else
+        if D(1) < 0 and W1 > .2 THEN 138
+           put_line( "ENGINES DAMAGED. MAX SPEED = WARP 0.2" );
+        else
+           N := numerics.floor(W1 * 8 + .5);
+           if E-N < 0 then
+              put_line( "INSUFFICIENT ENERGY FOR WARP" & strings.image( W1 ) );
+
+              if S >= N-E and D(7) >= 0 then
+                 put_line( strings.image( S ) & " UNITS OF ENERGY DEPLOYED TO SHIELDS" );
+                 -- goto 344
+              else
+                 for I in 1..K3 loop
+                     if strings.field( K(I), 3+1) > 0 then
+                        AS := " ";
+                        Z1 := strings.field( K(I), 1+1 );
+                        Z2 := strings.field( K(I), 2+1)
+                        X3 := Z1
+                        Y3 := Z2
+                        unknown_520( AS, Z1, Z2 );
+                        put( tty_inverse );
+                        unknown_586;
+                        put( tty_ normal );
+                        unknown_518;
+                        delay 1.0;
+                        strings.replace( K(I), 1+1, Z1 );
+                        strings.replace( K(I), 2+1, Z2 );
+                        AS := "K";
+                        X3 := Z1;
+                        Y3 := Z2
+                        put( tty_inverse );
+                        unknown_586;
+                        put( tty_ normal );
+                        unknown_520( AS, Z1, Z2 );
+                    end if;
+                 end loop;
+                 gosub klingon_attack;
+                 D1 := 0;
+                 D6 := W1;
+                 if FL = 1 then
+                    FL := 0;
+                    --GOTO 91
+                 else
+                    if W1 >= 1 then
+                       D6 := 1;
+                    end if;
+                    for I in 1..8 loop
+                        if D(I) < 0 then
+                           D(I) := D(I) + D6;
+                           if D(I) >= 0 then
+                              if D1 /= 1 then
+                                 D1 := 1;
+                                 put( "DAMAGE REPORT: " );
+                              end if;
+                              -- 160  HTAB 15
+                              R1 := I;
+                              show_damaged_section;
+                              put_line( " REPAIRED" );
+                           end if;
+                        end if;
+                    end loop;
+                    if numerics.random <= .2 then
+                       R1 := numerics.rnd( 8 );
+                       if numerics.random < .6 then
+                          D(R1) := D(R1) - numerics.rnd( 5 );
+                          new_line;
+                          put( "DAMAGE REPORT: " );
+                          put( tty_inverse );
+                          show_damaged_section;
+                          put( " DAMAGED" );
+                          put( tty_normal );
+                          new_line;
+                       else
+                          D(R1) := D(R1) + numerics.rnd( 3 );
+                          new_line;
+                          put( "DAMAGE REPORT: " );
+                          show_damaged_section;
+                          put( " IMPROVED" );
+                       end if;
+                    end if;
+                    AS := " ";
+                    Z1 := numerics.floor(S1 + .5);
+                    Z2 := numerics.floor(S2 + .5);
+                    X3 := Z1;
+                    Y3 := Z2;
+                    unknown_586;
+                    put( tty_inverse );
+                    unknown_586;
+                    put( tty_normal );
+                    -- HTAB 1: VTAB 15
+                    unknown_520( AS, Z1, Z2 );
+
+173 X1 = C(C1,1) + (C(C1 + 1,1) - C(C1,1)) * (C1 -  INT (C1))
+174 X = S1:Y = S2
+175 X2 = C(C1,2) + (C(C1 + 1,2) - C(C1,2)) * (C1 -  INT (C1))
+176 Q4 = Q1:Q5 = Q2
+177  FOR I = 1 TO N
+178 S1 = S1 + X1:S2 = S2 + X2
+179  IF  INT (S1 + .5) < 1 OR  INT (S1 + .5) > 8 OR  INT (S2 + .5) < 1 OR  INT (S2 + .5) > 8 THEN 196
+180  IF Z$( INT (S1 + .5), INT (S2 + .5)) = " " THEN 184
+181  IF Z$( INT (S1 + .5), INT (S2 + .5)) = "B" THEN D0 = 1
+182 S1 = S1 - X1:S2 = S2 - X2
+183  PRINT "ENGINES SHUT DOWN AT SECTOR " INT (S1 + .5)",";: INVERSE : PRINT  INT (S2 + .5): PRINT "DUE TO BAD NAVIGATION ": NORMAL : GOTO 185
+184  NEXT I
+185 A$ = "E":Z1 =  INT (S1 + .5):Z2 =  INT (S2 + .5):X3 = Z1:Y3 = Z2: GOSUB 586: INVERSE : GOSUB 586: NORMAL : HTAB 1: VTAB 15
+186  GOSUB 520: GOSUB 217
+187 T8 = 1: IF W1 >  = 1 THEN 189
+188 T8 = .1 *  INT (10 * W1)
+189 T = T + T8
+190  IF T > T0 + T9 THEN 405
+191  FOR I = S1 - 1 TO S1 + 1: FOR J = S2 - 1 TO S2 + 1: IF I < 1 OR I > 8 OR J < 1 OR J > 8 THEN 193
+192 A$ = "B":Z1 = I:Z2 = J: GOSUB 524: IF Z3 = 1 THEN D0 = 1
+193  NEXT J,I
+194  IF D0 = 1 THEN 90
+195  GOTO 91
+196 X = 8 * Q1 + X + N * X1:Y = 8 * Q2 + Y + N * X2:Q1 =  INT (X / 8):Q2 =  INT (Y / 8):S1 =  INT (X - Q1 * 8):S2 =  INT (Y - Q2 * 8)
+197  IF S1 <  > 0 THEN 199
+198 Q1 = Q1 - 1:S1 = 8
+199  IF S2 <  > 0 THEN 201
+200 Q2 = Q2 - 1:S2 = 8
+201 X5 = 0: IF Q1 >  = 1 THEN 203
+202 X5 = 1:Q1 = 1:S1 = 1
+203  IF Q1 <  = 8 THEN 205
+204 X5 = 1:Q1 = 8:S1 = 8
+205  IF Q2 >  = 1 THEN 207
+206 X5 = 1:Q2 = 1:S2 = 1
+207  IF Q2 <  = 8 THEN 209
+208 X5 = 1:Q2 = 8:S2 = 8
+209  IF X5 = 0 THEN 213
+210  FLASH : PRINT "ATTEMPT TO CROSS GALACTIC PERIMETER:": NORMAL 
+211  PRINT "ENGINES SHUT DOWN AT SECTOR " INT (S1 + .5)",";: INVERSE : PRINT  INT (S2 + .5): NORMAL : PRINT "                OF QUADRANT " INT (Q1 + .5)",";: INVERSE : PRINT  INT (Q2 + .5): NORMAL : FOR I = 0 TO 10000: NEXT 
+212  IF T > T0 + T9 THEN 405
+213  IF 8 * Q1 + Q2 = 8 * Q4 + Q5 THEN 185
+214 T = T + 1
+215  GOSUB 217
+216  GOTO 56
+217 E = E - N - 10
+218  IF E >  = 0 THEN 223
+219  PRINT "SHIELD CONTROL SUPPLIED ENERGY TO": PRINT " TO COMPLETE THE MANOEUVER."
+220 S = S + E:E = 0
+221  IF S > 0 THEN 223
+222 S = 0
+223  RETURN 
+224  IF D(3) >  = 0 THEN 226
+225  PRINT "LR SENSORS INOPERABLE": GOTO 91
+226  PRINT "LR SENSOR SCAN FOR QUADRANT "Q1",";: INVERSE : PRINT Q2: NORMAL 
+227 O1$ = "-------------"
+228  PRINT O1$
+229  FOR I = Q1 - 1 TO Q1 + 1: PRINT ":";
+230  FOR J = Q2 - 1 TO Q2 + 1
+231  IF J > 8 OR I > 8 OR J < 1 OR I < 1 THEN  PRINT "   :";: GOTO 239
+232 Z(I,J) = G(I,J):Z1 = G(I,J)
+233  IF Z1 >  = 100 THEN Z$ =  STR$ (Z1): GOTO 236
+234  IF Z1 >  = 10 THEN Z$ = " " +  STR$ (Z1): GOTO 236
+235 Z$ = "  " +  STR$ (Z1)
+236  IF I = Q1 AND J = Q2 THEN  INVERSE : PRINT Z$;: NORMAL : PRINT ":";: GOTO 239
+237  IF  VAL ( MID$ (Z$,2,1)) > 0 THEN  PRINT  LEFT$ (Z$,1);: INVERSE : PRINT  MID$ (Z$,2,1);: NORMAL : PRINT  RIGHT$ (Z$,1)":";: GOTO 239
+238  PRINT Z$":";
+239  NEXT 
+240  PRINT 
+241  NEXT 
+242  PRINT O1$
+243  GOTO 91
+244  IF K3 > 0 THEN 246
+245  PRINT "NO KLINGON SHIPS IN THIS QUADRANT": GOTO 91
+246  IF D(4) >  = 0 THEN 248
+247  PRINT "PHASERS INOPERATIVE": GOTO 91
+248  IF D(8) >  = 0 THEN 250
+249  PRINT "COMPUTER FAILURE HAMPERS ACCURACY"
+250  PRINT "PHASERS LOCKED ON TARGET"
+251  PRINT "ENERGY AVAILABLE = "E
+252  INPUT "UNITS TO FIRE ?";X
+253  IF X <  = 0 THEN 91
+254  IF E - X < 0 THEN 251
+255 E = E - X
+256  GOSUB 384
+257  IF D(7) >  = 0 THEN 259
+258 X = X *  RND (1)
+259 H1 =  INT (X / K3)
+260  FOR I = 1 TO 3
+261  IF K(I,3) <  = 0 THEN 284
+262  CALL 37296
+263 H =  INT ((H1 /  FN D(0)) * ( RND (1) + 2))
+264  IF H > .15 * K(I,3) THEN 268
+265  PRINT "SENSORS SHOW NO DAMAGE"
+266  PRINT "    TO ENEMY AT SECTOR "K(I,1)",";: INVERSE : PRINT K(I,2): NORMAL 
+267  GOTO 284
+268 K(I,3) = K(I,3) - H
+269  IF D(2) < 0 THEN 273
+270  HTAB K(I,2) * 2: VTAB K(I,1) + 16: PRINT "K";: FOR W = 0 TO 200: NEXT 
+271  INVERSE : HTAB K(I,2) * 2: VTAB K(I,1) + 16: PRINT "K";: NORMAL 
+272  IF D(2) < 0 THEN 273
+273  HTAB 1: VTAB 15
+274  PRINT H" UNIT HIT ON KLINGON AT "K(I,1)",";: INVERSE : PRINT K(I,2): NORMAL 
+275  IF K(I,3) <  = 0 THEN X3 = K(I,1):Y3 = K(I,2):A$ = "K": GOSUB 588: GOTO 278
+276  PRINT "SENSORS SHOW "K(I,3)" UNITS LEFT"
+277  GOTO 284
+278  FLASH : PRINT "*KLINGON DESTROYED*": NORMAL 
+279 K3 = K3 - 1:K9 = K9 - 1:A$ = " ":Z1 = K(I,1):Z2 = K(I,2): GOSUB 520
+280  IF K3 = 0 THEN C$ = "GREEN"
+281  IF K3 = 0 AND E < E0 * .1 THEN C$ = "YELLOW"
+282 G(Q1,Q2) = K3 * 100 + B3 * 10 + S3
+283  IF K9 <  = 0 THEN 418
+284  NEXT I
+285  GOTO 91
+286  IF D(5) >  = 0 THEN 288
+287  PRINT "PH TUBES INOPERABLE": GOTO 91
+288  IF P > 0 THEN 290
+289  PRINT "ALL PH TORPS EXPENDED": GOTO 91
+290  INPUT "TORPEDO COURSE ?";C1
+291  IF C1 >  = 1 THEN 293
+292  PRINT "INCORRECT COURSE DATA !": GOTO 91
+293  IF C1 > 9 THEN 292
+294  IF C1 < 9 THEN 297
+295  IF C1 >  = 9 THEN 290
+296 C1 = 1
+297 X1 = C(C1,1) + (C(C1 + 1,1) - C(C1,1)) * (C1 -  INT (C1))
+298 X2 = C(C1,2) + (C(C1 + 1,2) - C(C1,2)) * (C1 -  INT (C1))
+299 E = E - 2:X = S1:Y = S2:P = P - 1
+300  PRINT "TRACKING TORPEDO"
+301  CALL 36864
+302 X = X + X1:Y = Y + X2:X3 =  INT (X + .5):Y3 =  INT (Y + .5)
+303  IF X3 < 1 OR X3 >  = 9 OR Y3 < 1 OR Y3 >  = 9 THEN 341
+304  IF D(2) < 0 THEN 306
+305  VTAB X3 + 16: HTAB Y3 * 2: PRINT "#";: FOR X4 = 0 TO 20: NEXT : INVERSE : HTAB Y3 * 2: VTAB X3 + 16: PRINT " ";: NORMAL 
+306  VTAB 15: HTAB 1
+307 A$ = " ":Z1 = X:Z2 = Y: GOSUB 524
+308  IF Z3 <  > 0 THEN 302
+309 A$ = "K":Z1 = X:Z2 = Y: GOSUB 524
+310  IF Z3 = 0 THEN 322
+311  GOSUB 588
+312  INVERSE : PRINT "*KLINGON DESTROYED*": NORMAL 
+313 K3 = K3 - 1:K9 = K9 - 1: IF K9 <  = 0 THEN 418
+314  IF K3 = 0 THEN C$ = "GREEN"
+315  IF K3 = 0 AND E < E0 * .1 THEN C$ = "YELLOW"
+316  FOR I = 1 TO 3
+317  IF X3 <  > K(I,1) THEN 319
+318  IF Y3 = K(I,2) THEN 320
+319  NEXT I: GOTO 321
+320 K(I,3) = 0
+321  GOTO 338
+322 A$ = "*":Z1 = X:Z2 = Y: GOSUB 524
+323  IF Z3 = 0 THEN 329
+324  GOSUB 588
+325  PRINT "STAR AT "X3",";: INVERSE : PRINT Y3;: NORMAL : PRINT " ABSORBED ENERGY"
+326  IF D(2) < 0 THEN 342
+327  HTAB Z2 * 2: VTAB Z1 + 16: PRINT "*";: FOR X4 = 0 TO 500: NEXT : INVERSE : HTAB Z2 * 2: VTAB Z1 + 16: PRINT "*";: HTAB 1: VTAB 15: NORMAL 
+328  GOTO 342
+329 A$ = "B":Z1 = X:Z2 = Y: GOSUB 524
+330  IF Z3 = 0 THEN 290
+331  GOSUB 588
+332  INVERSE : PRINT "STARBASE DESTROYED!": NORMAL 
+333 B3 = B3 - 1:B9 = B9 - 1: IF B9 > 0 THEN 336
+334  PRINT : PRINT "THAT DOES IT, CAPTAIN !": PRINT "YOU ARE HEREBY RELIEVED OF COMMAND"
+335  PRINT : GOTO 413
+336  PRINT "COURTMARTIAL UNDER CONSIDERATION!"
+337 D0 = 0
+338 A$ = " ":Z1 = X:Z2 = Y: GOSUB 520
+339 G(Q1,Q2) = K3 * 100 + B3 * 10 + S3
+340  GOTO 342
+341  PRINT "TORPEDO MISSED"
+342 FL = 1: GOTO 144
+343  GOTO 91
+344  IF D(7) >  = 0 THEN 346
+345  INVERSE : PRINT "SHIELD CONTROL INOPERABLE": NORMAL : GOTO 91
+346  PRINT "ENERGY = "E + S;: INPUT "  UNITS TO SHIELDS ";X
+347  IF X >  = 0 OR S <  > X THEN 349
+348  PRINT "SHIELDS UNCHANGED": GOTO 91
+349  IF E + S - X < 0 THEN 346
+350 E = E + S - X:S = X
+351  PRINT "SHIELDS NOW AT "S" UNITS"
+352  GOTO 91
+353  IF D(6) >  = 0 THEN 371
+354  PRINT "DAMAGE REPORT NOT AVAILABLE"
+355  IF D0 = 0 THEN 91
+356 D3 = 0
+357  FOR I = 1 TO 8
+358  IF D(I) >  = 0 THEN 360
+359 D3 = D3 + .1
+360  NEXT I
+361  IF D3 = 0 THEN 91
+362 D3 = D3 + D4:D3 =  INT (D3 * 100) / 100
+363  IF D3 < 1 THEN 365
+364 D3 = .9
+365  PRINT "ESTIMATED REPAIR TIME = "D3" STARDATES"
+366  INPUT "DO YOU AUTHORIZE REPAIR ORDER ?";A$
+367  IF  LEFT$ (A$,1) <  > "Y" THEN 91
+368  FOR I = 1 TO 8:D(I) = 0: NEXT 
+369 T = T + D3 + .1
+370  GOSUB 558
+371  REM 
+372  PRINT "DEVICE        STATE OF REPAIR"
+373  FOR R1 = 1 TO 8: GOSUB 523
+374 DA =  INT (D(R1) * 100) / 100:DB =  ABS (DA)
+375  IF DB = 0 THEN D$ = "0.00"
+376  IF DB > 0 AND DB < 1 THEN D$ = "0" +  STR$ (DB)
+377  IF DB >  = 1 AND DB < 10 THEN D$ =  STR$ (DB)
+378  IF  LEN (D$) = 3 THEN D$ = D$ + "0"
+379  IF  LEN (D$) = 1 THEN D$ = D$ + ".00"
+380  HTAB 19: IF DA < 0 THEN  HTAB 18: INVERSE : PRINT "-";
+381  IF DB >  = 10 THEN D$ =  STR$ (DB): IF  LEN (D$) = 4 THEN D$ = D$ + "0"
+382  PRINT D$: NORMAL : NEXT R1
+383  GOTO 355
+
+384  IF K3 <  = 0 THEN 404
+385  IF D0 = 0 THEN 388
+386  PRINT "STAR BASE SHIELDS PROTECT ENTERPRISE"
+387  GOTO 404
+388  FOR I = 1 TO 3
+389  IF K(I,3) <  = 0 THEN 403
+390  IF D(2) < 0 THEN 392
+391  HTAB S2 * 2: VTAB S1 + 16: PRINT "E";
+392 H =  INT ((K(I,3) /  FN D(0)) * (2 +  RND (1))):S = S - H
+393  IF D(2) < 0 THEN 395
+394  INVERSE : VTAB S1 + 16: HTAB S2 * 2: PRINT "E";: NORMAL :
+395  CALL 37072: VTAB 15: HTAB 1
+396  INVERSE : PRINT H" UNIT HIT ";: NORMAL : PRINT "FROM SECTOR "K(I,1)",";: INVERSE : PRINT K(I,2): NORMAL 
+397  CALL 36864
+398  IF S < 0 THEN 406
+399  INVERSE : PRINT "SHIELDS DOWN TO "S" UNITS": NORMAL 
+400  IF H < 20 OR  RND (1) > .6 OR H / S <  = .02 THEN 403
+401 D2 = H / S + .5 *  RND (1):R1 =  INT ( RND (1) * 8 + 1):D(R1) = D(R1) - D2
+402  PRINT "DAMAGE REPORT: ";: FLASH : GOSUB 523: PRINT " DAMAGED!": NORMAL 
+403  NEXT I
+404  RETURN 
+
+405  TEXT : HOME : PRINT : PRINT "IT IS STARDATE "T: PRINT : GOTO 412
+406  POKE 49234,0: POKE 49238,0: POKE 49237,0: POKE 49232,0
+407  FOR J = 0 TO 5: CALL 36960: POKE 49236,0: CALL 36960: POKE 49237,0: NEXT 
+408  POKE 49233,0: POKE 49236,0: TEXT : HOME : CALL 36912: CALL 37216: FLASH 
+409  PRINT "THE ENTERPRISE HAS BEEN DESTROYED": PRINT : INVERSE : PRINT "THE FEDERATION WILL BE CONQUERED": NORMAL 
+410  PRINT 
+411  PRINT "IT IS STARDATE "T"."
+412  REM 
+413 W$ = "WAS":K$ = "": IF K9 <  > 1 THEN W$ = "WERE":K$ = "S"
+414  PRINT : PRINT "THERE "W$" "K9" KLINGON"K$" LEFT AT THE": PRINT "END OF YOUR MISSION.": PRINT "YOUR EFFINCIENCY RATING IS: ": PRINT (((K7 - K9) / (T - T0)) * 1000): PRINT 
+415  PRINT : INPUT "ANOTHER MISSION ?";A$
+416  IF  LEFT$ (A$,1) = "Y" THEN  CLEAR : HOME : GOTO 3
+417  GOTO 542
+418  TEXT : HOME : FLASH : PRINT "CONGRATULATIONS!": NORMAL : CALL 37136: HOME : INVERSE : PRINT "CONGRATULATIONS!": NORMAL : PRINT : PRINT "THE LAST KLINGON HAS BEEN DESTROYED": PRINT 
+419  PRINT "YOUR EFFICIENCY RATING IS "((K7 / (T - T0)) * 1000)"."
+420  GOTO 415
+
+421  FOR I = S1 - 1 TO S1 + 1: FOR J = S2 - 1 TO S2 + 1
+422  IF  INT (I + .5) < 1 OR  INT (I + .5) > 8 OR  INT (J + .5) < 1 OR  INT (J + .5) > 8 THEN 424
+423 A$ = "B":Z1 = I:Z2 = J: GOSUB 524: IF Z3 = 1 THEN 426
+424  NEXT J,I
+425 D0 = 0: GOTO 429
+426 D0 = 1:C$ = "DOCKED":E = 3000:P = 10
+427  PRINT "SHIELDS DROPPED FOR DOCKING PURPOSES"
+428 S = 0: GOTO 434
+429  IF K3 > 0 THEN 432
+430  IF E < E0 * .1 THEN 433
+431 C$ = "GREEN": GOTO 434
+432 C$ = "RED": GOTO 434
+433 C$ = "YELLOW"
+434  IF D(2) >  = 0 THEN 437
+435  PRINT 
+436  PRINT "*** SHORT RANGE SENSORS ARE OUT ***": PRINT : GOTO 439
+437  GOSUB 558: GOTO 439
+438  INVERSE : FOR J = 1 TO 8: PRINT Z$(I,J)" ";: NEXT : NORMAL : RETURN 
+439  RETURN 
+
+440  IF D(8) >  = 0 THEN 442
+441  PRINT "COMPUTER DISABLED": GOTO 91
+442  INPUT "COMPUTER AWAITING COMMAND: ";A
+443  IF A < 0 THEN 91
+444 H8 = 1
+445  IF A = 0 THEN 459
+446  ON A GOTO 477,486,513,491,517,543,554,561
+447  GOTO 448
+448  PRINT "COMPUTER FUNCTIONS: "
+449  PRINT "   0 = CUMULATIVE GALACTIC RECORD"
+450  PRINT "   1 = STATUS REPORT"
+451  PRINT "   2 = PHOTON TORPEDO DATA"
+452  PRINT "   3 = STARBASE NAVIGATION DATA"
+453  PRINT "   4 = GALAXY NAVIGATION CALCULATOR"
+454  PRINT "   5 = SECTOR NAVIGATION CALCULATOR"
+455  PRINT "   6 = QUADRANT NAME CHART"
+456  PRINT "   7 = EFFICIENCY RATING"
+457  PRINT "   8 = # DAYS FOR SPECIFIED RATING"
+458  GOTO 442
+459  HOME : PRINT "GALACTIC RECORD FOR QUADRANT "Q1",";: INVERSE : PRINT Q2
+460  PRINT "    1   2   3   4   5   6   7   8  "
+461  NORMAL 
+462  FOR I = 1 TO 8: PRINT I" :";
+463  FOR J = 1 TO 8
+464 Z1 = Z(I,J)
+465  IF Z1 >  = 100 THEN N$ =  STR$ (Z1): GOTO 469
+466  IF Z1 >  = 10 THEN N$ = " " +  STR$ (Z1): GOTO 469
+467 N$ = "  " +  STR$ (Z1)
+468  IF N$ = "  0" THEN N$ = "   "
+469  IF I = Q1 AND J = Q2 THEN  FLASH : PRINT N$;: NORMAL : PRINT " ";: GOTO 473
+470  IF  VAL ( MID$ (N$,2,1)) > 0 THEN  PRINT  LEFT$ (N$,1);: INVERSE : PRINT  MID$ (N$,2,1);: NORMAL : PRINT  RIGHT$ (N$,1)" ";: GOTO 473
+471  IF N$ = "   " THEN N$ = "   "
+472  PRINT N$;: NORMAL : PRINT ":";
+473  NEXT J
+474  PRINT 
+475  NEXT I
+476  GOTO 91
+477  HOME : PRINT "STATUS REPORT:":X$ = "": IF K9 = 1 THEN 479
+478 X$ = "S"
+479  PRINT K9" KLINGON"X$" LEFT"
+480 V5 = (T0 + T9) - T
+481  PRINT "TIME LEFT = " INT (V5 * 100) / 100" STARDATES"
+482 X$ = "": IF B9 = 1 THEN 485
+483 X$ = "S": IF B9 <  > 0 THEN 485
+484  PRINT "YOU ARE ALONE IN THE GALAXY ---": PRINT "YOU HAVE NO STARBASES LEFT!!": GOTO 353
+485  PRINT B9" STARBASES REMAIN IN THE GALAXY": GOTO 353
+486 H8 = 0
+487  FOR I = 1 TO 3
+488  IF K(I,3) <  = 0 THEN 511
+489 W1 = K(I,1):X = K(I,2)
+490 C1 = S1:A = S2: GOTO 494
+491  PRINT "QUADRANT NAVIGATION CALCULATOR"
+492 C1 = Q1:A = Q2
+493  INPUT "DESTINATION COORDINATES (X,Y) ?";W1,X
+494  IF C1 = W1 AND A = X THEN 91
+495  IF W1 = C1 AND A < X THEN V5 = 1: GOTO 504
+496  IF W1 = C1 AND A > X THEN V5 = 5: GOTO 504
+497  IF W1 < C1 AND A = X THEN V5 = 3: GOTO 504
+498  IF W1 > C1 AND A = X THEN V5 = 7: GOTO 504
+499 X7 = (( ATN ( ABS ((W1 - C1) / (X - A)))) / 6.28) * 8
+500  IF W1 < C1 AND A < X THEN V5 = X7 + 1
+501  IF W1 < C1 AND A > X THEN V5 = 5 - X7
+502  IF W1 > C1 AND A < X THEN V5 = 9 - X7
+503  IF W1 > C1 AND A > X THEN V5 = 5 + X7
+504  PRINT "DIRECTION = " INT (V5 * 100 + .5) / 100" : ";
+505 V1 =  ABS (W1 - C1):V2 =  ABS (X - A)
+506  IF V1 > V2 OR V1 = V2 THEN X = V1
+507  IF V2 > V1 THEN X = V2
+508  IF H8 = 1 THEN  PRINT "DISTANCE = ";X: GOTO 510
+509  IF H8 < 1 THEN  PRINT "DISTANCE = " INT ( SQR (V1 ^ 2 + V2 ^ 2)) / 10: IF H8 =  - 1 THEN H8 = 1
+510  IF H8 = 1 THEN 91
+511  NEXT I
+512  GOTO 91
+513  IF B3 >  < 0 THEN 515
+514  PRINT "NO STARBASES IN THIS QUADRANT": GOTO 91
+515  PRINT "FROM ENTERPRISE TO STARBASE:"
+516 W1 = B4:X = B5:H8 =  - 1: GOTO 490
+517 H8 =  - 1:C1 = S1:A = S2: GOTO 493
+518 R1 =  RND ( -  RND (1) * 1E9):R1 =  INT ( RND (1) * 8 + 1):R2 =  INT ( RND (1) * 8 + 1):A$ = " ":Z1 = R1:Z2 = R2: GOSUB 524: IF Z3 = 0 THEN 518
+519  RETURN 
+520 Z1 =  INT (Z1 + .5):Z2 =  INT (Z2 + .5)
+521 Z$(Z1,Z2) = A$
+522  RETURN 
+523  PRINT D$(R1);: RETURN 
+524 Z1 =  INT (Z1 + .5):Z2 =  INT (Z2 + .5):Z3 = 0
+525  IF Z$(Z1,Z2) = A$ THEN Z3 = 1
+526  RETURN 
+542  TEXT : HOME : PRINT  CHR$ (4);"RUN HELLO"
+543  PRINT "   1    2    3    4    5    6    7    8"
+544  INVERSE 
+545  PRINT "1      ANTARES      ";: NORMAL : PRINT "       SIRIUS"
+546  PRINT "2       RIGEL       ";: INVERSE : PRINT "       DENEB       "
+547  PRINT "3      PROCYON      ";: NORMAL : PRINT "       CAPELLA
+548  PRINT "4       VEGA        ";: INVERSE : PRINT "     BETELGEUSE    "
+549  PRINT "5      CANOPUS      ";: NORMAL : PRINT "      ALDEBARAN"
+550  PRINT "6      ALTAIR       ";: INVERSE : PRINT "      REGULUS      "
+551  PRINT "7    SAGITTARIUS    ";: NORMAL : PRINT "      ARCTURUS"
+552  PRINT "8      POLLUX       ";: INVERSE : PRINT "       SPICA       "
+553  GOTO 91
+554  IF T = T0 THEN  PRINT "EFFICIENCY RATING NOT AVAILABLE YET.": GOTO 91
+555  GOSUB 608: PRINT "YOUR EFFICIENCY RATING TO DATE IS: ";
+556  PRINT (((K7 - K9) / (T - T0)) * 1000)
+557  GOTO 91
+
+558  POKE 34,16: POKE 35,24: POKE 32,1: POKE 33,17: HOME : INVERSE 
+559  FOR I = 1 TO 8: GOSUB 438: IF I = 8 THEN 563
+560  PRINT : NEXT 
+561  INPUT "RATING WANTED:";ER
+562  PRINT "NUMBER OF STARDATES=";: PRINT (1000 * K7) / ER: GOTO 91
+563  POKE 33,40: POKE 32,0: POKE 34,1: POKE 35,15: VTAB 15: HTAB 1
+564  NORMAL : RETURN 
+
+565  POKE 34,16: POKE 35,24: POKE 32,18: POKE 33,11: HOME 
+566  PRINT "STARDATE :"
+567  PRINT "CONDITION:"
+568  PRINT "QUADRANT :"
+569  PRINT "SECTOR   :"
+570  PRINT "ENERGY   :"
+571  PRINT "PH TORPS :"
+572  PRINT "SHIELDS  :"
+573  POKE 32,0: POKE 33,40: POKE 34,0: POKE 35,15: HOME : RETURN 
+
+574  POKE 33,9: POKE 32,30: POKE 34,16: POKE 35,24: HOME 
+575  NORMAL 
+576  PRINT  INT (T * 10) / 10
+577  IF C$ = "RED" THEN  FLASH : PRINT C$: NORMAL : GOTO 580
+578  IF C$ = "YELLOW" THEN  INVERSE : PRINT C$: NORMAL : GOTO 580
+579  PRINT C$
+580  PRINT Q1",";: INVERSE : PRINT Q2: NORMAL 
+581  PRINT  INT (S1 + .5)",";: INVERSE : PRINT  INT (S2 + .5): NORMAL 
+582  PRINT E + S
+583  PRINT P
+584  PRINT S
+585  POKE 33,40: POKE 32,0: POKE 34,0: POKE 35,15: VTAB 1: RETURN 
+
+586  IF D(2) < 0 THEN  RETURN 
+587  HTAB Y3 * 2: VTAB X3 + 16: PRINT A$;: HTAB 1: VTAB 15: RETURN 
+588  IF D(2) < 0 THEN  CALL 37216: RETURN 
+589  FOR W = X3 - 1 TO X3 + 1
+590  IF W < 1 OR W > 8 THEN 592
+591 R$(W) = " " + Z$(W,Y3) + " "
+592  NEXT W
+593  HTAB Y3 * 2: VTAB X3 + 16: PRINT A$;: FOR W = 0 TO 300: NEXT 
+594  FOR W = X3 - 1 TO X3 + 1
+595  IF W < 1 OR W > 8 THEN 598
+596  VTAB W + 16: HTAB Y3 * 2 - 1: IF Y3 = 1 THEN  HTAB Y3 * 2: PRINT  RIGHT$ (R$(W),2);: GOTO 598
+597  PRINT R$(W);
+598  NEXT W
+599  CALL 37472
+600  FOR W = 1 TO 100: NEXT : INVERSE 
+601  IF A$ = "B" OR A$ = "K" THEN A$ = " ": CALL 37216
+602  FOR W = X3 - 1 TO X3 + 1
+603  IF W < 1 OR W > 8 THEN 606
+604  VTAB W + 16: HTAB Y3 * 2 - 1: IF Y3 = 1 THEN  HTAB Y3 * 2: PRINT  RIGHT$ (R$(W),2);: GOTO 606
+605  PRINT R$(W);
+606  NEXT : HTAB Y3 * 2: VTAB X3 + 16: PRINT A$;: NORMAL : HTAB 1: VTAB 15: RETURN 

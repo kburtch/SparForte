@@ -1,0 +1,4 @@
+# This should fail
+
+new_line(  ); -- no parameter
+

@@ -1,0 +1,4 @@
+# This should fail
+
+y : calendar.year_number := calendar.year( calendar.clock; -- bad syntax
+

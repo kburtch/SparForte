@@ -1,0 +1,201 @@
+$Id: READ.ME,v 1.2 2005/02/11 02:59:42 ken Exp $
+
+                The APQ Ada95 Binding to PostgreSQL & MySQL
+                         Warren W. Gay VE3WWG
+			mailto:ve3wwg@cogeco.ca
+                     http://home.cogeco.ca/~ve3wwg
+                           APQ Version 2.1
+
+The software you have in this directory, when compiled and installed, is
+the APQ Ada95 binding to the PostgreSQL and/or MySQL database servers.
+For C/C++ types, this "binding" represents an interface between the
+Ada95 language, and the C language libraries provided by those database
+offerings.
+
+There are several provisions for using PostgreSQL with Ada95, and this
+binding represents one more. As of APQ 2.0, MySQL support has been added
+and APQ restructured to make generic database programming possible.
+
+What are the advantages of using APQ?
+
+
+APQ Features:
+-------------
+
+  - It is a thick binding, making it natural for Ada programmers.
+  - It is very simple to use, making programming easy.
+  - Can be used with strong Ada types.
+  - Generic procedure and function support for strong types.
+  - Supports multiple database engines generically
+  - MySQL supported as of APQ-2.0
+
+  - Full BLOB support (PostgreSQL only)
+  - Blob I/O is performed through Ada95 stream I/O.
+  - High performance blob I/O through buffered stream I/O
+  - Optionally blob I/O can be unbuffered.
+
+  - Native binding (no ODBC!)
+  - Full support for NULL values.
+  - Additional support for DATE, TIME and TIMESTAMP data types.
+  - Some support for TIMEZONE types (PostgreSQL only)
+  - Supports bit string types (PostgreSQL only)
+  - Leaves the SQL in human readable form
+
+  - 4 levels of tracing for application debugging
+    - Trace_None  (no tracing)
+    - Trace_DB    (C library trace information only)
+    - Trace_APQ   (SQL query trace information only)
+    - Trace_Full  (both Trace_DB and Trace_APQ)
+  - Trace_APQ output can be fed to psql/mysql as
+    SQL text for testing purposes
+
+  - Dual-license :
+    - ACL (Ada Community License)
+    - GPL2 (GNU Public License)
+
+  - Extensive manual, with examples for nearly every function.
+  - Manual includes a chapter on generic database programming.
+
+  - Experimental support of the Decimal_Type package (using
+    decimal routines used internally by the PostgreSQL database
+    engine).
+  - Under active development
+
+
+Design Goals:
+-------------
+
+The main design goals for the APQ binding development were:
+
+  - simple to use
+  - easy to read
+  - reliable
+  - database vendor neutral (generic database programming)
+  - at the user's option, strongly typed
+  - strong blob support
+  - No C language interfaces or types
+  - good documentation
+
+It is the author's belief that these goals have been suitably met,
+although the package is still undergoing active research. Excluding blob
+support, there are only 2 tagged object types that the programmer must
+become familiar with. These objects include Finalization and  nicely
+clean up after themselves. Blob support adds one more tagged object that
+the programmer must interact with.
+
+  1. The Connection_Type object for database connections
+  2. The Query_Type object for SQL interactions with server
+  3. The Blob_Type type for Blob I/O and operations
+
+Having few objects reduces the learning curve substantially. A large
+number of functions and procedures are overloaded -- reusing the same
+name. This also reduces the learning curve, since the remaining
+differences are only in the involved data types.
+
+The APQ binding allows the Ada95 programmer to interface with blobs
+using stream I/O. This preserves the Ada advantage for strong type
+checking while making it simple for the programmer to perform I/O. As of
+APQ 1.2, the blob I/O is buffered, giving the stream I/O for blobs a
+major performance boost. No longer will the programmer need to search
+for performance work-arounds for blob operations.
+
+While the documentation is still improving (and being tested),
+there is more than enough information to get anyone started.
+Almost every function or procedure is accompanied by an example
+code fragment. This is especially helpful when generic
+instantiations of functions or procedures are involved. The
+examples permit the reader to see the application in concrete
+terms, allowing an easy transition to custom written
+applications.
+
+As of version 2.0, APQ supports MySQL in addition to
+PostgreSQL. MySQL is often the database of choice in win32
+environments. The extensive manual includes an entire chapter
+about how to program generically. That is, to program so that
+it can be used with any database engine. Only a simple change
+is required at the main program level (a "with" and "use"
+clause change).
+
+
+Future Plans:
+-------------
+
+APQ is now at version 2.0. This version includes the
+fundamental support for MySQL in addition to the original
+PostgreSQL support. In fact, it is now possible to build APQ
+without using PostgreSQL, if  that is what the user wants.
+
+MySQL's support for blobs however is considerably different
+than PostgreSQL's. For the present time, MySQL does not have
+blob support within APQ. This is an active area of
+development, and possibly research.
+
+
+Trial Programs:
+---------------
+
+Before you commit to a package like this, you want to see it
+work. No problem for UNIX users. Just try the example program in
+the ./eg2 directory. This example program is a simple
+illustration of how to load your /etc/passwd and /etc/group
+files into database tables. The example program does just this,
+and then performs some rudimentary checks on them.
+
+Just cd to the directory and type make. Follow the
+instructions from there.
+
+The ./eg directory is PostgreSQL only. The ./eg2 directory is
+the same example, but will operate for PostgreSQL or MySQL
+(depending upon your database support installed).
+
+
+Platforms:
+----------
+
+This binding has been tested on a debian Linux kernel 2.2.20
+using the installed debian GNAT 3.14p compiler. The two
+databases used in testing were:
+
+	PostgreSQL 7.2.1
+	MySQL 3.23.49
+
+While not yet tested on all platforms, this package will likely
+port well for must UNIX platforms, including:
+
+ - FreeBSD		(2.0 untested)
+ - NetBSD 		(untested)
+ - OpenBSD		(untested)
+ - Linux		(tested)
+ - HP-UX 10.2 or higher (to be tested)
+ - Sun Solaris 		(possibly)
+
+
+Win32 Builds:
+-------------
+
+Win32 builds are now possible. See the pdf document
+named win32.pdf for instructions on how to build APQ
+from sources.
+
+
+Feedback:
+---------
+
+  Please feedback suggestions and bugs to ve3wwg@cogeco.ca .
+
+	When reporting bugs, please indicate :
+
+	  - PostgreSQL server version (if used)
+	  - MySQL server version (if used)
+	  - O/S and kernel release
+	  - Ada compiler vendor and version
+            (do gnatls -v)
+
+  Thank-you for downloading and using APQ.
+
+Warren W. Gay.
+
+
+See file HISTORY for revision history.
+
+- End -

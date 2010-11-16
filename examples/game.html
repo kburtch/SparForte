@@ -1,0 +1,80 @@
+<HEAD><TITLE>game.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : game.bush </H1></DIV><HR>
+<IMG SRC="game.gif"><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- game.bush</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- This is a number guessing game.</EM></FONT>
+<FONT COLOR=green><EM>-- Demo program for the Bush shell</EM></FONT>
+<FONT COLOR=green><EM>-- by Ken O. Burtch</EM></FONT>
+
+<b>procedure</b> game <b>is</b>
+  n1    : <b>constant</b> integer := integer( numerics.rnd( 4 ) );
+  n2    : <b>constant</b> integer := integer( numerics.rnd( 4 ) );
+  n3    : <b>constant</b> integer := integer( numerics.rnd( 4 ) );
+  reply : integer;
+  match : integer;
+<b>begin</b>
+  clear;
+  put_line( "Numbers Game" );
+  new_line;
+
+  put_line( "I've chosen three numbers between 1 and 4" );
+  put_line( "Guess what they are!  You've got 10 tries." );
+  new_line;
+
+  <b>for</b> guess <b>in</b> 1..10 <b>loop</b>
+
+    put_line( "Guess #" &amp; strings.image( guess ) &amp; ":" );
+
+    put( "  Number 1? (1-4)" );
+    reply := numerics.value( inkey &amp; "" );
+    put_line( reply );
+    <b>if</b> reply = n1 <b>then</b>
+       match := 1;
+    <b>else</b>
+       match := 0;
+    <b>end</b> <b>if</b>;
+
+    put( "  Number 2? (1-4)" );
+    reply := numerics.value( inkey &amp; "" );
+    put_line( reply );
+    <b>if</b> reply = n2 <b>then</b>
+       match := @+1;
+    <b>else</b>
+       match := @+0;
+    <b>end</b> <b>if</b>;
+
+    put( "  Number 3? (1-4)" );
+    reply := numerics.value( inkey &amp; "" );
+    put_line( reply );
+    <b>if</b> reply = n3 <b>then</b>
+       match := @+1;
+    <b>else</b>
+       match := @+0;
+    <b>end</b> <b>if</b>;
+
+    <b>if</b> match = 3 <b>then</b>
+       put_line( "You've got the numbers right!" );
+       <b>exit</b>;
+    <b>elsif</b> guess = 10 <b>then</b>
+       put_line( "You're out of guesses." );
+       <b>exit</b>;
+    <b>else</b>
+       put_line( "You've got" &amp; strings.image( match ) &amp; " right." );
+    <b>end</b> <b>if</b>;
+
+  <b>end</b> <b>loop</b>;
+
+  new_line;
+  put( "The numbers were" ) @( n1 ) @( "," ) @( n2 ) @( " and" );
+  put_line( n3 );
+  new_line;
+  put_line( "Thanks for playing." );
+
+<b>end</b> game;
+
+</PRE></BODY></HTML>

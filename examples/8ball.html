@@ -1,0 +1,99 @@
+<HEAD><TITLE>8ball.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : 8ball.bush</H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush 8ball
+
+Ask the mysterious 8-ball a question...
+Is Business Shell production ready?
+All the signs point to yes
+
+Ask the mysterious 8-ball a question...
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- Title </EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Ask the magic 8-ball</EM></FONT>
+<FONT COLOR=green><EM>-- based on http://www.zazzybob.com/bin/8ball.html</EM></FONT>
+<FONT COLOR=green><EM>-- Created by Ken O. Burtch</EM></FONT>
+
+<b>pragma</b> annotate( "8ball" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Ask the magic 8-ball" );
+<b>pragma</b> annotate( "usage: 8ball" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> eight_ball <b>is</b>
+
+  <b>procedure</b> usage <b>is</b>
+  <b>begin</b>
+     put( "usage: " ) @ ( source_info.file );
+     command_line.set_exit_status( 0 );
+  <b>end</b> usage;
+
+  question : string;
+  answer : positive;
+
+<b>begin</b>
+
+<FONT COLOR=green><EM>-- Usage</EM></FONT>
+
+  <b>if</b> $# /= 0 <b>then</b>
+     usage;
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+<FONT COLOR=green><EM>-- Answer questions until an empty line</EM></FONT>
+
+  <b>loop</b>
+    new_line;
+    put_line( "Ask the mysterious 8-ball a question..." );
+
+    question := get_line;
+
+    <b>exit</b> <b>when</b> question = "";
+
+    answer := numerics.rnd( 100 );
+    <b>if</b> answer &lt; 10 <b>then</b>
+      put_line( "It is definite" );
+    <b>elsif</b> answer &lt; 20 <b>then</b>
+      put_line( "It is looking probable" );
+    <b>elsif</b> answer &lt; 30 <b>then</b>
+      put_line( "There is great certainty" );
+    <b>elsif</b> answer &lt; 40 <b>then</b>
+      put_line( "Maybe" );
+    <b>elsif</b> answer &lt; 50 <b>then</b>
+      put_line( "It doesn't look promising" );
+    <b>elsif</b> answer &lt; 60 <b>then</b>
+      put_line( "Probably not" );
+    <b>elsif</b> answer &lt; 70 <b>then</b>
+      put_line( "A definite no" );
+    <b>elsif</b> answer &lt; 80 <b>then</b>
+      put_line( "All the signs point to yes" );
+    <b>elsif</b> answer &lt; 80 <b>then</b>
+      put_line( "All the signs point to no" );
+    <b>else</b>
+      put_line( "Who can be sure? I'm not..." );
+    <b>end</b> <b>if</b>;
+  <b>end</b> <b>loop</b>;
+
+  command_line.set_exit_status( 0 );
+<b>end</b> eight_ball;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+</PRE></BODY></HTML>

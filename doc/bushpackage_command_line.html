@@ -1,0 +1,288 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Ken Burtch">
+   <meta name="GENERATOR" content="Mozilla/4.78 [en] (X11; U; Linux 2.4.7-10 i686) [Netscape]">
+   <title>Business Shell (BUSH) Guide</title>
+</head>
+<body bgcolor="#CCCC99">
+
+<center>
+<img src="bush_title_bar.gif" alt="[BUSH User Guide]" width="710" height="99">
+</center>
+<!-- h2>
+<font color="#777700">
+Bush Guide: Part 4 - Built-in Packages</font></h2 -->
+
+<table summary="menu" border="0" cellpadding="0" cellspacing="0"
+ width="100%">
+<tr>
+<td valign="bottom" bgcolor="white">&nbsp;</td>
+</tr><tr>
+<td valign="bottom" bgcolor="white">
+<table summary="menu" border="0" cellpadding="0" cellspacing="0"
+ width="100%">
+  <tbody>
+    <tr bgcolor="white">
+      <td align="center"><a href="http://www.pegasoft.ca/bush.html">Home Page</a></td>
+      <td align="center"><a href="bushintro.html">Introduction</a></td>
+      <td align="center"><a href="bushtutorial.html">Tutorials</a></td>
+      <td align="center"><a href="bushref.html">Reference</a></td>
+      <td valign="bottom" align="center" bgcolor="#CCCC99"><font size="+1" color="#777700"><b>Packages</b></font></td>
+      <td align="center"><a href="bushdetails.html">Hacking</a></td>
+    </tr>
+  </tbody>
+</table>
+</td>
+</tr>
+</table>
+
+<table summary="menu" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top" width="25%">
+&nbsp;<br>
+<table summary="menu" border="0" cellpadding="0" cellspacing="0">
+  <tr><td>
+      <table summary="menu" border="0" cellpadding="0" cellspacing="0">
+      <tr>
+      <td valign="bottom" align="center" bgcolor="white"><font size="+1" color="#777700"><b>&nbsp;&nbsp;Packages&nbsp;&nbsp;</b></font></td>
+      </tr>
+      </table>
+  </td></tr>
+  <tr><td bgcolor="white"><a href="bushpackages.html#4.1">4.1 Using Packages</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_text_io.html#4.2">4.2 text_io (Console I/O)</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_text_io.html#4.3">4.3 text_io (File I/O)</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_sound.html#4.4">4.4 sound</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_source_info.html#4.5">4.5 source_info</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_system.html#4.6">4.6 System</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_numerics.html#4.7">4.7 numerics</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_strings.html#4.8">4.8 strings</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_command_line.html#4.9">4.9 command_line</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_lock_files.html#4.10">4.10 lock_files</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_cgi.html#4.11">4.11 cgi</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_calendar.html#4.12">4.12 calendar</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_units.html#4.13">4.13 units</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_arrays.html#4.14">4.14 arrays</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_files.html#4.15">4.15 files</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_db.html#4.16">4.16 db (Database)</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_stats.html#4.17">4.17 stats</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_pen.html#4.18">4.18 pen</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_mysql.html#4.19">4.19 mysql</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_os.html#4.20">4.20 os</a></td></tr>
+  <tr><td bgcolor="white"><a href="bushpackage_dirops.html#4.21">4.21 directory_operations</a></td></tr>
+</table>
+</td>
+<td>
+&nbsp;<br>
+
+This part of the guide contains detailed descriptions of the
+BUSH built-in packages.
+<br>&nbsp;
+<h3>
+<a NAME="4.9"></a><font color="#777700">4.9 command_line Package</font></h3>
+The command_line package provides communication between a script and the
+calling program. This package sets the exit status and processes command
+line option switches. command_line contains following routines:
+<p><u>GCC Ada equivalent</u>: Ada.Command_Line
+<p>
+<hr><b>n := command_line.argument_count</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return the number of script arguments (the same as $#). Exclude BUSH
+option switches.
+<br>Example: if command_line.argument_count &gt; 0 then ...
+<br>Ada Equivalent: Ada.Command_Line.Argument_Count
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>n</td>
+
+<td>return value</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>the argument count</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>s := command_line.argument( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return a command line argument (the same as $n where n is a number).
+The arguments do not include option swithes interpreted by BUSH.
+<br>Example: put_line( "First argument is " &amp; command_line.argument(
+1 ) );
+<br>Ada Equivalent: Ada.Command_Line.Argument
+<br>PHP Equivalent: argv
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the argument number</td>
+</tr>
+
+<tr>
+<td>s</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the value of the argument</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>A bad argument number will raise an exception.
+<p>
+<hr><b>s := command_line.command_name</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return the the name of the script or BUSH interpreter (the same as
+$0)
+<br>Example: put_line( command_line.command_name &amp; " is this script"
+);
+<br>Ada Equivalent: Ada.Command_Line.Command_Name
+<br>PHP Equivalent: argv[0]
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the name of the script or BUSH interpreter</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>n := command_line.environment.environment_count</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return the number of variables in the operating system environment.
+<br>Example: for i in 1..command_line.environment.environment_count loop
+...
+<br>Ada Equivalent: Ada.Command_Line.Environment.Environment_Count
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>n</td>
+
+<td>return value</td>
+
+<td>natural</td>
+
+<td>required</td>
+
+<td>the argument count</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>s := command_line.environment.environment_value( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return an operating system environment value in the form of "VAR=value".
+<br>Example: put_line( "First value is " &amp; command_line.environment.environment_value(
+1 ) );
+<br>Ada Equivalent: Ada.Command_Line.Environment.Environment_Value
+<br>PHP Equivalent: $_ENV
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the argument number</td>
+</tr>
+
+<tr>
+<td>s</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the value of the argument</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>A bad environment value number will raise an exception.
+<p>
+<hr><b>command_line.set_exit_status( n )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>set the status code to be returned by the script to the calling program.
+(To read the exit status, use os.status.)
+<br>Example: command_line.set_exit_status( 0 ); -- all is well
+<br>Ada Equivalent: Ada.Command_Line.Set_Exit_Status
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>i</td>
+
+<td>in</td>
+
+<td>short_short_integer</td>
+
+<td>required</td>
+
+<td>the status code to return (0 for no error)</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>End of Document
+<p>&nbsp;<a href="#top">Back to Top</a></p>
+</td>
+</tr>
+</table>
+
+</body>
+</html>

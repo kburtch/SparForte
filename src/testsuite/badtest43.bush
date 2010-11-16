@@ -1,0 +1,4 @@
+# This should fail
+
+b : boolean := and true; -- missing boolean operand
+

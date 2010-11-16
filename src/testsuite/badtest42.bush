@@ -1,0 +1,4 @@
+# This should fail
+
+b : boolean := true > true < false; -- invalid boolean expression
+

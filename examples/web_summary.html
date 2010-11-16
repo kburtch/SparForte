@@ -1,0 +1,111 @@
+<HEAD><TITLE>chomp.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : web_summary.bush</H1></DIV><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- Summarize the Apache server log</EM></FONT>
+
+<b>pragma</b> annotate( "web_summary" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Simple web summary of an Apache server log" );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+<b>procedure</b> web_summary <b>is</b>
+  error_status  : <b>constant</b> short_short_integer := 192;
+  log_path      : <b>constant</b> string := directory_operations.format_pathname( "/var/log/httpd" );
+  log_file_name : <b>constant</b> string := "access_log";
+  log_file      : <b>constant</b> string := log_path &amp; directory_operations.dir_separator &amp; log_file_name;
+<b>begin</b>
+
+<FONT COLOR=green><EM> -- Verify the log directory exists and that the log file is readable</EM></FONT>
+
+  <b>if</b> <b>not</b> files.is_directory( log_path ) <b>then</b>
+     put( standard_error, source_info.file )
+         @( standard_error, ": log path is not a directory" );
+     command_line.set_exit_status( error_status );
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+  <b>if</b> <b>not</b> files.is_readable_file( log_file ) <b>then</b>
+     put( standard_error, source_info.file )
+         @( standard_error, ": log file does not exist or is not readable" );
+     command_line.set_exit_status( error_status );
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  <b>declare</b>
+    this_month : calendar.month_number := calendar.month( calendar.clock );
+    current_month : string;
+    today : string;
+
+    month_total_hits : natural;
+    month_users_hits : natural;
+    day_total_hits : natural;
+    day_users_hits : natural;
+  <b>begin</b>
+
+<FONT COLOR=green><EM> -- Create today and current_month strings for grepping the log file</EM></FONT>
+<FONT COLOR=green><EM> -- This may be dependent on your Apache configuration.</EM></FONT>
+
+    today := strings.trim( strings.image( calendar.year( calendar.clock ) ),
+             trim_end.left );
+    today := "/" &amp; @;
+    <b>case</b> this_month <b>is</b>
+    <b>when</b>  1 =&gt; today := "Jan" &amp; @;
+    <b>when</b>  2 =&gt; today := "Feb" &amp; @;
+    <b>when</b>  3 =&gt; today := "Mar" &amp; @;
+    <b>when</b>  4 =&gt; today := "Apr" &amp; @;
+    <b>when</b>  5 =&gt; today := "May" &amp; @;
+    <b>when</b>  6 =&gt; today := "Jun" &amp; @;
+    <b>when</b>  7 =&gt; today := "Jul" &amp; @;
+    <b>when</b>  8 =&gt; today := "Aug" &amp; @;
+    <b>when</b>  9 =&gt; today := "Sep" &amp; @;
+    <b>when</b> 10 =&gt; today := "Oct" &amp; @;
+    <b>when</b> 11 =&gt; today := "Nov" &amp; @;
+    <b>when</b> 12 =&gt; today := "Dec" &amp; @;
+    <b>when</b> <b>others</b> =&gt; put_line( standard_error, "bad month" );
+    <b>end</b> <b>case</b>;
+    current_month := today;
+    today := strings.trim( strings.image( calendar.day( calendar.clock ) ),
+             trim_end.left ) &amp; "/" &amp; @;
+    <b>if</b> strings.length( today ) &lt; 11 <b>then</b>
+       today := "0" &amp; @;
+    <b>end</b> <b>if</b>;
+
+<FONT COLOR=green><EM> -- Collect the statistics</EM></FONT>
+<FONT COLOR=green><EM> --</EM></FONT>
+<FONT COLOR=green><EM> -- Select only GET lines.  Of those lines, select only the current day or</EM></FONT>
+<FONT COLOR=green><EM> -- month.  For uses, examine the first field of the log and count unique</EM></FONT>
+<FONT COLOR=green><EM> -- visitors.</EM></FONT>
+
+    month_total_hits := numerics.value( `grep GET /var/log/httpd/access_log | grep "$current_month" | wc -l ;` );
+    month_users_hits := numerics.value( `grep GET /var/log/httpd/access_log | grep "$current_month" | cut -d\  -f 1 | sort -u | wc -l ;` );
+    day_total_hits := numerics.value( `grep GET /var/log/httpd/access_log | grep "$current_month" | wc -l ;` );
+    day_users_hits := numerics.value( `grep GET /var/log/httpd/access_log | grep "$current_month" | cut -d\  -f 1 | sort -u | wc -l ;` );
+
+<FONT COLOR=green><EM> -- Display the report</EM></FONT>
+
+    put_line( "Month to Date - " &amp; current_month );
+    new_line;
+
+    put( "Total hits:                 " ) @ ( month_total_hits, "ZZZZZZZ" );
+    new_line;
+    put( "Total users:                " ) @ ( month_users_hits, "ZZZZZZZ" );
+    new_line;
+
+    new_line;
+    put_line( "Today (so far) - " &amp; today );
+    new_line;
+    put( "Total hits:                 " ) @ ( day_total_hits, "ZZZZZZZ" );
+    new_line;
+    put( "Total users:                " ) @ ( day_users_hits, "ZZZZZZZ" );
+    new_line;
+
+  <b>end</b>;
+
+  command_line.set_exit_status( 0 );
+
+<b>end</b> web_summary;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+</PRE></BODY></HTML>

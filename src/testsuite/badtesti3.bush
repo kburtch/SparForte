@@ -1,0 +1,6 @@
+# This should fail
+
+pragma ada_95;
+
+? 0; -- not allowed
+

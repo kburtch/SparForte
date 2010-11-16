@@ -1,0 +1,117 @@
+      FREQUENTLY ASKED QUESTIONS (AFAQ) :
+      -----------------------------------
+
+
+   Q. Why don't I hear hear anything?
+
+   A. Use another command to set the volume (adavox does
+      not adjust volume). The aumix command is a good
+      command line mode command to use.
+
+
+   Q. Why do I get "clicks" and "gap noises"?
+
+   A. Your system was too busy, or is too slow (386
+      hosts may struggle). Consider allowing realtime
+      scheduling (if it is supported) by running the
+      adavox executable as setuid root:
+
+      # chmod u+w /usr/local/bin/adavox
+
+
+   Q. Why does it play noise on files that used to
+      play OK before?
+
+   A. I found that 4.3-RC FreeBSD has a problem in its
+      sound driver support (this problem may have been
+      inherited from Linux). If adavox is interrupted, or
+      after playing certain sound files, the sound driver
+      does not play correctly (you hear noise). This is
+      probably due to an odd number of samples being
+      written to /dev/dsp when in sterio. It appears that
+      the driver does not automatically reset properly
+      after this happens, unless by chance that extra
+      sample is made up again. To be investigated further.
+
+
+   Q. Why do I get noise playing my IMA/DVI ADPCM wave
+      file, which is supposed to be supported? And
+      by the way, CoolEdit-2000 plays it OK.
+
+   A. The CODEC has been designed to work for
+      2, 3, 4, and 5 bit samples. The 2 and 5
+      bit formats are not standard formats, but
+      are designed to be compatible with
+      CoolEdit-2000. The provided CODEC works
+      with all CoolEdit-2000 generated
+      monophonic files. However, CoolEdit-2000
+      generated sterio files do not seem to
+      play correctly, unless the 4-bit format
+      is chosen. Even though CoolEdit-2000
+      plays its own files correctly, it is
+      believed that CoolEdit-2000 incorrectly
+      interleaves the samples for sterio files
+      for non 4-bit sample files.
+
+
+   Q. How do you record a file with adavox?
+
+   A. You can't, yet.
+      
+
+   Q. What do these exceptions mean?
+
+   A. Ada is a very precise language, which is used
+      for mission critical systems. When things don't
+      go correctly, exceptions are raised. Ada is
+      much fussier than C++ (which also has exceptions).
+      Compiled Ada code will check for numeric
+      overflows, array bounds and a host of
+      other things (which C/C++ does not check).
+
+      Normally, you the user should not see
+      these exceptions when the code is properly
+      completed and tested. However, adavox is still in
+      an _ALPHA_ test and development state.
+
+      Most of the anticipated exceptions are trapped
+      within the software and a user friendly message
+      is provided in its place. Any exceptions that
+      you will see, will probably be unanticipated
+      exceptions, which probably should be reported
+      to the author (if the sound file is small, it
+      should be included with the report).
+
+
+   Q. Where can I find out about updates to adavox?
+
+   A. While the author does not find much time for
+      web site maintenance, the author's web site
+      is probably still the best place for the
+      latest news about, or downloads of adavox.
+
+      http://members.home.net/ve3wwg
+
+      Announcements will be made to comp.lang.ada,
+      comp.os.linux.announce and 
+      comp.unix.bsd.freebsd.announce.
+
+
+   Q. How can I help?
+
+   A. MPEG layer 3 support (MP3) and OGG Vorbis
+      support is still needed (in Ada95 only
+      please). Contact me before
+      you get started however, since I may be
+      able to save you from barking up the wrong
+      tree, and/or coordinate other ongoing efforts
+      with you. I also have some code that was
+      started in this regard.
+
+      Additionally, I need wave files with G.721,
+      G.722, G.723.3 and G.723.5 compression formats.
+      It should not be too much work to add support
+      for these, but I cannot test this support
+      without test files.
+
+                    - End -

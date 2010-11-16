@@ -1,0 +1,66 @@
+--------------------------------------------------
+-- ORIGINAL BOOCH COMPONENTS NOTICE 
+--------------------------------------------------
+This is the Download directory of the Ada 95 Booch Components.
+
+The Components are available in three forms:
+
+bc-{date}.tgz, normally for UNIX systems
+
+  tar zxvf bc-{date}.tgz
+  zcat bc-{date}.tgz | tar xvf -
+  gunzip < bc-19980924.tgz | tar xvf -
+
+bc-{date}.zip,    normally for Windows 95 (long file names)
+
+  use WinZip or equivalent (has CR/LF line terminations)
+
+bc-{date}.src,    uncompressed concatenated source, for DOS/Windows 3
+
+  use the GNAT utility gnatchop to extract the sources and crunch
+  the file names to 8.3 form.
+
+The HTML documentation is available as bc-html-{date}.zip.
+
+GNAT can be obtained from ftp://cs.nyu.edu/pub/gnat and mirrors.
+
+Simon Wright <simon@pogner.demon.co.uk>
+
+--------------------------------------------------
+-- MODIFIED NOTICE 
+--------------------------------------------------
+
+The booch components in this directory [files
+bc-*] are a subset of the full component set. The
+subset has been provided to allow for a more
+compact application download file. The BC-LICENSE
+(originally file name ACL) applies to all bc-*
+files. The full set of sources are available upon
+request, but may be obtained from the Internet at
+large.
+
+--------------------------------------------------
+-- USING YOUR OWN INSTALLED BOOCH COMPONENTS
+--------------------------------------------------
+
+If you prefer to use your already installed set of
+Booch components and library, you may perform the
+following, prior to making the project:
+
+   1. At the top level directory
+      $ mv bc bc.was
+      (rename the bc subdirectory to something
+      else, like bc.was)
+
+   2. Check that your ADA_INCLUDE_PATH and
+      ADA_OBJECTS_PATH access the directory(ies)
+      where your Booch components are installed.
+
+      3. At the top level, type "make"
+
+If compiler reports that packages with the name
+BC.<whatever> are not found, then re-check your
+ADA_INCLUDE_PATH variable, and permissions on the
+affected files and directories.
+
+--------------------------------------------------

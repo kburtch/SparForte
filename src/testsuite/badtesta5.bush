@@ -1,0 +1,6 @@
+# This should fail
+
+if 3 * 2 then -- bad type
+  null;
+end if;
+

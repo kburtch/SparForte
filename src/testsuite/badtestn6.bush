@@ -1,0 +1,4 @@
+# This should fail
+
+s : calendar.day_duration := calendar.seconds calendar.clock ); -- bad syntax
+

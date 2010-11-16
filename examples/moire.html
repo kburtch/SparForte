@@ -1,0 +1,51 @@
+<HEAD><TITLE>moire.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : moire.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD align="center" BGCOLOR="#000040"><SPAN STYLE="color: #00CC00">
+<img src="moire.png" alt="[Moire image]">
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "moire" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Draw a moire pattern and erase it using inverse pen mode" );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> moire <b>is</b>
+  c    : pen.canvas_id;
+  r    : pen.rect;
+  s    : string;
+  fill : boolean;
+<b>begin</b>
+  pen.new_window_canvas( 200,200,32,c);
+  pen.set_pen_mode( c, pen_mode.invert );
+  <b>for</b> y <b>in</b> <b>reverse</b> 1..99 <b>loop</b>
+      pen.move_to( c, 1, y );
+      pen.line_to( c, (100-y), 1 );
+      pen.move_to( c, 99, (100-y) );
+      pen.line_to( c, y, 99 );
+  <b>end</b> <b>loop</b>;
+  <b>delay</b> 5;
+  <b>for</b> y <b>in</b> <b>reverse</b> 1..99 <b>loop</b>
+      pen.move_to( c, 1, y );
+      pen.line_to( c, (100-y), 1 );
+      pen.move_to( c, 99, (100-y) );
+      pen.line_to( c, y, 99 );
+  <b>end</b> <b>loop</b>;
+  ? "Press return";
+  s := get_line;
+
+<b>end</b> moire;
+
+</PRE></BODY></HTML>

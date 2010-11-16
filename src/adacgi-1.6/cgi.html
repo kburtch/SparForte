@@ -1,0 +1,1213 @@
+<HTML>
+<HEAD>
+<TITLE>AdaCGI: An Ada 95 Binding to CGI</TITLE>
+<LINK REV="made" HREF="mailto:dwheeler@dwheeler.com">
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<H1>AdaCGI: An Ada 95 Binding to CGI</H1>
+
+AdaCGI (formerly called "Package CGI") is an Ada 95 interface to the
+<A HREF="http://www.w3.org/CGI">"Common Gateway Interface" (CGI)</A>.
+AdaCGI makes it easier to create Ada programs that can be
+invoked by World-Wide-Web (WWW) HTTP servers using the standard CGI interface.
+Using it, you can create Ada programs that perform queries or other processing
+by request from a WWW user.
+Such programs are often called ``web applications'' or simply ``web apps.''
+If you don't already know the advantages and disadvantages of using
+CGI and Ada, you might want to look at the later section titled
+<A HREF="#advantages">Advantages and Disadvantages: CGI, Ada, AdaCGI</A>.
+<P>
+
+The website for current versions of AdaCGI is
+<A HREF="http://www.dwheeler.com/adacgi">http://www.dwheeler.com/adacgi</A>.
+<P>
+
+This Ada package provides two data access approaches for CGI-related data:
+<P>
+<OL>
+<LI>
+As an associative array; simply provide the key name (as a string) and the
+value associated with that key will be returned.
+Since CGI keys can duplicate, you can even ask for ``the Nth value of
+this key.''
+<LI>
+As a sequence of key-value pairs, indexed from 1 to Argument_Count.
+This access approach is similar to the Ada library Ada.Command_Line.
+</OL>
+<P>
+
+The main access routines support both Ada 95 types String and Unbounded_String.
+<P>
+
+<HR>
+<P>
+The AdaCGI package is available in various formats, including
+zip, tarball (tar.gz), and RPM foramts.
+Again, go to the <A HREF="http://www.dwheeler.com/adacgi">AdaCGI website</A>
+to get the latest version in a variety of formats.
+<P>
+<HR>
+<P>
+
+This documentation assumes that you are already familiar with
+<A HREF="http://www.ncsa.uiuc.edu/demoweb/html-primer.html">HTML</A>.
+To use this package you'll need to learn a little about Ada 95; the
+<A HREF="http://www.dwheeler.com//lovelace/lovelace.html">Lovelace
+Ada 95 tutorial</A> provides one good way to do so.
+It would help if you understood the
+<A HREF="http://hoohoo.ncsa.uiuc.edu/cgi/">Common Gateway Interface (CGI)</A>,
+though hopefully for straightforward web applications you won't need to.
+<P>
+
+Below are the following sections; the ``license'' and ``advantages'' sections
+will hopefully help you determine if this library is right for you, the
+``installation'' and ``trying out'' sections will help you get started, and
+the rest (including the example) will hopefully give you enough information
+to be able to use it effectively:
+<OL>
+<LI><A HREF="#license">AdaCGI License.</A>
+<LI><A HREF="#installing">Installing AdaCGI.</A>
+<LI><A HREF="#tryout">Trying out a sample program.</A>
+<LI><A HREF="#details">Details on the Ada 95 Binding to CGI.</A>
+<LI><A HREF="#example">A Minimal Example.</A>
+<LI><A HREF="#cookies">Cookies</A>
+<LI><A HREF="#going_further">Going Further.</A>
+<LI><A HREF="#contents">Contents of the AdaCGI Distribution.</A>
+<LI><A HREF="#limitations">Limitations.</A>
+<LI><A HREF="#security">Security.</A>
+<LI><A HREF="#advantages">Advantages and Disadvantages: CGI, Ada, AdaCGI.</A>
+<LI><A HREF="#testimonials">Testimonials</A>
+<LI><A HREF="#related">Related Information Sources.</A>
+<LI><A HREF="#version">Version Information.</A>
+</OL>
+
+<P>
+<HR>
+<P>
+<A NAME="license"><H1>AdaCGI License</H1></A>
+AdaCGI is copyright (C) 1995-2000 David A. Wheeler
+(<A HREF="mailto:dwheeler@dwheeler.com">dwheeler@dwheeler.com</A>, or
+alternatively dwheeler@ida.org and wheeler@ida.org).
+AdaCGI is an open source library; the actual library
+is released using the LGPL license as modified by a
+special exception and a clarification
+(see the <A HREF="cgi.ads">CGI specification</A> for the actual license).
+You can use this library in proprietary programs but
+any changes to the library must stay as open source.
+No payment is required, but please provide credit if you use this package.
+The demonstration programs and this documentation are covered by the GPL.
+<P>
+
+The special exception made to the LGPL in the AdaCGI library license
+is the same as that used by
+many Ada libraries, including the GNAT (gcc-based) Ada compiler library and
+<A HREF="http://gtkada.eu.org">GtkAda</A>.
+This exception eliminates the requirement to create special object
+files to permit re-linking new libraries.
+While this requirement is desirable, it's onerous to do using today's
+heavily optimizing compilers and hard to do with generics,
+so this exception is common in Ada open source programs.
+
+<P>
+The clarification states that any user who uses the server remotely
+still has the right to acquire the source of this library as used
+by the serving program.
+The clarification was added because, as an interface to the web, the
+issue of "who is executing this program" could be a source of confusion.
+If you allow users to run your program, then you can't make the library
+proprietary from them.
+<P>
+
+
+<P>
+<HR>
+<P>
+<A NAME="installing"><H1>Installing AdaCGI</H1></A>
+If you use an RPM-based Linux system (e.g., Red Hat Linux),
+just get and install the RPM file as usual.
+For example, on a Linux i386-derived system (including Pentiums), you can
+get the precompiled file and just run:
+<PRE>
+ rpm -Uvh adacgi-*.i386.rpm
+</PRE>
+<P>
+The RPM installs the source files in the directory /usr/lib/ada/adainclude,
+the compiled files in /usr/lib/ada/adalib,
+top-level documentation in /usr/doc/adacgi-*,
+and the sample programs in /usr/doc/adacgi-*/sample
+(this is different than older RPMs, which for example used ``gnat''
+instead of ``ada'').
+Detailed HTML format documentation
+is integrated into the standard Ada documentation tree; the curious
+might want to know that this tree begins at /usr/share/ada/html/adacgi.
+The precompiled library depends on the Ada GNAT runtime library; you can get
+you can get these and other files from the
+<A HREF="http://www.gnuada.org/alt.html">Ada for Linux</A> website.
+Note that a renaming of the GNAT RPMs has taken place, starting at
+GNAT version 3.12p release 9; this AdaCGI RPM requires at least this version.
+<P>
+At the time of this writing I don't have a Debian (.deb) format
+for Debian-based systems (such as Debian and Corel), sorry.
+You can use the Unix-like instructions (below) to install it.
+It's been reported to me that ``alien'' translates adacgi into
+a Debian package fairly well by doing:
+<PRE>
+  alien --to-deb adacgi-*.i386.rpm
+</PRE>
+This isn't perfect, for example, /usr/share/doc
+is now used instead of /usr/doc.
+However, it's been reported to work.  Even better, please provide
+me with such a packaging!
+<P>
+<B>Warning:</B> If you've installed older versions of AdaCGI in 'zip' or
+'tar.gz' format, please note that the packaging conventions
+have changed slightly.
+This version of AdaCGI automatically unpacks itself into a subdirectory
+with the name of the version as part of the directory name, following
+standard distribution-making conventions.
+Older versions of AdaCGI unpacked themselves into the current directory, which
+while convenient for some was inconvenient for others and was not
+what most distributions do.
+<P>
+On a Unix-like system where you're not using the RPM format,
+get the tarball, create and move into
+a new directory, and install as usual.
+If you use the GNU tools (e.g., essentially any Linux system):
+<PRE>
+  tar xvfz adacgi-*.tar
+</PRE>
+Otherwise, if you're using a Unix-like system, the commands should work
+fine (you may need to install a version of ``gunzip'' first):
+<PRE>
+  gunzip adacgi-*.tar.gz
+  tar xvf adacgi-*.tar
+</PRE>
+On a Microsoft-based platform, get the zip file, create and move
+into a new directory, and install as usual,
+using a command like this (you might have ``unzip'' instead of
+``pkunzip''):
+<PRE>
+  pkunzip adacgi-*.zip
+</PRE>
+<P>
+If you want to use the demonstration programs, then you need to compile them.
+If you're using the RPM version, first copy the demonstration programs to
+some other directory:
+<PRE>
+ mkdir adacgisample
+ cp /usr/doc/adacgi*/sample/* adacgisample
+ cd adacgisample
+</PRE>
+For other formats, just move into the directory with adacgi.
+Then, for any format, type "make" to build the programs.
+This assumes that you have a suitable Ada compiler installed, of course;
+the files use the GNAT naming convention and assume that the compiler
+can be invoked using ``gnatmake''; adjust for your local situation.
+<P>
+The files cgi.ads and cgi.adb are the actual library; the
+other files are documentation and example programs.
+At this time only the RPM files automatically install themselves
+in a library directory; on other systems you'll need to compile
+the library into a shared area or simply include the library as part
+of your server's source code directory.
+The last "make" only compiles the sample programs.
+<P>
+If during compilations you get messages like
+"getenv not found", you probably need to add the C library to the
+list of searched libraries.  On most systems, that's automatic, but
+it isn't for ObjectAda.
+Anthony A. Lowe <aalowe@crnotes.cca.rockwell.com> sent in this tip for
+ObjectAda users:
+<BLOCKQUOTE>
+Basically the key to making this work in ObjectAda is to
+add the Win32 library to the search path (in Project-Settings-Search).
+Once it is there, it links fine.
+</BLOCKQUOTE>
+
+<HR>
+<P>
+<A NAME="tryout"><H1>Trying out a sample program</H1></A>
+To actually use this library, you need to write a program
+(this is, after all, only a library!), test the program, and then
+install it so it will be invoked by your web server.
+Included are some sample programs so you can try things out
+and see how the library works.
+<P>
+Impatient to <I>do</I> something?  Well, compile the demonstration
+programs as described above, and then run the "minimal" program by
+typing:
+<PRE>
+  ./minimal
+</PRE>
+<P>
+The output will look like this:
+<PRE>
+Content-type: text/html
+
+&lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;Minimal Form Demonstration&lt;/TITLE&gt;
+&lt;/HEAD&gt;&lt;BODY&gt;
+&lt;FORM METHOD=POST&gt;What's your Name?&lt;INPUT NAME="username"&gt;
+&lt;INPUT TYPE="submit"&gt;&lt;/FORM&gt;
+&lt;/BODY&gt;&lt;/HTML&gt;
+</PRE>
+The first line means that the program is returning an HTML file
+(the common case).
+The second (blank) line means that there is no more meta-information
+about the data to be returned to the user (such as cookies to be set).
+The rest of the lines are a tiny HTML file, which in this case
+presents a trivial form.
+<P>
+Notice that no web server is required here; we can just invoke the
+program directly.  That's really handy in debugging, because sometimes
+when you're interacting with a buggy server program it's hard to
+determing why things are failing unless you can see EXACTLY what
+is being sent back.
+<P>
+So, how can we send data to this script?
+The answer is by setting the REQUEST_METHOD and QUERY_STRING
+environment variables.
+Setting the REQUEST_METHOD variable to GET causes the library to
+get its data from the QUERY_STRING variable.
+This QUERY_STRING
+environment variable is of the form "fieldname=value"; if there's
+more than one field, the entries should be separated by ampersands (&amp;).
+If you want the values "=", "&amp;", " ", or "%" in the value, write them
+as "%3D", "%26", "%20", and "%25" respectively using the standard URL escaping
+mechanism (i.e., characters are replaced with % followed by 2 hexadecimal
+digits).
+On Unix-compatible systems running an sh-compatible shell
+(including Linux running bash), just do the following:
+<PRE>
+  REQUEST_METHOD="GET"
+  export REQUEST_METHOD
+  QUERY_STRING="name=David%20Wheeler&amp;email=dwheeler@dwheeler.com"
+  export QUERY_STRING
+</PRE>
+<P>
+Now, when you re-run ./minimal, you'll see that the program instead
+simply lists all of the fields that you've sent and their data.
+<P>
+So, how could you get this running through a web server?
+Well, you'll need to copy this program into an area that the web server
+accepts for executables.
+By implication, that means that your web server will have to be
+configured to run programs in certain directories
+and that you have permission to write to such a directory.
+On a typical Linux system running the Apache web server, such a
+directory is probably called "/home/httpd/cgi-bin", and is writable
+by root, so on such a
+configuration you'd do this to make the server "minimal" available to all:
+<PRE>
+  su
+  cp minimal /home/httpd/cgi-bin
+</PRE>
+<P>
+Assuming that your web server will run programs and you've installed your
+server in an appropriate place, now you need to try it out.
+Start up a web browser and open up:
+<PRE>
+  http://localhost/cgi-bin/minimal
+</PRE>
+replacing "localhost" with the name of the machine the web server is at
+if it's not your local machine.
+You should see a request to enter your name, a text box for entry,
+and a submit button.
+You can provide preset values to it by opening the URL using a format like:
+<PRE>
+  http://localhost/cgi-bin/minimal?name=David%20Wheeler&amp;email=dwheeler@dwheeler.com
+</PRE>
+<P>
+You can also see the <A HREF="screen.html">screenshot</A> showing
+the <A HREF="demo.adb">demo.adb</A> program in action.
+<P>
+You can also try out the more useful "search.adb" sample program, which
+lets the user specify a file to search and a string;
+the search program then lists every line in that file containing
+the string.
+Search requires a list of files that can be searched, called the
+"srchlist"; copy the demo file 'srchlist' to some useful location
+(I suggest /home/httpd/srchlist) and edit the srchlist file to be useful
+to you.
+The srchlist format is:
+<PRE>
+   &lt;FILENAME&gt;,&lt;EXTERNAL NAME&gt;
+</PRE>
+where &lt;FILENAME&gt; is the local filename, and &lt;EXTERNAL NAME&gt; is the
+name that the user will see.  The comma is the separator; that means that
+filenames can't have commas in them, sorry.
+Note that this is both a convenience and a security measure; users only
+see an easy-to-read external name, and only files that are specifically
+listed as searchable can be searched.
+You'll then need to set up reasonable files to search;
+I've included /usr/dict/words as a sample entry because many systems
+have such a file.
+<P>
+If you aren't going to place "srchlist" at /home/httpd/srchlist, then
+edit the program "search.adb" to change Search_List_Filename to some
+other value.
+Then compile "search.adb" (with GNAT, a "gnatmake search" will do nicely).
+Copy the resuling "search" executable to where the web server can use it
+(usually that would be /home/httpd/cgi-bin).
+Now send your browser to
+http://localhost/cgi-bin/search, and you should see a form that
+lets you search.
+<P>
+<HR>
+<P>
+<A NAME="details"><H1>Details on Ada 95 Binding to CGI</H1></A>
+
+Now, let's talk about how to write your own programs using this library.
+<P>
+
+To use package CGI, "with CGI" in your Ada program.
+Package CGI will automatically load the CGI information when your Ada
+program begins executing.
+CGI handles both "GET" and "POST" forms of CGI data automatically.
+The form information from a GET or POST form is loaded into a sequence of
+variables; each variable has a <I>Key</I> and a <I>Value</I>.
+Package CGI transforms "Isindex" queries into a form with a single key
+(named "isindex"), and the key's value is the query value.
+<P>
+
+Once the main Ada program starts, it can make various calls to the CGI
+subprograms to get information or to send information back out.
+<P>
+
+A typical program using package CGI would first call "CGI.Put_CGI_Header",
+which tells the calling HTTP server what kind of information will be returned.
+Usually the CGI header is a reply saying "I will reply a generated
+HTML document", so that is the default of Put_CGI_Header, but you could
+reply something else (for example, a Location: header to automatically
+redirect someone to a different URL; see the CGI specification for
+information about references which allow you to redirect browsers
+elsewhere).
+<P>
+
+Most CGI programs handle various types of forms, and most should automatically
+reply with a blank form if the user hasn't provided a filled-in form.
+Thus, your program will probably call CGI.Input_Received, which returns
+True if input has been received (and otherwise it returns False).
+You should reply with a blank form if CGI.Input_Received is False.
+<P>
+
+You can then use various routines to query what data values were sent.
+You can query either by the name of a variable (what is the value of 'name'?)
+or by position (what was the first variable's key name and value sent?):
+<UL>
+<LI>
+To query by variable name, use the "Value" function with the variable name
+as its parameter.
+Normally if the variable wasn't sent you'll just get an empty string back,
+but you can call Value with Required=>True to cause the
+exception Constraint_Error
+to be raised if the variable was not sent.
+To determine if given a key was sent, you can also use Key_Exists, which
+will return True if the given key was sent (and False otherwise).
+A given key can have more than one value; you can use the "Index"
+parameter to return the Nth value of a given key (the default is
+to return the first value).
+Function Key_Count will return how many values there are for a given key.
+<LI>
+To query by position, use the "Value" function with a Positive to get that
+value and the "Key" function to get the variable name.
+For example, Value(1) is the value of the first variable and Key(1) is the
+name of the first variable.
+The number of values sent is stored in CGI.Argument_Count.
+</UL>
+<P>
+
+There are also a number of useful output functions:
+<UL>
+<LI>
+Procedure Put_Variables is useful while debugging; it will cause all
+form values sent to be printed (in HTML format) to the Current_Output.
+<LI>
+Procedure Put_HTML_Head will put out an HTML header.
+It is given a title and an optional Mail_To email address.
+<LI>
+Procedure Put_HTML_Heading will put out an HTML heading (such as &lt;H1 ...&gt; Title &lt;/H1&gt;).
+<LI>
+Procedure HTML_Encode will encode characters special to HTML so that
+they'll pass through unharmed.  When generating HTML, always pass
+variable data through HTML_Encode if it isn't already HTML formatted.
+If you don't do this, data with the characters &amp;, &lt;, &gt;, and &quot;
+may become garbled (since these characters have special meaning in HTML).
+<LI> 
+Procedure Put_HTML_Tail will put out an HTML tail, (&lt;/BODY&gt;&lt;/HTML&gt;).
+<LI>
+Procedure Put_Error_Message will put an error message (including an
+HTML_Head, an HTML_Heading, and an HTML_Tail).
+Call "Put_CGI_Header" before calling this.
+</UL>
+<P>
+
+Function Get_Environment simply calls the underlying operating system
+and requests the value of the given operating system variable; this may
+be useful for acquiring less-often-used CGI values.
+If the variable does not exist, function Get_Environment replies with
+a null string ("").
+<P>
+<HR>
+<P>
+
+<A NAME="example"><H1>Minimal Example</H1></A>
+
+Here is a minimal example. Procedure "Minimal" always replies with an
+HTML document.  If input is received, the document is simply a list
+of the variable values.  If no input is received, procedure Minimal
+replies with a simple fill-in form:
+<P>
+
+<PRE>
+with CGI, Text_IO; use CGI, Text_IO;
+
+procedure Minimal is
+-- Demonstrate CGI interface.
+
+-- To run this program directly (without an HTTP server), set the
+-- environment variable REQUEST_METHOD to "GET" and the variable
+-- QUERY_STRING to either "" or "x=a&y=b".
+
+begin
+  -- First, declare that we'll regurn a generated HTML document:
+  Put_CGI_Header;
+  -- Now send the top of a typical HTML document, which is
+  --    &lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;title&lt;/TITLE&gt;&lt;/HEAD&gt;&lt;BODY&gt;
+  Put_HTML_Head("Minimal Form Demonstration");
+  if CGI.Input_Received then  -- Check if input was received.
+    Put_Variables;  -- Input received; show all variable values.
+  else
+    -- No input received; reply with a simple HTML form.
+    Put_Line("&lt;FORM METHOD=POST&gt;What's your Name?&lt;INPUT NAME=""name""&gt;" &amp;
+             "&lt;INPUT TYPE=""submit""&gt;&lt;/FORM&gt;");
+  end if;
+  Put_HTML_Tail;  -- End the HTML document, sending &lt;/BODY&gt;&lt;/HTML&gt;
+end Minimal;
+</PRE>
+
+Procedure Minimal is stored in file minimal.adb.
+More sophisticated sample programs are demo.adb and search.adb.
+<P>
+
+<P>
+<HR>
+<P>
+<A NAME="cookies"><H1>Cookies</H1></A>
+Cookies are supported by this package.
+A "cookie" is simply a value sent by a web server to a web browser; from
+then on, the web browser will respond with that value when reconnecting
+with that server.
+You should be aware that cookies can be used to
+reduce user anonymity, so some users intentionally disable cookies
+(see the references below for more about cookie controversies).
+Also, cookie data is intended to be small; a web user might not store
+more than 20 cookies per server, cookies larger than 4K, or 300 cookies total.
+If you need more, just store an ID with the cookie and store the rest
+of the data on the server.
+<P>
+To set a cookie's value in a remote browser,
+call Set_Cookie with the appropriate parameters.
+Note that Set_Cookie must be called <I>before</I> Put_CGI_Header.
+The expires attribute specifies when the cookie will no longer be stored;
+the domain attribute determines which host names will cause the cookie to
+be sent (at least two domain levels); the path attribute specifies the
+subset of URLs in a domain where the cookie will be returned; and if the
+cookie is marked secure, the cookie will only be sent over encrypted
+channels (e.g., SSL, using https://).
+<P>
+Cookie values are automatically loaded by this package on initialization.
+You can retrieve their values by calling Cookie_Value.
+You can retrieve cookies by their key value or by simple index.
+Just like CGI form fields, a key can occur multiple times.
+Information other than the key and value
+(such as expiration time, domain, path, and secure setting) is not available
+through AdaCGI, because this information is not sent in the underlying
+protocol from the user to the web server.
+<P>
+You can send cookie values to your program without using a web server
+by setting the environment variable HTTP_COOKIE.
+This has the format "key=value", separated by a semicolon,
+using URL escapes.
+The distribution includes a sample program, cookie_test,
+that prints the "first" cookie and the first value of the cookie
+named "problem".
+Here's how to try it out on a Unix-like machine using an
+sh-like command shell (e.g., a typical Linux system):
+<PRE>
+  HTTP_COOKIE="first_cookie=first_value;problem=my%20problem"
+  export HTTP_COOKIE
+  ./test_cookie
+</PRE>
+
+<P>
+<HR>
+<P>
+<A NAME="going_further"><H1>Going Further</H1></A>
+<P>
+Many CGI applications display a number of forms, data, and so on.
+For larger applications, I suggest drawing a sort of
+``state diagram'' showing the different displays as the nodes
+and showing the expected transitions between displayes.
+For each display, identify what information is needed for it;
+make sure that all the ways to reach that display will provide that
+information.
+In many cases I find it useful to have some CGI variable indicate the
+form desired (say ``command'').
+Remember that HTTP is essentially stateless; if you need some data later,
+you'll need to send it back to the user to store, or at least store some
+sort of identifier so that you can determine which user's data to use.
+Also, users can hop directly into any point by bookmarking things or
+just writing their own URLs, so
+don't depend on users only going through an ``expected path.''
+
+
+
+<P>
+<HR>
+<P>
+<A NAME="contents"><H1>Contents of AdaCGI Distribution</H1></A>
+
+File <A HREF="adacgi.zip">adacgi.zip</A> is
+the distribution collection of AdaCGI.
+It contains the following files:
+
+<P>
+<PRE>
+cgi.html      - Documentation for AdaCGI.
+cgi-doc.htm   - A duplicate of cgi.html (see README for an explanation).
+cgi.ads       - The Ada 95 package specification for the AdaCGI library.
+cgi.adb       - The Ada 95 package body for the AdaCGI library.
+minimal.adb   - A minimal demonstration of how to use the library.
+demo.adb      - A larger demonstration of how to use the library.
+search.adb    - A larger demo that searches a set of files.
+test_cookie   - A demo for getting cookie values.
+test_send.adb - A demo for setting cookie values.
+makefile      - The makefile to compile demo and minimal using GNAT.
+README        - A short list of the files.
+</PRE>
+
+<P>
+Note: all of the text files are stored in Unix text file format.
+MS-DOS users will need to convert them to MS-DOS text file format
+(some MS-DOS text editors will do this automatically).
+
+
+<P>
+<HR>
+<P>
+<A NAME="limitations"><H1>Limitations</H1></A>
+<P>
+This package has the following known limitations:
+<OL>
+<LI>Doesn't support an object-oriented or ADT interface.
+You might want to look at the
+<A HREF="http://stein.cshl.org/WWW/software/CGI/cgi_docs.html">Perl5 CGI
+library CGI.pm</A>.
+Clearly, there's a lower-level ``indexed multikey'' type that both cookies
+and CGI data could be based on; the current design is due to the growth
+over time to support specific requests.
+Some future version may overhaul the whole interface; the real problem
+is figuring how to better handle string types (see below).
+<LI>It only interfaces using the standard CGI interface.
+It doesn't support FastCGI or other interfaces.
+<LI>It doesn't support generation of forms with
+widgets automatically set to existing values.
+This is easily solved by creating a higher-level package that uses
+this package as an interface.
+That way, users can access capabilities more directly or not, their choice.
+<LI>It automatically initializes by reading in the CGI input;
+in a few odd cases this is limiting (though it also eliminates a
+common error).
+<LI>The way it handles String and Unbounded_String is at times
+awkward; perhaps requiring users to use the "+"
+convention or explicit type changes would be better.
+<LI>The current packaging could use some improvement for ease-of-use.
+In particular, the current zip and tarball
+packaging puts all the files in the current directory;
+they should create a subdirectory (note that you must
+fix the RPM spec file to do the same).
+A Debian package would be nice too.
+</OL>
+
+<P>
+<HR>
+<P>
+<A NAME="security"><H1>Security</H1></A>
+<P>
+As with all CGI programs, there are security ramifications.
+In general, ALWAYS check any values sent to you, and be conservative:
+identify the list of acceptable values, and reject anything that
+doesn't meet that list.
+Thus for strings, identify the legal characters and maximum length
+you'll accept, and reject anything that doesn't meet those requirements.
+Don't do the reverse and identify ``characters you'll prohibit,''
+because you'll probably forget an important case.
+You may need to escape shell characters.
+For numbers, identify minimum and maximum values.
+Be very cautious about filenames; beware of filenames with ".." or
+"/" in them (it's best not to accept them at all, if you can).
+<P>
+Since the user may not be the actual source for some variables and/or data,
+when generating HTML
+always send variable data through HTML_Encode first.
+That way, the presence of the special reserved characters "&amp;", "&lt;",
+"&gt;", or "&quot;" won't cause problems for the user's browser.
+<P>
+It's worth noting that Ada (and AdaCGI) can easily handle the "NIL"
+character (ASCII 0, represented as %00 in URLs).
+However, many system functions called by an Ada program assume that
+NIL is the end of a string, so calling system functions with such
+values may cause surprises.
+This isn't really unique to Ada; Perl can also handle NIL and has the
+same issues.
+<P>
+If you don't already know them, examine the extant literature on the
+subject of CGI security.
+Useful resources about CGI security include
+<A HREF="http://language.perl.com/CPAN/doc/FAQs/cgi/perl-cgi-faq.html">
+Gundavaram's Perl CGI FAQ</A> (particularly the security information),
+<A HREF="http://www.eekim.com/pubs/cgibook">Kim's CGI book</A>,
+<A HREF="http://www.go2net.com/people/paulp/cgi-security/safe-cgi.txt">Phillips'
+safe CGI material</A>,
+<A HREF="http://www.w3.org/Security/Faq/www-security-faq.html">
+Stein's WWW Security FAQ</A>,
+and
+<A HREF="http://www.webbertech.com/tips/web-security.html">Webber's web
+security tips</A>.
+You might find my document
+<A HREF="http://www.dwheeler.com/secure-programs">"Secure Programming
+for Linux HOWTO"</A> useful; I include a number of CGI-relevant tips.
+You could also search altavista for "CGI" and "security":
+<A HREF="http://www.altavista.com/cgi-bin/query?q=%2BCGI+%2Bsecurity">
+http://www.altavista.com/cgi-bin/query?q=%2BCGI+%2Bsecurity</A>.
+
+<P>
+<HR>
+<P>
+<A NAME="advantages"><H1>Advantages and Disadvantages: CGI, Ada, AdaCGI</H1></A>
+No tool is perfect, or appropriate for all circumstances.
+Here are some advantages and disadvantages of CGI and Ada for web applications;
+look at these and other information to determine if they're a good
+match for your application.
+<P>
+CGI is the standard interface between a web server and a web application,
+in the same way that HTTP is the standard interface between a web client
+(browser) and a web server.
+When using CGI there are 3 active components: the web client,
+the web server, and the web application (you're writing the web application).
+The client sends a request to the web server, the web server
+starts up the web application, the web server sends the request data to the
+web application using the CGI interface,
+the web application replies with data using the CGI interface,
+and the web server sends that data on to the web client.
+The web application then exits; the next client request will start a
+separate copy of the web application.
+If there are simultaneously clients making requests, then the web application
+will be executed more than once simultaneously (each web application
+serves exactly one request).
+<P>
+First, let's cover alternatives to CGI for interfacing to the web,
+listing their advantages and disadvantages compared to CGI:
+<OL>
+<LI>FastCGI: This is an alternative interface that, instead of stopping
+and restarting an application on each request, keeps the web application
+alive and sets up a permanent communication path between web server
+and web application.
+ <UL>
+ <LI>Advantages: FastCGI has
+     better performance than CGI on start-up (since start-up
+     time is eliminated). This ``better performance'' isn't as
+     big a strength as you might think:
+     <UL>
+     <LI>Modern systems can strart new processes rather quickly,
+         so optimizing for process start-up isn't as helpful.
+     <LI>Interpreters and just-in-time compilers do have an additional
+         start-up time, but again, this is not as helpful as you'd think.
+         Most such systems can cache previous analyses, eliminating a lot
+         of this time.
+     <LI>Fully compiled languages (such as typical C, C++, and Ada
+         implementations) essentially eliminate start-up costs imposed by
+         a language interpreter. They don't need to start-up their interpreter,
+         they just have a tiny run-time-library startup overhead.
+     </UL>
+     Another advantage of FastCGI is that
+     inter-application locking is potentially eliminated.
+ <LI>Disadvantages: FastCGI requires more work to develop the application
+     (because you must correctly reset all state),
+     the result is likely to be less robust (because the application
+     must survive many requests), and when using FastCGI
+     is slightly more difficult to take advantage of potential concurrency
+     (because you have to explicitly multi-thread your server).
+  </UL>
+<LI>Server-specific (proprietary) APIs
+ <UL>
+ <LI>Advantages: These APIs can potentially provide
+     even better performance by eliminating startup
+     and inter-process communication costs.
+ <LI>Disadvantages: These APIs lock you into a particular web server, and
+     your application is likely to be 
+     even less robust (because an error may take down the entire web server).
+ </UL>
+<LI>Specially-implemented HTTP server. This is lots of work.
+<LI>Separate protocol.  This is lots of work,
+    and now you need to distribute a client.
+<LI>Web application servers.
+These are intended for ``big jobs'' - large-scale dynamic web systems
+with a vast number of pages driven by many databases and programs.
+For smaller jobs, they're often too much.
+If you need something like this, take a look at
+<A HREF="http://www.zope.com">Zope</A>.
+<LI>HTML-embedded scripting language.
+For smaller jobs, or jobs where you have mostly static information
+with small snippets of dynamic information being inserted into it,
+a hypertext preprocessor is useful.
+This enables you to stick commands into an HTML document, and have the
+web server run those commands.
+A common one is <A HREF="http://www.php.net">PHP</A>.
+If you've used Microsoft's proprietary ASP language, you can switch to PHP
+using
+<A HREF="http://home.i1.net/~naken/asp2php">asp2php</A>.
+You can use the hypertext processor commands to run an Ada program.
+</OL>
+<P>
+For lots of people, CGI is the way to go to implement web applications.
+So, assuming that you've evaluated your options and decided to use CGI,
+let's move on.
+<P>
+The next question is, why use Ada?
+Well, here are some advantages of using Ada for web applications:
+<OL>
+<LI>Excellent Run-Time Performance: Ada is typically compiled to machine code,
+so its performance is generally much better than interpreters.
+Ada typically runs at the same speed as C and C++;
+sometimes faster (since it has more information) and sometimes slower
+(since by default it performs lots of safety checking not built into C/C++).
+Thus, it's typically much faster than Perl, and faster than Java if Ada
+is not compiled to a typical Java Virtual Machine (JVM).
+Note that CGI is itself a low performance interface,
+so this is primarily relevant only for compute-bound processes
+(such as graphics generation, mathematical processes such as some
+cryptography applications, etc.).
+<LI>Excellent compile-time checking:  Ada is well-known for its tight
+compile-time checks, which tries to eliminate many errors before the
+first execution.
+The theory here is that it's cheaper to let a machine find problems than
+make a human find them.
+<LI>Highly readable: Ada is designed to be easy to read;
+this is especially obvious when comparing it to Perl,
+but many C and C++ programs belong in an obfuscated code contest.
+Inscrutable code and clear code can be written in any language, but
+it's less work to make things clear in Ada.
+<LI>Increased security over C/C++: Ada by default does bounds checking
+on all arrays (and has the information necessary to do this quickly);
+C and C++ have to simulate this or use special libraries which are
+easily bypassed.
+<LI>Prefer Ada: you may prefer Ada for other reasons.
+Ada's the only widely-used language that combines the ability to
+compile to machine code, platform-independent threading, enumerations,
+generics, buffer overflow protection, and
+object-orientation in a single internationally-standardized language.
+Java omits enumerations, generics, and compilation to machine code (some
+JVMs try to get close, but there's a limiting necessary overhead);
+C++ omits platform-independent threading and buffer overflow protection.
+C lacks the C++ capabilities, and it also lacks object-orientation and
+generics.
+Whether or not having all of these capabilities simultaneously available
+is important depends on your application, of course.
+<LI>Have existing Ada applications.
+If you have an existing Ada application, and you want to move it to becoming
+a web application, using AdaCGI is a natural approach.
+</OL>
+<P>
+Sounds like you should always use Ada, right?
+Nonsense - no engineering decision is ever <I>that</I> simple.
+Here are some weaknesses of Ada for building web applications:
+<OL>
+<LI>Wordiness.
+Ada is wordy, which is especially inconvenient for short scripts.
+As programs get large, I find this isn't as big a disadvantage; the wordiness
+is for readability and modularity, which is more important for larger programs.
+You may disagree.
+<LI>Less convenient string handling.
+Ada originally came with type String, which stays at a fixed length once
+initialized and is inconvenient for many situations.
+The Ada type Unbounded_String automatically handles resizing, etc., but
+it is used essentially always through functions and procedures.
+The lack of syntactic sugar for Unbounded_String
+makes simple operations especially wordy and can obscure what's happening.
+This <I>is</I> a problem for web scripts, because string handling often
+takes up a great deal of the program.
+<LI>No built-in regular expression system.
+You could use GNAT's regular expression library, which is portable to other
+Ada compilers, but it's not as rich as Perl's library (for example) nor can
+Ada compilers optimize it the way Perl can optimize regular expressions.
+<LI>No built-in garbage collector necessarily built in.
+Ada doesn't guarantee that a garbage collector will be available, and in
+fact most Ada implementations don't include one.
+For CGI, this is almost never an issue, since the CGI program will exit after
+servicing one request anyway (and clean up then).
+<LI>Fewer web-centric libraries and/or need to reuse code in another language.
+If there's an existing library in another language that you need, that
+might be an excellent reason to use that language instead.
+You could use external language bindings; C and Fortran bindings
+in particular are built into the specification of Ada.
+If you have to interface to a <I>lot</I> of such modules, though, you might
+be much better off using that other language instead.
+<LI>Compilation time delays deployment.
+Scripts can simply be edited and used, while for Ada a compilation step
+is required before use.
+Since compilations are quite fast nowadays, this is not a real disadvantage.
+<LI>Complications from installing a dynamically linked library or static code.
+Since Ada is usually implemented as a compiled language, it generally requires
+a dynamically linked library to run.
+That means you'll have to get that library installed (or made available to
+your scripts).
+Alternatively, you could just generate statically linked programs, but that
+makes the individual programs larger.
+If you control the web server, this is a non-issue, but it might be minor issue
+if you really want the run-time library installed in the ``global'' location
+of your system.
+</OL>
+<P>
+At one time, Ada compilers were extremely costly ($20,000 or more), which
+was a serious disadvantage.  Nowadays, there's an open-source no-cost
+high-quality implementation (GNAT) and several other inexpensive
+implementations, so that's no longer a relevant disadvantage.
+<P>
+As always, base your decision based on the engineering trade-off.
+<P>
+Finally, even if you're using CGI and Ada, you needn't use this library.
+See the resource section for un-CGI and WebAda CGI.
+However, neither of those support cookies.
+For specific weaknesses, WebAda CGI has buggy encoders,
+and un-CGI is both slower than AdaCGI
+and introduces data ambiguity when handling data with multiple keys.
+In short, I believe that if you're using Ada and CGI, AdaCGI is the
+library you want to use.
+If it isn't, please let me know why so that it can be that way again :-).
+
+<P>
+<HR>
+<P>
+<A NAME="testimonials"><H1>Testimonials</H1></A>
+<P>
+
+<BLOCKQUOTE>
+I can't thank you enough for your great creation!  I have been extensively
+using  the CGI package (version 1.5) in the last couple of weeks and have
+totally fallen in love with it!  It is simple and does everything one could
+ask for!  So thank you, I don't know how I could put together my project
+without it! 
+<P>
+-- Alex Gertsen (AlexGertsen@libertybay.com)
+</BLOCKQUOTE>
+
+
+<P>
+<HR>
+<P>
+<A NAME="related"><H1>Related Information Sources</H1></A>
+<P>
+<OL>
+<LI>
+The current website for AdaCGI is
+<A HREF="http://www.dwheeler.com/adacgi">http://www.dwheeler.com/adacgi</A>.
+<LI>
+Old versions of this
+<A HREF="http://wuarchive.wustl.edu/languages/ada/swcomps/cgi/cgi.html">Ada
+binding to CGI</A>
+are available via the Public Ada Library (PAL).
+The
+<A HREF="http://wuarchive.wustl.edu/languages/ada/userdocs/html/cardcat/00_Tax.html">PAL
+card catalog</A> provides a nice general way to find Ada components
+(this binding is categorized as a "software component").
+
+<LI><A HREF="http://w3.org/CGI">CGI information at the W3C</A>.
+
+<LI><A HREF="http://webbuilder.netscape.com/Programming/Cookies">"Adding
+Cookies to your site"</A> by Paul Bonner; an introduction to cookies
+including notes on privacy issues.
+
+<LI><A HREF="http://home.netscape.com/newsref/std/cookie_spec.html">Netscape's
+original specification on cookies</A>.
+
+<LI><A HREF="http://www.cookiecentral.com/">Cookie Central</A>.
+
+<LI>
+<A HREF="http://hoohoo.ncsa.uiuc.edu/cgi/">General
+information on CGI is available from the NSCA</A>.
+
+<LI>
+Package CGI is inspired by the
+<A HREF="http://www.bio.cam.ac.uk/web/form.html">perl CGI interface
+by Steven E. Brenner (S.E.Brenner@bioc.cam.ac.uk)</A>.
+
+<LI>
+Another source of inspiration was the 
+<A HREF="http://www-genome.wi.mit.edu/ftp/pub/software/WWW/cgi_docs.html">perl
+CGI interface by L. Stein</A>.
+
+<LI>
+Doug Smith uses a different interface from Ada to CGI in his
+WebAda program, based on an old version of AdaCGI that he modified
+in a different way;
+<A HREF="http://www.adasmith.com/webada/source/webada/ada">you can
+see the webada source for more information</A> or more specifically see the
+<A HREF="http://www.adasmith.com/webada/source/cgi">CGI
+interface of WebAda</A>.
+This CGI interface has a few small features that AdaCGI doesn't, such
+as key removal, generic iterators, and encoders (though last I looked,
+the HTML encoders didn't handle ampersand correctly).
+However, AdaCGI has other significant features, such as Cookie support,
+and has a raft of documentation.  I also think AdaCGI's easier to use;
+WebAda CGI splits into so many child packages that it's more work to use.
+Hopefully, these two interfaces will merge in the future.
+
+<LI>
+<A HREF="http://goanna.cs.rmit.edu.au/~dale/cgi">
+Dale Stanbrough's CGI programming in Ada</A>
+site has related information.
+(Ada Home calls this site ``Ada CGI'', which can be confusing).
+However, Dale's package does something different --
+it doesn't create an interface with
+CGI, it creates a programmatic interface for generating HTML.
+Dale's package itself is called ``HTML'', and can easily be used in
+conjunction with AdaCGI (as his example does).
+
+<LI>
+A different method for interfacing binding Ada with CGI is to use the
+<A HREF="http://www.midwinter.com/~koreth/uncgi.html">"Un-CGI" interface</A>.
+
+<LI>
+Many Ada resources are available through the
+<A HREF="http://www.adahome.com/">Ada Home</A>,
+including an
+<A HREF="http://www.adahome.com/LRM/9X/rm9x/rm9x-toc.html">on-line
+Ada 95 reference manual</A>
+and a free
+<A HREF="http://www.dwheeler.com/lovelace/lovelace.html">on-line
+Ada 95 tutorial, Lovelace</A>.
+
+<LI>
+<A HREF="http://www.adapower.com">Ada Power</A> is another useful Ada site.
+
+<LI>
+The
+<A HREF="http://www.gnuada.org/alt.html">Ada for Linux</A> team
+has useful Linux-specific information.
+
+<LI>
+<A HREF="ftp://cs.nyu.edu/pub/gnat/">GNAT,
+a no-cost Ada 95 compiler, is available through New York University (NYU)</A>.
+
+<LI>
+You can download an `unzip' program from the 
+<A HREF="ftp://ftp.uu.net/pub/archiving/zip/">Info-ZIP archives</A>,
+which has software to unzip files as well as create zip files
+(including both a free implementation and the shareware pkzip/pkunzip programs).
+<A HREF="ftp://ftp.uu.net/pub/archiving/zip/Index">The Info-ZIP archive
+index lists what files are available.</A>,
+<A HREF="wuarchive.wustl.edu:/packages/compression/">An alternate
+(mirror) site for these zip format utilities is wuarchive.wustl.edu</A>.
+
+</OL>
+
+<P>
+<HR>
+<P>
+<A NAME="version"><H1>Version Information</H1></A>
+<P>
+This is version 1.6.
+<UL>
+<LI>
+Fixed an error in Hex_Value found and fixed by Pascal Obry.
+The internal function
+Hex_Value had a line reading ``1.. H'Length'', which should have been
+``H'Range'' instead.
+This could cause URL decoding to fail.
+<LI>
+Fixed a minor problem in cgi.adb that prevented ObjectAda from compiling
+the library.
+I had pragma Inline after the end of the function declaration; by
+moving it to right after the "is", ObjectAda became happy.
+Thanks to Lionel Draghi for reporting the problem (and the fix).
+<LI>
+Added testimonial.
+<LI>
+Added note that ``alien'' does a reasonable job converting this RPM to
+Debian format.
+</UL>
+<P>
+For version 1.5:
+<UL>
+<LI>
+All AdaCGI library routines have been modified so that any generated HTML is
+also valid XML.
+In particular, all tags are now lower case.
+This also caused a minor reformatting of Put_Variables so that
+its results would be valid XML and HTML (the &lt;br&gt; command doesn't
+easily work with both HTML and XML across all platforms at this time).
+This does <I>not</I> mean that somehow a program magically
+generates both valid XML and valid HTML if they just use this package;
+it just means that it's possible.
+See the specifications at the <A HREF="http://www.w3.org">W3C</A>
+for the requirements you have to meet if you wish to do this.
+Also, note that Put_HTML_Head does not autoamtically generate the
+official header to indicate that the following text is HTML (and
+which version) or XML (and which version);
+you may wish to Put_Line such a header.
+A future version of Put_HTML_Head may do this.
+<LI>
+Added Cookie_Count, so you can find out how many cookies are available.
+<LI>
+Changed the behavior of cookie results: cookie values are no longer
+automatically URL-decoded (CGI values continue to be automatically
+decoded by the package).
+This means that, if you depended on adacgi version 1.4 behavior, your
+program will need to insert calls to URL_Decode after requests for
+the cookie's value.
+The reason for this backwards-incompatible change is that I found that
+the cookie specification does <I>not</I> require URL encoding of cookies.
+While in some cases URL encoding is desirable, automatically decoding
+cookies could produce wrong results when interoperating with other scripts.
+The main issue is that, if you don't encode them in some way,
+semicolons in particular cannot be in cookies.
+You might consider encoding in the same way as CGI values are encoded,
+that is, URL encoding.
+However, these are merely suggestions; the actual interface permits
+as much freedom as the underlying protocol supports, aiding interoperability.
+<LI>
+An HTML encoding subprogram (HTML_Encode) is now available,
+which is very useful when generating an HTML document.
+This subprogram takes a string and translates
+"&amp;" to "&amp;amp;", "&lt;" to "&amp;lt;",
+"&gt;" to "&amp;gt;", and the double-quote character to "&amp;quot;".
+All other characters (including control characters) are untouched.
+It is HIGHLY recommended that all variable data being sent in HTML
+go through this filter; if you don't, data that has these special
+characters may cause the browser to become
+confused and display data incorrectly.
+I haven't developed an "HTML decoding" subprogram as part of AdaCGI;
+a future version of AdaCGI may add this.  Such a subprogram would have
+to handle the many more HTML escapes, however, and it's not clear how
+to represent some of them (e.g., "&amp;nbsp;" can be represented in Unicode
+but can only be represented in the Character type using other
+encodings like UTF-8).
+<LI>
+URL encoding and decoding subprograms are now available.
+The "URL" encoding is useful when dealing with CGI headers, generating
+follow-on URLs, processing cookie values, and other purposes.
+The subprogram URL_Encode walks through a string and, for each
+character that isn't URL-safe, replaces it with "%" and a 2-digit
+hexadecimal number.
+The URL-safe characters are English letters, digits, and
+the URL-safe symbols ("_", ".", "!", "~", "*", "'", "(", ")").
+Thus "%" becomes "%25" and "&amp;" becomes "%26".
+Some systems translate space into "+", while others translate to "%20";
+the encoder lets you choose.
+URL decoding reverses the process (and handles both "+" and "%20" as space).
+All CGI values are internally sent in this format, but it's sometimes
+useful to use these programs directly.
+If you're dealing with International character sets, I recommend that you
+use UTF-8 encoding first, then use URL encoding if you're using URL encoding.
+These functions were
+inspired by Doug Smith's version of AdaCGI in his WebAda program
+(though it turns out his functions had many errors; hopefully these
+are correct!).
+<LI>
+Added Key_Value_Exists, a quick way to tell if a Key has been given
+a specific Value (as one of its values).
+<LI>
+The documentation was modified, adding more information on how to create
+secure CGI programs.  In particular, links to the variety of CGI
+security information were added.
+Too many people create insecure CGI programs, even
+though techniques for avoiding most of their errors are widely known.
+I hope that linking to this information will make it easier for people
+to learn how to make secure CGI programs.
+<LI>
+Improved the "search.adb" example so it's easier to understand.
+In particular, I made Generate_Blank_Form a separate procedure and
+I added more explanatory comments.
+I also modified it so that it's more likely to be useful ``out of the box.''
+In particular, the default search file location is now
+/home/httpd/srchlist (a reasonable location on many systems).
+The search file list provided (and can be easily installed there)
+includes the English word dictionary file available on many Unix-like systems;
+this way, many users of Unix-like systems can easily play with the demo.
+Windows users, don't dispair; the program can be easily configured for
+your systems too.
+<LI>
+Hyperlink fixes: fixed the broken link to Un-CGI, added another link for
+WebAda CGI, added a reference to Dale Stanbrough's package.
+<LI>
+Made Put_Error_Mesage flush itself, so that errors would be more likely to
+reach the people who needed to see them.
+</UL>
+<P>
+Version 1.4 was released 21-Oct-1999.
+I changed the library license to the LGPL with minor additions
+as described in cgi.ads.
+I don't mind proprietary products using this library, but if they
+make improvements to this component and "release" its use to users
+I want EVERY user to be able to get the improvements.
+I also changed the documentation license to be a straight GPL license.
+All the demo programs are (C) 1995-1999 David A. Wheeler, licensed under
+the GPL license.
+The name of the packaged collection of files was changed to "AdaCGI", to
+clearly differentiate it from non-Ada CGI interfaces (the actual Ada package
+is still named "CGI", for backwards compatibility; after all, there's
+no ambiguity when calling from Ada :-) ).
+The program "minimal.adb" was changed to be more aesthetically pleasing
+(in particular, the submit button comes AFTER the data request).
+This version includes a patch by Juergen Pfeifer
+(Juergen.Pfeifer@t-online.de) that fixed an ambiguity in search.adb;
+it also makes use of his RPM packaging.
+I also added a patch by Bob Holcomb (bob_holcomb@hotmail.com)
+to directly support cookies, and modified his patch to eliminate
+a bug involving semicolons in cookie values.
+I added a major documentation section on how to start using the program
+(the "trying out" section).
+<P>
+Version 1.3 fixes a nasty bug in the low-level "getenv" routine,
+which kept this program from working on OS/2 and some other systems.
+<P>
+Version 1.2 added routines which get a Value and then get a Line or
+Line_Count all at once, developed by Clyde Roby (roby@ida.org).
+The Ustrings package (used by the search demo) has had two minor changes:
+Put_Line to a designated file now works correctly (instead of putting to
+the current output), and Get_Line
+can read in a line up to the maximum length of an Unbounded_String.
+<P>
+Major additions in version 1.1 are:
+<UL>
+<LI>
+Added Index parameter to Value(Key) so multi-valued keys could be handled.
+Also added Key_Count, which returns the number of values for a given key.
+<LI>
+Added routines (Line and Line_Count) to help handle multi-line text values.
+</UL>
+<P>
+Version 1.0 was released June 1995.
+
+<P>
+This documentation is (C) 1995-1999 David A. Wheeler.
+This documentation is free; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+<P>
+This documentation is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+<P>
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+<P>
+<ADDRESS><A HREF="http://www.dwheeler.com/lovelace/dwheeler.html">David A. Wheeler
+(dwheeler@dwheeler.com / dwheeler@ida.org)</A></ADDRESS>
+</BODY>
+</HTML>

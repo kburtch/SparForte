@@ -1,0 +1,4 @@
+# This should fail
+
+set_input( standard_output ); -- only input from an in_file
+

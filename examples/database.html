@@ -1,0 +1,74 @@
+<HEAD><TITLE>database.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : database.bush </H1></DIV><HR>
+<IMG SRC="database.gif"><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-------------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>-- DATABASE demo</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- by Ken O. Burtch</EM></FONT>
+<FONT COLOR=green><EM>-------------------------------------------------------------------</EM></FONT>
+
+<b>procedure</b> database <b>is</b>
+  database_name : <b>constant</b> string := "ken";
+  s : string;
+<b>begin</b>
+
+  <FONT COLOR=green><EM>-- Connect to database and create demo table</EM></FONT>
+
+  db.connect( database_name );
+  <b>if</b> <b>not</b> db.is_connected <b>then</b>
+     put_line( standard_error, "Unable to connect to database!" );
+     comamnd_line.set_exit_status( 192 );
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  db.begin_work;
+  db.prepare( "create table database_demo ( name varchar(80) )" );
+  db.execute;
+
+  <FONT COLOR=green><EM>-- Enter data</EM></FONT>
+
+  put_line( "This demo will enter names into a database table" );
+  put( "db.engine_of says your database is " ) @ (db.engine_of);
+  new_line;
+  new_line;
+  put_line( "Type a blank name to stop adding names" );
+  <b>loop</b>
+     put( "Name? " );
+     s := get_line;
+     <b>exit</b> <b>when</b> s = "";
+     db.prepare( "insert into database_demo (name) values ('" &amp; s &amp; "')" );
+     db.execute;
+  <b>end</b> <b>loop</b>;
+
+  <FONT COLOR=green><EM>-- Show sorted results</EM></FONT>
+
+  new_line;
+  put_line( "The names in alphabetical order are:" );
+  db.prepare( "select name from database_demo order by name" );
+  db.execute;
+
+  put( "  There is/are " ) @ (db.tuples) @ ( " rows in the results" );
+  new_line;
+  put( "  There is/are " ) @ (db.columns) @ ( " columns in the results" );
+  new_line;
+  <b>while</b> <b>not</b> db.end_of_query <b>loop</b>
+     db.fetch;
+     <b>if</b> db.is_null( 1 ) <b>then</b>
+        put( "NULL" );
+     <b>else</b>
+        put( db.value( 1 ) );
+     <b>end</b> <b>if</b>;
+     new_line;
+  <b>end</b> <b>loop</b>;
+  put_line( "(End of Results)" );
+
+  <FONT COLOR=green><EM>-- Discard table and disconnect from database</EM></FONT>
+
+  db.rollback_work;
+  db.disconnect;
+<b>end</b> database;
+</PRE></BODY></HTML>

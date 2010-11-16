@@ -1,0 +1,6 @@
+# This should fail
+
+for i in 1.10 loop -- bad range (should be ..)
+  null;
+end loop;
+

@@ -1,0 +1,7 @@
+# This should fail
+
+j : integer := 10;
+for i in 1..10000 loop
+   j := @ ** 10; -- this should crash eventually (float overflow)
+end loop;
+

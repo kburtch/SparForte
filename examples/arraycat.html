@@ -1,0 +1,55 @@
+<HEAD><TITLE>arraycat.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : arraycat.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush arraycat
+ 1 2 3 4 5 6
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- A common interview test from Rosetta Code for testing basic programming</EM></FONT>
+<FONT COLOR=green><EM>-- skills.</EM></FONT>
+
+<b>pragma</b> annotate( "arraycat" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Show how to concatenate two arrays in your language." );
+<b>pragma</b> annotate( "translated by Ken O. Burtch" );
+
+<b>procedure</b> arraycat <b>is</b>
+  <b>type</b> arrayOf3 <b>is</b> <b>array</b>(1..3) <b>of</b> integer;
+  a1 : arrayOf3 := (1, 2, 3);
+  a2 : arrayOf3 := (4, 5, 6);
+  <b>type</b> arrayOf6 <b>is</b> <b>array</b>(1..6) <b>of</b> integer;
+  a3 : arrayOf6;
+  p  : natural := arrays.first(a3);
+<b>begin</b>
+  <FONT COLOR=green><EM>-- In Business Shell 1, array support is limited.  &amp; only works on strings</EM></FONT>
+  <FONT COLOR=green><EM>-- and there's no indefinite ranges.  We have to do this the hard way.</EM></FONT>
+  <b>for</b> i <b>in</b> arrays.first(a1)..arrays.last(a1) <b>loop</b>
+      a3(p) := a1(i);
+      p := @+1;
+  <b>end</b> <b>loop</b>;
+  <b>for</b> i <b>in</b> arrays.first(a2)..arrays.last(a2) <b>loop</b>
+      a3(p) := a2(i);
+      p := @+1;
+  <b>end</b> <b>loop</b>;
+  <FONT COLOR=green><EM>-- show the array</EM></FONT>
+  <b>for</b> i <b>in</b> arrays.first(a3)..arrays.last(a3) <b>loop</b>
+      put( a3(i) );
+  <b>end</b> <b>loop</b>;
+  new_line;
+<b>end</b> arraycat;
+
+</PRE></BODY></HTML>

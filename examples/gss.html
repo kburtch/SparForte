@@ -1,0 +1,50 @@
+<HEAD><TITLE>gss.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : gss.bush </H1></DIV><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- A common interview test from Rosetta Code for testing basic programming</EM></FONT>
+<FONT COLOR=green><EM>-- skills.</EM></FONT>
+
+<b>pragma</b> annotate( "gss" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Given a sequence of integers, find a continuous subsequence which maximizes the" );
+<b>pragma</b> annotate( "sum of its elements, that is, the elements of no other single subsequence add" );
+<b>pragma</b> annotate( "up to a value larger than this one. An empty subsequence is considered to have" );
+<b>pragma</b> annotate( "the sum 0; thus if all elements are negative, the result must be the empty" );
+<b>pragma</b> annotate( "sequence. " );
+
+<b>procedure</b> greatest_subsequential_sum <b>is</b>
+
+  <b>type</b> int_array <b>is</b> <b>array</b>( 1..11 ) <b>of</b> integer;
+
+  a : int_array := (-1 , -2 , 3 , 5 , 6 , -2 , -1 , 4 , -4 , 2 , -1);
+  length : integer := 11;
+
+  beginmax : integer := 0;
+  endmax : integer := -1;
+  maxsum : integer := 0;
+  sum : integer := 0;
+
+<b>begin</b>
+ 
+ <b>for</b> start <b>in</b> arrays.first(a)..length-1 <b>loop</b>
+     sum := 0;
+     <b>for</b> finish <b>in</b> start..length-1 <b>loop</b>
+        sum := @ + a(finish);
+        <b>if</b> sum &gt; maxsum <b>then</b>
+           maxsum := sum;
+           beginmax := start;
+           endmax := finish;
+        <b>end</b> <b>if</b>;
+     <b>end</b> <b>loop</b>;
+  <b>end</b> <b>loop</b>;
+
+  <b>for</b> i <b>in</b> beginmax..endmax <b>loop</b>
+      ? a(i);
+  <b>end</b> <b>loop</b>; 
+
+<b>end</b> greatest_subsequential_sum;
+
+</PRE></BODY></HTML>

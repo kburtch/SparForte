@@ -1,0 +1,7 @@
+i : integer := 2;
+case i is
+when 1| => null; -- missing case
+when 2 => null;
+when others => null;
+end case;
+

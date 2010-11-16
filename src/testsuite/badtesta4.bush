@@ -1,0 +1,6 @@
+# This should fail
+
+while 3 * 2 loop  -- wrong expression type
+  null;
+end while;
+

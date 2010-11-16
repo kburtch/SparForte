@@ -1,0 +1,62 @@
+<HEAD><TITLE>fibonacci.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : fibonacci.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush fibonacci 7
+ 13
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "fibonacci" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Write a function to generate the nth Fibonacci number." );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> fibonacci <b>is</b>
+
+  <FONT COLOR=green><EM>-- fib</EM></FONT>
+  <FONT COLOR=green><EM>-- return the nth fibonacci number</EM></FONT>
+
+  <b>function</b> fib( n : natural ) <b>return</b> natural <b>is</b>
+    a : natural := 0;
+    b : natural := 1;
+    sum : natural;
+  <b>begin</b>
+    <b>for</b> i <b>in</b> 1..n <b>loop</b>
+        sum := a+b;
+        b := a;
+        a := sum;
+    <b>end</b> <b>loop</b>;
+    <b>return</b> sum;
+  <b>end</b> fib;
+
+  param  : integer := numerics.value( $1 );
+
+<b>begin</b>
+  <b>if</b> param &lt; 0 <b>then</b>
+     put_line( standard_error, source_info.source_location &amp; ": number must be &gt;= 0" );
+     command_line.set_exit_status( 192 );
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+  <b>if</b> param = 0 <b>then</b>
+     ? 0;
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+  ? fib( natural( param ) );
+<b>end</b> fibonacci;
+
+</PRE></BODY></HTML>

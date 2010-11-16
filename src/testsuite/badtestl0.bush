@@ -1,0 +1,6 @@
+# This should fail
+
+i : integer;
+
+set_output( i ); -- not a file varaible
+

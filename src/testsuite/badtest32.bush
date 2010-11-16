@@ -1,0 +1,4 @@
+# This should fail
+
+f : float := 1.; -- no decimal part
+

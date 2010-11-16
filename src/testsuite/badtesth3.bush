@@ -1,0 +1,6 @@
+# This should fail
+
+s : socket_type;
+
+open( s, ); -- this should fail
+

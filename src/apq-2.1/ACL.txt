@@ -1,0 +1,172 @@
+                         The Ada Community License
+
+                      Copyright(C) 1997 David G. Weller
+
+          Permission to redistribute in unmodified form is granted,
+                         all other rights reserved.
+
+            This is a modification of the Perl Artistic License,
+                          (c)1989-1991, Larry Wall
+
+        ------------------------------------------------------------
+
+                                  Preamble
+
+           The intent of this document is to state the conditions
+          under which the Ada library may be copied, such that the
+            Copyright Holder maintains some semblance of artistic
+          control over its development, while giving Ada users the
+              right to use and distribute the Ada library in a
+           more-or-less customary fashion, plus the right to make
+                          reasonable modifications.
+
+                                Definitions:
+
+                              Refers to the collection of Ada
+                              source files distributed by the
+              "Library"       Copyright Holder, and derivatives of
+                              that collection of files created
+                              through textual modification.
+
+                              Refers to such a library if it has
+          "Standard Version"  not been modified, or has been
+                              modified as specified below.
+
+          "Copyright Holder"  Is whoever is named in the copyright
+                              or copyrights for the Ada library.
+
+                "You"         Is you, if you're thinking about
+                              copying or distributing this library.
+
+                              Is whatever you can justify on the
+                              basis of media cost, duplication
+                              charges, time of people involved, and
+         "Reasonable Copying  so on. (You will not be required to
+                 Fee"         justify it to the Copyright Holder,
+                              but only to the computing community
+                              at large as a market that must bear
+                              the fee.)
+
+                              Means that no fee is charged for the
+                              item itself, though there may be fees
+          "Freely Available"  involved in handling the item. It
+                              also means that recipients of the
+                              item may redistribute it under the
+                              same conditions they received it.
+
+                                 Provisions:
+         1  You may make and give away verbatim copies of the
+            source form of the Standard Version of this Ada library
+            without restriction, provided that you duplicate all of
+            the original copyright notices and associated
+            disclaimers.
+
+         2  You may apply bug fixes, portability fixes and other
+            modifications derived from the Public Domain or from
+            the Copyright Holder. A library modified in such a way
+            shall still be considered the Standard Version.
+
+         3  You may otherwise modify your copy of this Ada library
+            in any way, provided that you insert a prominent notice
+            in each changed file stating how and when you changed
+            that file, and provided that you do at least ONE of the
+            following:
+
+         a) Place your modifications in the Public Domain or
+            otherwise make them Freely Available, such as by
+            posting said modifications to Usenet or an equivalent
+            medium, or placing the modifications on a major archive
+            site such as The Public Ada Library, or by allowing the
+            Copyright Holder to include your modifications in the
+            Standard Version of the Ada library.
+
+         b) Use the modified Ada library only within your
+            corporation or organization.
+
+         c) Rename any non-standard executables so the names do not
+            conflict with standard executables, which must also be
+            provided, and provide a separate manual page for each
+            non-standard executable that clearly documents how it
+            differs from the Standard Version.
+
+         d) Make other distribution arrangements with the Copyright
+            Holder.
+
+         4  You may distribute the programs of this Ada library in
+            object code or executable form, provided that you do at
+            least ONE of the following:
+
+         a) Distribute a Standard Version of the executables and
+            library files, together with instructions (in the
+            manual page or equivalent) on where to get the Standard
+            Version.
+
+         b) Accompany the distribution with the machine-readable
+            source of the Ada library with your modifications.
+            Accompany any non-standard executables with their
+
+         c) corresponding Standard Version executables, giving the
+            non-standard executables non-standard names, and
+            clearly documenting the differences in manual pages (or
+            equivalent), together with instructions on where to get
+            the Standard Version.
+
+         d) Make other distribution arrangements with the Copyright
+            Holder.
+
+         5  You may charge a reasonable copying fee for any
+            distribution of this Ada library. You may charge any
+            fee you choose for support of this Ada library. You may
+            not charge a fee for this Ada library itself. However,
+            you may distribute this Ada library in aggregate with
+            other (possibly commercial) programs as part of a
+            larger (possibly commercial) software distribution
+            provided that you do not advertise this Ada library as
+            a product of your own.
+
+         6  The scripts and library files supplied as input to or
+            produced as output from the programs of this Ada
+            library do not automatically fall under the copyright
+            of this Ada library, but belong to whomever generated
+            them, and may be sold commercially, and may be
+            aggregated with this Ada library.
+
+         7  System-level subroutines supplied by you and linked
+            into this Ada library in order to emulate the
+            functionality defined by this Ada library shall not be
+            considered part of this Ada library, but are the
+            equivalent of input as in Paragraph 6, provided these
+            subroutines do not change the library in any way that
+            would cause it to fail the regression tests for the
+            library.
+
+         8  The name of the Copyright Holder may not be used to
+            endorse or promote products derived from this software
+            without specific prior written permission.
+
+         9  THIS ADA LIBRARY IS PROVIDED "AS IS" AND WITHOUT ANY
+            EXPRESS OR IMPLIED WARRANTIES, INCLUDING, WITHOUT
+            LIMITATION, THE IMPLIED WARRANTIES OF MERCHANTIBILITY
+            AND FITNESS FOR A PARTICULAR PURPOSE.
+
+               How to Apply These Terms to Your New Libraries
+
+  To apply these terms, attach the following notices to the library. It is
+ safest to attach them to the start of each source file to most effectively
+  convey the exclusion of warranty; and each file should have at least the
+ "copyright" line and a pointer to where the full notice is found. Also, be
+ sure to add information on how to contact you by electronic and paper mail.
+
+                               Copyright (C)
+
+           This program is free software; you can redistribute it
+           and/or modify it under the terms of the "Ada Community
+                   License" which comes with this Library.
+           This program is distributed in the hope that it will be
+         useful, but WITHOUT ANY WARRANTY; without even the implied
+           warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+          PURPOSE. See the Ada Community License for more details.
+            You should have received a copy of the Ada Community
+         License with this library, in the file named "Ada Community
+         License" or "ACL". If not, contact the author of this library 
+				for a copy.

@@ -1,0 +1,192 @@
+<HEAD><TITLE>pack.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : pack.bush</H1></DIV><HR>
+<IMG SRC="pack.gif">
+<P>Compress a file using several tools and keep the best solution.</p>
+<PRE>
+
+#!/usr/local/bin/bush
+
+<FONT COLOR=green><EM>-- Pack</EM></FONT>
+
+<b>pragma</b> annotate( "Pack" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Try compressing a file using different compression programs" );
+<b>pragma</b> annotate( "and keep the best result." );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+<b>procedure</b> pack <b>is</b>
+
+  <b>procedure</b> usage <b>is</b>
+    <FONT COLOR=green><EM>-- show help</EM></FONT>
+  <b>begin</b>
+    put( "usage: " ) @ ( source_info.file );
+    put_line( " [-v] source-file" );
+    new_line;
+    put_line( "Try compressing a file using different compression programs" );
+    put_line( "and keep the best result." );
+    new_line;
+  <b>end</b> usage;
+
+  verbose : boolean := false;
+
+<b>begin</b>
+
+  <FONT COLOR=green><EM>-- There should be two parameters.  Any other number of parameters, or</EM></FONT>
+  <FONT COLOR=green><EM>-- -h or --help, should show script usage</EM></FONT>
+
+command_line.set_exit_status( 0 );                            <FONT COLOR=green><EM>-- status OK</EM></FONT>
+
+<b>if</b> $# /= 1 <b>and</b> $# /= 2 <b>then</b>                                    <FONT COLOR=green><EM>-- not 2 params?</EM></FONT>
+   usage;                                                     <FONT COLOR=green><EM>-- show usage</EM></FONT>
+   <b>return</b>;                                                    <FONT COLOR=green><EM>-- and quit</EM></FONT>
+<b>elsif</b> $1 = "-h" <b>or</b> $1 = "--help" <b>then</b>                         <FONT COLOR=green><EM>-- help request?</EM></FONT>
+   usage;                                                     <FONT COLOR=green><EM>-- show usage</EM></FONT>
+   <b>return</b>;                                                    <FONT COLOR=green><EM>-- and quit</EM></FONT>
+<b>elsif</b> $1 = "-v" <b>or</b> $1 = "--verbose" <b>then</b>                      <FONT COLOR=green><EM>-- verbose?</EM></FONT>
+   verbose := true;
+<b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- main block that does the work</EM></FONT>
+
+<b>declare</b>
+  source_path  : string;
+
+  <b>type</b> compress_programs <b>is</b> ( c_none, c_compress, c_zip, c_zoo, c_gzip,
+       c_bzip );
+
+  compress : <b>constant</b> string := "/usr/bin/compress";
+  zip      : <b>constant</b> string := "/usr/bin/zip";
+  zoo      : <b>constant</b> string := "/bin/zoo";
+  gzip     : <b>constant</b> string := "/bin/gzip";
+  bzip     : <b>constant</b> string := "/usr/bin/bzip2";
+
+  this_size : long_integer;
+  best_size : long_integer;
+  best_method : compress_programs := c_none;
+
+<b>begin</b>
+
+  <b>if</b> $# = 1 <b>then</b>
+     source_path := directory_operations.format_pathname( $1 );
+  <b>else</b>
+     source_path := directory_operations.format_pathname( $2 );
+  <b>end</b> <b>if</b>;
+  <FONT COLOR=green><EM>-- first param - convert path to operating system format</EM></FONT>
+
+  <FONT COLOR=green><EM>-- Verify that the source file exists</EM></FONT>
+
+  <b>if</b> <b>not</b> files.is_waiting_file( source_path ) <b>then</b>
+     put( standard_error, source_info.file )
+         @( standard_error, ": source file is not readable, doesn't exist or is empty" );
+     command_line.set_exit_status( 192 );
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- Try...</EM></FONT>
+
+  best_size   := numerics.value( `stat -c '%s' "$source_path";` );
+  best_method := c_none; 
+
+  <b>if</b> files.is_executable( compress ) <b>then</b>
+     $compress "-c" "$source_path" &gt; "/tmp/temp.out";
+     this_size   := numerics.value( `stat -c '%s' /tmp/temp.out;` );
+     <b>if</b> verbose <b>then</b>
+        put_line( source_info.file &amp; ": compress size = " &amp; strings.image( this_size ) );
+     <b>end</b> <b>if</b>;
+     <b>if</b> this_size &lt; best_size <b>then</b>
+        best_size := this_size;
+        best_method := c_compress;
+     <b>end</b> <b>if</b>;
+  <b>else</b>
+     <b>if</b> verbose <b>then</b>
+        put_line( source_info.file &amp; ": no compress" );
+     <b>end</b> <b>if</b>;
+  <b>end</b> <b>if</b>;
+
+  <b>if</b> files.is_executable( zip ) <b>then</b>
+     $zip "-q" "-" "$source_path" &gt; "/tmp/temp.out";
+     this_size   := numerics.value( `stat -c '%s' /tmp/temp.out;` );
+     <b>if</b> verbose <b>then</b>
+        put_line( source_info.file &amp; ": zip size = " &amp; strings.image( this_size ) );
+     <b>end</b> <b>if</b>;
+     <b>if</b> this_size &lt; best_size <b>then</b>
+        best_size := this_size;
+        best_method := c_zip;
+     <b>end</b> <b>if</b>;
+  <b>else</b>
+     <b>if</b> verbose <b>then</b>
+        put_line( source_info.file &amp; ": no zip" );
+     <b>end</b> <b>if</b>;
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>--if files.is_executable( zoo ) then</EM></FONT>
+  <FONT COLOR=green><EM>--   zoo( source_path );</EM></FONT>
+  <FONT COLOR=green><EM>--end if;</EM></FONT>
+
+  <b>if</b> files.is_executable( gzip ) <b>then</b>
+     $gzip "-c" "$source_path" &gt; "/tmp/temp.out";
+     this_size   := numerics.value( `stat -c '%s' /tmp/temp.out;` );
+     <b>if</b> verbose <b>then</b>
+        put_line( source_info.file &amp; ": gzip size = " &amp; strings.image( this_size ) );
+     <b>end</b> <b>if</b>;
+     <b>if</b> this_size &lt; best_size <b>then</b>
+        best_size := this_size;
+        best_method := c_gzip;
+     <b>end</b> <b>if</b>;
+  <b>else</b>
+     <b>if</b> verbose <b>then</b>
+        put_line( source_info.file &amp; ": no gzip" );
+     <b>end</b> <b>if</b>;
+  <b>end</b> <b>if</b>;
+
+  <b>if</b> files.is_executable( bzip ) <b>then</b>
+     $bzip "-c" "$source_path" &gt; "/tmp/temp.out";
+     this_size   := numerics.value( `stat -c '%s' /tmp/temp.out;` );
+     <b>if</b> verbose <b>then</b>
+        put_line( source_info.file &amp; ": bzip2 size = " &amp; strings.image( this_size ) );
+     <b>end</b> <b>if</b>;
+     <b>if</b> this_size &lt; best_size <b>then</b>
+        best_size := this_size;
+        best_method := c_bzip;
+     <b>end</b> <b>if</b>;
+  <b>else</b>
+     <b>if</b> verbose <b>then</b>
+        put_line( source_info.file &amp; ": no bzip2" );
+     <b>end</b> <b>if</b>;
+  <b>end</b> <b>if</b>;
+
+  <b>case</b> best_method <b>is</b>
+  <b>when</b> c_none <b>=></b>
+       put_line( source_info.file &amp; ": no compression" );
+       mv "$source_path" "$source_path"".none";
+  <b>when</b> c_compress <b>=></b>
+       put_line( source_info.file &amp; ": using compress" );
+       $compress "$source_path";
+  <b>when</b> c_zip <b>=></b>
+       put_line( source_info.file &amp; ": using zip" );
+       $zip "$source_path"".zip" "$source_path";
+       rm  "$source_path";
+  <b>when</b> c_zoo <b>=></b>
+       null;
+  <b>when</b> c_gzip <b>=></b>
+       put_line( source_info.file &amp; ": using gzip" );
+       $gzip "$source_path";
+  <b>when</b> c_bzip <b>=></b>
+       put_line( source_info.file &amp; ": using bzip" );
+       $bzip2 "$source_path";
+  <b>when</b> <b>others</b> <b>=></b>
+     put( standard_error, source_info.file )
+         @( standard_error, ": unknown compression method" );
+     command_line.set_exit_status( 192 );
+  <b>end</b> <b>case</b>;
+
+<b>end</b>;
+rm /tmp/temp.out;
+
+command_line.set_exit_status( 0 );
+
+<b>end</b> pack;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+</PRE></BODY></HTML>

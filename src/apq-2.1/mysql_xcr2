@@ -1,0 +1,45 @@
+# Extract MySQL Error Code Definitions
+
+TMP1=${TMPDIR:-/tmp}/$$-1.tmp
+
+trap "rm -f '$TMP1'" 0
+
+OUT=gen.tmp
+
+while read VALUE NAME ; do
+	case "$NAME" in
+	CR_MIN_ERROR | CR_MAX_ERROR | ER_ERROR_MESSAGES )
+		;;
+	* )	echo "$VALUE $NAME";;
+	esac
+done >"$TMP1"
+
+LINES=$(wc -l <"$TMP1")
+
+sed <apq-mysql.ads-in >"$OUT" -n '1,/^ *type Result_Type is/p'
+
+i=0
+while read VALUE NAME ; do
+	i=$(expr $i + 1)
+	if [ $i -lt $LINES ] ; then
+		echo "      $NAME,"
+	else
+		echo "      $NAME"
+	fi
+done <"$TMP1" >>$OUT
+
+sed <apq-mysql.ads-in >>$OUT '1,/%ENUM_RESULT_TYPE%/d;/%USE_RESULT_TYPE%/,$d'
+
+i=0
+while read VALUE NAME ; do
+	i=$(expr $i + 1)
+	if [ $i -lt $LINES ] ; then
+		echo "      $NAME => $VALUE,"
+	else
+		echo "      $NAME => $VALUE"
+	fi
+done <"$TMP1" >>$OUT
+
+sed <apq-mysql.ads-in >>$OUT '1,/%USE_RESULT_TYPE%/d'
+
+# End

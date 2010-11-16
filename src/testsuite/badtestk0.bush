@@ -1,0 +1,5 @@
+# This should fail
+
+f : file_type;
+set_input( f ); -- not open
+

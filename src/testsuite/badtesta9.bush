@@ -1,0 +1,8 @@
+# This should fail
+
+if true then
+  null;
+elsif 3 * 2 then -- bad type
+  null;
+end if;
+

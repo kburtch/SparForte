@@ -1,0 +1,9 @@
+# This should fail
+
+procedure main is
+  i : integer;
+  i : integer; -- duplicate identifier in proc block
+begin
+  null;
+end main;
+
