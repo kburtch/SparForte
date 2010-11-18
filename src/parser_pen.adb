@@ -616,6 +616,61 @@ begin
   end if;
 end ParsePenNewScreenCanvas;
 
+procedure ParsePenNewGLScreenCanvas is
+  -- Syntax: pen.new_gl_screen_canvas( H_Res, V_Res, C_Res, canvas_id );
+  -- Source: Pen.newGLScreenCanvas
+  h_val,  v_val,  c_val : unbounded_string;
+  h_type, v_type, c_type : identifier;
+  canvas_ref : reference;
+  canvas_type : identifier := pen_canvas_id_t;
+  C_Res : positive;
+begin
+  expect( pen_new_gl_screen_canvas_t );
+  --if inputMode = interactive or inputMode = breakout then
+  --   err( "screen canvas is not allowed in an interactive session" );
+  --end if;
+  -- But what about when it is only option? ie. non-X session
+  expect( symbol_t, "(" );
+  ParseExpression( h_val, h_type );
+  if baseTypesOk( h_type, positive_t ) then
+     expect( symbol_t, "," );
+     ParseExpression( v_val, v_type );
+     if baseTypesOk( v_type, positive_t ) then
+        expect( symbol_t, "," );
+        ParseExpression( c_val, c_type );
+        if baseTypesOk( c_type, positive_t ) then
+           C_Res := positive( to_numeric( C_val ) );
+           if C_Res /= 8 and C_Res /= 16 and C_Res /= 24 and C_Res /= 32 then
+              err( "pixel bit resolution must be 8, 16, 24 or 32" );
+           end if;
+           expect( symbol_t, "," );
+           ParseOutParameter( canvas_ref, canvas_type );
+           if baseTypesOk( canvas_type, pen_canvas_id_t ) then
+              expect( symbol_t, ")" );
+           end if;
+        end if;
+     end if;
+  end if;
+  if isExecutingCommand then
+     declare
+        id : aCanvasID;
+     begin
+-- some versions of SDL take control of the screen if video is started so
+-- we'll only start SDL when a canvas is created.
+        if not penRunning then
+           pen.startupPen;
+           penRunning := true;
+        end if;
+        newGLScreenCanvas( positive( to_numeric( h_val ) ),
+                         positive( to_numeric( v_val ) ),
+                         C_Res, id );
+        identifiers( canvas_ref.id ).value := to_unbounded_string( long_float( id ) );
+     exception when others =>
+        err( "exception raised" );
+     end;
+  end if;
+end ParsePenNewGLScreenCanvas;
+
 procedure ParsePenNewWindowCanvas is
   -- Syntax: pen.new_window_canvas( H_Res, V_Res, C_Res, canvas_id );
   -- Source: Pen.newWindowCanvas
@@ -666,6 +721,57 @@ begin
      end;
   end if;
 end ParsePenNewWindowCanvas;
+
+procedure ParsePenNewGlWindowCanvas is
+  -- Syntax: pen.new_gl_window_canvas( H_Res, V_Res, C_Res, canvas_id );
+  -- Source: Pen.newGLWindowCanvas
+  h_val,  v_val,  c_val : unbounded_string;
+  h_type, v_type, c_type : identifier;
+  canvas_ref : reference;
+  canvas_type : identifier := pen_canvas_id_t;
+  C_Res : positive;
+begin
+  expect( pen_new_gl_window_canvas_t );
+  expect( symbol_t, "(" );
+  ParseExpression( h_val, h_type );
+  if baseTypesOk( h_type, positive_t ) then
+     expect( symbol_t, "," );
+     ParseExpression( v_val, v_type );
+     if baseTypesOk( v_type, positive_t ) then
+        expect( symbol_t, "," );
+        ParseExpression( c_val, c_type );
+        if baseTypesOk( c_type, positive_t ) then
+           C_Res := positive( to_numeric( C_val ) );
+           if C_Res /= 8 and C_Res /= 16 and C_Res /= 24 and C_Res /= 32 then
+              err( "pixel bit resolution must be 8, 16, 24 or 32" );
+           end if;
+           expect( symbol_t, "," );
+           ParseOutParameter( canvas_ref, canvas_type );
+           if baseTypesOk( canvas_type, pen_canvas_id_t ) then
+              expect( symbol_t, ")" );
+           end if;
+        end if;
+     end if;
+  end if;
+  if isExecutingCommand then
+     declare
+        id : aCanvasID;
+     begin
+-- some versions of SDL take control of the screen if video is started so
+-- we'll only start SDL when a canvas is created.
+        if not penRunning then
+           pen.startupPen;
+           penRunning := true;
+        end if;
+        newGLWindowCanvas( positive( to_numeric( h_val ) ),
+                         positive( to_numeric( v_val ) ),
+                         C_Res, id );
+        identifiers( canvas_ref.id ).value := to_unbounded_string( long_float( id ) );
+     exception when others =>
+        err( "exception raised" );
+     end;
+  end if;
+end ParsePenNewGLWindowCanvas;
 
 procedure ParsePenNewCanvas is
   -- Syntax: pen.new_canvas( H_Res, V_Res, old_canvas_id, canvas_id );
@@ -1575,6 +1681,7 @@ begin
 
   declareProcedure( pen_new_screen_canvas_t, "pen.new_screen_canvas" );
   declareProcedure( pen_new_window_canvas_t, "pen.new_window_canvas" );
+  declareProcedure( pen_new_gl_window_canvas_t, "pen.new_gl_window_canvas" );
   declareProcedure( pen_new_canvas_t, "pen.new_canvas" );
   declareProcedure( pen_set_title_t, "pen.set_title" );
   declareProcedure( pen_close_canvas_t, "pen.close_canvas" );

@@ -1614,6 +1614,35 @@ begin
 end newScreenCanvas;
 
 
+---> NEW GL SCREEN CANVAS
+--
+-- Create a new OpenGL on-screen canvas covering the whole screen.  The size
+-- and resolution of the canvas is based on the canvas data structure.  There
+-- can only be one screen canvas.
+
+procedure newGLScreenCanvas( H_Res, V_Res, C_Res : positive; canvas_id : out aCanvasID ) is
+  newcanvas : aCanvas;
+begin
+  newcanvas.id := canvasIdTop;
+  canvasIdTop := canvasIdTop + 1;
+  newPenState( newCanvas.pen );
+  newcanvas.displayInfo.H_Res := H_Res;
+  newcanvas.displayInfo.V_Res := V_Res;
+  newcanvas.displayInfo.C_Res := C_Res;
+  newcanvas.hardware := SDL_GetVideoInfo;
+  newcanvas.hardware_ptr := SDL_VideoInfo_Conv.To_Pointer( newcanvas.hardware );
+  newcanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), SDL_FULLSCREEN + SDL_OPENGL );
+  newcanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
+  if newcanvas.surface_ptr = null then
+     put_line( standard_error, "newScreenCanvas: falied for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
+  end if;
+  newcanvas.kind := screen;
+  newCanvas.name := to_unbounded_string( "Untitled Bush Screen Canvas" );
+  canvasList.Queue( canvas, newCanvas );
+  canvas_id := newcanvas.id;
+end newGLScreenCanvas;
+
+
 ---> NEW WINDOW CANVAS
 --
 -- Create a new on-screen canvas with its own window.  The size and resolution
@@ -1639,6 +1668,33 @@ begin
   canvasList.Queue( canvas, newCanvas );
   canvas_id := newCanvas.id;
 end newWindowCanvas;
+
+
+---> GL NEW WINDOW CANVAS
+--
+-- Create a new on-screen canvas with its own window.  The size and resolution
+-- of the canvas is based on the canvas data structure.
+
+procedure newGLWindowCanvas( H_Res, V_Res, C_Res : positive; canvas_id : out aCanvasID ) is
+  newCanvas : aCanvas;
+begin
+  newCanvas.id := canvasIdTop;
+  canvasIdTop := canvasIdTop + 1;
+  newPenState( newCanvas.pen );
+  newCanvas.displayInfo.H_Res := H_Res;
+  newCanvas.displayInfo.V_Res := V_Res;
+  newCanvas.displayInfo.C_Res := C_Res;
+  newCanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), SDL_OPENGL );
+  newCanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
+  if newCanvas.surface_ptr = null then
+     put_line( standard_error, "newWindowCanvas: falied for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
+  end if;
+  newCanvas.kind := window;
+  newCanvas.name := to_unbounded_string( "Untitled BUSH Window Canvas" );
+  SDL_EXT_Window_Title( "Untitled BUSH Window Canvas" & ASCII.NUL );
+  canvasList.Queue( canvas, newCanvas );
+  canvas_id := newCanvas.id;
+end newGLWindowCanvas;
 
 
 ---> NEW CANVAS

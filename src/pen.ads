@@ -1028,6 +1028,8 @@ procedure fillEllipse( canvas_id : aCanvasID; r : ARect );
 
 procedure newScreenCanvas( H_Res, V_Res, C_Res : positive; canvas_id : out aCanvasID );
 
+procedure newGLScreenCanvas( H_Res, V_Res, C_Res : positive; canvas_id : out aCanvasID );
+
 
 ---> NEW WINDOW CANVAS
 --
@@ -1036,6 +1038,7 @@ procedure newScreenCanvas( H_Res, V_Res, C_Res : positive; canvas_id : out aCanv
 -----------------------------------------------------------------------------
 
 procedure newWindowCanvas( H_Res, V_Res, C_Res : positive; canvas_id : out aCanvasID );
+procedure newGLWindowCanvas( H_Res, V_Res, C_Res : positive; canvas_id : out aCanvasID );
 
 
 ---> NEW CANVAS

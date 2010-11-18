@@ -1343,6 +1343,7 @@ begin
      Put_Line( "  p := greyscale( r,g,b) blend(r1,g1,b1,r2,g2,b2,r,g,b) fade(r1,g1,b1,p,r,g,b)");
      New_Line;
      Put_Line( "  new_canvas(h,v,c,id) new_screen_canvas(h,v,c,id) new_window_canvas(h,v,c,id)");
+     Put_Line( "  new_gl_screen_canvas(h,v,c,id)                            ");
      Put_Line( "  close_canvas( id )        wait_to_reveal( id )     reveal( id )             ");
      Put_Line( "  reveal_now( id )                                                            ");
   elsif helpTopic = "step" then

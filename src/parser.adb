@@ -6519,6 +6519,8 @@ begin
      ParsePenNewScreenCanvas;
   elsif token = pen_new_window_canvas_t then       -- Pen.New_Window_Canvas
      ParsePenNewWindowCanvas;
+  elsif token = pen_new_gl_window_canvas_t then    -- Pen.New_GL_Window_Canvas
+     ParsePenNewGLWindowCanvas;
   elsif token = pen_new_canvas_t then              -- Pen.New_Canvas
      ParsePenNewCanvas;
   elsif token = pen_wait_to_reveal_t then          -- Pen.Wait_To_Reveal

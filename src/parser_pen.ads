@@ -88,7 +88,9 @@ pen_fill_ellipse_t   : identifier;
 pen_clear_t          : identifier;
 
 pen_new_screen_canvas_t : identifier;
+pen_new_gl_screen_canvas_t : identifier;
 pen_new_window_canvas_t : identifier;
+pen_new_gl_window_canvas_t : identifier;
 pen_new_canvas_t     : identifier;
 pen_set_title_t      : identifier;
 pen_close_canvas_t   : identifier;
@@ -605,7 +607,9 @@ procedure ParsePenFillEllipse;
 procedure ParsePenClear;
 
 procedure ParsePenNewScreenCanvas;
+procedure ParsePenNewGLScreenCanvas;
 procedure ParsePenNewWindowCanvas;
+procedure ParsePenNewGLWindowCanvas;
 procedure ParsePenNewCanvas;
 procedure ParsePenSetTitle;
 procedure ParsePenCloseCanvas;

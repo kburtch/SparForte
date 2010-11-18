@@ -1001,6 +1001,124 @@ parameter is a string, load the image file from path s into a canvas big enough 
 &nbsp;<br>
 
 <p>
+<hr><b>pen.new_gl_screen_canvas( h, v, c, id )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Create a new OpenGL drawing area canvas that covers the entire display
+screen.
+<br>Example: pen.new_screen_canvas( 100, 100, 16, canvas_id );
+<br>Ada Equivalent: N/A - Pen.newGLScreenCanvas (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>h</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the minimum horizontal size in pixels</td>
+</tr><tr>
+<td>v</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the minimum vertical size in pixels</td>
+</tr><tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the minimum pixel bits (8, 16, 24 or 32)</td>
+</tr><tr>
+<td>id</td>
+
+<td>out</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the identification number for the new canvas</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.new_gl_window_canvas( h, v, c, id )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Create a new OpenGL drawing area canvas in a separate
+operating system window.
+<br>Example: pen.new_gl_window_canvas( 100, 100, 16, canvas_id );
+<br>Ada Equivalent: N/A - Pen.newGLWindowCanvas (BUSH package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>h</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the minimum horizontal size in pixels</td>
+</tr><tr>
+<td>v</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the minimum vertical size in pixels</td>
+</tr><tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>positive</td>
+
+<td>required</td>
+
+<td>the minimum pixel bits (8, 16, 24 or 32)</td>
+</tr><tr>
+<td>id</td>
+
+<td>out</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the identification number for the new canvas</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
 <hr><b>pen.new_screen_canvas( h, v, c, id )</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
