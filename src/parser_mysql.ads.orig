@@ -4,7 +4,7 @@
 -- Part of BUSH                                                             --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2005 Ken O. Burtch & FSF                 --
+--              Copyright (C) 2001-2010 Ken O. Burtch & FSF                 --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -114,6 +114,8 @@ procedure ShutdownMySQL;
 -- PARSE THE DATABASE PACKAGE
 ------------------------------------------------------------------------------
 
+#if MYSQL
+
 procedure ParseMySQLConnect;
 procedure ParseMySQLPrepare;
 procedure ParseMySQLAppend;
@@ -166,5 +168,7 @@ procedure DoMySQLSQLStatement( sqlcmd : unbounded_string );
 --procedure ParseDBIPrepare( result : out unbounded_string );
 --procedure ParseDBDo( result : out unbounded_string );
 --procedure ParseDBFetchrow( result : out unbounded_string );
+
+#end if;
 
 end parser_mysql;

@@ -1268,106 +1268,230 @@ begin
      --   ParseDBIPrepare( f );
      --   kind := boolean_t;
      elsif token = db_engine_of_t then                 -- DB.Engine_Of
+#if POSTGRES
         ParseDBEngineOf( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := db_database_type_t;
      elsif token = db_is_connected_t then              -- DB.Is_Connected
+#if POSTGRES
         ParseDBIsConnected( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := boolean_t;
      elsif token = db_error_message_t then             -- DB.Error_Message
+#if POSTGRES
         ParseDBErrorMessage( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := string_t;
      elsif token = db_notice_message_t then            -- DB.Notice_Message
+#if POSTGRES
         ParseDBNoticeMessage( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := string_t;
      elsif token = db_in_abort_state_t then            -- DB.In_Abort_State
+#if POSTGRES
         ParseDBInAbortState( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := boolean_t;
      elsif token = db_options_t then                   -- DB.Options
+#if POSTGRES
         ParseDBOptions( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := string_t;
      elsif token = db_will_rollback_on_finalize_t then -- DB.Will_Rollback_On_Finalize
+#if POSTGRES
         ParseDBWillRollbackOnFinalize( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := boolean_t;
      elsif token = db_is_trace_t then                  -- DB.Is_Trace
+#if POSTGRES
         ParseDBIsTrace( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := boolean_t;
      elsif token = db_end_of_query_t then              -- DB.End_Of_Query
+#if POSTGRES
         ParseDBEndOfQuery( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := boolean_t;
      elsif token = db_tuple_t then                     -- DB.Tuple
+#if POSTGRES
         ParseDBTuple( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := db_tuple_index_type_t;
      elsif token = db_tuples_t then                    -- DB.Tuples
+#if POSTGRES
         ParseDBTuples( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := natural_t;
      elsif token = db_columns_t then                   -- DB.Columns
+#if POSTGRES
         ParseDBColumns( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := natural_t;
      elsif token = db_column_name_t then               -- DB.Column_Name
+#if POSTGRES
         ParseDBColumnName( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := string_t;
      elsif token = db_column_index_t then              -- DB.Column_Index
+#if POSTGRES
         ParseDBColumnIndex( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := db_column_index_type_t;
      --elsif token = db_column_type_t then             -- DB.Column_Type
      --   ParseDBColumnType( f );
      --   kind := db_column_index_type_t;
      elsif token = db_is_null_t then                   -- DB.Is_Null
+#if POSTGRES
         ParseDBIsNull( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := boolean_t;
      elsif token = db_value_t then                     -- DB.Value
+#if POSTGRES
         ParseDBValue( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := universal_t;
      elsif token = mysql_engine_of_t then              -- MYSQL.Engine_Of
+#if MYSQL
         ParseMySQLEngineOf( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := db_database_type_t;
      elsif token = mysql_is_connected_t then           -- MYSQL.Is_Connected
+#if MYSQL
         ParseMySQLIsConnected( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := boolean_t;
      elsif token = mysql_error_message_t then          -- MYSQL.Error_Message
+#if MYSQL
         ParseMySQLErrorMessage( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := string_t;
      -- elsif token = mysql_notice_message_t then         -- MYSQL.Notice_Message
      --    ParseMySQLNoticeMessage( f );
      --    kind := string_t;
      elsif token = mysql_in_abort_state_t then         -- MYSQL.In_Abort_State
+#if MYSQL
         ParseMySQLInAbortState( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := boolean_t;
      elsif token = mysql_options_t then                -- MYSQL.Options
+#if MYSQL
         ParseMySQLOptions( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := string_t;
      elsif token = mysql_will_rollback_on_finalize_t then -- MYSQL.Will_Rollback_On_Finalize
+#if MYSQL
         ParseMySQLWillRollbackOnFinalize( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := boolean_t;
      elsif token = mysql_is_trace_t then               -- MYSQL.Is_Trace
+#if MYSQL
         ParseMySQLIsTrace( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := boolean_t;
      elsif token = mysql_end_of_query_t then           -- MYSQL.End_Of_Query
+#if MYSQL
         ParseMySQLEndOfQuery( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := boolean_t;
      elsif token = mysql_tuple_t then                  -- MYSQL.Tuple
+#if MYSQL
         ParseMySQLTuple( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := mysql_tuple_index_type_t;
      elsif token = mysql_tuples_t then                 -- MYSQL.Tuples
+#if MYSQL
         ParseMySQLTuples( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := natural_t;
      elsif token = mysql_columns_t then                -- MYSQL.Columns
+#if MYSQL
         ParseMySQLColumns( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := natural_t;
      elsif token = mysql_column_name_t then            -- MYSQL.Column_Name
+#if MYSQL
         ParseMySQLColumnName( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := string_t;
      elsif token = mysql_column_index_t then           -- MYSQL.Column_Index
+#if MYSQL
         ParseMySQLColumnIndex( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := mysql_column_index_type_t;
      --elsif token = db_column_type_t then             -- MYSQL.Column_Type
      --   ParseDBColumnType( f );
      --   kind := db_column_index_type_t;
      elsif token = mysql_is_null_t then                -- MYSQL.Is_Null
+#if MYSQL
         ParseMySQLIsNull( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := boolean_t;
      elsif token = mysql_value_t then                  -- MYSQL.Value
+#if MYSQL
         ParseMySQLValue( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := universal_t;
      elsif token = os_status_t then                    -- OS.status
         ParseOSSTatus( f );
@@ -6344,109 +6468,317 @@ begin
   elsif Token = split_t then
      ParseStringsSplit;
   elsif token = db_connect_t then                   -- DB.Connect
+#if POSTGRES
      ParseDBConnect;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_disconnect_t then                -- DB.Disconnect
+#if POSTGRES
      ParseDBDisconnect;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_reset_t then                     -- DB.Reset
+#if POSTGRES
      ParseDBReset;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_set_rollback_on_finalize_t then  -- DB.SetRollbackOnFinalize
+#if POSTGRES
      ParseDBSetRollbackOnFinalize;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_open_db_trace_t then             -- DB.OpenDBTrace
+#if POSTGRES
      ParseDBOpenDBTrace;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_close_db_trace_t then            -- DB.CloseDBTrace
+#if POSTGRES
      ParseDBCloseDBTrace;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_set_trace_t then                 -- DB.SetTrace
+#if POSTGRES
      ParseDBSetTrace;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_clear_t then                     -- DB.Clear
+#if POSTGRES
      ParseDBClear;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_prepare_t then                   -- DB.Prepare
+#if POSTGRES
      ParseDBPrepare;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_append_t then                    -- DB.Append
+#if POSTGRES
      ParseDBAppend;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_append_line_t then               -- DB.Append_Line
+#if POSTGRES
      ParseDBAppendLine;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_append_quoted_t then             -- DB.Append_Quoted
+#if POSTGRES
      ParseDBAppendQuoted;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_execute_t then                   -- DB.Execute
+#if POSTGRES
      ParseDBExecute;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_execute_checked_t then           -- DB.Execute_Checked
+#if POSTGRES
      ParseDBExecuteChecked;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_raise_exceptions_t then          -- DB.Raise_Exceptions
+#if POSTGRES
      ParseDBRaiseExceptions;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_report_errors_t then             -- DB.Report_Errors
+#if POSTGRES
      ParseDBReportErrors;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_begin_work_t then                -- DB.Begin_Work
+#if POSTGRES
      ParseDBBeginWork;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_rollback_work_t then             -- DB.Rollback_Work
+#if POSTGRES
      ParseDBRollbackWork;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_commit_work_t then               -- DB.Commit_Work
+#if POSTGRES
      ParseDBCommitWork;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_rewind_t then                    -- DB.Rewind
+#if POSTGRES
      ParseDBRewind;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_fetch_t then                     -- DB.Fetch
+#if POSTGRES
      ParseDBFetch;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_show_t then                      -- DB.Show
+#if POSTGRES
      ParseDBShow;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_list_t then                      -- DB.List
+#if POSTGRES
      ParseDBList;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_schema_t then                    -- DB.Schema
+#if POSTGRES
      ParseDBSchema;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_users_t then                     -- DB.Users
+#if POSTGRES
      ParseDBUsers;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_databases_t then                 -- DB.Databases
+#if POSTGRES
      ParseDBDatabases;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = mysql_connect_t then                -- MYSQL.Connect
+#if MYSQL
      ParseMySQLConnect;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_disconnect_t then             -- MYSQL.Disconnect
+#if MYSQL
      ParseMySQLDisconnect;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_reset_t then                  -- MYSQL.Reset
+#if MYSQL
      ParseMySQLReset;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_set_rollback_on_finalize_t then  -- MYSQL.SetRollbackOnFinalize
+#if MYSQL
      ParseMySQLSetRollbackOnFinalize;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_open_db_trace_t then          -- MYSQL.OpenDBTrace
+#if MYSQL
      ParseMySQLOpenDBTrace;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_close_db_trace_t then         -- MYSQL.CloseDBTrace
+#if MYSQL
      ParseMySQLCloseDBTrace;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_set_trace_t then              -- MYSQL.SetTrace
+#if MYSQL
      ParseMySQLSetTrace;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_clear_t then                  -- MYSQL.Clear
+#if MYSQL
      ParseMySQLClear;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_prepare_t then                -- MYSQL.Prepare
+#if MYSQL
      ParseMySQLPrepare;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_append_t then                 -- MYSQL.Append
+#if MYSQL
      ParseMySQLAppend;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_append_line_t then            -- MYSQL.Append_Line
+#if MYSQL
      ParseMySQLAppendLine;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_append_quoted_t then          -- MYSQL.Append_Quoted
+#if MYSQL
      ParseMySQLAppendQuoted;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_execute_t then                -- MYSQL.Execute
+#if MYSQL
      ParseMySQLExecute;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_execute_checked_t then        -- MYSQL.Execute_Checked
+#if MYSQL
      ParseMySQLExecuteChecked;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_raise_exceptions_t then       -- MYSQL.Raise_Exceptions
+#if MYSQL
      ParseMySQLRaiseExceptions;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_report_errors_t then          -- MYSQL.Report_Errors
+#if MYSQL
      ParseMySQLReportErrors;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_begin_work_t then             -- MYSQL.Begin_Work
+#if MYSQL
      ParseMySQLBeginWork;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_rollback_work_t then          -- MYSQL.Rollback_Work
+#if MYSQL
      ParseMySQLRollbackWork;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_commit_work_t then            -- MYSQL.Commit_Work
+#if MYSQL
      ParseMySQLCommitWork;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_rewind_t then                 -- MYSQL.Rewind
+#if MYSQL
      ParseMySQLRewind;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_fetch_t then                  -- MYSQL.Fetch
+#if MYSQL
      ParseMySQLFetch;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_show_t then                   -- MYSQL.Show
+#if MYSQL
      ParseMySQLShow;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_list_t then                   -- MYSQL.List
+#if MYSQL
      ParseMySQLList;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_schema_t then                 -- MYSQL.Schema
+#if MYSQL
      ParseMySQLSchema;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_users_t then                  -- MYSQL.Users
+#if MYSQL
      ParseMySQLUsers;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_databases_t then               -- MYSQL.Databases
+#if MYSQL
      ParseMySQLDatabases;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = numerics_set_re_t then              -- Set_Re (complex)
      ParseNumericsSetRe;
   elsif token = numerics_set_im_t then              -- Set_Im (complex)
