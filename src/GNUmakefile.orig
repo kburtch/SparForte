@@ -132,7 +132,7 @@ distclean:
 	$(MAKE) -C ADAVOX-0.51 clobber
 	$(MAKE) -C apq-2.1 clobber
 	rm -f *.o *.ali t.t t.bush core bush.zip bush testsuite/write_only.txt testsuite/exec_only.txt
-	rm -f bush_os.ads bush_os.adb bush_os-sdl.ads
+	rm -f bush_os.ads bush_os.adb bush_os-sdl.ads parser.ads parser_db.ads parser_db.adb parser_mysql.ads parser_mysql.adb world.ads builtins.ads
 
 test:	all
 	@echo "---------------------------------------------------------------"

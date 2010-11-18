@@ -699,16 +699,29 @@ echo "Returning to BUSH..."
 
 echo "Updating source files..."
 
+NEEDS_APQ=
 if [ ! -z "$HAS_POSTGRES" ] ; then
    GNATPREP_OPTS="-DPOSTGRES=true"
+   NEEDS_APQ=1
 else
    GNATPREP_OPTS="-DPOSTGRES=false"
 fi
 if [ ! -z "$HAS_MYSQL" ] ; then
    GNATPREP_OPTS="$GNATPREP_OPTS -DMYSQL=true"
+   NEEDS_APQ=1
 else
    GNATPREP_OPTS="$GNATPREP_OPTS -DMYSQL=false"
 fi
+# this is for world.ads. APQ=true if either DB is installed
+if [ ! -z "$NEEDS_APQ" ] ; then
+   GNATPREP_OPTS="$GNATPREP_OPTS -DAPQ=true"
+fi
+
+echo "Updating...world.ads"
+test -f world.ads && chmod 666 world.ads
+cp world.ads.orig temp.ads
+gnatprep $GNATPREP_OPTS temp.ads world.ads
+chmod 444 world.ads
 
 echo "Updating...parser.adb"
 test -f parser.adb && chmod 666 parser.adb
