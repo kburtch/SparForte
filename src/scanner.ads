@@ -7,7 +7,7 @@
 -- Part of BUSH                                                             --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2005 Ken O. Burtch & FSF                 --
+--              Copyright (C) 2001-2010 Ken O. Burtch & FSF                 --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -227,12 +227,17 @@ procedure pullBlock;
 procedure topOfBlock;
 -- return to the top of the current block, read that line
 
+procedure GetFullParentUnitName( fullUnitName : out unbounded_string );
+-- return the full (dotted) name of the parent subprogram (e.g. proc )
+
 function isLocal( id : identifier ) return boolean;
 -- true if identifier is local to the current scope
 
 function getBlockName( b : block ) return unbounded_string;
 -- return the name of the given block
 
+procedure dumpSymbolTable;
+-- Debugging routine to display the top of the symbol table.
 
 ------------------------------------------------------------------------------
 -- Type Checking / Verification
@@ -344,7 +349,7 @@ function getLineNo return natural;
 
 function getCommandLine return unbounded_string;
 procedure getCommandLine ( cmdline : out unbounded_string;
-  token_firstpos, token_lastpos, line_number : out natural );
+  token_firstpos, token_lastpos, line_number, file_number : out natural );
 -- de-tokenize and return the original command string
 
 procedure compileTemplate( command : unbounded_string; lineno : natural );
@@ -371,6 +376,9 @@ procedure replaceScript( bytecode : unbounded_string );
 procedure replaceScriptWithFragment( bytecode : unbounded_string );
 -- like compileCommand, but command is already compiled (but is a fragment
 -- out of another script)
+
+procedure insertInclude( includeName : unbounded_string );
+-- insert an include file or separate subunit into the byte code after the current position.
 
 ------------------------------------------------------------------------------
 PRIVATE
