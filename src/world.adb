@@ -485,10 +485,15 @@ begin
   return left.word > right.word;
 end ">";
 
-function ">"( left, right : aSourceFile ) return boolean is
+function ">="( left, right : aSourceFile ) return boolean is
 begin
-  return left.name > right.name;
-end ">";
+  return left.name >= right.name;
+end ">=";
+
+function equal( left, right : aSourceFile ) return boolean is
+begin
+  return left.pos = right.pos;
+end equal;
 
 procedure findField( recordVar : identifier; fieldNumber: natural;
   fieldVar : out identifier ) is

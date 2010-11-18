@@ -4,7 +4,7 @@
 -- Part of BUSH                                                             --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2005 Ken O. Burtch & FSF                 --
+--              Copyright (C) 2001-2010 Ken O. Burtch & FSF                 --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -909,6 +909,7 @@ begin
         ParseStringsToEscaped( f, kind );
      elsif token = mktemp_t then                          -- mktemp function
         ParseStringsMkTemp( f );
+        kind := string_t;
      elsif token = unbounded_slice_t then                 -- unbounded_slice function
         ParseStringsUnboundedSlice( f );
         kind := unbounded_string_t;
@@ -1268,106 +1269,230 @@ begin
      --   ParseDBIPrepare( f );
      --   kind := boolean_t;
      elsif token = db_engine_of_t then                 -- DB.Engine_Of
+#if POSTGRES
         ParseDBEngineOf( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := db_database_type_t;
      elsif token = db_is_connected_t then              -- DB.Is_Connected
+#if POSTGRES
         ParseDBIsConnected( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := boolean_t;
      elsif token = db_error_message_t then             -- DB.Error_Message
+#if POSTGRES
         ParseDBErrorMessage( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := string_t;
      elsif token = db_notice_message_t then            -- DB.Notice_Message
+#if POSTGRES
         ParseDBNoticeMessage( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := string_t;
      elsif token = db_in_abort_state_t then            -- DB.In_Abort_State
+#if POSTGRES
         ParseDBInAbortState( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := boolean_t;
      elsif token = db_options_t then                   -- DB.Options
+#if POSTGRES
         ParseDBOptions( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := string_t;
      elsif token = db_will_rollback_on_finalize_t then -- DB.Will_Rollback_On_Finalize
+#if POSTGRES
         ParseDBWillRollbackOnFinalize( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := boolean_t;
      elsif token = db_is_trace_t then                  -- DB.Is_Trace
+#if POSTGRES
         ParseDBIsTrace( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := boolean_t;
      elsif token = db_end_of_query_t then              -- DB.End_Of_Query
+#if POSTGRES
         ParseDBEndOfQuery( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := boolean_t;
      elsif token = db_tuple_t then                     -- DB.Tuple
+#if POSTGRES
         ParseDBTuple( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := db_tuple_index_type_t;
      elsif token = db_tuples_t then                    -- DB.Tuples
+#if POSTGRES
         ParseDBTuples( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := natural_t;
      elsif token = db_columns_t then                   -- DB.Columns
+#if POSTGRES
         ParseDBColumns( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := natural_t;
      elsif token = db_column_name_t then               -- DB.Column_Name
+#if POSTGRES
         ParseDBColumnName( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := string_t;
      elsif token = db_column_index_t then              -- DB.Column_Index
+#if POSTGRES
         ParseDBColumnIndex( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := db_column_index_type_t;
      --elsif token = db_column_type_t then             -- DB.Column_Type
      --   ParseDBColumnType( f );
      --   kind := db_column_index_type_t;
      elsif token = db_is_null_t then                   -- DB.Is_Null
+#if POSTGRES
         ParseDBIsNull( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := boolean_t;
      elsif token = db_value_t then                     -- DB.Value
+#if POSTGRES
         ParseDBValue( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
         kind := universal_t;
      elsif token = mysql_engine_of_t then              -- MYSQL.Engine_Of
+#if MYSQL
         ParseMySQLEngineOf( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := db_database_type_t;
      elsif token = mysql_is_connected_t then           -- MYSQL.Is_Connected
+#if MYSQL
         ParseMySQLIsConnected( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := boolean_t;
      elsif token = mysql_error_message_t then          -- MYSQL.Error_Message
+#if MYSQL
         ParseMySQLErrorMessage( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := string_t;
      -- elsif token = mysql_notice_message_t then         -- MYSQL.Notice_Message
      --    ParseMySQLNoticeMessage( f );
      --    kind := string_t;
      elsif token = mysql_in_abort_state_t then         -- MYSQL.In_Abort_State
+#if MYSQL
         ParseMySQLInAbortState( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := boolean_t;
      elsif token = mysql_options_t then                -- MYSQL.Options
+#if MYSQL
         ParseMySQLOptions( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := string_t;
      elsif token = mysql_will_rollback_on_finalize_t then -- MYSQL.Will_Rollback_On_Finalize
+#if MYSQL
         ParseMySQLWillRollbackOnFinalize( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := boolean_t;
      elsif token = mysql_is_trace_t then               -- MYSQL.Is_Trace
+#if MYSQL
         ParseMySQLIsTrace( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := boolean_t;
      elsif token = mysql_end_of_query_t then           -- MYSQL.End_Of_Query
+#if MYSQL
         ParseMySQLEndOfQuery( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := boolean_t;
      elsif token = mysql_tuple_t then                  -- MYSQL.Tuple
+#if MYSQL
         ParseMySQLTuple( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := mysql_tuple_index_type_t;
      elsif token = mysql_tuples_t then                 -- MYSQL.Tuples
+#if MYSQL
         ParseMySQLTuples( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := natural_t;
      elsif token = mysql_columns_t then                -- MYSQL.Columns
+#if MYSQL
         ParseMySQLColumns( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := natural_t;
      elsif token = mysql_column_name_t then            -- MYSQL.Column_Name
+#if MYSQL
         ParseMySQLColumnName( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := string_t;
      elsif token = mysql_column_index_t then           -- MYSQL.Column_Index
+#if MYSQL
         ParseMySQLColumnIndex( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := mysql_column_index_type_t;
      --elsif token = db_column_type_t then             -- MYSQL.Column_Type
      --   ParseDBColumnType( f );
      --   kind := db_column_index_type_t;
      elsif token = mysql_is_null_t then                -- MYSQL.Is_Null
+#if MYSQL
         ParseMySQLIsNull( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := boolean_t;
      elsif token = mysql_value_t then                  -- MYSQL.Value
+#if MYSQL
         ParseMySQLValue( f );
+#else
+        err( "mysql not configured" );
+#end if;
         kind := universal_t;
      elsif token = os_status_t then                    -- OS.status
         ParseOSSTatus( f );
@@ -3119,8 +3244,14 @@ begin
      when debug =>
         if debugOpt then
            if not syntax_check then
-              CompileRunAndCaptureOutput( expr_val, results );
-              put( results );
+              declare
+                 savershOpt : commandLineOption := rshOpt;
+              begin
+                 rshOpt := true;            -- force restricted shell mode
+                 CompileRunAndCaptureOutput( expr_val, results );
+                 rshOpt := savershOpt;
+                 put( results );
+              end;
            end if;
         end if;
      when debug_on =>
@@ -3178,7 +3309,7 @@ begin
                Put_Identifier( i );
             end if;
         end loop;
-        -- put_line( getStackTrace ); exists in Bush 2.0
+        -- put_line( getStackTrace );
      when noCommandHash =>
         clearCommandHash;
         no_command_hash := true;
@@ -4858,6 +4989,67 @@ begin
   end if;
 end DeclareActualParameters;
 
+
+procedure ParseSeparateProcHeader( proc_id : identifier; procStart : out natural ) is
+  -- Syntax: separate( parent ); procedure p [(param1...)] is
+  -- Note: forward declaration handling not yet written so minimal parameter
+  -- checking in the header.
+  separate_proc_id : identifier;
+  parent_id        : identifier;
+  b : boolean;
+  pu : unbounded_string;
+  i : integer;
+  ch : character;
+begin
+   getFullParentUnitName( pu );
+   -- separate
+   expectSemicolon;
+   expect( separate_t );
+   expect( symbol_t, "(");
+   ParseIdentifier( parent_id );
+   -- NOTE: the identifier token returned has the prefix stripped!  This needs
+   -- to be fixed so I cannot check to see if it was full path before stripping.
+   i := length( pu );
+   while i > 0 loop
+     ch := element( pu, i );
+     if ch = '.' then
+        delete( pu, 1, i );
+        exit;
+     end if;
+     i := i - 1;
+   end loop;
+   if identifiers( parent_id ).class /= userProcClass and identifiers( parent_id ).class /= userFuncClass and identifiers( parent_id ).class /= mainProgramClass then
+         err( "parent unit should be a subprogram" );
+   elsif identifiers( parent_id ).name /= pu then
+         err( "expected parent unit " & optional_bold( to_string( pu ) ) );
+   end if;
+   expect( symbol_t, ")");
+   expectSemicolon;
+   -- separate's procedure header
+   procStart := firstPos;
+   expect( procedure_t );
+   -- could do ParseIdentifier since it should exist but want a more meaningful
+   -- message error for a mismatch
+   ParseProcedureIdentifier( separate_proc_id );
+   if identifiers( separate_proc_id ).value = identifiers( proc_id ).value then
+      -- names match?  OK, discard.  proc is stored under original ident
+      b := deleteIdent( separate_proc_id );
+   else
+      err( optional_bold( to_string( identifiers( separate_proc_id ).name ) ) & " is different from parent file's " & optional_bold( to_string( identifiers( proc_id  ).name ) ) );
+   end if;
+   -- check for forward declarations not yet written so minimal checking here
+   -- flush this out if i have time to walk the identifiers list if available
+   if token = symbol_t and identifiers( token ).value = "(" then
+      expect( symbol_t, "(" );
+      while token /= symbol_t and identifiers( token ).value /= ")" and token /= eof_t loop
+         getNextToken;
+      end loop;
+      expect( symbol_t, ")" );
+   end if;
+   expect( is_t );
+end ParseSeparateProcHeader;
+
+
 procedure ParseProcedureBlock is
   -- Syntax: procedure p [(param1...)] OR procedure p [(param1...)] is block
   -- end p;
@@ -4896,6 +5088,18 @@ begin
        newName => to_string (identifiers( proc_id ).name ) );
      DeclareActualParameters( proc_id );
      expect( is_t );
+     if token = separate_t then
+        if rshOpt then
+           err( "subunits are not allowed in a " & optional_bold( "restricted shell" ) );
+        end if;
+        expect( separate_t );
+        -- "is separate" is effectively an include
+        -- only insert include on a syntax check
+        if syntax_check then
+           insertInclude( identifiers( proc_id ).name & ".bush" );
+        end if;
+        ParseSeparateProcHeader( proc_id, procStart );
+     end if;
      ParseDeclarations;
      expect( begin_t );
      skipBlock;                                       -- never execute now
@@ -4979,6 +5183,70 @@ begin
   expect( symbol_t, ")" );
 end ParseActualParameters;
 
+procedure ParseSeparateFuncHeader( func_id : identifier; funcStart : out natural ) is
+  -- Syntax: separate( parent ); function p [(param1...)] return type is
+  -- Note: forward declaration handling not yet written so minimal parameter
+  -- checking in the header.
+  separate_func_id : identifier;
+  type_token       : identifier;
+  parent_id        : identifier;
+  b : boolean;
+  pu : unbounded_string;
+  i : integer;
+  ch : character;
+begin
+   -- separate
+   expectSemicolon;
+   expect( separate_t );
+   expect( symbol_t, "(");
+   ParseIdentifier( parent_id );
+   -- NOTE: the identifier token returned has the prefix stripped!  This needs
+   -- to be fixed so I cannot check to see if it was full path before stripping.
+   i := length( pu );
+   while i > 0 loop
+     ch := element( pu, i );
+     if ch = '.' then
+        delete( pu, 1, i );
+        exit;
+     end if;
+     i := i - 1;
+   end loop;
+   if identifiers( parent_id ).class /= userProcClass and identifiers( parent_id ).class /= userFuncClass and identifiers( parent_id ).class /= mainProgramClass then
+         err( "parent should be a subprogram" );
+   elsif identifiers( parent_id ).name /= pu then
+         err( "expected parent unit " & optional_bold( to_string( pu ) ) );
+   end if;
+   expect( symbol_t, ")");
+   expectSemicolon;
+   -- separate's procedure header
+   funcStart := firstPos;
+   expect( function_t );
+   -- could do ParseIdentifier since it should exist but want a more meaningful
+   -- message error for a mismatch
+   ParseProcedureIdentifier( separate_func_id );
+   if identifiers( separate_func_id ).value = identifiers( func_id ).value then
+      -- names match?  OK, discard.  proc is stored under original ident
+      b := deleteIdent( separate_func_id );
+   else
+      err( optional_bold( to_string( identifiers( separate_func_id ).name ) ) & " is different from parent file's " & optional_bold( to_string( identifiers( func_id  ).name ) ) );
+   end if;
+   -- check for forward declarations not yet written so minimal checking here
+   -- flush this out if i have time to walk the identifiers list if available
+   if token = symbol_t and identifiers( token ).value = "(" then
+      expect( symbol_t, "(" );
+      while token /= symbol_t and identifiers( token ).value /= ")" and token /= eof_t loop
+         getNextToken;
+      end loop;
+      expect( symbol_t, ")" );
+   end if;
+   expect( return_t );
+   ParseIdentifier( type_token ); -- don't really care
+   if identifiers( func_id ).kind /= type_token then
+      err( optional_bold( to_string( identifiers( type_token ).name ) ) & " is different from parent file's " & optional_bold( to_string( identifiers( identifiers( func_id ).kind  ).name ) ) );
+   end if;
+   expect( is_t );
+end ParseSeparateFuncHeader;
+
 procedure ParseFunctionBlock is
   -- Syntax: function f OR function p return t is block end p;
   -- Handle procedure declarations, including forward declarations.
@@ -5015,6 +5283,18 @@ begin
        newName => to_string (identifiers( func_id ).name ) );
      DeclareActualParameters( func_id );
      expect( is_t );
+     if token = separate_t then
+        if rshOpt then
+           err( "subunits are not allowed in a " & optional_bold( "restricted shell" ) );
+        end if;
+         expect( separate_t );
+        -- "is separate" is effectively an include
+        -- only insert include on a syntax check
+        if syntax_check then
+           insertInclude( identifiers( func_id ).name & ".bush" );
+        end if;
+        ParseSeparateFuncHeader( func_id, funcStart );
+     end if;
      ParseDeclarations;
      expect( begin_t );
      SkipBlock;                                       -- never execute
@@ -6344,109 +6624,317 @@ begin
   elsif Token = split_t then
      ParseStringsSplit;
   elsif token = db_connect_t then                   -- DB.Connect
+#if POSTGRES
      ParseDBConnect;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_disconnect_t then                -- DB.Disconnect
+#if POSTGRES
      ParseDBDisconnect;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_reset_t then                     -- DB.Reset
+#if POSTGRES
      ParseDBReset;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_set_rollback_on_finalize_t then  -- DB.SetRollbackOnFinalize
+#if POSTGRES
      ParseDBSetRollbackOnFinalize;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_open_db_trace_t then             -- DB.OpenDBTrace
+#if POSTGRES
      ParseDBOpenDBTrace;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_close_db_trace_t then            -- DB.CloseDBTrace
+#if POSTGRES
      ParseDBCloseDBTrace;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_set_trace_t then                 -- DB.SetTrace
+#if POSTGRES
      ParseDBSetTrace;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_clear_t then                     -- DB.Clear
+#if POSTGRES
      ParseDBClear;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_prepare_t then                   -- DB.Prepare
+#if POSTGRES
      ParseDBPrepare;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_append_t then                    -- DB.Append
+#if POSTGRES
      ParseDBAppend;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_append_line_t then               -- DB.Append_Line
+#if POSTGRES
      ParseDBAppendLine;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_append_quoted_t then             -- DB.Append_Quoted
+#if POSTGRES
      ParseDBAppendQuoted;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_execute_t then                   -- DB.Execute
+#if POSTGRES
      ParseDBExecute;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_execute_checked_t then           -- DB.Execute_Checked
+#if POSTGRES
      ParseDBExecuteChecked;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_raise_exceptions_t then          -- DB.Raise_Exceptions
+#if POSTGRES
      ParseDBRaiseExceptions;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_report_errors_t then             -- DB.Report_Errors
+#if POSTGRES
      ParseDBReportErrors;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_begin_work_t then                -- DB.Begin_Work
+#if POSTGRES
      ParseDBBeginWork;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_rollback_work_t then             -- DB.Rollback_Work
+#if POSTGRES
      ParseDBRollbackWork;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_commit_work_t then               -- DB.Commit_Work
+#if POSTGRES
      ParseDBCommitWork;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_rewind_t then                    -- DB.Rewind
+#if POSTGRES
      ParseDBRewind;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_fetch_t then                     -- DB.Fetch
+#if POSTGRES
      ParseDBFetch;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_show_t then                      -- DB.Show
+#if POSTGRES
      ParseDBShow;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_list_t then                      -- DB.List
+#if POSTGRES
      ParseDBList;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_schema_t then                    -- DB.Schema
+#if POSTGRES
      ParseDBSchema;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_users_t then                     -- DB.Users
+#if POSTGRES
      ParseDBUsers;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = db_databases_t then                 -- DB.Databases
+#if POSTGRES
      ParseDBDatabases;
+#else
+     err( "postgresql support not configured" );
+#end if;
   elsif token = mysql_connect_t then                -- MYSQL.Connect
+#if MYSQL
      ParseMySQLConnect;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_disconnect_t then             -- MYSQL.Disconnect
+#if MYSQL
      ParseMySQLDisconnect;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_reset_t then                  -- MYSQL.Reset
+#if MYSQL
      ParseMySQLReset;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_set_rollback_on_finalize_t then  -- MYSQL.SetRollbackOnFinalize
+#if MYSQL
      ParseMySQLSetRollbackOnFinalize;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_open_db_trace_t then          -- MYSQL.OpenDBTrace
+#if MYSQL
      ParseMySQLOpenDBTrace;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_close_db_trace_t then         -- MYSQL.CloseDBTrace
+#if MYSQL
      ParseMySQLCloseDBTrace;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_set_trace_t then              -- MYSQL.SetTrace
+#if MYSQL
      ParseMySQLSetTrace;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_clear_t then                  -- MYSQL.Clear
+#if MYSQL
      ParseMySQLClear;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_prepare_t then                -- MYSQL.Prepare
+#if MYSQL
      ParseMySQLPrepare;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_append_t then                 -- MYSQL.Append
+#if MYSQL
      ParseMySQLAppend;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_append_line_t then            -- MYSQL.Append_Line
+#if MYSQL
      ParseMySQLAppendLine;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_append_quoted_t then          -- MYSQL.Append_Quoted
+#if MYSQL
      ParseMySQLAppendQuoted;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_execute_t then                -- MYSQL.Execute
+#if MYSQL
      ParseMySQLExecute;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_execute_checked_t then        -- MYSQL.Execute_Checked
+#if MYSQL
      ParseMySQLExecuteChecked;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_raise_exceptions_t then       -- MYSQL.Raise_Exceptions
+#if MYSQL
      ParseMySQLRaiseExceptions;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_report_errors_t then          -- MYSQL.Report_Errors
+#if MYSQL
      ParseMySQLReportErrors;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_begin_work_t then             -- MYSQL.Begin_Work
+#if MYSQL
      ParseMySQLBeginWork;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_rollback_work_t then          -- MYSQL.Rollback_Work
+#if MYSQL
      ParseMySQLRollbackWork;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_commit_work_t then            -- MYSQL.Commit_Work
+#if MYSQL
      ParseMySQLCommitWork;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_rewind_t then                 -- MYSQL.Rewind
+#if MYSQL
      ParseMySQLRewind;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_fetch_t then                  -- MYSQL.Fetch
+#if MYSQL
      ParseMySQLFetch;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_show_t then                   -- MYSQL.Show
+#if MYSQL
      ParseMySQLShow;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_list_t then                   -- MYSQL.List
+#if MYSQL
      ParseMySQLList;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_schema_t then                 -- MYSQL.Schema
+#if MYSQL
      ParseMySQLSchema;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_users_t then                  -- MYSQL.Users
+#if MYSQL
      ParseMySQLUsers;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = mysql_databases_t then               -- MYSQL.Databases
+#if MYSQL
      ParseMySQLDatabases;
+#else
+     err( "mysql support not configured" );
+#end if;
   elsif token = numerics_set_re_t then              -- Set_Re (complex)
      ParseNumericsSetRe;
   elsif token = numerics_set_im_t then              -- Set_Im (complex)
@@ -6884,7 +7372,7 @@ begin
           end if;
        end if;                                          -- w/space in case shell cmd
        sourceFilesList.Clear( SourceFiles );
-       sourceFilesList.Push( SourceFiles, aSourceFile'( name => to_unbounded_string( commandLineSource ) ) );
+       sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => to_unbounded_string( commandLineSource ) ) );
        compileCommand( command );
        if not error_found then
           cmdpos := firstScriptCommandOffset;           -- start at first char
@@ -6947,14 +7435,18 @@ begin
      end if;
      -- put( ASCII.ESC & "]2;" & "bush" & ASCII.BEL  ); -- xterm window title
      sourceFilesList.Clear( SourceFiles );
-     sourceFilesList.Queue( SourceFiles, aSourceFile'(name => to_unbounded_string (commandLineSource) ) );
+     sourceFilesList.Queue( SourceFiles, aSourceFile'(pos => 0, name => to_unbounded_string (commandLineSource) ) );
      scriptFilePath := to_unbounded_string( commandLineSource ); -- script name
      compileCommand( to_unbounded_string( ScriptPath ) ); -- path is really script
   else                                             -- else path is a path
     --put( ASCII.ESC & "]2;" & scriptPath & ASCII.BEL  ); -- xterm window title
     scriptFilePath := to_unbounded_string( scriptPath ); -- script name
-    sourceFilesList.Clear( SourceFiles );
-    sourceFilesList.Queue( SourceFiles, aSourceFile'(name => scriptFilePath) );
+    if syntax_check then
+       -- only register source files during the syntax check, when files
+       -- (including include files) are loaded
+       sourceFilesList.Clear( SourceFiles );
+       sourceFilesList.Queue( SourceFiles, aSourceFile'(pos => 0, name => scriptFilePath) );
+    end if;
     scriptFile := open( scriptPath & ASCII.NUL, 0, 660 ); -- open script
     if scriptFile < 1 then                           -- error?
        scriptFilePath := scriptFilePath & ".bush";   -- try name with ".bush"
@@ -7050,7 +7542,7 @@ begin
   end if;
   scriptFilePath := to_unbounded_string( commandLineSource ); -- "script" name
   sourceFilesList.Clear( SourceFiles );
-  sourceFilesList.Push( SourceFiles, aSourceFile'( name => basename( scriptFilePath ) ) );
+  sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( scriptFilePath ) ) );
   compileCommand( commandString );
   parse;
   if error_found then                              -- was there an error?
@@ -7101,6 +7593,109 @@ begin
 end SetStandardVariables;
 
 
+procedure doGlobalProfile is
+  save_rshOpt  : commandLineOption;              -- for executing profile
+  save_execOpt : commandLineOption;              -- for executing profile
+begin
+  save_rshOpt := rshOpt;                   -- if restricted shell
+  save_execOpt := execOpt;                 -- if cmd line script
+  rshOpt := false;                         -- turn off for profile
+  if scriptFile > 0 then                       -- good?
+     close( scriptFile );                      -- close test fd
+     interpretScript( "/etc/bush_profile" );   -- run login script
+  end if;
+  rshOpt := save_rshOpt;                          -- restore rsh setting
+  execOpt := save_execOpt;                        -- restore -e setting
+end doGlobalProfile;
+
+
+procedure doLocalProfile is
+  save_rshOpt  : commandLineOption;              -- for executing profile
+  save_execOpt : commandLineOption;              -- for executing profile
+  home_id      : identifier;                     -- HOME variable
+begin
+  save_rshOpt := rshOpt;                   -- if restricted shell
+  save_execOpt := execOpt;                 -- if cmd line script
+  rshOpt := false;                         -- turn off for profile
+  findIdent( to_unbounded_string( "HOME" ), home_id );
+  if home_id /= eof_t then                     -- HOME defined?
+     scriptFilePath := identifiers( home_id ).value;
+     if Element( scriptFilePath, length( scriptFilePath ) ) /= '/' then
+        scriptFilePath := scriptFilePath & "/";
+     end if;
+     scriptFilePath := scriptFilePath & ".bush_profile";
+     scriptFile := open( to_string( scriptFilePath ) & ASCII.NUL, 0, 660 ); -- open script
+     if scriptFile > 0 then                       -- profile opened OK?
+        close( scriptFile );                      -- close test fd
+        interpretScript( to_string( scriptFilePath ) ); -- do profile
+     end if;
+  end if;
+  rshOpt := save_rshOpt;                          -- restore rsh setting
+  execOpt := save_execOpt;                        -- restore -e setting
+end doLocalProfile;
+
+procedure checkAndInterpretScript( fullScriptPath : string ) is
+begin
+  if syntaxOpt then                                  -- -c / --check?
+     syntax_check := true;                           -- check syntax only
+     interpretScript( fullScriptPath );    -- check the script
+  -- no syntax check obsolete with BUSH 2.0 (syntax check stage is needed to
+  -- load "include" files)
+  --elsif nosyntaxOpt then                             -- -n / --nocheck?
+  --   if traceOpt then                                -- -x / --trace?
+  --      trace := true;                               -- turn on trace
+  --   end if;
+  --   interpretScript( Argument( OptionOffset ) );    -- run the script
+  else
+     syntax_check := true;                           -- check syntax only
+     interpretScript( fullScriptPath );    -- check the script
+     if not error_found then                         -- no errors?
+        resetScanner;                                -- discard declarations
+        SetStandardVariables;                        -- built-in elaboration
+        if traceOpt then                             -- -x?
+           trace := true;                            -- turn on trace
+        end if;
+        interpretScript( fullScriptPath ); -- run the script
+     end if;
+     if length( depreciatedMsg ) > 0 then            -- pragma depreciated?
+        put( standard_error, scriptFilePath );       -- show the message
+        put( standard_error, ":" );                  -- as a warning
+        put( standard_error, getLineNo'img );
+        put( standard_error, ":" );
+        put_line( standard_error, "warning--" & depreciatedMsg );
+     end if;
+     if processingTemplate then                      -- doing a template
+        if verboseOpt then
+           Put_Trace( "Processing template " & to_string( templatePath ) );
+        end if;
+        begin
+           processTemplate;
+        exception
+        when STATUS_ERROR =>
+           err( "cannot open template " & optional_bold( to_string( templatePath ) ) &
+               " - file may be locked" );
+        when NAME_ERROR =>
+           err( "template " & optional_bold( to_string( templatePath ) ) &
+               " doesn't exist or is not readable" );
+        when MODE_ERROR =>
+           err( "interal error: mode error on template " & optional_bold( to_string( templatePath ) ) );
+        when END_ERROR =>
+           err( "interal error: end of file reached on template " & optional_bold( to_string( templatePath ) ) );
+        -- when others =>
+       --  err( "unable to open template " & optional_bold( to_string( templatePath ) ) );
+        end;
+     end if;
+  end if;
+
+  -- Apply the return error status
+
+  if error_found and last_status = 0 then
+     last_status := 192;
+  end if;
+  Set_Exit_Status( Exit_Status( last_status ) );
+
+end checkAndInterpretScript;
+
 ------------------------------------------------------------------------------
 -- INTERPRET
 --
@@ -7112,37 +7707,11 @@ end SetStandardVariables;
 ------------------------------------------------------------------------------
 
 procedure interpret is
-  save_rshOpt  : commandLineOption;              -- for executing profile
-  save_execOpt : commandLineOption;              -- for executing profile
-  home_id      : identifier;                     -- HOME variable
 begin
   if optionOffset = 0 then                       -- no arguments or '-'?
      if isLoginShell then                        -- login shell? find profile
-        save_rshOpt := rshOpt;                   -- if restricted shell
-        save_execOpt := execOpt;                 -- if cmd line script
-        rshOpt := false;                         -- turn off for profile
-        -- we're using scriptFile and scriptFilePath as temp variables
-        -- here.  They'll be overwritten when the script is interpreted.
-        scriptFile := open( "/etc/bush_profile" & ASCII.NUL, 0, 660 ); -- open script
-        if scriptFile > 0 then                       -- good?
-           close( scriptFile );                      -- close test fd
-           interpretScript( "/etc/bush_profile" );   -- run login script
-        end if;
-        findIdent( to_unbounded_string( "HOME" ), home_id );
-        if home_id /= eof_t then                     -- HOME defined?
-           scriptFilePath := identifiers( home_id ).value;
-           if Element( scriptFilePath, length( scriptFilePath ) ) /= '/' then
-              scriptFilePath := scriptFilePath & "/";
-           end if;
-           scriptFilePath := scriptFilePath & ".bush_profile";
-           scriptFile := open( to_string( scriptFilePath ) & ASCII.NUL, 0, 660 ); -- open script
-           if scriptFile > 0 then                       -- profile opened OK?
-              close( scriptFile );                      -- close test fd
-              interpretScript( to_string( scriptFilePath ) ); -- do profile
-           end if;
-        end if;
-        rshOpt := save_rshOpt;                          -- restore rsh setting
-        execOpt := save_execOpt;                        -- restore -e setting
+        doGlobalProfile;
+        doLocalProfile;
      end if;
      inputMode := interactive;                          -- we're interactive
      if traceOpt then                                   -- -x / --trace?
@@ -7150,55 +7719,16 @@ begin
      end if;
      interactiveSession;                                -- start the session
   else
-     if syntaxOpt then                                  -- -c / --check?
-        syntax_check := true;                           -- check syntax only
-        interpretScript( Argument( OptionOffset ) );    -- check the script
-     elsif nosyntaxOpt then                             -- -n / --nocheck?
-        if traceOpt then                                -- -x / --trace?
-           trace := true;                               -- turn on trace
-        end if;
-        interpretScript( Argument( OptionOffset ) );    -- run the script
-     else
-        syntax_check := true;                           -- check syntax only
-        interpretScript( Argument( optionOffset ) );    -- check the script
-        if not error_found then                         -- no errors?
-           resetScanner;                                -- discard declarations
-           SetStandardVariables;                        -- built-in elaboration
-           if traceOpt then                             -- -x?
-              trace := true;                            -- turn on trace
-           end if;
-           interpretScript( Argument( optionOffset ) ); -- run the script
-        end if;
-        if length( depreciatedMsg ) > 0 then            -- pragma depreciated?
-           put( standard_error, scriptFilePath );       -- show the message
-           put( standard_error, ":" );                  -- as a warning
-           put( standard_error, getLineNo'img );
-           put( standard_error, ":" );
-           put_line( standard_error, "warning--" & depreciatedMsg );
-        end if;
-        if processingTemplate then                      -- doing a template
-           if verboseOpt then
-             Put_Trace( "Processing template " & to_string( templatePath ) );
-           end if;
-           begin
-             processTemplate;
-           exception
-           when STATUS_ERROR =>
-             err( "cannot open template " & optional_bold( to_string( templatePath ) ) &
-                " - file may be locked" );
-           when NAME_ERROR =>
-             err( "template " & optional_bold( to_string( templatePath ) ) &
-                " doesn't exist or is not readable" );
-           when MODE_ERROR =>
-             err( "interal error: mode error on template " & optional_bold( to_string( templatePath ) ) );
-           when END_ERROR =>
-             err( "interal error: end of file reached on template " & optional_bold( to_string( templatePath ) ) );
-           -- when others =>
-           --  err( "unable to open template " & optional_bold( to_string( templatePath ) ) );
-           end;
-        end if;
-     end if;
+     checkAndInterpretScript( Argument( OptionOffset ) );
   end if;
+
+  -- Apply the return error status
+
+  if error_found and last_status = 0 then
+     last_status := 192;
+  end if;
+  Set_Exit_Status( Exit_Status( last_status ) );
+
 end interpret;
 
 ------------------------------------------------------------------------------

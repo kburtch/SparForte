@@ -6,7 +6,7 @@
 -- Part of BUSH                                                             --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2005 Ken O. Burtch & FSF                 --
+--              Copyright (C) 2001-2010 Ken O. Burtch & FSF                 --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -28,10 +28,12 @@ with system,
   ada.numerics.float_random,
   ada.unchecked_deallocation,
   ada.strings.unbounded,
-  gen_list,
-  APQ;
-use ada.strings.unbounded, APQ;
-
+  gen_list;
+use ada.strings.unbounded;
+#if APQ
+  with APQ;
+  use APQ;
+#end if;
 
 package world is
 
@@ -100,12 +102,16 @@ last_status : aStatusCode := 0;           -- status of last shell command
 -- We're using a record for allow storing additional information in the future.
 
 type aSourceFile is record                -- source file info
+     pos  : natural;                               -- for identifying includes
      name : unbounded_string;             -- name of the source file
 end record;
+-- note: POS should be a byte code position
 
-function ">"( left, right : aSourceFile ) return boolean;
+function ">="( left, right : aSourceFile ) return boolean;
 
-package SourceFilesList is new gen_list( aSourceFile, ">", "=" );
+function equal( left, right : aSourceFile ) return boolean;
+
+package SourceFilesList is new gen_list( aSourceFile, equal,  ">=" );
 
 sourceFiles : SourceFilesList.List;
 -- the list of source files
@@ -127,7 +133,7 @@ err_message : unbounded_string;         -- last error message
 onlyAda95                        : boolean := false; -- pragma ada_95
 restriction_no_auto_declarations : boolean := false; -- pragma restriction
 restriction_no_external_commands : boolean := false; -- pragma restriction
-no_command_hash                  : boolean := false;
+no_command_hash                  : boolean := false; -- pragma restriction
 
 type templateTypes is (noTemplate, htmlTemplate, textTemplate);
 
@@ -163,10 +169,19 @@ traceOpt     : commandLineOption := false;           -- true if -x
 terminalWindowNaming : boolean := false;
 -- true if terminal emulation supports xterm window naming
 
-currentEngine : Database_Type := Engine_PostgreSQL;
+#if APQ
+currentEngine : Database_Type; --:= Engine_PostgreSQL;
+#else
+-- APQ disabled.  All we need are dummy values here
+type Database_Type is ( Engine_PostgreSQL, Engine_MySQL, Engine_None );
+currentEngine : Database_Type := Engine_None;
+#end if;
 engineOpen    : boolean := false;
 -- current database being used.  Unfortunately, APQ has no Engine_None so we
 -- need two variables.
+
+libraryPath : Unbounded_String;
+-- list of library directories (-L) from command line
 
 ------------------------------------------------------------------------------
 -- Identifiers (The Symbol Table)

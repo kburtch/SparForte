@@ -46,6 +46,7 @@ pragma Optimize( space );
 
 procedure bush is
   term_id : identifier;
+  libraryPathNext : boolean := false;
 begin
   startSignalFlags;
   
@@ -59,7 +60,7 @@ begin
   if Argument_Count = 1 then
      if Argument(1) = "-h" or Argument( 1 ) = "--help" then
         Put_Line( "BUSH (Business Shell) usage" );
-        Put_Line( "bush [-bcdeghilnrvVx] [--break][--check][--debug][--exec][--gcc-errors][--login][--no-check][--verbose][--version][--restricted][--trace][--] [script [param1 ...] ]" );
+        Put_Line( "bush [-bcdeghilnrvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--no-check][--verbose][--version][--restricted][--trace][--] [script [param1 ...] ]" );
         Put_Line( "  --break or -b      - enable breakout debugging prompt" );
         Put_Line( "  --check or -c      - syntax check the script but do not run" );
         Put_Line( "  --debug or -d      - enable pragma assert and pragma debug" );
@@ -67,6 +68,8 @@ begin
         Put_Line( "  --gcc-errors or -g - simple GCC-style errors (good for IDEs)" );
         Put_Line( "  --help or -h       - show this help" );
         Put_Line( "  --import-all or -i - import all environment variables" );
+        Put_Line( "   -Ld or -L d       - add directory d to the separate files search list" );
+        Put_Line( "                       (may be repeated)" );
         Put_Line( "  --login or -l      - simulate a login shell" );
         Put_Line( "  --no-check or -n   - run script without checking syntax" );
         Put_Line( "  --restricted or -r - restricted shell mode" );
@@ -84,11 +87,24 @@ begin
   end if;
   if Argument_Count > 0 then
      optionOffset := 1;
+     libraryPathNext := false;
      for i in 1..Argument_Count loop
+
+         if libraryPathNext then
+            if Argument(i)'length = 0 then
+               Put_Line( standard_error, Command_Name & ": missing argument for -L" );
+               Set_Exit_Status( 192 );
+               return;
+            end if;
+            if length( libraryPath ) > 0 then
+               libraryPath := libraryPath & ":";
+            end if;
+            libraryPath := libraryPath & to_unbounded_string( Argument(i) );
+            libraryPathNext := false;
 
          -- Interpret Long (--) Arguments
 
-         if Argument(i) = "--break" then
+         elsif Argument(i) = "--break" then
             breakoutOpt := true;
          elsif Argument(i) = "--check" then
             syntaxOpt := true;
@@ -98,7 +114,7 @@ begin
             execOpt := true;
          elsif Argument(i) = "--help" then
             Put_Line( standard_error, Command_Name & ": --help should appear by itself" );
-            Set_Exit_Status( 1 );
+            Set_Exit_Status( 192 );
             return;
          elsif Argument(i) = "--import-all" then
             importOpt := true;
@@ -112,7 +128,7 @@ begin
             verboseOpt := true;
          elsif Argument(i) = "--version" then
             Put_Line( standard_error, Command_Name & ": --version should appear by itself" );
-            Set_Exit_Status( 1 );
+            Set_Exit_Status( 192 );
             return;
          elsif Argument(i) = "--trace" then
             traceOpt := true;
@@ -123,7 +139,7 @@ begin
             exit;
          elsif Argument(i)'length = 0 then
             Put_Line( standard_error, Command_Name & ": empty script name" );
-            Set_Exit_Status( 1 );
+            Set_Exit_Status( 192 );
             return;
          elsif Argument(i)(1) = '-' then
 
@@ -137,6 +153,19 @@ begin
                   Set_Exit_Status( 1 );
                   return;
                end if;
+               -- -L has a wierd format: the directory is immediately attached
+               -- to the "L"
+
+               if Args(2) = 'L' then
+                   if Args'length = 2 then
+                      libraryPathNext := true;
+                   else
+                      if length( libraryPath ) > 0 then
+                         libraryPath := libraryPath & ":";
+                      end if;
+                   end if;
+                   libraryPath := libraryPath & to_unbounded_string( Args(3..Args'last) );
+               else
                for letter in 2..Args'last loop
                    if Args(letter) = 'b' then
                       breakoutOpt := true;
@@ -148,7 +177,7 @@ begin
                       execOpt := true;
                    elsif Args(letter) = 'h' then
                       Put_Line( standard_error, Command_Name & ": -h should appear by itself" );
-                      Set_Exit_Status( 1 );
+                      Set_Exit_Status( 192 );
                       return;
                    elsif Args(letter) = 'i' then
                       importOpt := true;
@@ -164,32 +193,37 @@ begin
                       verboseOpt := true;
                    elsif Argument(i) = "-V" then
                       Put_Line( standard_error, Command_Name & ": -V should appear by itself" );
-                      Set_Exit_Status( 1 );
+                      Set_Exit_Status( 192 );
                       return;
                    elsif Args(letter) = 'x' then
                       traceOpt := true;
                    else
                       Put_Line( standard_error, Command_Name & ": unknown option: " & Argument(i) );
-                      Set_Exit_Status( 1 );
+                      Set_Exit_Status( 192 );
                       return;
                    end if;
                end loop;
+            end if;
             end;
-
          else
             exit;
          end if;
          optionOffset := optionOffset + 1;
      end loop;
   end if;
+  if libraryPathNext then
+     Put_Line( standard_error, Command_Name & ": missing argument for -L" );
+     Set_Exit_Status( 192 );
+     return;
+  end if;
   if syntaxOpt and nosyntaxOpt then
      Put_Line( standard_error, Command_Name & ": -c and -n cannot be used together" );
-     Set_Exit_Status( 1 );
+     Set_Exit_Status( 192 );
      return;
   elsif (boolean(syntaxOpt) or boolean(nosyntaxOpt)) and
      optionOffset > Argument_Count then
      Put_Line( standard_error, Command_Name & ": missing command name" );
-     Set_Exit_Status( 1 );
+     Set_Exit_Status( 192 );
      return;
   end if;
   if optionOffset > Argument_Count then

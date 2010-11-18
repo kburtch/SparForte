@@ -5,7 +5,7 @@
 -- Part of BUSH                                                             --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2005 Ken O. Burtch & FSF                 --
+--              Copyright (C) 2001-2010 Ken O. Burtch & FSF                 --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -517,7 +517,6 @@ end put_trace;
 -- Error reporting
 -----------------------------------------------------------------------------
 
-
 -----------------------------------------------------------------------------
 -- ERR
 --
@@ -531,10 +530,14 @@ end put_trace;
 
 procedure err( msg : string ) is
   cmdline  : unbounded_string;
+  firstpos : natural;
+  lastpos  : natural;
   lineStr  : unbounded_string;
   firstposStr : unbounded_string;
   lineno   : natural;
+  fileno   : natural;
   outLine  : unbounded_string;
+  sfr      : aSourceFile;
 begin
 
   -- Already displayed one error or script is complete?
@@ -547,7 +550,7 @@ begin
   -- Decode a copy of the command line to show the error.  Also returns
   -- the current token position and the line number.
 
-  getCommandLine( cmdline, firstpos, lastpos, lineno );
+  getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
 
   -- If in a script (that is, a non-interactive input mode) then
   -- show the location and traceback.  Otherwise, don't bother.
@@ -572,7 +575,8 @@ begin
               delete( firstposStr, 1, 1 );
            end if;
         end if;
-        outLine := scriptFilePath
+        sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
+        outLine := sfr.name
           & ":" & lineStr
           & ":" & firstposStr
           & ":";                  -- no traceback
@@ -580,7 +584,8 @@ begin
 
   -- If not gcc option, show the location and traceback
 
-        outLine := scriptFilePath       -- otherwise
+        sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
+        outLine := sfr.name               -- otherwise
           & ":" & lineno'img
           & ":" & firstpos'img
           & ": ";
@@ -736,12 +741,10 @@ end pullBlock;
 -----------------------------------------------------------------------------
 
 procedure topOfBlock is
-  --posn    : long_integer;
-  --discard : aliased unbounded_string;
-  --b       : boolean;
   firstpos : natural;
   lastpos  : natural;
   lineno   : natural;
+  fileno   : natural;
   cmdLine  : unbounded_string;
 begin
    if blocks_top = blocks'first then                            -- in a block?
@@ -752,7 +755,7 @@ begin
          scriptLineStart := blocks( blocks_top-1).startpos;     -- current line
          if trace and not exit_block and not error_found then   -- display
             put( standard_error, "=> " & '"' );                 -- line if
-            getCommandLine( cmdline, firstpos, lastpos, lineno );
+            getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
             put( standard_error, toEscaped( cmdline ) );
             put( standard_error, """ [" );
             put( standard_error, lineno'img );
@@ -761,6 +764,13 @@ begin
       end if;
   end if;
 end topOfBlock;
+
+procedure GetFullParentUnitName( fullUnitName : out unbounded_string ) is
+-- return the full (dotted) name of the parent subprogram (e.g. proc )
+
+begin
+  put_line( standard_error, "GetFullParentUnitName : not yet written" );
+end GetFullParentUnitName;
 
 -----------------------------------------------------------------------------
 -- IS LOCAL
@@ -808,6 +818,25 @@ begin
   end if;
   return blocks( b ).blockName;
 end getBlockName;
+
+
+-----------------------------------------------------------------------------
+-- DUMP SYMBOL TABLE
+--
+-- Debugging routine to display the top of the symbol table.
+-----------------------------------------------------------------------------
+
+procedure dumpSymbolTable is
+  count : natural := 0;
+begin
+  put_line( "-- Symbol Table Dump ---------------------------------------------" );
+  for i in reverse 1..identifiers_top-1 loop
+      put( "symbol" & i'img & ": " );
+      Put_Identifier( i );
+  exit when count = 10;
+      count := count + 1;
+  end loop;
+end dumpSymbolTable;
 
 
 -----------------------------------------------------------------------------
@@ -909,6 +938,7 @@ procedure resetScanner is
     home_key   : unbounded_string := to_unbounded_string( "HOME=" );
     term_key   : unbounded_string := to_unbounded_string( "TERM=" );
     shell_key  : unbounded_string := to_unbounded_string( "SHELL=" );
+    library_key: unbounded_string := to_unbounded_string( "BUSH_LIBRARY_PATH=" );
     ev  : unbounded_string;                                     -- an env var
   begin
      for i in 1..environmentList.Length( initialEnvironment ) loop
@@ -925,6 +955,8 @@ procedure resetScanner is
            init_env_ident( to_string( ev ) );
            identifiers( identifiers_top-1).export := true;
         elsif Head( ev, 6 ) = shell_key then
+           init_env_ident( to_string( ev ) );
+        elsif Head( ev, 18 ) = library_key then
            init_env_ident( to_string( ev ) );
         elsif importOpt then
            init_env_ident( to_string( ev ) );
@@ -1539,8 +1571,14 @@ begin
   else
      -- xterm emulation?  then change the window name during interactive
      -- sessions
-     terminalWindowNaming := head( identifiers( temp_id ).value, 5 ) = "xterm"
-                             or identifiers( temp_id ).value = "linux";
+     if head( identifiers( temp_id ).value, 5 ) = "xterm" then
+        terminalWindowNaming := true;
+     elsif identifiers( temp_id ).value = "linux" then           -- could be
+        findIdent( to_unbounded_string( "DISPLAY" ), temp_id );  -- a console
+        if identifiers( temp_id ).value = "DISPLAY" then         -- hope its x
+           terminalWindowNaming := true;
+        end if;
+     end if;
   end if;
 
 end resetScanner;
@@ -2178,7 +2216,7 @@ end getLineNo;
 -----------------------------------------------------------------------------
 
 procedure getCommandLine ( cmdline : out unbounded_string;
-  token_firstpos, token_lastpos, line_number : out natural ) is
+  token_firstpos, token_lastpos, line_number, file_number : out natural ) is
   line_firstpos : natural;                           -- start of compiled line
   line_lastpos  : natural;                           -- end of compiled line
   indent        : natural;
@@ -2195,6 +2233,7 @@ begin
      token_firstpos := cmdpos;
      token_lastpos  := cmdpos;
      line_number    := natural'last;
+     file_number := natural'last;
      return;
   end if;
 
@@ -2207,6 +2246,7 @@ begin
      token_firstpos := cmdpos;
      token_lastpos  := cmdpos;
      line_number    := natural'last;
+     file_number := natural'last;
      return;
   end if;
 
@@ -2241,6 +2281,7 @@ begin
   -- of the current line.  Extract the line number and indent.
 
   line_firstpos := line_firstpos + 1;               -- skip NUL
+  file_number := character'pos( script( line_firstpos ) );
   line_number := ( character'pos( script( line_firstpos + 1 ) ) -1 )
                + ( character'pos( script( line_firstpos + 2 ) ) - 1 ) * 256;
   line_firstpos := line_firstpos + 3;               -- skip line number info
@@ -2341,8 +2382,9 @@ function getCommandLine return unbounded_string is
   firstpos, lastpos : natural;
   cmdline : unbounded_string;
   line_number : natural;
+  file_number : natural;
 begin
-  getCommandLine( cmdline, firstpos, lastpos, line_number );
+  getCommandLine( cmdline, firstpos, lastpos, line_number, file_number );
   return cmdline;
 end getCommandLine;
 
@@ -2367,7 +2409,9 @@ procedure getNextToken is
   -- these should be optimized away by the compiler, but you'd
   -- be surprised by what a compiler won't optimize away...
   is_based_number : boolean; -- true if numeric literal has a base
-  token_firstpos, token_lastpos, lineno : natural;
+  token_firstpos, token_lastpos, lineno, fileno : natural;
+  sfr : aSourceFile;
+
 begin
 
   -- Out of data?  Never any more data.
@@ -2387,9 +2431,14 @@ begin
          if syntax_check or (not exit_block and not error_found) then
 	    cmdpos := cmdpos + 2; -- first character of next command
             put( standard_error, "=> " & '"' );
-            getCommandLine( gnt_commandLine, token_firstpos, token_lastpos, lineno );
+            getCommandLine( gnt_commandLine, token_firstpos, token_lastpos, lineno, fileno );
             put( standard_error, toEscaped( gnt_commandLine ) );
             put( standard_error, """ [" );
+            if fileno > 1 then -- don't bother naming main file
+               sourceFilesList.Find( sourceFiles, sourceFilesList.aListIndex( fileno ), sfr );
+               put( standard_error, toEscaped( sfr.name ) );
+               put( standard_error, ":" );
+            end if;
             put( standard_error, lineno'img );
             put_line( standard_error, "]" );
 	    cmdpos := cmdpos - 2;
@@ -2879,14 +2928,17 @@ end restoreScript;
 -- * EOF tokens are added as the beginning and ending
 --   "lines" of the script to act as sentinels.
 --
+-- Each line begins with the 16-bit line number and the- 8-bit file number.
+--
 -- There could be other features in the future.
 --
 -- For example:
 --    if x > y then
 -- becomes
--- [ASCII 3][if code] x > y [then code][ASCII 0]
+-- file/line/indent/stuff/EOL
+-- [ASCII 1][ASCII 1][ACSII 1][ASCII 3][if code] x > y [then code][ASCII 0]
 --
--- reducing 17 bytes to 11 bytes, about 2/3rds the
+-- reducing 17 bytes to 12 bytes, about 2/3rds the
 -- number of characters to read through when running
 -- a script.
 ------------------------------------------------------
@@ -2991,6 +3043,16 @@ begin
   return (SourceLineNoLo) + (SourceLineNoHi) * 255;
 end getByteCodeLineNo;
 
+-----------------------------------------------------------------------------
+-- GET BYTE CODE LINE NO
+--
+-- Return the current value of the byte code line counter
+-----------------------------------------------------------------------------
+
+function getByteCodeFileNo return natural is
+begin
+  return SourceFileNo+1;
+end getByteCodeFileNo;
 
 -----------------------------------------------------------------------------
 -- ERR TOKENIZE
@@ -3003,6 +3065,7 @@ end getByteCodeLineNo;
 
 procedure err_tokenize( msg:string; cmdline:string ) is
   lineStr : unbounded_string;
+  sfr     : aSourceFile;
 begin
   if error_found then                                         -- not first err?
      return;                                                  -- don't display
@@ -3017,12 +3080,14 @@ begin
               delete( lineStr, 1, 1 );
            end if;
         end if;
-        put( standard_error, scriptFilePath );        -- show it
+        sourceFilesList.Find( sourceFiles, sourceFilesList.aListIndex( getByteCodeFileNo ), sfr );
+        put( standard_error, sfr.name );              -- show it
         put( standard_error, ":" );
         put( standard_error, to_string( lineStr ) );
         put( standard_error, ":1:" );
      else
-        put( standard_error, scriptFilePath );       -- otherwise
+        sourceFilesList.Find( sourceFiles, sourceFilesList.aListIndex( getByteCodeFileNo ), sfr );
+        put( standard_error, sfr.name );            -- otherwise
         put( standard_error, ":" );                  -- leave leading
         put( standard_error, getByteCodeLineNo'img );           -- spaces in
         put( standard_error, ":1:" );
@@ -3051,6 +3116,10 @@ begin
 
   -- Error Pointer
 
+     -- KB: 07/11/04: guestimated
+     for i in 1..length( sfr.name )+length( lineStr )+6 loop                           -- move to token
+        put( standard_error, " " );
+     end loop;
      for i in 1..firstpos-1 loop                              -- move to token
         put( standard_error, " " );
      end loop;
@@ -4684,6 +4753,76 @@ end dumpByteCode;
 
 
 -----------------------------------------------------------------------------
+-- COMPILE INCLUDE
+--
+-- Compile into byte code a command typed interactively at the command prompt
+-- or backquotes or templates.
+-----------------------------------------------------------------------------
+
+procedure compileInclude( command : unbounded_string ) is
+  ci : compressionInfo;
+  linePos : integer;
+  firstLinePos : integer;
+  lastLinePos : integer;
+  line2compile : unbounded_string;
+begin
+  if script /= null then                                      -- discard script
+     free( script );
+  end if;
+
+  cmdpos := firstScriptCommandOffset; -- Reset cmdpos to beginning of script
+
+  ci.compressedScript := null_unbounded_string;
+  SourceLineNoLo := 0;
+  SourceLineNoHi := 0;
+
+  -- Find lines and compress each in turn
+
+  linePos := 1;
+  firstLinePos := linePos;
+  -- Null command?
+  if linepos > length( command ) then
+    line2ByteCode( ci, null_unbounded_string );
+  end if;
+  -- Multiple lines
+  while linepos <= length( command ) and not error_found loop -- anything left?
+    loop
+      exit when element( command, linePos ) = ASCII.LF; -- UNIX/Linux EOL
+      exit when element( command, linePos ) = ASCII.CR; -- DOS/Apple EOL
+      linePos := linePos + 1;                            -- next character
+      exit when error_found;                             -- quit on err
+      exit when linePos > length( command );             -- if not beyond EOF
+    end loop;
+    lastLinePos := linePos - 1;                          -- back up one
+    line2compile := to_unbounded_string( slice( command, firstLinePos, lastLinePos ) );
+    line2ByteCode( ci, line2compile );                   -- compress that slice
+    -- DOS text files have CR+LF
+    if  linePos < length( command ) then
+        if element( command, linePos ) = ASCII.CR then
+            if element( command, linePos+1 ) = ASCII.LF then   -- skip extra LF
+               linePos := linePos + 1;
+            end if;
+       end if;
+    end if;
+    linePos := linePos+1;                                -- skip term char
+    firstLinePos := linePos;
+  end loop;
+
+  nextByteCodeLine;
+
+  -- Verbose? Show the byte code
+
+  if verboseOpt then
+     dumpByteCode( ci );
+  end if;
+
+  script := new string( 1..length( ci.compressedScript ) );   -- alloc script
+  script.all := to_string( ci.compressedScript );             -- and copy
+  identifiers( source_info_script_size_t ).value := delete( to_unbounded_string( script.all'length'img), 1, 1 );
+end compileInclude;
+
+
+-----------------------------------------------------------------------------
 -- COMPILE COMMAND OR TEMPLATE
 --
 -- Compile into byte code a command typed interactively at the command prompt
@@ -4973,5 +5112,160 @@ begin
   script.all := to_string( ci.compressedScript );            -- and copy
   -- identifiers( source_info_script_size_t ).value := delete( to_unbounded_string( script.all'length'img), 1, 1 );
 end replaceScript;
+
+-----------------------------------------------------------------------------
+-- INSERT INCLUDE
+--
+--
+-----------------------------------------------------------------------------
+
+procedure loadIncludeFile( includeName : unbounded_string; fileLocation : in out SourceFilesList.aListIndex; includeText : out unbounded_string ) is
+  sfr, temp_sfr : aSourceFile;
+  workingPaths : unbounded_string;
+  includeFileOpened : boolean;
+  temp_id : identifier;
+  libraryPrefix :unbounded_string;
+  libraryPrefixNumber : natural;
+begin
+
+  sfr.pos  := lastPos;                                     -- pos of include
+  sfr.name := includeName;                                 -- name of file
+
+  -- Find not working
+  -- sourceFilesList.Find( sourceFiles, sfr, foundAt =>fileLocation );
+  -- doesn't seem to be using equal()??
+
+  includeText := null_unbounded_string;                    -- clear text
+  fileLocation := 0;                                       -- assume failure
+  for i in 1..sourceFilesList.Length( sourceFiles ) loop   -- in incl. files
+      sourceFilesList.Find( sourceFiles, i, temp_sfr );    -- get one
+      if equal( temp_sfr, sfr )  then                      -- already incl.?
+         fileLocation := i;                                -- get the number
+      end if;
+  end loop;
+
+  if fileLocation /= 0 then                                -- already incl.?
+     put_trace( "file already included" );                 -- note it
+  elsif sourceFilesList.Length( sourceFiles ) = 255 then   -- too many?
+     -- 255 is one byte minus 0, which is reserved
+     err( optional_inverse( "too many include files and subunits" ) );
+  else                                                     -- new file
+     workingPaths := libraryPath;                          -- use -L paths
+     if length( workingPaths ) = 0 then                    -- none?
+        workingPaths := to_unbounded_string( "." );        -- use current
+     end if;                                               -- check env var
+     findIdent( to_unbounded_string( "BUSH_LIBRARY_PATH" ), temp_id );
+     if temp_id /= eof_t then                              -- exists?
+        if length( identifiers( temp_id ).value ) > 0 then  -- non-blank?
+           workingPaths := workingPaths & ":" & identifiers( temp_id ).value;
+        end if;
+     end if;
+
+     includeFileOpened := false;                           -- assume failure
+     libraryPrefixNumber := 1;                             -- prefix one
+     loop                                                  -- get next prefix
+        libraryPrefix := stringField( workingPaths, ':', libraryPrefixNumber );
+      exit when length( libraryPrefix ) = 0;               -- quit if none
+        if element( libraryPrefix, length( libraryPrefix ) ) /= directory_delimiter then
+           libraryPrefix := libraryPrefix & directory_delimiter;
+        end if;
+
+        declare
+          include_file : file_type;
+        begin
+          open( include_file, in_file, to_string( libraryPrefix & includeName ) );
+          put_trace( to_string( "Including " & libraryPrefix & includeName ) );
+          while not end_of_file( include_file ) loop
+            includeText := includeText & ada.strings.unbounded.text_io.get_line( include_file ) & ASCII.LF;
+          end loop;
+          close( include_file );
+          includeFileOpened := true;
+          exit;
+        exception
+            when STATUS_ERROR =>
+              err( "cannot open include file" & optional_bold( to_string( includeName ) ) &
+                 " - file may be locked" );
+              return;
+            when NAME_ERROR => 
+                if traceOpt then
+                   put_trace( to_string( "Cannot open " & libraryPrefix & includeName ) );
+                end if;
+            when MODE_ERROR =>
+                err( "interal error: mode error on include file " & optional_bold( to_string( includeName ) ) );
+                 return;
+               when END_ERROR =>
+                 err( "interal error: end of file reached on include file " & optional_bold( to_string( includeName ) ) );
+               return;
+            when others =>
+               err( "interal error: unexpected error reading " & optional_bold( to_string( includeName ) ) );
+               return;
+        end;
+        libraryPrefixNumber := libraryPrefixNumber + 1;  -- next prefix
+     end loop;
+
+     if not includeFileOpened then
+        err( "include file " & optional_bold( to_string( includeName ) ) &
+             " doesn't exist or is not readable" );
+        fileLocation := SourceFilesList.aListIndex'last;
+     end if;
+  end if;
+end loadIncludeFile;
+
+procedure insertInclude( includeName : unbounded_string ) is
+  sfr : aSourceFile;
+  pre_script, post_script : unbounded_string;
+  posAfterIncludePragma : natural;
+  oldSourceFileNo : natural;
+  fileLocation : SourceFilesList.aListIndex;
+  new_script : unbounded_string;
+  includeSemicolonPosition : aScannerState;
+  includeText : unbounded_string;
+begin
+  if script = null then                                       -- no script?
+     err( "internal_error: no script" );
+  else
+
+     -- includes are based on a byte code position (the file name is not
+     -- unique).  The file name is used for error reporting, to identify
+     -- the included file.
+
+     -- Not an error to include twice, just ignore.
+     -- This is because it's not possible to determine if this is the initial
+     -- syntax check or some other use of syntax mode (block skipping, for
+     -- example)
+
+     loadIncludeFile( includeName, fileLocation, includeText );
+     if fileLocation > 0 then                                -- already exist?
+        return;                                              -- don't include
+     end if;                                                 -- or error
+
+     sfr.pos  := lastPos;
+     sfr.name := includeName;
+
+     -- Split the script around the include point (i.e. line after the include)
+     posAfterIncludePragma := lastPos + 1; -- after ';'
+     while script(posAfterIncludePragma) /= ASCII.NUL loop
+           posAfterIncludePragma := posAfterIncludePragma + 1; -- after ';'
+     end loop;
+     posAfterIncludePragma := posAfterIncludePragma + 1; -- first position in next line
+     pre_script := to_unbounded_string( script(1..posAfterIncludePragma-1 ) );
+     post_script := to_unbounded_string( script(posAfterIncludePragma..script'last ) );
+
+     -- Set the new source file number
+     oldSourceFileNo := sourceFileNo;
+     sourceFilesList.Queue( sourceFiles, sfr );
+     sourceFileNo := natural( sourceFilesList.Length( sourceFiles ) -1 );
+
+     -- save position, compile include file and insert the byte code
+     -- record the size of the new script for source_info.script_size
+     markScanner( includeSemicolonPosition );
+     compileInclude( includeText );
+     new_script := pre_script & to_unbounded_string( script.all ) & post_script;
+     replaceScript( new_script );
+     identifiers( source_info_script_size_t ).value := delete( to_unbounded_string( script.all'length'img), 1, 1 );
+     resumeScanning( includeSemicolonPosition );
+
+  end if;     
+end insertInclude;
 
 end scanner;
