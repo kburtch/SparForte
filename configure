@@ -5,11 +5,59 @@
 #
 # This Bourne shell script was written on Bash.  It isn't supposed to depend
 # on BASH but I haven't tested it on other shells so your results may vary.
-#
+
 #set -eu
 # CVS: $Id$
 
-# BUSH
+PREFIX="/usr/local"
+MANPREFIX="/usr/local"
+
+# Get command line options
+
+while [ $# -gt 0 ] ; do
+  TMP=`echo "$1" | cut -d= -f1`
+  if [ -z "$TMP" ] ; then
+     $TMP="$1"
+  fi
+  case "$TMP" in
+  -h|--help)
+      echo "--arch=ARCH"
+      echo "--make=MAKE"
+      echo "--prefix=PREFIX"
+      echo "--manprefix=MANPREFIX"
+      echo "--without-mysql"
+      echo "--without-postgres"
+#      echo "--without-sdl"
+#      echo "--without-sound"
+      echo
+      echo "Read INSTALL for complete information"
+      ;;
+  --arch)
+      ARCH=`echo "$1" | cut -d= -f2`
+      ;;
+  --make)
+      GMAKE=`echo "$1" | cut -d= -f2`
+      ;;
+  --prefix)
+      PREFIX=`echo "$1" | cut -d= -f2`
+      ;;
+  --manprefix)
+      MANPREFIX=`echo "$1" | cut -d= -f2`
+      ;;
+  --without-mysql)
+      NO_MYSQL=0
+      ;;
+  --without-postgres)
+      NO_POSTGRES=0
+      ;;
+  *)
+      echo "Unrecognized option $TMP"
+      exit 192
+  esac
+  shift
+done
+
+# Configure BUSH
 
 # OS Environment
 #
@@ -367,35 +415,6 @@ else
    exit 1
 fi
 
-# Databases
-
-echo -n "checking for postgresql (pg_config)..."
-HAS_DBS="1"
-TMP=`(exec pg_config --version 2>/dev/null)`
-if [ -z "$TMP" ] ; then
-   echo "no"
-   HAS_DBS=""
-else
-   echo "yes"
-fi
-echo -n "checking for mysql (mysql_config)..."
-TMP=`(exec mysql_config --version 2>/dev/null)`
-if [ -z "$TMP" ] ; then
-   echo "no"
-   HAS_DBS=""
-else
-   echo "yes"
-fi
-if [ -z "$HAS_DBS" ] ; then
-   echo "Bush 1.x requires both MySQL and PostgreSQL to be installed"
-   echo "The servers do not have to be running but the configuration"
-   echo "utilities must be present - pg_config and mysql_config -"
-   echo "and the development files to allow Bush to compile database"
-   echo "support for these databases."
-   echo "Please install these files to continue."
-   exit 1
-fi
-
 # Check for the libSDL (Simple DirectMedia Layer) Library
 
 echo -n "checking for libSDL (ldconfig -p, Linux)... "
@@ -519,6 +538,37 @@ fi
 #  echo "yes"
 #fi
 
+# Databases
+
+echo -n "checking for postgresql (pg_config)..."
+if [ -z "$NO_POSTGRES" ] ; then
+   HAS_POSTGRES=1
+   TMP=`(exec pg_config --version 2>/dev/null)`
+   if [ -z "$TMP" ] ; then
+      echo "no"
+      HAS_POSTGRES=""
+   else
+      echo "yes"
+   fi
+else
+   HAS_POSTGRES=""
+   echo "no"
+fi
+echo -n "checking for mysql (mysql_config)..."
+if [ -z "$NO_MYSQL" ] ; then
+   HAS_MYSQL=1
+   TMP=`(exec mysql_config --version 2>/dev/null)`
+   if [ -z "$TMP" ] ; then
+      echo "no"
+      HAS_MYSQL=""
+   else
+      echo "yes"
+   fi
+else
+   HAS_MYSQL=""
+   echo "no"
+fi
+
 # Make
 
 echo -n "checking for gmake (\$GMAKE)... "
@@ -555,7 +605,7 @@ else
          echo "no"
          echo
          echo "BUSH requires GNU make.  GNU make normally has a gmake alias"
-         echo "but some systems (like Debian/Linux) do not include the"
+         echo "but some systems (like Debian/Linux, Cygwin) do not include the"
          echo "alias.  If your system calls gmake by another name (such as"
          echo "'make') use the GMAKE shell variable to specify the name."
          echo "For example, 'GMAKE=make; export GMAKE"
@@ -600,28 +650,39 @@ echo
 sleep 3
 echo "Configuring third-party APQ (Database Library)..."
 sleep 1
+
 echo -n "apq library: checking for one or more database config scripts... "
-TMP=`(exec pg_config --version 2>/dev/null)`
-if [ -z "$TMP" ] ; then
-   TMP=`(exec mysql_config --version 2>/dev/null)`
-   if [ -z "$TMP" ] ; then
-      echo "no"
-      echo
-      echo "The APQ library uses the pg_config and mysql_config scripts to configure"
-      echo "itself.  Not all operating systems include these, or they include them"
-      echo "as part of the 'devel' packages.  If you don't have these scripts, you"
-      echo "copy them from the database sources into /usr/local/bin"
-      exit 1
+if [ ! -z "$NO_MYSQL" -a ! -z "$NO_POSTGRES" ] ; then
+   echo "no"
+else
+   if [ -z "$HAS_POSTGRES" ] ; then
+      if [ -z "$HAS_MYSQL" ] ; then
+         echo "no"
+         echo
+         echo "The APQ library uses the pg_config and mysql_config scripts to configure"
+         echo "itself.  Not all operating systems include these, or they include them"
+         echo "as part of the 'devel' packages.  If you don't have these scripts, you"
+         echo "copy them from the database sources into /usr/local/bin"
+         exit 1
+      else
+         echo "yes"
+      fi
    else
       echo "yes"
    fi
-else
-   echo "yes"
 fi
 
-echo "Running APQ's configure..."
 cd apq-2.1
-./configure
+if [ -z "$NO_MYSQL" -a ! -z "$NO_POSTGRES" ] ; then
+   echo "Running APQ's configure (no MySQL)..."
+   HAVE_MY=0 ./configure
+elif [ ! -z "$NO_MYSQL" -a -z "$NO_POSTGRES" ] ; then
+   echo "Running APQ's configure (no PostgreSQL)..."
+   HAVE_PG=0 ./configure
+else
+   echo "Running APQ's configure..."
+   ./configure
+fi
 cd -
 #if test -f Makeincl ; then
 #   mv -f Makeincl apq-2.1/Makeincl
@@ -632,9 +693,95 @@ echo "APQ library is configured"
 
 echo
 echo "Returning to BUSH..."
+
+# Update the source files, disabling optional libraries, using the gnatprep
+# preprocessor.
+
+echo "Updating source files..."
+
+if [ ! -z "$HAS_POSTGRES" ] ; then
+   GNATPREP_OPTS="-DPOSTGRES=true"
+else
+   GNATPREP_OPTS="-DPOSTGRES=false"
+fi
+if [ ! -z "$HAS_MYSQL" ] ; then
+   GNATPREP_OPTS="$GNATPREP_OPTS -DMYSQL=true"
+else
+   GNATPREP_OPTS="$GNATPREP_OPTS -DMYSQL=false"
+fi
+
+echo "Updating...parser.adb"
+test -f parser.adb && chmod 666 parser.adb
+cp parser.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb parser.adb
+chmod 444 parser.adb
+
+echo "Updating...builtins.adb"
+test -f builtins.adb && chmod 666 builtins.adb
+cp builtins.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb builtins.adb
+chmod 444 builtins.adb
+
+echo "Updating...parser_db.ads"
+test -f parser_db.ads && chmod 666 parser_db.ads
+cp parser_db.ads.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb parser_db.ads
+chmod 444 parser_db.ads
+
+echo "Updating...parser_db.adb"
+test -f parser_db.adb && chmod 666 parser_db.adb
+cp parser_db.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb parser_db.adb
+chmod 444 parser_db.adb
+
+echo "Updating...parser_mysql.ads"
+test -f parser_mysql.ads && chmod 666 parser_mysql.ads
+cp parser_mysql.ads.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb parser_mysql.ads
+chmod 444 parser_mysql.ads
+
+echo "Updating...parser_mysql.adb"
+test -f parser_mysql.adb && chmod 666 parser_mysql.adb
+cp parser_mysql.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb parser_mysql.adb
+chmod 444 parser_mysql.adb
+
+# Create a new makefile by substituting optional libraries and configuration
+# options into the file with sed.
+
+if [ \( ! -z "$HAS_MYSQL" \) -a \( ! -z "$HAS_POSTGRES" \) ] ; then
+   APQMAKESUB='$(MAKE) -C apq-2.1\/'
+else
+   APQMAKESUB="@echo \"Disabled\""
+fi
+if [ -z "$HAS_POSTGRES" ] ; then
+   PGLIBSSUB=""
+else
+   PGLIBSSUB="`pg_config --libdir` `pg_config --libs`"
+   PGLIBSSUB=`echo "-L""$PGLIBSSUB" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+fi
+if [ -z "$HAS_MYSQL" ] ; then
+   MYSQLLIBSSUB=""
+else
+   MYSQLLIBSSUB="`mysql_config --libs`"
+   MYSQLLIBSSUB=`echo "$MYSQLLIBSSUB" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+fi
+APQLIBSSUB='-L.\/apq-2.1\/ .\/apq-2.1\/c_mysql.o'
+APQINCLSSUB='-I.\/apq-2.1\/ '
+if [ -z "$HAS_POSTGRES" ] ; then
+   if [ -z "$HAS_MYSQL" ] ; then
+      APQLIBSSUB=""
+      APQINCLSSUB=""
+   fi
+fi
+
+PREFIX=`echo "$PREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+MANPREFIX=`echo "$MANPREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+
 echo "Creating src/GNUmakefile..."
 
-sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g" < GNUmakefile.orig > GNUmakefile
+sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/PREFIXSUB/$PREFIX/g;s/MANPREFIXSUB/$MANPREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/ADAVOXINCLSSUB/$ADAVOXINCLSSUB/g;s/ADAVOXLIBSSUB/$ADAVOXLIBSSUB/g;s/ADAVOXMAKESUB/$ADAVOXMAKESUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g" < GNUmakefile.orig > GNUmakefile
+
 cd ..
 echo "Creating GNUmakefile..."
 sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/GMAKETYPE/$GMAKETYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g" < GNUmakefile.orig > GNUmakefile

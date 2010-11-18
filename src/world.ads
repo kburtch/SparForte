@@ -29,9 +29,7 @@ with system,
   ada.unchecked_deallocation,
   ada.strings.unbounded,
   gen_list,
-  APQ;
-use ada.strings.unbounded, APQ;
-
+use ada.strings.unbounded;
 
 package world is
 
@@ -163,7 +161,7 @@ traceOpt     : commandLineOption := false;           -- true if -x
 terminalWindowNaming : boolean := false;
 -- true if terminal emulation supports xterm window naming
 
-currentEngine : Database_Type := Engine_PostgreSQL;
+--currentEngine : Database_Type := Engine_PostgreSQL;
 engineOpen    : boolean := false;
 -- current database being used.  Unfortunately, APQ has no Engine_None so we
 -- need two variables.
