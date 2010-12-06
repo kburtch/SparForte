@@ -24,7 +24,7 @@
 with Ada.Strings.Unbounded, Interfaces.C, System.Address_To_Access_Conversions;
 use  Ada.Strings.Unbounded, Interfaces.C;
 
-package bush_os.gl is
+package bush_os.opengl is
 
 ------------------------------------------------------------------------------
 -- Standard OpenGL Types
@@ -57,40 +57,142 @@ subtype GLdouble is double;            -- typedef double          GLdouble;
 type GLclampd is new double;           -- typedef double          GLclampd; 
 
 ------------------------------------------------------------------------------
+-- C arrays and their Pointers
+------------------------------------------------------------------------------
+
+type char_array_ptr is new System.address;
+
+type double_array is array( size_t range <> ) of aliased GLdouble;
+type double_array_matrix is new double_array( 0..15 );
+pragma warnings( off );
+package GL_Double_Array_Conv is new
+     system.address_to_access_conversions( double_array );
+     subtype GL_Double_Array_Ptr is GL_Double_Array_Conv.object_pointer;
+pragma warnings( on );
+
+type double_vertex_2d is new double_array( 0..1 );
+type double_vertex_3d is new double_array( 0..2 );
+type double_vertex_4d is new double_array( 0..3 );
+
+type clamp_float_array is array( size_t range <> ) of aliased GLclampf;
+pragma warnings( off );
+package GL_Clampf_Array_Conv is new
+     system.address_to_access_conversions( clamp_float_array );
+     subtype GL_Clampf_Array_Ptr is GL_Clampf_Array_Conv.object_pointer;
+pragma warnings( on );
+
+type float_array is array( size_t range <> ) of aliased GLfloat;
+type float_array_matrix is new float_array( 0..15 );
+pragma warnings( off );
+package GL_Float_Array_Conv is new
+     system.address_to_access_conversions( float_array );
+     subtype GL_Float_Array_Ptr is GL_Float_Array_Conv.object_pointer;
+pragma warnings( on );
+
+type float_vertex_2d is new float_array( 0..1 );
+type float_vertex_3d is new float_array( 0..2 );
+type float_vertex_4d is new float_array( 0..3 );
+
+type int_array is array( size_t range <> ) of aliased GLint;
+type int_array_matrix is new double_array( 0..15 );
+pragma warnings( off );
+package GL_Int_Array_Conv is new
+     system.address_to_access_conversions( int_array );
+     subtype GL_Int_Array_Ptr is GL_Int_Array_Conv.object_pointer;
+pragma warnings( on );
+
+type int_vertex_2d is new int_array( 0..1 );
+type int_vertex_3d is new int_array( 0..2 );
+type int_vertex_4d is new int_array( 0..3 );
+
+type short_array is array( size_t range <> ) of aliased GLshort;
+type short_array_matrix is new short_array( 0..15 );
+pragma warnings( off );
+package GL_Short_Array_Conv is new
+     system.address_to_access_conversions( short_array );
+     subtype GL_Short_Array_Ptr is GL_Short_Array_Conv.object_pointer;
+pragma warnings( on );
+
+type short_vertex_2d is new short_array( 0..1 );
+type short_vertex_3d is new short_array( 0..2 );
+type short_vertex_4d is new short_array( 0..3 );
+
+type byte_array is array( size_t range <> ) of aliased GLbyte;
+pragma warnings( off );
+package GL_Byte_Array_Conv is new
+     system.address_to_access_conversions( byte_array );
+     subtype GL_Byte_Array_Ptr is GL_Byte_Array_Conv.object_pointer;
+pragma warnings( on );
+
+type byte_vertex_2d is new byte_array( 0..1 );
+type byte_vertex_3d is new byte_array( 0..2 );
+type byte_vertex_4d is new byte_array( 0..3 );
+
+type uint_array is array( size_t range <> ) of aliased GLuint;
+pragma warnings( off );
+package GL_UInt_Array_Conv is new
+     system.address_to_access_conversions( uint_array );
+     subtype GL_UInt_Array_Ptr is GL_UInt_Array_Conv.object_pointer;
+pragma warnings( on );
+
+type ushort_array is array( size_t range <> ) of aliased GLushort;
+pragma warnings( off );
+package GL_UShort_Array_Conv is new
+     system.address_to_access_conversions( ushort_array );
+     subtype GL_UShort_Array_Ptr is GL_UShort_Array_Conv.object_pointer;
+pragma warnings( on );
+
+type ubyte_array is array( size_t range <> ) of aliased GLubyte;
+pragma warnings( off );
+package GL_UByte_Array_Conv is new
+     system.address_to_access_conversions( ubyte_array );
+     subtype GL_UByte_Array_Ptr is GL_UByte_Array_Conv.object_pointer;
+pragma warnings( on );
+
+type bool_array is array( size_t range <> ) of aliased GLboolean;
+pragma warnings( off );
+package GL_Boolean_Array_Conv is new
+     system.address_to_access_conversions( bool_array );
+     subtype GL_Boolean_Array_Ptr is GL_Boolean_Array_Conv.object_pointer;
+pragma warnings( on );
+
+------------------------------------------------------------------------------
+-- OpenGL Core
+------------------------------------------------------------------------------
 
 GL_FALSE : constant GLboolean := 16#0#; -- #define GL_FALSE  0x0
 GL_TRUE  : constant GLboolean := 16#1#; -- #define GL_TRUE   0x1
 
-type GLtype is new GLenum;
+type GLtypes is new GLenum;
 
-GL_BYTE          : constant GLtype := 16#1400#; -- #define GL_BYTE 0x1400
-GL_UNSIGNED_BYTE : constant GLtype := 16#1401#; -- #define GL_UNSIGNED_BYTE 0x1401
-GL_SHORT         : constant GLtype := 16#1402#; -- #define GL_SHORT 0x1402
-GL_UNSIGNED_SHORT : constant GLtype := 16#1403#; -- #define GL_UNSIGNED_SHORT 0x1403
-GL_INT           : constant GLtype := 16#1404#; -- #define GL_INT 0x1404
-GL_UNSIGNED_INT  : constant GLtype := 16#1405#; -- #define GL_UNSIGNED_INT 0x1405
-GL_FLOAT         : constant GLtype := 16#1406#; -- #define GL_FLOAT 0x1406
-GL_2_BYTES       : constant GLtype := 16#1407#; -- #define GL_2_BYTES 0x1407
-GL_3_BYTES       : constant GLtype := 16#1408#; -- #define GL_3_BYTES 0x1408
-GL_4_BYTES       : constant GLtype := 16#1409#; -- #define GL_4_BYTES 0x1409
-GL_DOUBLE        : constant GLtype := 16#140A#; -- #define GL_DOUBLE 0x140A
+GL_BYTE          : constant GLtypes := 16#1400#; -- #define GL_BYTE 0x1400
+GL_UNSIGNED_BYTE : constant GLtypes := 16#1401#; -- #define GL_UNSIGNED_BYTE 0x1401
+GL_SHORT         : constant GLtypes := 16#1402#; -- #define GL_SHORT 0x1402
+GL_UNSIGNED_SHORT : constant GLtypes := 16#1403#; -- #define GL_UNSIGNED_SHORT 0x1403
+GL_INT           : constant GLtypes := 16#1404#; -- #define GL_INT 0x1404
+GL_UNSIGNED_INT  : constant GLtypes := 16#1405#; -- #define GL_UNSIGNED_INT 0x1405
+GL_FLOAT         : constant GLtypes := 16#1406#; -- #define GL_FLOAT 0x1406
+GL_2_BYTES       : constant GLtypes := 16#1407#; -- #define GL_2_BYTES 0x1407
+GL_3_BYTES       : constant GLtypes := 16#1408#; -- #define GL_3_BYTES 0x1408
+GL_4_BYTES       : constant GLtypes := 16#1409#; -- #define GL_4_BYTES 0x1409
+GL_DOUBLE        : constant GLtypes := 16#140A#; -- #define GL_DOUBLE 0x140A
 
 ------------------------------------------------------------------------------
 -- Primitives
 ------------------------------------------------------------------------------
 
-type GLprimitive is new GLenum;
+type GLprimitives is new GLenum;
 
-GL_POINTS        : constant GLprimitive := 16#0000#; -- #define GL_POINTS 0x0000
-GL_LINES         : constant GLprimitive := 16#0001#; -- #define GL_LINES  0x0001
-GL_LINE_LOOP     : constant GLprimitive := 16#0002#; -- #define GL_LINE_LOOP 0x0002
-GL_LINE_STRIP    : constant GLprimitive := 16#0003#; -- #define GL_LINE_STRIP 0x0003
-GL_TRIANGLES     : constant GLprimitive := 16#0004#; -- #define GL_TRIANGLES 0x0004
-GL_TRIANGLE_STRIP : constant GLprimitive := 16#0005#; -- #define GL_TRIANGLE_STRIP 0x0005
-GL_TRIANGLE_FAN  : constant GLprimitive := 16#0006#; -- #define GL_TRIANGLE_FAN 0x0006
-GL_QUADS         : constant GLprimitive := 16#0007#; -- #define GL_QUADS 0x0007
-GL_QUAD_STRIP    : constant GLprimitive := 16#0008#; -- #define GL_QUAD_STRIP 0x0008
-GL_POLYGON       : constant GLprimitive := 16#0009#; -- #define GL_POLYGON 0x0009
+GL_POINTS        : constant GLprimitives := 16#0000#; -- #define GL_POINTS 0x0000
+GL_LINES         : constant GLprimitives := 16#0001#; -- #define GL_LINES  0x0001
+GL_LINE_LOOP     : constant GLprimitives := 16#0002#; -- #define GL_LINE_LOOP 0x0002
+GL_LINE_STRIP    : constant GLprimitives := 16#0003#; -- #define GL_LINE_STRIP 0x0003
+GL_TRIANGLES     : constant GLprimitives := 16#0004#; -- #define GL_TRIANGLES 0x0004
+GL_TRIANGLE_STRIP : constant GLprimitives := 16#0005#; -- #define GL_TRIANGLE_STRIP 0x0005
+GL_TRIANGLE_FAN  : constant GLprimitives := 16#0006#; -- #define GL_TRIANGLE_FAN 0x0006
+GL_QUADS         : constant GLprimitives := 16#0007#; -- #define GL_QUADS 0x0007
+GL_QUAD_STRIP    : constant GLprimitives := 16#0008#; -- #define GL_QUAD_STRIP 0x0008
+GL_POLYGON       : constant GLprimitives := 16#0009#; -- #define GL_POLYGON 0x0009
 
 ------------------------------------------------------------------------------
 -- Vertex Arrays
@@ -143,12 +245,12 @@ GL_T4F_C4F_N3F_V4F : constant GLvertexarrays := 16#2A2D#; -- #define GL_T4F_C4F_
 -- Matrix Mode
 ------------------------------------------------------------------------------
 
-type GLmode is new GLenum;
+type GLmodes is new GLenum;
 
-GL_MATRIX_MODE : constant GLmode := 16#0BA0#; -- #define GL_MATRIX_MODE 0x0BA0
-GL_MODELVIEW   : constant GLmode := 16#1700#; -- #define GL_MODELVIEW 0x1700
-GL_PROJECTION  : constant GLmode := 16#1701#; -- #define GL_PROJECTION 0x1701
-GL_TEXTURE     : constant GLmode := 16#1702#; -- #define GL_TEXTURE 0x1702
+GL_MATRIX_MODE : constant GLmodes := 16#0BA0#; -- #define GL_MATRIX_MODE 0x0BA0
+GL_MODELVIEW   : constant GLmodes := 16#1700#; -- #define GL_MODELVIEW 0x1700
+GL_PROJECTION  : constant GLmodes := 16#1701#; -- #define GL_PROJECTION 0x1701
+GL_TEXTURE     : constant GLmodes := 16#1702#; -- #define GL_TEXTURE 0x1702
 
 ------------------------------------------------------------------------------
 -- Points
@@ -592,9 +694,12 @@ GL_POINT_SMOOTH_HINT : constant GLhints := 16#0C51#;
 GL_LINE_SMOOTH_HINT : constant GLhints := 16#0C52#;
 GL_POLYGON_SMOOTH_HINT : constant GLhints := 16#0C53#;
 GL_FOG_HINT : constant GLhints := 16#0C54#;
-GL_DONT_CARE : constant GLhints := 16#1100#;
-GL_FASTEST : constant GLhints := 16#1101#;
-GL_NICEST : constant GLhints := 16#1102#;
+
+type GLhintmodes is new GLenum;
+
+GL_DONT_CARE : constant GLhintmodes := 16#1100#;
+GL_FASTEST : constant GLhintmodes := 16#1101#;
+GL_NICEST : constant GLhintmodes := 16#1102#;
 
 ------------------------------------------------------------------------------
 -- Scissor Box
@@ -767,96 +872,96 @@ GL_ALL_ATTRIB_BITS : constant GLpushbits := 16#000FFFFF#;
 -- OpenGL 1.1
 ------------------------------------------------------------------------------
 
-GL_PROXY_TEXTURE_1D : constant GLushort := 16#8063#;
-GL_PROXY_TEXTURE_2D : constant GLushort := 16#8064#;
-GL_TEXTURE_PRIORITY : constant GLushort := 16#8066#;
-GL_TEXTURE_RESIDENT : constant GLushort := 16#8067#;
-GL_TEXTURE_BINDING_1D : constant GLushort := 16#8068#;
-GL_TEXTURE_BINDING_2D : constant GLushort := 16#8069#;
-GL_TEXTURE_INTERNAL_FORMAT : constant GLushort := 16#1003#;
-GL_ALPHA4 : constant GLushort := 16#803B#;
-GL_ALPHA8 : constant GLushort := 16#803C#;
-GL_ALPHA12 : constant GLushort := 16#803D#;
-GL_ALPHA16 : constant GLushort := 16#803E#;
-GL_LUMINANCE4 : constant GLushort := 16#803F#;
-GL_LUMINANCE8 : constant GLushort := 16#8040#;
-GL_LUMINANCE12 : constant GLushort := 16#8041#;
-GL_LUMINANCE16 : constant GLushort := 16#8042#;
-GL_LUMINANCE4_ALPHA4 : constant GLushort := 16#8043#;
-GL_LUMINANCE6_ALPHA2 : constant GLushort := 16#8044#;
-GL_LUMINANCE8_ALPHA8 : constant GLushort := 16#8045#;
-GL_LUMINANCE12_ALPHA4 : constant GLushort := 16#8046#;
-GL_LUMINANCE12_ALPHA12 : constant GLushort := 16#8047#;
-GL_LUMINANCE16_ALPHA16 : constant GLushort := 16#8048#;
-GL_INTENSITY : constant GLushort := 16#8049#;
-GL_INTENSITY4 : constant GLushort := 16#804A#;
-GL_INTENSITY8 : constant GLushort := 16#804B#;
-GL_INTENSITY12 : constant GLushort := 16#804C#;
-GL_INTENSITY16 : constant GLushort := 16#804D#;
-GL_R3_G3_B2 : constant GLushort := 16#2A10#;
-GL_RGB4 : constant GLushort := 16#804F#;
-GL_RGB5 : constant GLushort := 16#8050#;
-GL_RGB8 : constant GLushort := 16#8051#;
-GL_RGB10 : constant GLushort := 16#8052#;
-GL_RGB12 : constant GLushort := 16#8053#;
-GL_RGB16 : constant GLushort := 16#8054#;
-GL_RGBA2 : constant GLushort := 16#8055#;
-GL_RGBA4 : constant GLushort := 16#8056#;
-GL_RGB5_A1 : constant GLushort := 16#8057#;
-GL_RGBA8 : constant GLushort := 16#8058#;
-GL_RGB10_A2 : constant GLushort := 16#8059#;
-GL_RGBA12 : constant GLushort := 16#805A#;
-GL_RGBA16 : constant GLushort := 16#805B#;
-GL_CLIENT_PIXEL_STORE_BIT : constant GLuint := 16#00000001#;
-GL_CLIENT_VERTEX_ARRAY_BIT : constant GLuint := 16#00000002#;
-GL_ALL_CLIENT_ATTRIB_BITS  : constant GLuint := 16#FFFFFFFF#;
-GL_CLIENT_ALL_ATTRIB_BITS  : constant GLuint := 16#FFFFFFFF#;
+GL_PROXY_TEXTURE_1D : constant GLenum := 16#8063#;
+GL_PROXY_TEXTURE_2D : constant GLenum := 16#8064#;
+GL_TEXTURE_PRIORITY : constant GLenum := 16#8066#;
+GL_TEXTURE_RESIDENT : constant GLenum := 16#8067#;
+GL_TEXTURE_BINDING_1D : constant GLenum := 16#8068#;
+GL_TEXTURE_BINDING_2D : constant GLenum := 16#8069#;
+GL_TEXTURE_INTERNAL_FORMAT : constant GLenum := 16#1003#;
+GL_ALPHA4 : constant GLenum := 16#803B#;
+GL_ALPHA8 : constant GLenum := 16#803C#;
+GL_ALPHA12 : constant GLenum := 16#803D#;
+GL_ALPHA16 : constant GLenum := 16#803E#;
+GL_LUMINANCE4 : constant GLenum := 16#803F#;
+GL_LUMINANCE8 : constant GLenum := 16#8040#;
+GL_LUMINANCE12 : constant GLenum := 16#8041#;
+GL_LUMINANCE16 : constant GLenum := 16#8042#;
+GL_LUMINANCE4_ALPHA4 : constant GLenum := 16#8043#;
+GL_LUMINANCE6_ALPHA2 : constant GLenum := 16#8044#;
+GL_LUMINANCE8_ALPHA8 : constant GLenum := 16#8045#;
+GL_LUMINANCE12_ALPHA4 : constant GLenum := 16#8046#;
+GL_LUMINANCE12_ALPHA12 : constant GLenum := 16#8047#;
+GL_LUMINANCE16_ALPHA16 : constant GLenum := 16#8048#;
+GL_INTENSITY : constant GLenum := 16#8049#;
+GL_INTENSITY4 : constant GLenum := 16#804A#;
+GL_INTENSITY8 : constant GLenum := 16#804B#;
+GL_INTENSITY12 : constant GLenum := 16#804C#;
+GL_INTENSITY16 : constant GLenum := 16#804D#;
+GL_R3_G3_B2 : constant GLenum := 16#2A10#;
+GL_RGB4 : constant GLenum := 16#804F#;
+GL_RGB5 : constant GLenum := 16#8050#;
+GL_RGB8 : constant GLenum := 16#8051#;
+GL_RGB10 : constant GLenum := 16#8052#;
+GL_RGB12 : constant GLenum := 16#8053#;
+GL_RGB16 : constant GLenum := 16#8054#;
+GL_RGBA2 : constant GLenum := 16#8055#;
+GL_RGBA4 : constant GLenum := 16#8056#;
+GL_RGB5_A1 : constant GLenum := 16#8057#;
+GL_RGBA8 : constant GLenum := 16#8058#;
+GL_RGB10_A2 : constant GLenum := 16#8059#;
+GL_RGBA12 : constant GLenum := 16#805A#;
+GL_RGBA16 : constant GLenum := 16#805B#;
+GL_CLIENT_PIXEL_STORE_BIT : constant GLenum := 16#00000001#;
+GL_CLIENT_VERTEX_ARRAY_BIT : constant GLenum := 16#00000002#;
+GL_ALL_CLIENT_ATTRIB_BITS  : constant GLenum := 16#FFFFFFFF#;
+GL_CLIENT_ALL_ATTRIB_BITS  : constant GLenum := 16#FFFFFFFF#;
 
 ------------------------------------------------------------------------------
 -- OpenGL 1.2
 ------------------------------------------------------------------------------
 
-GL_RESCALE_NORMAL : constant GLushort := 16#803A#;
-GL_CLAMP_TO_EDGE : constant GLushort := 16#812F#;
-GL_MAX_ELEMENTS_VERTICES : constant GLushort := 16#80E8#;
-GL_MAX_ELEMENTS_INDICES : constant GLushort := 16#80E9#;
-GL_BGR : constant GLushort := 16#80E0#;
-GL_BGRA : constant GLushort := 16#80E1#;
-GL_UNSIGNED_BYTE_3_3_2 : constant GLushort := 16#8032#;
-GL_UNSIGNED_BYTE_2_3_3_REV : constant GLushort := 16#8362#;
-GL_UNSIGNED_SHORT_5_6_5 : constant GLushort := 16#8363#;
-GL_UNSIGNED_SHORT_5_6_5_REV : constant GLushort := 16#8364#;
-GL_UNSIGNED_SHORT_4_4_4_4 : constant GLushort := 16#8033#;
-GL_UNSIGNED_SHORT_4_4_4_4_REV : constant GLushort := 16#8365#;
-GL_UNSIGNED_SHORT_5_5_5_1 : constant GLushort := 16#8034#;
-GL_UNSIGNED_SHORT_1_5_5_5_REV : constant GLushort := 16#8366#;
-GL_UNSIGNED_INT_8_8_8_8 : constant GLushort := 16#8035#;
-GL_UNSIGNED_INT_8_8_8_8_REV : constant GLushort := 16#8367#;
-GL_UNSIGNED_INT_10_10_10_2 : constant GLushort := 16#8036#;
-GL_UNSIGNED_INT_2_10_10_10_REV : constant GLushort := 16#8368#;
-GL_LIGHT_MODEL_COLOR_CONTROL : constant GLushort := 16#81F8#;
-GL_SINGLE_COLOR : constant GLushort := 16#81F9#;
-GL_SEPARATE_SPECULAR_COLOR : constant GLushort := 16#81FA#;
-GL_TEXTURE_MIN_LOD : constant GLushort := 16#813A#;
-GL_TEXTURE_MAX_LOD : constant GLushort := 16#813B#;
-GL_TEXTURE_BASE_LEVEL : constant GLushort := 16#813C#;
-GL_TEXTURE_MAX_LEVEL : constant GLushort := 16#813D#;
-GL_SMOOTH_POINT_SIZE_RANGE : constant GLushort := 16#0B12#;
-GL_SMOOTH_POINT_SIZE_GRANULARITY : constant GLushort := 16#0B13#;
-GL_SMOOTH_LINE_WIDTH_RANGE : constant GLushort := 16#0B22#;
-GL_SMOOTH_LINE_WIDTH_GRANULARITY : constant GLushort := 16#0B23#;
-GL_ALIASED_POINT_SIZE_RANGE : constant GLushort := 16#846D#;
-GL_ALIASED_LINE_WIDTH_RANGE : constant GLushort := 16#846E#;
-GL_PACK_SKIP_IMAGES : constant GLushort := 16#806B#;
-GL_PACK_IMAGE_HEIGHT : constant GLushort := 16#806C#;
-GL_UNPACK_SKIP_IMAGES : constant GLushort := 16#806D#;
-GL_UNPACK_IMAGE_HEIGHT : constant GLushort := 16#806E#;
-GL_TEXTURE_3D : constant GLushort := 16#806F#;
-GL_PROXY_TEXTURE_3D : constant GLushort := 16#8070#;
-GL_TEXTURE_DEPTH : constant GLushort := 16#8071#;
-GL_TEXTURE_WRAP_R : constant GLushort := 16#8072#;
-GL_MAX_3D_TEXTURE_SIZE : constant GLushort := 16#8073#;
-GL_TEXTURE_BINDING_3D : constant GLushort := 16#806A#;
+GL_RESCALE_NORMAL : constant GLenum := 16#803A#;
+GL_CLAMP_TO_EDGE : constant GLenum := 16#812F#;
+GL_MAX_ELEMENTS_VERTICES : constant GLenum := 16#80E8#;
+GL_MAX_ELEMENTS_INDICES : constant GLenum := 16#80E9#;
+GL_BGR : constant GLenum := 16#80E0#;
+GL_BGRA : constant GLenum := 16#80E1#;
+GL_UNSIGNED_BYTE_3_3_2 : constant GLenum := 16#8032#;
+GL_UNSIGNED_BYTE_2_3_3_REV : constant GLenum := 16#8362#;
+GL_UNSIGNED_SHORT_5_6_5 : constant GLenum := 16#8363#;
+GL_UNSIGNED_SHORT_5_6_5_REV : constant GLenum := 16#8364#;
+GL_UNSIGNED_SHORT_4_4_4_4 : constant GLenum := 16#8033#;
+GL_UNSIGNED_SHORT_4_4_4_4_REV : constant GLenum := 16#8365#;
+GL_UNSIGNED_SHORT_5_5_5_1 : constant GLenum := 16#8034#;
+GL_UNSIGNED_SHORT_1_5_5_5_REV : constant GLenum := 16#8366#;
+GL_UNSIGNED_INT_8_8_8_8 : constant GLenum := 16#8035#;
+GL_UNSIGNED_INT_8_8_8_8_REV : constant GLenum := 16#8367#;
+GL_UNSIGNED_INT_10_10_10_2 : constant GLenum := 16#8036#;
+GL_UNSIGNED_INT_2_10_10_10_REV : constant GLenum := 16#8368#;
+GL_LIGHT_MODEL_COLOR_CONTROL : constant GLenum := 16#81F8#;
+GL_SINGLE_COLOR : constant GLenum := 16#81F9#;
+GL_SEPARATE_SPECULAR_COLOR : constant GLenum := 16#81FA#;
+GL_TEXTURE_MIN_LOD : constant GLenum := 16#813A#;
+GL_TEXTURE_MAX_LOD : constant GLenum := 16#813B#;
+GL_TEXTURE_BASE_LEVEL : constant GLenum := 16#813C#;
+GL_TEXTURE_MAX_LEVEL : constant GLenum := 16#813D#;
+GL_SMOOTH_POINT_SIZE_RANGE : constant GLenum := 16#0B12#;
+GL_SMOOTH_POINT_SIZE_GRANULARITY : constant GLenum := 16#0B13#;
+GL_SMOOTH_LINE_WIDTH_RANGE : constant GLenum := 16#0B22#;
+GL_SMOOTH_LINE_WIDTH_GRANULARITY : constant GLenum := 16#0B23#;
+GL_ALIASED_POINT_SIZE_RANGE : constant GLenum := 16#846D#;
+GL_ALIASED_LINE_WIDTH_RANGE : constant GLenum := 16#846E#;
+GL_PACK_SKIP_IMAGES : constant GLenum := 16#806B#;
+GL_PACK_IMAGE_HEIGHT : constant GLenum := 16#806C#;
+GL_UNPACK_SKIP_IMAGES : constant GLenum := 16#806D#;
+GL_UNPACK_IMAGE_HEIGHT : constant GLenum := 16#806E#;
+GL_TEXTURE_3D : constant GLenum := 16#806F#;
+GL_PROXY_TEXTURE_3D : constant GLenum := 16#8070#;
+GL_TEXTURE_DEPTH : constant GLenum := 16#8071#;
+GL_TEXTURE_WRAP_R : constant GLenum := 16#8072#;
+GL_MAX_3D_TEXTURE_SIZE : constant GLenum := 16#8073#;
+GL_TEXTURE_BINDING_3D : constant GLenum := 16#806A#;
 
 ------------------------------------------------------------------------------
 -- GL_ARB_imaging
@@ -1218,24 +1323,24 @@ function  glGetError return GLenum;
 function  glGetString( name : GLenum ) return system.address; -- GLUbyte*
 procedure glFinish;
 procedure glFlush;
-procedure glHint( target : GLenum; mode : GLenum );
+procedure glHint( target : GLhints; mode : GLhintmodes );
 procedure glClearDepth( depth : GLclampd );
-procedure glDepthFunc( func : GLenum );
+procedure glDepthFunc( func : GLalphacompare );
 procedure glDepthMask( flag : GLboolean );
 procedure glDepthRange( near_val, far_val : GLclampd );
 procedure glClearAccum( red, green, blue, alpha : GLfloat );
 procedure glAccum( op : GLenum; value : GLfloat );
-procedure glMatrixMode( mode : GLenum );
+procedure glMatrixMode( mode : GLmodes );
 procedure glOrtho( left, right, bottom, top, near_val, far_val : GLdouble );
 procedure glFrustum( left, right, bottom, top, near_val, far_val : GLdouble );
 procedure glViewport( x, y : GLint; width, height : GLsizei );
 procedure glPushMatrix;
 procedure glPopMatrix;
 procedure glLoadIdentity;
-procedure glLoadMatrixd( m : in out GLdouble );
-procedure glLoadMatrixf( m : in out GLfloat );
-procedure glMultMatrixd( m : in out GLdouble );
-procedure glMultMatrixf( m : in out GLfloat );
+procedure glLoadMatrixd( m : GL_Double_Array_Ptr );
+procedure glLoadMatrixf( m : GL_Float_Array_Ptr );
+procedure glMultMatrixd( m : GL_Double_Array_Ptr );
+procedure glMultMatrixf( m : GL_Float_Array_Ptr );
 procedure glRotated( angle, x, y, z : GLdouble );
 procedure glRotatef( angle, x, y, z : GLfloat );
 procedure glScaled( x, y, z : GLdouble );
@@ -1245,12 +1350,12 @@ procedure glTranslatef( x, y,z : GLfloat );
 function  glIsList( list : GLuint ) return GLboolean;
 procedure glDeleteLists( list : GLuint; rng : GLsizei );
 function  glGenLists( rng : GLsizei ) return GLuint;
-procedure glNewList( list : GLuint; mode : GLenum );
+procedure glNewList( list : GLuint; mode : GLdlists );
 procedure glEndList;
 procedure glCallList( list : GLuint );
-procedure glCallLists( n : GLsizei; kind : GLenum; lists : System.address );
+procedure glCallLists( n : GLsizei; kind : GLtypes; lists : System.address );
 procedure glListBase( base : GLuint );
-procedure glBegin( mode : GLenum );
+procedure glBegin( mode : GLprimitives );
 procedure glEnd;
 procedure glVertex2d( x, y : GLdouble );
 procedure glVertex2f( x, y : GLfloat );
@@ -1264,38 +1369,38 @@ procedure glVertex4d( x, y, z, w : GLdouble );
 procedure glVertex4f( x, y, z, w : GLfloat );
 procedure glVertex4i( x, y, z, w : GLint );
 procedure glVertex4s( x, y, z, w : GLshort );
-procedure glVertex2dv( v : in out GLdouble );
-procedure glVertex2fv( v : in out GLfloat );
-procedure glVertex2iv( v : in out GLint );
-procedure glVertex2sv( v : in out GLshort);
-procedure glVertex3dv( v : in out GLdouble );
-procedure glVertex3fv( v : in out GLfloat );
-procedure glVertex3iv( v : in out GLint );
-procedure glVertex3sv( v : in out GLshort );
-procedure glVertex4dv( v : in out GLdouble );
-procedure glVertex4fv( v : in out GLfloat );
-procedure glVertex4iv( v : in out GLint );
-procedure glVertex4sv( v : in out GLshort );
+procedure glVertex2dv( v : GL_Double_Array_Ptr );
+procedure glVertex2fv( v : GL_Float_Array_Ptr );
+procedure glVertex2iv( v : GL_Int_Array_Ptr );
+procedure glVertex2sv( v : GL_Short_Array_Ptr );
+procedure glVertex3dv( v : GL_Double_Array_Ptr );
+procedure glVertex3fv( v : GL_Float_Array_Ptr );
+procedure glVertex3iv( v : GL_Int_Array_Ptr );
+procedure glVertex3sv( v : GL_Short_Array_Ptr );
+procedure glVertex4dv( v : GL_Double_Array_Ptr );
+procedure glVertex4fv( v : GL_Float_Array_Ptr );
+procedure glVertex4iv( v : GL_Int_Array_Ptr );
+procedure glVertex4sv( v : GL_Short_Array_Ptr );
 procedure glNormal3b( nx, ny, nz : GLbyte );
 procedure glNormal3d( nx, ny, nz : GLdouble );
 procedure glNormal3f( nx, ny, nz : GLfloat );
 procedure glNormal3i( nx, ny, nz : GLint );
 procedure glNormal3s( nx, ny, nz : GLshort );
-procedure glNormal3bv( v : in out GLbyte );
-procedure glNormal3dv( v : in out GLdouble );
-procedure glNormal3fv( v : in out GLfloat );
-procedure glNormal3iv( v : in out GLint );
-procedure glNormal3sv( v : in out GLshort );
+procedure glNormal3bv( v : GL_Byte_Array_Ptr );
+procedure glNormal3dv( v : GL_Double_Array_Ptr );
+procedure glNormal3fv( v : GL_Float_Array_Ptr );
+procedure glNormal3iv( v : GL_Int_Array_Ptr );
+procedure glNormal3sv( v : GL_Short_Array_Ptr );
 procedure glIndexd( c : GLdouble );
 procedure glIndexf( c : GLfloat );
 procedure glIndexi( c : GLint );
 procedure glIndexs( c : GLshort );
 procedure glIndexub( c : GLubyte );  -- /* 1.1 */
-procedure glIndexdv( c : in out GLdouble );
-procedure glIndexfv( c : in out GLfloat );
-procedure glIndexiv( c : in out GLint );
-procedure glIndexsv( c : in out GLshort );
-procedure glIndexubv( c : in out GLubyte );  -- /* 1.1 */
+procedure glIndexdv( c : GL_Double_Array_Ptr );
+procedure glIndexfv( c : GL_Float_Array_Ptr );
+procedure glIndexiv( c : GL_Int_Array_Ptr );
+procedure glIndexsv( c : GL_Short_Array_Ptr );
+procedure glIndexubv( c : GL_UByte_Array_Ptr );  -- /* 1.1 */
 procedure glColor3b( red, green, blue : GLbyte );
 procedure glColor3d( red, green, blue : GLdouble );
 procedure glColor3f( red, green, blue : GLfloat );
@@ -1312,22 +1417,22 @@ procedure glColor4s( red, green, blue, alpha : GLshort );
 procedure glColor4ub( red, green, blue, alpha : GLubyte );
 procedure glColor4ui( red, green, blue, alpha : GLuint );
 procedure glColor4us( red, green, blue, alpha : GLushort );
-procedure glColor3bv( v : in out GLbyte );
-procedure glColor3dv( v : in out GLdouble );
-procedure glColor3fv( v : in out GLfloat );
-procedure glColor3iv( v : in out GLint );
-procedure glColor3sv( v : in out GLshort );
-procedure glColor3ubv( v : in out GLubyte );
-procedure glColor3uiv( v : in out GLuint );
-procedure glColor3usv( v : in out GLushort );
-procedure glColor4bv( v : in out GLbyte );
-procedure glColor4dv( v : in out GLdouble );
-procedure glColor4fv( v : in out GLfloat );
-procedure glColor4iv( v : in out GLint );
-procedure glColor4sv( v : in out GLshort );
-procedure glColor4ubv( v : in out GLubyte );
-procedure glColor4uiv( v : in out GLuint );
-procedure glColor4usv( v : in out GLushort );
+procedure glColor3bv( v : GL_Byte_Array_Ptr );
+procedure glColor3dv( v : GL_Double_Array_Ptr );
+procedure glColor3fv( v : GL_Float_Array_Ptr );
+procedure glColor3iv( v : GL_Int_Array_Ptr );
+procedure glColor3sv( v : GL_Short_Array_Ptr );
+procedure glColor3ubv( v : GL_UByte_Array_Ptr );
+procedure glColor3uiv( v : GL_UInt_Array_Ptr );
+procedure glColor3usv( v : GL_UShort_Array_Ptr );
+procedure glColor4bv( v : GL_Byte_Array_Ptr );
+procedure glColor4dv( v : GL_Double_Array_Ptr );
+procedure glColor4fv( v : GL_Float_Array_Ptr );
+procedure glColor4iv( v : GL_Int_Array_Ptr );
+procedure glColor4sv( v : GL_Short_Array_Ptr );
+procedure glColor4ubv( v : GL_UByte_Array_Ptr );
+procedure glColor4uiv( v : GL_UInt_Array_Ptr );
+procedure glColor4usv( v : GL_UShort_Array_Ptr );
 procedure glTexCoord1d( s : GLdouble );
 procedure glTexCoord1f( s : GLfloat );
 procedure glTexCoord1i( s : GLint );
@@ -1344,22 +1449,22 @@ procedure glTexCoord4d( s, t, r, q : GLdouble );
 procedure glTexCoord4f( s, t, r, q : GLfloat );
 procedure glTexCoord4i( s, t, r, q : GLint );
 procedure glTexCoord4s( s, t, r, q : GLshort );
-procedure glTexCoord1dv( v : in out GLdouble );
-procedure glTexCoord1fv( v : in out GLfloat );
-procedure glTexCoord1iv( v : in out GLint );
-procedure glTexCoord1sv( v : in out GLshort );
-procedure glTexCoord2dv( v : in out GLdouble );
-procedure glTexCoord2fv( v : in out GLfloat );
-procedure glTexCoord2iv( v : in out GLint );
-procedure glTexCoord2sv( v : in out GLshort );
-procedure glTexCoord3dv( v : in out GLdouble );
-procedure glTexCoord3fv( v : in out GLfloat );
-procedure glTexCoord3iv( v : in out GLint );
-procedure glTexCoord3sv( v : in out GLshort );
-procedure glTexCoord4dv( v : in out GLdouble );
-procedure glTexCoord4fv( v : in out GLfloat );
-procedure glTexCoord4iv( v : in out GLint );
-procedure glTexCoord4sv( v : in out GLshort );
+procedure glTexCoord1dv( v : GL_Double_Array_Ptr );
+procedure glTexCoord1fv( v : GL_Float_Array_Ptr );
+procedure glTexCoord1iv( v : GL_Int_Array_Ptr );
+procedure glTexCoord1sv( v : GL_Short_Array_Ptr );
+procedure glTexCoord2dv( v : GL_Double_Array_Ptr );
+procedure glTexCoord2fv( v : GL_Float_Array_Ptr );
+procedure glTexCoord2iv( v : GL_Int_Array_Ptr );
+procedure glTexCoord2sv( v : GL_Short_Array_Ptr );
+procedure glTexCoord3dv( v : GL_Double_Array_Ptr );
+procedure glTexCoord3fv( v : GL_Float_Array_Ptr );
+procedure glTexCoord3iv( v : GL_Int_Array_Ptr );
+procedure glTexCoord3sv( v : GL_Short_Array_Ptr );
+procedure glTexCoord4dv( v : GL_Double_Array_Ptr );
+procedure glTexCoord4fv( v : GL_Float_Array_Ptr );
+procedure glTexCoord4iv( v : GL_Int_Array_Ptr );
+procedure glTexCoord4sv( v : GL_Short_Array_Ptr );
 procedure glRasterPos2d( x, y : GLdouble );
 procedure glRasterPos2f( x, y : GLfloat );
 procedure glRasterPos2i( x, y : GLint );
@@ -1372,192 +1477,196 @@ procedure glRasterPos4d( x, y, z, w : GLdouble );
 procedure glRasterPos4f( x, y, z, w : GLfloat );
 procedure glRasterPos4i( x, y, z, w : GLint );
 procedure glRasterPos4s( x, y, z, w : GLshort );
-procedure glRasterPos2dv( v : in out GLdouble );
-procedure glRasterPos2fv( v : in out GLfloat );
-procedure glRasterPos2iv( v : in out GLint );
-procedure glRasterPos2sv( v : in out GLshort );
-procedure glRasterPos3dv( v : in out GLdouble );
-procedure glRasterPos3fv( v : in out GLfloat );
-procedure glRasterPos3iv( v : in out GLint );
-procedure glRasterPos3sv( v : in out GLshort );
-procedure glRasterPos4dv( v : in out GLdouble );
-procedure glRasterPos4fv( v : in out GLfloat );
-procedure glRasterPos4iv( v : in out GLint );
-procedure glRasterPos4sv( v : in out GLshort );
+procedure glRasterPos2dv( v : GL_Double_Array_Ptr );
+procedure glRasterPos2fv( v : GL_Float_Array_Ptr );
+procedure glRasterPos2iv( v : GL_Int_Array_Ptr );
+procedure glRasterPos2sv( v : GL_Short_Array_Ptr );
+procedure glRasterPos3dv( v : GL_Double_Array_Ptr );
+procedure glRasterPos3fv( v : GL_Float_Array_Ptr );
+procedure glRasterPos3iv( v : GL_Int_Array_Ptr );
+procedure glRasterPos3sv( v : GL_Short_Array_Ptr );
+procedure glRasterPos4dv( v : GL_Double_Array_Ptr );
+procedure glRasterPos4fv( v : GL_Float_Array_Ptr );
+procedure glRasterPos4iv( v : GL_Int_Array_Ptr );
+procedure glRasterPos4sv( v : GL_Short_Array_Ptr );
 procedure glRectd( x1, y1, x2, y2 : GLdouble );
 procedure glRectf( x1, y1, x2, y2 : GLfloat );
 procedure glRecti( x1, y1, x2, y2 : GLint );
 procedure glRects( x1, y1, x2, y2 : GLshort );
-procedure glRectdv( v1, v2 : in out GLdouble );
-procedure glRectfv( v1, v2 : in out GLfloat );
-procedure glRectiv( v1, v2 : in out GLint );
-procedure glRectsv( v1, v2 : in out GLshort );
-procedure glVertexPointer( size : GLint; kind : GLenum; stride : GLsizei; ptr : System.address );
-procedure glNormalPointer( kind : GLenum; stride : GLsizei; ptr : System.address );
-procedure glColorPointer( size : GLint; kind : GLenum; stride : GLsizei; ptr : System.address ); 
-procedure glIndexPointer( kind : GLenum; stride : GLsizei; ptr : System.address );
-procedure glTexCoordPointer( size : GLint; kind : GLenum; stride : GLsizei; ptr : System.address );
+procedure glRectdv( v1, v2 : GL_Double_Array_Ptr );
+procedure glRectfv( v1, v2 : GL_Float_Array_Ptr );
+procedure glRectiv( v1, v2 : GL_Int_Array_Ptr );
+procedure glRectsv( v1, v2 : GL_Short_Array_Ptr );
+procedure glVertexPointer( size : GLint; kind : GLtypes; stride : GLsizei; ptr : System.address );
+procedure glNormalPointer( kind : GLtypes; stride : GLsizei; ptr : System.address );
+procedure glColorPointer( size : GLint; kind : GLtypes; stride : GLsizei; ptr : System.address ); 
+procedure glIndexPointer( kind : GLtypes; stride : GLsizei; ptr : System.address );
+procedure glTexCoordPointer( size : GLint; kind : GLtypes; stride : GLsizei; ptr : System.address );
 procedure glEdgeFlagPointer( stride : GLsizei; ptr : System.address );
-procedure glGetPointerv( pname : GLenum; params : in out System.address );
+procedure glGetPointerv( pname : GLvertexarrays; params : in out System.address );
 procedure glArrayElement( i : GLint );
-procedure glDrawArrays( mode : GLenum; first : GLint; count : GLsizei );
-procedure glDrawElements( mode : GLenum; count : GLsizei; kind : GLenum; indices : System.address );
-procedure glInterleavedArrays( format : GLenum; stride : GLsizei; pointer : System.address );
-procedure glShadeModel( mode : GLenum );
-procedure glLightf( light : GLenum; pname : GLenum; param : GLfloat );
-procedure glLighti( light : GLenum; pname : GLenum; param : GLint );
-procedure glLightfv( light : GLenum; pname : GLenum; params : in out GLfloat );
-procedure glLightiv( light : GLenum; pname : GLenum; params : in out GLint );
-procedure glGetLightfv( light : GLenum; pname : GLenum; params : System.address );
-procedure glGetLightiv( light : GLenum; pname : GLenum; params : System.address );
+procedure glDrawArrays( mode : GLprimitives; first : GLint; count : GLsizei );
+procedure glDrawElements( mode : GLtypes; count : GLsizei; kind : GLprimitives; indices : System.address );
+procedure glInterleavedArrays( format : GLvertexarrays; stride : GLsizei; pointer : System.address );
+procedure glShadeModel( mode : GLlighting );
+procedure glLightf( light : GLenum; pname : GLlighting; param : GLfloat );
+procedure glLighti( light : GLenum; pname : GLlighting; param : GLint );
+procedure glLightfv( light : GLenum; pname : GLlighting; params : GL_Float_Array_Ptr );
+procedure glLightiv( light : GLenum; pname : GLlighting; params : GL_Int_Array_Ptr );
+procedure glGetLightfv( light : GLenum; pname : GLlighting; params : GL_Float_Array_Ptr );
+procedure glGetLightiv( light : GLenum; pname : GLlighting; params : GL_Int_Array_Ptr );
 procedure glLightModelf( pname : GLenum; param : GLfloat );
 procedure glLightModeli( pname : GLenum; param : GLint );
-procedure glLightModelfv( pname : GLenum; params : System.address );
-procedure glLightModeliv( pname : GLenum; params : System.address );
-procedure glMaterialf( face : GLenum; pname : GLenum; param : GLfloat );
-procedure glMateriali( face : GLenum; pname : GLenum; param : GLint );
-procedure glMaterialfv( face : GLenum; pname : GLenum; param : in out GLfloat );
-procedure glMaterialiv( face : GLenum; pname : GLenum; param : in out GLint );
-procedure glGetMaterialfv( face : GLenum; pname : GLenum; param : in out GLfloat );
-procedure glGetMaterialiv( face : GLenum; pname : GLenum; param : in out GLint );
-procedure glColorMaterial( face : GLenum; mode : GLenum );
+procedure glLightModelfv( pname : GLenum; params : GL_Float_Array_Ptr );
+procedure glLightModeliv( pname : GLenum; params : GL_Int_Array_Ptr );
+procedure glMaterialf( face : GLbuffers; pname : GLlighting; param : GLfloat );
+procedure glMateriali( face : GLbuffers; pname : GLlighting; param : GLint );
+procedure glMaterialfv( face : GLbuffers; pname : GLlighting; param : GL_Float_Array_Ptr );
+procedure glMaterialiv( face : GLbuffers; pname : GLlighting; param : GL_Int_Array_Ptr );
+procedure glGetMaterialfv( face : GLbuffers; pname : GLlighting; param : in out GLfloat );
+procedure glGetMaterialiv( face : GLbuffers; pname : GLlighting; param : in out GLint );
+procedure glColorMaterial( face : GLbuffers; mode : GLlighting );
 procedure glPixelZoom( xfactor, yfactor : GLfloat );
-procedure glPixelStoref( pname : GLenum; param : GLfloat );
-procedure glPixelStorei( pname : GLenum; param : GLint );
-procedure glPixelTransferf( pname : GLenum; param : GLfloat );
-procedure glPixelTransferi( pname : GLenum; param : GLint );
-procedure glPixelMapfv( map : GLenum; mapsize : GLsizei; values : in out GLfloat );
-procedure glPixelMapuiv( map : GLenum; mapsize : GLsizei; values : in out GLuint );
-procedure glPixelMapusv( map : GLenum; mapsize : GLsizei; values : in out GLushort );
-procedure glGetPixelMapfv( map : GLenum; values : in out GLfloat );
-procedure glGetPixelMapuiv( map : GLenum; values : in out GLuint );
-procedure glGetPixelMapusv( map : GLenum; values : in out GLushort );
-procedure glBitmap( width, height : GLsizei; xorig, yorig : GLfloat; xmove, ymove : GLfloat; bitmap : in out GLubyte );
-procedure glReadPixels( x, y : GLint; width, height : GLsizei; format : GLenum; kind : GLenum; pixels : System.address );
-procedure glDrawPixels( width, height : GLsizei; format : GLenum; kind : GLenum; pixels : System.address );
-procedure glCopyPixels( x, y : GLint; width, height : GLsizei; kind : GLenum );
+procedure glPixelStoref( pname : GLpixelmode; param : GLfloat );
+procedure glPixelStorei( pname : GLpixelmode; param : GLint );
+procedure glPixelTransferf( pname : GLpixelmode; param : GLfloat );
+procedure glPixelTransferi( pname : GLpixelmode; param : GLint );
+procedure glPixelMapfv( map : GLpixelmode; mapsize : GLsizei; values : in out GLfloat );
+procedure glPixelMapuiv( map : GLpixelmode; mapsize : GLsizei; values : in out GLuint );
+procedure glPixelMapusv( map : GLpixelmode; mapsize : GLsizei; values : in out GLushort );
+procedure glGetPixelMapfv( map : GLpixelmode; values : GL_Float_Array_Ptr );
+procedure glGetPixelMapuiv( map : GLpixelmode; values : GL_UInt_Array_Ptr );
+procedure glGetPixelMapusv( map : GLpixelmode; values : GL_UShort_Array_Ptr );
+procedure glBitmap( width, height : GLsizei; xorig, yorig : GLfloat; xmove, ymove : GLfloat; bitmap : GL_UByte_Array_Ptr );
+procedure glReadPixels( x, y : GLint; width, height : GLsizei; format : GLenum; kind : GLtypes; pixels : System.address );
+procedure glDrawPixels( width, height : GLsizei; format : GLbuffers; kind : GLtypes; pixels : System.address );
+procedure glCopyPixels( x, y : GLint; width, height : GLsizei; kind : GLbuffers );
 procedure glStencilFunc( func : GLenum; ref : GLint; mask : GLuint );
 procedure glStencilMask( mask : GLuint );
-procedure glStencilOp( fail : GLenum; zfail : GLenum; zpass : GLenum );
+procedure glStencilOp( fail : GLstencil; zfail : GLstencil; zpass : GLstencil );
 procedure glClearStencil( s : GLint );
-procedure glTexGend( coord : GLenum; pname : GLenum; param : GLdouble );
-procedure glTexGenf( coord : GLenum; pname : GLenum; param : GLfloat );
-procedure glTexGeni( coord : GLenum; pname : GLenum; param : GLint );
-procedure glTexGendv( coord : GLenum; pname : GLenum; params : in out GLdouble );
-procedure glTexGenfv( coord : GLenum; pname : GLenum; params : in out GLfloat );
-procedure glTexGeniv( coord : GLenum; pname : GLenum; params : in out GLint );
-procedure glGetTexGendv( coord : GLenum; pname : GLenum; params : in out GLdouble );
-procedure glGetTexGenfv( coord : GLenum; pname : GLenum; params : in out GLfloat );
-procedure glGetTexGeniv( coord : GLenum; pname : GLenum; params : in out GLint );
-procedure glTexEnvf( target : GLenum; pname : GLenum; param : GLfloat );
-procedure glTexEnvi( target : GLenum; pname : GLenum; param : GLint );
-procedure glTexEnvfv( target : GLenum; pname : GLenum; param : in out GLfloat );
-procedure glTexEnviv( target : GLenum; pname : GLenum; param : in out GLint );
-procedure glGetTexEnvfv( target : GLenum; pname : GLenum; param : in out GLfloat );
-procedure glGetTexEnviv( target : GLenum; pname : GLenum; param : in out GLint );
-procedure glTexParameterf( target : GLenum; pname : GLenum; param : GLfloat );
-procedure glTexParameteri( target : GLenum; pname : GLenum; param : GLint );
-procedure glTexParameterfv( target : GLenum; pname : GLenum; params : in out GLfloat );
-procedure glTexParameteriv( target : GLenum; pname : GLenum; params : in out GLint );
-procedure glGetTexParameterfv( target : GLenum; pname : GLenum; params : in out GLfloat );
-procedure glGetTexParameteriv( target : GLenum; pname : GLenum; params : in out GLint );
-procedure glGetTexLevelParameterfv( target : GLenum; level : GLint; pname : GLenum; params : in out GLfloat );
-procedure glGetTexLevelParameteriv( target : GLenum; level : GLint; pname : GLenum; params : in out GLint );
-procedure glTexImage1D( target : GLenum; level : GLint; internalFormat : GLint; width : GLsizei; border : GLint; format : GLenum; kind : GLenum; pixels : System.address );
+procedure glTexGend( coord : GLtexturemapping; pname : GLtexturemapping; param : GLdouble );
+procedure glTexGenf( coord : GLtexturemapping; pname : GLtexturemapping; param : GLfloat );
+procedure glTexGeni( coord : GLtexturemapping; pname : GLtexturemapping; param : GLint );
+procedure glTexGendv( coord : GLtexturemapping; pname : GLtexturemapping; params : GL_Double_Array_Ptr );
+procedure glTexGenfv( coord : GLtexturemapping; pname : GLtexturemapping; params : GL_Float_Array_Ptr );
+procedure glTexGeniv( coord : GLtexturemapping; pname : GLtexturemapping; params : GL_Int_Array_Ptr );
+procedure glGetTexGendv( coord : GLtexturemapping; pname : GLtexturemapping; params : in out GLdouble );
+procedure glGetTexGenfv( coord : GLtexturemapping; pname : GLtexturemapping; params : in out GLfloat );
+procedure glGetTexGeniv( coord : GLtexturemapping; pname : GLtexturemapping; params : in out GLint );
+procedure glTexEnvf( target : GLtexturemapping; pname : GLtexturemapping; param : GLfloat );
+procedure glTexEnvi( target : GLtexturemapping; pname : GLtexturemapping; param : GLint );
+procedure glTexEnvfv( target : GLtexturemapping; pname : GLtexturemapping; param : GL_Float_Array_Ptr );
+procedure glTexEnviv( target : GLtexturemapping; pname : GLtexturemapping; param : GL_Int_Array_Ptr );
+procedure glGetTexEnvfv( target : GLtexturemapping; pname : GLtexturemapping; param : in out GLfloat );
+procedure glGetTexEnviv( target : GLtexturemapping; pname : GLtexturemapping; param : in out GLint );
+procedure glTexParameterf( target : GLtexturemapping; pname : GLtexturemapping; param : GLfloat );
+procedure glTexParameteri( target : GLtexturemapping; pname : GLtexturemapping; param : GLint );
+procedure glTexParameterfv( target : GLtexturemapping; pname : GLtexturemapping; params : in out GLfloat );
+procedure glTexParameteriv( target : GLtexturemapping; pname : GLtexturemapping; params : in out GLint );
+procedure glGetTexParameterfv( target : GLtexturemapping; pname : GLtexturemapping; params : in out GLfloat );
+procedure glGetTexParameteriv( target : GLtexturemapping; pname : GLtexturemapping; params : in out GLint );
+procedure glGetTexLevelParameterfv( target : GLtexturemapping; level : GLint; pname : GLenum; params : in out GLfloat );
+procedure glGetTexLevelParameteriv( target : GLtexturemapping; level : GLint; pname : GLenum; params : in out GLint );
+procedure glTexImage1D( target : GLtexturemapping; level : GLint; internalFormat : GLint; width : GLsizei; border : GLint; format : GLbuffers; kind : GLtypes; pixels : System.address );
 procedure glTexImage2D( target : GLenum; level : GLint; internalFormat : GLint; width : GLsizei; height : GLsizei; border : GLint; format : GLenum; kind : GLenum; pixels : System.address );
-procedure glGetTexImage( target : GLenum; level : GLint; format : GLenum; kind : GLenum; pixels : System.address );
-procedure glGenTextures( n : GLsizei; textures : in out GLuint );
-procedure glDeleteTextures( n : GLsizei; textures : in out GLuint );
-procedure glBindTexture( target : GLenum; texture : GLuint );
-procedure glPrioritizeTextures( n : GLsizei; textures : in out GLuint; priorities : in out GLclampf );
-function  glAreTexturesResident( n : GLsizei; textures : System.address; residences : System.address ) return GLboolean;
-function  glIsTexture( texture : GLuint ) return GLboolean;
-procedure glTexSubImage1D( target : GLenum; level : GLint; xoffset : GLint; width : GLsizei; format : GLenum; kind : GLenum; pixels : System.address );
-procedure glTexSubImage2D( target : GLenum; level : GLint; xoffset, yoffset : GLint; width, height : GLsizei; format : GLenum; kind : GLenum; pixels : System.address );
-procedure glCopyTexImage1D( target : GLenum; level : GLint; internalformat : GLenum; x, y : GLint; width : GLsizei; border : GLint );
-procedure glCopyTexImage2D( target : GLenum; level : GLint; internalformat : GLenum; x, y : GLint; width, height : GLsizei; border : GLint );
-procedure glCopyTexSubImage1D( target : GLenum; level : GLint; xoffset : GLint; x, y : GLint; width : GLsizei );
-procedure glCopyTexSubImage2D( target : GLenum; level : GLint; xoffset, yoffset : GLint; x, y : GLint; width, height : GLsizei );
-procedure glMap1d( target : GLenum; u1, u2 : GLdouble; stride : GLint; order : GLint; points : in out GLdouble );
-procedure glMap1f( target : GLenum; u1, u2 : GLfloat; stride : GLint; order : GLint; points : in out GLfloat );
-procedure glMap2d( target : GLenum; u1, u2 : GLdouble; ustride : GLint; uorder : GLint; v1, v2 : GLdouble; vstride : GLint; vorder : GLint; points : in out GLdouble );
-procedure glMap2f( target : GLenum; u1, u2 : GLfloat; ustride : GLint; uorder : GLint; v1, v2 : GLfloat; vstride : GLint; vorder : GLint; points : in out GLfloat );
-procedure glGetMapdv( target: GLenum; query : GLenum; v : in out GLdouble );
-procedure glGetMapfv( target: GLenum; query : GLenum; v : in out GLfloat );
-procedure glGetMapiv( target: GLenum; query : GLenum; v : in out GLint );
-procedure glEvalCoord1d( u : GLdouble );
-procedure glEvalCoord1f( u : GLfloat );
-procedure glEvalCoord1dv( u : GLdouble );
-procedure glEvalCoord1fv( u : in out GLfloat );
+procedure glGetTexImage( target : GLtexturemapping; level : GLint; format : GLbuffers; kind : GLtypes; pixels : System.address );
+procedure glGenTextures( n : GLsizei; textures : GL_UInt_Array_Ptr );
+procedure glDeleteTextures( n : GLsizei; textures : GL_UInt_Array_Ptr );
+procedure glBindTexture( target : GLtexturemapping; texture : GLuint );
+procedure glPrioritizeTextures( n : GLsizei; textures : GL_UInt_Array_Ptr; priorities : GL_Clampf_Array_Ptr );
+function  glAreTexturesResident( n : GLsizei; textures : GL_UInt_Array_Ptr; residences : GL_Boolean_Array_Ptr ) return GLboolean;
+function  glIsTexture( texture : GL_UInt_Array_Ptr ) return GLboolean;
+procedure glTexSubImage1D( target : GLtexturemapping; level : GLint; xoffset : GLint; width : GLsizei; format : GLbuffers; kind : GLtypes; pixels : System.address );
+procedure glTexSubImage2D( target : GLtexturemapping; level : GLint; xoffset, yoffset : GLint; width, height : GLsizei; format : GLbuffers; kind : GLtypes; pixels : System.address );
+procedure glCopyTexImage1D( target : GLtexturemapping; level : GLint; internalformat : GLenum; x, y : GLint; width : GLsizei; border : GLint );
+procedure glCopyTexImage2D( target : GLtexturemapping; level : GLint; internalformat : GLenum; x, y : GLint; width, height : GLsizei; border : GLint );
+procedure glCopyTexSubImage1D( target : GLtexturemapping; level : GLint; xoffset : GLint; x, y : GLint; width : GLsizei );
+procedure glCopyTexSubImage2D( target : GLtexturemapping; level : GLint; xoffset, yoffset : GLint; x, y : GLint; width, height : GLsizei );
+procedure glMap1d( target : GLevaluators; u1, u2 : GLdouble; stride : GLint; order : GLint; points : GL_Double_Array_Ptr );
+procedure glMap1f( target : GLevaluators; u1, u2 : GLfloat; stride : GLint; order : GLint; points : GL_Float_Array_Ptr );
+procedure glMap2d( target : GLevaluators; u1, u2 : GLdouble; ustride : GLint; uorder : GLint; v1, v2 : GLdouble; vstride : GLint; vorder : GLint; points : GL_Double_Array_Ptr );
+procedure glMap2f( target : GLevaluators; u1, u2 : GLfloat; ustride : GLint; uorder : GLint; v1, v2 : GLfloat; vstride : GLint; vorder : GLint; points : GL_Float_Array_Ptr );
+procedure glGetMapdv( target, query : GLevaluators; v : GL_Double_Array_Ptr );
+procedure glGetMapfv( target, query : GLevaluators; v : GL_Float_Array_Ptr );
+procedure glGetMapiv( target, query : GLevaluators; v : GL_Int_Array_Ptr );
+procedure glEvalCoord1d( u : GL_Double_Array_Ptr );
+procedure glEvalCoord1f( u : GL_Float_Array_Ptr );
+procedure glEvalCoord1dv( u : GL_Double_Array_Ptr );
+procedure glEvalCoord1fv( u : GL_Float_Array_Ptr );
 procedure glEvalCoord2d( u, v : GLdouble );
 procedure glEvalCoord2f( u, v : GLfloat );
-procedure glEvalCoord2dv( u : in out GLdouble );
-procedure glEvalCoord2fv( u : in out GLfloat );
+procedure glEvalCoord2dv( u : GL_Double_Array_Ptr );
+procedure glEvalCoord2fv( u : GL_Float_Array_Ptr );
 procedure glMapGrid1d( un : GLint; u1, u2 : GLdouble );
 procedure glMapGrid1f( un : GLint; u1, u2 : GLfloat );
 procedure glMapGrid2d( un : GLint; u1, u2 : GLdouble; vn : GLint; v1, v2 : GLdouble );
 procedure glMapGrid2f( un : GLint; u1, u2 : GLfloat; vn : GLint; v1, v2 : GLfloat );
 procedure glEvalPoint1( i : GLint );
 procedure glEvalPoint2( i, j : GLint );
-procedure glEvalMesh1( mode : GLenum; i1, i2 : GLint );
-procedure glEvalMesh2( mode : GLenum; i1, i2  :GLint; j1, j2 : GLint );
-procedure glFogf( pname : GLenum; param : GLfloat );
-procedure glFogi( pname : GLenum; param : GLint );
-procedure glFogfv( pname : GLenum; param : in out GLfloat );
-procedure glFogiv( pname : GLenum; param : in out GLint );
-procedure glFeedbackBuffer( size : GLsizei; kind : GLenum; buffer : in out GLfloat );
+procedure glEvalMesh1( mode : GLpolygons; i1, i2 : GLint );
+procedure glEvalMesh2( mode : GLpolygons; i1, i2  :GLint; j1, j2 : GLint );
+procedure glFogf( pname : GLfog; param : GLfloat );
+procedure glFogi( pname : GLfog; param : GLint );
+procedure glFogfv( pname : GLfog; param : GL_Float_Array_Ptr );
+procedure glFogiv( pname : GLfog; param : GL_Int_Array_Ptr );
+procedure glFeedbackBuffer( size : GLsizei; kind : GLfeedback; buffer : GL_Float_Array_Ptr );
 procedure glPassThrough( token : GLfloat );
-procedure glSelectBuffer( kind : GLsizei; buffer : in out GLuint );
+procedure glSelectBuffer( kind : GLsizei; buffer : GL_UInt_Array_Ptr );
 procedure glInitNames;
 procedure glLoadName( name : GLuint );
 procedure glPushName( name : GLuint );
 procedure glPopName;
-procedure glDrawRangeElements( mode : GLenum; start : GLuint; done : GLuint; count : GLsizei; kind : GLenum; indices : System.address );
-procedure glTexImage3D( target : GLenum; level : GLint; internalFormat : GLint; width, height, depth : GLsizei; border : GLint; format : GLenum; kind : GLenum; pixels : System.address );
-procedure glTexSubImage3D( target : GLenum; level : GLint; xoffset, yoffset, zoffset : GLint; width, height, depth : GLsizei; format : GLenum; kind : GLenum; pixels : System.address );
+procedure glDrawRangeElements( mode : GLprimitives; start : GLuint; done : GLuint; count : GLsizei; kind : GLtypes; indices : System.address );
+procedure glTexImage3D( target : GLenum; level : GLint; internalFormat : GLint; width, height, depth : GLsizei; border : GLint; format : GLbuffers; kind : GLtypes; pixels : System.address );
+procedure glTexSubImage3D( target : GLenum; level : GLint; xoffset, yoffset, zoffset : GLint; width, height, depth : GLsizei; format : GLbuffers; kind : GLtypes; pixels : System.address );
 procedure glCopyTexSubImage3D( target : GLenum; level : GLint; xoffset, yoffset, zoffset : GLint; x, y : GLint; width, height : GLsizei );
 procedure glColorTable( target : GLenum; internalformat : GLenum; width : GLsizei; format : GLenum; kind : GLenum; table : System.address );
-procedure glColorSubTable( target : GLenum; start : GLsizei; count : GLsizei; format : GLenum; kind : GLenum; data : System.address );
-procedure glColorTableParameteriv( target : GLenum; pname : GLenum; params : in out GLint );
-procedure glColorTableParameterfv( target : GLenum; pname : GLenum; params : in out GLfloat );
-procedure glCopyColorSubTable( target : GLenum; start : GLsizei; x, y : GLint; width : GLsizei );
-procedure glCopyColorTable( target : GLenum; internalformat : GLenum; x, y : GLint; width : GLsizei );
-procedure glGetColorTable( target : GLenum; format : GLenum; table : System.address );
-procedure glGetColorTableParameterfv( target : GLenum; pname : GLenum; params : in out GLfloat );
-procedure glGetColorTableParameteriv( target : GLenum; pname : GLenum; params : in out GLint );
-procedure glBlendEquation( mode : GLenum );
+procedure glColorSubTable( target : GLarbmapping; start : GLsizei; count : GLsizei; format : GLbuffers; kind : GLtypes; data : System.address );
+procedure glColorTableParameteriv( target : GLarbmapping; pname : GLarbmapping; params : GL_Int_Array_Ptr );
+procedure glColorTableParameterfv( target : GLarbmapping; pname : GLarbmapping; params : GL_Float_Array_Ptr );
+procedure glCopyColorSubTable( target : GLarbmapping; start : GLsizei; x, y : GLint; width : GLsizei );
+procedure glCopyColorTable( target : GLarbmapping; internalformat : GLenum; x, y : GLint; width : GLsizei );
+procedure glGetColorTable( target : GLarbmapping; format : GLbuffers; kind : GLtypes; table : System.address );
+procedure glGetColorTableParameterfv( target : GLarbmapping; pname : GLarbmapping; params : GL_Float_Array_Ptr );
+procedure glGetColorTableParameteriv( target : GLarbmapping; pname : GLarbmapping; params : GL_Int_Array_Ptr );
+procedure glBlendEquation( mode : GLarbmapping );
 procedure glBlendColor( red, green, blue, alpha : GLclampf );
-procedure glHistogram( target : GLenum; width : GLsizei; internalformat : GLenum; sink : GLboolean );
-procedure glResetHistogram( target : GLenum );
-procedure glGetHistogram( target : GLenum; reset : GLboolean; format : GLenum; kind : GLenum; values : System.address );
-procedure glGetHistogramParameterfv( target : GLenum; pname : GLenum; params : in out GLfloat );
-procedure glGetHistogramParameteriv( target : GLenum; pname : GLenum; params : in out GLint );
-procedure glMinmax( target : GLenum; internalformat : GLenum; sink : GLboolean );
-procedure glResetMinmax( target : GLenum );
-procedure glGetMinmax( target : GLenum; reset : GLboolean; format : GLenum; kind : GLenum; values : System.address );
-procedure glGetMinmaxParameterfv( target : GLenum; pname : GLenum; params : in out GLfloat );
-procedure glGetMinmaxParameteriv( target : GLenum; pname : GLenum; params : in out GLint );
-procedure glConvolutionFilter1D( target : GLenum; internalformat : GLenum; width : GLsizei; format : GLenum; kind : GLenum; image : System.address );
-procedure glConvolutionFilter2D( target : GLenum; internalformat : GLenum; width, height : GLsizei; format : GLenum; kind : GLenum; image : System.address );
-procedure glConvolutionParameterf( target : GLenum; pname : GLenum; params : GLfloat );
-procedure glConvolutionParameterfv( target : GLenum; pname : GLenum; params : in out GLfloat );
-procedure glConvolutionParameteri( target : GLenum; pname : GLenum; params : GLint );
-procedure glConvolutionParameteriv( target : GLenum; pname : GLenum; params : in out GLint );
-procedure glCopyConvolutionFilter1D( target : GLenum; internalformat : GLenum; x, y : GLint; width : GLsizei );
-procedure glCopyConvolutionFilter2D( target : GLenum; internalformat : GLenum; x, y : GLint; width, height : GLsizei );
-procedure glGetConvolutionFilter( target : GLenum; format : GLenum; kind : GLenum; image : System.address );
-procedure glGetConvolutionParameterfv( target : GLenum; pname : GLenum; params : in out GLfloat );
-procedure glGetConvolutionParameteriv( target : GLenum; pname : GLenum; params : in out GLint );
-procedure glSeparableFilter2D( target : GLenum; internalformat : GLenum; width, height : GLsizei; format : GLenum; kind : GLenum; row, column : System.address );
-procedure glGetSeparableFilter( target : GLenum; format : GLenum; kind : GLenum; row, column, span : System.address );
+procedure glHistogram( target : GLarbmapping; width : GLsizei; internalformat : GLenum; sink : GLboolean );
+procedure glResetHistogram( target : GLarbmapping );
+procedure glGetHistogram( target : GLarbmapping; reset : GLboolean; format : GLbuffers; kind : GLtypes; values : System.address );
+procedure glGetHistogramParameterfv( target : GLarbmapping; pname : GLarbmapping; params : in out GLfloat );
+procedure glGetHistogramParameteriv( target : GLarbmapping; pname : GLarbmapping; params : in out GLint );
+procedure glMinmax( target : GLarbmapping; internalformat : GLenum; sink : GLboolean );
+procedure glResetMinmax( target : GLarbmapping );
+procedure glGetMinmax( target : GLarbmapping; reset : GLboolean; format : GLbuffers; kind : GLtypes; values : System.address );
+procedure glGetMinmaxParameterfv( target : GLarbmapping; pname : GLarbmapping; params : in out GLfloat );
+procedure glGetMinmaxParameteriv( target : GLarbmapping; pname : GLarbmapping; params : in out GLint );
+procedure glConvolutionFilter1D( target : GLbuffers; internalformat : GLbuffers; width : GLsizei; format : GLbuffers; kind : GLtypes; image : System.address );
+procedure glConvolutionFilter2D( target : GLbuffers; internalformat : GLbuffers; width, height : GLsizei; format : GLbuffers; kind : GLtypes; image : System.address );
+procedure glConvolutionParameterf( target : GLarbmapping; pname : GLarbmapping; params : GLfloat );
+procedure glConvolutionParameterfv( target : GLarbmapping; pname : GLarbmapping; params : in out GLfloat );
+procedure glConvolutionParameterfv( target : GLarbmapping; pname : GLarbmapping; params :  GL_Float_Array_Ptr );
+procedure glConvolutionParameteri( target : GLarbmapping; pname : GLarbmapping; params : GLint );
+procedure glConvolutionParameteriv( target : GLarbmapping; pname : GLarbmapping; params :  GL_Int_Array_Ptr  );
+procedure glCopyConvolutionFilter1D( target : GLarbmapping; internalformat : GLarbmapping; x, y : GLint; width : GLsizei );
+procedure glCopyConvolutionFilter2D( target : GLarbmapping; internalformat : GLarbmapping; x, y : GLint; width, height : GLsizei );
+procedure glGetConvolutionFilter( target : GLarbmapping; format : GLbuffers; kind : GLtypes; image : System.address );
+procedure glGetConvolutionParameterfv( target : GLarbmapping; pname : GLarbmapping; params : in out GLfloat );
+procedure glGetConvolutionParameteriv( target : GLarbmapping; pname : GLarbmapping; params : in out GLint );
+procedure glSeparableFilter2D( target : GLarbmapping; internalformat : GLbuffers; width, height : GLsizei; format : GLbuffers; kind : GLtypes; row, column : System.address );
+procedure glGetSeparableFilter( target : GLarbmapping; format : GLbuffers; kind : GLtypes; row, column, span : System.address );
+
+-- No man pages for what these do
+
 procedure glActiveTexture( texture : GLenum );
 procedure glClientActiveTexture( texture : GLenum );
-procedure glCompressedTexImage1D( target : GLenum; level : GLint; internalformat : GLenum; width : GLsizei; border : GLint; imageSize : GLsizei; data : System.address );
-procedure glCompressedTexImage2D( target : GLenum; level : GLint; internalformat : GLenum; width, height : GLsizei; border : GLint; imageSize : GLsizei; data : System.address );
-procedure glCompressedTexImage3D( target : GLenum; level : GLint; internalformat : GLenum; width, height, depth : GLsizei; border : GLint; imageSize : GLsizei; data : System.address );
-procedure glCompressedTexSubImage1D( target : GLenum; level : GLint; xoffset : GLint; width : GLsizei; format : GLenum; imageSize : GLsizei; data : System.address );
-procedure glCompressedTexSubImage2D( target : GLenum; level : GLint; xoffset, yoffset : GLint; width, height : GLsizei; format : GLenum; imageSize : GLsizei; data : System.address );
-procedure glCompressedTexSubImage3D( target : GLenum; level : GLint; xoffset, yoffset, zoffset : GLint; width, height, depth : GLsizei; format : GLenum; imageSize : GLsizei; data : System.address );
+procedure glCompressedTexImage1D( target : GLenum; level : GLint; internalformat : GLbuffers; width : GLsizei; border : GLint; imageSize : GLsizei; data : System.address );
+procedure glCompressedTexImage2D( target : GLenum; level : GLint; internalformat : GLbuffers; width, height : GLsizei; border : GLint; imageSize : GLsizei; data : System.address );
+procedure glCompressedTexImage3D( target : GLenum; level : GLint; internalformat : GLbuffers; width, height, depth : GLsizei; border : GLint; imageSize : GLsizei; data : System.address );
+procedure glCompressedTexSubImage1D( target : GLenum; level : GLint; xoffset : GLint; width : GLsizei; format : GLbuffers; imageSize : GLsizei; data : System.address );
+procedure glCompressedTexSubImage2D( target : GLenum; level : GLint; xoffset, yoffset : GLint; width, height : GLsizei; format : GLbuffers; imageSize : GLsizei; data : System.address );
+procedure glCompressedTexSubImage3D( target : GLenum; level : GLint; xoffset, yoffset, zoffset : GLint; width, height, depth : GLsizei; format : GLbuffers; imageSize : GLsizei; data : System.address );
 procedure glGetCompressedTexImage( target : GLenum; lod : GLint; img : System.address );
 procedure glMultiTexCoord1d( target : GLenum; s : GLdouble );
 procedure glMultiTexCoord1dv( target : GLenum; v : in out GLdouble );
@@ -1644,4 +1753,819 @@ procedure glMultiTexCoord4svARB( target : GLenum; v : in out GLshort );
 --procedure glEGLImageTargetTexture2DOES ( target : GLenum; image : GLeglImageOES );
 --procedure glEGLImageTargetRenderbufferStorageOES (target : GLenum; image : GLeglImageOES );
 
-end bush_os.gl;
+
+-----------------------------------------------------------------------------
+-- GLU - OpenGL Utility Library
+-----------------------------------------------------------------------------
+
+-- Extensions
+
+GLU_EXT_object_space_tess  : constant GLenum := 1;
+GLU_EXT_nurbs_tessellator  : constant GLenum := 1;
+
+-- Boolean
+
+GLU_FALSE                  : constant GLenum := 0;
+GLU_TRUE                   : constant GLenum := 1;
+
+-- Version
+
+GLU_VERSION_1_1            : constant GLenum := 1;
+GLU_VERSION_1_2            : constant GLenum := 1;
+GLU_VERSION_1_3            : constant GLenum := 1;
+
+-- String Name
+
+GLU_VERSION                : constant GLenum := 100800;
+GLU_EXTENSIONS             : constant GLenum := 100801;
+
+-- Error Code
+
+GLU_INVALID_ENUM           : constant GLenum := 100900;
+GLU_INVALID_VALUE          : constant GLenum := 100901;
+GLU_OUT_OF_MEMORY          : constant GLenum := 100902;
+GLU_INCOMPATIBLE_GL_VERSION : constant GLenum := 100903;
+GLU_INVALID_OPERATION      : constant GLenum := 100904;
+
+-- Nurbs Display
+
+GLU_OUTLINE_POLYGON        : constant GLenum := 100240;
+GLU_OUTLINE_PATCH          : constant GLenum := 100241;
+
+-- Nurbs Callback
+
+type GLUnurbscallbacks is new GLenum;
+
+GLU_NURBS_ERROR            : constant GLUnurbscallbacks := 100103;
+GLU_ERROR                  : constant GLUnurbscallbacks := 100103;
+GLU_NURBS_BEGIN            : constant GLUnurbscallbacks := 100164;
+GLU_NURBS_BEGIN_EXT        : constant GLUnurbscallbacks := 100164;
+GLU_NURBS_VERTEX           : constant GLUnurbscallbacks := 100165;
+GLU_NURBS_VERTEX_EXT       : constant GLUnurbscallbacks := 100165;
+GLU_NURBS_NORMAL           : constant GLUnurbscallbacks := 100166;
+GLU_NURBS_NORMAL_EXT       : constant GLUnurbscallbacks := 100166;
+GLU_NURBS_COLOR            : constant GLUnurbscallbacks := 100167;
+GLU_NURBS_COLOR_EXT        : constant GLUnurbscallbacks := 100167;
+GLU_NURBS_TEXTURE_COORD    : constant GLUnurbscallbacks := 100168;
+GLU_NURBS_TEX_COORD_EXT    : constant GLUnurbscallbacks := 100168;
+GLU_NURBS_END              : constant GLUnurbscallbacks := 100169;
+GLU_NURBS_END_EXT          : constant GLUnurbscallbacks := 100169;
+GLU_NURBS_BEGIN_DATA       : constant GLUnurbscallbacks := 100170;
+GLU_NURBS_BEGIN_DATA_EXT   : constant GLUnurbscallbacks := 100170;
+GLU_NURBS_VERTEX_DATA      : constant GLUnurbscallbacks := 100171;
+GLU_NURBS_VERTEX_DATA_EXT  : constant GLUnurbscallbacks := 100171;
+GLU_NURBS_NORMAL_DATA      : constant GLUnurbscallbacks := 100172;
+GLU_NURBS_NORMAL_DATA_EXT  : constant GLUnurbscallbacks := 100172;
+GLU_NURBS_COLOR_DATA       : constant GLUnurbscallbacks := 100173;
+GLU_NURBS_COLOR_DATA_EXT   : constant GLUnurbscallbacks := 100173;
+GLU_NURBS_TEXTURE_COORD_DATA : constant GLUnurbscallbacks := 100174;
+GLU_NURBS_TEX_COORD_DATA_EXT : constant GLUnurbscallbacks := 100174;
+GLU_NURBS_END_DATA         : constant GLUnurbscallbacks := 100175;
+GLU_NURBS_END_DATA_EXT     : constant GLUnurbscallbacks := 100175;
+
+-- Nurbs Error
+
+GLU_NURBS_ERROR1           : constant GLenum := 100251;
+GLU_NURBS_ERROR2           : constant GLenum := 100252;
+GLU_NURBS_ERROR3           : constant GLenum := 100253;
+GLU_NURBS_ERROR4           : constant GLenum := 100254;
+GLU_NURBS_ERROR5           : constant GLenum := 100255;
+GLU_NURBS_ERROR6           : constant GLenum := 100256;
+GLU_NURBS_ERROR7           : constant GLenum := 100257;
+GLU_NURBS_ERROR8           : constant GLenum := 100258;
+GLU_NURBS_ERROR9           : constant GLenum := 100259;
+GLU_NURBS_ERROR10          : constant GLenum := 100260;
+GLU_NURBS_ERROR11          : constant GLenum := 100261;
+GLU_NURBS_ERROR12          : constant GLenum := 100262;
+GLU_NURBS_ERROR13          : constant GLenum := 100263;
+GLU_NURBS_ERROR14          : constant GLenum := 100264;
+GLU_NURBS_ERROR15          : constant GLenum := 100265;
+GLU_NURBS_ERROR16          : constant GLenum := 100266;
+GLU_NURBS_ERROR17          : constant GLenum := 100267;
+GLU_NURBS_ERROR18          : constant GLenum := 100268;
+GLU_NURBS_ERROR19          : constant GLenum := 100269;
+GLU_NURBS_ERROR20          : constant GLenum := 100270;
+GLU_NURBS_ERROR21          : constant GLenum := 100271;
+GLU_NURBS_ERROR22          : constant GLenum := 100272;
+GLU_NURBS_ERROR23          : constant GLenum := 100273;
+GLU_NURBS_ERROR24          : constant GLenum := 100274;
+GLU_NURBS_ERROR25          : constant GLenum := 100275;
+GLU_NURBS_ERROR26          : constant GLenum := 100276;
+GLU_NURBS_ERROR27          : constant GLenum := 100277;
+GLU_NURBS_ERROR28          : constant GLenum := 100278;
+GLU_NURBS_ERROR29          : constant GLenum := 100279;
+GLU_NURBS_ERROR30          : constant GLenum := 100280;
+GLU_NURBS_ERROR31          : constant GLenum := 100281;
+GLU_NURBS_ERROR32          : constant GLenum := 100282;
+GLU_NURBS_ERROR33          : constant GLenum := 100283;
+GLU_NURBS_ERROR34          : constant GLenum := 100284;
+GLU_NURBS_ERROR35          : constant GLenum := 100285;
+GLU_NURBS_ERROR36          : constant GLenum := 100286;
+GLU_NURBS_ERROR37          : constant GLenum := 100287;
+
+-- Nurbs Property
+
+type GLUnurbsproperties is new GLenum;
+
+GLU_AUTO_LOAD_MATRIX       : constant GLUnurbsproperties := 100200;
+GLU_CULLING                : constant GLUnurbsproperties := 100201;
+GLU_SAMPLING_TOLERANCE     : constant GLUnurbsproperties := 100203;
+GLU_DISPLAY_MODE           : constant GLUnurbsproperties := 100204;
+GLU_PARAMETRIC_TOLERANCE   : constant GLUnurbsproperties := 100202;
+GLU_SAMPLING_METHOD        : constant GLUnurbsproperties := 100205;
+GLU_U_STEP                 : constant GLUnurbsproperties := 100206;
+GLU_V_STEP                 : constant GLUnurbsproperties := 100207;
+GLU_NURBS_MODE             : constant GLUnurbsproperties := 100160;
+GLU_NURBS_MODE_EXT         : constant GLUnurbsproperties := 100160;
+GLU_NURBS_TESSELLATOR      : constant GLUnurbsproperties := 100161;
+GLU_NURBS_TESSELLATOR_EXT  : constant GLUnurbsproperties := 100161;
+GLU_NURBS_RENDERER         : constant GLUnurbsproperties := 100162;
+GLU_NURBS_RENDERER_EXT     : constant GLUnurbsproperties := 100162;
+
+-- Nurbs Sampling
+
+GLU_OBJECT_PARAMETRIC_ERROR: constant GLenum := 100208;
+GLU_OBJECT_PARAMETRIC_ERROR_EXT : constant GLenum := 100208;
+GLU_OBJECT_PATH_LENGTH     : constant GLenum := 100209;
+GLU_OBJECT_PATH_LENGTH_EXT : constant GLenum := 100209;
+GLU_PATH_LENGTH            : constant GLenum := 100215;
+GLU_PARAMETRIC_ERROR       : constant GLenum := 100216;
+GLU_DOMAIN_DISTANCE        : constant GLenum := 100217;
+
+-- Nurbs Trim
+
+GLU_MAP1_TRIM_2            : constant GLevaluators := 100210;
+GLU_MAP1_TRIM_3            : constant GLevaluators := 100211;
+
+-- Quadric Draw Style
+
+type GLUquaddrawstyle is new GLenum;
+
+GLU_POINT                  : constant GLUquaddrawstyle := 100010;
+GLU_LINE                   : constant GLUquaddrawstyle := 100011;
+GLU_FILL                   : constant GLUquaddrawstyle := 100012;
+GLU_SILHOUETTE             : constant GLUquaddrawstyle := 100013;
+
+-- Quadric Normal
+
+type GLUquadricnormal is new GLenum;
+
+GLU_SMOOTH                 : constant GLUquadricnormal := 100000;
+GLU_FLAT                   : constant GLUquadricnormal := 100001;
+GLU_NONE                   : constant GLUquadricnormal := 100002;
+
+-- Quadric Orientation
+
+type GLUquadorientation is new GLenum;
+
+GLU_OUTSIDE                : constant GLUquadorientation := 100020;
+GLU_INSIDE                 : constant GLUquadorientation := 100021;
+
+-- Tess Callback
+
+type GLUtesscallbacks is new GLenum;
+
+GLU_TESS_BEGIN             : constant GLUtesscallbacks := 100100;
+GLU_BEGIN                  : constant GLUtesscallbacks := 100100;
+GLU_TESS_VERTEX            : constant GLUtesscallbacks := 100101;
+GLU_VERTEX                 : constant GLUtesscallbacks := 100101;
+GLU_TESS_END               : constant GLUtesscallbacks := 100102;
+GLU_END                    : constant GLUtesscallbacks := 100102;
+GLU_TESS_ERROR             : constant GLUtesscallbacks := 100103;
+GLU_TESS_EDGE_FLAG         : constant GLUtesscallbacks := 100104;
+GLU_EDGE_FLAG              : constant GLUtesscallbacks := 100104;
+GLU_TESS_COMBINE           : constant GLUtesscallbacks := 100105;
+GLU_TESS_BEGIN_DATA        : constant GLUtesscallbacks := 100106;
+GLU_TESS_VERTEX_DATA       : constant GLUtesscallbacks := 100107;
+GLU_TESS_END_DATA          : constant GLUtesscallbacks := 100108;
+GLU_TESS_ERROR_DATA        : constant GLUtesscallbacks := 100109;
+GLU_TESS_EDGE_FLAG_DATA    : constant GLUtesscallbacks := 100110;
+GLU_TESS_COMBINE_DATA      : constant GLUtesscallbacks := 100111;
+
+-- Tess Contour
+
+type GLUtesscontour is new GLenum;
+
+GLU_CW                     : constant GLUtesscontour := 100120;
+GLU_CCW                    : constant GLUtesscontour := 100121;
+GLU_INTERIOR               : constant GLUtesscontour := 100122;
+GLU_EXTERIOR               : constant GLUtesscontour := 100123;
+GLU_UNKNOWN                : constant GLUtesscontour := 100124;
+
+-- Tess Property
+
+type GLUtessproperties is new GLenum;
+
+GLU_TESS_WINDING_RULE      : constant GLUtessproperties := 100140;
+GLU_TESS_BOUNDARY_ONLY     : constant GLUtessproperties := 100141;
+GLU_TESS_TOLERANCE         : constant GLUtessproperties := 100142;
+
+-- Tess Error
+
+GLU_TESS_ERROR1            : constant GLenum := 100151;
+GLU_TESS_ERROR2            : constant GLenum := 100152;
+GLU_TESS_ERROR3            : constant GLenum := 100153;
+GLU_TESS_ERROR4            : constant GLenum := 100154;
+GLU_TESS_ERROR5            : constant GLenum := 100155;
+GLU_TESS_ERROR6            : constant GLenum := 100156;
+GLU_TESS_ERROR7            : constant GLenum := 100157;
+GLU_TESS_ERROR8            : constant GLenum := 100158;
+GLU_TESS_MISSING_BEGIN_POLYGON : constant GLenum := 100151;
+GLU_TESS_MISSING_BEGIN_CONTOUR : constant GLenum := 100152;
+GLU_TESS_MISSING_END_POLYGON : constant GLenum := 100153;
+GLU_TESS_MISSING_END_CONTOUR : constant GLenum := 100154;
+GLU_TESS_COORD_TOO_LARGE   : constant GLenum := 100155;
+GLU_TESS_NEED_COMBINE_CALLBACK : constant GLenum := 100156;
+
+-- Tess Winding
+
+GLU_TESS_WINDING_ODD       : constant GLenum := 100130;
+GLU_TESS_WINDING_NONZERO   : constant GLenum := 100131;
+GLU_TESS_WINDING_POSITIVE  : constant GLenum := 100132;
+GLU_TESS_WINDING_NEGATIVE  : constant GLenum := 100133;
+GLU_TESS_WINDING_ABS_GEQ_TWO : constant GLenum := 100134;
+
+GLU_TESS_MAX_COORD : constant long_float := 1.0e150;
+
+type GLUnurbs_Ptr is new System.Address;
+type GLUtessellator_Ptr is new System.Address;
+type GLUquadratic_Ptr is new System.Address;
+
+procedure gluBeginCurve ( nurb : GLUnurbs_Ptr );
+procedure gluBeginPolygon ( tess : GLUtessellator_Ptr);
+procedure gluBeginSurface ( nurb : GLUnurbs_Ptr );
+procedure gluBeginTrim ( nurb : GLUnurbs_Ptr);
+function  gluBuild1DMipmapLevels ( target : GLenum; internalFormat : GLbuffers; width : GLsizei; format : GLbuffers; kind : GLtypes; level, base, max : GLint; data : System.address) return GLint;
+function  gluBuild1DMipmaps ( target : GLenum; internalFormat : GLbuffers; width : GLsizei; format : GLbuffers; kind : GLtypes; data : System.address) return GLint;
+function  gluBuild2DMipmapLevels ( target : GLenum; internalFormat : GLbuffers;  width, height : GLsizei; format : GLbuffers; kind : GLtypes; level, base, max : GLint; data : System.address) return GLint;
+function  gluBuild2DMipmaps ( target : GLenum; internalFormat : GLbuffers; width, height : GLsizei; format : GLbuffers; kind : GLtypes; data : System.address) return GLint;
+function  gluBuild3DMipmapLevels ( taraget : GLenum; internalFormat : GLbuffers; width, height, depth : GLsizei; format : GLbuffers;  kind : GLtypes; level, base, max : GLint; data : System.address) return GLint;
+function  gluBuild3DMipmaps ( target : GLenum; internalFormat : GLbuffers; width, height, depth : GLsizei; format : GLbuffers; kind : GLtypes; data : System.address ) return GLint;
+function gluCheckExtension ( extName, extString : char_array) return GLboolean;
+procedure gluCylinder (quad : GLUquadratic_Ptr; base, top, height : GLdouble; slices : GLint; stacks : GLint);
+procedure gluDeleteNurbsRenderer ( nurb : GLUnurbs_Ptr );
+procedure gluDeleteQuadric ( quad : GLUquadratic_Ptr );
+procedure gluDeleteTess ( tess : GLUtessellator_Ptr );
+procedure gluDisk ( quad : GLUquadratic_Ptr; inner, outer : GLdouble; slices : GLint; loops : GLint );
+procedure gluEndCurve ( nurb : GLUnurbs_Ptr );
+procedure gluEndPolygon ( tess : GLUtessellator_Ptr );
+procedure gluEndSurface ( nurb : GLUnurbs_Ptr );
+procedure gluEndTrim ( nurb : GLUnurbs_Ptr );
+function  gluErrorString ( error : GLenum ) return char_array_ptr;
+procedure gluGetNurbsProperty ( nurb : GLUnurbs_Ptr; property : GLUnurbsproperties; data : GL_Float_Array_Ptr );
+function  gluGetString ( name : GLenum ) return char_array_ptr;
+procedure gluGetTessProperty (tess : GLUtessellator_Ptr; which : GLUtessproperties; data : GL_Float_Array_Ptr );
+procedure gluLoadSamplingMatrices ( nurb : GLUnurbs_Ptr; model : GL_Float_Array_Ptr; perspective : GL_Float_Array_Ptr; view : GL_Int_Array_Ptr );
+procedure gluLookAt ( eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ : GLdouble );
+function  gluNewNurbsRenderer return GLUnurbs_Ptr;
+function  gluNewQuadric return GLUquadratic_Ptr;
+function  gluNewTess return GLUtessellator_Ptr;
+procedure gluNextContour ( tess : GLUtessellator_Ptr; kind : GLUtesscontour );
+procedure gluNurbsCallback ( nurb : GLUnurbs_Ptr; which : GLUnurbscallbacks; CallBackFunc : System.address );
+procedure gluNurbsCallbackData ( nurb : GLUnurbs_Ptr; userData : System.address );
+procedure gluNurbsCallbackDataEXT ( nurb : GLUnurbs_Ptr; userData : System.address );
+procedure gluNurbsCurve ( nurb : GLUnurbs_Ptr; knotCount : GLint; knots : GL_Float_Array_Ptr; stride : GLint; control : GL_Float_Array_Ptr; order : GLint; kind : GLevaluators );
+procedure gluNurbsProperty ( nurb : GLUnurbs_Ptr; property : GLUnurbsproperties; value : GLfloat );
+procedure gluNurbsSurface ( nurb : GLUnurbs_Ptr; sKnotCount : GLint;  sKnots : GL_Float_Array_Ptr; tKnotCount : GLint;  tKnots : GL_Float_Array_Ptr; sStride, tStride : GLint; control : GL_Float_Array_Ptr; sOrder, tOrder : GLint; kind : GLenum );
+procedure gluOrtho2D ( left, right, bottom, top : GLdouble );
+procedure gluPartialDisk ( quad : GLUquadratic_Ptr; inner, outer : GLdouble; slices : GLint; loops : GLint; start : GLdouble; sweep : GLdouble );
+procedure gluPerspective ( fovy, aspect, zNear, zFar : GLdouble );
+procedure gluPickMatrix ( x, y : GLdouble; delX, delY : GLdouble; viewport : in out GLint );
+function  gluProject ( objX, objY, objZ : GLdouble; model, proj : GL_Double_Array_Ptr; view : GL_Int_Array_Ptr; winX, winY, winZ : GL_Double_Array_Ptr ) return GLint;
+procedure gluPwlCurve ( nurb : GLUnurbs_Ptr; count : GLint; data : GL_Float_Array_Ptr; stride : GLint; kind : GLevaluators );
+procedure gluQuadricCallback ( quad : GLUquadratic_Ptr; which : GLUnurbscallbacks; CallBackFunc : System.address );
+procedure gluQuadricDrawStyle ( quad : GLUquadratic_Ptr; draw : GLUquaddrawstyle );
+procedure gluQuadricNormals ( quad : GLUquadratic_Ptr; normal : GLUquadricnormal );
+procedure gluQuadricOrientation ( quad : GLUquadratic_Ptr; orientation : GLUquadorientation );
+procedure gluQuadricTexture ( quad : GLUquadratic_Ptr; texture : GLboolean );
+function  gluScaleImage ( format : GLbuffers; wIn, hIn : GLsizei; typeIn : GLtypes; dataIn : System.address; wOut, hOut : GLsizei; typeOut : GLtypes; dataOut : System.address ) return GLint;
+procedure gluSphere ( quad : GLUquadratic_Ptr; radius : GLdouble; slices : GLint; stacks : GLint );
+procedure gluTessBeginContour ( tess : GLUtessellator_Ptr );
+procedure gluTessBeginPolygon ( tess : GLUtessellator_Ptr; data : System.address );
+procedure gluTessCallback (tess : GLUtessellator_Ptr; which : GLUtesscallbacks; CallBackFunc : System.address );
+procedure gluTessEndContour ( tess : GLUtessellator_Ptr );
+procedure gluTessEndPolygon ( tess : GLUtessellator_Ptr );
+procedure gluTessNormal ( tess : GLUtessellator_Ptr; valueX, valueY, valueZ : GLdouble );
+procedure gluTessProperty ( tess : GLUtessellator_Ptr; which : GLUtessproperties; data : GLdouble );
+procedure gluTessVertex ( tess : GLUtessellator_Ptr; location : in out GLdouble; data : System.address );
+function  gluUnProject ( winX, winY, winZ : GLdouble; model : GL_Double_Array_Ptr; proj : GL_Double_Array_Ptr; view : GL_Int_Array_Ptr; objX, objY, objZ : GL_Double_Array_Ptr) return GLint;
+
+function  gluUnProject4 ( winX, winY, winZ : GLdouble; clipW : GLdouble; model : GL_Double_Array_Ptr; proj : GL_Double_Array_Ptr; view : GL_Int_Array_Ptr; nearVal, farVal : GLdouble; objX, objY, objZ, objW : GL_Double_Array_Ptr ) return GLint;
+
+
+-----------------------------------------------------------------------------
+-- Import from C
+-----------------------------------------------------------------------------
+
+
+pragma import( C, glAccum, "glAccum" );
+pragma import( C, glActiveTexture, "glActiveTexture" );
+pragma import( C, glActiveTextureARB, "glActiveTextureARB" );
+pragma import( C, glAlphaFunc, "glAlphaFunc" );
+pragma import( C, glAreTexturesResident, "glAreTexturesResident" );
+pragma import( C, glArrayElement, "glArrayElement" );
+pragma import( C, glBegin, "glBegin" );
+pragma import( C, glBindTexture, "glBindTexture" );
+pragma import( C, glBitmap, "glBitmap" );
+pragma import( C, glBlendColor, "glBlendColor" );
+pragma import( C, glBlendEquation, "glBlendEquation" );
+pragma import( C, glBlendFunc, "glBlendFunc" );
+pragma import( C, glCallList, "glCallList" );
+pragma import( C, glCallLists, "glCallLists" );
+pragma import( C, glClear, "glClear" );
+pragma import( C, glClearAccum, "glClearAccum" );
+pragma import( C, glClearColor, "glClearColor" );
+pragma import( C, glClearDepth, "glClearDepth" );
+pragma import( C, glClearIndex, "glClearIndex" );
+pragma import( C, glClearStencil, "glClearStencil" );
+pragma import( C, glClientActiveTexture, "glClientActiveTexture" );
+pragma import( C, glClientActiveTextureARB, "glClientActiveTextureARB" );
+pragma import( C, glClipPlane, "glClipPlane" );
+pragma import( C, glColor3b, "glColor3b" );
+pragma import( C, glColor3bv, "glColor3bv" );
+pragma import( C, glColor3d, "glColor3d" );
+pragma import( C, glColor3dv, "glColor3dv" );
+pragma import( C, glColor3f, "glColor3f" );
+pragma import( C, glColor3fv, "glColor3fv" );
+pragma import( C, glColor3i, "glColor3i" );
+pragma import( C, glColor3iv, "glColor3iv" );
+pragma import( C, glColor3s, "glColor3s" );
+pragma import( C, glColor3sv, "glColor3sv" );
+pragma import( C, glColor3ub, "glColor3ub" );
+pragma import( C, glColor3ubv, "glColor3ubv" );
+pragma import( C, glColor3ui, "glColor3ui" );
+pragma import( C, glColor3uiv, "glColor3uiv" );
+pragma import( C, glColor3us, "glColor3us" );
+pragma import( C, glColor3usv, "glColor3usv" );
+pragma import( C, glColor4b, "glColor4b" );
+pragma import( C, glColor4bv, "glColor4bv" );
+pragma import( C, glColor4d, "glColor4d" );
+pragma import( C, glColor4dv, "glColor4dv" );
+pragma import( C, glColor4f, "glColor4f" );
+pragma import( C, glColor4fv, "glColor4fv" );
+pragma import( C, glColor4i, "glColor4i" );
+pragma import( C, glColor4iv, "glColor4iv" );
+pragma import( C, glColor4s, "glColor4s" );
+pragma import( C, glColor4sv, "glColor4sv" );
+pragma import( C, glColor4ub, "glColor4ub" );
+pragma import( C, glColor4ubv, "glColor4ubv" );
+pragma import( C, glColor4ui, "glColor4ui" );
+pragma import( C, glColor4uiv, "glColor4uiv" );
+pragma import( C, glColor4us, "glColor4us" );
+pragma import( C, glColor4usv, "glColor4usv" );
+pragma import( C, glColorMask, "glColorMask" );
+pragma import( C, glColorMaterial, "glColorMaterial" );
+pragma import( C, glColorPointer, "glColorPointer" );
+pragma import( C, glColorSubTable, "glColorSubTable" );
+pragma import( C, glColorTable, "glColorTable" );
+pragma import( C, glColorTableParameterfv, "glColorTableParameterfv" );
+pragma import( C, glColorTableParameteriv, "glColorTableParameteriv" );
+pragma import( C, glCompressedTexImage1D, "glCompressedTexImage1D" );
+pragma import( C, glCompressedTexImage2D, "glCompressedTexImage2D" );
+pragma import( C, glCompressedTexImage3D, "glCompressedTexImage3D" );
+pragma import( C, glCompressedTexSubImage1D, "glCompressedTexSubImage1D" );
+pragma import( C, glCompressedTexSubImage2D, "glCompressedTexSubImage2D" );
+pragma import( C, glCompressedTexSubImage3D, "glCompressedTexSubImage3D" );
+pragma import( C, glConvolutionFilter1D, "glConvolutionFilter1D" );
+pragma import( C, glConvolutionFilter2D, "glConvolutionFilter2D" );
+pragma import( C, glConvolutionParameterf, "glConvolutionParameterf" );
+pragma import( C, glConvolutionParameterfv, "glConvolutionParameterfv" );
+pragma import( C, glConvolutionParameteri, "glConvolutionParameteri" );
+pragma import( C, glConvolutionParameteriv, "glConvolutionParameteriv" );
+pragma import( C, glCopyColorSubTable, "glCopyColorSubTable" );
+pragma import( C, glCopyColorTable, "glCopyColorTable" );
+pragma import( C, glCopyConvolutionFilter1D, "glCopyConvolutionFilter1D" );
+pragma import( C, glCopyConvolutionFilter2D, "glCopyConvolutionFilter2D" );
+pragma import( C, glCopyPixels, "glCopyPixels" );
+pragma import( C, glCopyTexImage1D, "glCopyTexImage1D" );
+pragma import( C, glCopyTexImage2D, "glCopyTexImage2D" );
+pragma import( C, glCopyTexSubImage1D, "glCopyTexSubImage1D" );
+pragma import( C, glCopyTexSubImage2D, "glCopyTexSubImage2D" );
+pragma import( C, glCopyTexSubImage3D, "glCopyTexSubImage3D" );
+pragma import( C, glCullFace, "glCullFace" );
+pragma import( C, glDeleteLists, "glDeleteLists" );
+pragma import( C, glDeleteTextures, "glDeleteTextures" );
+pragma import( C, glDepthFunc, "glDepthFunc" );
+pragma import( C, glDepthMask, "glDepthMask" );
+pragma import( C, glDepthRange, "glDepthRange" );
+pragma import( C, glDisable, "glDisable" );
+pragma import( C, glDisableClientState, "glDisableClientState" );
+pragma import( C, glDrawArrays, "glDrawArrays" );
+pragma import( C, glDrawBuffer, "glDrawBuffer" );
+pragma import( C, glDrawElements, "glDrawElements" );
+pragma import( C, glDrawPixels, "glDrawPixels" );
+pragma import( C, glDrawRangeElements, "glDrawRangeElements" );
+pragma import( C, glEdgeFlag, "glEdgeFlag" );
+pragma import( C, glEdgeFlagPointer, "glEdgeFlagPointer" );
+pragma import( C, glEdgeFlagv, "glEdgeFlagv" );
+pragma import( C, glEnable, "glEnable" );
+pragma import( C, glEnableClientState, "glEnableClientState" );
+pragma import( C, glEnd, "glEnd" );
+pragma import( C, glEndList, "glEndList" );
+pragma import( C, glEvalCoord1d, "glEvalCoord1d" );
+pragma import( C, glEvalCoord1dv, "glEvalCoord1dv" );
+pragma import( C, glEvalCoord1f, "glEvalCoord1f" );
+pragma import( C, glEvalCoord1fv, "glEvalCoord1fv" );
+pragma import( C, glEvalCoord2d, "glEvalCoord2d" );
+pragma import( C, glEvalCoord2dv, "glEvalCoord2dv" );
+pragma import( C, glEvalCoord2f, "glEvalCoord2f" );
+pragma import( C, glEvalCoord2fv, "glEvalCoord2fv" );
+pragma import( C, glEvalMesh1, "glEvalMesh1" );
+pragma import( C, glEvalMesh2, "glEvalMesh2" );
+pragma import( C, glEvalPoint1, "glEvalPoint1" );
+pragma import( C, glEvalPoint2, "glEvalPoint2" );
+pragma import( C, glFeedbackBuffer, "glFeedbackBuffer" );
+pragma import( C, glFinish, "glFinish" );
+pragma import( C, glFlush, "glFlush" );
+pragma import( C, glFogf, "glFogf" );
+pragma import( C, glFogfv, "glFogfv" );
+pragma import( C, glFogi, "glFogi" );
+pragma import( C, glFogiv, "glFogiv" );
+pragma import( C, glFrontFace, "glFrontFace" );
+pragma import( C, glFrustum, "glFrustum" );
+pragma import( C, glGenLists, "glGenLists" );
+pragma import( C, glGenTextures, "glGenTextures" );
+pragma import( C, glGetBooleanv, "glGetBooleanv" );
+pragma import( C, glGetClipPlane, "glGetClipPlane" );
+pragma import( C, glGetColorTable, "glGetColorTable" );
+pragma import( C, glGetColorTableParameterfv, "glGetColorTableParameterfv" );
+pragma import( C, glGetColorTableParameteriv, "glGetColorTableParameteriv" );
+pragma import( C, glGetCompressedTexImage, "glGetCompressedTexImage" );
+pragma import( C, glGetConvolutionFilter, "glGetConvolutionFilter" );
+pragma import( C, glGetConvolutionParameterfv, "glGetConvolutionParameterfv" );
+pragma import( C, glGetConvolutionParameteriv, "glGetConvolutionParameteriv" );
+pragma import( C, glGetDoublev, "glGetDoublev" );
+pragma import( C, glGetError, "glGetError" );
+pragma import( C, glGetFloatv, "glGetFloatv" );
+pragma import( C, glGetHistogram, "glGetHistogram" );
+pragma import( C, glGetHistogramParameterfv, "glGetHistogramParameterfv" );
+pragma import( C, glGetHistogramParameteriv, "glGetHistogramParameteriv" );
+pragma import( C, glGetIntegerv, "glGetIntegerv" );
+pragma import( C, glGetLightfv, "glGetLightfv" );
+pragma import( C, glGetLightiv, "glGetLightiv" );
+pragma import( C, glGetMapdv, "glGetMapdv" );
+pragma import( C, glGetMapfv, "glGetMapfv" );
+pragma import( C, glGetMapiv, "glGetMapiv" );
+pragma import( C, glGetMaterialfv, "glGetMaterialfv" );
+pragma import( C, glGetMaterialiv, "glGetMaterialiv" );
+pragma import( C, glGetMinmax, "glGetMinmax" );
+pragma import( C, glGetMinmaxParameterfv, "glGetMinmaxParameterfv" );
+pragma import( C, glGetMinmaxParameteriv, "glGetMinmaxParameteriv" );
+pragma import( C, glGetPixelMapfv, "glGetPixelMapfv" );
+pragma import( C, glGetPixelMapuiv, "glGetPixelMapuiv" );
+pragma import( C, glGetPixelMapusv, "glGetPixelMapusv" );
+pragma import( C, glGetPointerv, "glGetPointerv" );
+pragma import( C, glGetPolygonStipple, "glGetPolygonStipple" );
+pragma import( C, glGetSeparableFilter, "glGetSeparableFilter" );
+pragma import( C, glGetString, "glGetString" );
+pragma import( C, glGetTexEnvfv, "glGetTexEnvfv" );
+pragma import( C, glGetTexEnviv, "glGetTexEnviv" );
+pragma import( C, glGetTexGendv, "glGetTexGendv" );
+pragma import( C, glGetTexGenfv, "glGetTexGenfv" );
+pragma import( C, glGetTexGeniv, "glGetTexGeniv" );
+pragma import( C, glGetTexImage, "glGetTexImage" );
+pragma import( C, glGetTexLevelParameterfv, "glGetTexLevelParameterfv" );
+pragma import( C, glGetTexLevelParameteriv, "glGetTexLevelParameteriv" );
+pragma import( C, glGetTexParameterfv, "glGetTexParameterfv" );
+pragma import( C, glGetTexParameteriv, "glGetTexParameteriv" );
+pragma import( C, glHint, "glHint" );
+pragma import( C, glHistogram, "glHistogram" );
+pragma import( C, glIndexd, "glIndexd" );
+pragma import( C, glIndexdv, "glIndexdv" );
+pragma import( C, glIndexf, "glIndexf" );
+pragma import( C, glIndexfv, "glIndexfv" );
+pragma import( C, glIndexi, "glIndexi" );
+pragma import( C, glIndexiv, "glIndexiv" );
+pragma import( C, glIndexMask, "glIndexMask" );
+pragma import( C, glIndexPointer, "glIndexPointer" );
+pragma import( C, glIndexs, "glIndexs" );
+pragma import( C, glIndexsv, "glIndexsv" );
+pragma import( C, glIndexub, "glIndexub" );
+pragma import( C, glIndexubv, "glIndexubv" );
+pragma import( C, glInitNames, "glInitNames" );
+pragma import( C, glInterleavedArrays, "glInterleavedArrays" );
+pragma import( C, glIsEnabled, "glIsEnabled" );
+pragma import( C, glIsList, "glIsList" );
+pragma import( C, glIsTexture, "glIsTexture" );
+pragma import( C, glLightf, "glLightf" );
+pragma import( C, glLightfv, "glLightfv" );
+pragma import( C, glLighti, "glLighti" );
+pragma import( C, glLightiv, "glLightiv" );
+pragma import( C, glLightModelf, "glLightModelf" );
+pragma import( C, glLightModelfv, "glLightModelfv" );
+pragma import( C, glLightModeli, "glLightModeli" );
+pragma import( C, glLightModeliv, "glLightModeliv" );
+pragma import( C, glLineStipple, "glLineStipple" );
+pragma import( C, glLineWidth, "glLineWidth" );
+pragma import( C, glListBase, "glListBase" );
+pragma import( C, glLoadIdentity, "glLoadIdentity" );
+pragma import( C, glLoadMatrixd, "glLoadMatrixd" );
+pragma import( C, glLoadMatrixf, "glLoadMatrixf" );
+pragma import( C, glLoadName, "glLoadName" );
+pragma import( C, glLogicOp, "glLogicOp" );
+pragma import( C, glMap1d, "glMap1d" );
+pragma import( C, glMap1f, "glMap1f" );
+pragma import( C, glMap2d, "glMap2d" );
+pragma import( C, glMap2f, "glMap2f" );
+pragma import( C, glMapGrid1d, "glMapGrid1d" );
+pragma import( C, glMapGrid1f, "glMapGrid1f" );
+pragma import( C, glMapGrid2d, "glMapGrid2d" );
+pragma import( C, glMapGrid2f, "glMapGrid2f" );
+pragma import( C, glMaterialf, "glMaterialf" );
+pragma import( C, glMaterialfv, "glMaterialfv" );
+pragma import( C, glMateriali, "glMateriali" );
+pragma import( C, glMaterialiv, "glMaterialiv" );
+pragma import( C, glMatrixMode, "glMatrixMode" );
+pragma import( C, glMinmax, "glMinmax" );
+pragma import( C, glMultiTexCoord1d, "glMultiTexCoord1d" );
+pragma import( C, glMultiTexCoord1dARB, "glMultiTexCoord1dARB" );
+pragma import( C, glMultiTexCoord1dv, "glMultiTexCoord1dv" );
+pragma import( C, glMultiTexCoord1dvARB, "glMultiTexCoord1dvARB" );
+pragma import( C, glMultiTexCoord1f, "glMultiTexCoord1f" );
+pragma import( C, glMultiTexCoord1fARB, "glMultiTexCoord1fARB" );
+pragma import( C, glMultiTexCoord1fv, "glMultiTexCoord1fv" );
+pragma import( C, glMultiTexCoord1fvARB, "glMultiTexCoord1fvARB" );
+pragma import( C, glMultiTexCoord1i, "glMultiTexCoord1i" );
+pragma import( C, glMultiTexCoord1iARB, "glMultiTexCoord1iARB" );
+pragma import( C, glMultiTexCoord1iv, "glMultiTexCoord1iv" );
+pragma import( C, glMultiTexCoord1ivARB, "glMultiTexCoord1ivARB" );
+pragma import( C, glMultiTexCoord1s, "glMultiTexCoord1s" );
+pragma import( C, glMultiTexCoord1sARB, "glMultiTexCoord1sARB" );
+pragma import( C, glMultiTexCoord1sv, "glMultiTexCoord1sv" );
+pragma import( C, glMultiTexCoord1svARB, "glMultiTexCoord1svARB" );
+pragma import( C, glMultiTexCoord2d, "glMultiTexCoord2d" );
+pragma import( C, glMultiTexCoord2dARB, "glMultiTexCoord2dARB" );
+pragma import( C, glMultiTexCoord2dv, "glMultiTexCoord2dv" );
+pragma import( C, glMultiTexCoord2dvARB, "glMultiTexCoord2dvARB" );
+pragma import( C, glMultiTexCoord2f, "glMultiTexCoord2f" );
+pragma import( C, glMultiTexCoord2fARB, "glMultiTexCoord2fARB" );
+pragma import( C, glMultiTexCoord2fv, "glMultiTexCoord2fv" );
+pragma import( C, glMultiTexCoord2fvARB, "glMultiTexCoord2fvARB" );
+pragma import( C, glMultiTexCoord2i, "glMultiTexCoord2i" );
+pragma import( C, glMultiTexCoord2iARB, "glMultiTexCoord2iARB" );
+pragma import( C, glMultiTexCoord2iv, "glMultiTexCoord2iv" );
+pragma import( C, glMultiTexCoord2ivARB, "glMultiTexCoord2ivARB" );
+pragma import( C, glMultiTexCoord2s, "glMultiTexCoord2s" );
+pragma import( C, glMultiTexCoord2sARB, "glMultiTexCoord2sARB" );
+pragma import( C, glMultiTexCoord2sv, "glMultiTexCoord2sv" );
+pragma import( C, glMultiTexCoord2svARB, "glMultiTexCoord2svARB" );
+pragma import( C, glMultiTexCoord3d, "glMultiTexCoord3d" );
+pragma import( C, glMultiTexCoord3dARB, "glMultiTexCoord3dARB" );
+pragma import( C, glMultiTexCoord3dv, "glMultiTexCoord3dv" );
+pragma import( C, glMultiTexCoord3dvARB, "glMultiTexCoord3dvARB" );
+pragma import( C, glMultiTexCoord3f, "glMultiTexCoord3f" );
+pragma import( C, glMultiTexCoord3fARB, "glMultiTexCoord3fARB" );
+pragma import( C, glMultiTexCoord3fv, "glMultiTexCoord3fv" );
+pragma import( C, glMultiTexCoord3fvARB, "glMultiTexCoord3fvARB" );
+pragma import( C, glMultiTexCoord3i, "glMultiTexCoord3i" );
+pragma import( C, glMultiTexCoord3iARB, "glMultiTexCoord3iARB" );
+pragma import( C, glMultiTexCoord3iv, "glMultiTexCoord3iv" );
+pragma import( C, glMultiTexCoord3ivARB, "glMultiTexCoord3ivARB" );
+pragma import( C, glMultiTexCoord3s, "glMultiTexCoord3s" );
+pragma import( C, glMultiTexCoord3sARB, "glMultiTexCoord3sARB" );
+pragma import( C, glMultiTexCoord3sv, "glMultiTexCoord3sv" );
+pragma import( C, glMultiTexCoord3svARB, "glMultiTexCoord3svARB" );
+pragma import( C, glMultiTexCoord4d, "glMultiTexCoord4d" );
+pragma import( C, glMultiTexCoord4dARB, "glMultiTexCoord4dARB" );
+pragma import( C, glMultiTexCoord4dv, "glMultiTexCoord4dv" );
+pragma import( C, glMultiTexCoord4dvARB, "glMultiTexCoord4dvARB" );
+pragma import( C, glMultiTexCoord4f, "glMultiTexCoord4f" );
+pragma import( C, glMultiTexCoord4fARB, "glMultiTexCoord4fARB" );
+pragma import( C, glMultiTexCoord4fv, "glMultiTexCoord4fv" );
+pragma import( C, glMultiTexCoord4fvARB, "glMultiTexCoord4fvARB" );
+pragma import( C, glMultiTexCoord4i, "glMultiTexCoord4i" );
+pragma import( C, glMultiTexCoord4iARB, "glMultiTexCoord4iARB" );
+pragma import( C, glMultiTexCoord4iv, "glMultiTexCoord4iv" );
+pragma import( C, glMultiTexCoord4ivARB, "glMultiTexCoord4ivARB" );
+pragma import( C, glMultiTexCoord4s, "glMultiTexCoord4s" );
+pragma import( C, glMultiTexCoord4sARB, "glMultiTexCoord4sARB" );
+pragma import( C, glMultiTexCoord4sv, "glMultiTexCoord4sv" );
+pragma import( C, glMultiTexCoord4svARB, "glMultiTexCoord4svARB" );
+pragma import( C, glMultMatrixd, "glMultMatrixd" );
+pragma import( C, glMultMatrixf, "glMultMatrixf" );
+pragma import( C, glNewList, "glNewList" );
+pragma import( C, glNormal3b, "glNormal3b" );
+pragma import( C, glNormal3bv, "glNormal3bv" );
+pragma import( C, glNormal3d, "glNormal3d" );
+pragma import( C, glNormal3dv, "glNormal3dv" );
+pragma import( C, glNormal3f, "glNormal3f" );
+pragma import( C, glNormal3fv, "glNormal3fv" );
+pragma import( C, glNormal3i, "glNormal3i" );
+pragma import( C, glNormal3iv, "glNormal3iv" );
+pragma import( C, glNormal3s, "glNormal3s" );
+pragma import( C, glNormal3sv, "glNormal3sv" );
+pragma import( C, glNormalPointer, "glNormalPointer" );
+pragma import( C, glOrtho, "glOrtho" );
+pragma import( C, glPassThrough, "glPassThrough" );
+pragma import( C, glPixelMapfv, "glPixelMapfv" );
+pragma import( C, glPixelMapuiv, "glPixelMapuiv" );
+pragma import( C, glPixelMapusv, "glPixelMapusv" );
+pragma import( C, glPixelStoref, "glPixelStoref" );
+pragma import( C, glPixelStorei, "glPixelStorei" );
+pragma import( C, glPixelTransferf, "glPixelTransferf" );
+pragma import( C, glPixelTransferi, "glPixelTransferi" );
+pragma import( C, glPixelZoom, "glPixelZoom" );
+pragma import( C, glPointSize, "glPointSize" );
+pragma import( C, glPolygonMode, "glPolygonMode" );
+pragma import( C, glPolygonOffset, "glPolygonOffset" );
+pragma import( C, glPolygonStipple, "glPolygonStipple" );
+pragma import( C, glPopAttrib, "glPopAttrib" );
+pragma import( C, glPopClientAttrib, "glPopClientAttrib" );
+pragma import( C, glPopMatrix, "glPopMatrix" );
+pragma import( C, glPopName, "glPopName" );
+pragma import( C, glPrioritizeTextures, "glPrioritizeTextures" );
+pragma import( C, glPushAttrib, "glPushAttrib" );
+pragma import( C, glPushClientAttrib, "glPushClientAttrib" );
+pragma import( C, glPushMatrix, "glPushMatrix" );
+pragma import( C, glPushName, "glPushName" );
+pragma import( C, glRasterPos2d, "glRasterPos2d" );
+pragma import( C, glRasterPos2dv, "glRasterPos2dv" );
+pragma import( C, glRasterPos2f, "glRasterPos2f" );
+pragma import( C, glRasterPos2fv, "glRasterPos2fv" );
+pragma import( C, glRasterPos2i, "glRasterPos2i" );
+pragma import( C, glRasterPos2iv, "glRasterPos2iv" );
+pragma import( C, glRasterPos2s, "glRasterPos2s" );
+pragma import( C, glRasterPos2sv, "glRasterPos2sv" );
+pragma import( C, glRasterPos3d, "glRasterPos3d" );
+pragma import( C, glRasterPos3dv, "glRasterPos3dv" );
+pragma import( C, glRasterPos3f, "glRasterPos3f" );
+pragma import( C, glRasterPos3fv, "glRasterPos3fv" );
+pragma import( C, glRasterPos3i, "glRasterPos3i" );
+pragma import( C, glRasterPos3iv, "glRasterPos3iv" );
+pragma import( C, glRasterPos3s, "glRasterPos3s" );
+pragma import( C, glRasterPos3sv, "glRasterPos3sv" );
+pragma import( C, glRasterPos4d, "glRasterPos4d" );
+pragma import( C, glRasterPos4dv, "glRasterPos4dv" );
+pragma import( C, glRasterPos4f, "glRasterPos4f" );
+pragma import( C, glRasterPos4fv, "glRasterPos4fv" );
+pragma import( C, glRasterPos4i, "glRasterPos4i" );
+pragma import( C, glRasterPos4iv, "glRasterPos4iv" );
+pragma import( C, glRasterPos4s, "glRasterPos4s" );
+pragma import( C, glRasterPos4sv, "glRasterPos4sv" );
+pragma import( C, glReadBuffer, "glReadBuffer" );
+pragma import( C, glReadPixels, "glReadPixels" );
+pragma import( C, glRectd, "glRectd" );
+pragma import( C, glRectdv, "glRectdv" );
+pragma import( C, glRectf, "glRectf" );
+pragma import( C, glRectfv, "glRectfv" );
+pragma import( C, glRecti, "glRecti" );
+pragma import( C, glRectiv, "glRectiv" );
+pragma import( C, glRects, "glRects" );
+pragma import( C, glRectsv, "glRectsv" );
+pragma import( C, glRenderMode, "glRenderMode" );
+pragma import( C, glResetHistogram, "glResetHistogram" );
+pragma import( C, glResetMinmax, "glResetMinmax" );
+pragma import( C, glRotated, "glRotated" );
+pragma import( C, glRotatef, "glRotatef" );
+pragma import( C, glSampleCoverage, "glSampleCoverage" );
+pragma import( C, glScaled, "glScaled" );
+pragma import( C, glScalef, "glScalef" );
+pragma import( C, glScissor, "glScissor" );
+pragma import( C, glSelectBuffer, "glSelectBuffer" );
+pragma import( C, glSeparableFilter2D, "glSeparableFilter2D" );
+pragma import( C, glShadeModel, "glShadeModel" );
+pragma import( C, glStencilFunc, "glStencilFunc" );
+pragma import( C, glStencilMask, "glStencilMask" );
+pragma import( C, glStencilOp, "glStencilOp" );
+pragma import( C, glTexCoord1d, "glTexCoord1d" );
+pragma import( C, glTexCoord1dv, "glTexCoord1dv" );
+pragma import( C, glTexCoord1f, "glTexCoord1f" );
+pragma import( C, glTexCoord1fv, "glTexCoord1fv" );
+pragma import( C, glTexCoord1i, "glTexCoord1i" );
+pragma import( C, glTexCoord1iv, "glTexCoord1iv" );
+pragma import( C, glTexCoord1s, "glTexCoord1s" );
+pragma import( C, glTexCoord1sv, "glTexCoord1sv" );
+pragma import( C, glTexCoord2d, "glTexCoord2d" );
+pragma import( C, glTexCoord2dv, "glTexCoord2dv" );
+pragma import( C, glTexCoord2f, "glTexCoord2f" );
+pragma import( C, glTexCoord2fv, "glTexCoord2fv" );
+pragma import( C, glTexCoord2i, "glTexCoord2i" );
+pragma import( C, glTexCoord2iv, "glTexCoord2iv" );
+pragma import( C, glTexCoord2s, "glTexCoord2s" );
+pragma import( C, glTexCoord2sv, "glTexCoord2sv" );
+pragma import( C, glTexCoord3d, "glTexCoord3d" );
+pragma import( C, glTexCoord3dv, "glTexCoord3dv" );
+pragma import( C, glTexCoord3f, "glTexCoord3f" );
+pragma import( C, glTexCoord3fv, "glTexCoord3fv" );
+pragma import( C, glTexCoord3i, "glTexCoord3i" );
+pragma import( C, glTexCoord3iv, "glTexCoord3iv" );
+pragma import( C, glTexCoord3s, "glTexCoord3s" );
+pragma import( C, glTexCoord3sv, "glTexCoord3sv" );
+pragma import( C, glTexCoord4d, "glTexCoord4d" );
+pragma import( C, glTexCoord4dv, "glTexCoord4dv" );
+pragma import( C, glTexCoord4f, "glTexCoord4f" );
+pragma import( C, glTexCoord4fv, "glTexCoord4fv" );
+pragma import( C, glTexCoord4i, "glTexCoord4i" );
+pragma import( C, glTexCoord4iv, "glTexCoord4iv" );
+pragma import( C, glTexCoord4s, "glTexCoord4s" );
+pragma import( C, glTexCoord4sv, "glTexCoord4sv" );
+pragma import( C, glTexCoordPointer, "glTexCoordPointer" );
+pragma import( C, glTexEnvf, "glTexEnvf" );
+pragma import( C, glTexEnvfv, "glTexEnvfv" );
+pragma import( C, glTexEnvi, "glTexEnvi" );
+pragma import( C, glTexEnviv, "glTexEnviv" );
+pragma import( C, glTexGend, "glTexGend" );
+pragma import( C, glTexGendv, "glTexGendv" );
+pragma import( C, glTexGenf, "glTexGenf" );
+pragma import( C, glTexGenfv, "glTexGenfv" );
+pragma import( C, glTexGeni, "glTexGeni" );
+pragma import( C, glTexGeniv, "glTexGeniv" );
+pragma import( C, glTexImage1D, "glTexImage1D" );
+pragma import( C, glTexImage2D, "glTexImage2D" );
+pragma import( C, glTexImage3D, "glTexImage3D" );
+pragma import( C, glTexParameterf, "glTexParameterf" );
+pragma import( C, glTexParameterfv, "glTexParameterfv" );
+pragma import( C, glTexParameteri, "glTexParameteri" );
+pragma import( C, glTexParameteriv, "glTexParameteriv" );
+pragma import( C, glTexSubImage1D, "glTexSubImage1D" );
+pragma import( C, glTexSubImage2D, "glTexSubImage2D" );
+pragma import( C, glTexSubImage3D, "glTexSubImage3D" );
+pragma import( C, glTranslated, "glTranslated" );
+pragma import( C, glTranslatef, "glTranslatef" );
+pragma import( C, gluBeginCurve, "gluBeginCurve" );
+pragma import( C, gluBeginPolygon, "gluBeginPolygon" );
+pragma import( C, gluBeginSurface, "gluBeginSurface" );
+pragma import( C, gluBeginTrim, "gluBeginTrim" );
+pragma import( C, gluBuild1DMipmapLevels, "gluBuild1DMipmapLevels" );
+pragma import( C, gluBuild1DMipmaps, "gluBuild1DMipmaps" );
+pragma import( C, gluBuild2DMipmapLevels, "gluBuild2DMipmapLevels" );
+pragma import( C, gluBuild2DMipmaps, "gluBuild2DMipmaps" );
+pragma import( C, gluBuild3DMipmapLevels, "gluBuild3DMipmapLevels" );
+pragma import( C, gluBuild3DMipmaps, "gluBuild3DMipmaps" );
+pragma import( C, gluCheckExtension, "gluCheckExtension" );
+pragma import( C, gluCylinder, "gluCylinder" );
+pragma import( C, gluDeleteNurbsRenderer, "gluDeleteNurbsRenderer" );
+pragma import( C, gluDeleteQuadric, "gluDeleteQuadric" );
+pragma import( C, gluDeleteTess, "gluDeleteTess" );
+pragma import( C, gluDisk, "gluDisk" );
+pragma import( C, gluEndCurve, "gluEndCurve" );
+pragma import( C, gluEndPolygon, "gluEndPolygon" );
+pragma import( C, gluEndSurface, "gluEndSurface" );
+pragma import( C, gluEndTrim, "gluEndTrim" );
+pragma import( C, gluErrorString, "gluErrorString" );
+pragma import( C, gluGetNurbsProperty, "gluGetNurbsProperty" );
+pragma import( C, gluGetString, "gluGetString" );
+pragma import( C, gluGetTessProperty, "gluGetTessProperty" );
+pragma import( C, gluLoadSamplingMatrices, "gluLoadSamplingMatrices" );
+pragma import( C, gluLookAt, "gluLookAt" );
+pragma import( C, gluNewNurbsRenderer, "gluNewNurbsRendererreturnGLUnurbs_Ptr" );
+pragma import( C, gluNewQuadric, "gluNewQuadricreturnGLUquadratic_Ptr" );
+pragma import( C, gluNewTess, "gluNewTessreturnGLUtessellator_Ptr" );
+pragma import( C, gluNextContour, "gluNextContour" );
+pragma import( C, gluNurbsCallback, "gluNurbsCallback" );
+pragma import( C, gluNurbsCallbackData, "gluNurbsCallbackData" );
+pragma import( C, gluNurbsCallbackDataEXT, "gluNurbsCallbackDataEXT" );
+pragma import( C, gluNurbsCurve, "gluNurbsCurve" );
+pragma import( C, gluNurbsProperty, "gluNurbsProperty" );
+pragma import( C, gluNurbsSurface, "gluNurbsSurface" );
+pragma import( C, gluOrtho2D, "gluOrtho2D" );
+pragma import( C, gluPartialDisk, "gluPartialDisk" );
+pragma import( C, gluPerspective, "gluPerspective" );
+pragma import( C, gluPickMatrix, "gluPickMatrix" );
+pragma import( C, gluProject, "gluProject" );
+pragma import( C, gluPwlCurve, "gluPwlCurve" );
+pragma import( C, gluQuadricCallback, "gluQuadricCallback" );
+pragma import( C, gluQuadricDrawStyle, "gluQuadricDrawStyle" );
+pragma import( C, gluQuadricNormals, "gluQuadricNormals" );
+pragma import( C, gluQuadricOrientation, "gluQuadricOrientation" );
+pragma import( C, gluQuadricTexture, "gluQuadricTexture" );
+pragma import( C, gluScaleImage, "gluScaleImage" );
+pragma import( C, gluSphere, "gluSphere" );
+pragma import( C, gluTessBeginContour, "gluTessBeginContour" );
+pragma import( C, gluTessBeginPolygon, "gluTessBeginPolygon" );
+pragma import( C, gluTessCallback, "gluTessCallback" );
+pragma import( C, gluTessEndContour, "gluTessEndContour" );
+pragma import( C, gluTessEndPolygon, "gluTessEndPolygon" );
+pragma import( C, gluTessNormal, "gluTessNormal" );
+pragma import( C, gluTessProperty, "gluTessProperty" );
+pragma import( C, gluTessVertex, "gluTessVertex" );
+pragma import( C, gluUnProject, "gluUnProject" );
+pragma import( C, gluUnProject4, "gluUnProject4" );
+pragma import( C, glVertex2d, "glVertex2d" );
+pragma import( C, glVertex2dv, "glVertex2dv" );
+pragma import( C, glVertex2f, "glVertex2f" );
+pragma import( C, glVertex2fv, "glVertex2fv" );
+pragma import( C, glVertex2i, "glVertex2i" );
+pragma import( C, glVertex2iv, "glVertex2iv" );
+pragma import( C, glVertex2s, "glVertex2s" );
+pragma import( C, glVertex2sv, "glVertex2sv" );
+pragma import( C, glVertex3d, "glVertex3d" );
+pragma import( C, glVertex3dv, "glVertex3dv" );
+pragma import( C, glVertex3f, "glVertex3f" );
+pragma import( C, glVertex3fv, "glVertex3fv" );
+pragma import( C, glVertex3i, "glVertex3i" );
+pragma import( C, glVertex3iv, "glVertex3iv" );
+pragma import( C, glVertex3s, "glVertex3s" );
+pragma import( C, glVertex3sv, "glVertex3sv" );
+pragma import( C, glVertex4d, "glVertex4d" );
+pragma import( C, glVertex4dv, "glVertex4dv" );
+pragma import( C, glVertex4f, "glVertex4f" );
+pragma import( C, glVertex4fv, "glVertex4fv" );
+pragma import( C, glVertex4i, "glVertex4i" );
+pragma import( C, glVertex4iv, "glVertex4iv" );
+pragma import( C, glVertex4s, "glVertex4s" );
+pragma import( C, glVertex4sv, "glVertex4sv" );
+pragma import( C, glVertexPointer, "glVertexPointer" );
+pragma import( C, glViewport, "glViewport" );
+
+end bush_os.opengl;

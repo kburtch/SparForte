@@ -1860,6 +1860,42 @@ elsif not f1 then
 end if;
 pragma assert( i = 2 );
 
+-- integer casting
+-- in bush, literals are universal_numeric's
+
+i := 2.4
+pragma assert( i = 2 );
+i := 2.5
+pragma assert( i = 3 );
+i := 2.5 * 2
+pragma assert( i = 5 );
+i := 5 / 2
+pragma assert( i = 3 );
+i := 2.5 + 1
+pragma assert( i = 4 );
+i := 2.5 - 1
+pragma assert( i = 2 );
+i := integer( 2.5 ) * 2
+pragma assert( i = 6 );
+i := integer( 5.4 ) / 2
+pragma assert( i = 3 );
+i := integer( 2.5 ) + 1
+pragma assert( i = 4 );
+i := integer( 2.5 ) - 1
+pragma assert( i = 2 );
+i := integer( 2.5 ) * 2;
+pragma assert( i = 6 );
+iz : integer := 2.5
+pragma assert( iz = 3 );
+i := short_short_integer( 2.5 ) * 2
+pragma assert( i = 6 );
+i := short_integer( 2.5 ) * 2
+pragma assert( i = 6 );
+i := long_integer( 2.5 ) * 2
+pragma assert( i = 6 );
+i := long_long_integer( 2.5 ) * 2
+pragma assert( i = 6 );
+
 -- Pragma ada_95 tests
 
 pragma ada_95;

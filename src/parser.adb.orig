@@ -1811,6 +1811,7 @@ begin
            expect( symbol_t, ")" );
            if uniTypesOk( castType, kind ) then
               kind := castType;
+	      f := castToType( to_numeric( f ), kind );
            end if;
         elsif identifiers( getBaseType( t ) ).list then        -- array(index)?
            array_id := t;                            -- array_id=array variable
@@ -1983,9 +1984,10 @@ begin
              if operator = "*" then
                 begin
                   if isExecutingCommand then
-                     term := to_unbounded_string(
+                     term := castToType(
                         to_numeric( term ) *
-                        to_numeric( pterm2 ) );
+                        to_numeric( pterm2 ),
+		       term_type );
                   end if;
                  exception when program_error =>
                     err( "program_error exception raised" );
@@ -1997,9 +1999,10 @@ begin
              elsif operator = "/" then
                 begin
                   if isExecutingCommand then
-                     term := to_unbounded_string(
+                     term := castToType(
                         to_numeric( term ) /
-                        to_numeric( pterm2 ) );
+                        to_numeric( pterm2 ),
+		       term_type );
                   end if;
                  exception when program_error =>
                     err( "program_error exception raised" );
@@ -2011,10 +2014,12 @@ begin
              elsif operator = "mod" then
                 begin
                   if isExecutingCommand then
-                     term := to_unbounded_string(
-                        long_long_integer'image(
+                     term := castToType(
+                        --long_long_integer'image(
+                        long_float(
                         long_long_integer( to_numeric( term ) ) mod
-                        long_long_integer( to_numeric( pterm2 ) ) ) );
+                        long_long_integer( to_numeric( pterm2 ) ) ),
+		       term_type );
                   end if;
                 exception when program_error =>
                    err( "program_error exception raised" );
@@ -2026,10 +2031,12 @@ begin
              elsif operator = "rem" then
                 begin
                   if isExecutingCommand then
-                     term := to_unbounded_string(
-                        long_long_integer'image(
+                     term := castToType(
+                        --long_long_integer'image(
+                        long_float(
                         long_long_integer( to_numeric( term ) ) rem
-                        long_long_integer( to_numeric( pterm2 ) ) ) );
+                        long_long_integer( to_numeric( pterm2 ) ) ),
+		       term_type );
                   end if;
                 exception when program_error =>
                    err( "program_error exception raised" );
@@ -2152,9 +2159,10 @@ begin
              if operator = "+" then
                 begin
                   if isExecutingCommand then
-                     se := to_unbounded_string(
+                     se := castToType(
                         to_numeric( se ) +
-                        to_numeric( term2 ) );
+                        to_numeric( term2 ),
+		       expr_type );
                   end if;
                 exception when program_error =>
                    err( "program_error exception raised" );
@@ -2166,9 +2174,10 @@ begin
              elsif operator = "-" then
                 begin
                   if isExecutingCommand then
-                     se := to_unbounded_string(
+                     se := castToType(
                         to_numeric( se ) -
-                        to_numeric( term2 ) );
+                        to_numeric( term2 ),
+		       expr_type );
                   end if;
                 exception when program_error =>
                    err( "program_error exception raised" );
@@ -3004,6 +3013,8 @@ begin
               lf : long_float;
            begin
               lf := to_numeric( expr_value );
+	      -- handle integer types
+              expr_value := castToType( lf, type_token );
            exception when program_error =>
               err( "program_error exception raised" );
            when others =>
@@ -6341,6 +6352,8 @@ begin
         begin
            if isExecutingCommand then
               lf := to_numeric( expr_value );
+	      -- handle integer types
+              expr_value := castToType( lf, var_kind );
            end if;
         exception when others =>
            err( "'" & to_string( expr_value) & "' is not numeric" );
@@ -6375,7 +6388,7 @@ begin
                  " := """ &
                  to_string( ToEscaped( expr_value ) ) &
                  """" );
-        end if;
+           end if;
         end if;
     end if;
   end if;

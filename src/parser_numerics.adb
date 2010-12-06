@@ -51,15 +51,100 @@ package body parser_numerics is
 
 serialNumber : long_float := 0.0;
 
+-----------------------------------------------------------------------------
+
+--procedure ParseSingleNumericExpression( expr_val : out unbounded_string;
+--  expr_type : out identifier ) is
+--begin
+--  expect( symbol_t, "(" );
+--  ParseExpression( expr_val, expr_type );
+--  if uniTypesOk( expr_type, uni_numeric_t ) then
+--     expect( symbol_t, ")" );
+--  end if;
+--end ParseSingleNumericExpression;
+
+procedure ParseSingleStringExpression( expr_val : out unbounded_string;
+  expr_type : out identifier ) is
+begin
+  expect( symbol_t, "(" );
+  ParseExpression( expr_val, expr_type );
+  if uniTypesOk( expr_type, uni_string_t ) then
+     expect( symbol_t, ")" );
+  end if;
+end ParseSingleStringExpression;
+
+procedure ParseFirstStringExpression( expr_val : out unbounded_string;
+  expr_type : out identifier ) is
+begin
+  expect( symbol_t, "(" );
+  ParseExpression( expr_val, expr_type );
+  if uniTypesOk( expr_type, uni_string_t ) then
+     expect( symbol_t, "," );
+  end if;
+end ParseFirstStringExpression;
+
+procedure ParseNextStringExpression( expr_val : out unbounded_string;
+  expr_type : out identifier ) is
+begin
+  ParseExpression( expr_val, expr_type );
+  if uniTypesOk( expr_type, uni_string_t ) then
+     expect( symbol_t, "," );
+  end if;
+end ParseNextStringExpression;
+
+procedure ParseLastStringExpression( expr_val : out unbounded_string;
+  expr_type : out identifier ) is
+begin
+  ParseExpression( expr_val, expr_type );
+  if uniTypesOk( expr_type, uni_string_t ) then
+     expect( symbol_t, ")" );
+  end if;
+end ParseLastStringExpression;
+
 procedure ParseSingleNumericExpression( expr_val : out unbounded_string;
   expr_type : out identifier ) is
 begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
+  expr_val := castToType( expr_val, expr_type );
   if uniTypesOk( expr_type, uni_numeric_t ) then
      expect( symbol_t, ")" );
   end if;
 end ParseSingleNumericExpression;
+
+procedure ParseFirstNumericExpression( expr_val : out unbounded_string;
+  expr_type : out identifier ) is
+begin
+  expect( symbol_t, "(" );
+  ParseExpression( expr_val, expr_type );
+  expr_val := castToType( expr_val, expr_type );
+  if uniTypesOk( expr_type, uni_numeric_t ) then
+     expect( symbol_t, "," );
+  end if;
+end ParseFirstNumericExpression;
+
+procedure ParseNextNumericExpression( expr_val : out unbounded_string;
+  expr_type : out identifier ) is
+begin
+  ParseExpression( expr_val, expr_type );
+  expr_val := castToType( expr_val, expr_type );
+  if uniTypesOk( expr_type, uni_numeric_t ) then
+     expect( symbol_t, "," );
+  end if;
+end ParseNextNumericExpression;
+
+procedure ParseLastNumericExpression( expr_val : out unbounded_string;
+  expr_type : out identifier ) is
+begin
+  ParseExpression( expr_val, expr_type );
+  expr_val := castToType( expr_val, expr_type );
+  if uniTypesOk( expr_type, uni_numeric_t ) then
+     expect( symbol_t, ")" );
+  end if;
+end ParseLastNumericExpression;
+
+
+-----------------------------------------------------------------------------
 
 procedure ParseNumericsRandom( result : out unbounded_string ) is
   -- Syntax: random

@@ -111,4 +111,11 @@ procedure parseProcedureCallSemicolon;
 procedure parseFunctionCallSemicolon;
 -- more informative than expect( .. ";" );
 
+
+function castToType( val : long_float; kind : identifier ) return unbounded_string;
+function castToType( val : unbounded_string; kind : identifier ) return unbounded_string;
+-- If a value is an integer type (i.e. positive, natural or integer),
+-- round the value.  Otherwise do not round the value.  Return the
+-- result as a string value.
+
 end parser_aux;

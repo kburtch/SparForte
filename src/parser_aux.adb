@@ -540,5 +540,96 @@ begin
   end if;
 end parseFunctionCallSemicolon;
 
+
+---> CAST TO TYPE
+--
+-- If a value is an integer type (i.e. positive, natural or integer),
+-- round the value.  Otherwise do not round the value.  Return the
+-- result as a string value.
+-----------------------------------------------------------------------------
+
+function castToType( val : long_float; kind : identifier ) return unbounded_string is
+  baseType : identifier;
+  roundedVal : long_long_integer;
+  str : unbounded_string;
+begin
+  -- what kind is it 
+  baseType := getBaseType( kind );
+  --put_identifier( baseType ); -- DEBUG
+  -- If it's an integer type, just round it
+  if baseType = short_short_integer_t or
+     baseType = short_integer_t or
+     baseType = integer_t or
+     baseType = long_integer_t or
+     baseType = long_long_integer_t then
+     roundedVal := long_long_integer( val );
+     str := to_unbounded_string( long_long_integer'image( roundedVal ) );
+  -- If it's a natural type, round it and check for negative
+  elsif baseType = natural_t then
+     roundedVal := long_long_integer( val );
+     if roundedVal < 0 then
+        err( "natural value is less than zero" );
+     end if;
+     str := to_unbounded_string( long_long_integer'image( roundedVal ) );
+  -- If it's a positive type, round it and check for negative or zero
+  elsif baseType = positive_t then
+     roundedVal := long_long_integer( val );
+     if roundedVal <= 0 then
+        err( "positive value is less than zero" );
+     end if;
+     str := to_unbounded_string( long_long_integer'image( roundedVal ) );
+  -- If it's anything else, including universals, don't do anything
+  -- except convert to a string
+  else
+     -- return unchanged
+     str := to_unbounded_string( val'img );
+  end if;
+  return str;
+end castToType;
+
+function castToType( val : unbounded_string; kind : identifier ) return unbounded_string is
+  baseType : identifier;
+  roundedVal : long_long_integer;
+  str : unbounded_string;
+begin
+  -- what kind is it 
+  baseType := getBaseType( kind );
+  --put_identifier( baseType ); -- DEBUG
+  -- If it's an integer type, just round it
+  if baseType = short_short_integer_t or
+     baseType = short_integer_t or
+     baseType = integer_t or
+     baseType = long_integer_t or
+     baseType = long_long_integer_t then
+     roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
+     str := to_unbounded_string( long_long_integer'image( roundedVal ) );
+  -- If it's a natural type, round it and check for negative
+  elsif baseType = natural_t then
+     roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
+     if roundedVal < 0 then
+        err( "natural value is less than zero" );
+     end if;
+     str := to_unbounded_string( long_long_integer'image( roundedVal ) );
+  -- If it's a positive type, round it and check for negative or zero
+  elsif baseType = positive_t then
+     roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
+     if roundedVal <= 0 then
+        err( "positive value is less than zero" );
+     end if;
+     str := to_unbounded_string( long_long_integer'image( roundedVal ) );
+  -- If it's anything else, including universals, don't do anything
+  -- except convert to a string
+  elsif baseType = character_t then
+     if length( val ) /= 1 then
+        err( "character value must be one character long" );
+     end if;
+     str := val;
+  else
+     -- return unchanged
+     str := val;
+  end if;
+  return str;
+end castToType;
+
 end parser_aux;
 
