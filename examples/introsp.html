@@ -1,0 +1,81 @@
+<HEAD><TITLE>introsp.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : introsp.bush </H1></DIV><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "verify the version/revision of your currently running" );
+<b>pragma</b> annotate( "(compiler/interpreter/byte-compiler/runtime environment/" );
+<b>pragma</b> annotate( "whatever your language uses) and exit if it is too old." );
+<b>pragma</b> annotate( "check whether the variable 'bloop' exists and whether the" );
+<b>pragma</b> annotate( " math-function 'abs()' is available and if yes compute" );
+<b>pragma</b> annotate( "abs(bloop).  Extra credit: Report the number of integer" );
+<b>pragma</b> annotate( "variables in global scope, and their sum." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Introspection" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "by ken O. Burtch" );
+
+<b>procedure</b> introsp <b>is</b>
+   bloop : integer := -5;
+   e     : string;
+   s     : string;
+<b>begin</b>
+
+   <FONT COLOR=green><EM>-- get initial environment</EM></FONT>
+
+   e := `<b>env</b>;`;
+
+   <FONT COLOR=green><EM>-- version number is not available (yet) under bush</EM></FONT>
+
+   <FONT COLOR=green><EM>-- the bloop test</EM></FONT>
+
+   s := `echo $e | grep "^bloop\ " ;` ;
+   <b>if</b> strings.length( s ) &gt; 0 <b>then</b>
+      ? "bloop exists";
+      s := `echo $e | grep "^abs\ " ;` ;
+      <b>if</b> strings.length( s ) &gt; 0 <b>then</b>
+         ? "abs() exists";
+         ? "abs(bloop) = " &amp; strings.image( <b>abs</b>( bloop ) );
+      <b>else</b>
+         ? "abs does not exist";
+      <b>end</b> <b>if</b>;
+   <b>else</b>
+      ? "bloop does not exist";
+   <b>end</b> <b>if</b>;
+
+   <FONT COLOR=green><EM>-- count global integers and their sum</EM></FONT>
+   <FONT COLOR=green><EM>--</EM></FONT>
+   <FONT COLOR=green><EM>-- bit of a cheat...we're counting their value at script startup</EM></FONT>
+
+   <b>declare</b>
+     pos : natural := 0;
+     l   : string;
+     ch  : character;
+     cnt : natural := 0;
+     sum : integer := 0;
+   <b>begin</b>
+     <b>while</b> pos &lt; strings.length( e ) <b>loop</b>
+       l := "";
+       <b>loop</b>
+         pos := @+1;
+         <b>exit</b> <b>when</b> pos &gt; strings.length( e );
+         ch := strings.element( e, positive( pos ) );
+         <b>exit</b> <b>when</b> ch = ASCII.LF;
+         l := @ &amp; ch;
+       <b>end</b> <b>loop</b>;
+       <b>if</b> strings.index( l, "identifier of the type integer" ) &gt; 0 <b>then</b>
+         ? l;
+         cnt := @ + 1;
+         s := strings.trim( strings.field( l, 2, "|" ), trim_end.both );
+         <b>if</b> strings.length( s ) &gt; 0 <b>then</b>
+            sum := @ + numerics.value( s );
+         <b>end</b> <b>if</b>;
+       <b>end</b> <b>if</b>;
+     <b>end</b> <b>loop</b>;
+     ? "There are" &amp; strings.image( cnt ) &amp; " integer variables";
+     ? "Their sum is " &amp; strings.image( sum );
+   <b>end</b>;
+
+<b>end</b> introsp;
+</PRE></BODY></HTML>

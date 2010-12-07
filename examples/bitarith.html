@@ -1,0 +1,57 @@
+<HEAD><TITLE>bitarith.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : bitarith.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush bitarith
+A and B =  170
+A or  B =  255
+A xor B =  85
+
+A &lt; B =  256
+A &gt;&gt; B =  64
+A &gt;&gt;&gt; B =  64
+A rotl B =  256
+A rotr B =  64
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "Write a routine to perform a bitwise AND, OR, and XOR on" );
+<b>pragma</b> annotate( "two integers, a bitwise NOT on the first integer, a left" );
+<b>pragma</b> annotate( "shift, right shift, right arithmetic shift, left rotate," );
+<b>pragma</b> annotate( "and right rotate. All shifts and rotates should be done on" );
+<b>pragma</b> annotate( "the first integer with a shift/rotate amount of the second" );
+<b>pragma</b> annotate( "integer." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Bitwise_operations" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Translated by ken O. Burtch" );
+
+<b>procedure</b> bitarith <b>is</b>
+  A : natural := 255;
+  B : natural := 170;
+  X : natural := 128;
+  N : natural := 1;
+<b>begin</b>
+  put( "A and B = " ) @ (A <b>and</b> B); new_line;
+  put( "A or  B = " ) @ (A <b>or</b>  B); new_line;
+  put( "A xor B = " ) @ (A <b>xor</b> B); new_line;
+  new_line;
+  put( "A &lt;&lt; B = " ) @ ( numerics.shift_left( X, N ) ); new_line;
+  put( "A &gt;&gt; B = " ) @ ( numerics.shift_right( X, N ) ); new_line;
+  put( "A &gt;&gt;&gt; B = " ) @ ( numerics.shift_right_arithmetic( X, N ) ); new_line;
+  put( "A rotl B = " ) @ ( numerics.rotate_left( X, N ) ); new_line;
+  put( "A rotr B = " ) @ ( numerics.rotate_right( X, N ) ); new_line;
+<b>end</b> bitarith;
+</PRE></BODY></HTML>

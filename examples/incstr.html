@@ -1,0 +1,33 @@
+<HEAD><TITLE>incstr.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : incstr.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush incstr
+12346
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "Increment an integer number in a string" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Increment_a_numerical_string" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Translated by ken O. Burtch" );
+
+<b>procedure</b> incstr <b>is</b>
+   s : string := "12345";
+<b>begin</b>
+   s := strings.trim( strings.image( numerics.value( s ) + 1 ), trim_end.both ) ;
+   ? s;
+<b>end</b> incstr;
+</PRE></BODY></HTML>
