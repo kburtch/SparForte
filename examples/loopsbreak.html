@@ -1,0 +1,55 @@
+<HEAD><TITLE>loopsbreak.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : loopsbreak.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush loopsbreak
+ 20
+ 20
+ 19
+ 17
+ 6
+ 20
+ 10
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "loopsbreak" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Show a loop which prints random numbers (each number newly" );
+<b>pragma</b> annotate( "generated each loop) from 0 to 19 (inclusive). If a number is" );
+<b>pragma</b> annotate( "10, stop the loop after printing it, and do not generate any" );
+<b>pragma</b> annotate( "further numbers. Otherwise, generate and print a second random" );
+<b>pragma</b> annotate( "number before restarting the loop. If the number 10 is never" );
+<b>pragma</b> annotate( "generated as the first number in a loop, loop forever. " );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Loops/Break" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> arraysloop <b>is</b>
+  a : positive;
+  b : positive;
+<b>begin</b>
+  <b>loop</b>
+    a := numerics.rnd( 20 );
+    put_line( strings.image( a ) );
+    <b>exit</b> <b>when</b> a = 10;
+    b := numerics.rnd( 20 );
+    put_line( strings.image( b ) );
+  <b>end</b> <b>loop</b>;
+<b>end</b> arraysloop;
+
+</PRE></BODY></HTML>

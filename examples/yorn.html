@@ -1,0 +1,57 @@
+<HEAD><TITLE>yorn.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : yorn.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush yorn
+Your answer? (Y/N) Y
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "yorn" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Obtain a valid Y or N response from the keyboard. The" );
+<b>pragma</b> annotate( "keyboard should be flushed, so that any outstanding keypresses" );
+<b>pragma</b> annotate( "are removed, preventing any existing Y or N keypress from" );
+<b>pragma</b> annotate( "being evaluated. The response should be obtained as soon as" );
+<b>pragma</b> annotate( "Y or N are pressed, and there should be no need to press an" );
+<b>pragma</b> annotate( "enter key. " );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Keyboard_Input/Obtain_a_Y_or_N_response" );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<FONT COLOR="green">-- KB: Not sure if inkey flushes or not...don't remember</FONT>
+
+<b>procedure</b> yorn <b>is</b>
+  answer : character;
+<b>begin</b>
+  put( "Your answer? (Y/N) " );
+  <b>loop</b>
+    answer := inkey;
+    <b>case</b> answer <b>is</b>
+    <b>when</b> 'Y'|'y' =&gt;
+       answer := 'Y';
+       <b>exit</b>;
+    <b>when</b> 'N'|'n' =&gt;
+       answer := 'N';
+       <b>exit</b>;
+    <b>when</b> <b>others</b> =&gt;
+       <b>null</b>;
+    <b>end</b> <b>case</b>;
+  <b>end</b> <b>loop</b>;
+  put_line( answer );
+<b>end</b> yorn;
+
+</PRE></BODY></HTML>

@@ -1,0 +1,63 @@
+<HEAD><TITLE>arrayloop.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : arrayloop.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush arrayloop
+aA1
+bB2
+cC3
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "arrayloop" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Loop over multiple arrays simultaneously" );
+<b>pragma</b> annotate( "You are encouraged to solve this task according to the" );
+<b>pragma</b> annotate( "task description, using any language you may know. Loop" );
+<b>pragma</b> annotate( "over multiple arrays (or lists or tuples or whatever" );
+<b>pragma</b> annotate( "they're called in your language) and print the ith" );
+<b>pragma</b> annotate( "element of each. Use your language's 'for each' loop if" );
+<b>pragma</b> annotate( "it has one, otherwise iterate through the collection in" );
+<b>pragma</b> annotate( "order with some other loop." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "For this example, loop over the arrays (a,b,c), (A,B,C)" );
+<b>pragma</b> annotate( "and (1,2,3) to produce the output" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "aA1" );
+<b>pragma</b> annotate( "bB2" );
+<b>pragma</b> annotate( "cC3" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "If possible, also describe what happens when the arrays" );
+<b>pragma</b> annotate( "are of different lengths. " );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Loop_over_multiple_arrays_simultaneously" );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> arrayloop <b>is</b>
+  a1 : <b>array</b>( 1..3 ) <b>of</b> character := ('a', 'b', 'c');
+  a2 : <b>array</b>( 1..3 ) <b>of</b> character := ('A', 'B', 'C');
+  a3 : <b>array</b>( 1..3 ) <b>of</b> integer   := (1, 2, 3);
+<b>begin</b>
+  <b>for</b> i <b>in</b> arrays.first( a1 )..arrays.last( a1 ) <b>loop</b>
+      put( a1( i ) )
+        @( a2( i ) )
+        @( strings.trim( strings.image( a3( i ) ), trim_end.both ) );
+      new_line;
+  <b>end</b> <b>loop</b>;
+<b>end</b> arrayloop;
+
+</PRE></BODY></HTML>

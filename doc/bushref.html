@@ -100,11 +100,8 @@ variables
 couldn't be used.
 <br>
 &nbsp;
-<br>
-&nbsp;
-<p>Ada is case-insensitive and programs may need to have the
-capitalization
-of keywords changed to fit the case expected by AdaScript.
+<p><b>Ada</b>: Ada is case-insensitive and programs may need to have the
+capitalization of keywords changed to fit the case expected by AdaScript.
 <br>
 &nbsp;
 </p>
@@ -247,14 +244,16 @@ supported.</font>
 &nbsp;
 &nbsp;<br>
 <ul>
-  <li> <font color="#000000"><tt>5</tt> - the integer 5</font></li>
-  <li> <font color="#000000"><tt>5.0</tt> the integer 5.0</font></li>
+  <li> <font color="#000000"><tt>5</tt> - the numeric value 5</font></li>
+  <li> <font color="#000000"><tt>5.0</tt> the numeric value 5.0</font></li>
   <li> <font color="#000000"><tt>8#777#</tt> - the octal value 511</font></li>
   <li> <font color="#000000"><tt>16#ff#</tt> - the hexadecimal value
 255</font></li>
 </ul>
+<p>All numerical literals are of type universal_numeric.</p>
 <p><br>
-<font color="#000000">Characters are enclosed in single quotes.</font>
+<font color="#000000">Characters are enclosed in single quotes.  It must
+be only one character long.</font>
 <br>
 &nbsp;
 </p>
@@ -269,6 +268,12 @@ supported.</font>
 <ul>
   <li> <font color="#000000"><tt>"hello" </tt>- the string hello</font></li>
 </ul>
+<p>All string or character literals are of type universal_string.</p>
+<br>
+<p><b>Ada</b>: In Ada, the
+number 5 is an integer and 5.0 is a float.  Here they are both
+universal_numeric.  In Ada, "hello" is a string and 'c' is a character.
+Both are universal_strings here.</p>
 <br>
 <h3><a name="3.6"></a><font color="#777700">3.6 Bourne Shell Arguments<br>
 </font></h3>
@@ -295,6 +300,16 @@ Bourne shell expansions include:<br>
 <table style="text-align: left; width: 100%;" border="1" cellpadding="2"
  cellspacing="2">
   <tbody>
+    <tr>
+      <td style="vertical-align: top;"><b>Expansion</b><br>
+      </td>
+      <td style="vertical-align: top;"><b>Before</b><br>
+      </td>
+      <td style="vertical-align: top;"><b>After</b><br>
+      </td>
+      <td style="vertical-align: top;"><b>Bush</b><br>
+      </td>
+    </tr>
     <tr>
       <td style="vertical-align: top;">Brace Expansion<br>
       </td>
@@ -861,7 +876,7 @@ numeric or enumerated index.
 </p>
 <p><tt>=&gt; zerbra_population : array(1900..1999) of natural</tt>
 <br>
-<tt>=&gt; type divisions is (america, asia, africa, eurpoe, oceania )</tt>
+<tt>=&gt; type divisions is (america, asia, africa, europe, oceania )</tt>
 <br>
 <tt>=&gt; sales : array (america..oceania) of float</tt>
 </p>
@@ -1031,19 +1046,17 @@ population</tt>
 </p>
 <p>Common self-referential (or combined operator) shortcuts:</p>
 <table cellspacing="0" cellpadding="0" border="1" summary="">
-<tr>
-<td><u>C style</u></td><td><u>Bush Style</u></td>
-<td>temp++</td><td>temp:=@+1</td>
-<td>++temp</td><td>temp:=@+1</td>
-<td>temp--</td><td>temp:=@-1</td>
-<td>--temp</td><td>temp:=@-1</td>
-<td>temp+=x</td><td>temp:=@+x</td>
-<td>temp-=x</td><td>temp:=@-x</td>
-<td>temp*=x</td><td>temp:=@*x</td>
-<td>temp/=x</td><td>temp:=@/x</td>
-<td>temp%=x</td><td>temp:=@ mod x</td>
-<td>temp.=x (PHP)</td><td>temp:= @&amp;x</td>
-</tr>
+<tr><td><b>C style</b></td><td><b>Bush Style</b></td></tr>
+<tr><td>temp++</td><td>temp:=@+1</td></tr>
+<tr><td>++temp</td><td>temp:=@+1</td></tr>
+<tr><td>temp--</td><td>temp:=@-1</td></tr>
+<tr><td>--temp</td><td>temp:=@-1</td></tr>
+<tr><td>temp+=x</td><td>temp:=@+x</td></tr>
+<tr><td>temp-=x</td><td>temp:=@-x</td></tr>
+<tr><td>temp*=x</td><td>temp:=@*x</td></tr>
+<tr><td>temp/=x</td><td>temp:=@/x</td></tr>
+<tr><td>temp%=x</td><td>temp:=@ mod x</td></tr>
+<tr><td>temp.=x (PHP)</td><td>temp:= @&amp;x</td></tr>
 </table>
 <p>AdaScript provides a last output operand. "%", pronounced "last
 output",
@@ -1664,11 +1677,11 @@ repeat while the condition is true and the condition is tested each
 time
 the first line of the loop is executed.
 </p>
-<p><tt>while x &gt; y loop</tt>
+<p><tt><b>while</b> x &gt; y <b>loop</b></tt>
 <br>
 <tt>&nbsp; x := @ + 1;</tt>
 <br>
-<tt>end loop;</tt>
+<tt><b>end</b> <b>loop</b>;</tt>
 </p>
 <p>The for loop increments its index variable by 1 until it iterates
 through
@@ -1678,37 +1691,37 @@ and only exists for the scope of the the loop.&nbsp; The range can
 either
 be numeric or enumerated.
 </p>
-<p><tt>for i in 1..10 loop</tt>
+<p><tt><b>for</b> i <b>in</b> 1..10 <b>loop</b></tt>
 <br>
 <tt>&nbsp; put( "i is " );</tt>
 <br>
 <tt>&nbsp; put_line( i );</tt>
 <br>
-<tt>end loop;</tt>
+<tt><b>end</b> <b>loop</b>;</tt>
 </p>
 <p>To loop in reverse in a for loop, use "in reverse" instead of "in".
 </p>
 <p>Any loop can be exited by using either an exit statement or an "exit
 when" shorthand.
 </p>
-<p><tt>if x &gt; 100 then</tt>
+<p><tt><b>if</b> x &gt; 100 <b>then</b></tt>
 <br>
-<tt>&nbsp; exit;</tt>
+<tt>&nbsp; <b>exit</b>;</tt>
 <br>
-<tt>end if;</tt>
+<tt><b>end</b> <b>if</b>;</tt>
 </p>
-<p><tt>exit when x &gt; 100;</tt>
+<p><tt><b>exit</b> <b>when</b> x &gt; 100;</tt>
 </p>
 <p>A "loop" loop is a general purpose loop. It can only be exited with
 "exit".
 </p>
-<p><tt>loop</tt>
+<p><tt><b>loop</b></tt>
 <br>
 <tt>&nbsp; reply := get_line;</tt>
 <br>
-<tt>&nbsp; exit when reply = "exit";</tt>
+<tt>&nbsp; <b>exit</b> <b>when</b> reply = "exit";</tt>
 <br>
-<tt>end loop;</tt>
+<tt><b>end</b> <b>loop</b>;</tt>
 <br>
 &nbsp;
 </p>
@@ -1758,7 +1771,7 @@ where commands are required.  There are no arguments.</p>
 &nbsp;<br>
 
 
-The <b>nulue]</b></p>
+<b>return [value]</b></p>
 <center>
 <table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
 <tr>
