@@ -1,0 +1,68 @@
+<HEAD><TITLE>rot13.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : rot13.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush rot13
+Ovt swbeqf irk dhvpx jnygm alzcu!
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "rot13" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Implement a 'rot-13' function (or procedure, class," );
+<b>pragma</b> annotate( "subroutine, or other 'callable' object as appropriate" );
+<b>pragma</b> annotate( "to your programming environment).  The definition of the" );
+<b>pragma</b> annotate( "rot-13 function is to simply replace every letter of the" );
+<b>pragma</b> annotate( "ASCII alphabet with the letter which is 'rotated' 13" );
+<b>pragma</b> annotate( "characters 'around' the 26 letter alphabet from its" );
+<b>pragma</b> annotate( "normal cardinal position (wrapping around from 'z' to" );
+<b>pragma</b> annotate( "'a' as necessary). Thus the letters 'abc' become 'nop'" );
+<b>pragma</b> annotate( "and so on. Technically rot-13 is a 'monoalphabetic" );
+<b>pragma</b> annotate( "substitution cipher' with a trivial 'key'. A proper" );
+<b>pragma</b> annotate( "implementation should work on upper and lower case" );
+<b>pragma</b> annotate( "letters, preserve case, and pass all non-alphabetic" );
+<b>pragma</b> annotate( "characters in the input stream through without" );
+<b>pragma</b> annotate( "alteration." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Rot-13" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> rot13 <b>is</b>
+
+  <b>function</b> to_rot13( s : string ) <b>return</b> string <b>is</b>
+    ch : character;
+    result : string;
+  <b>begin</b>
+    <b>for</b> i <b>in</b> 1..strings.length( s ) <b>loop</b>
+        ch := strings.element( s, i );
+        <b>if</b> strings.is_letter( ch ) <b>then</b>
+           <b>if</b> (ch <b>in</b> 'A'..'M') <b>or</b> (ch <b>in</b> 'a'..'m' ) <b>then</b>
+              ch := strings.val( numerics.pos( ch ) + 13 );
+           <b>else</b>
+              ch := strings.val( numerics.pos( ch ) - 13 );
+           <b>end</b> <b>if</b>;
+        <b>end</b> <b>if</b>;
+        result := @ &amp; ch;
+    <b>end</b> <b>loop</b>;
+    <b>return</b> result;
+  <b>end</b> to_rot13;
+
+<b>begin</b>
+   ? to_rot13( "Big fjords vex quick waltz nymph!" );
+<b>end</b> rot13;
+
+</PRE></BODY></HTML>

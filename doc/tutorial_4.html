@@ -1,0 +1,292 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Tutorials - Script Tutorial 1: Basic Commands Scripts</title>
+        <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html"><b>Tutorials</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+				<!-- Content Area -->
+
+<h2><a name="2.4"></a>Script Tutorial 1: Basic Commands Scripts</h2>
+</p>
+<p>SparForte <b>comments</b> begin with a double minus sign. Any text
+following
+the comment sign to the end of the line are treated as explanatory
+text.
+For example,
+</p>
+
+        <center>
+        <div class="code">
+	<p class="code">=&gt; -- SparForte is great</p>
+        </div>
+        </center>
+
+<p>Comments are not very useful at the command prompt but they are very
+useful in scripts.&nbsp; A script is collection of SparForte commands stored
+in a file. <br>
+
+</p>
+<p>One crude way to get SparForte to execute commands is to redirect the
+commands
+through standard input. For example, from BASH you could type
+</p>
+
+        <center>
+        <div class="code">
+	<p class="code">bash$ echo "? \"Hello World\" ; logout" | bush</p>
+        </div>
+	</center>
+
+<p>SparForte treats this as if it was an interactive session with a human
+user.
+Command prompts are written to the screen and the keyword logout is
+necessary
+to terminate the session.
+</p>
+<p>A better way to execute a set of commands is to write a script. A
+script has these
+advantages:
+</p>
+<ul>
+  <li>It will run faster because SparForte compiles scripts into its own
+internal
+byte code</li>
+  <li>Compound statements can be used on multiple lines</li>
+
+  <li>Command prompts and other interactive session displays will not
+appear</li>
+</ul>
+Commands typed into a script are treated slightly differently than
+those
+in an interactive session.:
+<ul>
+  <li>The semi-colon at the end of each command is required.<br>
+  </li>
+  <li>All variables must be declared before they are used. Assigning a
+value
+to an undeclared variable is an error. (In an interactive session, SparForte
+can automatically declare the variable with a warning.)</li>
+  <li> <b>logout</b> will not stop a script. Use <b>return</b> or let
+the
+script
+reach the end of file.</li>
+
+</ul>
+The first two items are necessary because in a script there's no user
+to
+interact with the commands. SparForte cannot not make assumptions or take
+any
+automatic actions.
+<p>By convention, SparForte shell scripts have file names ending with
+".bush".
+The following is a script called "hello.bush", a very short script to
+write
+a message on the screen.
+</p>
+
+        <center>
+        <div class="code">
+	<p class="code">-- hello.bush<br>
+     	-- this is my first SparForte script<br>
+	put_line( "Hello! SparForte is wonderful." );<br>
+	command_line.set_exit_status( 0 );<br>&nbsp;<br>
+	</p>
+        <div class="code_caption">
+        <b>Example</b>: A First Script</span>
+        </div>
+        </div>
+	</center>
+
+<p>put_line and set_exit_status are built-in procedures. put_line, part
+of
+the Text_IO package, displays a message on the screen. 
+set_exit_status(0) informs the program which ran your shell script
+that the script ran successfully.  </p>
+
+<p>You can run your shell script</p>
+
+        <center>
+        <div class="code">
+	<p class="code">=&gt; bush hello.bush</p>
+        </div>
+	</center>
+
+<p>If there are no mistakes, SparForte will respond with the message.</p>
+
+        <center>
+        <div class="code">
+	<p class="code">Hello! SparForte is wonderful.</p>
+        </div>
+	</center>
+
+<p><b>Conditional statements</b> are SparForte constructs for making choices and
+providing alternative instructions.  Use the <b>if</b> statement to make
+choices.  The if statement can have optional <b>elsif</b> or <b>else</b>
+parts.</p>
+
+        <center>
+        <div class="code">
+	<p class="code">current_day : calendar.day_number := calendar.day( calendar.clock );<br>
+	<b>if</b> current_day = 1 <b>then</b><br>
+	&nbsp;&nbsp;&nbsp;? "It is the first day of the month!";<br>
+	<b>end if</b>;<br>&nbsp;<br>
+	</p>
+        <div class="code_caption">
+        <b>Example</b>: A First If Statement</span>
+        </div>
+        </div>
+	</center>
+
+<p>The <b>case</b> statement can be used for decisions involving many
+individual values.  The final "when" must always be "when others", which
+includes all other values not covered by the other "when"'s.</p>
+
+        <center>
+        <div class="code">
+	<p class="code">current_day : calendar.day_number := calendar.day( calendar.clock );<br>
+	put( "It is the" );<br>
+	<b>case</b> current_day <b>is</b><br>
+	<b>when</b> 1 =&gt; put( " first" );<br>
+	<b>when</b> 2 =&gt; put( " second" );<br>
+
+	<b>when</b> 3 =&gt; put( " third" );<br>
+	<b>when</b> 4 =&gt; put( " fourth" );<br>
+	<b>when</b> 5 =&gt; put( " fifth" );<br>
+
+	<b>when</b> 6 =&gt; put( " sixth" );<br>
+	<b>when</b> 7 =&gt; put( " seventh" );<br>
+	<b>when</b> 8 =&gt; put( " eighth" );<br>
+
+	<b>when</b> 9 =&gt; put( " ninth" );<br>
+	<b>when</b> <b>others</b> =&gt; put( current_day ) @ ( "th" );<br>
+	<b>end case;</b><br>
+	put_line( " day of the month" );<br>&nbsp;<br>
+	</p>
+        <div class="code_caption">
+        <b>Example</b>: A First Case Statement</span>
+        </div>
+        </div>
+	</center>
+
+<p>The @ character (pronounced "itself") has two different uses in SparForte.
+When used at the end of a command or procedure call, @ will call the
+command or procedure again with a new set of parameters.  Combining parameter
+lists with @ is called a <b>chain</b>.  @ is especially useful with the
+put procedure to output several items without having to do string
+conversions and a long, hard to read expression.</p>
+<p>There are several looping statements.  The <b>for</b> loop will repeat
+a set of commands a specific number of times or over a specific range of
+numbers.  The variable in the for loop doesn't need to be declared: SparForte will
+declare it for you automatically.  A <b>while</b> loop will repeat a set of
+commands until something
+becomes true.  A <b>loop</b> loop will loop indefinitely until you break out
+of the loop with an <b>exit</b> command.</p>
+
+        <center>
+        <div class="code">
+	<p class="code"><b>for</b> i <b>in</b> 1..10 <b>loop</b><br>
+	&nbsp;&nbsp;&nbsp;put( i ) @ ( " times 2 is" ) @ ( i * 2 );<br>
+	&nbsp;&nbsp;&nbsp;new_line;<br>
+	<b>end loop</b>;<br>&nbsp;<br>
+	</p>
+        <div class="code_caption">
+        <b>Example</b>: A First For Statement</span>
+        </div>
+        </div>
+	</center>
+
+<p>The <b>logout</b> command, which ends an interactive login session,
+cannot be used to stop a script. (After all, a script is not a login
+session.) Instead, use the <b>return</b> command to unconditionally
+stop a script and return control to the calling program or person. Set
+the exit status to zero to indicate there is no error.</p>
+
+<p>Scripts automatically stop when it reaches its end as if there was an
+implicit "return" typed there.</p>
+<p>Scripts can be paused using the built-in delay command. delay will
+suspend
+the script for a specific number of seconds after which it will wake up
+and resume the next statement after the delay command. The number of
+seconds
+can include a fractional part.
+</p>
+
+        <center>
+        <div class="code">
+	<p class="code"><b>delay</b> 5.5; -- wait for 5 1/2 seconds<br>&nbsp;<br>
+	</p>
+        <div class="code_caption">
+        <b>Example</b>: The Delay Statement</span>
+        </div>
+        </div>
+	</center>
+
+<p>delay is useful for putting pauses in a script, allowing the user to
+read what's been displayed. delay isn't suitable for synchronizing
+events,
+however, because how long a particular program runs on the computer
+often
+depends on the system load, the number of users, hardware upgrades and
+other factors outside of the script's control.
+<br>
+&nbsp;
+</p>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_1.html">&nbsp;Command Prompt Tutorial 1: SparForte as a Calculator</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_2.html">&nbsp;Command Prompt Tutorial 2: Basic Shell Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_3.html">&nbsp;Command Prompt Tutorial 3: Working with Databases</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_4.html">&nbsp;<b>Script Tutorial 1: Basic Commands Scripts</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_5.html">&nbsp;Script Tutorial 2: Intermediate Program Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_6.html">&nbsp;Template Tutorial 1: Basic Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_7.html">&nbsp;Template Tutorial 2: Intermediate Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_8.html">&nbsp;GCC Tutorial: Compiling SparForte Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_9.html">&nbsp;Debugging Tutorial - Using the SparForte Debugger</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_10.html">&nbsp;Creating a Profile Script</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_11.html">&nbsp;Calling SparForte from C: A Tutorial</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_12.html">&nbsp;SparForte Best Practices</a></p>
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>

@@ -1,0 +1,686 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Packages - Files</title>
+	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html">Tutorials</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html"><b>Packages</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+	<!-- Content Area -->
+<h2><a NAME="4.15"></a>Files Package</h2>
+<p>The files package provides general functions pretaining to files.</p>
+<p><u>GCC Ada Equivalent</u>: GNAT.OS_Lib, GNAT.IO_Aux
+<p>The routines include:</p>
+<ul>
+<li><b>Pathnames</b>: basename, dirname, is_absolute_path</li>
+
+<li><b>Access rights</b>: exists, is_executable, is_executable_file,
+is_readable, is_readable_file, is_writable, is_writable_file</li>
+<li><b>File type</b>: is_regular_file, is_directory
+<li><b>Misc</b>: is_waiting_file, last_modified, length
+</ul>
+<p>
+<hr><b>b := files.basename( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the filename for the path p.
+<br>Example: b := files.basename( "/tmp/myfile.txt" ); -- returns "myfile.txt"
+<br>Ada Equivalent: none (AdaScript extension)
+
+<br>See Also: directory_operations.base_name
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+
+</tr>
+
+<tr>
+<td>s</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the filename</td>
+
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.dirname( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the directory portion of the path p.
+<br>Example: s := files.dirname( "/tmp/myfile.txt" ); -- returns "/tmp"
+<br>Ada Equivalent: none (AdaScript extension)
+<br>See Also: directory_operations.dir_name
+<br>Parameters:
+
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>s</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the directory portion of the path (without a trailing directory separator)</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.exists( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file at path p exists.  The function works on directories and other special files.
+<br>Example: b := files.exists( "/tmp/myfile.txt" );
+<br>Ada Equivalent: GNAT.IO_Aux.File_Exists
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file exists</td>
+</tr>
+</table>
+</td>
+
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_absolute_path( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the path p is an absolute path.
+<br>Example: b := files.is_absolute_path( "/tmp/myfile.txt" ); -- returns true
+<br>Ada Equivalent: GNAT.OS_Lib.Is_Absolute_Path
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the path is not a relative path</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_directory( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file at path p exists and is a directory.
+<br>Example: b := files.is_directory( "/tmp/myfile.txt" ); -- returns false
+<br>Ada Equivalent: GNAT.OS_Lib.Is_Directory
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file is a directory</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_executable( p )</b>
+
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file or special file  at path p exists and is executable.
+<br>Example: b := files.is_executable( "home_directory" );
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file is executable</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_executable_file( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+
+<td>
+<br>Return true if the file at path p exists, is regular and is executable.
+<br>Example: b := files.is_executable_file( "myscript.bush" );
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file is not a special file and is executable</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_readable( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file or special file at path p exists and is readable.
+<br>Example: b := files.is_readable( "home_directory" );
+
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file is readable</td>
+
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_readable_file( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file at path p exists, is regular and is readable.
+<br>Example: b := files.is_readable_file( "/tmp/myfile.txt" );
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file is not a special file and is readable</td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_regular_file( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file at path p exists and is a regular file.
+<br>Example: b := files.is_regular_file( "/tmp/myfile.txt" ); -- returns true
+<br>Ada Equivalent: GNAT.IO_Aux.File_Exists (but GNAT doesn't check for regular)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file is not a special file</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_waiting_file( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file at path p exists, is regular, is_readable and is
+not empty.
+<br>Example: b := files.is_waiting_file( "/tmp/myfile.txt" );
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file has waiting data to process</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_writable( p )</b>
+
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if the file or special file at path p exists and is writable.
+<br>Example: b := files.is_writable( "home_directory" );
+<br>Ada Equivalent: GNAT.OS_Lib.Is_Writable_File
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file is writable</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.is_writable_file( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+
+<td>
+<br>Return true if the file at path p exists, is regular and is writable.
+<br>Example: b := files.is_writable_file( "/tmp/myfile.txt" );
+<br>Ada Equivalent: GNAT.OS_Lib.Is_Writable_File (but GNAT doesn't check for regular)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>b</td>
+
+<td>return value</td>
+
+<td>boolean</td>
+
+<td>required</td>
+
+<td>true if the file is not a special file and is writable</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>b := files.last_modified( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the time a file was last changed.
+<br>Example: t := files.last_modified( "/tmp/myfile.txt" );
+
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+
+</tr>
+
+<tr>
+<td>t</td>
+
+<td>return value</td>
+
+<td>calendar.time</td>
+
+<td>required</td>
+
+<td>the time of the last change</td>
+
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>l := files.size( p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the size of the file at path p in bytes.  The function works on directories and other special files.
+<br>Example: b := files.size( "/tmp/myfile.txt" );
+<br>Ada Equivalent: GNAT.OS_Lib.File_Length (without opening file)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+<td>l</td>
+
+<td>return value</td>
+
+<td>long_integer</td>
+
+<td>required</td>
+
+<td>the length of the file</td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table></center>
+<p>If a file doesn't exist or is not accessible, an error will occur.
+
+&nbsp;<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="packages.html">&nbsp;Summary</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_arrays.html">&nbsp;arrays</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_calendar.html">&nbsp;calendar</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cgi.html">&nbsp;cgi</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cmdline.html">&nbsp;command_line</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_db.html">&nbsp;db/ postgresql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;<b>files</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_pen.html">&nbsp;pen</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sound.html">&nbsp;sound</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sinfo.html">&nbsp;source_info</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;stats</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_strings.html">&nbsp;strings</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
+</a></p>
+
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" border="0" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>
+

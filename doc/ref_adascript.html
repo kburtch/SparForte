@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Reference - AdaScript versus GCC Ada 95</title>
+	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html">Tutorials</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html"><b>Reference</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+	<!-- Content Area -->
+<h2><a name="3.1"></a>AdaScript versus GCC Ada 95</h2>
+
+<p>The computer language that the SparForte shell understands is called
+<b>AdaScript</b>.
+Unlike JavaScript, which has no relation to Java, AdaScript is a small
+subset of the Ada programming language, with additional features
+related to shell commands and databases.</p>
+
+<p>AdaScript is intended to be "upward compatible" with Ada.
+AdaScript scripts should run with little difficulty under Ada, but
+Ada programs may require large changes run under SparForte.</p>
+
+<p>For more information, see Intro / Why It Works.</p>
+
+<h3>Terminology</h3>
+
+<p>Here are some common terms used in the reference.</p>
+
+<p><b>Access type</b> - a "handle" or extended pointer to a storage
+location.</p>
+
+<p><b>Array</b> - a composite type whose components are all of the same
+type, where components are selected with indices.</p>
+
+<p><b>Declaration</b> - a language construct that associates a name
+with a storage location.</p>
+
+<p><b>Discrete Type</b> - an integer or enumerated type (including
+characters).</p>
+
+<p><b>Discriminant</b> - a parameter of a composite type, like an index
+to an array.</p>
+
+<p><b>Elementary Type</b> - a type without components.</p>
+
+<p><b>Fixed Point Type</b> - a number with a fixed number of decimal
+places, often used for currency.</p>
+
+<p><b>Limited Type</b> - a type for which assignment is not allowed.</p>
+
+<p><b>Package</b> - a "library" or "module".  A program unit containing
+a collection of related items.</p>
+
+<p><b>Pragma</b> - an interpreter directive</p>
+
+<p><b>Record Type</b> - a composite types with zero or more named
+components of various types, where components are selected by name.</p>
+
+<p><b>Real Type</b> - a fixed point or floating point number.</p>
+
+<p><b>Scalar Type</b> - a discrete or real type.  In AdaScript, a
+string is also a scalar type.</p>
+
+<p><b>Tagged Type</b> - a "class"</p>
+
+<p><b>Task</b> - a "thread"</p>
+
+
+
+<br>&nbsp;
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="ref_adascript.html">&nbsp;<b>AdaScript versus GCC</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_case.html">&nbsp;Case Sensitivity</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_reserved.html">&nbsp;Reserved Words</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_comments.html">&nbsp;Comments</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_literals.html">&nbsp;Literals</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Arguments</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_types.html">&nbsp;Fundamental Types</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_typedecl.html">&nbsp;User-defined Types</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_enum.html">&nbsp;Enumerated Types</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_arrays.html">&nbsp;Arrays</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_records.html">&nbsp;Records</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_assign.html">&nbsp;Basic Assignment</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_specials.html">&nbsp;The @ and % Operands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cmdlineargs.html">&nbsp;Command Argument Shortcuts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_redirection.html">&nbsp;Redirection and Pipelines</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cmdline.html">&nbsp;Command Line Interaction</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_shellcmds.html">&nbsp;Built-in Shell Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cd.html">&nbsp;The Current Directory</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_db.html">&nbsp;Database Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_flow.html">&nbsp;Flow of Control</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_other.html">&nbsp;Other Statements/ Subprograms</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_extcmds.html">&nbsp;External Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_subprograms.html">&nbsp;Block Statements and Subprograms</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_sockets.html">&nbsp;TCP/IP Sockets</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_numberformat.html">&nbsp;Numeric Formatting with Put</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_pragmas.html">&nbsp;Interpreter Directives</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cmdoptions.html">&nbsp;Command Line Options</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cmdref.html">&nbsp;Command Reference</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_charsets.html">&nbsp;ASCII and Latin_1 Character Sets</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_errors.html">&nbsp;Common Error Messages</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_php.html">&nbsp;Common PHP Functions and the SparForte Equivalent</a></p>
+			</td>
+
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" border="0" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>
+

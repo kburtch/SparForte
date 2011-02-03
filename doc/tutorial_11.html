@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Tutorials - Calling SparForte from C: A Tutorial</title>
+        <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html"><b>Tutorials</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+				<!-- Content Area -->
+
+<h2><a name="2.11"></a>Calling SparForte from C: A Tutorial</h2>
+<p>Certain kinds of programs, such as games or the Gimp, allow users to
+write
+their own scripts&nbsp;&nbsp; For example, there are game scripts that
+change the behavior of enemies, or Gimp scripts that apply imaging
+effects
+to a photograph.&nbsp; SparForte can be used as a scripting language for
+these
+kind of applications.</p>
+
+<p>There is a special pragma, <b>pragma restriction(
+no_external_commands
+)</b>, that will disable all operating system commands.&nbsp;&nbsp; If
+you are using SparForte strictly as a scripting language, this pragma will
+guarantee
+that your SparForte scripts will be portable to other operating
+systems.&nbsp;
+
+In addition, if you use <b>pragma ada_95</b>, your scripts will have
+less
+errors and commonly used scripts can compiled with GCC Ada (with only
+minor
+changes) for extra speed.</p>
+
+<p>Scripts that interact with other programs must be able to share data
+with the SparForte scripts.&nbsp; In order to share variables with SparForte, you
+will have to export your variables as environment variables or add the
+appropriate declarations to the scripts before you run them with SparForte.
+</p>
+
+<p>A simple C example called scripting.c is included in the examples
+directory.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<p><tt>/* -------------------------------------------- */</tt>
+<br>
+<tt>/*
+scripting.c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</tt>
+
+<br>
+<tt>/*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</tt>
+<br>
+<tt>/* An example of using SparForte as a
+scripting&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</tt>
+<br>
+<tt>/* language for a C
+program.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</tt>
+<br>
+<tt>/* -------------------------------------------- */</tt>
+
+</p>
+<p><tt>#include &lt;stdio.h&gt;</tt>
+<br>
+<tt>#include &lt;stdlib.h&gt;</tt>
+<br>
+<tt>#include &lt;unistd.h&gt;</tt>
+<br>
+<tt>#include &lt;string.h&gt;</tt>
+<br>
+
+<tt>#include &lt;errno.h&gt;</tt>
+</p>
+<p><tt>int main() {</tt>
+<br>
+<tt>&nbsp; char i_string[255];</tt>
+<br>
+<tt>&nbsp;&nbsp; int i;</tt>
+<br>
+<tt>&nbsp;&nbsp; FILE *f;</tt>
+
+</p>
+<p><tt>/* assign a value to i */</tt>
+</p>
+<p><tt>&nbsp; i = 5;</tt>
+</p>
+<p><tt>/* export i */</tt>
+</p>
+<p><tt>&nbsp; sprintf( i_string, "i_string=%d", i ); // convert i to a
+string</tt>
+<br>
+<tt>&nbsp; if ( putenv( i_string ) != 0
+)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+// add i to the environment</tt>
+<br>
+<tt>&nbsp;&nbsp;&nbsp; printf( "putenv i_string failed: %s\n",
+strerror(
+errno ) );</tt>
+</p>
+<p><tt>/* Create the script to run */</tt>
+</p>
+<p><tt>&nbsp; f = fopen( "scripting_example.bush", "w" );</tt>
+<br>
+<tt>&nbsp; fprintf( f, "%s\n", "pragma restriction(
+no_external_commands
+);" );</tt>
+
+<br>
+<tt>&nbsp; fprintf( f, "%s\n", "pragma ada_95;" );</tt>
+<br>
+<tt>&nbsp; fprintf( f, "%s\n", "procedure scripting_example is" );</tt>
+<br>
+<tt>&nbsp; fprintf( f, "%s\n", "i : integer := numerics.value( i_string
+);" );</tt>
+<br>
+<tt>&nbsp; fprintf( f, "%s\n", "begin" );</tt>
+<br>
+
+<tt>&nbsp; fprintf( f, "%s\n", "put_line( i * 2 );" );</tt>
+<br>
+<tt>&nbsp; fprintf( f, "%s\n", "end scripting_example;" );</tt>
+<br>
+<tt>&nbsp; fclose( f );</tt>
+</p>
+<p><tt>/* Run the script. If successful, delete script */</tt>
+<br>&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: Hello World
+        </div>
+        </div>
+        </center>
+&nbsp;<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_1.html">&nbsp;Command Prompt Tutorial 1: SparForte as a Calculator</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_2.html">&nbsp;Command Prompt Tutorial 2: Basic Shell Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_3.html">&nbsp;Command Prompt Tutorial 3: Working with Databases</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_4.html">&nbsp;Script Tutorial 1: Basic Commands Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_5.html">&nbsp;Script Tutorial 2: Intermediate Program Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_6.html">&nbsp;Template Tutorial 1: Basic Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_7.html">&nbsp;Template Tutorial 2: Intermediate Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_8.html">&nbsp;GCC Tutorial: Compiling SparForte Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_9.html">&nbsp;Debugging Tutorial - Using the SparForte Debugger</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_10.html">&nbsp;Creating a Profile Script</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_11.html">&nbsp;<b>Calling SparForte from C: A Tutorial</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_12.html">&nbsp;SparForte Best Practices</a></p>
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>

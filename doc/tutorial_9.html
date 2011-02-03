@@ -1,0 +1,245 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Tutorials - Debugging Tutorial - Using the SparForte Debugger</title>
+        <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html"><b>Tutorials</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+				<!-- Content Area -->
+
+<h2><a name="2.9"></a>Debugging Tutorial - Using the SparForte Debugger</h2>
+<p>A script is run by using the script name as an argument to SparForte. SparForte
+normally
+performs a syntax check before running the script.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">$ bush demo_script.bush</p>
+        </div>
+        </center>
+
+<p>There are several <a href="#cmdlineopt">command line options</a>
+which
+can change how the script is run.&nbsp; For example, the SparForte syntax
+check
+will sometimes report errors for a legitimate script--for example, by
+declaring
+variables inside of an&nbsp; "if" statement.&nbsp; Normally, this is a
+sign of a poorly organized script, but the syntax check can be disabled
+.&nbsp;&nbsp; To run the script without checking it, use the <b>--no-check
+
+</b>command
+line option.
+</p>
+<p>The execution of a script can be traced with the SparForte trace
+command.&nbsp;
+Suppose you want to trace the execution of the following script:
+</p>
+
+        <center>
+        <div class="code">
+                <p class="code">#!/usr/local/bin/bush<br>
+&nbsp;<br>
+<b>trace</b> <b>true</b>;<br>
+&nbsp;<br>
+<b>procedure</b> main <b>is</b><br>
+&nbsp; <b>type</b> paint <b>is</b> ( black, white, blue );<br>
+<b>begin</b><br>
+&nbsp; <b>for</b> p <b>in</b> black..blue <b>loop</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put_line( p );<br>
+&nbsp; <b>end loop</b>;<br>
+<b>end</b> main;<br>&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: Using the trace command in a script
+        </div>
+        </div>
+        </center>
+
+<p>Once tracing is turned on by <b>trace true</b> (or with --trace),
+each
+line will be shown before it's executed, with the line number in square
+brackets to the right of the line.&nbsp; Some statements will also show
+additional information.&nbsp; For example, an assignment statement will
+show the value being assigned.&nbsp; The trace information is written
+to
+standard error, so the output from the command may appear in the wrong
+order because some versions of UNIX buffer their output.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">$ bush trace_demo.bush<br>
+Trace is on<br>
+=&gt; " " [ 4]<br>
+=&gt; "procedure main is" [ 5]<br>
+=&gt; "&nbsp;&nbsp;type paint is ( black, white, blue );" [ 6]<br>
+=&gt; "begin" [ 7]<br>
+=&gt; "&nbsp;&nbsp;for p in black..blue loop" [ 8]<br>
+=&gt; "&nbsp;&nbsp;&nbsp;&nbsp;put_line( p );" [ 9]<br>
+=&gt; (p := ' 0')<br>
+black<br>
+=&gt; "&nbsp;&nbsp;end loop;" [ 10]<br>
+=&gt; "&nbsp;&nbsp;for p in black..blue loop" [ 8]<br>
+=&gt; "&nbsp;&nbsp;&nbsp;&nbsp;put_line( p );" [ 9]<br>
+=&gt; (p := ' 1')<br>
+white<br>
+=&gt; "&nbsp;&nbsp;end loop;" [ 10]<br>
+=&gt; "&nbsp;&nbsp;for p in black..blue loop" [ 8]<br>
+=&gt; "&nbsp;&nbsp;&nbsp;&nbsp;put_line( p );" [ 9]<br>
+=&gt; (p := ' 2')<br>
+blue<br>
+=&gt; "&nbsp;&nbsp;end loop;" [ 10]<br>
+=&gt; "&nbsp;&nbsp;for p in black..blue loop" [ 8]<br>
+=&gt; "&nbsp;&nbsp;&nbsp;&nbsp;put_line( p );" [ 9]<br>
+=&gt; "&nbsp;&nbsp;end loop;" [ 10]<br>
+=&gt; (There are 0 array elements declared by all arrays)<br>
+=&gt; "end main;" [ 11]<br>
+=&gt; (There are 0 array elements declared by all arrays)<br>
+=&gt; "End of File" [ 12]<br>
+=&gt; (Script exit status is 0)<br>&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: Example Output from the trace command
+        </div>
+        </div>
+        </center>
+
+<p>If a script is started with the <b>--break</b> (or <b>-b</b>)
+option,
+a SIGINT (e.g. a control-c) will pause the script and give the user a
+command
+prompt. This breakout prompt is identical to a normal interactive
+session
+except for the command to quit. "return" will retry the last statement.
+"step" will run the next statement and then stop. "logout" will
+terminate
+the script.
+</p>
+<p>Without a --break, a SIGINT will terminate the script, just as if a
+return command was executed.
+</p>
+
+        <center>
+        <div class="code">
+                <p class="code">$ cat breakdemo.bush<br>
+		for i in 1..10000 loop<br>
+		&nbsp;&nbsp;&nbsp;put_line( i );<br>
+		&nbsp;&nbsp;&nbsp;delay 1;<br>
+		end loop;<br>
+		$ bush breakdemo.bush<br>
+		1<br>
+		2<br>
+		3<br>
+                $<br>&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: Control-C Used on a Script without --break
+        </div>
+        </div>
+        </center>
+
+<p>Since --break was not used, the script terminated.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">$ cat breakdemo.bush<br>
+		for i in 1..10000 loop<br>
+		&nbsp;&nbsp;&nbsp;put_line( i );<br>
+		&nbsp;&nbsp;&nbsp;delay 1;<br>
+		end loop;<br>
+		$ bush --break breakdemo.bush</tt> <br>
+		1<br>
+		2<br>
+		3<br>
+		breakdemo.bush: 4: 1: for loop
+		&nbsp; put_line( i );<br>
+		^ <span style="background: black; color:white">Break: return to continue, logout to quit</span><br>
+		=&gt;<br>&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: Breakout Prompt Appears when Control-C is used on a Script with --break
+        </div>
+        </div>
+        </center>
+
+<p>Since --break was used, SparForte breaks out of the script and provides an
+interactive prompt.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; ? i<br>
+		 4<br>
+		=&gt; i := 9999<br>
+		=&gt; return<br>
+		=&gt; (returning to script)<br>
+		 9.99900000000000E+03<br>
+		 10000<br>
+		$<br>&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: How to Change a Variable and Resume a Script from the Breakout Prompt
+        </div>
+        </div>
+        </center>
+
+<p>To break at a specific point in a script, use <b>pragma
+inspection_point</b>.  When this pragma is reached, SparForte will stop as if you
+typed a Control-C.</p>
+<p>To monitor variables, use <b>pragma inspect</b>.  Each time the script
+stops at an inspection point or because of a Control-C, the value of all the
+variables marked for inspection will be shown.  You can also use pragma inspect
+at the breakout prompt to start inspecting a variable, or <b>pragma
+uninspect</b> to stop inspecting a variable.</p>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_1.html">&nbsp;Command Prompt Tutorial 1: SparForte as a Calculator</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_2.html">&nbsp;Command Prompt Tutorial 2: Basic Shell Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_3.html">&nbsp;Command Prompt Tutorial 3: Working with Databases</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_4.html">&nbsp;Script Tutorial 1: Basic Commands Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_5.html">&nbsp;Script Tutorial 2: Intermediate Program Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_6.html">&nbsp;Template Tutorial 1: Basic Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_7.html">&nbsp;Template Tutorial 2: Intermediate Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_8.html">&nbsp;GCC Tutorial: Compiling SparForte Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_9.html">&nbsp;<b>Debugging Tutorial - Using the SparForte Debugger</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_10.html">&nbsp;Creating a Profile Script</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_11.html">&nbsp;Calling SparForte from C: A Tutorial</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_12.html">&nbsp;SparForte Best Practices</a></p>
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>

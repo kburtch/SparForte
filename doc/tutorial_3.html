@@ -1,0 +1,264 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Tutorials - Command Prompt Tutorial 3: Working with Databases</title>
+        <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html"><b>Tutorials</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+				<!-- Content Area -->
+
+<h2><a name="2.3"></a>Command Prompt Tutorial 3: Working with Databases</h2>
+
+<p>In order to work with database engines, you will need to install a database
+engine on your computer if you do not have one installed already.  The engine
+is a program that stores, sorts and retrieves data.  SparForte supports the
+PostgreSQL 7 or newer and MySQL 4 or newer.&nbsp; This tutorial uses
+the PostgreSQL database.  To use MySQL in these examples, use the "mysql."
+prefix instead of "db.".</p>
+<p>Database engines use a language called SQL.&nbsp; Since most software
+applications don't understand SQL, a special client program or library is often
+provided with the database.&nbsp; The MySQL database has a client program
+called mysql.  &nbsp;The PostgreSQL database has a program called psql.&nbsp;
+However, SparForte doesn't require a client program: it understands basic SQL
+commands and the built-in database package provides most of the additional
+features of a client program.&nbsp; (Note: Each engine uses a unique version
+of SQL.&nbsp; To create complex SQL queries, consult your database
+documentation.)<br>
+
+</p>
+<p>Before you can use a database, connect to software using the
+<span style="font-weight: bold;">connect</span> procedure.&nbsp; Connecting is
+similar to logging in: you will need the name of the database, a username and
+a password.&nbsp; Some of this information may be optional.&nbsp; In the
+simplest example, PostgreSQL will allow you to connect to an existing
+database with your login name by providing only the database name.<br>
+</p>
+
+        <center>
+        <div class="code">
+	<p class="code">=&gt; db.connect( "ken" )<br>
+	=&gt; ? db.is_connected<br>
+	true<br>&nbsp;<br>
+        <div class="code_caption">
+        <b>Example</b>: Connecting to a Database
+        </div>
+        </div>
+        </center>
+
+	<p>db.connect is a built-in AdaScript procedure in the db database
+package.&nbsp; It is not an operating command:
+you cannot use POSIX arguments or redirect the output.</p>
+
+<p>Database client programs do more than just run SQL commands.&nbsp; They
+also know how to display information about the database, its users and
+its tables.&nbsp; These commands are not a part of the SQL
+language.&nbsp; SparForte's db package contains <span
+ style="font-weight: bold;">db,databases</span>, <span
+ style="font-weight: bold;">db.list</span>, <span
+ style="font-weight: bold;">db.users</span> and <span
+ style="font-weight: bold;">db.schema</span> procedures to display this
+kind of information.</p>
+
+<p>The <span style="font-weight: bold;">db.list</span> procedure will
+list all the tables in a database.</p>
+
+        <center>
+        <div class="code">
+	<p class="code">=&gt; db.list<br>
+	&nbsp;<br>
+	&nbsp;Schema | Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type&nbsp; | Owner<br>
+	--------+-----------+-------+-------<br>
+	&nbsp;public | guestbook | table | root<br>
+	&nbsp;public | users&nbsp;&nbsp;&nbsp;&nbsp; | table | ken<br>
+	&nbsp;2 Rows and 4 Columns<br>&nbsp;<br>
+        <div class="code_caption">
+	<b>Example</b>: Listing Tables in a Database
+        </div>
+        </div>
+        </center>
+
+<p>The <span style="font-weight: bold;">db.schema</span> procedure will
+list the contents of a table.</p>
+
+        <center>
+        <div class="code">
+	<p class="code">=&gt; db.schema( "users" )<br>
+	&nbsp;<br>
+	&nbsp;Column | Type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Not Null | Default<br>
+	--------+-----------------------+----------+---------<br>
+	&nbsp;name&nbsp;&nbsp; | character varying(32) |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |<br>
+	&nbsp;age&nbsp;&nbsp;&nbsp; | integer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |<br>
+	&nbsp;2 Rows and 5 Columns<br>&nbsp;<br>
+        <div class="code_caption">
+	<b>Example</b>: Listing Columns in a Database Table
+        </div>
+        </div>
+        </center>
+
+	<p>To create a new table, use the db.prepare and db.execute
+procedures.&nbsp; Use db.prepare to begin building a SQL command.&nbsp;
+Additional lines can be added with db.append, db.append_line and
+db.append_quoted.&nbsp; When the SQL command is finished, run the
+command with db.execute.</p>
+
+<p>Before we begin, we'll start a transaction.</p>
+
+        <center>
+        <div class="code">
+	<p class="code">=&gt; db.begin_work<br>
+	=&gt; db.prepare( "create table test (name varchar(20), age integer )" )<br>
+	=&gt; db.execute<br>
+	=&gt; db.list<br>
+	&nbsp;Schema | Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type&nbsp; | Owner<br>
+	--------+-----------+-------+-------<br>
+	&nbsp;public | guestbook | table | root<br>
+	&nbsp;public | test&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | table | ken<br>
+	&nbsp;public | users&nbsp;&nbsp;&nbsp;&nbsp; | table | ken<br>
+	&nbsp;2 Rows and 4 Columns<br>&nbsp;<br>
+        <div class="code_caption">
+	<b>Example</b>: Creating a Table within a Transaction
+        </div>
+        </div>
+        </center>
+
+<p>The SQL command created a new table.&nbsp; You can use
+db.prepare and db.execute to run most
+SQL commands.&nbsp; For convenience, SparForte recognizes several basic SQL
+commands
+directly on the command
+prompt: <span style="font-weight: bold;">alter</span> (change a
+table's structure), <span style="font-weight: bold;">insert</span>
+(add a row to a table), <span style="font-weight: bold;">delete</span>
+(remove rows from a table), <span style="font-weight: bold;">select</span>
+(view rows) and <span style="font-weight: bold;">update</span> (change
+rows).</p>
+
+        <center>
+        <div class="code">
+	<p class="code">=&gt; db.begin_work<br>
+	=&gt; insert into test values ('bob', 16 )<br>
+	=&gt; insert into test values ('joe', 78 )<br>
+	=&gt; select * from test<br>
+	&nbsp;<br>
+	&nbsp;name | age<br>
+	------+------<br>
+	&nbsp;bob&nbsp; | 16<br>
+	&nbsp;joe&nbsp; | 78<br>
+	&nbsp;2 Rows and 2 Columns<br>&nbsp;<br>
+        <div class="code_caption">
+	<b>Example</b>: Inserting Rows into a Table
+        </div>
+        </div>
+        </center>
+
+<p>The new rows were added to the empty table.</p>
+
+<p>The format of the SQL command, including how quoting is used, is
+determined by the database being used.&nbsp; SparForte will not perform
+file globbing (otherwise select count(*) would give very strange
+results!).&nbsp; SparForte will substitute variables with dollar sign
+expansion and the output from SQL commands can be redirected like an
+operating system command.&nbsp; For this reason you'll have to escape
+characters like "&gt;" with a backslash used with SQL on the command
+line.</p>
+
+        <center>
+        <div class="code">
+	<p class="code">=&gt; select * from test where name &gt; temp.txt<br>
+	=&gt; cat temp.txt<br>
+	&nbsp;<br>
+	&nbsp;name | age<br>
+	------+------<br>
+	&nbsp;bob&nbsp; | 16<br>
+	&nbsp;joe&nbsp; | 78<br>
+	&nbsp;2 Rows and 2 Columns<br>&nbsp;<br>
+        <div class="code_caption">
+	<b>Example</b>: Writing Rows from a Table to a File
+        </div>
+        </div>
+        </center>
+
+<p>In this case, the "&gt;" must be escaped to prevent SparForte from
+redirecting the output to a file called "c".</p>
+
+<p>Since these command are in a transaction, you can discard the table by
+rolling
+back with <span style="font-weight: bold;">db.rollback_work</span>, or
+commit the changes using <span style="font-weight: bold;">db.commit_work</span>.</p>
+
+        <center>
+        <div class="code">
+	<p class="code">=&gt; db.rollback_work<br>
+        </div>
+        </center>
+
+<p>Database errors are reported in the same way as a SparForte error.</p>
+
+        <center>
+        <div class="code">
+	<p class="code">=&gt; select * from test<br>
+	select * from test;<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^ ERROR:&nbsp; relation "test" does not exist<br>
+        </div>
+</center>
+
+<p>There's a lot more that the db package can do.&nbsp; Read the
+Packages section for a full description.</p>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_1.html">&nbsp;Command Prompt Tutorial 1: SparForte as a Calculator</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_2.html">&nbsp;Command Prompt Tutorial 2: Basic Shell Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_3.html">&nbsp;<b>Command Prompt Tutorial 3: Working with Databases</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_4.html">&nbsp;Script Tutorial 1: Basic Commands Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_5.html">&nbsp;Script Tutorial 2: Intermediate Program Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_6.html">&nbsp;Template Tutorial 1: Basic Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_7.html">&nbsp;Template Tutorial 2: Intermediate Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_8.html">&nbsp;GCC Tutorial: Compiling SparForte Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_9.html">&nbsp;Debugging Tutorial - Using the SparForte Debugger</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_10.html">&nbsp;Creating a Profile Script</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_11.html">&nbsp;Calling SparForte from C: A Tutorial</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_12.html">&nbsp;SparForte Best Practices</a></p>
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>

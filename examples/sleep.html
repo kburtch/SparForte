@@ -1,0 +1,60 @@
+<HEAD><TITLE>sleep.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : sleep.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush sleep
+Number of seconds to sleep?
+5
+Sleeping...
+Awake!
+Sleeping...
+Awake!
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "sleep_demo" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Write a program that does the following in this order:" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "* Input an amount of time to sleep in whatever units are" );
+<b>pragma</b> annotate( "most natural for your language (milliseconds, seconds," );
+<b>pragma</b> annotate( "ticks, etc.). This unit should be noted in comments or" );
+<b>pragma</b> annotate( "in a description." );
+<b>pragma</b> annotate( "* Print 'Sleeping...'" );
+<b>pragma</b> annotate( "* Sleep the main thread for the given amount of time." );
+<b>pragma</b> annotate( "* Print 'Awake!'" );
+<b>pragma</b> annotate( "* End." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Sleep" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>procedure</b> sleep_demo <b>is</b>
+  in_val : duration;
+<b>begin</b>
+  ? "Number of seconds to sleep?";
+  in_val := numerics.value( get_line );
+
+  <FONT COLOR=green><EM>-- Using delay</EM></FONT>
+  ? "Sleeping...";
+  <b>delay</b> in_val;
+  ? "Awake!";
+
+  <FONT COLOR=green><EM>-- Using Linux/UNIX sleep</EM></FONT>
+  ? "Sleeping...";
+  sleep "$in_val" ;
+  ? "Awake!";
+<b>end</b> sleep_demo;
+
+</PRE></BODY></HTML>

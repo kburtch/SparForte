@@ -1,0 +1,80 @@
+<HEAD><TITLE>randdist.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : randdist.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush randdist
+aleph  2.00260000000000E-01 2.00000000000000E-01
+beth  1.66376000000000E-01 1.66666666666667E-01
+gimel  1.42698000000000E-01 1.42857142857143E-01
+daleth  1.25408000000000E-01 1.25000000000000E-01
+he  1.11311000000000E-01 1.11111111111111E-01
+waw  9.97980000000000E-02 1.00000000000000E-01
+zayin  9.09570000000000E-02 9.09090909090909E-02
+heth  6.31920000000000E-02 rest
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "randdist" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Given a mapping between items and their required" );
+<b>pragma</b> annotate( "probability of occurrence, generate a million items" );
+<b>pragma</b> annotate( "randomly subject to the given probabilities and compare" );
+<b>pragma</b> annotate( "the target probability of occurrence versus the" );
+<b>pragma</b> annotate( "generated values." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "The total of all the probabilities should equal one." );
+<b>pragma</b> annotate( "(Because floating point arithmetic is involved this is" );
+<b>pragma</b> annotate( "subject to rounding errors).  Use the following mapping" );
+<b>pragma</b> annotate( "to test your programs: aleph 1/5.0, beth 1/6.0," );
+<b>pragma</b> annotate( "gimel 1/7.0, daleth 1/8.0, he 1/9.0,  waw 1/10.0" );
+<b>pragma</b> annotate( "zayin 1/11.0, heth 1759/27720 adjusted so that" );
+<b>pragma</b> annotate( "probabilities add to 1" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Probabilistic_choice" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> randdist <b>is</b>
+  trials : <b>constant</b> positive := 1_000_000;
+  <b>type</b> outcome <b>is</b> (aleph, beth, gimel, daleth, he, waw, zayin, heth);
+  pr : <b>constant</b> <b>array</b>(aleph..heth) <b>of</b> float :=
+     (1/5, 1/6, 1/7, 1/8, 1/9, 1/10, 1/11, 1 );
+  samples : <b>array</b>(aleph..heth) <b>of</b> natural := (0, 0, 0, 0, 0, 0, 0, 0);
+  value : float;
+<b>begin</b>
+  <b>for</b> try <b>in</b> 1..trials <b>loop</b>
+    value := numerics.random;
+    <b>for</b> i <b>in</b> arrays.first( pr )..arrays.last( pr ) <b>loop</b>
+       <b>if</b> value &lt;= pr(i) <b>then</b>
+         samples(i) := samples(i) + 1;
+         <b>exit</b>;
+       <b>else</b>
+         value := @ - pr(i);
+       <b>end</b> <b>if</b>;
+    <b>end</b> <b>loop</b>;
+  <b>end</b> <b>loop</b>;
+  <FONT COLOR=green><EM>-- Show results</EM></FONT>
+  <b>for</b> i <b>in</b> arrays.first( pr )..arrays.last( pr ) <b>loop</b>
+    put( i ) @ ( " " ) @ ( float( samples( i ) ) / float( trials ) );
+    <b>if</b> i = heth <b>then</b>
+       put_line( " rest" );
+    <b>else</b>
+       put_line( pr(i) );
+    <b>end</b> <b>if</b>;
+  <b>end</b> <b>loop</b>;
+<b>end</b> randdist;
+
+</PRE></BODY></HTML>

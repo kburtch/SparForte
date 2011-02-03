@@ -1,0 +1,102 @@
+<HEAD><TITLE>monty.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : monty.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush monty
+Stay: count 33611 =  3.36110000000000E+01%
+Switch: count 66456 =  6.64560000000000E+01%
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "monty" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Run random simulations of the Monty Hall game. Show the" );
+<b>pragma</b> annotate( "effects of a strategy of the contestant always keeping" );
+<b>pragma</b> annotate( "his first guess so it can be contrasted with the" );
+<b>pragma</b> annotate( "strategy of the contestant always switching his guess." );
+<b>pragma</b> annotate( "Simulate at least a thousand games using three doors" );
+<b>pragma</b> annotate( "for each strategy and show the results in such a way as" );
+<b>pragma</b> annotate( "to make it easy to compare the effects of each strategy." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Monty_Hall_problem" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> monty <b>is</b>
+  num_iterations : positive := 100_000;
+  <b>type</b> action_type <b>is</b> (stay, switch);
+  <b>type</b> prize_type <b>is</b> (goat, pig, car);
+  doors : <b>array</b>(1..3) <b>of</b> prize_type;
+  <b>type</b> door_index <b>is</b> <b>new</b> positive;
+
+  <FONT COLOR=green><EM>-- place the prizes behind random doors</EM></FONT>
+
+  <b>procedure</b> set_prizes <b>is</b>
+  <b>begin</b>
+    doors( 1 ) := goat;
+    doors( 2 ) := pig;
+    doors( 3 ) := car;
+    arrays.shuffle( doors );
+  <b>end</b> set_prizes;
+
+  <FONT COLOR=green><EM>-- determine if the prize was chosen based on strategy</EM></FONT>
+
+  <b>function</b> play( action : action_type ) <b>return</b> prize_type <b>is</b>
+    chosen : door_index := door_index( numerics.rnd(3) );
+    monty : door_index;
+  <b>begin</b>
+    set_prizes;
+    <b>for</b> i <b>in</b> arrays.first(doors)..arrays.last(doors) <b>loop</b>
+       <b>if</b> i /= chosen <b>and</b> doors(i) /= car <b>then</b>
+          monty := i;
+       <b>end</b> <b>if</b>;
+    <b>end</b> <b>loop</b>;
+    <b>if</b> action = switch <b>then</b>
+       <b>for</b> i <b>in</b> arrays.first(doors)..arrays.last(doors) <b>loop</b>
+           <b>if</b> i /= monty <b>and</b> i /= chosen <b>then</b>
+              chosen := i;
+              <b>exit</b>;
+           <b>end</b> <b>if</b>;
+       <b>end</b> <b>loop</b>;
+    <b>end</b> <b>if</b>;
+    <b>return</b> doors( chosen );
+  <b>end</b> play;
+
+  winners : natural; <FONT COLOR=green><EM>-- times won</EM></FONT>
+  pct     : float;   <FONT COLOR=green><EM>-- percentage won</EM></FONT>
+
+<b>begin</b>
+  winners := 0;
+  <b>for</b> i <b>in</b> 1..num_iterations <b>loop</b>
+      <b>if</b> play( stay ) = car <b>then</b>
+         winners := @+1;
+      <b>end</b> <b>if</b>;
+  <b>end</b> <b>loop</b>;
+  pct := float( winners * 100 ) / float( num_iterations );
+  put( "Stay: count" ) @ ( winners ) @ ( " = " ) @ ( pct ) @ ( "%" );
+  new_line;
+  winners := 0;
+  <b>for</b> i <b>in</b> 1..num_iterations <b>loop</b>
+      <b>if</b> play( switch ) = car <b>then</b>
+         winners := @+1;
+      <b>end</b> <b>if</b>;
+  <b>end</b> <b>loop</b>;
+  pct := float( winners * 100 ) / float( num_iterations );
+  put( "Switch: count" ) @ ( winners ) @ ( " = " ) @ ( pct ) @ ( "%" );
+  new_line;
+<b>end</b> monty;
+
+</PRE></BODY></HTML>

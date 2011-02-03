@@ -1,0 +1,449 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Packages - Calendar</title>
+	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html">Tutorials</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html"><b>Packages</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+	<!-- Content Area -->
+<h2><a NAME="4.12"></a>Calendar Package</h2>
+<p>The calendar package provides date and time routines for SparForte.  These include
+determining the current date and time, determining the year, performing date
+arithmetic and more.</p>
+<p><u>GCC Ada equivalent</u>: Ada.Calendar</p>
+<p>The calendar package defines 4 special types:</p>
+<ul>
+<li>
+<b>calendar.year_number</b> - an integer year number (1901..2099)</li>
+
+<li>
+<b>calendar.month_number</b> - an integer month number (1..12)</li>
+
+<li>
+<b>calendar.day_number</b> - an integer day number (1..31)</li>
+
+<li>
+<b>calendar.day_duration</b> - a floating point number of seconds</li>
+
+<li>
+<b>calendar.time</b> - a point in time</li>
+</ul>
+<p>year_number, month_number, day_number are subtypes in Ada, but are declared
+as types in AdaScript to emphasize that they represent incompatible values.</p>
+<p>
+Limited arithmetic: a duration can be added or subtracted from a
+calendar.time value.  "calendar.clock - 1.0" subtracts 1 second from the
+current time.  "calendar.clock + 2.5" adds 2.5 seconds to the current time.
+<p>Comparing times: time values can be compared with &gt;, &gt;=, <, &lt;=, =,
+/=, in, and not in.
+<p>
+<hr><b>t := calendar.clock</b>
+
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the current time.
+<br>Example: current_time := clock;
+<br>Ada Equivalent: Ada.Calendar.Clock
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>t</td>
+
+<td>return value</td>
+
+<td>calendar.time</td>
+
+<td>required</td>
+
+<td>the current time</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>y := calendar.year( t )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+
+<td>
+<br>Return the year of the given time.
+<br>Example: the_year := calendar.year( t );
+<br>Ada Equivalent: Ada.Calendar.Year
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>y</td>
+
+<td>return value</td>
+
+<td>calendar.year_number</td>
+
+<td>required</td>
+
+<td>the year value for the time (1901..2099)</td>
+</tr>
+
+<tr>
+<td>t</td>
+
+<td>in</td>
+
+<td>calendar.time</td>
+
+<td>required</td>
+
+<td>the time</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>m := calendar.month( t )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the year of the given time.
+<br>Example: the_month := calendar.month( t );
+
+<br>Ada Equivalent: Ada.Calendar.Month
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>m</td>
+
+<td>return value</td>
+
+<td>calendar.month_number</td>
+
+<td>required</td>
+
+<td>the month value for the time (1..12)</td>
+
+</tr>
+
+<tr>
+<td>t</td>
+
+<td>in</td>
+
+<td>calendar.time</td>
+
+<td>required</td>
+
+<td>the time</td>
+
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>d := calendar.day( t )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the day of the given time.
+<br>Example: the_year := calendar.day( t );
+<br>Ada Equivalent: Ada.Calendar.Day
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+
+<tr>
+<td>d</td>
+
+<td>return value</td>
+
+<td>calendar.day_number</td>
+
+<td>required</td>
+
+<td>the day value for the time (1..31)</td>
+</tr>
+
+<tr>
+<td>t</td>
+
+<td>in</td>
+
+<td>calendar.time</td>
+
+<td>required</td>
+
+<td>the time</td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>y := calendar.seconds( t )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the seconds of the given time.
+<br>Example: the_seconds := calendar.seconds( t );
+<br>Ada Equivalent: Ada.Calendar.Seconds
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>y</td>
+
+<td>return value</td>
+
+<td>calendar.day_duration</td>
+
+<td>required</td>
+
+<td>the seconds of the day (floating point value)</td>
+</tr>
+
+<tr>
+<td>t</td>
+
+<td>in</td>
+
+<td>calendar.time</td>
+
+<td>required</td>
+
+<td>the time</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>calendar.split( t, y, m, d, s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the year, month, day and seconds value for the given time.
+<br>Example: calendar.split( t, year, month, day, secs );
+<br>Ada Equivalent: Ada.Calendar.Split
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>t</td>
+
+<td>in</td>
+
+<td>calendar.time</td>
+
+<td>required</td>
+
+<td>the time</td>
+</tr>
+
+<tr>
+<td>y</td>
+
+<td>out</td>
+
+<td>calendar.year_number</td>
+
+<td>required</td>
+
+<td>the year value for the time (1901..2099)</td>
+</tr>
+
+<tr>
+<td>m</td>
+
+<td>out</td>
+
+<td>calendar.month_number</td>
+
+<td>required</td>
+
+<td>the month value for the time (1..12)</td>
+</tr>
+
+<tr>
+<td>d</td>
+
+<td>out</td>
+
+<td>calendar.day_number</td>
+
+<td>required</td>
+
+<td>the day value for the time (1..31)</td>
+</tr>
+
+<tr>
+<td>s</td>
+
+<td>out</td>
+
+<td>calendar.day_duration</td>
+
+<td>required</td>
+
+<td>the seconds of the day (floating point value)</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>t := calendar.time_of( y, m, d, s )</b>
+
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Create a time from year, month, day and seconds values.
+<br>Example: the_time := calendar.time_of( 2002, 3, 15, 125.6 );
+<br>Ada Equivalent: Ada.Calendar.Time_Of
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>t</td>
+
+<td>return value</td>
+
+<td>calendar.time</td>
+
+<td>required</td>
+
+<td>the time</td>
+</tr>
+
+<tr>
+<td>y</td>
+
+<td>in</td>
+
+<td>calendar.year_number</td>
+
+<td>required</td>
+
+<td>the year value for the time (1901..2099)</td>
+</tr>
+
+<tr>
+<td>m</td>
+
+<td>in</td>
+
+<td>calendar.month_number</td>
+
+<td>required</td>
+
+<td>the month value for the time (1..12)</td>
+</tr>
+
+<tr>
+<td>d</td>
+
+<td>in</td>
+
+<td>calendar.day_number</td>
+
+<td>required</td>
+
+<td>the day value for the time (1..31)</td>
+</tr>
+
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>calendar.day_duration</td>
+
+<td>required</td>
+
+<td>the seconds of the day (floating point value)</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<pre>=&gt; current_time : calendar.time := calendar.clock
+=&gt; ? calendar.year( current_time )
+
+&nbsp;2002
+=&gt; calendar.seconds( current_time )
+&nbsp;8.19477557630540E+04
+=&gt; return</pre>
+&nbsp;<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="packages.html">&nbsp;Summary</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_arrays.html">&nbsp;arrays</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_calendar.html">&nbsp;<b>calendar</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cgi.html">&nbsp;cgi</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cmdline.html">&nbsp;command_line</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_db.html">&nbsp;db/ postgresql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_pen.html">&nbsp;pen</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sound.html">&nbsp;sound</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sinfo.html">&nbsp;source_info</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;stats</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_strings.html">&nbsp;strings</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
+</a></p>
+
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" border="0" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>
+

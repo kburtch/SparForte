@@ -1,0 +1,47 @@
+<HEAD><TITLE>radices.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : radices.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush radices
+ 180154659
+ 4009
+ 666
+ 4095
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "radices" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "This task requires parsing of such a string (which may" );
+<b>pragma</b> annotate( "be assumed to contain nothing else) using the" );
+<b>pragma</b> annotate( "language's built-in facilities if possible. Parsing of" );
+<b>pragma</b> annotate( "decimal strings is required, parsing of other formats" );
+<b>pragma</b> annotate( "is optional but should be shown (i.e., if the language" );
+<b>pragma</b> annotate( "can parse in base-19 then that should be illustrated)." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Non-decimal_radices/Input" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> radices <b>is</b>
+<b>begin</b>
+  ? numerics.value( "16#ABCF123#" );
+  ? numerics.value( "8#7651#" );
+  ? numerics.value( "2#1010011010#" );
+  ? numerics.value( "16#F.FF#E+2" );
+<b>end</b> radices;
+
+</PRE></BODY></HTML>

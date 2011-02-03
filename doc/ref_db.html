@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Reference - Database Commands</title>
+	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html">Tutorials</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html"><b>Reference</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+	<!-- Content Area -->
+<h2><a name="3.19"></a>Database Commands</h2>
+
+<p>SparForte understands basic SQL commands.&nbsp; This feature is a great
+convenience for people who work frequently with databases.&nbsp; The
+SQL command parameters are given directly to your database.&nbsp; SparForte
+recognizes the following SQL commands:</p>
+
+<ul>
+  <li><span style="font-weight: bold;">alter</span> - alter a database
+table</li>
+
+  <li><span style="font-weight: bold;">delete</span> - delete a row
+from a database table</li>
+  <li><span style="font-weight: bold;">insert</span> - add a row to a
+database table</li>
+  <li><span style="font-weight: bold;">select</span> - show the results
+of a database query</li>
+  <li><span style="font-weight: bold;">update</span> - edit a row in a
+database table</li>
+
+</ul>
+
+<p>SQL is a different language from AdaScript and the Bourne shell.&nbsp;
+SQL for one database may not be compatible with another.&nbsp; For
+example, an asterisk (*) will not expand to a list of files and quote
+marks indicate strings or table names, not how to expand dollar
+variables.&nbsp; Your database documentation will explain how to use
+your version of SQL.</p>
+
+<p>SparForte submits the SQL command to the database with only one
+change.&nbsp; Bush will search command for variables and will
+substitute values using a dollar sign ($) and escape characters with a
+backslash.&nbsp; Single and double
+quotes have no effect on how the variable is substituted since quote
+marks used for a different purpose in SQL.</p>
+
+<p>Like a shell command, the output from the database commands can be
+redirected or captured using backquotes.&nbsp; The commands can be
+intermixed with the db package database commands.</p>
+
+<p>For example,</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<span style="font-family: monospace;">=&gt; db.connect( "ken" )</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; select * from users</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;name&nbsp; | age</span><br
+ style="font-family: monospace;">
+
+<span style="font-family: monospace;">-------+------</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;ken&nbsp;&nbsp; | 38</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;dan&nbsp;&nbsp; | 37</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;chris | 40</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;kati&nbsp; | 36</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;4 Rows and 2 Columns<br>
+
+=&gt; select * from users where user \&gt; 'dan'<br>
+</span><span style="font-family: monospace;">&nbsp;name&nbsp; | age</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">-------+------</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;ken&nbsp;&nbsp; | 38</span><br
+ style="font-family: monospace;">
+&nbsp;
+
+<span style="font-family: monospace;"></span><span
+ style="font-family: monospace;">kati&nbsp; | 36</span><br
+ style="font-family: monospace;">
+&nbsp;
+<span style="font-family: monospace;">2 Rows and 2 Columns</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; select count(*) from users
+&gt; temp.tmp</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">=&gt; cat temp.tmp</span><br
+ style="font-family: monospace;">
+
+<span style="font-family: monospace;">&nbsp;count</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">-------</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;4<br>
+=&gt; s : string := `select age from users;`<br>
+=&gt;&nbsp; k := "ken"<br>
+=&gt; (Assuming k is a new universal_string variable)<br>
+
+=&gt; select * from users where name = '$k'<br>
+&nbsp;name | age<br>
+------+------<br>
+&nbsp;ken&nbsp; | 38<br style="font-family: monospace;">
+</span><span style="font-family: monospace;">=&gt; db.disconnect</span>
+<br>&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: Examples of Database Commands
+        </div>
+        </div>
+        </center>
+
+<p>The format of select statements is the same as db.show in the db
+package.</p>
+
+<p>Some limitations on database commands:</p>
+
+<ul>
+  <li>Database commands cannot (yet) be used in a pipeline<br>
+  </li>
+  <li>SparForte interprets &lt;, &gt;, &gt;&gt;, $, quotes and other symbols
+(escape them when necessary using \)</li>
+
+  <li>Database commands cannot be used with pragma ada_95 (use the db
+library instead)<br>
+  </li>
+</ul>
+<span style="font-family: monospace;"></span>
+<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="ref_adascript.html">&nbsp;<b>AdaScript versus GCC</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_case.html">&nbsp;Case Sensitivity</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_reserved.html">&nbsp;Reserved Words</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_comments.html">&nbsp;Comments</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_literals.html">&nbsp;Literals</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Arguments</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_types.html">&nbsp;Fundamental Types</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_typedecl.html">&nbsp;User-defined Types</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_enum.html">&nbsp;Enumerated Types</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_arrays.html">&nbsp;Arrays</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_records.html">&nbsp;Records</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_assign.html">&nbsp;Basic Assignment</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_specials.html">&nbsp;The @ and % Operands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cmdlineargs.html">&nbsp;Command Argument Shortcuts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_redirection.html">&nbsp;Redirection and Pipelines</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cmdline.html">&nbsp;Command Line Interaction</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_shellcmds.html">&nbsp;Built-in Shell Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cd.html">&nbsp;The Current Directory</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_db.html">&nbsp;<b>Database Commands</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_flow.html">&nbsp;Flow of Control</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_other.html">&nbsp;Other Statements/ Subprograms</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_extcmds.html">&nbsp;External Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_subprograms.html">&nbsp;Block Statements and Subprograms</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_sockets.html">&nbsp;TCP/IP Sockets</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_numberformat.html">&nbsp;Numeric Formatting with Put</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_pragmas.html">&nbsp;Interpreter Directives</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cmdoptions.html">&nbsp;Command Line Options</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cmdref.html">&nbsp;Command Reference</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_charsets.html">&nbsp;ASCII and Latin_1 Character Sets</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_errors.html">&nbsp;Common Error Messages</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_php.html">&nbsp;Common PHP Functions and the SparForte Equivalent</a></p>
+			</td>
+
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>
+

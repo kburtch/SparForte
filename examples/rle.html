@@ -1,0 +1,100 @@
+<HEAD><TITLE>rle.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : rle.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush rle
+12W1B12W3B24W1B14W
+WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "rle" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Given a string containing uppercase characters (A-Z)," );
+<b>pragma</b> annotate( "compress repeated 'runs' of the same character by" );
+<b>pragma</b> annotate( "storing the length of that run, and provide a function to" );
+<b>pragma</b> annotate( "reverse the compression. The output can be anything, as" );
+<b>pragma</b> annotate( "long as you can recreate the input with it." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Example:" );
+<b>pragma</b> annotate( "Input: WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW" );
+<b>pragma</b> annotate( "Output: 12W1B12W3B24W1B14W" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Run-length_encoding" );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+<b>procedure</b> rle <b>is</b>
+
+  <b>function</b> to_rle( s : string ) <b>return</b> string <b>is</b>
+  <b>begin</b>
+    <b>if</b> strings.length( s ) = 0 <b>then</b>
+       <b>return</b> "";
+    <b>end</b> <b>if</b>;
+    <b>declare</b>
+      result : string;
+      code   : character;
+      prefix : string;
+      first  : natural := 1;
+      index  : natural := 1;
+    <b>begin</b>
+      <b>while</b> index &lt;= strings.length( s ) <b>loop</b>
+        first := index;
+        index := @+1;
+        code := strings.element( s, positive(first) );
+        <b>while</b> index &lt;= strings.length( s ) <b>loop</b>
+          <b>exit</b> <b>when</b> code /= strings.element( s, positive(index) );
+          index := @+1;
+          <b>exit</b> <b>when</b> index-first = 99;
+        <b>end</b> <b>loop</b>;
+        prefix := strings.trim( strings.image( index - first ), trim_end.left ); 
+        result := @ &amp; prefix &amp; code;
+      <b>end</b> <b>loop</b>;
+      <b>return</b> result;
+    <b>end</b>;
+  <b>end</b> to_rle;
+
+  <b>function</b> from_rle( s : string ) <b>return</b> string <b>is</b>
+  <b>begin</b>
+    <b>if</b> strings.length( s ) = 0 <b>then</b>
+       <b>return</b> "";
+    <b>end</b> <b>if</b>;
+    <b>declare</b>
+      result : string;
+      index  : positive := 1;
+      prefix : string;
+      code : character;
+    <b>begin</b>
+      <b>loop</b>
+        prefix := "" &amp; strings.element( s, index );
+        index := @+1;
+        <b>if</b> strings.is_digit( strings.element( s, index ) ) <b>then</b>
+          prefix := @ &amp; strings.element( s, index );
+          index := @+1;
+        <b>end</b> <b>if</b>;
+        code := strings.element( s, index );
+        index := @+1;
+        result := @ &amp; ( numerics.value( prefix ) * code );
+        <b>exit</b> <b>when</b> natural(index) &gt; strings.length( s );
+      <b>end</b> <b>loop</b>;
+      <b>return</b> result;
+    <b>end</b>;
+  <b>end</b> from_rle;
+
+<b>begin</b>
+  ? to_rle( "WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW" );
+  ? from_rle( "12W1B12W3B24W1B14W");
+<b>end</b> rle;
+
+</PRE></BODY></HTML>

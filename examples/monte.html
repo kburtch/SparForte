@@ -1,0 +1,64 @@
+<HEAD><TITLE>monte.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : monte.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush monte
+      1_000: 3.08400000000000E+00
+     10_000: 3.15280000000000E+00
+    100_000: 3.14604000000000E+00
+  1_000_000: 3.14100000000000E+00
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "monte" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "A Monte Carlo Simulation is a way of approximating the" );
+<b>pragma</b> annotate( "value of a function where calculating the actual value is" );
+<b>pragma</b> annotate( "difficult or impossible. It uses random sampling to define" );
+<b>pragma</b> annotate( "constraints on the value and then makes a sort of 'best" );
+<b>pragma</b> annotate( " guess.'" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Write a function to run a simulation like this with a" );
+<b>pragma</b> annotate( "variable number of random points to select. Also, show the" );
+<b>pragma</b> annotate( "results of a few different sample sizes. For software" );
+<b>pragma</b> annotate( "where the number pi is not built-in, we give pi to a couple" );
+<b>pragma</b> annotate( "of digits: 3.141592653589793238462643383280 " );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Monte_Carlo_methods" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>procedure</b> monte <b>is</b>
+
+<b>pragma</b> restriction( no_external_commands );
+ 
+   <b>function</b> pi (throws : positive) <b>return</b> float <b>is</b>
+      inside : natural := 0;
+   <b>begin</b>
+      <b>for</b> throw <b>in</b> 1..throws <b>loop</b>
+         <b>if</b> numerics.random ** 2 + numerics.random ** 2 &lt;= 1.0 <b>then</b>
+            inside := @ + 1;
+         <b>end</b> <b>if</b>;
+      <b>end</b> <b>loop</b>;
+      <b>return</b> 4.0 * float (inside) / float (throws);
+   <b>end</b> pi;
+
+<b>begin</b>
+   ? "      1_000:" &amp; strings.image (pi (      1_000))
+   @ "     10_000:" &amp; strings.image (pi (     10_000))
+   @ "    100_000:" &amp; strings.image (pi (    100_000))
+   @ "  1_000_000:" &amp; strings.image (pi (  1_000_000));
+<b>end</b> monte;
+
+</PRE></BODY></HTML>

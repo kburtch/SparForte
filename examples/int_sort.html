@@ -1,0 +1,51 @@
+<HEAD><TITLE>int_sort.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : int_sort.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush int_sort
+ 0
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "int_array" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Sort an array (or list) of integers in ascending" );
+<b>pragma</b> annotate( "numerical order. Use a sorting facility provided by" );
+<b>pragma</b> annotate( "the language/library if possible." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Sort_an_integer_array" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> int_sort <b>is</b>
+  <b>type</b> int_array <b>is</b> <b>array</b> (1..9) <b>of</b> integer;
+  values : int_array := (0,1,8,2,7,3,6,4,5);
+<b>begin</b>
+  arrays.heap_sort( values );
+  <b>for</b> i <b>in</b> arrays.first( values )..arrays.last( values ) <b>loop</b>
+    ? values(i);
+  <b>end</b> <b>loop</b>;
+<b>end</b> int_sort;
+
+</PRE></BODY></HTML>

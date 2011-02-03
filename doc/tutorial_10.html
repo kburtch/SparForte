@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Tutorials - Creating a Profile Script</title>
+        <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html"><b>Tutorials</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+				<!-- Content Area -->
+
+<h2><a name="2.10"></a>Creating a Profile Script</h2>
+<p>When SparForte is started when a user first logs in, SparForte attempts to find
+and
+run "profile" scripts--a list of commands to set up a user's
+environment.
+By creating a profile script, a user can create variables or run
+programs
+every time they log in.</p>
+<p>First, SparForte looks for a script called "/etc/bush_profile". This
+script
+should contain commands to be run by every user logging in.
+</p>
+<p>Second, SparForte looks for a script called ".bush_profile" in the user's
+home directory. This script should contain commands specific to a
+particular
+user.
+</p>
+<p>The following is a sample ".bush_profile" script:
+</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<pre>
+-- Sample Red Hat Profile script
+--
+-- This is executed by the SparForte during startup.
+
+-----------------------------------------------
+-- Define Aliases
+
+-- ls, by default, has no color.&nbsp; ls_color is a script that turns
+-- on the ls --color flag before running ls.
+
+ls : <b>constant</b> <b>command</b> := "/home/ken/bush/ls_color";
+
+
+-----------------------------------------------
+-- Define various environment variables needed by other software
+
+PATH := "/usr/gnat/bin:/home/ken/bin:/usr/java/bin:" &amp; PATH;
+<b>pragma</b> export( shell, PATH );
+
+ASIS_DIR : string := "/usr/lib/asis";
+<b>pragma</b> export( shell, ASIS_DIR );
+
+CLASSPATH : string := ".:/usr/lib/jgnat.jar";
+<b>pragma</b> export( shell, CLASSPATH );
+
+JGNAT_LIB : string := "/usr/lib/jgnat";
+<b>pragma</b> export( shell, JGNAT_LIB );
+
+KDEDIR : string := "/usr";
+<b>pragma</b> export( shell, KDEDIR );
+
+LANG : <b>constant</b> string := "en_US";
+<b>pragma</b> export( shell, LANG );
+
+LESSOPEN : <b>constant</b> string := "|/usr/bin/lesspipe.sh %s";
+<b>pragma</b> export( shell, LESSOPEN );
+
+LS_COLORS : string := "no=00:fi=00:di=01;34:ln=01;36:pi=40;33:<i>etc</i>";
+<b>pragma</b> export( shell, LS_COLORS );
+
+QTDIR : string :="/usr/lib/qt-2.3.1";
+<b>pragma</b> export( shell, QTDIR );
+
+SSH_ASKPASS : <b>constant</b> string := "/usr/libexec/openssh/gnome-ssh-askpass";
+<b>pragma</b> export( shell, SSH_ASKPASS );
+
+-- export DISPLAY only if it exists
+DISPLAY : string := "undefined";
+<b>pragma</b> unchecked_import( shell, DISPLAY );
+<b>if</b> DISPLAY /= "undefined" <b>then</b>
+  <b>pragma</b> export( shell, DISPLAY );
+<b>end</b> <b>if</b>;
+
+-- disable automatic declaractions if I don't like them
+<b>pragma</b> restriction( no_auto_declaractions );
+
+-- declare company name, but don't export beyond shell session
+company : <b>constant</b> string := "Compu-Global-Mega-Corp Inc.";
+
+-- show the date and time with UNIX/Linux date command
+date;
+
+-- change my SparForte prompt
+<b>pragma</b> prompt_script( `pwd;echo "=&gt; ";` );
+
+-- end of .bush_profile
+</pre>
+&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: A Sample Profile Script
+        </div>
+        </div>
+        </center>
+
+<p>After the profile scripts are executed, the user sees the "=&gt;"
+prompt and
+can being entering commands.</p>
+<br>
+&nbsp;
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_1.html">&nbsp;Command Prompt Tutorial 1: SparForte as a Calculator</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_2.html">&nbsp;Command Prompt Tutorial 2: Basic Shell Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_3.html">&nbsp;Command Prompt Tutorial 3: Working with Databases</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_4.html">&nbsp;Script Tutorial 1: Basic Commands Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_5.html">&nbsp;Script Tutorial 2: Intermediate Program Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_6.html">&nbsp;Template Tutorial 1: Basic Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_7.html">&nbsp;Template Tutorial 2: Intermediate Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_8.html">&nbsp;GCC Tutorial: Compiling SparForte Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_9.html">&nbsp;Debugging Tutorial - Using the SparForte Debugger</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_10.html">&nbsp;<b>Creating a Profile Script</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_11.html">&nbsp;Calling SparForte from C: A Tutorial</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_12.html">&nbsp;SparForte Best Practices</a></p>
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>

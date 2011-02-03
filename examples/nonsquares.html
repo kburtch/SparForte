@@ -1,0 +1,55 @@
+<HEAD><TITLE>nonsquares.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : nonsquares.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush nonsquares.bush
+ 2 3 5 6 7 8 10 11 12 13 14 15 17 18 19 20 21 22 23 24 26 27
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "nonsquares" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Show that the following remarkable formula gives the" );
+<b>pragma</b> annotate( "sequence of non-square natural numbers: n +" );
+<b>pragma</b> annotate( "floor(1/2 + sqrt(n)).  Print out the values for n in" );
+<b>pragma</b> annotate( "the range 1 to 22.  Show that no squares occur for n" );
+<b>pragma</b> annotate( "less than one million." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Sequence_of_non-squares" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> nonsquares <b>is</b>
+ 
+   <b>function</b> is_non_square (n : positive) <b>return</b> positive <b>is</b>
+   <b>begin</b>
+      <b>return</b> n + positive (numerics.rounding(numerics.sqrt (long_float (n))));
+   <b>end</b> is_non_square;
+ 
+   i : positive;
+<b>begin</b>
+   <b>for</b> n <b>in</b> 1..22 <b>loop</b> <FONT COLOR=green><EM>-- First 22 non-squares</EM></FONT>
+      put (strings.image (is_non_square (n)));
+   <b>end</b> <b>loop</b>;
+   new_line;
+   <b>for</b> n <b>in</b> 1..1_000_000 <b>loop</b> <FONT COLOR=green><EM>-- Check first million of</EM></FONT>
+      i := is_non_square (n);
+      <b>if</b> i = positive (numerics.rounding(numerics.sqrt (long_float (i))))**2 <b>then</b>
+         put_line ("Found a square:" &amp; strings.image (n));
+      <b>end</b> <b>if</b>;
+   <b>end</b> <b>loop</b>;
+<b>end</b> nonsquares;
+</PRE></BODY></HTML>

@@ -1,0 +1,49 @@
+<HEAD><TITLE>stripcomment.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : stripcomment.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush stripcomment
+this is a test # a comment
+this is a test 
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "stripcomment" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "The task is to remove text that follow any of a set of" );
+<b>pragma</b> annotate( "comment markers, (in these examples either a hash or a" );
+<b>pragma</b> annotate( "semicolon) from a string or input line." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Strip_comments_from_a_string" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> stripcomment <b>is</b>
+  line : string := get_line;
+  eol  : natural := 0;
+  ch   : character;
+<b>begin</b>
+  <b>for</b> i <b>in</b> 1..strings.length( line ) <b>loop</b>
+    ch := strings.element( line, i );
+    <b>exit</b> <b>when</b> ch = '#' <b>or</b> ch = ';';
+    eol := i;
+  <b>end</b> <b>loop</b>;
+  <b>if</b> eol &gt; 0 <b>then</b>
+     ? strings.slice( line, 1, eol );
+  <b>end</b> <b>if</b>;
+<b>end</b> stripcomment;
+
+</PRE></BODY></HTML>

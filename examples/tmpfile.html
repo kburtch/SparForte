@@ -1,0 +1,61 @@
+<HEAD><TITLE>tmpfile.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : tmpfile.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush tmpfile
+Creating a temporary file
+Reading a temporary file
+File contains: Hello World
+Discarding a temporary file
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "tmpfile" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Create a temporary file, securely and exclusively" );
+<b>pragma</b> annotate( "(opening it such that there are no possible race" );
+<b>pragma</b> annotate( "conditions). It's fine assuming local filesystem" );
+<b>pragma</b> annotate( "semantics (NFS or other networking filesystems can" );
+<b>pragma</b> annotate( "have signficantly more complicated semantics for" );
+<b>pragma</b> annotate( "satisfying the 'no race conditions' criteria). The" );
+<b>pragma</b> annotate( "function should automatically resolve name collisions" );
+<b>pragma</b> annotate( "and should only fail in cases where permission is" );
+<b>pragma</b> annotate( "denied, the filesystem is read-only or full, or similar" );
+<b>pragma</b> annotate( "conditions exist (returning an error or raising an" );
+<b>pragma</b> annotate( "exception as appropriate to the language/environment)." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Secure_temporary_file" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> tmpfile <b>is</b>
+   temp : file_type;
+   contents : string;
+<b>begin</b>
+   ? "Creating a temporary file";
+   create( temp );
+   put_line( temp,  "Hello World");
+
+   ? "Reading a temporary file";
+   reset( temp, in_file);
+   contents := get_line( temp );
+   put_line( "File contains: " &amp; contents );  
+
+   ? "Discarding a temporary file";
+   close( temp );
+<b>end</b> tmpfile;
+
+</PRE></BODY></HTML>

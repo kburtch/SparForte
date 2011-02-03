@@ -1,0 +1,69 @@
+<HEAD><TITLE>perfect.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : perfect.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush perfect
+ 6 : true
+ 18 : false
+ 28 : true
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "perfect" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "In mathematics, a perfect number is a positive integer" );
+<b>pragma</b> annotate( "that is the sum of its proper positive divisors, that is," );
+<b>pragma</b> annotate( "the sum of the positive divisors excluding the number" );
+<b>pragma</b> annotate( "itself." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://en.wikipedia.org/wiki/Perfect_number" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> perfect <b>is</b>
+
+  <b>function</b> is_perfect( n : positive ) <b>return</b> boolean <b>is</b>
+    sum : natural := 0;
+  <b>begin</b>
+    <b>for</b> i <b>in</b> 1..n-1 <b>loop</b>
+      <b>if</b> n <b>mod</b> i = 0 <b>then</b>
+         sum := @+i;
+      <b>end</b> <b>if</b>;
+    <b>end</b> <b>loop</b>;
+    <b>return</b> sum = natural( n );
+  <b>end</b> is_perfect;
+
+  number : positive;
+  result : boolean;
+<b>begin</b>
+  number := 6;
+  result   := is_perfect( number );
+  put( number ) @ ( " : " ) @ ( result );
+  new_line;
+
+  number := 18;
+  result   := is_perfect( number );
+  put( number ) @ ( " : " ) @ ( result );
+  new_line;
+
+  number := 28;
+  result   := is_perfect( number );
+  put( number ) @ ( " : " ) @ ( result );
+  new_line;
+
+<b>end</b> perfect;
+
+</PRE></BODY></HTML>

@@ -1,0 +1,76 @@
+<HEAD><TITLE>prime.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : prime.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush prime
+ 6 : false
+ 7 : true
+ 8 : false
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "prime" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Write a boolean function that tells whether a given" );
+<b>pragma</b> annotate( "integer is prime. Remember that 1 and all" );
+<b>pragma</b> annotate( "non-positive numbers are not prime. " );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Primality_by_trial_division" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> prime <b>is</b>
+
+<b>function</b> is_prime(item : positive) <b>return</b> boolean <b>is</b>
+   result : boolean := true;
+   test : natural;
+<b>begin</b>
+   <b>if</b> item /= 2 <b>and</b> item <b>mod</b> 2 = 0 <b>then</b>
+      result := false;
+   <b>else</b>
+      test := 3;
+      <b>while</b> test &lt; natural( numerics.sqrt( item ) ) <b>loop</b>
+         <b>if</b> natural(item) <b>mod</b> test = 0 <b>then</b>
+            result := false;
+            <b>exit</b>;
+         <b>end</b> <b>if</b>;
+         test := @ + 2;
+      <b>end</b> <b>loop</b>;
+  <b>end</b> <b>if</b>;
+  <b>return</b> result;
+<b>end</b> is_prime;
+
+  number : positive;
+  result : boolean;
+
+<b>begin</b>
+  number := 6;
+  result   := is_prime( number );
+  put( number ) @ ( " : " ) @ ( result );
+  new_line;
+
+  number := 7;
+  result   := is_prime( number );
+  put( number ) @ ( " : " ) @ ( result );
+  new_line;
+
+  number := 8;
+  result   := is_prime( number );
+  put( number ) @ ( " : " ) @ ( result );
+  new_line;
+<b>end</b> prime;
+
+</PRE></BODY></HTML>

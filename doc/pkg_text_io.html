@@ -1,0 +1,926 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Packages - Text_IO</title>
+	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html">Tutorials</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html"><b>Packages</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+	<!-- Content Area -->
+<h2><a NAME="4.2"></a>Console Input/Output (Text_IO)</h2>
+<p>The Text_IO package handles reading and writing to the console (or UNIX
+tty device) and text files. (More on text files will be said in the next
+section.)  With the&nbsp; SparForte Text_IO package routines, "Text_IO" doesn't
+have to be prefixed to the routine name.</p>
+<p>&nbsp;
+<hr><b>put_line( [f,] e )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+
+<br>Write expression e with an appended line feed (new line) character
+<br>Example: put_line( 3*2 );
+<br>Ada Equivalent: Ada.Text_IO.Put_Line, Ada.Strings.Unbounded.Text_IO.Put_Line,
+etc.
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>in</td>
+
+<td>file_type</td>
+
+<td>standard_output</td>
+
+<td>file to direct output to</td>
+</tr>
+
+<tr>
+<td>e</td>
+
+<td>in</td>
+
+<td>not limited</td>
+
+<td>required</td>
+
+<td>the expressions to write</td>
+</tr>
+</table>
+
+<p>put_line can take any type of parameter except limited types. This includes
+enumerated types. Output can be redirected to standard error by using standard_error
+as the file. The default file is standard_output.
+<p><tt>=> put_line( standard_error, "an error occurred!" );</tt></td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>put( [f,] e [, p] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+
+<td>
+<br>Write expression e with optional numeric formatting
+<br>Example: put( 3*2 );
+<br>Ada Equivalent: Ada.Text_IO.Put, Ada.Strings.Unbounded.Text_IO.Put,
+Ada.Text_IO.Editing
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>in</td>
+
+<td>file_type</td>
+
+<td>standard_output</td>
+
+<td>the file to direct output to</td>
+</tr>
+
+<tr>
+<td>e</td>
+
+<td>in</td>
+
+<td>not limited</td>
+
+<td>required</td>
+
+<td>the expression to write</td>
+</tr>
+
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>none</td>
+
+<td>format picture to write with</td>
+</tr>
+</table>
+
+<p>put can take any type of parameter except limited types. This includes
+enumerated types. Output can be redirected to standard error by using standard_error
+as the file. The default file is standard_output.</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>new_line [(f)]</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+
+<br>write a line feed (new line)
+<br>Example: new_line;
+<br>Ada Equivalent: Ada.Text_IO.New_Line
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>in</td>
+
+<td>file_type</td>
+
+<td>standard_output</td>
+
+<td>file to redirect output to</td>
+</tr>
+</table>
+
+<p>Output can be redirected to standard error by using standard_error as
+the file. The default file is standard_output.</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>s := get_line [( f )]</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+
+<br>read a string until the end of line is encountered. The default file
+is standard_input.
+<br>Example: s := get_line;
+<br>Ada Equivalent: Ada.Text_IO.Get_Line, Ada.Strings.Unbounded.Text_IO
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>in</td>
+
+<td>file_type</td>
+
+<td>standard_input</td>
+
+<td>the file to read input from</td>
+</tr>
+
+<tr>
+<td>s</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the string that was read</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>get( [f,] c )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>read the first character from a line on standard input and return it
+as c
+<br>Example: get( ch );
+
+<br>Ada Equivalent: Ada.Text_IO.Get_Line, Ada.Strings.Unbounded.Text_IO
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>in</td>
+
+<td>file_type</td>
+
+<td>standard_input</td>
+
+<td>the file to read input from</td>
+
+</tr>
+
+<tr>
+<td>c</td>
+
+<td>out</td>
+
+<td>character</td>
+
+<td>required</td>
+
+<td>the character read</td>
+
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>? e</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>put_line expression e to standard output
+<br>Restrictions: disabled with pragma ada_95
+<br>Example: ? 3*2;
+<br>Ada Equivalent: none (AdaScript extension taken from BASIC language)
+<br>Parameters:
+
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>e</td>
+
+<td>in</td>
+
+<td>not limited</td>
+
+<td>required</td>
+
+<td>the expression to write</td>
+</tr>
+
+</table>
+
+<p>The <b>question mark command</b> "?" is a short-form for put_line to
+standard output. It is intended as a command line convenience.  This is
+roughly equivalent to PHP's "=" in a short open tag, a shortcut for "echo".</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>c := inkey</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Read a character from standard input. Don't write the character.
+
+<br>Restrictions: disabled with pragma ada_95
+<br>Example: ch := inkey;
+<br>Ada Equivalent: none (AdaScript extension)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>return value</td>
+
+<td>character</td>
+
+<td>required</td>
+
+<td>the key that was pressed</td>
+</tr>
+</table>
+
+<p>get is provided for compatibility for Ada 95 but get is not very convenient.
+inkey is a more useful function for reading a keypress.</td>
+</tr>
+</table></center>
+
+<hr>
+<p>The file_type constants standard_input, standard_output and standard_error
+can be used to redirect I/O to standard input, output or error respectively.
+<p>Ada's get_immediate is not implemented.
+<br>&nbsp;
+
+<h2><a NAME="4.3"></a>Text File I/O (Text_IO)</h2>
+
+BASH opens files on the basis of file numbers or "file descriptors". In
+AdaScript, files are declared using a file_type variable.
+<p>AdaScript's I/O system implements a subsection of the Ada Text_IO library.
+<p>The Text_IO package has a predefined enumerated type, file_mode, which
+determines if a file should be read (in_file), written (out_file) or should
+append to an existing file (append_file).
+<p>
+<hr><b>open( f, m, p )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Open existing file f as pathname p in file mode m.
+<br>Example: open( data, in_mode, "/home/ken/data.txt" );
+<br>Restrictions: out_mode not allowed in restricted shells
+<br>Ada Equivalent: Ada.Text_IO.Open
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>out</td>
+
+<td>file_type</td>
+
+<td>required</td>
+
+<td>file variable representing the open file</td>
+</tr>
+
+<tr>
+<td>m</td>
+
+<td>in</td>
+
+<td>file_mode</td>
+
+<td>required</td>
+
+<td>open the file for reading, writing or appending</td>
+</tr>
+
+<tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file to open</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>create( f [, m] [, n] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Create a new file or open an existing file for writing. Also, create
+temp files.
+<br>Example: create( temp_file );
+<br>Restrictions: out_mode not allowed in restricted shells
+<br>Ada Equivalent: Ada.Text_IO.Create
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>out</td>
+
+<td>file_type</td>
+
+<td>required</td>
+
+<td>file variable representing the open file</td>
+</tr>
+
+<tr>
+<td>m</td>
+
+<td>in</td>
+
+<td>file_mode</td>
+
+<td>out_file</td>
+
+<td>open the file writing or appending</td>
+</tr>
+
+<tr>
+<td>n</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td><i>a temp file</i></td>
+
+<td>the pathname of the file to create. If none is given, a temp file will
+be created.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>reset( f [, m] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Reopen open file f in optional new file mode m
+<br>Example: reset( temp_file, in_mode );
+<br>Restrictions: out_mode not allowed in restricted shells
+<br>Ada Equivalent: Ada.Text_IO.Reset
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>in out</td>
+
+<td>file_type</td>
+
+<td>required</td>
+
+<td>file variable representing the file to reopen</td>
+</tr>
+
+<tr>
+<td>m</td>
+
+<td>in</td>
+
+<td>file_mode</td>
+
+<td><i>current mode</i></td>
+
+<td>the new mode for the file. The default is to leave the mode unchanged.</td>
+
+<td></td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>is_open( f )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if file f is open
+<br>Example: if is_open( data ) then ...
+<br>Ada Equivalent: Ada.Text_IO.Is_Open
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>in</td>
+
+<td>file_type</td>
+
+<td>required</td>
+
+<td>file variable representing the file to test</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>end_of_file( f )</b>
+
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return true if all data has been read from in_mode file f
+<br>Example: if end_of_file( data ) then ...
+<br>Ada Equivalent: Ada.Text_IO.End_Of_File
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>in</td>
+
+<td>file_type</td>
+
+<td>required</td>
+
+<td>file variable representing the file to test</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>end_of_line( f )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+
+<td>
+<br>Return true if at the end of line for file f
+<br>Example: if end_of_line( data ) then ...
+<br>Ada Equivalent: Ada.Text_IO.End_Of_Line
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>in</td>
+
+<td>file_type</td>
+
+<td>required</td>
+
+<td>file variable representing the file to test</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>close( f )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Close and save the open file f
+<br>Example: close( data );
+
+<br>Ada Equivalent: Ada.Text_IO.Close
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>in out</td>
+
+<td>file_type</td>
+
+<td>required</td>
+
+<td>file variable representing the file to close</td>
+
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>delete( f )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Close and delete the open file f
+<br>Example: delete( temp_file );
+<br>Restriction: not allowed in restricted shells
+<br>Ada Equivalent: Ada.Text_IO.Delete
+<br>Parameters:
+
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>in out</td>
+
+<td>file_type</td>
+
+<td>required</td>
+
+<td>file variable representing the file to delete</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>skip_line( [f] )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Read a line from standard input and discard it
+<br>Example: s := get_line;
+<br>Ada Equivalent: Ada.Text_IO.Skip_Line
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+
+<td>f</td>
+
+<td>in</td>
+
+<td>file_type</td>
+
+<td>standard_input</td>
+
+<td>the file to read input from</td>
+</tr>
+</table>
+</td>
+
+</tr>
+</table></center>
+
+<p>
+<hr><b>set_input( f )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Redirect standard_input to an open file
+<br>Example: set_input( data_file );
+<br>Ada Equivalent: Ada.Text_IO.Set_Input
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>in</td>
+
+<td>file_type</td>
+
+<td>required</td>
+
+<td>the file to read input from</td>
+</tr>
+</table>
+
+<p>Use set_input( standard_input ) to return to standard input.</td>
+
+</tr>
+</table></center>
+
+<p>
+<hr><b>set_output( f )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Redirect standard_output to an open file
+<br>Example: set_output( data_file );
+<br>Ada Equivalent: Ada.Text_IO.Set_Output
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>in</td>
+
+<td>file_type</td>
+
+<td>required</td>
+
+<td>the file to write output to</td>
+</tr>
+</table>
+
+<p>Use set_output( standard_output ) to return to standard output.</td>
+
+</tr>
+</table></center>
+
+<p>
+<hr><b>set_error( f )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Redirect standard_error to an open file
+<br>Example: set_error( data_file );
+<br>Ada Equivalent: Ada.Text_IO.Set_Error
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>f</td>
+
+<td>in</td>
+
+<td>file_type</td>
+
+<td>required</td>
+
+<td>the file to write error output to</td>
+</tr>
+</table>
+
+<p>Use set_error( standard_error ) to return to standard error.</td>
+
+</tr>
+</table></center>
+
+<p>
+<hr><b>i := line( f )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the number of lines read or written (with put_line, the number
+of lines explicitly put to that file)
+<br>Example: if line( f ) > 33 then ...
+<br>Ada Equivalent: Ada.Text_IO.Line
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>i</td>
+
+<td>return value</td>
+
+<td>integer</td>
+
+<td>required</td>
+
+<td>the number of lines read or written</td>
+</tr>
+
+<tr>
+<td>f</td>
+
+<td>in</td>
+
+<td>file_type</td>
+
+<td>required</td>
+
+<td>file variable representing the file to test</td>
+</tr>
+</table>
+
+<p>This function will work with standard_input, standard_output and standard_error.
+However, it does not take into account lines read or written by operating
+system commands.</td>
+
+</tr>
+</table></center>
+
+<p>
+<hr><b>s := name( f )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the pathname of the open file.
+<br>Example: put_line( "error in file " &amp; name( f ) );
+<br>Ada Equivalent: Ada.Text_IO.Name
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+
+<td>s</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the pathname of the file</td>
+</tr>
+
+<tr>
+
+<td>f</td>
+
+<td>in</td>
+
+<td>file_type</td>
+
+<td>required</td>
+
+<td>file variable representing the file</td>
+</tr>
+</table>
+
+<p>This function will work with standard_input, standard_output and standard_error.
+However, it does not return a pathname since these files have no known
+pathnames.</td>
+</tr>
+</table></center>
+
+<p>
+<hr><b>m := mode( f )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Return the mode of the open file
+<br>Example: if mode( f ) = in_file then ...
+<br>Ada Equivalent: Ada.Text_IO.Mode
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+
+<td>m</td>
+
+<td>return value</td>
+
+<td>file_mode</td>
+
+<td>required</td>
+
+<td>the current mode of the file</td>
+</tr>
+
+<tr>
+
+<td>f</td>
+
+<td>in</td>
+
+<td>file_type</td>
+
+<td>required</td>
+
+<td>file variable representing the file</td>
+</tr>
+</table>
+</td>
+
+</tr>
+</table></center>
+
+<p>This function will work with standard_input, standard_output and standard_error.
+<p>The Text_IO package also defines three file aliases. These can be used
+anywhere a file_type variable is expected.
+<ul>
+<li>
+<b>current_input</b> -- an alias for the current input file</li>
+
+<li>
+<b>current_output</b>-- an alias for the current output file</li>
+
+<li>
+<b>current_error</b> -- an alias for the current error file</li>
+</ul>
+The put, put_line, get, get_line and new_line commands are used to read
+and write files.
+<p><tt>=&gt; f : file_type</tt>
+<br><tt>=&gt; create( f, out_file, "data.out" )</tt>
+<br><tt>=&gt; put_line( f, "Added to file" )</tt>
+
+<br><tt>=&gt; ? name( f )</tt>
+<br><tt>data.out</tt>
+<br><tt>=&gt; ? mode( f )</tt>
+<br><tt>out_file</tt>
+<br><tt>=&gt; ? line( f )</tt>
+<br><tt>1</tt>
+
+<p>standard_input, standard_output and standard_error can be redirected
+with the appropriate command to an open file.
+<p><tt>=&gt; set_output( f )</tt>
+<p>From now on, all output going to standard output is written to the file_type
+variable f. The current_output function refers to the file being written
+to (in this case, f). Output redirected to f is not counted by the line
+function.
+<p>The file is closed with close.
+<p><tt>=&gt; close( f )</tt></p>
+
+&nbsp;<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="packages.html">&nbsp;Summary</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_arrays.html">&nbsp;arrays</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_calendar.html">&nbsp;calendar</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cgi.html">&nbsp;cgi</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cmdline.html">&nbsp;command_line</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_db.html">&nbsp;db/ postgresql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_pen.html">&nbsp;pen</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sound.html">&nbsp;sound</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sinfo.html">&nbsp;source_info</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;stats</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_strings.html">&nbsp;strings</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;<b>text_io</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
+</a></p>
+
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" border="0" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>
+

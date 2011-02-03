@@ -1,0 +1,499 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Reference - Bourne Shell Arguments</title>
+	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html">Tutorials</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html"><b>Reference</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+	<!-- Content Area -->
+<h2><a name="3.7"></a>Fundamental Types</h2>
+<p>All AdaScript variables have a type.&nbsp; Variables must declared so
+that
+SparForte knows what that type is.&nbsp; When new variables are created by
+assignment
+at the command prompt, SparForte choses an appropriate type for the new
+variable.&nbsp;
+In scripts, all variables must be declared.</p>
+
+<h3>Universal Types</h3>
+
+<p>There are three "universal types":</p>
+
+<table nosave="" bgcolor="#F3F5F7" border="1" cols="3" width="100%">
+  <tbody>
+    <tr>
+      <td><b>Type Name</b></td>
+      <td><b>Content</b></td>
+      <td><b>Usage</b></td>
+
+    </tr>
+    <tr>
+      <td><tt>universal_string</tt></td>
+      <td>unlimited length, 8-bit characters</td>
+      <td>text</td>
+    </tr>
+    <tr>
+
+      <td><tt>universal_numeric</tt></td>
+      <td>double precision floating point values</td>
+      <td>numbers</td>
+    </tr>
+    <tr>
+      <td><tt>universal_typeless</tt></td>
+      <td>same as universal_string/numeric</td>
+
+      <td>text or numbers</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The first two types form the basis for all other AdaScript string
+and
+numeric types.&nbsp; Variables declared as universal_typeless change
+their
+type between universal_string and universal_numeric depending how they
+are used.&nbsp; If AdaScript cannot decide in a particular context, the
+variable type defaults to universal_string.&nbsp; Typeless variables
+correspond
+to variables in Bourne shells and are provided for as a command line
+convenience.</p>
+
+<p>Universal types automatically match any type derived from the same
+universal
+type. A universal_numeric variable accepts integer or floating point
+values.&nbsp;
+A universal_string variable accepts single characters or strings
+containing
+many characters.</p>
+
+<p>Universal types are used for all AdaScript literals.&nbsp; For
+example,
+a string literal like "hello" is a universal_string and be assigned to
+any string type. The numeric literal 45.5 is a universal_numeric can be
+used with float, long_float, or any other numeric type.</p>
+
+<p>Using these three built-in types will give you a minimum amount of
+type
+checking, suitable for short scripts or quick command line
+calculations.&nbsp;
+Universal types should not be used in large scripts because they will
+greatly
+reduce the number of errors SparForte can detect.</p>
+
+<p><b>Ada</b>: Ada has no usable universal types but the Ada
+rationale uses universal types to describe the type system.</p>
+
+<h3>Predefined, Non-Universal Types</h3>
+
+<p>For more extensive scripts, AdaScript extends the universal string
+and
+numeric types into all the predefined Ada language types, plus some
+AdaScript-specific
+types:</p>
+
+<table nosave="" bgcolor="#F3F5F7" border="1" cols="4" width="100%">
+  <tbody>
+    <tr>
+      <td><b>Type Name</b></td>
+      <td><b>Base Type</b></td>
+      <td><b>Usage</b></td>
+      <td><b>GCC Ada Equivalent</b></td>
+
+    </tr>
+    <tr nosave="">
+      <td nosave=""><tt>integer</tt></td>
+      <td><tt>universal_numeric</tt></td>
+      <td>number without a radix point</td>
+      <td><tt>integer</tt></td>
+    </tr>
+
+    <tr>
+      <td><tt>natural</tt></td>
+      <td><tt>universal_numeric</tt></td>
+      <td>0 or integer larger than zero</td>
+      <td><tt>natural</tt></td>
+    </tr>
+    <tr>
+
+      <td><tt>positive</tt></td>
+      <td><tt>universal_numeric</tt></td>
+      <td>integer larger than zero</td>
+      <td><tt>positive</tt></td>
+    </tr>
+    <tr>
+      <td><tt>short_short_integer</tt></td>
+
+      <td><tt>universal_numeric</tt></td>
+      <td>very small integer</td>
+      <td><tt>short_short_integer</tt></td>
+    </tr>
+    <tr>
+      <td><tt>short_integer</tt></td>
+      <td><tt>universal_numeric</tt></td>
+
+      <td>small integer</td>
+      <td><tt>long_integer</tt></td>
+    </tr>
+    <tr>
+      <td><tt>long_integer</tt></td>
+      <td><tt>universal_numeric</tt></td>
+      <td>large integer</td>
+
+      <td><tt>long_long_integer</tt></td>
+    </tr>
+    <tr>
+      <td><tt>long_long_integer</tt></td>
+      <td><tt>universal_numeric</tt></td>
+      <td>very large integer</td>
+      <td><tt>float</tt></td>
+
+    </tr>
+    <tr>
+      <td><tt>float</tt></td>
+      <td><tt>universal_numeric</tt></td>
+      <td>floating point number</td>
+      <td><tt>float</tt></td>
+    </tr>
+
+    <tr>
+      <td><tt>short_float</tt></td>
+      <td><tt>universal_numeric</tt></td>
+      <td>small floating point number</td>
+      <td><tt>short_float</tt></td>
+    </tr>
+    <tr>
+
+      <td><tt>long_float</tt></td>
+      <td><tt>universal_numeric</tt></td>
+      <td>large floating point number</td>
+      <td><tt>long_float</tt></td>
+    </tr>
+    <tr>
+      <td><tt>character</tt></td>
+
+      <td><tt>universal_string</tt></td>
+      <td>8-bit character</td>
+      <td><tt>character</tt></td>
+    </tr>
+    <tr>
+      <td><tt>string</tt></td>
+      <td><tt>universal_string</tt></td>
+
+      <td>unlimited length string</td>
+      <td>almost <tt>unbounded_string</tt></td>
+    </tr>
+    <tr>
+      <td><tt>unbounded_string</tt></td>
+      <td>universal_string</td>
+
+      <td>unlimited length string</td>
+      <td>almost <tt>unbounded_string</tt></td>
+    </tr>
+    <tr>
+      <td><tt>duration</tt></td>
+      <td><tt>universal_numeric</tt></td>
+
+      <td>time, float seconds</td>
+      <td><tt>duration</tt></td>
+    </tr>
+    <tr>
+      <td><tt>boolean</tt></td>
+      <td>enumerated type</td>
+      <td><tt>true</tt> or <tt>false</tt></td>
+
+      <td><tt>boolean</tt></td>
+    </tr>
+    <tr>
+      <td><tt>file_type</tt></td>
+      <td>limited type</td>
+      <td>operating system files</td>
+      <td><tt>file_type</tt></td>
+
+    </tr>
+    <tr>
+      <td><tt>file_mode</tt></td>
+      <td>enumerated type</td>
+      <td><tt>in_file</tt>, <tt>out_file</tt> or <tt>append_file</tt></td>
+
+      <td><tt>file_mode</tt></td>
+    </tr>
+    <tr>
+      <td><tt>command</tt></td>
+      <td>limited type</td>
+      <td>alias for an operating system command</td>
+      <td>&nbsp;-</td>
+
+    </tr>
+  </tbody>
+</table>
+
+<p>The built-in packages may define additional types.</p>
+
+<p>By default, all numeric variables are initialized without any value.
+Any attempt to use uninitialized numeric variables in an expression
+will cause an error or exception.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; i : integer -- no value specified<br>
+=&gt; i := i + 1<br>
+i := i + 1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^ exception
+raised</p>
+        </div>
+        </center>
+
+<p>All types are <i>logical</i> types: that is, all numeric types are
+stored
+in the same format.&nbsp; A natural, integer or float are all stored as
+a universal numeric value.&nbsp; There are only minimal checks to make
+sure that variables of these types conform to their descriptions.
+However,
+types provide an indication to the reader of how a variable is intended
+to be used, and AdaScript will not allow these types to be combined
+without
+an appropriate type cast.
+</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; i : integer := 5<br>
+=&gt; f : float := 0<br>
+=&gt; f := i<br>
+f := i;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^ type 'float' is not compatible
+with type 'integer'<br>
+=&gt; f := float(i) -- typecast<br>
+=&gt; ? f<br>
+5
+</p>
+        </div>
+        </center>
+
+<p>You cannot typecast a numeric type into a string type
+directly.&nbsp;
+There are functions in the <a href="#numerics">numerics</a> and <a
+ href="#strings">strings</a>
+packages to do these conversions.
+</p>
+
+<p>Since all values are stored as a universal type, this can cause some
+unusual side-effects. A character variable can contain more than one
+character
+if you really want it to by assigning a string literal. Characters are
+stored as a universal_string and a string literal is a universal_string
+type.&nbsp; AdaScript will allow the assignment.&nbsp; However, the
+type
+checking will prevent a character variable from being assigned to a
+string
+variable.
+</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; i : integer := 5<br>
+		=&gt; c : character;<br>
+		=&gt; c := "hello"; -- confusing, perhaps stupid, but legal<br>
+		=&gt; s : string := c; -- ILLEGAL</p>
+        </div>
+        </center>
+
+<p>AdaScript strings are an unbounded string type--that is, they are
+stored
+as an Ada.Strings.Unbounded.Unbounded_String variable.&nbsp; They have
+an unlimited length and are not implemented as any sort of array.
+Ada "fixed" strings, the default string type for GCC Ada, are not used
+because they have limited length and can create array bounds exceptions.
+Strings are an integral part of scripts and unbounded strings are used
+instead.  AdaScript includes an unbounded_string type (it has the same
+properties as the string type) which may make porting to GCC Ada easier.
+</p>
+
+<h3>Constants</h3>
+
+<p>Constants can be declared with the word "constant" for any type. The
+use of "constant" doesn't not affect the type of the variable--it
+simply
+prevents new values from being assigned by making the variable
+"read-only".</p>
+
+        <center>
+        <div class="code">
+                <p class="code">program_name : <b>constant</b> string := "Nightly FTP Transfer";</p>
+        </div>
+        </center>
+
+<h3>Limited Types</h3>
+
+<p>file_type and socket_type variables are known as <i>limited</i>
+type
+variables. Limited types cannot be assigned a new value with an
+assignment
+statement
+</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; f : file_type<br>
+=&gt; g : file_type<br>
+=&gt; f := g<br>
+f := g;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^ limited variables cannot be
+assigned
+a value </p>
+        </div>
+        </center>
+
+<p>SparForte manages the contents of these variables and scripts are not
+allowed
+to change the contents.</p>
+
+<h3>Complex Types</h3>
+
+<p>Variables declared complex represent complex numbers.&nbsp; A
+complex number is a record with long_float real and imaginary
+parts.&nbsp; The real field is designated "re" and the imaginary field
+is designated "im".&nbsp; (See below for more information about using
+records.)</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; c : complex := ( 1.0, 2.0)<br>
+
+=&gt; ? c.re<br>
+&nbsp;1.0<br>
+=&gt; ? c.im<br>
+&nbsp;2.0<br>
+=&gt; c.re := 5.0<br>
+=&gt; ? c.re<br>
+
+&nbsp;5.0<br>
+=&gt; numerics.set_re( c, 3.0 )<br>
+=&gt; ? c.re<br>
+&nbsp;3.0</p>
+        </div>
+        </center>
+
+<p>Some of the numerics package subprograms work with complex types.</p>
+
+<p>Complex types are not fully implemented in this version of SparForte:
+some of the Ada complex number functions are not available.</p>
+
+<h3>Command Types</h3>
+
+<p>External operating system commands can be declared using <b>command</b>
+variables. When a command is declared, SparForte will ensure that the
+command
+exists and is runnable.
+</p>
+<p>Command types are similar to limited types and have several
+restrictions.
+</p>
+<ul>
+  <li>they must be declared as constants</li>
+  <li>they cannot be assigned to other variables</li>
+
+  <li>they cannot be used in expressions (although they can appear by
+themselves
+and are treated as strings)</li>
+</ul>
+
+        <center>
+        <div class="code">
+                <p class="code">
+=&gt; l : <b>constant</b> <b>command</b> := "/bin/ls"<br>
+=&gt; m : <b>constant</b> <b>command</b> := "/bin/lt"<br>
+m : <b>constant</b> <b>command</b> := "/bin/lt";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^ "/bin/lt" is not an executable command<br>
+=&gt; n : <b>constant</b> <b>command</b> := l;<br>
+n : <b>constant</b> <b>command</b> := l;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^ type universal_string is inherently different from a command<br>
+
+=&gt; ? l &amp; " is the path"<br>
+? l &amp; " is the path";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^ type command is inherently different from a universal_string<br>
+=&gt; ? l <br>
+/bin/ls
+</p>
+        </div>
+        </center>
+&nbsp;<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="ref_adascript.html">&nbsp;AdaScript versus GCC</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_case.html">&nbsp;Case Sensitivity</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_reserved.html">&nbsp;Reserved Words</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_comments.html">&nbsp;Comments</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_literals.html">&nbsp;Literals</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Arguments</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_types.html">&nbsp;<b>Fundamental Types</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_typedecl.html">&nbsp;User-defined Types</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_enum.html">&nbsp;Enumerated Types</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_arrays.html">&nbsp;Arrays</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_records.html">&nbsp;Records</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_assign.html">&nbsp;Basic Assignment</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_specials.html">&nbsp;The @ and % Operands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cmdlineargs.html">&nbsp;Command Argument Shortcuts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_redirection.html">&nbsp;Redirection and Pipelines</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cmdline.html">&nbsp;Command Line Interaction</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_shellcmds.html">&nbsp;Built-in Shell Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cd.html">&nbsp;The Current Directory</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_db.html">&nbsp;Database Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_flow.html">&nbsp;Flow of Control</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_other.html">&nbsp;Other Statements/ Subprograms</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_extcmds.html">&nbsp;External Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_subprograms.html">&nbsp;Block Statements and Subprograms</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_sockets.html">&nbsp;TCP/IP Sockets</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_numberformat.html">&nbsp;Numeric Formatting with Put</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_pragmas.html">&nbsp;Interpreter Directives</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cmdoptions.html">&nbsp;Command Line Options</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cmdref.html">&nbsp;Command Reference</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_charsets.html">&nbsp;ASCII and Latin_1 Character Sets</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_errors.html">&nbsp;Common Error Messages</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_php.html">&nbsp;Common PHP Functions and the SparForte Equivalent</a></p>
+			</td>
+
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" border="0" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>
+

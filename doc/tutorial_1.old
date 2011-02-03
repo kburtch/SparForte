@@ -1,0 +1,481 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Tutorials - Command Prompt Tutorial 1: BUSH as a Calculator</title>
+        <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html"><b>Tutorials</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+				<!-- Content Area -->
+
+<h2><a name="2.1"></a>Command Prompt Tutorial 1: BUSH as a Calculator</h3>
+<p>Thanks for taking the time to look at the Business Shell.&nbsp; This
+tutorial is a simple introduction to BUSH by using BUSH to perform
+interactive math like a pocket calculator.</p>
+<p>When BUSH is started without an argument, it presents you with a
+welcome
+message and a command prompt, a "<tt>=&gt;</tt>". From this prompt, you
+can
+
+<a href="bushref.html#fundamental%20types">declare
+variables</a>, execute AdaScript statements, or run <a
+ href="bushref.html#shell%20cmds">external
+commands.</a><br>
+</p>
+<p>BUSH is case-sensitive, as are many other shells, because
+UNIX/Linux environment variables are also case-sensitive.&nbsp; This
+means that BUSH treats "IF", "if" and "If" as three different words.<br>
+</p>
+<p>BUSH will <b>terminate your session</b> by the
+command <b>return</b> (or <b>logout</b> for a login shell).&nbsp;
+
+You can also terminate your session by typing a Control-D (the UNIX
+end-of-file character).<br>
+</p>
+<p>The <span style="font-weight: bold;">help</span> command presents a
+short summary of recognized BUSH commands.
+</p>
+<p><img src="pictures/bush_2.gif" alt="[BUSH help command]" height="357"
+ width="591"><br>
+<b style="font-style: italic;">Figure:</b><span
+ style="font-style: italic;"> Screenshot of an interactive BUSH session</span>
+</p>
+<p>For a brief description of a particular topic or command, use <b>help</b>
+
+and the topic name.
+</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; help delay
+		<br>
+		delay - wait (sleep) for a specific time
+		<br>
+		delay secs<br>&nbsp;<br>
+		</p>
+        <div class="code_caption">
+                <b>Example</b>: The Help Command</span>
+        </div>
+        </div>
+        </center>
+
+<p>Complete descriptions of all of BUSH commands can be found in the
+Reference section of this manual.  Summaries of all built-in packages
+are found in the Packages section of this manual.<br>
+</p>
+<p>BUSH recognizes the console arrow keys and common key
+sequences for
+the "emacs" and "vi" text editors. The sequences are called <b>key
+bindings</b>
+
+and represent cursor movement and editing functions.
+</p>
+<p>The <b>emacs mode</b> key bindings are:
+</p>
+<ul>
+  <li> <b>control-b</b> - move back (left) one character</li>
+  <li> <b>control-f</b> - move forward (right) one character</li>
+
+  <li> <b>control-p</b> - move to the previous command line you typed</li>
+  <li> <b>control-n</b> - move to the next command line you typed</li>
+  <li> <b>control-x</b> - erase the command line</li>
+
+  <li> <b>control-a</b> - move to start of the line</li>
+  <li> <b>control-e</b> - move to end of the line</li>
+  <li> <b>control-r</b> - search command lines (history) backwards</li>
+
+  <li> <b>control-]</b> - character search forwards. (Follow with the
+key
+to search
+for.)</li>
+  <li> <b>tab</b> - complete the filename if there is a unqiue match</li>
+  <li> <b>backspace/delete</b> - delete a character</li>
+
+</ul>
+<p>Typing a control-c (sending a SIGINT signal) at the command prompt
+acts
+the same as a control-x: the current line will be erased.&nbsp;
+Pressing control-c while a command is running will normally cause the
+command to stop.
+</p>
+<p>If you prefer to use <b>vi cursor movement</b>, press the Escape
+key to enter <b>vi</b> mode. Press escape again to return to emacs
+mode. In vi mode, you can use lower-case 'h', 'j', 'k', 'l', '^' and
+'$'. Filename completion is accomplished with two escape key presses
+in a row.
+</p>
+<p>The <a href="bushpackages.html#consoleio">"?"
+command</a> (pronounced "print") will print the result of an
+expression. The basic
+<a href="bushref.html#basic%20assign">arithmetic
+operators</a> are the same as they are in most computer languages: +
+(add), - (subtract),
+* (multiply), and / (divide). Also available are ** (exponentiation), <b>rem</b>
+
+(remainder),
+<b>mod</b> (modulus), <b>and</b> (bitwise and), <b>or</b>
+(bitwise or),
+<b>xor</b> (bitwise exclusive or). Parentheses can be used
+to group subexpressions.</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; ? 5.5+2.5
+		<br>
+		8
+		<br>
+		=&gt; ? (25-4)*6
+		<br>
+		126</tt>
+		<br>
+		=&gt; ? 12/4
+		<br>
+		3<br>&nbsp;<br>
+		</p>
+        <div class="code_caption">
+                <b>Example</b>: Arithmetic on the Command Prompt</span>
+        </div>
+        </div>
+	</center>
+
+<p>Because BUSH is a shell that can run commands, if you omit the "?",
+BUSH
+assumes that the expression is the name of a Linux command and will
+attempt to run it.<br>
+</p>
+        <center>
+        <div class="code">
+		<p class="code">
+		<p>=&gt; 12/4
+		<br>
+		12/4: No such file or directory
+		</p>
+        <div class="code_caption">
+                <b>Example</b>: Arithmetic without ? is treated as a command</span>
+        </div>
+        </div>
+	</center>
+
+<p>In this case, BUSH attempts to run a command named "12/4" but doesn't
+find one.&nbsp; Running commands is discussed in more detail in the
+next tutorial.</p>
+
+<p>BUSH can work with strings and characters as well as numbers.
+&nbsp; Strings are surrounded by double quotes and
+characters by single quotes.  There is no limit on the length of strings
+(they are "unbounded") but single quotes must have exactly one character.</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; ? "Hello world!"
+		<br>
+		Hello world!
+		<br>
+		=&gt; ? 'c'
+		<br>
+		c<br>&nbsp;<br>
+		</p>
+        <div class="code_caption">
+                <b>Example</b>: Strings and Characters at the Command Prompt</span>
+        </div>
+        </div>
+	</center>
+
+<p>Quotation marks are sometimes treated as they appear in a UNIX
+shell.&nbsp; This is discussed in other tutorials.<br>
+</p>
+<p>The "?" command is a quick way to display a result in a readable
+format to standard output.&nbsp; BUSH has other output commands.&nbsp;
+The <b>put</b> and <b>put_line</b> procedures will also display results.&nbsp;
+
+These procedures have more options than "?".&nbsp; The parameters are
+enclosed in parentheses and separated by commas.&nbsp; The put
+procedure, for example, can format the result using a picture string.<br>
+</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; put( 123.45, "####9.99" )
+		<br>
+		&nbsp;$123.45
+		<br>&nbsp;<br>
+		</p>
+        <div class="code_caption">
+                <b>Example</b>: How to Format Numbers</span>
+        </div>
+        </div>
+	</center>
+
+<p>Strings operatings include "&amp;" (concatenation) and *
+(duplication).  <a href="bushref.html#ascii">Special string characters can be expressed with </a>"ASCII", a period, and the code name for the character.  
+</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; ? "Hello " &amp; "world!"
+		<br>
+		Hello world!<br>
+		=&gt; ? "The tilde is " &amp; "'" &amp; ASCII.Tilde &amp; "'."<br>
+		The tilde is '~'.<br>
+		=&gt; ? "Three times lucky is " & (3 * "luck")<br>
+		Three times lucky is luckluckluck<br>&nbsp;<br>
+		</p>
+        <div class="code_caption">
+                <b>Example</b>: String and Character Operators at the Command Prompt</span>
+        </div>
+        </div>
+	</center>
+
+<p>BUSH performs authentic Boolean arithmetic. Boolean expressions are
+logically "true" or "false".&nbsp; The expressions can be computed
+using "=", "/=", "&gt;",
+"&gt;=", "&lt;", "&lt;=", <b>in</b>, <b>not in</b>, <b>and</b>, <b>or</b>
+
+and <b>xor</b>.  Numbers and strings cannot be compared directly: BUSH
+assumes that you have made a mistake by trying to compare items that are
+not alike and it will not try to guess at what you meant to do.  (There
+are ways to explicitly convert numbers into strings, and strings into
+numbers.)</p>
+<p>The built-in
+constants "true" and "false" represent true and false respectively:
+unlike many scripting languages and shells, they have no numeric or
+string equivalent.  A zero is not false: it is a numeric zero.  An
+empty string is not false: it is an string with no characters.  true
+and false are a completely different type of value (an enumerated value,
+to be precise).
+</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; ? 5=5<br>
+		true<br>
+		=&gt; ? (5&gt;6) or (2&lt;3)<br>
+		true<br>
+		=&gt; ? false<br>
+		false<br>
+		=&gt; ? 5 in 1..10<br>
+		true<br>&nbsp;<br>
+		</p>
+        <div class="code_caption">
+                <b>Example</b>: Boolean Operators at the Command Prompt</span>
+        </div>
+        </div>
+	</center>
+
+<p>In addition to the "?" command, another single-character word is
+the <a href="bushref.html#itself%20lastout">last outputted</a>
+value.&nbsp; This is
+represented by the "%" operand (pronounced "last output").&nbsp; This
+is the output of the last put, put_line or "?".&nbsp; This is useful
+for doing calculations without having save the intermediate results in
+a variable.</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; ? 2+2<br>
+		&nbsp;4<br>
+		=&gt; ? %*2<br>
+		&nbsp;8<br>
+		=&gt; ? "Hello world!"<br>
+		Hello world!<br>
+		=&gt; ?% &amp; " It's good to be alive!"<br>
+		Hello world! It's good to be alive!"<br>&nbsp;<br>
+		</p>
+        <div class="code_caption">
+                <b>Example</b>: The Last Output Operand</span>
+        </div>
+        </div>
+	</center>
+
+<p>More advanced expressions can be created using BUSH's built-in
+packages.&nbsp; These packages containing routines that perform more
+complex calculations.&nbsp; For example, the strings package contains
+many routines for working with strings such as calculating the length
+of string, editing strings or performing pattern matching.</p>
+<p>The "strings.glob" function performs POSIX shell "globbing" pattern
+matching.&nbsp; The format for globbing patterns is discussed in the
+Packages section.&nbsp; The "strings.length" function returns the
+length of a string.</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; ? strings.glob( "*pear*", "apple pear peach" )<br>
+		true<br>
+		=&gt; ? strings.glob( "*cherry*", "apple pear peach" )<br>
+		false<br>
+		=&gt; ? strings.length( "apple" )<br>
+		5<br>&nbsp;<br>
+		</p>
+        <div class="code_caption">
+                <b>Example</b>: Built-in String Functions at the Command Prompt</span>
+        </div>
+        </div>
+	</center>
+
+<p>Intermediate results of your calculations can be saved using
+variables.&nbsp; If you are using the BUSH command prompt, BUSH can create
+variables automatically when you assign the results to a new
+name.&nbsp; The assignment operator is ":=".</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; v := (2*3 + 5)/2<br>
+		=&gt; (Assuming v is a new universal_numeric variable)<br>
+		=&gt; ? v<br>
+		&nbsp;5.50000000000000E+00<br>&nbsp;<br>
+		</p>
+        <div class="code_caption">
+                <b>Example</b>: Automatic Variable Declarations at the Command Prompt</span>
+        </div>
+        </div>
+	</center>
+
+<p>Like many strong typed languages, all variables are declared to provide protection
+against spelling mistakes and to provide the variable with a <a href="bushref.html#fundamental%20types">type</a>.
+For example, a string variable may only contain string values.&nbsp; This
+prevents variables containing fundamentally different
+values from being combined in nonsense ways.&nbsp; When BUSH declared
+"v", it was given the type of "universal_numeric" (that is, a
+variable compatible with any kind of number).&nbsp; You can explicitly declare
+a variable, giving it type of your choosing.</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; x : integer<br>
+		=&gt; x := 5<br>
+		=&gt; ? x<br>
+		5<br>
+		=&gt; x := "hello"<br>
+		x := "hello";<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		^ type integer (a universal_numeric) is inherently different from a
+		universal_string<br>&nbsp;<br>
+		</p>
+        <div class="code_caption">
+                <b>Example</b>: Declarations and Strong Typing at the Command Prompt</span>
+        </div>
+        </div>
+	</center>
+
+<p>BUSH will not permit a string to be assigned to the variable "x"
+because x is a numeric variable.<br>
+</p>
+<p>Type <b>help type</b> to see a list of standard BUSH types.&nbsp; Besides
+the usual types like "boolean" or "string", BUSH also has 3 universal
+types.  You can use universal types to override some or all of BUSH's strong
+typing during an interactive session and create variables that are similar to
+Perl, PHP or UNIX shell variables.<br>
+
+</p>
+<p>A variable's type can be changed "on the fly" with the typeset
+command.
+</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; y := 5<br>
+		=&gt; (Assuming y is a new universal_numeric variable)<br>
+		=&gt; env y<br>
+		y :=  5.00000000000000E+00; -- identifier of the type universal_numeric<br>
+		=&gt; typeset y is float<br>
+		=&gt; env y<br>
+		y :=  5.00000000000000E+00; -- identifier of the type float<br>&nbsp;<br>
+		</p>
+        <div class="code_caption">
+                <b>Example</b>: Changing a Type at the Command Prompt</span>
+        </div>
+        </div>
+	</center>
+
+<p>Commands are always terminated with a semi-colon. (You do not need
+to type the semi-colon at the end of a command line because BUSH
+automatically adds one for you.)&nbsp; Using semi-colons, more than
+one command can be placed on a line.
+</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; x := 3<br>
+		=&gt; (Assuming x is a new universal_numeric variable)<br>
+		=&gt; y := 4<br>
+		=&gt; h := numerics.sqrt( x*x + y*y )<br>
+		=&gt; (Assuming h is a new universal_numeric variable)<br>
+		=&gt; ? "Hypoteneuse is" ; ? h<br>
+		Hypoteneuse is<br>
+		5<br>&nbsp;<br>
+		</p>
+        <div class="code_caption">
+                <b>Example</b>: Calculating the Hypoteneuse of a Triangle</span>
+        </div>
+        </div>
+	</center>
+
+<p>This concludes the first BUSH tutorial.  There are more tutorials following
+this one.  Read on to learn about BUSH built-in packages, scripting, database
+access and web templating.&nbsp; To see a sample script, try running
+"eliza.bush", the BUSH version of the famous artificial intelligence program.
+This script is included in the <b>examples</b> directory and can be run with
+"bush eliza.bush".
+
+</p>
+<p><img src="pictures/bush_3.gif" alt="[BUSH help command]" height="331"
+ width="607"><br>
+<b>Screenshot of the example eliza.bush script</b>
+</p>
+&nbsp;<br />
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_1.html">&nbsp;<b>Command Prompt Tutorial 1: BUSH as a Calculator</b></a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_2.html">&nbsp;Command Prompt Tutorial 2: Basic Shell Commands</a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_3.html">&nbsp;Command Prompt Tutorial 3: Working with Databases</a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_4.html">&nbsp;Script Tutorial 1: Basic Commands Scripts</a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_5.html">&nbsp;Script Tutorial 2: Intermediate Program Scripts</a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_6.html">&nbsp;Template Tutorial 1: Basic Templates</a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_7.html">&nbsp;Template Tutorial 2: Intermediate Templates</a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_8.html">&nbsp;GCC Tutorial: Compiling BUSH Scripts</a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_9.html">&nbsp;Debugging Tutorial - Using the BUSH Debugger</a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_10.html">&nbsp;Creating a Profile Script</a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_11.html">&nbsp;Calling BUSH from C: A Tutorial</a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_12.html">&nbsp;BUSH Best Practices</a></p>
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>

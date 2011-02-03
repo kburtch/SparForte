@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Tutorials - SparForte Best Practices</title>
+        <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html"><b>Tutorials</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+				<!-- Content Area -->
+
+<h2><a name="2.12"></a>SparForte Best Practices</h2>
+
+<p>There are many theories for script layout, variable naming and so forth.
+I don't recommend or endorse any paritcular "best practices" standards.
+However, if you are looking for suggestions to base coding standards on, here
+are some ideas:</p>
+
+<ul>
+
+<li><p>If script file names are simple, with letters, numbers and underscores, they are
+easily ported to different operating systems</p></li>
+
+<li><p>Consider using a standard layout for the start of all scripts, with
+comments for who created the script and any source control elements.</p></li>
+
+<li><p>Use pragma annotate instead of comments to describe how to use a script.
+ The help command can shows these annotations.  Describe the usage: leave notes
+on the history, implementation or design as comments.  Annotate can then serve
+the same function as an Ada package specification.</p></li>
+
+<li><p>Use pragma ada_95 in scripts where you want to copy your routines to Ada
+programs.</p></li>
+
+<li><p>Variable naming in the standard Ada packages usually use words with
+beginning with upper-case and containing an underscore (e.g. Put_Line).
+Shell conventions use upper-case for variable names.  Since SparForte is
+case-sensitive, SparForte uses lower-case words with underscores to fit to the
+conventions of UNIX shell-scripting.</p></li>
+
+<li><p>Sticking to lower-case will make it easier to reuse code with Ada and SparForte</p></li>
+
+<li><p>Avoid using names that vary only in case.  (e.g. do not use "x" and "X".)</p></li>
+
+<li><p>Ada conventions use full words in functions or variable names whereever possible.
+(e.g. unbiased_rounding() .)  Avoid acronyms, especially when they can be ambiguous,
+unless the acronym is a common one.</p></li>
+
+<li><p>Don't use universal variable types in scripts.</p></li>
+
+<li><p>For unfinished sections, consider using put_line("not yet written") instead
+of a simple null.</p></li>
+
+<li><p>Use comments on a separate line to identify sections of a script, or to
+explain design decisions, potential problems or workarounds</p></li>
+
+<li><p>Don't rely on separator characters such as lines of "=" or "*" to
+make comments stand out.  Instead, use blank lines and whitespace.</p></li>
+
+<li><p>Use a usage functions and show the usage when "-h" or "--help" are
+used to run the script</p></li>
+
+<li><p>Put complicated routines into a function, procedore or a declare block.
+Declare any local variables in the local scope to improve readability and
+reduce the scope and clutter of variables.</p></li>
+
+<li><p>Declare one item per line.</p></li>
+
+<li><p>Use one mathematical operation per line.  Break up long expressions and
+use temporary variables.  This makes debugging the partial results easier.</p></li>
+
+<li><p>Use pragma assert and pragma debug during development.  These only run
+when --debug is used.</p></li>
+
+<li><p>Use the source_info package to display location information in messages.</p></li>
+
+<li><p>Apply consistent spacing and indentation throughout a script.</p></li>
+</ul>
+&nbsp;<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_1.html">&nbsp;Command Prompt Tutorial 1: SparForte as a Calculator</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_2.html">&nbsp;Command Prompt Tutorial 2: Basic Shell Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_3.html">&nbsp;Command Prompt Tutorial 3: Working with Databases</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_4.html">&nbsp;Script Tutorial 1: Basic Commands Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_5.html">&nbsp;Script Tutorial 2: Intermediate Program Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_6.html">&nbsp;Template Tutorial 1: Basic Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_7.html">&nbsp;Template Tutorial 2: Intermediate Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_8.html">&nbsp;GCC Tutorial: Compiling SparForte Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_9.html">&nbsp;Debugging Tutorial - Using the SparForte Debugger</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_10.html">&nbsp;Creating a Profile Script</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_11.html">&nbsp;Calling SparForte from C: A Tutorial</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_12.html">&nbsp;<b>SparForte Best Practices</b></a></p>
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>

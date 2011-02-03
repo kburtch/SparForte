@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Tutorials - Template Tutorial 1: Basic Templates</title>
+        <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html"><b>Tutorials</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+				<!-- Content Area -->
+
+<h2><a name="2.6"></a>Template Tutorial 1: Basic Templates</h2>
+<p>Tools like PHP can run commands embedded in a web page. SparForte scripts
+can
+also be embedded in a web page. Using SparForte instead of another tool is
+easy to learn and use since you're are already familiar with the SparForte
+language.</p>
+<h4>Running SparForte From a Web Server</h4>
+<p>CGI scripts can be written in SparForte, in the same way as they are
+written in
+in other scripting languages like PERL or PHP. Write your CGI script in
+SparForte
+and make sure that the "#!" path has the correct location of the SparForte
+interpreter. Your web server can then run the SparForte script.</p>
+<p>Using the SparForte <tt>cgi</tt> package you should now be able to write
+a CGI
+script using SparForte.</p>
+<p>To make SparForte run as a template engine like PHP, SparForte has a directive
+called
+
+<tt>pragma template</tt>. This pragma has two parameters: the type of
+template
+and an optional path to the template. If you don't include a path to
+the
+template, SparForte will assume that the template has the same name as your
+script
+but with a ".tmpl" file name extension. Use a template type of <tt>html</tt>.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">
+	#!/usr/local/bin/bush<br>
+	-- status.bush<br>
+	<b>pragma</b> template( html );<br>
+	<b>procedure</b> status is<br>
+	&nbsp;&nbsp;user_count : constant integer := `who | wc -l`;<br>
+	<b>begin</b><br>
+  	&nbsp;&nbsp;null;<br>
+	<b>end</b> status;<br>&nbsp;<br>
+        </p>
+        <div class="code_caption">
+        <b>Example</b>: A Simple Template Script (Missing the Template)</span>
+        </div>
+        </div>
+        </center>
+
+<p>Use the main script to run operating system command, database
+queries or
+complex calculations. Once SparForte has executed this script, SparForte try will
+load a
+template called "status.tmpl".</p>
+<h4>What's in a Template File?</h4>
+<p>A template file should contain the web page SparForte will display. Embed
+SparForte
+scripts within the template using &lt;?bush tag. The output
+from the scripts is written directly into the web page. For example,
+to insert the values of SparForte variables in a web page, use the question
+mark
+command.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">
+	&lt;!-- status.tmpl: template for the status.bush script --&gt;<br>
+	&lt;html&gt;<br>
+	&lt;head&gt;<br>
+	&lt;title&gt;Users on the System&lt;/title&gt;<br>
+	&lt;/head&gt;<br>
+	&lt;body&gt;<br>
+	&lt;h3&gt;Users on the System&lt;h3&gt;<br>
+	&lt;p&gt;There are &lt;?bush ?user_count; ?&gt; users on the system.&lt;/p&gt;<br>
+	&lt;/body&gt;<br>
+	&lt;/html&gt;<br>&nbsp;<br>
+        </p>
+        <div class="code_caption">
+        <b>Example</b>: A Simple Web Template (For the Simple Template Script)</span>
+        </div>
+        </div>
+        </center>
+
+
+<p>This would result in a web page similar to</p>
+<hr>
+<h3>Users on the System</h3>
+There are 4 users on the system.
+<hr>
+<p>The &lt;?bush...?&gt; tag can contain any kind of SparForte script and
+can be longer
+than one line.</p>
+<p>The scripts in the template are after the main script. For security,
+scripts run in a restricted shell and are not able to run external
+operating
+system commands. (You can disable this protection with <tt>pragma
+unrestricted_template</tt> but anyone who can edit the template will be
+able to run commands with the authority of the web server--generally, a
+very bad idea.).</p>
+
+<p>Here is a longer example:</p>
+<table border="1" width="98%">
+  <tbody>
+    <tr>
+      <td><b>CGI Script (test.cgi)</b></td>
+      <td><b>Template (test.tmpl)</b></td>
+    </tr>
+    <tr>
+
+      <td valign="top">
+      <pre>#!/usr/local/bin/bush<br>pragma unrestricted_template( html );<br></pre>
+      </td>
+      <td valign="top">
+      <pre>&lt;html&gt;<br>&lt;head&gt;<br>&lt;titleSparForte Rocks!&lt;/title&gt;<br>&lt;/head&gt;<br>&lt;body&gt;<br>&lt;h2&gt;SparForte Rocks!&lt;/h2&gt;<br>&lt;h3&gt;System Info&lt;/h3&gt;<br>&lt;table border=1 summary="System Info"&gt;<br>&lt;tr&gt;<br>&lt;td align="right"&gt;&lt;b&gt;System Name:&lt;/b&gt;&lt;/td&gt;<br>&lt;td&gt;&lt;?bush uname -n; ?&gt;&lt;/td&gt;<br>&lt;/tr&gt;<br>&lt;tr&gt;<br>&lt;td align="right"&gt;&lt;b&gt;Uptime:&lt;/b&gt;&lt;/td&gt;<br>&lt;td&lt;pre&gt;&lt;?bush uptime; ?&gt;&lt;/pre&gt;&lt;/td&gt;<br>&lt;/tr&gt;<br>&lt;tr&gt;<br>&lt;td align="right"&gt;&lt;b&gt;Database Tables:&lt;/b&gt;&lt;/td&gt;<br>&lt;td&gt;&lt;pre&gt;&lt;?bush<br>   db.connect( "ken" );<br>   if not db.is_connected then<br>      put_line( "&lt;i&gt;Unable to connect to database&lt;/i&gt;" );<br>   end if;<br>   db.list; -- show a list of database tables<br>?&gt;&lt;/pre&gt;&lt;/td&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;<br></pre>
+
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2"><b>Results in a Web Browser</b><br>
+      <img src="pictures/bush_template_1.gif" alt="[Screenshot]" height="505"
+ width="696"></td>
+    </tr>
+  </tbody>
+</table>
+<p>Like most CGI scripting languages, an error messages are written to
+the
+web server error log. If a page doesn't display properly, check the
+error
+log for possible problems.</p>
+
+<p>&nbsp;
+</p>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_1.html">&nbsp;Command Prompt Tutorial 1: SparForte as a Calculator</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_2.html">&nbsp;Command Prompt Tutorial 2: Basic Shell Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_3.html">&nbsp;Command Prompt Tutorial 3: Working with Databases</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_4.html">&nbsp;Script Tutorial 1: Basic Commands Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_5.html">&nbsp;Script Tutorial 2: Intermediate Program Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_6.html">&nbsp;<b>Template Tutorial 1: Basic Templates</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_7.html">&nbsp;Template Tutorial 2: Intermediate Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_8.html">&nbsp;GCC Tutorial: Compiling SparForte Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_9.html">&nbsp;Debugging Tutorial - Using the SparForte Debugger</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_10.html">&nbsp;Creating a Profile Script</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_11.html">&nbsp;Calling SparForte from C: A Tutorial</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_12.html">&nbsp;SparForte Best Practices</a></p>
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>

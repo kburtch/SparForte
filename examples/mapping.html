@@ -1,0 +1,85 @@
+<HEAD><TITLE>mapping.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : mapping.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush mapping.bush
+ 0.00000000000000E+00 maps to: -1.00000000000000E+00
+ 1.00000000000000E+00 maps to: -9.00000000000000E-01
+ 2.00000000000000E+00 maps to: -8.00000000000000E-01
+ 3.00000000000000E+00 maps to: -7.00000000000000E-01
+ 4.00000000000000E+00 maps to: -6.00000000000000E-01
+ 5.00000000000000E+00 maps to: -5.00000000000000E-01
+ 6.00000000000000E+00 maps to: -4.00000000000000E-01
+ 7.00000000000000E+00 maps to: -3.00000000000000E-01
+ 8.00000000000000E+00 maps to: -2.00000000000000E-01
+ 9.00000000000000E+00 maps to: -1.00000000000000E-01
+ 1.00000000000000E+01 maps to:  0.00000000000000E+00
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "mapping" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "The task is to write a function/subroutine/... that takes" );
+<b>pragma</b> annotate( "two ranges and a real number, and returns the mapping of" );
+<b>pragma</b> annotate( "the real number from the first to the second range. Use" );
+<b>pragma</b> annotate( "this function to map values from the range [0, 10] to the" );
+<b>pragma</b> annotate( "range [-1, 0]." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Map_range" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> mapping <b>is</b>
+   <b>type</b> first_range  <b>is</b> <b>new</b> float;
+   <b>type</b> second_range <b>is</b> <b>new</b> float;
+   <FONT COLOR=green><EM>-- Bush doesn't implement ranges so we'll use constants</EM></FONT>
+   first_range_first : <b>constant</b> first_range := 0.0;
+   first_range_last : <b>constant</b> first_range := 10.0;
+   second_range_first : <b>constant</b> second_range := -1.0;
+   second_range_last : <b>constant</b> second_range := 0.0;
+
+   <b>function</b> translate (value : first_range) <b>return</b> second_range <b>is</b>
+      b1 : float := float( second_range_first );
+      b2 : float := float( second_range_last );
+      a1 : float := float( first_range_first );
+      a2 : float := float( first_range_last );
+      result : float;
+   <b>begin</b>
+      result := b1 + (float (value) - a1) * (b2 - b1) / (a2 - a1);
+      <b>return</b> second_range(result);
+   <b>end</b> translate;
+
+   <b>function</b> translate_back (value : second_range) <b>return</b> first_range <b>is</b>
+      b1 : float := float (first_range_first);
+      b2 : float := float (first_range_last);
+      a1 : float := float (second_range_first);
+      a2 : float := float (second_range_last);
+      result : float;
+   <b>begin</b>
+      result := b1 + (float (value) - a1) * (b2 - b1) / (a2 - a1);
+      <b>return</b> first_range (result);
+   <b>end</b> translate_back;
+   test_value : first_range := first_range_first;
+<b>begin</b>
+   <b>loop</b>
+      ? strings.image(test_value) &amp; " maps to: "
+                          &amp; strings.image (translate (test_value));
+      <b>exit</b> <b>when</b> test_value = first_range_last;
+      test_value := @ + 1.0;
+   <b>end</b> <b>loop</b>;
+<b>end</b> mapping;
+
+</PRE></BODY></HTML>

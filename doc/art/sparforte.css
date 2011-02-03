@@ -1,0 +1,117 @@
+	abbr, acronym, dfn {
+		border-bottom: dotted 1px #999;
+		cursor: help;
+	}
+	a {
+	       	text-decoration: none;
+	}
+	h2 {
+		font-family: "Lucida Sans", "Trebuchet MS", sans-serif;
+		font-size: 24px;
+        	margin: 1.5em 0 0 0;
+        	padding: 0 0 0.3em 0;
+        	color: #1c1142;
+        	border-bottom: 3px solid #000099;
+        	line-height: 1.2em;
+        }
+	h3 {
+		font-family: "Lucida Sans", "Trebuchet MS", sans-serif;
+		font-size: 18px;
+        	margin: 1.5em 0 0 0;
+        	padding: 0 0 0.3em 0;
+        	color: #1c1142;
+        	border-bottom: 2px solid #000099;
+        	line-height: 1.2em;
+        }
+	h4, h5, h6 {
+		font-family: sans-serif;
+		font-size: 14px;
+        	margin: 1.5em 0 0 0;
+        	padding: 0 0 0.3em 0;
+        	color: #1c1142;
+        	border-bottom: 2px solid #000099;
+        	line-height: 1.2em;
+        }
+	p,span {
+        	/* margin-left: 3.0em 0 0 0; */
+		font-family: Verdana, Arial, Helvetica, Sans-Serif;
+		font-size: 14px;
+		font-weight: normal;
+		font-style: normal;
+		text-align: left;
+		color: black;
+	}
+	ul {
+        	/* margin-left: 3.0em 0 0 0; */
+		font-family: Verdana, Arial, Helvetica, Sans-Serif;
+		font-size: 14px;
+		font-weight: normal;
+		font-style: normal;
+		text-align: left;
+		color: black;
+	}
+	.menutext {
+		font-family: sans-serif;
+		font-size: 12px;
+		font-weight: normal;
+		font-style: normal;
+		text-align: center;
+		line-height: 120%;
+		color: black;
+		cursor: pointer;
+	}
+	.rightmenutext {
+		font-family: Verdana, Arial, Helvetica, Sans-Serif;
+		font-size: 12px;
+		font-weight: normal;
+		font-style: normal;
+		text-align: center;
+		line-height: 120%;
+		color: black;
+		cursor: pointer;
+	}
+	p.rmt {
+		margin: 10px;
+	}
+	.code { /* the div makes the border */
+		margin: 0px 0;
+        	padding: 0;
+        	color: black;
+		font-family: courier;
+		font-size: 12pt;
+		font-weight: normal;
+		font-style: normal;
+		text-align: left;
+	}
+	div.code {
+		margin: 5px 0;
+        	padding: 0;
+        	border: 1pt solid #AEBDCC;
+        	background-color: #F3F5F7;
+        	color: black;
+		border: 1;
+		border-style: solid;
+		border-width: 1px;
+		border-color: black;
+		font-family: courier;
+		font-size: 12pt;
+		font-weight: normal;
+		font-style: normal;
+		text-align: left;
+		width: 95%;
+	}
+	.code_caption {
+		background-color: #dcdced;
+		font-family: sans-serif;
+		font-size: 12pt;
+		font-weight: normal;
+		font-style: normal;
+		text-align: left;
+		color: black;
+		cursor: pointer;
+	}
+	img.padded_left {
+		margin: 15px 15px 15px 15px;
+		float: left;
+	        border: 1px solid #000000;
+      }

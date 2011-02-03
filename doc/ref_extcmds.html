@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Reference - External Commands</title>
+	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html">Tutorials</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html"><b>Reference</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+	<!-- Content Area -->
+<h2><a name="3.22"></a>External Commands</h2>
+
+<h3>Running External Commands</h3>
+
+<p>The purpose of an AdaScript script is, ultimately, to execute shell
+commands.
+Any command not understood by AdaScript as a command is assumed to be a
+shell command. For example,</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; echo</p>
+        </div>
+        </center>
+
+<p>will run the Linux echo command and print a blank line to the
+screen,
+the same as new_line.
+</p>
+
+<h3>Command Parameters</h3>
+
+<p>Commands are accepted in one of two different formats. If the
+command
+is followed by a "(", the parameters are expected to be in AdaScript
+format
+with each parameter separated by a comma (","). These parameters may be
+any legitimate AdaScript expression and no shell quote removal or file
+globbing is performed.
+</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; ls( "bush.adb" )<br>
+bush.adb</p>
+        </div>
+        </center>
+
+<p>If the command is not followed by a "(", the parameters are expected
+to be in Bourne shell format. This is provided for convenience in
+interactive
+sessions.&nbsp; The parameters are shell "words" separated by spaces.
+Each
+word has file globbing performed. The words may be enclosed in double
+quotes
+to allow embedded spaces, or single quotes to inhibit file globbing.
+Special
+characters may also be escaped with backslashes.
+</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; ls b*.adb<br>
+builtins.adb bush.adb</p>
+        </div>
+	</center>
+
+<h3>Variable Expansion</h3>
+
+<p>Bush can insert the values of variables using BASH-style "$"
+substitutions.&nbsp; "ls $HOME" will show the contents of your home
+directory.<br>
+</p>
+
+<h3>Quoting Commands</h3>
+
+<p>Command names containing space characters can be quoted with double
+quotes.
+</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; "inventory report"</p>
+        </div>
+	</center>
+
+<p>When pragma ada_95 is used, shell commands must only use the
+AdaScript
+parameter format.
+</p>
+
+<h3>Running Commands in the Background</h3>
+
+<p>External commands can be run in the background using an ampersand
+("&amp;")
+at the end of the command. With AdaScript parameters, place the
+ampersand
+after the closing parenthesis. The <b>jobs</b> command displays the
+status
+of any outstanding background commands.
+</p>
+<p>The built-in shell commands are listed in a section above. when a
+Linux
+command conflicts with a built-in command, the Linux command can be
+executed
+using the <b>command</b> command.
+</p>
+
+<h3>Capturing Command Output</h3>
+
+<p>The results of a command can be captured as a string using
+backquotes.&nbsp;
+The commands should be ended with a semi-colon.&nbsp; Commands
+appearing
+in backquotes will be syntax checked along with the rest of the
+commands
+in a script.
+</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; date : string := `date;`</p>
+        </div>
+	</center>
+
+<p>If there is a trailing line feed (or carriage return/line feed for
+Windows)
+it will be removed.
+</p>
+<p>Standard input, standard error and standard output can be redirected
+using the Text_IO package.</p>
+<br>
+
+&nbsp;
+<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="ref_adascript.html">&nbsp;AdaScript versus GCC</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_case.html">&nbsp;Case Sensitivity</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_reserved.html">&nbsp;Reserved Words</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_comments.html">&nbsp;Comments</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_literals.html">&nbsp;Literals</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Arguments</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_types.html">&nbsp;Fundamental Types</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_typedecl.html">&nbsp;User-defined Types</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_enum.html">&nbsp;Enumerated Types</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_arrays.html">&nbsp;Arrays</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_records.html">&nbsp;Records</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_assign.html">&nbsp;Basic Assignment</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_specials.html">&nbsp;The @ and % Operands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cmdlineargs.html">&nbsp;Command Argument Shortcuts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_redirection.html">&nbsp;Redirection and Pipelines</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cmdline.html">&nbsp;Command Line Interaction</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_shellcmds.html">&nbsp;Built-in Shell Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cd.html">&nbsp;The Current Directory</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_db.html">&nbsp;Database Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_flow.html">&nbsp;Flow of Control</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_other.html">&nbsp;Other Statements/ Subprograms</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_extcmds.html">&nbsp;<b>External Commands</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_subprograms.html">&nbsp;Block Statements and Subprograms</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_sockets.html">&nbsp;TCP/IP Sockets</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_numberformat.html">&nbsp;Numeric Formatting with Put</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_pragmas.html">&nbsp;Interpreter Directives</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cmdoptions.html">&nbsp;Command Line Options</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_cmdref.html">&nbsp;Command Reference</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_charsets.html">&nbsp;ASCII and Latin_1 Character Sets</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_errors.html">&nbsp;Common Error Messages</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_php.html">&nbsp;Common PHP Functions and the SparForte Equivalent</a></p>
+			</td>
+
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>
+

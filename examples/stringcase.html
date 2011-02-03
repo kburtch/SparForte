@@ -1,0 +1,47 @@
+<HEAD><TITLE>stringcase.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : stringcase.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush stringcase
+ALPHABETA
+alphabeta
+Alphabeta
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "stringcase" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Take the string 'alphaBETA', and demonstrate how to" );
+<b>pragma</b> annotate( "convert it to UPPER-CASE and lower-case. Use the" );
+<b>pragma</b> annotate( "default encoding of a string literal or plain ASCII if" );
+<b>pragma</b> annotate( "there is no string literal in your language. Show any" );
+<b>pragma</b> annotate( "additional case conversion functions (e.g. swapping" );
+<b>pragma</b> annotate( "case, capitalizing the first letter, etc.) that may be" );
+<b>pragma</b> annotate( "included in the library of your language. " );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/String_case" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> stringcase <b>is</b>
+  s : <b>constant</b> string := "alphaBETA";
+<b>begin</b>
+  ? strings.to_upper( s );
+  ? strings.to_lower( s );
+  ? strings.to_proper( s );
+<b>end</b> stringcase;
+
+</PRE></BODY></HTML>

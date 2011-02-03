@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Contributors - Source Guilde</title>
+        <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html">Tutorials</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html"><b>Contributors</b></a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+	<!-- Content Area -->
+<h2><a NAME="5.1"></a>Source Guide</h2>
+
+<h3>GCC Ada</h3>
+
+<p>SparForte is written in GCC Ada (GNAT) and GCC&nbsp;C.</p>
+<p>Files named ".ads" are Ada package specifications.&nbsp; They contain
+the definitions of package functions (like a C&nbsp;header file) and document
+the functions inside a package.
+<p>Files named ".adb" are Ada package bodies.&nbsp; They contain the actual
+implementation of the package (like a C ".c" file).
+
+<p>Except for the main program (bush.adb), all other packages have a specification
+and a body.
+<p>The SparForte project files can be divided up into 4 layers which build one
+on top of another:
+<br>&nbsp;
+<ul>
+<li>
+<b>utilities</b> - packages containing commonly used functions shared by
+several packages</li>
+
+<li>
+<b>scanner</b> - packages implement the lexical scanner.&nbsp; This part
+of SparForte compiles the byte code, maintains the symbol table, and interprets
+the script as a series of "tokens".</li>
+
+<li>
+<b>parser</b> - packages that implement the SparForte features and check for
+syntactic and semantic errors.&nbsp; This part of SparForte "runs" the script
+and reports error messages.</li>
+
+<li>
+<b>main program</b></li>
+</ul>
+
+<h3>Utility Packages</h3>
+
+<ul>
+
+<li>
+<b>bush_os</b> - the package containing binding to your operating system as chosen
+by the configure script.  That is, it's a copy of bush_linux, bush_freebsd, etc.
+There are several child packages: support for the O/S terminal (bush_os.tty),
+support for the SDL library (bush_os.sdl) and executing programs (bush_os.exec).</li>
+
+<li>
+<b>bush_linux</b> - bush_os for Linux</li>
+
+<li>
+<b>bush_freebsd</b> - bush_os for FreeBSD</li>
+
+<li>
+<b>world</b> - the symbol table and global type declarations</li>
+
+<li>
+<b>gen_list</b> - a generic (template) package for single-direction linked
+lists.</li>
+
+<li>
+<b>script_io</b> - routines to read a script file</li>
+
+<li>
+<b>user_io</b> - routines to read the keyboard and print to the screen.&nbsp;
+Also implements the emacs and vi editing modes.</li>
+
+<li>
+<b>signal_flags</b> - interface to the C signal handlers.</li>
+
+<li>
+<b>c_os</b> - support functions written in the C language.&nbsp; In particular,
+the signal handlers are written in C.</li>
+
+</ul>
+
+<h3>Scanner Packages</h3>
+
+<ul>
+<li>
+<b>jobs</b> - runs an operating system command.&nbsp; That is, forks
+off a separate process, sets up standard input, output and error, and starts
+the command running.&nbsp; Also implements SparForte job control.</li>
+
+<li>
+<b>scanner</b> - contains the main body of the scanner.&nbsp; Includes
+identifier declarations, byte code compiler,&nbsp; tokenizing functions,
+and error reproting.</li>
+
+<li>
+<b>scanner-calendar </b>- implementation of Ada.Calendar package.&nbsp;
+(This is the GCC Ada calendar package with the time type as non-private
+so it can be used from SparForte.)</li>
+</ul>
+
+<h3>Parser Packages</h3>
+
+<ul>
+<li>
+<b>builtins</b> - implementation of built-in shell commands.&nbsp; That
+is, "cd", "pwd", "history" and "env".</li>
+
+<li>
+<b>parser</b> - implements the core AdaScript language and Text_IO functions.&nbsp;
+Handles syntax checking, running scripts and running commands at the SparForte
+command prompt.</li>
+
+<li>
+<b>parser_aux</b> - utility functions soley for the parser.&nbsp; For example,
+working with file_type variables, creating temp files and opening network
+sockets.</li>
+
+<li>
+<b>parser_cal</b> - implementation of the built-in calendar package; interface
+to scanner-calendar package.</li>
+
+<li>
+<b>parser_cgi </b>- implementation of the built-in cgi package; interface
+to the AdaCGI package</li>
+
+<li>
+<b>parser_cmd</b> -&nbsp; implementation of the built-in command_line package,
+interface to Ada.Command_Line</li>
+
+<li>
+<b>parser_db</b> - implementation of the built-in db package; interface
+to Warren Gay's APQ Postgres binding</li>
+
+<li>
+<b>parser_lock </b>- implementation of the built-in lock_files package,
+interface to GNAT.Lock_Files</li>
+
+<li>
+<b>parser_numerics</b> - implementation of the built-in numerics package,
+interface to various Ada numeric features/packages</li>
+
+<li>
+<b>parser_strings</b> - implementation of the built-in strings package,
+interface to various Ada string features/packages</li>
+
+<li>
+<b>parser_units</b> - implementation of the built-in units package,
+interface to various measurement conversion routines.</li>
+</ul>
+
+<h3>Main Program</h3>
+
+<ul>
+<li>
+
+<b>bush</b> - shows --help instrutions, interprets command line option
+switches, invokes the SparForte parser</li>
+</ul>
+
+&nbsp;<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="cont_vision.html">&nbsp;Vision</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="cont_roadmap.html">&nbsp;Roadmap</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="cont_sguide.html">&nbsp;<b>Source Guide</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="cont_uport.html">&nbsp;UNIX Ports</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="cont_wport.html">&nbsp;Window Ports</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="cont_bindings.html">&nbsp;Bindings</a></p>
+
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" border="0" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>
+

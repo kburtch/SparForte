@@ -1,0 +1,405 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Tutorials - Command Prompt Tutorial 2: Basic Shell Commands</title>
+        <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html"><b>Tutorials</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+				<!-- Content Area -->
+
+<h2><a name="2.2"></a>Command Prompt Tutorial 2: Basic Shell Commands</h2>
+<p>Tutorial 2.1 demonstrated how SparForte can be used to do command line
+calculations.&nbsp; It introduced the concepts of expressions, types,
+variables and built-in packages.&nbsp; SparForte can do far more that
+calculations.&nbsp; It can also run commands.&nbsp; The following
+tutorial shows how to use SparForte as an operating system shell.</p>
+
+<p>A <span style="font-weight: bold;">shell</span> is a command prompt
+from which you can run operating system commands.&nbsp; Type an <a
+ href="bushref.html#shell%20cmds">operating system command</a> to run
+it. On UNIX-based systems, the "ls"
+command lists files in the current directory.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; ls<br>
+		letter2mom.txt bushscript.bush<br>&nbsp;<br>
+               </p>
+        <div class="code_caption">
+		<b>Example</b>: Running an Operating System Command
+        </div>
+        </div>
+        </center>
+
+<p>Commands can be followed by parameters that change their behaviour.
+There are two methods of representing parameters. If
+the command is followed by a left parenthesis, the command is executed
+using AdaScript arguments (the same as the parameters in the first
+tutorial).&nbsp; The arguments are contained by
+parentheses, separated by commas, characters are surrounded by single
+quotes and strings have double quotes.<br>
+</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; date( "--universal" )<br>
+		Sat Jan&nbsp; 1 17:23:16 UTC 2005<br>&nbsp;<br>
+               </p>
+        <div class="code_caption">
+		<b>Example</b>: Running a Command With AdaScript Parameters
+        </div>
+        </div>
+	</center>
+
+<p>If there are no parentheses, the command will use
+Bourne shell (POSIX) arguments, the same as the shell that comes
+standard with operating systems like Linux and FreeBSD.</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; date --universal<br>
+		Sat Jan&nbsp; 1 17:23:16 UTC 2005<br>&nbsp;<br>
+               </p>
+        <div class="code_caption">
+		<b>Example</b>: Running a Command With Bourne Parameters
+        </div>
+        </div>
+	</center>
+
+<p>The AdaScript format is primarily used for SparForte scripts.&nbsp; However,
+if you've never used a shell before, you may find this format easier to
+use because the POSIX arguments follow completely different rules.</p>
+
+<p>The POSIX arguments are useful for people already familiar with other
+UNIX-based shells.&nbsp; SparForte implements all of the basic POSIX
+features including dollar sign expansions, file globbing, and word
+quoting.</p>
+
+<p>Dollar sign ($) expansions substitute the value of a SparForte variable into
+the command.&nbsp; Unlike AdaScript arguments which evaluate
+expressions for the arguments, dollar expansions substitute the text of
+a variable into the command prior to executing the command.</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; s : string := "--universal"<br>
+		=&gt; date $s<br>
+		Sat Jan&nbsp; 1 17:23:16 UTC 2005<br>&nbsp;<br>
+               </p>
+        <div class="code_caption">
+		<b>Example</b>: Running a Command With Variable Substitution
+        </div>
+        </div>
+	</center>
+
+</p>
+<p>Each item separated by spaces in a POSIX format command is called a <span
+ style="font-weight: bold;">shell word</span>.&nbsp; Quote marks
+control how the words are interpreted.&nbsp; Double quotes allow spaces
+to be included in the word.&nbsp; Single quotes also allow spaces in
+the word but prevent dollar expansions from taking place.&nbsp; Sets of
+quotes can be placed next to each other to form a single word.&nbsp;
+Individual letters can be escaped using a backslash (\).</p>
+
+        <center>
+        <div class="code">
+		<p class="code"> =&gt; echo s&nbsp;&nbsp;is&nbsp;&nbsp;&nbsp; $s<br>
+		s is --universal<br>
+		=&gt; echo "s&nbsp;&nbsp;is&nbsp;&nbsp;&nbsp; $s"<br>
+		s&nbsp;&nbsp;is &nbsp;--universal<br>
+		=&gt; echo 's&nbsp;&nbsp;is&nbsp;&nbsp;&nbsp; $s'<br>
+		s&nbsp;&nbsp; is &nbsp; $s<br>=&gt; echo 's is '"$s"<br>
+		s is --universal<br>&nbsp;<br>
+               </p>
+        <div class="code_caption">
+		<b>Example</b>: How Shell Words and Quotes Are Parsed
+        </div>
+        </div>
+	</center>
+
+
+<p>Each word is matched against files using a technique called <span
+ style="font-weight: bold;">file globbing<span
+ style="font-weight: bold;"><span style="font-weight: bold;">.</span></span></span>&nbsp;
+Single or double quotes prevent file globbing from occurring.&nbsp; For
+example, an asterisk (*) is a wildcard character representing zero or
+more characters.&nbsp; The word "cat*" would match "cat", "cats" or
+"catatonic", if files with these names exist.</p>
+
+<p>With AdaScript arguments, quote marks follow the standard AdaScript
+rules but file globbing will occur on arguments.&nbsp; This is only true
+for commands: no file globbing takes place for "?" or "put".</p>
+
+<p>To work with the results of a command, you'll need to use backquoted
+(`) strings.&nbsp; Use these strings to capture the results of a
+command.&nbsp; When backquotes are used in POSIX arguments, the results
+are substituted into the command in place of the string.&nbsp; When
+backquotes are used in AdaScript arguments, the command results can be
+used in string expressions.<br>
+</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; s : string := `date;`<br>
+		=&gt; ? s<br>
+		Sat Jan&nbsp; 1 12:50:50 EST 2005<br>
+		=&gt; echo "The date is "`date;`<br>
+		The date is Sat Jan&nbsp; 1 12:51:21 EST 2005<br>&nbsp;<br>
+               </p>
+        <div class="code_caption">
+		<b>Example</b>: How to Capture Command Output
+        </div>
+        </div>
+	</center>
+
+<p>External commands will run in the background when a trailing
+ampersand
+(&amp;) is used.&nbsp; This is often used to start X Windows
+applications (like the gimp image editing program).</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; sleep( 5 ) &amp;<br>
+		sleep ( 11400) has started<br>&nbsp;<br>
+               </p>
+        <div class="code_caption">
+		<b>Example</b>: How to Run Commands as a Background Job
+        </div>
+        </div>
+	</center>
+
+<p>The bracketed number returned is the operating system process
+id.&nbsp; Use the <span style="font-weight: bold;">jobs</span> command
+to see which background jobs are running.&nbsp; Use the <span
+ style="font-weight: bold;">history</span> command to see the commands
+you typed at the command prompt.</p>
+
+<p>Like most shells, SparForte supports <b>input/output redirection</b> and
+<b>command pipelines</b>.</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; ls &gt; list.txt<br>
+		=&gt; grep bush &lt; list.txt<br>&nbsp;<br>
+               </p>
+        <div class="code_caption">
+		<b>Example</b>: How to Redirect Command Input and Output
+        </div>
+        </div>
+	</center>
+
+<p>The &gt; operator will write the results of a command to a
+file.&nbsp;
+If the file exists, it will be overwritten.&nbsp; If the file doesn't
+exist,
+it will be created.&nbsp; In this case, the results of the ls command
+are
+written to a file named "list.txt" in the current directory.&nbsp; The
+&gt;&gt; operator will append the results to the end of an existing
+file instead
+of overwriting it.</p>
+
+<p>Likewise the &lt; operator will read a file and use it as input to
+another
+command just as if someone had typed the file by hand.&nbsp; In this
+case,
+grep will search list.txt for the word "bush".</p>
+
+<p>Errors from a command are redirected using the 2&gt; or 2&gt;&gt;
+operators.&nbsp;
+The 2&gt; creates a new file or overwrites an old file and 2&gt;&gt;
+will append
+the errors to an existing file.</p>
+
+<p>A pipeline is a combination of two or more commands connected by a
+pipe
+symbol (|).&nbsp; The results of the first command become the input to
+the second command.&nbsp; Using a pipeline, you don't need to use an
+intermediate
+file to store the results.</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; ls | grep bush<br>&nbsp;<br>
+               </p>
+        <div class="code_caption">
+               <b>Example</b>: How to Create a Command Pipeline
+        </div>
+        </div>
+	</center>
+
+<p>The &gt;, &gt;&gt;, &lt;, 2&gt;, 2&gt;&gt; and | features make
+it easy to work with programs
+at the command prompt.&nbsp; SparForte provides more powerful redirection
+features
+for scripting in the Text_IO package described in <span
+ style="text-decoration: underline;">the Packages section.</p>
+
+<p>In UNIX-based
+operating systems, variables are shared between shells and other
+programs
+through collections of variables called an environment.&nbsp; The
+environment
+can only hold string variables.&nbsp; To get around this problem, SparForte
+variables are stored independently of the operating system
+environment.&nbsp;
+Environment variables must be "imported" into SparForte or "exported" so
+that
+the programs you run can see them.</p>
+
+<p align="center"><img src="pictures/bush_ie.gif" width="256" height="256" summary="[import and export]"></p>
+<p>On startup, SparForte automatically imports basic environment variables
+like HOME (the name of your home directory).&nbsp; You can see that
+they are imported using the env command.
+Import other environment variables using "pragma import".
+</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; env HOME<br>
+		HOME = "/home/ken" -- imported identifier of the type string<br>
+		=&gt; LOGNAME : string<br>
+		=&gt; pragma import( shell, LOGNAME )<br>
+		=&gt; ? LOGNAME<br>
+		ken<br>&nbsp;<br>
+               </p>
+        <div class="code_caption">
+               <b>Example</b>: How to Import Environment Variables
+        </div>
+        </div>
+	</center>
+
+<p>You can assign a new value to an environment variable but this changes
+the variable
+for the SparForte session.&nbsp; It doesn't change the environment variable
+from
+the point of view of the program that started SparForte.</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; LOGNAME := "monkey"<br>
+		=&gt; env LOGNAME<br>
+		LOGNAME = "monkey" ( imported identifier of type string)<br>&nbsp;<br>
+               </p>
+        <div class="code_caption">
+               <b>Example</b>: Overwriting an Imported Variable Makes It No Longer Imported
+        </div>
+        </div>
+	</center>
+
+<p>To restore the original value, LOGNAME must be re-imported from the
+environment variables using <b>pragma import</b>.</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; pragma import( shell, LOGNAME )<br>
+		&gt; env LOGNAME<br>
+		LOGNAME = "ken" ( imported identifier of type string )<br>&nbsp;<br>
+               </p>
+        <div class="code_caption">
+		<b>Example</b>: Making an Variable Imported Again
+        </div>
+        </div>
+	</center>
+
+<p>LOGNAME is restored to its original value.</p>
+
+<p>To provide a variable to a program you run, it must be exported out
+of SparForte using <b>pragma export</b>.&nbsp; SparForte will take the variable
+and
+convert it to a form that can be placed the environment of the new
+program.&nbsp;
+CVS, for example, requires a variable called CVSROOT.</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; CVSROOT : string := "/home/ken/cvsroot";<br>
+		=&gt; pragma export( shell, CVSROOT )<br>
+		=&gt; env CVSROOT<br>
+		CVSROOT = "/home/ken/cvsroot" -- exported identifier of type string<br>&nbsp;<br>
+               </p>
+        <div class="code_caption">
+		<b>Example</b>: How to Export Variables to the O/S Environment
+        </div>
+        </div>
+	</center>
+
+<p>If you don't export CVSROOT, the CVS command will not be able to see
+it.&nbsp; It will be "local" to the SparForte session.</p>
+
+<p>Since environments can only hold string variables, you cannot export
+variables other than string variables.</p>
+
+        <center>
+        <div class="code">
+		<p class="code">=&gt; sum : integer<br>
+		=&gt; pragma export( shell, sum )<br>
+		pragma export( shell, sum );<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^ type integer (an universal_numeric) is inherently different from an universal_string<br>&nbsp;<br>
+               </p>
+        <div class="code_caption">
+		<b>Example</b>: How to Export Variables to the O/S Environment
+        </div>
+        </div>
+	</center>
+
+</p>
+<p><br>
+</p>
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_1.html">&nbsp;Command Prompt Tutorial 1: SparForte as a Calculator</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_2.html">&nbsp;<b>Command Prompt Tutorial 2: Basic Shell Commands</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_3.html">&nbsp;Command Prompt Tutorial 3: Working with Databases</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_4.html">&nbsp;Script Tutorial 1: Basic Commands Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_5.html">&nbsp;Script Tutorial 2: Intermediate Program Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_6.html">&nbsp;Template Tutorial 1: Basic Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_7.html">&nbsp;Template Tutorial 2: Intermediate Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_8.html">&nbsp;GCC Tutorial: Compiling SparForte Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_9.html">&nbsp;Debugging Tutorial - Using the SparForte Debugger</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_10.html">&nbsp;Creating a Profile Script</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_11.html">&nbsp;Calling SparForte from C: A Tutorial</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_12.html">&nbsp;SparForte Best Practices</a></p>
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>

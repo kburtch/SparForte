@@ -1,0 +1,63 @@
+<HEAD><TITLE>palindrome.bush</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : palindrome.bush </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ bush palindrome
+this is a test : false
+ablewasiereisawelba : true
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>pragma</b> annotate( "palindrome" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Write at least one function/method (or whatever it is" );
+<b>pragma</b> annotate( "called in your preferred language) to check if a" );
+<b>pragma</b> annotate( "sequence of characters (or bytes) is a palindrome or" );
+<b>pragma</b> annotate( "not. The function must return a boolean value (or" );
+<b>pragma</b> annotate( "something that can be used as boolean value, like an" );
+<b>pragma</b> annotate( "integer)." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Palindrome_detection" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> palindrome <b>is</b>
+
+  <b>function</b> is_palindrome( text : string ) <b>return</b> boolean <b>is</b>
+  <b>begin</b>
+    <b>for</b> offset <b>in</b> 0..strings.length( text ) / 2 -1 <b>loop</b>
+      <b>if</b> strings.element( text, offset+1) /= strings.element( text, positive( strings.length( text ) - offset ) ) <b>then</b>
+         <b>return</b> false;
+      <b>end</b> <b>if</b>;
+    <b>end</b> <b>loop</b>;
+    <b>return</b> true;
+  <b>end</b> is_palindrome;
+
+  sentence : string;
+  result   : boolean;
+<b>begin</b>
+  sentence := "this is a test";
+  result   := is_palindrome( sentence );
+  put(  sentence ) @ ( " : " ) @ ( result );
+  new_line;
+
+  sentence := "ablewasiereisawelba";
+  result   := is_palindrome( sentence );
+  put(  sentence ) @ ( " : " ) @ ( result );
+  new_line;
+<b>end</b> palindrome;
+
+</PRE></BODY></HTML>

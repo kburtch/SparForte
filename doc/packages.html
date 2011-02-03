@@ -1,0 +1,232 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Packages - Summary</title>
+	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html">Tutorials</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html"><b>Packages</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+	<!-- Content Area -->
+<h2><a NAME="4.1"></a>Package Summary</h2>
+
+<p>AdaScript contains hundreds of built-in constants, variables, functions and
+procedures. Many of these are grouped into collections called packages.</p>
+
+<h3>Built-in Packages</h3>
+
+<p>AdaScript includes the following packages:
+<ul>
+<li>
+<b>arrays</b> - contains general array operations</li>
+
+<li>
+<b>calendar</b> - contains time operations</li>
+
+<li>
+<b>cgi</b> - CGI variables and HTML cookie handling</li>
+
+<li>
+<b>command_line</b> - the script name, parameters and return value</li>
+
+<li>
+<b>db</b> - PostgreSQL database interface</li>
+
+<li>
+<b>directory_operations</b> - manage directories</li>
+
+<li>
+<b>files</b> - contains general file and directory operations</li>
+
+<li>
+<b>lock_files</b> - create and destroy lock files</li>
+
+<li>
+<b>mysql</b> - MySQL database interface</li>
+
+<li>
+<b>numerics</b> - contains mathematical functions and constants</li>
+
+<li>
+<b>os</b> - miscellaneous operating system functions</li>
+
+<li>
+<b>pen</b> - graphics, drawing and animation</li>
+
+<li>
+<b>sound</b> - play sounds, music or adjust the system mixer</li>
+
+<li>
+<b>source_info</b> - the script file name and current statistics</li>
+
+<li>
+<b>stats</b> - statistics on numeric arrays</li>
+
+<li>
+<b>strings</b> - contains string operations</li>
+
+<li>
+<b>System</b> - contains information about the computer a script is running</li>
+
+<li>
+<b>units</b> - conversion between common measurements</li>
+</ul>
+
+<p>These packages are referenced by name and are described in detail later
+in this guide.</p>
+
+<h3>Using Built-in Package Subprograms</h3>
+
+<p>To use a function or constant inside a package, prefix the function
+with the name of the package.&nbsp; For example, to use the "length" function
+in the "strings" package, refer to it as "strings.length".
+
+<p><tt>=&gt; ? strings.length( "PegaSoft" )</tt>
+<br><tt>8</tt>
+<p>The built-in Text_IO package is treated as an inherent part of the language
+and doesn't use a prefx of "Text_IO".  This is the only package that doesn't
+use a package prefix.</p>
+
+<h3>Parameter Types</h3>
+
+<p>Parameters to a command have a mode which determine how the parameter
+is treated:</p>
+<ul>
+<li>
+<b>in</b> - the parameter is read only.  This is not the same as C/C++/Java's
+<i>call-by-value</i> because an in parameter is a constant and the value
+cannot be changed.</li>
+
+<li>
+<b>out</b> - the paramter is write only.  SparForte can create a new variable
+automatically (if this feature has not been disabled by the user).</li>
+
+<li>
+<b>in out</b> - the parameter is read and changed by the command.  The
+variable must exist.  This is the same as <i>call-by-reference</i> in
+languages like C/C++/Java.</li>
+ 
+<li>
+
+<b>return value</b> - the type of value returned for functions.</li>
+</ul>
+<h3>An Example</h3>
+<hr><b>n := strings.length( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>return the number of characters in the string
+<br>Example: n := strings.length( "bounce" ); -- retuns 6
+<br>Ada Equivalent: Ada.Strings.Unbounded.Length
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+
+<tr>
+<td>s</td>
+<td>in</td>
+<td>universal_string</td>
+<td>required</td>
+<td>the string to count</td>
+</tr>
+
+<tr>
+<td>n</td>
+<td>return value</td>
+
+<td>natural</td>
+<td>required</td>
+<td>the number of characters</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+<hr>
+
+<p>This example uses the description of the strings.length function.  Here is
+how to read the description.</p>
+
+<p>"n := strings.length( s )" shows the syntax of the function...often this
+is all you need to look at to remind yourself of how to use the function.</p>
+
+<p>Following this is a summary of what the function does, including an
+example.  If this is a GCC Ada function, the full name of the Ada function
+appears in the "Ada Equivalent" section.  This is to help you move your SparForte
+scripts to other Ada-based tools and languages.</p>
+
+<p>Finally, there is a detailed list of parameters.  In the case of
+strings.length, there is one parameter. It is an "in" parameter and it is
+required (there is no default value for the parameter).  The parameter is a
+universal_string type (any kind of string variable).</p>
+
+<p>strings.length returns a natural value (a zero or positive integer) which is
+the number of characters in the string.</p>
+
+&nbsp;<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="packages.html">&nbsp;<b>Summary</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_arrays.html">&nbsp;arrays</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_calendar.html">&nbsp;calendar</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cgi.html">&nbsp;cgi</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cmdline.html">&nbsp;command_line</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_db.html">&nbsp;db/ postgresql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_pen.html">&nbsp;pen</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sound.html">&nbsp;sound</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sinfo.html">&nbsp;source_info</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;stats</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_strings.html">&nbsp;strings</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
+</a></p>
+
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" border="0" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>
+
