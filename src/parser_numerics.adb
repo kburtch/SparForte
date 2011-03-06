@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
--- BUSH Numerics Parckage Parser                                            --
+-- Numerics Parckage Parser                                                 --
 --                                                                          --
--- Part of BUSH                                                             --
+-- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2005 Ken O. Burtch & FSF                 --
+--            Copyright (C) 2001-2011 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -20,7 +20,6 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
--- CVS: $Id: parser_numerics.adb,v 1.2 2005/02/11 02:59:27 ken Exp $
 
 with ada.text_io;
 use ada.text_io;
@@ -106,7 +105,9 @@ procedure ParseSingleNumericExpression( expr_val : out unbounded_string;
 begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
-  expr_val := castToType( expr_val, expr_type );
+  if isExecutingCommand then
+     expr_val := castToType( expr_val, expr_type );
+  end if;
   if uniTypesOk( expr_type, uni_numeric_t ) then
      expect( symbol_t, ")" );
   end if;
@@ -117,7 +118,9 @@ procedure ParseFirstNumericExpression( expr_val : out unbounded_string;
 begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
-  expr_val := castToType( expr_val, expr_type );
+  if isExecutingCommand then
+     expr_val := castToType( expr_val, expr_type );
+  end if;
   if uniTypesOk( expr_type, uni_numeric_t ) then
      expect( symbol_t, "," );
   end if;
@@ -127,7 +130,9 @@ procedure ParseNextNumericExpression( expr_val : out unbounded_string;
   expr_type : out identifier ) is
 begin
   ParseExpression( expr_val, expr_type );
-  expr_val := castToType( expr_val, expr_type );
+  if isExecutingCommand then
+     expr_val := castToType( expr_val, expr_type );
+  end if;
   if uniTypesOk( expr_type, uni_numeric_t ) then
      expect( symbol_t, "," );
   end if;
@@ -137,7 +142,9 @@ procedure ParseLastNumericExpression( expr_val : out unbounded_string;
   expr_type : out identifier ) is
 begin
   ParseExpression( expr_val, expr_type );
-  expr_val := castToType( expr_val, expr_type );
+  if isExecutingCommand then
+     expr_val := castToType( expr_val, expr_type );
+  end if;
   if uniTypesOk( expr_type, uni_numeric_t ) then
      expect( symbol_t, ")" );
   end if;

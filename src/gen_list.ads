@@ -2,10 +2,10 @@
 -- Generic List Package                                                     --
 --                                                                          --
 --                                                                          --
--- Part of BUSH                                                             --
+-- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2005 Ken O. Burtch & FSF                 --
+--            Copyright (C) 2001-2011 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,7 +21,6 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
--- CVS: $Id: gen_list.ads,v 1.2 2005/02/11 02:59:22 ken Exp $
 --
 -- A generic package for handling general purpose linked lists.
 -- eg. package AnIntegerList is new list_manager(integer, "=", ">=");

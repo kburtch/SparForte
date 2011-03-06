@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
--- BUSH Arrays Package Parser                                               --
+-- Arrays Package Parser                                                    --
 --                                                                          --
--- Part of BUSH                                                             --
+-- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2005 Ken O. Burtch & FSF                 --
+--            Copyright (C) 2001-2011 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -41,7 +41,7 @@ package body parser_arrays is
 
 
 ---------------------------------------------------------
--- PARSE THE FILES PACKAGE
+-- PARSE THE ARRAYS PACKAGE
 ---------------------------------------------------------
 
 procedure ParseArraysFirst( f : out unbounded_string; kind : out identifier ) is
@@ -53,12 +53,13 @@ begin
   expect( arrays_first_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
+  if identifiers( var_id ).class = typeClass or
+     identifiers( var_id ).class = subClass then
      var_id := getBaseType( var_id );
      if not identifiers( var_id ).list then
         err( "Array or array type expected" );
      end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  elsif not (class_ok( var_id, otherClass, constClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -88,7 +89,7 @@ begin
      if not identifiers( var_id ).list then
         err( "Array or array type expected" );
      end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  elsif not (class_ok( var_id, otherClass, constClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -118,7 +119,7 @@ begin
      if not identifiers( var_id ).list then
         err( "Array or array type expected" );
      end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  elsif not (class_ok( var_id, otherClass, constClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );

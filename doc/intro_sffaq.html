@@ -7,7 +7,7 @@
 	<title>SparForte - Intro - FAQ</title>
         <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 </head>
-<body bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
 		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
 		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
@@ -22,7 +22,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
-				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
@@ -38,16 +38,28 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-	<h2>FAQ</h2>
+	<h2>Frequently Asked Questions</h2>
+
+<p>This section contains answers to frequently asked questions on SparForte.</p>
 
 <h3>Introductory Questions</h3>
 
 <h4>What does Sparforte Stand For?</h4>
 
-<p>"Spar" expresses strength and engineering: a willingness to duel with
-critics as well as an element of construction.  "Forte" (pronounced
-FORE-tay) is a music term for loudness.  If you are going to spar,
-spar loud.  Together "SparForte" expresses "sound design".</p>
+<img class="padded_left" src="pictures/sf2_ryu.png" width="128" height="103" alt="[Ryu]" \>
+
+<p>To "Spar" is to duel.  "Forte" (pronounced FORE-tay) is a music term
+for loudness.  If you are going to spar, spar loud.  Together "Sparforte"
+expresses "sound design".</p>
+
+<img class="padded_right" src="pictures/roosevelt_bridge.jpg" width="128" height="92" alt="[Roosevelt Bridge]" \>
+<p>"Spar" is also a stout naval mast or boom and "Forte" is a proficiency
+or skill.  So, alternatively, "Sparforte" can also mean a proficient or
+skillful programming framework.</p>
+
+<p>Spar can also mean to argue in a non-aggressive way, as with critics.</p>
+
+<p>"Sparforte" expresses confident strength and quality engineering.</p>
 
 <h4>What is the Difference between Bush (Business Shell) and Sparforte?</h4>
 
@@ -61,9 +73,14 @@ company.</p>
 <p>After several dozen names were reviewed, "Sparforte" was chosen as the
 new name for the project.</p>
 
-<h4>What is AdaScript?  How does it relate to SparForte?</h4>
+<h4>Can Sparforte run Bush (Business Shell) scripts?</h4>
 
-<p>AdaScript is the programming language used by SparForte.  SparForte
+<p>Yes.  The only exception is that web template tags must be
+&lt;?spar instead of &lt;?bush.</p>
+
+<h4>What is AdaScript?  How does it relate to Sparforte?</h4>
+
+<p>AdaScript is the programming language used by Sparforte.  Sparforte
 is the original AdaScript interpreter.  Since the language and the
 interpreter names are different, other projects can be developed using
 AdaScript--even other interpeters.</p>
@@ -102,7 +119,7 @@ includes commands in backquotes.</p>
 
 <h4>Why can't I use put_line, ?, etc. to start a command pipeline?</h4>
 
-<p>There are 3 kinds of subprograms in SparForte: commands, procedures
+<p>There are 3 kinds of subprograms in Sparforte: commands, procedures
 and functions.  Commands can have the I/O redirected.  Functions can
 be used in expressions.  Procedures are stand-alone.  put_line and
 related are procedures so they can't be used in a command pipeline.</p>
@@ -113,6 +130,16 @@ related are procedures so they can't be used in a command pipeline.</p>
 a string to its equivalent value: numerics.value("5") returns 5.
 <tt>numerics.pos</tt> returns the ASCII value: numerics.pos( "A" )
 returns 65.</p>
+
+<h4>When I convert numbers to strings, why do they sometimes have a leading space character?</h4>
+
+<p>For historical reasons, the Ada language uses a leading space for
+positive numbers and a leading minus for negative numbers.  Sparforte
+also follows this convention for GCC Ada compatibility.  So "?",
+strings.image, put_line, etc. will put a leading space before a
+positive number.</p>
+
+<p>To remove the leading space, use strings.trim().</p>
 
 <h4>How do I read in a number like scanf, readln, etc?</h4>
 
@@ -128,11 +155,24 @@ do this.  The optional final parameter is a picture string
 describing the number's layout.  See the put in the package
 section.</p>
 
+<h4>How do I create a C-style string?</h4>
+
+<p>Create a string and append an ASCII or Latin_1 NUL character.</p>
+
+<pre>
+  c_string1 : string := "This is a C string" &amp; ASCII.NUL
+  c_string2 : string := "This is a C string" &amp; Latin_1.NUL
+</pre>
+
 <h4>What does it mean when a type is <tt>limited</tt>?</h4>
 
 <p>A limited type is a type that cannot be assigned in an assignment
-statement.  It can still be used in paramters.  An example is
-the <tt>file_type</tt> type.</p>
+statement.  It can still be used in paramters.  Typically a limited
+type is used to protect against "shallow copying" of data structures.
+Although Sparforte has no pointers and thus no shallow copying issues,
+some times are treated as limited
+for compatibility with GCC Ada. An example is the
+<tt>file_type</tt> type.</p>
 
 <h4>How do I use an environment variable like <tt>LOGNAME</tt>?</h4>
 
@@ -165,22 +205,35 @@ reference section.</p>
 
 <h3>Design Questions</h3>
 
-<h4>Isn't SparForte just another "my favourite language" shell?</h4>
+<h4>Isn't Sparforte just another "my favourite language" shell?</h4>
 
 <p>There are several open source shells such as Java's bean shell and
 Perl's zoidberg.  These attempt to create shells with a structure
 famillar to practicioners of those languages.</p>
 
 <p>SpareForte chose compatibility with Ada because Ada was the only
-top 20 language that had the capability to meet SparForte's vision.
+top 20 language that had the capability to meet Sparforte's vision.
 This is the same reason that NASA, aerospace, air traffic control,
 robotics, and financial institutions chose Ada over Java, Perl, etc.</p>
 
 <h4>Can strong typing be used successfully in a shell?</h4>
 
-<p>SparForte makes allowances by supplying universal types and
+<p>Sparforte makes allowances by supplying universal types and
 using "duck typing" when automatically declaring variables
 at the command prompt.</p>
+
+<h4>Why can't I undo <tt>pragma restriction</tt>, <tt>pragma ada_95</tt>, running in restricted shell mode, etc.?</h4>
+
+<p>As a general rule, when restrictions are enforced they cannot be undone.
+First, restrictions may be applied for security purposes.  Allowing them
+to be undone would be a security risk.  Second, restrictions may be applied
+for style or design reasons by architects or team leaders.  For example,
+they might use pragma ada_95 make source code as reuseable as possible.  In
+either case, the restrictions should not be undone.</p>
+
+<h4>Why are there no objects or exceptions?</h4>
+
+<p>Objects, exceptions, user-defined packages, etc. are scheduled to be added to Sparforte.  See the project roadmap map.</p>
 
 &nbsp;<br>
 

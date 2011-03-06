@@ -7,7 +7,7 @@
 	<title>SparForte - Tutorials - Debugging Tutorial - Using the SparForte Debugger</title>
         <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 </head>
-<body bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
 		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
 		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
@@ -22,7 +22,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
-				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
@@ -40,37 +40,32 @@
 				<!-- Content Area -->
 
 <h2><a name="2.9"></a>Debugging Tutorial - Using the SparForte Debugger</h2>
+
+<p>This is a detailed look at SparForte's debugger (the breakout mode), and
+related features.</p>
+
+<h3>Syntax Checking</h3>
+
 <p>A script is run by using the script name as an argument to SparForte. SparForte
-normally
-performs a syntax check before running the script.</p>
+performs a syntax check before running the script.  You can run just the
+syntax check with the <b>--check</b> option.</p>
 
         <center>
         <div class="code">
-                <p class="code">$ bush demo_script.bush</p>
+                <p class="code">bash$ spar --check demo_script.sp</p>
         </div>
         </center>
 
-<p>There are several <a href="#cmdlineopt">command line options</a>
-which
-can change how the script is run.&nbsp; For example, the SparForte syntax
-check
-will sometimes report errors for a legitimate script--for example, by
-declaring
-variables inside of an&nbsp; "if" statement.&nbsp; Normally, this is a
-sign of a poorly organized script, but the syntax check can be disabled
-.&nbsp;&nbsp; To run the script without checking it, use the <b>--no-check
+<h3>The Trace Command</h3>
 
-</b>command
-line option.
-</p>
-<p>The execution of a script can be traced with the SparForte trace
+<p>The execution of a script can be traced with the SparForte <b>trace</b>
 command.&nbsp;
 Suppose you want to trace the execution of the following script:
 </p>
 
         <center>
         <div class="code">
-                <p class="code">#!/usr/local/bin/bush<br>
+                <p class="code">#!/usr/local/bin/spar<br>
 &nbsp;<br>
 <b>trace</b> <b>true</b>;<br>
 &nbsp;<br>
@@ -87,7 +82,7 @@ Suppose you want to trace the execution of the following script:
         </div>
         </center>
 
-<p>Once tracing is turned on by <b>trace true</b> (or with --trace),
+<p>Once tracing is turned on by <b>trace true</b> (or with spar --trace),
 each
 line will be shown before it's executed, with the line number in square
 brackets to the right of the line.&nbsp; Some statements will also show
@@ -99,7 +94,7 @@ order because some versions of UNIX buffer their output.</p>
 
         <center>
         <div class="code">
-                <p class="code">$ bush trace_demo.bush<br>
+                <p class="code">bash$ spar trace_demo.sp<br>
 Trace is on<br>
 =&gt; " " [ 4]<br>
 =&gt; "procedure main is" [ 5]<br>
@@ -134,29 +129,34 @@ blue<br>
         </div>
         </center>
 
+<h3>Breakout Mode: The Debugger</h3>
+
 <p>If a script is started with the <b>--break</b> (or <b>-b</b>)
 option,
 a SIGINT (e.g. a control-c) will pause the script and give the user a
 command
 prompt. This breakout prompt is identical to a normal interactive
 session
-except for the command to quit. "return" will retry the last statement.
-"step" will run the next statement and then stop. "logout" will
+except for the command to quit. <b>return</b> will retry the last statement.
+<b>step</b> will run the next statement and then stop. <b>logout</b> will
 terminate
 the script.
 </p>
+
+<h3>The Breakout Prompt</h3>
+
 <p>Without a --break, a SIGINT will terminate the script, just as if a
 return command was executed.
 </p>
 
         <center>
         <div class="code">
-                <p class="code">$ cat breakdemo.bush<br>
-		for i in 1..10000 loop<br>
+                <p class="code">bash$ cat breakdemo.sp<br>
+		<b>for</b> i <b>in</b> 1..10000 <b>loop</b><br>
 		&nbsp;&nbsp;&nbsp;put_line( i );<br>
-		&nbsp;&nbsp;&nbsp;delay 1;<br>
-		end loop;<br>
-		$ bush breakdemo.bush<br>
+		&nbsp;&nbsp;&nbsp;<b>delay</b> 1;<br>
+		<b>end</b> <b>loop</b>;<br>
+		bash$ spar breakdemo.sp<br>
 		1<br>
 		2<br>
 		3<br>
@@ -171,16 +171,16 @@ return command was executed.
 
         <center>
         <div class="code">
-                <p class="code">$ cat breakdemo.bush<br>
-		for i in 1..10000 loop<br>
+                <p class="code">bash$ cat breakdemo.sp<br>
+		<b>for</b> i <b>in</b> 1..10000 <b>loop</b><br>
 		&nbsp;&nbsp;&nbsp;put_line( i );<br>
-		&nbsp;&nbsp;&nbsp;delay 1;<br>
-		end loop;<br>
-		$ bush --break breakdemo.bush</tt> <br>
+		&nbsp;&nbsp;&nbsp;<b>delay</b> 1;<br>
+		<b>end</b> <b>loop</b>;<br>
+		bash$ spar --break breakdemo.sp</tt> <br>
 		1<br>
 		2<br>
 		3<br>
-		breakdemo.bush: 4: 1: for loop
+		breakdemo.sp: 4: 1: for loop<br>
 		&nbsp; put_line( i );<br>
 		^ <span style="background: black; color:white">Break: return to continue, logout to quit</span><br>
 		=&gt;<br>&nbsp;<br></p>
@@ -209,9 +209,12 @@ interactive prompt.</p>
         </div>
         </center>
 
+<h3>Breakout Pragmas</h3>
+
 <p>To break at a specific point in a script, use <b>pragma
 inspection_point</b>.  When this pragma is reached, SparForte will stop as if you
-typed a Control-C.</p>
+typed a Control-C.  <b>pragma inspection_peek</b> works the same way
+without stopping the program.</p>
 <p>To monitor variables, use <b>pragma inspect</b>.  Each time the script
 stops at an inspection point or because of a Control-C, the value of all the
 variables marked for inspection will be shown.  You can also use pragma inspect
@@ -235,7 +238,7 @@ uninspect</b> to stop inspecting a variable.</p>
 			</td>
 		</tr>
 		<tr>
-			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" border="0" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
 			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
 	       	</tr>
 

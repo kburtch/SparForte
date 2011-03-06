@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
--- BUSH Built-in Shell Commands                                             --
+-- Built-in Shell Commands                                                  --
 --                                                                          --
--- Part of BUSH                                                             --
+-- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2010 Ken O. Burtch & FSF                 --
+--            Copyright (C) 2001-2011 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -20,7 +20,6 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
--- CVS: $Id: builtins.adb,v 1.6 2005/08/31 15:10:44 ken Exp $
 
 with ada.text_io,
      ada.strings.unbounded.text_io,
@@ -842,10 +841,10 @@ begin
      Put_Line( "  delete            line            reset               wait             " );
      Put_Line( "  directory_operations lock_files   return              while                " );
      Put_Line( "  end_of_file       logout          set_input           ""?""            " );
-     Put_Line( "  end_of_line       loop            sound                                " );
+     Put_Line( "  end_of_line       loop            sound               enums            " );
      Put_Line( "  env               mode            source_info                          " );
      New_Line;
-     Put_Line( "You can also type an O/S word or a Bush script name." );
+     Put_Line( "You can also type an O/S word or a SparForte script name." );
      return;
   end if;
   if helpTopic = "arrays" then
@@ -963,6 +962,11 @@ begin
   elsif helpTopic = "end_of_line" then
      Put_Line( "end_of_line - true if an in_file file has reached the end of a line with get" );
      Put_Line( "  end_of_line( file )" );
+  elsif helpTopic = "enums" then
+     Put_Line( "enums (package) - enumerated types" );
+     New_Line;
+     Put_Line( "  enums.first(t)            enums.last(t)            enums.prev(e2)      ");
+     Put_Line( "  enums.succ(e2)                                                         ");
   elsif helpTopic = "env" then
      Put_Line( "env - show an identifier/all identifiers" );
      Put_Line( "  " & bold( "env" ) & " [identifier]" );
@@ -1523,6 +1527,20 @@ begin
                          discardUnusedIdentifier( token );
                          getNextToken;
                          expect( symbol_t, "," );
+                      elsif identifiers( token ).name = to_unbounded_string( "bugs" ) then
+                         if last_tag = "bugs" then
+                            info := null_unbounded_string;
+                         elsif HTMLOutput then
+                            info := to_unbounded_string( "</p><p><b>Bugs</b>: " );
+                         elsif MANOutput then
+                            info := to_unbounded_string( ".SH BUGS" );
+                         else
+                            info := to_unbounded_string( "Bugs: " );
+                         end if;
+                         last_tag := identifiers( token ).name;
+                         discardUnusedIdentifier( token );
+                         getNextToken;
+                         expect( symbol_t, "," );
                       elsif identifiers( token ).name = to_unbounded_string( "created" ) then
                          if last_tag = "created" then
                             info := null_unbounded_string;
@@ -1630,6 +1648,20 @@ begin
                             info := to_unbounded_string( ".SH SUMMARY" );
                          else
                             info := to_unbounded_string( "Summary: " );
+                         end if;
+                         last_tag := identifiers( token ).name;
+                         discardUnusedIdentifier( token );
+                         getNextToken;
+                         expect( symbol_t, "," );
+                      elsif identifiers( token ).name = to_unbounded_string( "todo" ) then
+                         if last_tag = "todo" then
+                            info := null_unbounded_string;
+                         elsif HTMLOutput then
+                            info := to_unbounded_string( "</p><p><b>To Do</b>: " );
+                         elsif MANOutput then
+                            info := to_unbounded_string( ".SH TODO" );
+                         else
+                            info := to_unbounded_string( "To Do: " );
                          end if;
                          last_tag := identifiers( token ).name;
                          discardUnusedIdentifier( token );

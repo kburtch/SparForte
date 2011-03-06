@@ -1,0 +1,80 @@
+.TH SPAR "1" "February 2011" "spar 1.2" "User Commands"
+.SH NAME
+spar \- SparForte, the Business Shell
+.SH SYNOPSIS
+.B spar
+[\-bcdeghilnrvVx] [\-\-break][\-\-check][\-\-debug][\-\-exec][\-\-gcc\-errors]
+[\-\-import\-all][\-\-login][\-\-no\-check][\-\-verbose][\-\-version]
+[\-\-restricted][\-\-trace][\-\-]
+[script [param1 ...] ]
+.SH DESCRIPTION
+.\" Add any additional description here
+.PP
+.B SparForte
+is a sh\-compatible command language interpreter that executes commands read
+from the standard input or from a file.
+.B SparForte
+uses the high reliability AdaScript language and supports web and database
+development.  Scripts can be compiled with GCC or converted to JVM or .Net
+applets using the appropriate compilers.
+.PP
+.B SparForte
+is intended to be conformant with the ISO Ada standard and is part of the
+ABEE open source alternative to J2EE.
+.TP
+\fB\-b\fR, \fB\-\-break\fR
+enable breakout debugging prompt
+.TP
+\fB\-c\fR, \fB\-\-check\fR
+syntax check the script but do not run
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+enable pragma assert and pragma debug
+.TP
+\fB\-e\fR, \fB\-\-exec\fR
+script is a string containing SparForte commands
+.TP
+\fB\-g\fR, \fB\-\-gcc\-errors\fR
+simple GCC-style errors (good for IDEs)
+.TP
+\fB\-i\fR, \fB\-\-import\-all\fR
+import all environment variables
+.TP
+\fB\-l\fR, \fB\-\-login\fR
+simulate a login shell
+.TP
+\fB\-n\fR, \fB\-\-no\-check\fR
+run script without checking syntax
+.TP
+\fB\-r\fR, \fB\-\-restricted\fR
+restricted shell mode
+.TP
+\fB\-x\fR, \fB\-\-trace\fR
+show script lines as they run
+.TP
+\fB\-v\fR, \fB\-\--verbose\fR
+show shell activity
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+show version and exit
+.TP
+\fB\-\-\fR
+.br
+explicitly end shell options
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+display command option help and exit
+.SH AUTHOR
+Written by Ken O. Burtch.
+.SH "REPORTING BUGS"
+Report bugs to <ken@pegasoft.ca>.
+.SH COPYRIGHT
+SparForte is Copyright (c)2001-2011 Free Software Foundation, Inc.
+.br
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.SH "SEE ALSO"
+The full documentation and AdaScript language description
+is maintained as an HTML manual.  These items are also available online
+along with the discussion forum and source code treasury at SparForte home page
+\fBhttp://www.pegasoft.ca/bush.html\fR.

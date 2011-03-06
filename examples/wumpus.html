@@ -1,15 +1,15 @@
-<HEAD><TITLE>wumpus.bush</TITLE></HEAD>
+<HEAD><TITLE>wumpus.sp</TITLE></HEAD>
 <BODY>
-<HR><DIV ALIGN="center"><H1> File : wumpus.bush </H1></DIV><HR>
+<HR><DIV ALIGN="center"><H1> File : wumpus.sp </H1></DIV><HR>
 <IMG SRC="wumpus.gif"><HR>
 <PRE>
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 <FONT COLOR=green><EM>--</EM></FONT>
 <FONT COLOR=green><EM>-- *** HUNT THE WUMPUS ***</EM></FONT>
 <FONT COLOR=green><EM>--</EM></FONT>
 <FONT COLOR=green><EM>-- Originally for the PDP-8.</EM></FONT>
 <FONT COLOR=green><EM>-- The Timeless cave-crawling classing based on GW-BASIC source</EM></FONT>
-<FONT COLOR=green><EM>-- www.ifarchive.org.  Modified for BUSH by Ken O. Burtch.</EM></FONT>
+<FONT COLOR=green><EM>-- www.ifarchive.org.  Modified for SparForte by Ken O. Burtch.</EM></FONT>
 <FONT COLOR=green><EM>--</EM></FONT>
 
 <b>pragma</b> ada_95;                       <FONT COLOR=green><EM>-- strict programming practices</EM></FONT>
@@ -103,7 +103,7 @@ i := get_line;
 <b>end</b> <b>if</b>;
 
 <FONT COLOR=green><EM>-- *** SET UP CAVE (DODECAHEDRAL NODE LIST) ***</EM></FONT>
-<FONT COLOR=green><EM>-- dim tunnels(20,3) but BUSH has no true 2-d arrays.  So we'll fake-it using</EM></FONT>
+<FONT COLOR=green><EM>-- dim tunnels(20,3) but SparForte has no true 2-d arrays.  So we'll fake-it using</EM></FONT>
 <FONT COLOR=green><EM>-- 1-D arrays and text fields</EM></FONT>
 
 tunnels(1) := "2,5,8";

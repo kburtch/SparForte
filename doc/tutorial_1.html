@@ -7,7 +7,7 @@
 	<title>SparForte - Tutorials - Command Prompt Tutorial 1: SparForte as a Calculator</title>
         <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 </head>
-<body bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
 		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
 		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
@@ -22,7 +22,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
-				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
@@ -66,8 +66,7 @@ end-of-file character).<br>
 <p>The <span style="font-weight: bold;">help</span> command presents a
 short summary of recognized SparForte commands.
 </p>
-<p><img src="pictures/bush_2.gif" alt="[SparForte help command]" height="357"
- width="591"><br>
+<p><img src="pictures/sparforte_help.gif" alt="[SparForte help command]" width="616" height="421"><br>
 <b style="font-style: italic;">Figure:</b><span
  style="font-style: italic;"> Screenshot of an interactive SparForte session</span>
 </p>
@@ -85,7 +84,7 @@ and the topic name.
 		delay secs<br>&nbsp;<br>
 		</p>
         <div class="code_caption">
-                <b>Example</b>: The Help Command</span>
+                <b>Example</b>: The Help Command: Help for the Delay Statement</span>
         </div>
         </div>
         </center>
@@ -126,8 +125,8 @@ for.)</li>
 <p>Typing a control-c (sending a SIGINT signal) at the command prompt
 acts
 the same as a control-x: the current line will be erased.&nbsp;
-Pressing control-c while a command is running will normally cause the
-command to stop.
+Pressing control-c while a command is running will usually cause the
+command to stop running.
 </p>
 <p>If you prefer to use <b>vi cursor movement</b>, press the Escape
 key to enter <b>vi</b> mode. Press escape again to return to emacs
@@ -135,10 +134,10 @@ mode. In vi mode, you can use lower-case 'h', 'j', 'k', 'l', '^' and
 '$'. Filename completion is accomplished with two escape key presses
 in a row.
 </p>
-<p>The <a href="bushpackages.html#consoleio">"?"
+<p>The <a href="pkg_text_io.html#consoleio">"?"
 command</a> (pronounced "print") will print the result of an
 expression. The basic
-<a href="bushref.html#basic%20assign">arithmetic
+<a href="ref_assign.html#basic%20assign">arithmetic
 operators</a> are the same as they are in most computer languages: +
 (add), - (subtract),
 * (multiply), and / (divide). Also available are ** (exponentiation), <b>rem</b>
@@ -238,7 +237,7 @@ procedure, for example, can format the result using a picture string.<br>
 	</center>
 
 <p>Strings operatings include "&amp;" (concatenation) and *
-(duplication).  <a href="bushref.html#ascii">Special string characters can be expressed with </a>"ASCII", a period, and the code name for the character.  
+(duplication).  <a href="ref_charsets.html#ascii">Special string characters can be expressed with </a>"ASCII", a period, and the code name for the character.  
 </p>
 
         <center>
@@ -248,7 +247,7 @@ procedure, for example, can format the result using a picture string.<br>
 		Hello world!<br>
 		=&gt; ? "The tilde is " &amp; "'" &amp; ASCII.Tilde &amp; "'."<br>
 		The tilde is '~'.<br>
-		=&gt; ? "Three times lucky is " & (3 * "luck")<br>
+		=&gt; ? "Three times lucky is " &amp; (3 * "luck")<br>
 		Three times lucky is luckluckluck<br>&nbsp;<br>
 		</p>
         <div class="code_caption">
@@ -444,14 +443,14 @@ one command can be placed on a line.
 <p>This concludes the first SparForte tutorial.  There are more tutorials following
 this one.  Read on to learn about SparForte built-in packages, scripting, database
 access and web templating.&nbsp; To see a sample script, try running
-"eliza.bush", the SparForte version of the famous artificial intelligence program.
+"eliza.sp", the SparForte version of the famous artificial intelligence program.
 This script is included in the <b>examples</b> directory and can be run with
-"bush eliza.bush".
+"spar eliza.sp".
 
 </p>
 <p><img src="pictures/bush_3.gif" alt="[SparForte help command]" height="331"
  width="607"><br>
-<b>Screenshot of the example eliza.bush script</b>
+<b>Screenshot of the example eliza.sp script</b>
 </p>
 &nbsp;<br />
 			</td>
@@ -471,7 +470,7 @@ This script is included in the <b>examples</b> directory and can be run with
 			</td>
 		</tr>
 		<tr>
-			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" border="0" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
 			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
 	       	</tr>
 

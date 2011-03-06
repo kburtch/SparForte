@@ -57,14 +57,14 @@ while [ $# -gt 0 ] ; do
   shift
 done
 
-# Configure BUSH
+# Configure SparForte
 
 # OS Environment
 #
 # Use an ARCH variable if one exists.  Otherwise, determine the operating
 # system type and processor architecture type by uname.
 
-echo "Configuring BUSH..."
+echo "Configuring SparForte..."
 sleep 1
 echo
 echo -n "checking for locate command... "
@@ -77,7 +77,7 @@ if [ $? -ne 0 ] ; then
    echo "Could not run locate"
    echo
    echo "Locate is used by this script to ensure you have all the required"
-   echo "software to build BUSH."
+   echo "software to build SparForte."
    echo
    echo "Please install GNU locate and run updatedb (as root)."
    exit 1
@@ -195,7 +195,7 @@ elif [ "$OS" = "HPUX" ] ; then
          exit 1
       fi
    fi
-   echo "  (Warning: BUSH HP-UX support is obsolete...you will need to edit bush_hp.ads/adb)"
+   echo "  (Warning: SparForte HP-UX support is obsolete...you will need to edit bush_hp.ads/adb)"
 elif [ "$OS" = "cygwin" ] ; then
    echo -n "Cygwin"
    if test -r bush_os.ads ; then
@@ -213,12 +213,12 @@ else
    echo
    echo "I couldn't identify your operating system."
    echo
-   echo "BUSH requires a bush_os.ads file to make operating system calls."
+   echo "SparForte requires a bush_os.ads file to make operating system calls."
    echo "If I made a mistake and your O/S is supported, manually copy"
    echo "a bush_* file to bush_os.  If you're operating system isn't supported"
    echo "and if you are experienced and have time, you can create a new"
    echo "bush_os.ads for your operating system.  Consult the Hacker's Guide"
-   echo "in the documentation on how to port BUSH to a new operating system."
+   echo "in the documentation on how to port SparForte to a new operating system."
    exit 1
 fi
 # Check compiler
@@ -268,7 +268,7 @@ else
             echo " - Fedora Linux users can try add/remove software gcc-gnat"
             echo " - SuSE Linux   users can try add/remove software gcc-ada"
             echo
-            echo "Specifically, BUSH requires one of the following:"
+            echo "Specifically, SparForte requires one of the following:"
             echo " - GCC 3.x or newer with the Ada language enabled (http://gcc.gnu.org)"
             echo " - ACT's GNAT compiler 3.14 or newer, based on GCC 2.7.2 (ftp://cs.nyu.edu/pub/gnat)"
             echo
@@ -429,7 +429,7 @@ if [ -z "$TMP" ] ; then
       echo "If you have installed libSDL, you may need to use ldconfig (as"
       echo "root) to update the shared library search paths for libSDL"
       echo
-      echo "libSDL is used by BUSH to access sound and graphics on your machine"
+      echo "libSDL is used by SparForte to access sound and graphics on your machine"
       exit 1
     else
        echo "yes"
@@ -503,7 +503,7 @@ if [ -z "$TMP" ] ; then
       echo "If you have installed libSDL_image, you may need to use ldconfig (as"
       echo "root) to update the shared library search paths for libSDL_image"
       echo
-      echo "libSDL_image is used by BUSH to load image files (JPEGs, GIFs, etc.)"
+      echo "libSDL_image is used by SparForte to load image files (JPEGs, GIFs, etc.)"
       exit 1
     else
        echo "yes"
@@ -593,7 +593,7 @@ else
          else
             echo "no"
             echo
-            echo "BUSH requires GNU make.  GNU make normally has a gmake alias"
+            echo "SparForte requires GNU make.  GNU make normally has a gmake alias"
             echo "but some systems (like Debian/Linux, Cygwin) do not include the"
             echo "alias.  If your system calls gmake by another name (such as"
             echo "'make') use the GMAKE shell variable to specify the name."
@@ -604,7 +604,7 @@ else
       else
          echo "no"
          echo
-         echo "BUSH requires GNU make.  GNU make normally has a gmake alias"
+         echo "SparForte requires GNU make.  GNU make normally has a gmake alias"
          echo "but some systems (like Debian/Linux, Cygwin) do not include the"
          echo "alias.  If your system calls gmake by another name (such as"
          echo "'make') use the GMAKE shell variable to specify the name."
@@ -614,7 +614,7 @@ else
    fi
 fi
 
-echo "BUSH is configured"
+echo "SparForte is configured"
 
 # ADAVOX library
 
@@ -692,7 +692,7 @@ echo "APQ library is configured"
 # Create GNUmakefile from GNUmakefile.orig
 
 echo
-echo "Returning to BUSH..."
+echo "Returning to SparForte..."
 
 # Update the source files, disabling optional libraries, using the gnatprep
 # preprocessor.
@@ -802,7 +802,7 @@ sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/GMAKETYPE/$GMAKETY
 # Done
 
 echo "-------------------------------------------------------------------"
-echo "Please read the INSTALL file if you have problems making BUSH."
+echo "Please read the INSTALL file if you have problems making SparForte."
 echo
 if [ "$GMAKE" != "" ] ; then
    echo "Type $GMAKE all"

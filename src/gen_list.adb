@@ -6,7 +6,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --                                                                          --
---                 Copyright (C) 1999-2005 Ken O. Burtch                    --
+--            Copyright (C) 2001-2011 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -29,7 +29,6 @@
 -- This is maintained at http://www.vaxxine.com/pegasoft                    --
 --                                                                          --
 ------------------------------------------------------------------------------
--- CVS: $Id: gen_list.adb,v 1.2 2005/02/11 02:59:22 ken Exp $
 --
 -- Started September 5/95 by Ken O. Burtch
 --

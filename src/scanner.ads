@@ -4,10 +4,10 @@
 -- Also, the semantic checking such as type mismatch checking.              --
 --                                                                          --
 --                                                                          --
--- Part of BUSH                                                             --
+-- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2010 Ken O. Burtch & FSF                 --
+--            Copyright (C) 2001-2011 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -23,7 +23,6 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
--- CVS: $Header: /home/cvsroot/bush/src/scanner.ads,v 1.2 2005/02/11 02:59:30 ken Exp $
 
 with system,
   ada.unchecked_deallocation,
@@ -391,6 +390,10 @@ type aScannerState is record
      last    : natural;          -- lastpos value
      cmdpos  : natural;          -- cmdpos value
      lineno  : aLineNumber;      -- line number
+     itself  : unbounded_string;   -- copy of the identifier declaration
+     itself_type : identifier;         -- type of @ or procedure identifier
+     last_output : unbounded_string;   -- result of last output
+     last_output_type : identifier;    -- type of last output
 end record;
 
 type aScriptState is record

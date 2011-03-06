@@ -7,7 +7,7 @@
 	<title>SparForte - Tutorials - Creating a Profile Script</title>
         <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 </head>
-<body bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
 		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
 		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
@@ -22,7 +22,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
-				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
@@ -47,16 +47,16 @@ environment.
 By creating a profile script, a user can create variables or run
 programs
 every time they log in.</p>
-<p>First, SparForte looks for a script called "/etc/bush_profile". This
+<p>First, SparForte looks for a script called "/etc/spar_profile". This
 script
 should contain commands to be run by every user logging in.
 </p>
-<p>Second, SparForte looks for a script called ".bush_profile" in the user's
+<p>Second, SparForte looks for a script called ".sparforte_profile" in the user's
 home directory. This script should contain commands specific to a
 particular
 user.
 </p>
-<p>The following is a sample ".bush_profile" script:
+<p>The following is a sample ".sparforte_profile" script:
 </p>
 
         <center>
@@ -73,7 +73,7 @@ user.
 -- ls, by default, has no color.&nbsp; ls_color is a script that turns
 -- on the ls --color flag before running ls.
 
-ls : <b>constant</b> <b>command</b> := "/home/ken/bush/ls_color";
+ls : <b>constant</b> <b>command</b> := "/home/ken/spar/ls_color";
 
 
 -----------------------------------------------
@@ -128,7 +128,7 @@ date;
 -- change my SparForte prompt
 <b>pragma</b> prompt_script( `pwd;echo "=&gt; ";` );
 
--- end of .bush_profile
+-- end of .sparforte_profile
 </pre>
 &nbsp;<br></p>
         <div class="code_caption">
@@ -160,7 +160,7 @@ can being entering commands.</p>
 			</td>
 		</tr>
 		<tr>
-			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" border="0" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
 			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
 	       	</tr>
 

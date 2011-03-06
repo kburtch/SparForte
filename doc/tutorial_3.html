@@ -7,7 +7,7 @@
 	<title>SparForte - Tutorials - Command Prompt Tutorial 3: Working with Databases</title>
         <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 </head>
-<body bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
 		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
 		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
@@ -22,7 +22,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
-				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
@@ -41,13 +41,15 @@
 
 <h2><a name="2.3"></a>Command Prompt Tutorial 3: Working with Databases</h2>
 
-<p>In order to work with database engines, you will need to install a database
-engine on your computer if you do not have one installed already.  The engine
+<p>In order to work with database engines, you will need to install database
+software on your computer if you do not have one installed already.  The engine
 is a program that stores, sorts and retrieves data.  SparForte supports the
-PostgreSQL 7 or newer and MySQL 4 or newer.&nbsp; This tutorial uses
+PostgreSQL 7 or newer and MySQL 4 or newer.&nbsp; (When you build SparForte
+from sources, you can select which database engines SparForte will support.)
+This tutorial uses
 the PostgreSQL database.  To use MySQL in these examples, use the "mysql."
 prefix instead of "db.".</p>
-<p>Database engines use a language called SQL.&nbsp; Since most software
+<p>Database engines use a language called <b>SQL</b>.&nbsp; Since most software
 applications don't understand SQL, a special client program or library is often
 provided with the database.&nbsp; The MySQL database has a client program
 called mysql.  &nbsp;The PostgreSQL database has a program called psql.&nbsp;
@@ -79,7 +81,7 @@ database with your login name by providing only the database name.<br>
 
 	<p>db.connect is a built-in AdaScript procedure in the db database
 package.&nbsp; It is not an operating command:
-you cannot use POSIX arguments or redirect the output.</p>
+you cannot use Bourne parameters or redirect the output.</p>
 
 <p>Database client programs do more than just run SQL commands.&nbsp; They
 also know how to display information about the database, its users and
@@ -127,7 +129,7 @@ list the contents of a table.</p>
         </div>
         </center>
 
-	<p>To create a new table, use the db.prepare and db.execute
+	<p>To create a new table, use the <b>db.prepare</b> and <b>db.execute</b>
 procedures.&nbsp; Use db.prepare to begin building a SQL command.&nbsp;
 Additional lines can be added with db.append, db.append_line and
 db.append_quoted.&nbsp; When the SQL command is finished, run the
@@ -196,7 +198,7 @@ line.</p>
 
         <center>
         <div class="code">
-	<p class="code">=&gt; select * from test where name &gt; temp.txt<br>
+	<p class="code">=&gt; select * from test &gt; temp.txt<br>
 	=&gt; cat temp.txt<br>
 	&nbsp;<br>
 	&nbsp;name | age<br>
@@ -204,14 +206,20 @@ line.</p>
 	&nbsp;bob&nbsp; | 16<br>
 	&nbsp;joe&nbsp; | 78<br>
 	&nbsp;2 Rows and 2 Columns<br>&nbsp;<br>
+	<p class="code">=&gt; select * from test where name \&gt; 'c' &gt; temp.txt<br>
+	&nbsp;<br>
+	&nbsp;name | age<br>
+	------+------<br>
+	&nbsp;joe&nbsp; | 78<br>
+	&nbsp;1 Row and 2 Columns<br>&nbsp;<br>
         <div class="code_caption">
 	<b>Example</b>: Writing Rows from a Table to a File
         </div>
         </div>
         </center>
 
-<p>In this case, the "&gt;" must be escaped to prevent SparForte from
-redirecting the output to a file called "c".</p>
+<p>In the case of the where clause, the "&gt;" must be escaped to
+prevent SparForte from redirecting the output to a file called "c".</p>
 
 <p>Since these command are in a transaction, you can discard the table by
 rolling
@@ -254,7 +262,7 @@ Packages section for a full description.</p>
 			</td>
 		</tr>
 		<tr>
-			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" border="0" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
 			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
 	       	</tr>
 

@@ -1,0 +1,78 @@
+<HEAD><TITLE>sieve.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : sieve.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar sieve
+ 2
+ 3
+ 5
+ 7
+ 11
+ 13
+ 17
+ 19
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( "sieve" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "The Sieve of Eratosthenes is a simple algorithm that" );
+<b>pragma</b> annotate( "finds the prime numbers up to a given integer. Implement ");
+<b>pragma</b> annotate( "this algorithm, with the only allowed optimization that" );
+<b>pragma</b> annotate( "the outer loop can stop at the square root of the limit," );
+<b>pragma</b> annotate( "and the inner loop may start at the square of the prime" );
+<b>pragma</b> annotate( "just found. That means especially that you shouldn't" );
+<b>pragma</b> annotate( "optimize by using pre-computed wheels, i.e. don't assume" );
+<b>pragma</b> annotate( "you need only to cross out odd numbers (wheel based on" );
+<b>pragma</b> annotate( "2), numbers equal to 1 or 5 modulo 6 (wheel based on 2" );
+<b>pragma</b> annotate( "and 3), or similar wheels based on low primes." );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "http://rosettacode.org/wiki/Sieve_of_Eratosthenes" );
+<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> sieve <b>is</b> 
+   last_bool : <b>constant</b> positive := 20;
+   <b>type</b> bool_array <b>is</b> <b>array</b>(2..last_bool) <b>of</b> boolean;
+   a : bool_array;
+ 
+   test_num : positive;  
+   limit    : positive := positive(numerics.sqrt(float(arrays.last(a))));
+
+   n : positive := 2;  
+<b>begin</b>
+   <b>for</b> i <b>in</b> arrays.first(a)..last_bool <b>loop</b>
+     a(i) := true;
+   <b>end</b> <b>loop</b>;
+
+   <b>for</b> num <b>in</b> arrays.first(a)..last_bool <b>loop</b>
+     <b>if</b> a(num) <b>then</b>
+        test_num := num * num;
+        <b>while</b> test_num &lt;= last_bool <b>loop</b>
+          a(test_num) := false;
+          test_num := @ + num;
+        <b>end</b> <b>loop</b>;
+     <b>end</b> <b>if</b>;
+   <b>end</b> <b>loop</b>;
+ 
+   <b>for</b> i <b>in</b> arrays.first(a)..last_bool <b>loop</b>
+     <b>if</b> a(i) <b>then</b>
+       put_line(i);
+     <b>end</b> <b>if</b>;
+   <b>end</b> <b>loop</b>;
+<b>end</b> sieve;
+
+</PRE></BODY></HTML>

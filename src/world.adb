@@ -1,11 +1,11 @@
 ------------------------------------------------------------------------------
--- Common declarations across most of BUSH including                        --
+-- Common declarations across most of SparForte/BUSH including              --
 -- command line switches and the symbol table.                              --
 --                                                                          --
--- Part of BUSH                                                             --
+-- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2005 Ken O. Burtch & FSF                 --
+--              Copyright (C) 2001-2011 Free Software Foundation            --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,7 +21,6 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
--- CVS: $Id: world.adb,v 1.3 2005/06/24 01:01:18 ken Exp $
 
 pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;

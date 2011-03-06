@@ -2,10 +2,10 @@
 ------------------------------------------------------------------------------
 -- Linux Imported kernel syscalls / standard C functions                    --
 --                                                                          --
--- Part of BUSH                                                             --
+-- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2008 Ken O. Burtch & FSF                 --
+--            Copyright (C) 2001-2011 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,7 +21,6 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
--- CVS: $Header: /home/cvsroot/bush/src/bush_linux.ads,v 1.3 2005/08/31 15:10:44 ken Exp $
 
 with Interfaces.C, System.Address_To_Access_Conversions;
 use  Interfaces.C;

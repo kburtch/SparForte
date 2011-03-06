@@ -1,4 +1,4 @@
-# BUSH - Business Shell Makefile
+# SparForte - Business Shell Makefile
 #
 # This makefile is for GNU make
 
@@ -17,7 +17,7 @@ CFLAGS=CFLAGSTYPE
 
 # RPM Directories For Building an RPM file
 
-RPM_BUILD_DIR=~/rpm/tmp/bush-root
+RPM_BUILD_DIR=~/rpm/tmp/spar-root
 RPM_BIN_DIR=${RPM_BUILD_ROOT}/usr/local/bin
 RPM_SYSCONF_DIR=/etc
 RPM_MAN_DIR=/usr/local/man
@@ -40,7 +40,7 @@ LIBS=-L`pg_config --libdir` `mysql_config --libs` -L./apq-2.1/ ./apq-2.1/c_mysql
 all: c_os.o c_scanner.o
 	@echo
 	@echo "==============================================================="
-	@echo "  BUSH - Business Shell"
+	@echo "  SparForte - Business Shell"
 	@echo "    Need help? Type make help"
 	@echo "==============================================================="
 	@echo
@@ -66,16 +66,16 @@ all: c_os.o c_scanner.o
 	$(MAKE) -C apq-2.1/
 	@echo
 	@echo "---------------------------------------------------------------"
-	@echo " Making BUSH"
-	@echo "   http://www.pegasoft.ca/bush.html"
+	@echo " Making SparForte"
+	@echo "   http://www.pegasoft.ca/sparforte.html"
 	@echo "---------------------------------------------------------------"
 	@echo
-	$(GNATMAKE) -c -i -O1 $(CPU_FLAG)=$(CPU) -gnatfaon -fstack-check -c $(INCLUDE) bush
-	gnatbind -x $(INCLUDE_BIND) bush.ali
-	gnatlink bush.ali ./ADAVOX-0.51/wc/cglue.o c_os.o c_scanner.o $(LIBS)
+	$(GNATMAKE) -c -i -O1 $(CPU_FLAG)=$(CPU) -gnatfaon -fstack-check -c $(INCLUDE) spar
+	gnatbind -x $(INCLUDE_BIND) spar.ali
+	gnatlink spar.ali ./ADAVOX-0.51/wc/cglue.o c_os.o c_scanner.o $(LIBS)
 	@echo
 	@echo "---------------------------------------------------------------"
-	@echo "  Thanks for choosing BUSH"
+	@echo "  Thanks for choosing SparForte"
 	@echo "---------------------------------------------------------------"
 	@echo
 
@@ -114,24 +114,24 @@ max: clean c_os.o c_scanner.o
 	$(MAKE) -C apq-2.1/
 	@echo
 	@echo "---------------------------------------------------------------"
-	@echo "Making BUSH"
+	@echo "Making SparForte"
 	@echo "---------------------------------------------------------------"
 	@echo
-	$(GNATMAKE) -c -i -O3 $(CPU_FLAG)=$(CPU) -gnatf -gnatn -gnatp -ffast-math -c $(INCLUDE) bush
-	gnatbind -x $(INCLUDE) bush.ali
-	gnatlink bush.ali ./ADAVOX-0.51/wc/cglue.o c_os.o c_scanner.o $(LIBS)
+	$(GNATMAKE) -c -i -O3 $(CPU_FLAG)=$(CPU) -gnatf -gnatn -gnatp -ffast-math -c $(INCLUDE) spar
+	gnatbind -x $(INCLUDE) spar.ali
+	gnatlink spar.ali ./ADAVOX-0.51/wc/cglue.o c_os.o c_scanner.o $(LIBS)
 
 clean:
 	$(MAKE) -C adacgi-1.6 clean
 	$(MAKE) -C apq-2.1 clean
 	$(MAKE) -C ADAVOX-0.51 clean
-	rm -f *.o *.ali t.t t.bush core bush.zip bush testsuite/write_only.txt testsuite/exec_only.txt
+	rm -f *.o *.ali t.t t.spar core spar.zip spar testsuite/write_only.txt testsuite/exec_only.txt
 
 distclean:
 	$(MAKE) -C adacgi-1.6 clean
 	$(MAKE) -C ADAVOX-0.51 clobber
 	$(MAKE) -C apq-2.1 clobber
-	rm -f *.o *.ali t.t t.bush core bush.zip bush testsuite/write_only.txt testsuite/exec_only.txt
+	rm -f *.o *.ali t.t t.spar core spar.zip spar testsuite/write_only.txt testsuite/exec_only.txt
 	rm -f bush_os.ads bush_os.adb bush_os-sdl.ads parser.adb parser_db.ads parser_db.adb parser_mysql.ads parser_mysql.adb world.ads builtins.adb
 
 test:	all
@@ -161,34 +161,34 @@ srctar: distclean
 	chmod 440 bush_hp.adb
 	chmod 440 bush_os-sdl-32bit.ads
 	chmod 440 bush_os-sdl-64bit.ads
-	(cd ..;  tar cfvz bush.tgz *; cd src)
+	(cd ..;  tar cfvz spar.tgz *; cd src)
 	@echo "Don't forget to unpack and repack under a descriptive directory"
 
 rpm:	all
 
 bintar: c_os.o all
-	gnatbind -x $(INCLUDE_BIND) bush.ali
-	gnatlink bush.ali ./ADAVOX-0.51/wc/cglue.o c_os.o c_scanner.o $(LIBS)
-	(cd ..; rm -f bush.tgz; tar cfvz bush.tgz src/bush src/bush.1 README COPYING INSTALL examples doc GNUmakefile; rm -f bush )
+	gnatbind -x $(INCLUDE_BIND) spar.ali
+	gnatlink spar.ali ./ADAVOX-0.51/wc/cglue.o c_os.o c_scanner.o $(LIBS)
+	(cd ..; rm -f spar.tgz; tar cfvz spar.tgz src/spar src/spar.1 README COPYING INSTALL examples doc GNUmakefile; rm -f spar )
 	@echo "Don't forget to unpack and repack under a descriptive directory"
 
 install:
 	install -d /usr/local/bin
-	install -m 555 bush /usr/local/bin/bush
+	install -m 555 spar /usr/local/bin/spar
 	install -d /usr/local/man/man1
-	install -m 555 bush.1 /usr/local/man/man1/bush.1
+	install -m 555 spar.1 /usr/local/man/man1/spar.1
 
 uninstall:
-	rm /usr/local/bin/bush
-	rm /usr/local/man/man1/bush.1
+	rm /usr/local/bin/spar
+	rm /usr/local/man/man1/spar.1
 
 help:
 	@echo "Run configure first, if you have not already done so."
 	@echo "Then you can make these:"
 	@echo "  all       - (default) normal build"
 	@echo "  max       - maximum performance, minimum error checks"
-	@echo "  install   - install bush binary file in /usr/local/bin"
-	@echo "  uninstall - remove bush binary file in /usr/local/bin"
+	@echo "  install   - install sparforte binary file in /usr/local/bin"
+	@echo "  uninstall - remove sparforte binary file in /usr/local/bin"
 	@echo "  clean     - remove temporary and binary files"
 	@echo "  distclean - clean and remove operating system choice"
 	@echo "  test      - make all, then run test.bush script"

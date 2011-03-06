@@ -1,8 +1,8 @@
-<HEAD><TITLE>chomp.bush</TITLE></HEAD>
+<HEAD><TITLE>chomp.sp</TITLE></HEAD>
 <BODY>
-<HR><DIV ALIGN="center"><H1> File : chomp.bush</H1></DIV><HR>
+<HR><DIV ALIGN="center"><H1> File : chomp.sp</H1></DIV><HR>
 <PRE>
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 <FONT COLOR=green><EM>--</EM></FONT>
 <FONT COLOR=green><EM>-- Morph</EM></FONT>
 <FONT COLOR=green><EM>--</EM></FONT>
@@ -152,7 +152,7 @@ create( output, out_file, targetpath );
 open( input, in_file, sourcepath );
 <b>while</b> <b>not</b> end_of_file( input ) <b>loop</b>
    <FONT COLOR=green><EM>-- strip end-of-line terminators</EM></FONT>
-   <FONT COLOR=green><EM>-- Note: BUSH should do this automatically.</EM></FONT>
+   <FONT COLOR=green><EM>-- Note: SparForte should do this automatically.</EM></FONT>
    textline := get_line( input );
    <b>if</b> verbose <b>then</b>
       put( standard_error, "&lt;&lt; " );

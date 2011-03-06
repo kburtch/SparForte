@@ -1,13 +1,13 @@
-<HEAD><TITLE>quest.bush</TITLE></HEAD>
+<HEAD><TITLE>quest.sp</TITLE></HEAD>
 <BODY>
-<HR><DIV ALIGN="center"><H1> File : quest.bush </H1></DIV><HR>
+<HR><DIV ALIGN="center"><H1> File : quest.sp </H1></DIV><HR>
 <PRE>
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
 <FONT COLOR=green><EM>-- Quest</EM></FONT>
 <FONT COLOR=green><EM>--</EM></FONT>
 <FONT COLOR=green><EM>-- An old BASIC exploration game.</EM></FONT>
-<FONT COLOR=green><EM>-- Coverted to BUSH, Ken O. Burtch, 2003</EM></FONT>
+<FONT COLOR=green><EM>-- Coverted to SparForte, Ken O. Burtch, 2003</EM></FONT>
 <FONT COLOR=green><EM>-- WARNING: Conversion not finished!!</EM></FONT>
 <FONT COLOR=green><EM>--</EM></FONT>
 <FONT COLOR=green><EM>-- THIS PROGRAM WAS TAKEN FROM THE JULY 1979 BYTE MAG.</EM></FONT>
@@ -25,7 +25,7 @@ second_treasure_room : <b>constant</b> integer := 12; <FONT COLOR=green><EM>-- w
 
 room : <b>array</b>( 1..42 ) <b>of</b> integer; <FONT COLOR=green><EM>-- was W</EM></FONT>
 move : <b>array</b>( 1..42 ) <b>of</b> string; <FONT COLOR=green><EM>-- movement table, M</EM></FONT>
-<FONT COLOR=green><EM>-- since BUSH only has 1-D arrays, the 43 elements will be fields.</EM></FONT>
+<FONT COLOR=green><EM>-- since SparForte only has 1-D arrays, the 43 elements will be fields.</EM></FONT>
 move_sep : character := ',';
 
 score : integer; <FONT COLOR=green><EM>-- was S</EM></FONT>

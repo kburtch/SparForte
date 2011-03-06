@@ -1,7 +1,7 @@
 /* -------------------------------------------- */
 /* scripting.c                                  */
 /*                                              */
-/* An example of using BUSH as a scripting      */
+/* An example of using SparForte as a scripting */
 /* language for a C program.                    */
 /* -------------------------------------------- */
 
@@ -28,7 +28,7 @@ int main() {
 
   /* Create the script to run */
 
-  f = fopen( "scripting_example.bush", "w" );
+  f = fopen( "scripting_example.sp", "w" );
   fprintf( f, "%s\n", "pragma restriction( no_external_commands );" );
   fprintf( f, "%s\n", "pragma ada_95;" );
   fprintf( f, "%s\n", "procedure scripting_example is" );
@@ -40,10 +40,10 @@ int main() {
 
   /* Run the script.  If successful, delete script */
 
-  if ( system( "../bush scripting_example.bush" ) != 0 ) {
+  if ( system( "../spar scripting_example.sp" ) != 0 ) {
      printf( "Oh, no.  There was an error in the script\n" );
   } else {
-     unlink( "scripting_example.bush" );
+     unlink( "scripting_example.sp" );
   }
   return 0;
 }

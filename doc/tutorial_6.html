@@ -7,7 +7,7 @@
 	<title>SparForte - Tutorials - Template Tutorial 1: Basic Templates</title>
         <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 </head>
-<body bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
 		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
 		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
@@ -22,7 +22,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
-				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
@@ -42,12 +42,12 @@
 <h2><a name="2.6"></a>Template Tutorial 1: Basic Templates</h2>
 <p>Tools like PHP can run commands embedded in a web page. SparForte scripts
 can
-also be embedded in a web page. Using SparForte instead of another tool is
-easy to learn and use since you're are already familiar with the SparForte
-language.</p>
-<h4>Running SparForte From a Web Server</h4>
+also be embedded in a web page.</p>
+<h3>Running SparForte From a Web Server</h3>
+
+<h3>Using SparForte with CGI</h3>
 <p>CGI scripts can be written in SparForte, in the same way as they are
-written in
+written
 in other scripting languages like PERL or PHP. Write your CGI script in
 SparForte
 and make sure that the "#!" path has the correct location of the SparForte
@@ -55,34 +55,55 @@ interpreter. Your web server can then run the SparForte script.</p>
 <p>Using the SparForte <tt>cgi</tt> package you should now be able to write
 a CGI
 script using SparForte.</p>
-<p>To make SparForte run as a template engine like PHP, SparForte has a directive
-called
 
-<tt>pragma template</tt>. This pragma has two parameters: the type of
+        <center>
+        <div class="code">
+        <p class="code">
+	<b>procedure</b> minimal_cgi <b>is</b><br>
+  	-- Demonstrate SparForte's CGI interface<br>
+  	-- based on AdaCGI's minimal.adb example<br>
+&nbsp;<br>
+  	-- To run this script directly (without a HTTP server), set the<br>
+  	-- environment variable REQUEST_METHOD to "GET" and the variable<br>
+  	-- QUERY_STRING to either "" or "x=a&amp;y=b".<br>
+&nbsp;<br>
+	<b>begin</b><br>
+  	&nbsp;&nbsp;cgi.put_cgi_header;<br>
+  	&nbsp;&nbsp;cgi.put_html_head( "Minimal Form Demonstration" );<br>
+  	&nbsp;&nbsp;<b>if</b> cgi.input_received <b>then</b><br>
+     	&nbsp;&nbsp;&nbsp;&nbsp;cgi.put_variables;<br>
+  	&nbsp;&nbsp;<b>else</b><br>
+     	&nbsp;&nbsp;&nbsp;&nbsp;put_line( "&lt;form method=" &amp; ASCII.Quotation &amp; "POST" &amp; ASCII.Quotation &amp;<br>
+       	&nbsp;&nbsp;&nbsp;&nbsp;"&gt;What's your name?&lt;input name=" &amp; ASCII.Quotation &amp; "username" &amp;<br>
+       	&nbsp;&nbsp;&nbsp;&nbsp;ASCII.Quotation &amp; "&gt;&lt;input type=" &amp; ASCII.Quotation &amp; "submit" &amp;<br>
+       	&nbsp;&nbsp;&nbsp;&nbsp;ASCII.Quotation &amp; "&gt;</form>" );<br>
+  	&nbsp;&nbsp;<b>end</b> <b>if</b>;<br>
+  	&nbsp;&nbsp;cgi.put_html_tail;<br>
+	<b>end</b> minimal_cgi;<br>&nbsp;<br>
+        </p>
+        <div class="code_caption">
+        <b>Example</b>: A Simple CGI Script</span>
+        </div>
+        </div>
+        </center>
+
+<h3>Using SparForte with Web Templates</h3>
+
+<p>SparForte can also run as a template engine like PHP.  Although
+it doesn't yet have an Apache module, you can use the CGI mechanism
+to use templates.  First, the CGI script can do any necessary
+computation.  Then, using a directive called
+called <b>pragma template</b>, a web template is loaded containing
+HTML and embedded SparForte statements.</p>
+
+<p>The template pragma has two parameters: the type of
 template
 and an optional path to the template. If you don't include a path to
 the
 template, SparForte will assume that the template has the same name as your
 script
-but with a ".tmpl" file name extension. Use a template type of <tt>html</tt>.</p>
-
-        <center>
-        <div class="code">
-        <p class="code">
-	#!/usr/local/bin/bush<br>
-	-- status.bush<br>
-	<b>pragma</b> template( html );<br>
-	<b>procedure</b> status is<br>
-	&nbsp;&nbsp;user_count : constant integer := `who | wc -l`;<br>
-	<b>begin</b><br>
-  	&nbsp;&nbsp;null;<br>
-	<b>end</b> status;<br>&nbsp;<br>
-        </p>
-        <div class="code_caption">
-        <b>Example</b>: A Simple Template Script (Missing the Template)</span>
-        </div>
-        </div>
-        </center>
+but with a ".tmpl" file name extension. Use a template type of <tt>html</tt>
+to return a web page.</p>
 
 <p>Use the main script to run operating system command, database
 queries or
@@ -92,7 +113,7 @@ template called "status.tmpl".</p>
 <h4>What's in a Template File?</h4>
 <p>A template file should contain the web page SparForte will display. Embed
 SparForte
-scripts within the template using &lt;?bush tag. The output
+scripts within the template using &lt;?spar tag. The output
 from the scripts is written directly into the web page. For example,
 to insert the values of SparForte variables in a web page, use the question
 mark
@@ -101,14 +122,14 @@ command.</p>
         <center>
         <div class="code">
         <p class="code">
-	&lt;!-- status.tmpl: template for the status.bush script --&gt;<br>
+	&lt;!-- status.tmpl: template for the status.sp script --&gt;<br>
 	&lt;html&gt;<br>
 	&lt;head&gt;<br>
 	&lt;title&gt;Users on the System&lt;/title&gt;<br>
 	&lt;/head&gt;<br>
 	&lt;body&gt;<br>
 	&lt;h3&gt;Users on the System&lt;h3&gt;<br>
-	&lt;p&gt;There are &lt;?bush ?user_count; ?&gt; users on the system.&lt;/p&gt;<br>
+	&lt;p&gt;There are &lt;?spar ?user_count; ?&gt; users on the system.&lt;/p&gt;<br>
 	&lt;/body&gt;<br>
 	&lt;/html&gt;<br>&nbsp;<br>
         </p>
@@ -124,7 +145,7 @@ command.</p>
 <h3>Users on the System</h3>
 There are 4 users on the system.
 <hr>
-<p>The &lt;?bush...?&gt; tag can contain any kind of SparForte script and
+<p>The &lt;?spar...?&gt; tag can contain any kind of SparForte script and
 can be longer
 than one line.</p>
 <p>The scripts in the template are after the main script. For security,
@@ -132,8 +153,7 @@ scripts run in a restricted shell and are not able to run external
 operating
 system commands. (You can disable this protection with <tt>pragma
 unrestricted_template</tt> but anyone who can edit the template will be
-able to run commands with the authority of the web server--generally, a
-very bad idea.).</p>
+able to run commands with the authority of the web server.</p>
 
 <p>Here is a longer example:</p>
 <table border="1" width="98%">
@@ -145,15 +165,15 @@ very bad idea.).</p>
     <tr>
 
       <td valign="top">
-      <pre>#!/usr/local/bin/bush<br>pragma unrestricted_template( html );<br></pre>
+      <pre>#!/usr/local/bin/spar<br>pragma unrestricted_template( html );<br></pre>
       </td>
       <td valign="top">
-      <pre>&lt;html&gt;<br>&lt;head&gt;<br>&lt;titleSparForte Rocks!&lt;/title&gt;<br>&lt;/head&gt;<br>&lt;body&gt;<br>&lt;h2&gt;SparForte Rocks!&lt;/h2&gt;<br>&lt;h3&gt;System Info&lt;/h3&gt;<br>&lt;table border=1 summary="System Info"&gt;<br>&lt;tr&gt;<br>&lt;td align="right"&gt;&lt;b&gt;System Name:&lt;/b&gt;&lt;/td&gt;<br>&lt;td&gt;&lt;?bush uname -n; ?&gt;&lt;/td&gt;<br>&lt;/tr&gt;<br>&lt;tr&gt;<br>&lt;td align="right"&gt;&lt;b&gt;Uptime:&lt;/b&gt;&lt;/td&gt;<br>&lt;td&lt;pre&gt;&lt;?bush uptime; ?&gt;&lt;/pre&gt;&lt;/td&gt;<br>&lt;/tr&gt;<br>&lt;tr&gt;<br>&lt;td align="right"&gt;&lt;b&gt;Database Tables:&lt;/b&gt;&lt;/td&gt;<br>&lt;td&gt;&lt;pre&gt;&lt;?bush<br>   db.connect( "ken" );<br>   if not db.is_connected then<br>      put_line( "&lt;i&gt;Unable to connect to database&lt;/i&gt;" );<br>   end if;<br>   db.list; -- show a list of database tables<br>?&gt;&lt;/pre&gt;&lt;/td&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;<br></pre>
+      <pre>&lt;html&gt;<br>&lt;head&gt;<br>&lt;titleSparForte Rocks!&lt;/title&gt;<br>&lt;/head&gt;<br>&lt;body&gt;<br>&lt;h2&gt;SparForte Rocks!&lt;/h2&gt;<br>&lt;h3&gt;System Info&lt;/h3&gt;<br>&lt;table border=1 summary="System Info"&gt;<br>&lt;tr&gt;<br>&lt;td align="right"&gt;&lt;b&gt;System Name:&lt;/b&gt;&lt;/td&gt;<br>&lt;td&gt;&lt;?spar uname -n; ?&gt;&lt;/td&gt;<br>&lt;/tr&gt;<br>&lt;tr&gt;<br>&lt;td align="right"&gt;&lt;b&gt;Uptime:&lt;/b&gt;&lt;/td&gt;<br>&lt;td&lt;pre&gt;&lt;?spar uptime; ?&gt;&lt;/pre&gt;&lt;/td&gt;<br>&lt;/tr&gt;<br>&lt;tr&gt;<br>&lt;td align="right"&gt;&lt;b&gt;Database Tables:&lt;/b&gt;&lt;/td&gt;<br>&lt;td&gt;&lt;pre&gt;&lt;?spar<br>   db.connect( "ken" );<br>   if not db.is_connected then<br>      put_line( "&lt;i&gt;Unable to connect to database&lt;/i&gt;" );<br>   end if;<br>   db.list; -- show a list of database tables<br>?&gt;&lt;/pre&gt;&lt;/td&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;<br></pre>
 
       </td>
     </tr>
     <tr>
-      <td colspan="2"><b>Results in a Web Browser</b><br>
+      <td colspan="2"><b>Results in a Web Browser</b> (Taken from BUSH 1.0)<br>
       <img src="pictures/bush_template_1.gif" alt="[Screenshot]" height="505"
  width="696"></td>
     </tr>
@@ -185,7 +205,7 @@ log for possible problems.</p>
 			</td>
 		</tr>
 		<tr>
-			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" border="0" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
 			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
 	       	</tr>
 

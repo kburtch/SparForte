@@ -7,7 +7,7 @@
 	<title>SparForte - Contributors - Bindings</title>
         <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 </head>
-<body bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
 		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
 		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
@@ -22,7 +22,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
-				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html"><b>Contributors</b></a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
@@ -245,6 +245,45 @@ The only difference to the calendar package compared to what you did here
 was that Ada.Calendar.Time was a private type so SparForte implements its own
 calendar package using a normal type so that time values can be converted
 to strings.</p>
+
+&nbsp;<br>
+
+<h2>Tips for Implementing New Features</h2>
+
+<p>Do you want to contribute to one of these features?</p>
+
+<h3>Tips on Implementing Exceptions</h3>
+
+<p>To implement exceptions, all "bad paths" must be followed correctly.  For
+example, the SkipBlock procedure skips through the until it finds the end of
+a block but that may be too simple for exception handling.  With exception
+handling, most input must be read and must be parsed (even if it does nothing
+because an exception is raised/thrown) so the parser doesn't loose context.</p>
+
+<h3>Tips on Implementing Objects</h3>
+
+<p>The current symbol table, the identifiers array, is only suitable for
+simple data types.  I've written a new symbol table for SparForte that has 
+support for objects as well as other complex data structures.  The table is 
+very different from the current symbol table it will take an extensive,
+concentrated effort to rewrite the rest of SparForte to use this new symbol 
+table.</p>
+
+<h3>Tips on Implementing User-Defined Packages</h3>
+
+<p>This is also dependant on the new symbol table mentioned above.  The
+new symbol table adds namespaces.</p>
+
+<h3>Tips on Implementing UTF-8 Characters</h3>
+
+<p>The current byte-code compiler supports 8-bit characters (that is,
+ISO Latin-1).  Special instructions in the byte code are flagged as
+characters greater than 127 and Latin-1 characters greater than 127
+are escaped in the byte code.  The string length also affects things
+like indentation and command line wrapping.  UTF-8 characters are 
+multiple bytes.  To implement UTF-8, you'll have to deal with these
+string length issues as well as ensure that the byte code routines
+handle the new variable-length characters properly.</p>
 
 &nbsp;<br>
 

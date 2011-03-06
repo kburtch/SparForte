@@ -7,7 +7,7 @@
 	<title>SparForte - Tutorials - GCC Tutorial: Compiling SparForte Scripts</title>
         <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 </head>
-<body bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
 		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
 		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
@@ -22,7 +22,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
-				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
@@ -40,14 +40,22 @@
 				<!-- Content Area -->
 
 <h2><a name="2.8"></a>GCC Tutorial: Compiling SparForte Scripts</h2>
-<p>To compile a script as an executable program, you'll need to download
-the
-GNAT GNU Ada 95 compiler.&nbsp; This compiler is available as part of GCC 3.x
-(if your version has it enabled).  A standalone compiler is available
-from Ada Core Technologies (<a href="http://www.gnat.com">www.gnat.com</a>).
-A Linux-specific version in RPM format is available from the Ada Linux
-Team (<a href="http://www.gnuada.org/alt.html">www.gnuada.org/alt.html</a>).</p>
-<p>AdaScript is not completely compatible with Ada 95 because Ada 95
+
+<p>Complete instructions for converting a SparForte AdaScript script
+into Ada and compiling it with GCC is beyond the scope of this manual.
+However, here's are some tips.</p>
+
+<h3>Getting GCC Ada/GNAT</h3>
+
+<p>GCC Ada is availble for most version of Linux.  If you need to,
+you can compile GCC from sources and activate Ada support.  AdaCore,
+the company responsible for GCC Ada, also as a standalone GPL version
+and commerical versions available from their web site.  Likewise,
+there are other Ada compiler vendors for other operating systems.</p>
+
+<h3>Minimize the Differences</h3>
+
+<p>AdaScript is not completely compatible with Ada 2005 because Ada 2005
 was
 never designed as a language for writing scripts.&nbsp; Changes must be
 made to your script, but the changes should be minimal and easily made.
@@ -55,7 +63,7 @@ made to your script, but the changes should be minimal and easily made.
 </p>
 <p>First, compile your script with the <b>pragma ada_95</b>
 directive.&nbsp;
-This will report most non-Ada 95 features as an error.&nbsp; pragma
+This will report most non-Ada features as an error.&nbsp; pragma
 ada_95
 disallows the following in scripts:
 </p>
@@ -80,19 +88,32 @@ package</li>
 syntax
 instead</li>
 </ul>
+
+<h3>Use a Main Procedure</h3>
+
 <p>Second, make sure your script is contained in a <b>procedure block </b>(see
 "script structure" below).</p>
+
+<h3>Deal with External Commands</h3>
+
 <p>Third, <b>external commands</b> will have to be rewritten as Ada
 procedures
 or calls to GNAT.OS_Lib.Spawn or the POSIX system() call.&nbsp;
 You
 will have to import system() to use it.
 </p>
-<p>Finally, compile the script with GNAT compiler.&nbsp; To generate
+
+<h3>Final Steps</h3>
+
+<p>There are still differences you may encounter such as the package
+names for certain functions, incompatibility with string types, use
+of with/use statements, or Ada attributes.</p>
+
+<p>To test your script, compile the script.&nbsp; To generate
 Java
 byte code to run on a Java Virtual Machine, use the JGNAT compiler
 instead
-of GNAT.</p>
+of GNAT.  Or use A# to generate .NET code.</p>
 
 <p>To learn more about GCC Ada, read
 <a href="http://www.pegasoft.ca/resources/boblap/book.html">The Big Online Book of Linux Ada Programming</a>.
@@ -117,7 +138,7 @@ of GNAT.</p>
 			</td>
 		</tr>
 		<tr>
-			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" border="0" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
 			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
 	       	</tr>
 

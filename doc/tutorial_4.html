@@ -7,7 +7,7 @@
 	<title>SparForte - Tutorials - Script Tutorial 1: Basic Commands Scripts</title>
         <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 </head>
-<body bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
 		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
 		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
@@ -22,7 +22,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
-				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
@@ -41,6 +41,12 @@
 
 <h2><a name="2.4"></a>Script Tutorial 1: Basic Commands Scripts</h2>
 </p>
+<p>This section discusses how to assemble SparForte into runnable
+programs called "scripts".  It also covers basic features related
+to writing scripts.</p>
+
+<h3>Comments</h3>
+
 <p>SparForte <b>comments</b> begin with a double minus sign. Any text
 following
 the comment sign to the end of the line are treated as explanatory
@@ -56,9 +62,10 @@ For example,
 
 <p>Comments are not very useful at the command prompt but they are very
 useful in scripts.&nbsp; A script is collection of SparForte commands stored
-in a file. <br>
+in a file.</p>
 
-</p>
+<h3>Running Commands</h3>
+
 <p>One crude way to get SparForte to execute commands is to redirect the
 commands
 through standard input. For example, from BASH you could type
@@ -66,20 +73,31 @@ through standard input. For example, from BASH you could type
 
         <center>
         <div class="code">
-	<p class="code">bash$ echo "? \"Hello World\" ; logout" | bush</p>
+	<p class="code">bash$ echo "? \"Hello World\" ; return" | spar<br>
+	Type "help" for help<br>
+	=&gt; ? "Hello World" ; return<br>
+	Hello World</p>
         </div>
 	</center>
 
-<p>SparForte treats this as if it was an interactive session with a human
-user.
-Command prompts are written to the screen and the keyword logout is
-necessary
-to terminate the session.
-</p>
-<p>A better way to execute a set of commands is to write a script. A
-script has these
-advantages:
-</p>
+<p>Notice the login prompt appears.  SparForte treats this as if it was
+an interactive session with a human user.  Command prompts are written
+to the screen and the keyword return is necessary to terminate the session.</p>
+
+<p>A better way to run short commands is to use the --exec option.</p>
+
+        <center>
+        <div class="code">
+	<p class="code">bash$ spar --exec "? \"Hello World\";"<br>
+	Hello World</p>
+        </div>
+	</center>
+
+<h3>How Scripts Differ from the Command Prompt</h3>
+
+<p>For a large set of commands, a better way to execute them is to
+write a script. A script has these advantages:</p>
+
 <ul>
   <li>It will run faster because SparForte compiles scripts into its own
 internal
@@ -89,9 +107,9 @@ byte code</li>
   <li>Command prompts and other interactive session displays will not
 appear</li>
 </ul>
-Commands typed into a script are treated slightly differently than
+<p>Commands typed into a script are treated slightly differently than
 those
-in an interactive session.:
+in an interactive session:</p>
 <ul>
   <li>The semi-colon at the end of each command is required.<br>
   </li>
@@ -105,21 +123,24 @@ script
 reach the end of file.</li>
 
 </ul>
-The first two items are necessary because in a script there's no user
+<p>The first two items are necessary because in a script there's no user
 to
 interact with the commands. SparForte cannot not make assumptions or take
 any
-automatic actions.
+automatic actions.</p>
+
+<h3>A First Script</h3>
+
 <p>By convention, SparForte shell scripts have file names ending with
-".bush".
-The following is a script called "hello.bush", a very short script to
+".sp".
+The following is a script called "hello.sp", a very short script to
 write
 a message on the screen.
 </p>
 
         <center>
         <div class="code">
-	<p class="code">-- hello.bush<br>
+	<p class="code">-- hello.sp<br>
      	-- this is my first SparForte script<br>
 	put_line( "Hello! SparForte is wonderful." );<br>
 	command_line.set_exit_status( 0 );<br>&nbsp;<br>
@@ -140,7 +161,7 @@ that the script ran successfully.  </p>
 
         <center>
         <div class="code">
-	<p class="code">=&gt; bush hello.bush</p>
+	<p class="code">=&gt; bush hello.sp</p>
         </div>
 	</center>
 
@@ -151,6 +172,8 @@ that the script ran successfully.  </p>
 	<p class="code">Hello! SparForte is wonderful.</p>
         </div>
 	</center>
+
+<h3>Flow of Control</h3>
 
 <p><b>Conditional statements</b> are SparForte constructs for making choices and
 providing alternative instructions.  Use the <b>if</b> statement to make
@@ -207,6 +230,9 @@ command or procedure again with a new set of parameters.  Combining parameter
 lists with @ is called a <b>chain</b>.  @ is especially useful with the
 put procedure to output several items without having to do string
 conversions and a long, hard to read expression.</p>
+
+<h3>Loops</h3>
+
 <p>There are several looping statements.  The <b>for</b> loop will repeat
 a set of commands a specific number of times or over a specific range of
 numbers.  The variable in the for loop doesn't need to be declared: SparForte will
@@ -228,6 +254,8 @@ of the loop with an <b>exit</b> command.</p>
         </div>
 	</center>
 
+<h3>The End of a Script</h3>
+
 <p>The <b>logout</b> command, which ends an interactive login session,
 cannot be used to stop a script. (After all, a script is not a login
 session.) Instead, use the <b>return</b> command to unconditionally
@@ -236,6 +264,9 @@ the exit status to zero to indicate there is no error.</p>
 
 <p>Scripts automatically stop when it reaches its end as if there was an
 implicit "return" typed there.</p>
+
+<h3>The Delay Command</h3>
+
 <p>Scripts can be paused using the built-in delay command. delay will
 suspend
 the script for a specific number of seconds after which it will wake up
@@ -282,7 +313,7 @@ other factors outside of the script's control.
 			</td>
 		</tr>
 		<tr>
-			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" border="0" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
 			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
 	       	</tr>
 

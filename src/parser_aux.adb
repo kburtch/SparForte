@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
--- BUSH Parser Aux (Parser Support)                                         --
+-- Parser Aux (Parser Support)                                              --
 --                                                                          --
--- Part of BUSH                                                             --
+-- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2005 Ken O. Burtch & FSF                 --
+--            Copyright (C) 2001-2011 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -60,7 +60,7 @@ end discardUnusedIdentifier;
 
 procedure makeTempFile( s : out unbounded_string ) is
   -- create a unique temporary filename
-  LinuxPath : string := "/tmp/bushXXXXXX" & ASCII.NUL;
+  LinuxPath : string := "/tmp/sparXXXXXX" & ASCII.NUL;
   result : aFileDescriptor;
 begin
   s := null_unbounded_string;
@@ -280,7 +280,7 @@ procedure processTemplate is
                    outputTemplate                   -- writing out template
                   );
    mode : aMode := outputTemplate;                  -- what are we doing now
-   bushStartTag   : string := "<?bush";             -- the start tag
+   bushStartTag   : string := "<?spar";             -- the start tag
    bushEndTag     : string := "?>";                 -- the end tag
    tag            : unbounded_string;               -- possible tag text
    tagCount       : natural := 0;                   -- characters in p. tag
@@ -322,7 +322,7 @@ begin
       -- Examining a possible script start tag?
       ----------------------------------------------------------------------
 
-      when gatheringStartTag =>                     -- possible <?bush ?
+      when gatheringStartTag =>                     -- possible <?spar ?
 -- put_line( "gst: read '" & ch & " at" & lineno'img & "', tag = '" & to_string( tag ) & "', tagCount = " & tagCount'img );
          tag := tag & ch;                           -- record in case not
          tagCount := tagCount + 1;                  -- count characters

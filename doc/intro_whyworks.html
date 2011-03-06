@@ -7,7 +7,7 @@
 	<title>SparForte - Intro - Preface</title>
         <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 </head>
-<body bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
 		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
 		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
@@ -22,7 +22,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
-				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
@@ -39,210 +39,124 @@
 			<td align="left" valign="top">
 	<!-- Content Area -->
 	<h2>Why It Works</h2>
-	<h3>SparForte: Cowboy Coders Not Welcome</h3>
 
-	<p>This is a high-level overview the SparForte and its goals.
-	Do you want to see a SparForte script? Here is a short one.</p>
+	<h3>How It Started</h3>
 
+<p><b>An Age of Hype</b></p>
 
-	<center>
-	<div class="code">
-		<p class="code">? "Hello World!";<br>&nbsp;<br></p>
-	<div class="code_caption">
-		<b>Example</b>: Hello World</span>
-	</div>
-	</div>
-	</center>
+<p>In the book "Facts and Fallacies of Software Engineering", long-time software
+design researcher Robert L. Glass discusses many myths of running a computer
+division in a modern company. The reality of computing is that most new
+techniques, bureaucratic processes, advanced tools and management methods simply
+don't live up to their promises. Glass describes it in this way:</p>
 
-	<p>There are many shells, interpreters, languages and web template systems.&nbsp;
-	Virtually without exception, they are incompatible with one
-	another.&nbsp;&nbsp;&nbsp;
-	What's the point of learning a tool that, no matter how sophisticated
-	it is, leaves your source code stuck with that particular tool.&nbsp; You
-	want to do scripting, so you use Python or Scheme.&nbsp; You want to do
-	reporting, so you use Perl or AWK.&nbsp; You want to write a command script, so you
-	use Bash or Zsh.&nbsp; You want to write an applet, so you use Java.&nbsp; To be a
-	programmer these days, you need to be fluent in a dozen different
-	languages.&nbsp; You would be making more money if you got a job at the United Nations.
-	</p>
-	<p>The SparForte is different.&nbsp; It is part of a language
-	environment called ABEE, one of the most powerful and flexible
-	environments available for Linux today.  ABEE is built around a single language
-	standard available on almost all Linux platforms, GCC Ada.  Any project you write in SparForte is immediately portable to
-	any machine that GCC runs on.&nbsp;
-	In other words, virtually everything.&nbsp; And it means that SparForte
-	scripts
-	can be compiled using GCC and everyone knows that GCC is superior to
-	most
-	commercial compilers.
-	</p>
+<p><i>"Hype is the plague on the house of software. Most software tools and
+technique improvements account for about 5 to 35 percent increase in productivity
+and quality. But at one time or another, most of those same improvements have
+been claimed by someone to have 'order of magnitude' of benefits".</i></p>
 
-<table summary="" bgcolor="white" border="1" cellpadding="0" cellspacing="0" width="100%">
-  <tbody>
-    <tr>
-      <td><u>A SparForte Script</u></td>
-      <td><u>A GCC Program</u></td>
-    </tr>
-    <tr>
-      <td>
-      <pre><b>procedure</b> hello <b>is</b>
-&nbsp;&nbsp;<b>pragma ada_95;<br><b>begin</b>
-&nbsp;&nbsp;put_line( "Hello World!" );
-<b>end</b> hello;<br></b></pre>
-      </td>
-      <td>
-      <pre><b>with</b> text_io<b>;<br>use</b> text_io<b>;<br>procedure</b> hello <b>is</b>
-&nbsp;&nbsp;<b>pragma ada_95;<br><b>begin</b>
-&nbsp;&nbsp;put_line( "Hello World!" );
-<b>end</b> hello;<br></b></pre>
-      </td>
-    </tr>
-  </tbody>
+<p>There's been any number of so-called "magic bullets": smarter editors, extreme programming, agile programming, CASE tools, object-oriented programming, Service Oriented Architecture, etc. Some of these had no improvement in productivity, others small improvements. But none of these were the break-though techniques that would improve productivity by a factor of 10 or more.</p>
+
+<p>Even the optimistic value of 35%, according to Mr. Glass, was not achieved through some new technique. That's the improvement gained by code reuse--breaking your program up into reusable subroutines by defining plain old functions or classes.</p>
+
+<p>A little common sense would back that up. Consider programming languages. Java was designed as an improved version of C++. Problems are expressed in the same way as C++. The fundamental syntax is the same, with the same well-known flaws. Java and C++ (and C# for that matter) are tools of the same category. So one should not expect Java to make exponential productivity improvements over C++. The same is true of PHP versus Perl as PHP was based on Perl.</p>
+
+<p>So where does that leave my claims about my Business Shell as a better way to develop software? Is it hype like extreme programming?</p>
+
+<p><b>Old Software Never Goes Away...</b></p>
+
+<p>Unlike Java, SparForte was not designed to remove annoying quirks in a programming language. It was not intended to be an enhanced Bourne Shell or to solve the problems of Ada 95, the language it is based on. SparForte was designed to solve problems in software management problems in businesses environments.</p>
+
+<p>I was perplexed with the problem that I refer to as code aging. I once worked in a company that had created a simple shell script to print a Windows spreadsheet on a UNIX printer. This shell script grew and grew until it became a web-based report generator with thousands of lines of programming.</p>
+
+<p>But the programming was all written in shell scripts. Shell scripts use a different programming paradigm than other programming languages. Shell variables do not function like variables in other languages. Shell if statements do not function like if statements in other languages. To convert a shell script into a standard programming language, the solution would have to be constructed in a different way. That means a total rewrite of the software. What was needed was a shell that used the same paradigm as another, more popular programming language.</p>
+
+<p>There are plenty of shells based on My Favourite Language. What I needed was a language to solve the code aging problem: something designed to handle small programming that could evolve and grow to millions of lines of code maintained by dozens of developers without falling apart under the language's limitations. The only top-20 programming language to meet that criteria was Ada. Ada is a language designed from the ground up for large teams, large-scale development and high reliability. Projects scale up over time and Ada was a language designed to be scalable. It was the only suitable language on which to base the Business Shell (Is Ada Good for My Business?, Aonix White Paper).</p>
+
+<p><b>Why No Bullets?</b></p>
+
+<p>This problem of software failing to be maintained as it grows or changes is not new. Author Jaron Lanier expressed the same concerns in the "Wired 24/7" episode of TV Ontario's current affairs program, "The Agenda". Lanier pointed out that hardware follows the predictable pattern of Moore's Law while software does not.</p>
+
+<p>"Sometimes," Mr. Glass writes, "I think what is happening is a kind of 'hardware envy'. Our computer hardware brethren have made remarkable progress in a few decades that computer hardware has been produced. Cheaper/better/faster happens over and over again in that hardware world. Friends who study the history of technology tell me that progress in the computer hardware field is probably faster than that in any other field, ever. Perhaps we in software are so envious of that progress that we pretend that it is happening--or can happen--to us."</p>
+
+<p>I would also agree with Mr. Glass that the software industry lacks a lot of serious, objective evaluations of claims. The problem is not limited to the software industry. In Wired magazine (Wired Home Page), researcher David Eddy discusses the problem of getting good evidence in medical trials. In the late 1980's, Eddy recommended that insurance companies not fund a new and risky cancer treatment on the grounds that it had no solid proof of results. "The dispute ignited the national media. 'The country was in a furor," Eddy says. 'We held the line and stopped a dangerous treatment,' he says. 'The first rule is Thou Shalt Have Evidence.'" ("The Body Synthetic", Wired December 2009). The cancer treatment was later proven to be a failure.</p>
+
+<p><b>Different Approach, Different Results</b></p>
+
+<p>The Stephen F. Zeigler study (Comparing Development Costs of C and Ada, Rational White Paper, also referenced in "Business Shell: Critics say 'I Don't Get It'", Lone Coder), which shows Ada delivers projects with many times less bugs that the leading conventional language, and with 50% less cost, is based on only one project (although that project had nearly two million lines of code and had large teams of skilled developers). It also hasn't be repeated, to the best of my knowledge, with tools developed in the last few years.</p>
+
+<p>True, the Business Shell is only version 1.0 and there's a lot more I would do with it if I had time, funding or an active development community. I think there is a lesson here. The SparForte approach has a lot of surface improvements over conventional languages ("Doing it Right with the Business Shell", Lone Coder). However, what makes the Business Shell more than hype is that it is designed to tackle big, enduring projects. It requires a different way of thinking about software. That's what it takes to invent truly revolutionary software technology. Can the SparForte approach improve productivity by a full order of magnitude? That's not feasible for any software tool or management technique. Yet there are valid studies that suggest it could greatly improve quality and cut production costs by half over the long term. That's a lot better than CASE tools, Extreme Programming, Agile Programming or even object-oriented programming have deliver. This is because it looks at the big picture.</p>
+
+<p>Software tools and methodologies often focus on short-term issues for product delivery, not the long-term problem of managing software. The software industry needs more people working to solve the big problems and we need more unbiased evidence to qualify how we can put these techniques and tools to best use.</p>
+
+<p>Ken Burtch<br />
+The Lone Coder: The Business Shell in an Age of Hype<br />
+December 23, 2009<br />
+http://www.pegasoft.ca/coder_december_2009.html</p>
+
+<h3><a name="tech"></a>Cowbody's Not Welcome</h3>
+
+<center>
+<table cellspacing="0" cellpadding="0" width="80%" border="0">
+<tr>
+<td><p><b>Pointy-haired Boss</b>: I've decided to standardize the department on a new programming language.<br />
+<b>Dilbert</b>: With all due respect, that sort of decision should be made by someone who knows his mass from a black hole.<br />
+<b>Pointy-haired Boss</b>: The vendor warned me that you couldn't be objective.</p>
+</tr>
 </table>
-</p>
-<p>You don't have to rewrite your scripts to use them in applications.
-Use the same variable types, the same structures, the same built-in
-packages.  Cut-and-paste your code.</p>
-<p>If that's not enough, using the JGNAT open
-source compiler, you can even compile your SparForte scripts into actual
-Java
-bytecode.&nbsp; There is another tool, A#, that will compile scripts
-into
-.NET byte code&nbsp; Things don't get much more platform-independent
-than
-that.
-</p>
-<p>What about PHP? SparForte has a HTML template engine that runs embedded
-scripts in a secure environment. No need to worry about users messing
-with
-your code...unless you want them to.
-</p>
-<p>
-<table summary="" bgcolor="white" border="1" cellpadding="0" cellspacing="0" width="100%">
-  <tbody>
-    <tr>
-      <td>
-      <pre><b>&lt;html&gt;</b>
-<b>&lt;head&gt;</b>
-<b>&lt;title&gt;</b>SparForte script embedded in a web page<b>&lt;/title&gt;</b>
-<b>&lt;/head&gt;</b>
-<b>&lt;body&gt;</b>
-  &lt;<b>?bush</b> <b>?</b> "Hello World!"; <b>?</b>&gt;<br><b>&lt;/body&gt;</b>
-<b>&lt;/html&gt;</b>
-      </pre>
-      </td>
-    </tr>
-  </tbody>
-</table>
-</p>
-<p>It's the same SparForte source code that you use for your scripts.  No need
-to learn a special template language with a new set of rules.</p>
-<p>But SparForte does more than just create scripts, executable programs and
-Java applets.&nbsp; It's a powerful computer language on its own able
-to
-do complex math, manipulate files, generate reports and able to do
-network
-programming.&nbsp; And there are many built-in packages that will let you
-do everything from compute trig functions to connecting to a web server.
-</p>
-<p>But best of all, SparForte is easy.&nbsp; Perl claims to be easy.&nbsp;
-Easily
-like riding a bicycle backwards in the middle of a thunderstorm.&nbsp;
-SparForte is easy to read, easy to understand.&nbsp; You know exactly what a
-script does without having to have a reference book beside you at all
-times
-</p>
-<p>SparForte doesn't run your programs outright.&nbsp; First it examines
-them,
-compresses them, and converts them into intermediate code.&nbsp;
-(That's
-"byte code", to you Java developers.) SparForte optimizes the program for
-the
-best possible performance. It also takes the time to verify your
-program
-will run before attempting to execute the first line.
-</p>
-<p>And if you make to typing mistake, SparForte will let you know before
-running
-your program.&nbsp; There's no need to worry that your typo will be a
-valid
-command like it would be in most other languages.&nbsp; SparForte works for
-you, not against you.
-</p>
-<p>One tool for all solutions.
-</p>
-<p>And, yes, SparForte is also makes a pretty good shell.
-</p>
-<p>So you basically have two choices. Keep working for the U.N., or
-give SparForte a try and make your life a little easier.</p>
+</center>
 
-<h3><a name="install"></a>1.2 Installation</h3>
+<p>SparForte doesn't aim to minimize keystrokes.  It targets solutions
+to what studies show are real problems in today's software teams:</p>
 
-<p>SparForte requires the GCC Ada (GNAT) run-time library and the standard C library.
-To compile SparForte from sources, you will also need BASH, GNU make and GCC Ada.
-SparForte was developed on Linux but has been ported to some other platforms.</p>
-
-<p>SparForte has additional requirements depending on what features are
-enabled.</p>
-
-<p>For further information, check the INSTALL file included with the SparForte
-sources.</p>
-
-<p>The source files and some pre-built versions can be downloaded from the SparForte
-home page at
-<a href="http://www.pegasoft.ca/bush.html">http://www.pegasoft.ca/bush.html</a>.</p>
-<p>Complete installation details are in the README and INSTALL files
-included in the SparForte download file.</p>
-<br>
-<h3><a name="tech"></a>Technical Introduction</h3>
-<p>Scripting languages are increasingly popular in commercial work, particularily
-in web design.  Some of the problems encountered with today's scripting
-languages include area of:</p>
 <ul>
-<li><b>Code Reuse</b> - sharing source code between the client or server,
-templates or applications, or other software developers requires fundamental
-change in syntax or semantics, preventing code reuse.</li>
-<li><b>Training</b> - software developers must be trained in a variety of
-languages each with its own non-standard syntax and unique terminology.
-This leads to confusion and prevents peer review.</li>
+<li><b>Programming-in-the-Large</b> - scaling up for large projects and
+teams, following existing standards where possible.  SparForte chooses
+proven technologies in these areas and adapts them for scripting.</li>
+<li><b>Code Reuse</b> - source code should be sharable between the client or server,
+templates or applications, or other software developers by adopting some
+standard syntax and semantics.</li>
+<li><b>Training</b> - by adopting a base standard syntax and semantics,
+the learning curve for software developers is reduced.
+This leads to less confusion and allows more peer review.</li>
 <li><b>Modal Thinking</b> - software developers are proned, when
 using similar languages, to use the syntax of one language when progrmming in a
 different language.  This results in statements that are semantically correct
-but syntactically wrong for a particular tool.</li>
+but syntactically wrong for a particular tool.  SparForte addresses this
+issue with compatibility with common standards, such as the ability to run
+SQL queries on the command line.</li>
 <li><b>Code Aging</b> - related to scalability, script tend to evolve over time
 outstripping the capabilities of the original languages.  These legacy
 scripts need to be ported to a different environment which often requires
-a complete rewrite into a different language.</li>
+a complete rewrite into a different language.  SparForte starts with a
+design to address this problem and contains tools to help scripts grow and
+evolve.</li>
 <li><b>Design Standardization</b> - what I refer to as the "Kitchen
 Sink Syndrome".  Many scripting languages have begin as a project to solve a
 particular issue.  For example, Python was created to be easy to use and Perl
 was an amalgamation of several UNIX tools.  As the languages age,
 new features are added that corrupt the original design goals.  Python is no longer easy
 to use.  Perl's syntax conflicts with the original UNIX tools that inspired it.
-This is results in similar but incompatible tools with unclear goals.</li>
+This is results in similar but incompatible tools with unclear goals.
+SparForte starts with an advanced, proven design and modifies it for
+scripting.  It emphasizes modularity and orthogonality--doing the most
+with the fewest, well-designed, targetted features.</li>
 <li><b>Reliability</b> - many scripting tools have poor error checking and
-error-prone syntaxes which require longer testing times and greater chances
+error-prone syntax which require longer testing times and greater chances
 of latent run-time errors. Testing applications in these languages require
 testing not only high-level functionality but also additional tests for
-low-level language issues.</li>
+low-level language issues.  Error reduction is a key goal in SparForte.</li>
+<li><b>Maintenance</b> - SparForte uses an easy-to-read syntax, with
+data hiding, modularity and program restrictions to oversee the design of
+a project, while maintaining portability and quality.</li>
 </ul>
-<p>Many of these problems can be reduced by using a common development
-language for web pages, scripting and application building.  Many languages,
-including Java and Perl, offer this kind of capability.</p>
-<p>However, comparisons of software development languages, such as
-Rational Software's 2005 study by Zeigler
-(<a href="http://www.adaic.com/whyada/ada-vs-c/cada_art.html">study</a>)
-demonstrate that languages designed for correctness, code reuse and
-easy maintenance (so called "software engineering" languages) greatly reduce
-costs for businesses.</p>
-<p>(Supporters of languages like Perl argue that less typing is the key to
-reducing costs.  However, as the size and complexity of projects grow, the
-time to type is less significant that the cost of design and bug fixing).</p>
-<p>PegaSoft's SparForte is a scripting language, template engine and
-command prompt that is designed to solve these issues and allow faster
-development of large-scale web applications compared to other popular tools.</p>
 
-<h3><a name="abee"></a>Ada-SparForte Enterprise Endeavor (ABEE)</h3>
+<p>By tackling these issues, SparForte attempts to greatly reduce the
+cost of software development and maintenance and improve the overall
+quality of the work.</p>
+
+<h3><a name="abee"></a>A Strong Foundation</h3>
+
 <p>As long as the command prompt, compiled applications, web templates and
 scripts remain in fundamental dischord, these issues will be difficult to
 solve.  These development tools cannot agree even on basic issues as
@@ -251,8 +165,7 @@ an associative array.  There needs to be some structural design agreement
 between the development tools in order to create an enterprise-wide, open
 source software environment standard.</p>
 
-<p>The standard proposed by PegaSoft is called the <b>Ada-SparForte Enterprise
-Endeavor (ABEE)</b>.  SparForte is part of a set of tools built around the ISO
+<p>SparForte is part of a set of tools built around the ISO
 Ada standard to create a standardized framework for create applications.
 The other tools include:
 
@@ -273,9 +186,6 @@ and so forth.  There is agreement at a fundamental structural level between
 the development tools.  This agreement promotes code reuse, simplifies
 training and peer review, reduces modal thinking errors, makes code age-able
 and scalable.</p>
-
-<p>ABEE also serves as an open source alternative to proprietary offerings
-like ASP .Net and Sun's J2EE.</p>
 
 <p>In order to achieve standardization, ABEE uses the Ada 95 language.
 Ada 95 is the only open source language that provides all of the following
@@ -302,14 +212,16 @@ of GCC Ada, was a runner up for the <u>Datamation's Enterprise Linux Product of
 the Year Award for 2005</u>.<p></p>
 </li></ul>
 
-<p>The following chart shows how ABEE can be divided into a multi-tier web
-development framework:</p>
+<h3><a name="abee"></a>Across a Business: An Enterprise Solution</h3>
+
+<p>The following chart shows how SparForte, JGNAT, A# and GCC Ada/GNAT
+form a multi-tier web development framework comparable to Java's J2EE:</p>
 <p>&nbsp;
 </p>
 <center>
 <p><img src="pictures/bush2ee.gif" alt="[Ada-SpareForte Enterprise Model]" height="350" width="425"></p>
 </center>
-<p><i><b>Figure</b>: ABEE Multitier Enterprise Application Model
+<p><i><b>Figure</b>: A Multitier Enterprise Application Model with SparForte (BUSH)
 </i></p>
 <p><b><span style="font-weight: bold;"><span style="font-weight: bold;">Client-Side
 Presentation</span></span></b><br>
@@ -353,7 +265,7 @@ reply
 on a database client program. The stored procedure language for most
 databases is very similar to AdaScript and is intuitive to learn and
 use
-if developers are already familiar with ABEE. The database package with
+if developers are already familiar with SparForte. The database package with
 SparForte
 is also available with GCC Ada applications.</p>
 <p></p>
@@ -375,7 +287,7 @@ applications)
 can be distributed across an information system using secure
 connections
 to negotiate with one another. Ignoring Sun's marketing buzzwords, you
-can see that the open source ABEE approach is as good as or superior to
+can see that the open source SparForte approach is as good as or superior to
 J2EE:
 </p>
 <ul>
@@ -412,11 +324,11 @@ like the ones Java uses.</li>
 </ul>
 <p>J2EE is not your only solution for writing multitiered enterprise
 applications.&nbsp;
-The ABEE strategy offers the same advantages as solutions offered by
+The SparForte strategy offers the same advantages as solutions offered by
 Sun.
 Reusable components, client interaction using HTML/XML/HTTP,
 scalability
-and high availability over a network are all possible with an ABEE
+and high availability over a network are all possible with a SparForte
 strategy. Ada-SparForte allows applications to be written once and run
 everywhere,
 supports CORBA technology to interface with existing enterprise
@@ -427,235 +339,16 @@ cuts
 down training expenses and allows applications to be "scaled up" with
 minimum
 effort.</p>
+
 <h3><a name="comm"></a>Commercial Options</h3>
 <p>GCC Ada is available in an award-winning, commercial, supported edition
 called GNAT Pro.</p>
 <p>Aonix produces a commercial Ada compiler for Linux and other platforms.</p>
-</p></p>
-<h3><a name="prob1"></a>How SparForte Improves Code Reuse</h3>
-<p>To further illustrate SparForte's advantages over other popular tools, let us
-examine some of the issues raised in section 1.2 in detail.</p>
+</p>
 
-<p>The fundamental differents in syntax or semantics between different web
-development tools has led to difficulties in sharing source code between
-applications or developers.  Consider the issue of null or undefined variables
-which have no associated value, string concatenation and array referencing.</p>
+<h3><a name="prob4"></a>How SparForte Manages Code Aging: The Progressive Development Model</h3>
 
-<p>The conventional C, Perl, PHP or BASH shell solution have no agreement on
-these basic features:</p>
-
-<table summary="Language Features" border="1" cellpadding="2" cellspacing="1">
-  <tbody>
-    <tr>
-      <td>&nbsp;<b>Feature</b>&nbsp;</td>
-      <td>&nbsp;<b>GCC C Application</b>&nbsp;</td>
-      <td>&nbsp;<b>Perl Script</b>&nbsp;</td>
-      <td>&nbsp;<b>PHP Template</b>&nbsp;</td>
-      <td>&nbsp;<b>Shell Prompt</b>&nbsp;</td>
-    </tr>
-    <tr>
-      <td>&nbsp;<i>Undefined Variables</i>&nbsp;</td>
-      <td bgcolor="lightgrey">never</td>
-      <td bgcolor="lightgrey">var == undef</td>
-      <td bgcolor="lightgrey">empty()</td>
-      <td bgcolor="lightgrey">-z (null string)</td>
-    </tr>
-    <tr>
-      <td>&nbsp;<i>String Concatenation</i>&nbsp;</td>
-      <td bgcolor="lightgrey">strcat/strncat</td>
-      <td bgcolor="lightgrey">. or word expansion</td>
-      <td bgcolor="lightgrey">.</td>
-      <td bgcolor="lightgrey">word expansion</td>
-    </tr>
-    <tr>
-      <td>&nbsp;<i>Arrays</i>&nbsp;</td>
-      <td bgcolor="lightgrey">fixed size, 0-based index</td>
-      <td bgcolor="lightgrey">variable size, 0-based index</td>
-      <td bgcolor="lightgrey">variable size, 0-based index or strings</td>
-      <td bgcolor="lightgrey">variable size, 0-based index</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>Moving source code between these tools is inherently difficult even though
-they are often employed simultaenously for a web-based application.</p>
-
-<p>The ABEE solution using SparForte provides fundamental consistency across these
-features:</p>
-
-<table summary="Language Features" border="1" cellpadding="2" cellspacing="1">
-  <tbody>
-    <tr>
-      <td>&nbsp;<b>Feature</b>&nbsp;</td>
-      <td>&nbsp;<b>GCC Ada</b>&nbsp;</td>
-      <td>&nbsp;<b>SparForte Script</b>&nbsp;</td>
-      <td>&nbsp;<b>SparForte Template</b>&nbsp;</td>
-      <td>&nbsp;<b>SparForte Prompt</b>&nbsp;</td>
-    </tr>
-    <tr>
-      <td>&nbsp;<i>Undefined Variables</i>&nbsp;</td>
-      <td bgcolor="white">never</td>
-      <td bgcolor="white">never</td>
-      <td bgcolor="white">never</td>
-      <td bgcolor="white">never</td>
-    </tr>
-    <tr>
-      <td>&nbsp;<i>String Concatenation</i>&nbsp;</td>
-      <td bgcolor="white">&amp;</td>
-      <td bgcolor="white">&amp;</td>
-      <td bgcolor="white">&amp;</td>
-      <td bgcolor="white">&amp;</td>
-    </tr>
-    <tr>
-      <td>&nbsp;<i>Arrays</i>&nbsp;</td>
-      <td bgcolor="white">fixed size, integer or enumerated index</td>
-      <td bgcolor="white">fixed size, integer or enumerated index</td>
-      <td bgcolor="white">fixed size, integer or enumerated index</td>
-      <td bgcolor="white">fixed size, integer or enumerated index</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>Source code can be moved from application to template, or template to
-script, or script to command prompt without breaking the code.</p>
-
-<h3><a name="prob2"></a>How SparForte Eases Training</h3>
-
-<p>Many of the different tools employ their own unique syntax for features
-that are essentially the same.  In the preceeding section it was demonstrated
-how features, even very basic ones, are used in incompatible ways.  However
-these tools often use their own unique terminology.</p>
-
-<p>Consider how popular scripting languages declare a subprogram:</p>
-
-<table summary="Language Terminology" border="1" cellpadding="2" cellspacing="1">
-  <tbody>
-    <tr>
-      <td>&nbsp;<b>Terminology</b>&nbsp;</td>
-      <td>&nbsp;<b>GCC C Application</b>&nbsp;</td>
-      <td>&nbsp;<b>Perl Script</b>&nbsp;</td>
-      <td>&nbsp;<b>PHP Template</b>&nbsp;</td>
-      <td>&nbsp;<b>Shell Prompt</b>&nbsp;</td>
-      <td>&nbsp;<b>Python Script</b>&nbsp;</td>
-    </tr>
-    <tr>
-      <td>&nbsp;<i>Subprogram Declaration</i>&nbsp;</td>
-      <td bgcolor="lightgrey">function (<u>type</u> <u>name</u> ...)</td>
-      <td bgcolor="lightgrey">subroutine (sub)</td>
-      <td bgcolor="lightgrey">function</td>
-      <td bgcolor="lightgrey">function (<u>name</u>() ...)</td>
-      <td bgcolor="lightgrey">function (def)</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>People using these languages cannot even agree on what to call a routine
-with a name because there's no consistent terminology.  When one developer
-refers to a def and another refers to a sub, how can they understand one
-another?</p>
-
-<p>SparForte and ABEE tools have consistent terminology:</p>
-
-<table summary="Language Terminology" border="1" cellpadding="2" cellspacing="1">
-  <tbody>
-    <tr>
-      <td>&nbsp;<b>Terminology</b>&nbsp;</td>
-      <td>&nbsp;<b>GCC Ada Application</b>&nbsp;</td>
-      <td>&nbsp;<b>SparForte Script</b>&nbsp;</td>
-      <td>&nbsp;<b>SparForte Template</b>&nbsp;</td>
-      <td>&nbsp;<b>SparForte Prompt</b>&nbsp;</td>
-    </tr>
-    <tr>
-      <td>&nbsp;<i>Subprogram Declaration</i>&nbsp;</td>
-      <td bgcolor="white">procedure or function</td>
-      <td bgcolor="white">procedure or function</td>
-      <td bgcolor="white">procedure or function</td>
-      <td bgcolor="white">procedure or function</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>It is easy to see how programmers can be divided into camps by this
-modern day "Tower of Babel", all taking about the same issues but unable
-to express the issues in common terminology.</p>
-
-<h3><a name="prob3"></a>How SparForte Reduces Modal Thinking</h3>
-
-<p>When programmers try to use similar but incompatible languages on a single
-project, they run the risk of using the wrong syntax for the current
-language they are using.  What they type is correct...if they were using
-something else.</p>
-
-<p>Here's an example using string and numerical equality.  Scripting languages
-that are "typeless" require different operator to compare strings and numbers:</p>
-
-<table summary="Language Modes" border="1" cellpadding="2" cellspacing="1">
-  <tbody>
-    <tr>
-      <td>&nbsp;<b>Feature</b>&nbsp;</td>
-      <td>&nbsp;<b>GCC C Application</b>&nbsp;</td>
-      <td>&nbsp;<b>Perl Script</b>&nbsp;</td>
-      <td>&nbsp;<b>PHP Template</b>&nbsp;</td>
-      <td>&nbsp;<b>Shell Prompt</b>&nbsp;</td>
-    </tr>
-    <tr>
-      <td>&nbsp;<i>String Equality</i>&nbsp;</td>
-      <td bgcolor="lightgrey">strcmp/strncmp</td>
-      <td bgcolor="lightgrey">eq</td>
-      <td bgcolor="lightgrey">==</td>
-      <td bgcolor="lightgrey">=</td>
-    </tr>
-    <tr>
-      <td>&nbsp;<i>Number Equality</i>&nbsp;</td>
-      <td bgcolor="lightgrey">==</td>
-      <td bgcolor="lightgrey">==</td>
-      <td bgcolor="lightgrey">==</td>
-      <td bgcolor="lightgrey">-eq</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>Notice the problem of Perl and Shell: they both use "eq" <u>but for
-opposite uses</u>.  A single equal sign is sometimes used for assignment or
-comparision.  A double equal sign can be used for either string or numeric
-comparision, depending on the language.</p>
-
-<p>Compare this to ABEE approach with SparForte:</p>
-
-<table summary="Language Modes" border="1" cellpadding="2" cellspacing="1">
-  <tbody>
-    <tr>
-      <td>&nbsp;<b>Feature</b>&nbsp;</td>
-      <td>&nbsp;<b>GCC Ada Application</b></td>
-      <td>&nbsp;<b>SparForte Prompt</b></td>
-      <td>&nbsp;<b>SparForte Script</b></td>
-      <td>&nbsp;<b>SparForte Template</b></td>
-    </tr>
-    <tr>
-      <td>&nbsp;<i>String Equality</i>&nbsp;</td>
-      <td bgcolor="white">=</td>
-      <td bgcolor="white">=</td>
-      <td bgcolor="white">=</td>
-      <td bgcolor="white">=</td>
-    </tr>
-    <tr>
-      <td>&nbsp;<i>Number Equality</i>&nbsp;</td>
-      <td bgcolor="white">=</td>
-      <td bgcolor="white">=</td>
-      <td bgcolor="white">=</td>
-      <td bgcolor="white">=</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>There is a consistent way to compare strings or numbers across the scripts,
-applications, templates and command prompt.  There is no danger of accidently
-using the wrong operator when you are looking at the wrong type of source
-code.</p>
-
-<h3><a name="prob4"></a>How SparForte Manages Code Aging--The Progressive Development Model</h3>
-
-SparForte recognizes a fundamental problem in business programming.
+<p>SparForte recognizes a fundamental problem in business programming.
 Programmers
 with limited time and resources are often required to write up quick
 scripts
@@ -666,7 +359,7 @@ designed for rapid and simple solutions, continue to grow and mutate,
 becoming
 rapidly unreadable and easily broken, leaving a complete rewrite in a
 different
-language as the only way to upgrade the software.
+language as the only way to upgrade the software.</p>
 <p>To combat this problem, SparForte scripts can be developed using a
 progressive
 development model.
@@ -705,108 +398,6 @@ no choice but to rewrite the script "from scratch".
 phased out of a project, allowing them to be removed in a controlled manner
 without disrupting the project.</p>
 
-<h3><a name="prob5"></a>How SparForte Provides Design Standardization</h3>
-
-<p>SparForte is designed to be compliant with the ISO standard.  Each version
-of SparForte moves closer to this goal.  As SparForte adds new features, they are
-implemented based on a recognized internation standard, not based on the
-language designer's whims.</p>
-
-<table summary="Language Irregularities" border="1" cellpadding="2" cellspacing="1">
-  <tbody>
-    <tr>
-      <td>&nbsp;<b>Feature</b>&nbsp;</td>
-      <td>&nbsp;<b>GCC C Application</b>&nbsp;</td>
-      <td>&nbsp;<b>Perl Script</b>&nbsp;</td>
-      <td>&nbsp;<b>PHP Template</b>&nbsp;</td>
-      <td>&nbsp;<b>Shell Prompt</b>&nbsp;</td>
-    </tr>
-    <tr>
-      <td>&nbsp;<i>String Searching</i>&nbsp;</td>
-      <td bgcolor="lightgrey">strstr</td>
-      <td bgcolor="lightgrey">Perl grep</td>
-      <td bgcolor="lightgrey">strstr</td>
-      <td bgcolor="lightgrey">Shell grep or $ exprssions</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>This kind of inconstent behaviour is a result of the "kitchen sink
-syndrome": throwing in features from different sources without thought to
-the overall impact on the language.  Perl and Shell use grep, but they
-are not the same grep.  C and PHP uses strstr but the strings behave
-somewhat differently.</p>
-
-<p>SparForte and ABEE languages share one function with a common name:</p>
-
-<table summary="Language Irregularities" border="1" cellpadding="2" cellspacing="1">
-  <tbody>
-    <tr>
-      <td>&nbsp;<b>Feature</b>&nbsp;</td>
-      <td>&nbsp;<b>GCC Ada Application</b></td>
-      <td>&nbsp;<b>SparForte Prompt</b></td>
-      <td>&nbsp;<b>SparForte Script</b></td>
-      <td>&nbsp;<b>SparForte Template</b></td>
-    </tr>
-    <tr>
-      <td>&nbsp;<i>String Searching</i>&nbsp;</td>
-      <td bgcolor="white">strings.<u>string_type</u>.index</td>
-      <td bgcolor="white">strings.index</td>
-      <td bgcolor="white">strings.index</td>
-      <td bgcolor="white">strings.index</td>
-    </tr>
-    <tr>
-  </tr></tbody>
-</table>
-
-<p>(In SparForte there is only one string type so the type name is omitted.)</p>
-
-<p>SparForte avoids the feature creep that affects even common library functions
-but following a recognized standard.</p>
-
-<h3><a name="prob6"></a>How SparForte Improves Reliability</h3>
-
-<p>Most scripting languages have forsaken reliability for convenience.
-Popular justifications for this are:
-</p><ul>
-<li>"Smaller" source code means "a reduced target for errors".</li>
-<li>Languages should do what you mean not what you say.</li>
-<li>You have to write test suites (and, perhaps, code review) anyway, so why
-have a language that tries to help you?</li>
-</ul>
-
-<p>However, studies have not backed up these claims.  There have been numerous
-studies, particularly between C and Ada, that demonstrate that Ada developers
-complete projects faster and have fewer errors.  Ada is a language designed
-for reliability.  For example, an in-depth 1995 study by Stephen F. Zeigler
-(http://www.adaic.com/docs/reports/cada/cada_art.html) showed that development
-in Ada costs about half that of C++. It also suggests that Ada produces
-"almost 90% fewer bugs for the final customer".</p>
-
-<p>SparForte complies to the Ada languages for high reliability and implements
-a number of security features that restrict what scripts and templates can
-and cannot do.  SparForte implements strong typing, explicit type conversion and
-required variable declarations because these are basic features in the war on
-bugs.  Saving a few seconds on typing is not worth a few hours of debugging.</p>
-
-<p>For example, consider the issue called "type juggling".  If there are two
-alternatives for automatic type conversion, the programmer must try to guess
-which conversion the language will use.  This can have unusual side-effects
-such as in PHP where "hello" == 0 is false but in Perl it is true.  This
-kind of problem cannot occur in SparForte.</p>
-
-<p>For another example, not having to declare variables or their types saves
-a few keystrokes.  However, the savings is an illusion as you have to use
-different operators (effectively declaring the types) in expressions.  Without
-declared variables and types, the language is left without redundant
-information to identify many common mistakes.</p>
-
-<p>When you run a short SparForte script and SparForte does not complain, there is a
-good chance the script will work properly the first time "out of the box".
-With other tools, you are rolling dice.</p>
-
-
-
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
                                 <p class="rmt"><a class="rightmenutext" href="intro_preface.html">&nbsp;Preface</a></p>
@@ -816,7 +407,7 @@ With other tools, you are rolling dice.</p>
 			</td>
 		</tr>
 		<tr>
-			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" border="0" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
 			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
 	       	</tr>
 

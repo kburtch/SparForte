@@ -7,7 +7,7 @@
 	<title>SparForte - Tutorials - Script Tutorial 2: Intermediate Program Scripts</title>
         <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 </head>
-<body bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
 		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
 		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
@@ -22,7 +22,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
-				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
@@ -40,12 +40,15 @@
 				<!-- Content Area -->
 
 <h2><a name="2.5"></a>Script Tutorial 2: Intermediate Program Scripts</h2>
-<p>A script can be as simple as a list of command.&nbsp;&nbsp; Once a
-script is installed, it can grow, change and become obsolete.&nbsp;
 
-This tutorial discusses SparForte's features for handling the evolution of a
-script.</p>
-<p>Suppose you want to write a script that does something more useful,
+<p>The first script tutorial showed how to write a basic script.  This
+tutorial discusses how execute statements and delcarations can be
+organized.  It also discusses how scripts can evolve and grow under
+SparForte.</p>
+
+<h3>Structuring a Script</h3>
+
+<p>Suppose you want to write a script that does something useful,
 such
 as email someone with a "bob" login when there are files waiting in a
 certain
@@ -69,7 +72,7 @@ directory. In SparForte, the following commands can do the job:
 <p>But consider the following questions:</p>
 
 <ul>
-  <li>how does the operating system know that this is a SparForte script?</li>
+  <li>How does the operating system know that this is a SparForte script?</li>
   <li>Is there more than one "mail" command on the computer, which one
 executes?</li>
   <li>How does the script inform the program if it succeeds or fails?</li>
@@ -80,7 +83,7 @@ system administrator (these things happen)?</li>
 </ul>
 
 <p>SparForte scripts can be more than a list of commands. SparForte has a number of
-features that allow scripts to be "well-structured". Well-structured
+features that allow scripts to be "well-structured" (or modular). Well-structured
 scripts
 are easier to read and debug. Here's an example of a well-structured
 SparForte
@@ -91,7 +94,7 @@ script:</p>
         <p class="code">
 	#!/usr/local/bin/bush<br>
 	&nbsp;<br>
-	<b>pragma</b> annotate( summary, "checkfiles.bush" );<br>
+	<b>pragma</b> annotate( summary, "checkfiles.sp" );<br>
 	<b>pragma</b> annotate( description, "check the files in the incoming directory and email someone when the files arrive." );<br>
 	<b>pragma</b> annotate( author, "Ken O. Burtch" );<br>
 	&nbsp;<br>
@@ -120,15 +123,15 @@ script:</p>
         </div>
         </center>
 
-<p>The first part of this script is called the header. The header
+<p>The first part of this script is called the <b>header</b>. The header
 defines
 what kind of script this is, who wrote it, what version it is, and what
 restrictions or SparForte pragmas will apply to this script.
 </p>
-<p>The very first line of a script is the header line. This line begins
+<p>The very first line of a script is the <b>header line</b>. This line begins
 with a "#!" at the top of the script, flush with the left margin. This
 character combination identifies the kind of script. UNIX-based O/S
-users
+uses
 this information to start the right program to run the script. For SparForte
 scripts, this line contains the absolute pathname to where the SparForte
 shell
@@ -140,8 +143,8 @@ command to find it:
 
         <center>
         <div class="code">
-        <p class="code">=&gt; whereis bush<br>
-	bush: /usr/local/bin/bush<br>&nbsp;<br>
+        <p class="code">=&gt; whereis spar<br>
+	bush: /usr/local/bin/spar<br>&nbsp;<br>
         </p>
         <div class="code_caption">
         <b>Example</b>: How to Find the Interpreter's Path</span>
@@ -149,21 +152,19 @@ command to find it:
         </div>
         </center>
 
-<p>The header line is followed by comments describing the purpose of
+<p>The header line is followed by <b>annotations</b> describing the purpose of
 the
 script and who wrote it. This is important in case your script needs to
-be debugged in an emergency situation. The "CVS" line is used by the
-cvs
-program, if it is installed and you intend to use it.
-</p>
+be debugged in an emergency situation.  The <b>help</b> command can
+read the annotations in scripts.</p>
 
-<p>The main script is wrapped in a procedure statement. The procedure
+<p>The <b>main script</b> is wrapped in a procedure statement. The procedure
 statement
 divides the script into two sections: declaring variables and commands
 to run. Putting all the declarations for a script in one place makes it
 easy for someone to refer to them while reading the script.
 </p>
-<p>The commands are declared as command variables. A command variable
+<p>The commands are declared as <b>command variables</b>. A command variable
 is
 a special SparForte variable type: when a command variable is declared, SparForte
 verifies that the command exists and that it can be run. If the command
@@ -185,7 +186,7 @@ will be left in a consistent state.
 </p>
 <p>After the main portion of the script runs (the part that does the
 actual
-work), the script should clean up after itself. Any open files should
+work), the script should <b>clean up</b> after itself. Any open files should
 be
 closed or deleted and the script should return a status code to the
 person
@@ -194,11 +195,14 @@ clean
 up. All that is necessary is the set_exit_status command( 0 ) which
 indicates
 that the script ran successfully.</p>
-<p>A subprogram is a piece of a program that is given a name.&nbsp;
+
+<h3>Main Procedures</h3>
+
+<p>A <b>subprogram</b> is a piece of a program that is given a name.&nbsp;
 Subprograms can be <span style="font-weight: bold;">functions</span>,
 routines that return a value for an expression, or <span
- style="font-weight: bold;">procedures</span>.&nbsp; A SparForte script
-itself can be contained in a <span style="font-weight: bold;">procedure</span>.<br>
+ style="font-weight: bold;">procedures</span> that stand alone.&nbsp; A SparForte script
+itself can be contained in a <span style="font-weight: bold;">main procedure</span>.<br>
 </p>
 
         <center>
@@ -206,7 +210,7 @@ itself can be contained in a <span style="font-weight: bold;">procedure</span>.<
         <p class="code">
 #!/usr/local/bin/bush<br>
 &nbsp;<br>
--- Bottles.bush: A Script implementing a children's song<br>
+-- Bottles.sp: A Script implementing a children's song<br>
 &nbsp;<br>
 <b>procedure</b> Bottles is<br>
 <b>begin</b><br>
@@ -224,6 +228,13 @@ itself can be contained in a <span style="font-weight: bold;">procedure</span>.<
         </div>
         </center>
 
+<p>In this example, "Bottles" is the main procedure for the script.  Variable
+declarations are placed between "is" and "begin" (in this case, there are
+none).  Between the "begin" and "end" are the executable statements that
+the script will run.</p>
+
+<h3>Procedures and Functions</h3>
+
 <p>Additional procedures and functions can be declared in declared in
 the declaration section of the procedure.<br>
 
@@ -232,7 +243,7 @@ the declaration section of the procedure.<br>
         <p class="code">
 #!/usr/local/bin/bush<br>
 &nbsp;<br>
--- math1.bush: do some simple math<br>
+-- math1.sp: do some simple math<br>
 &nbsp;<br>
 <b>procedure</b> math1 <b>is</b><br>
 &nbsp;<br>
@@ -258,13 +269,13 @@ the declaration section of the procedure.<br>
         </div>
         </div>
         </center>
-
+&nbsp;<br>
         <center>
         <div class="code">
         <p class="code">
 #!/usr/local/bin/bush<br>
 &nbsp;<br>
--- math2.bush: do some simple math<br>
+-- math2.sp: do some simple math<br>
 &nbsp;<br>
 <b>procedure</b> math2 <b>is</b><br>
 &nbsp;<br>
@@ -284,49 +295,26 @@ the declaration section of the procedure.<br>
         </div>
         </center>
 
-<p>Comments can be placed in a script using <span
- style="font-weight: bold;">pragma annotate</span>.&nbsp; These embedded
-comments appear when you use the help command.&nbsp; You can have more than
-one pragma annotate in a script.</p>
-
-        <center>
-        <div class="code">
-        <p class="code">-- math.bush: do some simple math<br>
-	<span style="font-weight: bold;">procedure</span> math <span style="font-weight: bold;">is</span><br>
-&nbsp;<br>
-&nbsp; <span style="font-weight: bold;">function</span> double( n : integer ) <span style="font-weight: bold;">return</span> integer <span style="font-weight: bold;">is</span><br>
-&nbsp;&nbsp;&nbsp; <span style="font-weight: bold;">pragma</span> annotate( "multiply the parameter by two" )<br>
-&nbsp; <span style="font-weight: bold;">begin</span><br>
-&nbsp;&nbsp;&nbsp; <span style="font-weight: bold;">return</span> 2*n;<br>
-&nbsp; <span style="font-weight: bold;">end</span> double;<br>
-&nbsp;<br>
-<span style="font-weight: bold;">begin</span><br>
-&nbsp; put_line( "5 doubled is" &amp; strings.image( double( 5 ) ) );<br>
-<span style="font-weight: bold;">end</span> math;<br>&nbsp;<br>
-        </p>
-        <div class="code_caption">
-        <b>Example</b>: A Simple Annotation
-        </div>
-        </div>
-        </center>
-
 <p>View the annotations with the <span style="font-weight: bold;">help</span>
 command.</p>
 
         <center>
         <div class="code">
-        <p class="code">=&gt; help t.bush<br>
-	Help for script <b>t.bush</b>:<br>
+        <p class="code">=&gt; help t.sp<br>
+	Help for script <b>t.sp</b>:<br>
 	&nbsp;<br> 
 	This script performs some simple math
         </p>
         </div>
         </center>
 
-<p>You can include a type parameter with annotate to further describe
-the annotations: author, description, param, return and several other
-pre-defined types.  The help command can use these to produce manual
-HTML pages for documentation.</p>
+<p>There is another kind of subprogram, a <b>declare block</b>, that
+is discussed in the reference section.</p>
+
+<h3>Debugging</h3>
+
+<p>The <b>trace</b> command will show each line of a script as
+SparForte reads it.</p>
 
 <p>There are two pragmas for debugging.&nbsp; <span
  style="font-weight: bold;">pragma assert</span> tests for a condition
@@ -350,8 +338,17 @@ behavior.</p>
         </div>
         </center>
 
-<p>To perform more complex debugging, SparForte has a built-in debugger.  You
-can find out more about using the debugger in another tutorial.</p>
+<p>To perform more complex debugging, SparForte has a built-in debugger
+called the <b>breakout mode</b>.  Using the breakout mode, you can
+stop a script at specific points, examine values and more.  You can
+find out more about using the debugger in another tutorial.</p>
+
+<p>See the
+<a href="tutorial_9.html">Debugging Tutorial</a>
+for more info</p>
+
+<h3>Standards Compliance and Portability</h3>
+
 <p>SparForte scripts can be copied or moved to other tools such as GCC (for binary
 applications), JGNAT (JVM applications) or A# (.Net applets).&nbsp; Although
 tools like GCC understand most AdaScript features, they have no knowledge of
@@ -378,7 +375,7 @@ commands from running.</p>
 
         <center>
         <div class="code">
-        <p class="code">-- math.bush: do some simple math<br>
+        <p class="code">-- math.sp: do some simple math<br>
 	&nbsp;<br>
 	<span style="font-weight: bold;">procedure</span> math <span style="font-weight: bold;">is</span><br>
 	&nbsp;<br>
@@ -406,6 +403,8 @@ performs some simple math" );</span><br>
         </div>
         </center>
 
+<h3>Retiring a Script</h3>
+
 <p>When a script becomes obsolete, use
 <span style="font-weight: bold;">pragma deprecated</span>
 (or depreciated) to specify name of the new
@@ -416,7 +415,6 @@ new script.&nbsp; In this way, old scripts can continue to run as
 programmers slowly upgrade to the new script.<br>
 
 </p>
-<p></p>
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_1.html">&nbsp;Command Prompt Tutorial 1: SparForte as a Calculator</a></p>
@@ -434,7 +432,7 @@ programmers slowly upgrade to the new script.<br>
 			</td>
 		</tr>
 		<tr>
-			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" border="0" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
 			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
 	       	</tr>
 

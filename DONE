@@ -1,21 +1,34 @@
-Open for socket_types working again.
 
-Initial Get on a socket_type now gets the first character.
+Bush has been renamed "SparForte".
+
+Bush accepts files ending with ".bush" or ".sp".
+
+postresql and mysql are now separated in the code and selectable on
+configure.
 
 pen.new_gl_window_canvas( h, v, r, c )
 
 pen.new_gl_screen_canvas - untested
+
+---
+
+draco_ii and poetry broken...probably because numerics is broken
+from the rounding experiments
+
+testing is separate and other features backported ported from 2.0
+but not tested
+
+enums package works but ? displays numbers instead of literals...why?
+enums.pos() and enums.val() not implemented yet
+
+implement other gnatprep stuff?
 
 SkipBlock won't show trace line because it's syntax_checking.  But how do we
 know if we're at the start of a new line and need to output it?  Could be on
 one line.
 
 integer casting
-  - +, -, *, /, mod, rem
-  - := and := on declaration
-  - on cast
-
-  - params and return values
+  - params and return values not done
 
 Displays lines as read but also non-executed lines
   Need to flag if anything on line executes and then display line

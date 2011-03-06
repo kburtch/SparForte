@@ -7,7 +7,7 @@
 	<title>SparForte - Tutorials - Template Tutorial 2: Intermediate Templates</title>
         <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 </head>
-<body bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
 		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
 		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
@@ -22,7 +22,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
-				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
@@ -41,21 +41,28 @@
 
 <h2><a name="2.7"></a>Template Tutorial 2: Intermediate Templates</h3>
 
-<p>Some web experts recommend using a MVC (model, view, controller) layout
-for web templates.  What they mean by that is that the business logic,
+<p>Some web experts recommend using a <b>MVC</b> (model, view, controller) layout
+for web templates.  What they mean by that is that the business logic
+(or page routing, depending on the expert),
 the formatting of the web page, and the content should be separated.  In
 large organizations, the programmer will to the calculations, the web designer
 will create the look of the web page and an editor will fill in text.  By
 separating these tasks, each person can work on his/her part of the web site
 without interfering with the others.</p>
 
-<p>As shown in Tutorial 2.6, SparForte templates consist of a CGI script plus an
+<p>The other advantage of MVC is that it separates the appearance of the
+page from the data, making it easier to "skin" a site for different clients
+without altering the underlying program.</p>
+
+<p>As shown in Tutorial 1, SparForte templates consist of a CGI script plus an
 HTML template.  By default, both files are located in the same directory.
 The template file can be located in a different directory.  <b>pragma
 template</b> can have the location of the template file as a second parameter.
 For example, if you have a web designer and programmer, place the templates
 in a different directory with different access rights so that these two
 people will not interfere with each other.</p>
+
+<h3>HTML Form Variables</h3>
 
 <p>There are several ways to share information between templates.  Data can be
 stored in cookies, in files, in database tables or it can be shared using HTML
@@ -76,6 +83,7 @@ import the variable.  In the same way as you import shell environment variables,
                 <b>Example</b>: How to Import HTML Form Variables
         </div>
         </div>
+	</center>
 
 <p>The second method is to use the builtin cgi package.  <b>cgi.value</b>
 will retrieve the value of a HTML variable in a form.  The value function
@@ -90,6 +98,7 @@ the variable is not there.</p>
                 <b>Example</b>: How to Read HTML Form Variables with the cgi Package
         </div>
         </div>
+        </center>
 
 <p>The import method provides greater reliability: the name of the SparForte
 variable must be the same as the HTML variable, and if the import fails, the
@@ -99,6 +108,8 @@ with GCC.</p>
 
 <p><b>cgi.input_received</b> is true if form data was received.  You can use this
 function to check for form data before trying to read the values.</p>
+
+<h3>Web Server Variables</h3>
 
 <p>You can also use pragma import to get environment information from the web
 server using "shell" import type.  The variables available depends on the
@@ -126,13 +137,16 @@ web server you are using. Common variables include:</p>
                 <b>Example</b>: How to Standard Web Server Variables
         </div>
         </div>
+	</center>
+
+<h3>A Guestbook Web App</h3>
 
 <p>Here is a larger example of a simple guestbook where people can leave their
 names and a message.</p>
 
         <center>
         <div class="code">
-                <p class="code">#!/usr/local/bin/bush<br>
+                <p class="code">#!/usr/local/bin/spar<br>
 &nbsp;<br>
 -----------------------------------------------------------------------------<br>
 -- GUESTBOOK.CGI<br>
@@ -191,21 +205,23 @@ db.connect( dbname );                      -- open a connection to the database<
 ok_to_post := REMOTE_ADDR = allowed_host_address;  -- is this host OK?<br>
 &nbsp;<br>
 -- VIM vi editor will show correct hilighting with this:<br>
--- vim: ts=8 sw=4 tw=72 fdm=indent ft=ada smarttab noexpandtab&nbsp;<br></p>
+-- vim: ts=8 sw=4 tw=72 fdm=indent ft=ada smarttab noexpandtab<br>&nbsp;<br></p>
         <div class="code_caption">
                 <b>Example</b>: Guest Book Example (guestbook.cgi, CGI Portion)
         </div>
         </div>
+        </div>
+	</center>
 
         <center>
         <div class="code">
                 <p class="code">&lt;html&gt;<br>
 &lt;head&gt;<br>
 &nbsp;<br>
-&lt;title&lt;?bush ? guestbook_title; ?&gt;&lt;/title&gt;<br>
+&lt;title&lt;?spar ? guestbook_title; ?&gt;&lt;/title&gt;<br>
 &lt;/head&gt;<br>
 &lt;body&gt;<br>
-&lt;h2&gt;&lt;?bush ? guestbook_title; ?&gt;&lt;/h2&gt;<br>
+&lt;h2&gt;&lt;?spar ? guestbook_title; ?&gt;&lt;/h2&gt;<br>
 &lt;form action="/cgi-bin/guestbook.cgi" method="post"&gt;<br>
 &lt;p&gt;Please sign our guestbook.&lt;/p&gt;<br>
 &nbsp;<br>
@@ -228,7 +244,7 @@ ok_to_post := REMOTE_ADDR = allowed_host_address;  -- is this host OK?<br>
 &nbsp;<br>
 &lt;table border="1" cellspacing="2" cellpadding="1" width="98%" summary="other messages"&gt;<br>
 &nbsp;<br>
-&lt;?bush<br>
+&lt;?spar<br>
 &nbsp;&nbsp;-- if there is a new guestbook entry, insert<br>
 &nbsp;&nbsp;<b>if</b> cgi.input_received <b>then</b><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<b>if</b> ok_to_post <b>then</b><br>
@@ -279,9 +295,12 @@ ok_to_post := REMOTE_ADDR = allowed_host_address;  -- is this host OK?<br>
                 <b>Example</b>: Guest Book Example (guestbook.tmpl, Template Portion)
         </div>
         </div>
+	</center>
 
 <img src="pictures/bush_5.gif" width="777" height="667" summary="screenshot">
 
+
+<h3>Conditional Output</h3>
 
 <p>The ability to chose between pieces of HTML code is a powerful
 feature
@@ -312,7 +331,7 @@ in the final web page.</p>
 			</td>
 		</tr>
 		<tr>
-			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" border="0" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
 			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
 	       	</tr>
 

@@ -2,10 +2,10 @@
 ------------------------------------------------------------------------------
 -- Reading the keyboard, writing to the terminal/console                    --
 --                                                                          --
--- Part of BUSH                                                             --
+-- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2010 Ken O. Burtch & FSF                 --
+--            Copyright (C) 2001-2011 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,7 +21,6 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
--- CVS: $Id: user_io.adb,v 1.2 2005/02/11 02:59:32 ken Exp $
 
 with ada.text_io,
     ada.strings.unbounded.text_io,
@@ -671,9 +670,11 @@ procedure displayVersionSplash is
   -- uses term attributes.
 begin
   if isatty( stdout ) = 1 then
-     Put( "PegaSoft Business Shell (BUSH) version " );
+     Put( "SparForte (Business Shell, BUSH) version " );
      Put_Line( version );
-     Put_Line( "Copyright (c)2001-2010 PegaSoft Canada & Free Software Foundation");
+     Put_Line( "Copyright (c)2001-2011 Free Software Foundation");
+     Put_Line( "This is free software; see the source for copying conditions." );
+     Put_Line( "There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE." );
   end if;
 end displayVersionSplash;
 
@@ -682,14 +683,14 @@ procedure displayCopyrightSplash is
   -- uses term attributes.
 begin
   if isatty( stdout ) = 1 then
-     Put( "BUSH " );
-     Put( version );
-     Put_Line( " Copyright (c)2001-2010 PegaSoft Canada & Free Software Foundation");
-     Put_Line( "AdaCGI 1.6 Copyright (c)2000 David A. Wheeler & Free Software Foundation");
-     Put_Line( "APQ 2.1 Copyright (c)2002-2003 Warren W. Gay & Free Software Foundation");
-     Put_Line( "MD5 Copyright RSA Data Security, Inc. -- Message-Digest Algorithm" );
+     -- Put( "BUSH " );
+     -- Put( version );
+     -- Put_Line( " Copyright (c)2001-2011 Free Software Foundation");
+     -- Put_Line( "AdaCGI 1.6 Copyright (c)2000 David A. Wheeler & Free Software Foundation");
+     -- Put_Line( "APQ 2.1 Copyright (c)2002-2003 Warren W. Gay & Free Software Foundation");
+     -- Put_Line( "MD5 Copyright RSA Data Security, Inc. -- Message-Digest Algorithm" );
      Put_Line( "Type ""help"" for help" );
-     New_Line;
+     -- New_Line;
   end if;
 end displayCopyrightSplash;
 

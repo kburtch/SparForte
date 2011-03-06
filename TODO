@@ -6,6 +6,8 @@ POST TO CHANGE LOG
 
 ISSUES (BUSH Environment)
 
+ - cleanup of integer values by ? broken with rounding
+
   * build system (BUSH Environment)
 
   * regression test suite (BUSH Environemnt)
@@ -74,6 +76,7 @@ ISSUES (AdaScript)
     - \ at end of line will cause an error on SQL statements
 
   * Text_IO package (AdaScript issues)
+    - enumerated subtypes - put_line / ? do not print the correct enum item
     - set input/output/error cannot be redirected to an file_type in an array
     - get_line doesn't strip ASCII.CR like I thought
     - should "?" should trim strings?
@@ -96,6 +99,12 @@ ISSUES (AdaScript)
     - command_line.arguement() cannot be used in open...get an error.  Expects
       a type not a keyword...why?
     - implement gnat command_line
+
+  * enumerated types
+    - enumerateds are declare as constants of the enumerated type BUT if the
+      user declares a constant of the enumerated type (a rare occurrence) it
+      will be treated as an item of the enumerated type instead of a constant
+      so there needs to be a symbol table flag to identify enumerated items.
 
   * sound package (AdaScript issues)
     - sound.mute, sound.unmute
@@ -128,7 +137,6 @@ ISSUES (AdaScript)
       when expecting forward subprogram
 
   * command types (AdaScript Issues)
-    - command types are no longer working
       - can command types be implemented using appropriate pragmas
         instead of a special type (ie. pragma command (strvar) );?
    - command vars should be &-able with backquotes.

@@ -2,10 +2,10 @@
 -- BUSH OS/Exec - Fork off an Operating System Command                      --
 -- This version is for UNIX/Linux Commands                                  --
 --                                                                          --
--- Part of BUSH                                                             --
+-- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2005 Ken O. Burtch & FSF                 --
+--            Copyright (C) 2001-2011 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,7 +21,6 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
--- CVS: $Id: bush_os-exec.adb,v 1.2 2005/02/11 02:59:21 ken Exp $
 
 with ada.text_io;
 use ada.text_io;

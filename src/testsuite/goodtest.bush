@@ -244,6 +244,8 @@ pragma assert( i in 1..10 );
 pragma assert( i in i..i );
 pragma assert( i not in 10..20 );
 pragma assert( i not in 1..4 );
+pragma assert( 'c' in 'a'..'z' );
+pragma assert( 'c' not in 'a'..'b' );
 inenum : new_enum2 := enum1;
 pragma assert( inenum in enum1..enum3 );
 pragma assert( inenum in inenum..inenum );
@@ -892,6 +894,21 @@ pragma volatile( PATH );
 foo_dummy_variable_123: string := "foo_123";
 pragma unchecked_import( shell, foo_dummy_variable_123 );
 pragma assert( foo_dummy_variable_123 = "foo_123" );
+
+-- enums package
+
+pragma assert( enums.first( boolean ) = false );
+pragma assert( enums.last( boolean ) = true );
+pragma assert( enums.prev( true ) = false );
+pragma assert( enums.succ( false ) = true );
+
+pragma assert( enums.first( new_enum2 ) = enum1 );
+pragma assert( enums.last( new_enum2 ) = enum3 );
+pragma assert( enums.prev( enum2 ) = enum1 );
+pragma assert( enums.succ( enum2 ) = enum3 );
+
+pragma assert( enums.first( new_enum ) = enum0 );
+pragma assert( enums.last( new_enum ) = enum0 );
 
 -- arrays
 
@@ -1837,11 +1854,18 @@ end if;
 
 i := 0;
 
+declare
+
 function f1 return boolean is
 begin
   i := i + 1;
   return true;
 end f1;
+
+function f2 return boolean is
+begin
+  return true;
+end f2;
 
 begin
 
@@ -1860,40 +1884,46 @@ elsif not f1 then
 end if;
 pragma assert( i = 2 );
 
+-- test that @ is ? not fn's return
+s := `put( f2 ) @ ( f2 );`;
+pragma assert( s = "truetrue" );
+
+end;
+
 -- integer casting
 -- in bush, literals are universal_numeric's
 
-i := 2.4
+i := 2.4;
 pragma assert( i = 2 );
-i := 2.5
+i := 2.5;
 pragma assert( i = 3 );
-i := 2.5 * 2
+i := 2.5 * 2;
 pragma assert( i = 5 );
-i := 5 / 2
+i := 5 / 2;
 pragma assert( i = 3 );
-i := 2.5 + 1
+i := 2.5 + 1;
 pragma assert( i = 4 );
-i := 2.5 - 1
-pragma assert( i = 2 );
-i := integer( 2.5 ) * 2
-pragma assert( i = 6 );
-i := integer( 5.4 ) / 2
-pragma assert( i = 3 );
-i := integer( 2.5 ) + 1
-pragma assert( i = 4 );
-i := integer( 2.5 ) - 1
+i := 2.5 - 1;
 pragma assert( i = 2 );
 i := integer( 2.5 ) * 2;
 pragma assert( i = 6 );
-iz : integer := 2.5
+i := integer( 5.4 ) / 2;
+pragma assert( i = 3 );
+i := integer( 2.5 ) + 1;
+pragma assert( i = 4 );
+i := integer( 2.5 ) - 1;
+pragma assert( i = 2 );
+i := integer( 2.5 ) * 2;
+pragma assert( i = 6 );
+iz : integer := 2.5;
 pragma assert( iz = 3 );
-i := short_short_integer( 2.5 ) * 2
+i := short_short_integer( 2.5 ) * 2;
 pragma assert( i = 6 );
-i := short_integer( 2.5 ) * 2
+i := short_integer( 2.5 ) * 2;
 pragma assert( i = 6 );
-i := long_integer( 2.5 ) * 2
+i := long_integer( 2.5 ) * 2;
 pragma assert( i = 6 );
-i := long_long_integer( 2.5 ) * 2
+i := long_long_integer( 2.5 ) * 2;
 pragma assert( i = 6 );
 
 -- Pragma ada_95 tests

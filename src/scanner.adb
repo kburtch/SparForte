@@ -2,10 +2,10 @@
 -- Lexical Scanner (the thing that reads your source code)                  --
 -- Also, the semantic stuff.                                                --
 --                                                                          --
--- Part of BUSH                                                             --
+-- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2010 Ken O. Burtch & FSF                 --
+--            Copyright (C) 2001-2011 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,7 +21,6 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
--- CVS: $Header: /home/cvsroot/bush/src/scanner.adb,v 1.6 2005/08/31 15:10:45 ken Exp $
 
 pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
@@ -43,6 +42,7 @@ with system,
     scanner_arrays,
     parser_os,
     parser_arrays,
+    parser_enums,
     parser_files,
     parser_lock,
     parser_cmd,
@@ -74,6 +74,7 @@ use ada.text_io,
     scanner_arrays,
     parser_os,
     parser_arrays,
+    parser_enums,
     parser_files,
     parser_lock,
     parser_cmd,
@@ -866,6 +867,7 @@ begin
   ShutdownCalendar;
   ShutdownUnits;
   ShutdownFiles;
+  ShutdownEnums;
   ShutdownArrays;
   ShutdownMySQL;
   ShutdownDB;
@@ -1440,7 +1442,7 @@ begin
 
   -- System Package constants
 
-  declareStandardConstant( "System.System_Name", uni_string_t, "SYSTEM_NAME_BUSH" );
+  declareStandardConstant( "System.System_Name", uni_string_t, "SYSTEM_NAME_SPARFORTE" );
   declareStandardConstant( "System.Min_Int", uni_numeric_t, to_string( to_unbounded_string( long_float( integerOutputType'first+0.9 ) ) ) );
   -- out minimum integer is the limit of a long_float's mantissa.  should
   -- probably check that system.min_int isn't smaller, but Gnat gives bogus
@@ -1488,6 +1490,7 @@ begin
   StartupCalendar;
   StartupUnits;
   StartupFiles;
+  StartupEnums;
   StartupArrays;
   StartupMySQL;
   StartupDB;
@@ -2856,6 +2859,10 @@ begin
   scannerState.first   := firstpos;
   scannerState.cmdpos  := cmdpos;
   scannerState.last    := lastpos;
+  scannerState.itself  := itself;
+  scannerState.itself_type := itself_type;
+  scannerState.last_output := last_output;
+  scannerState.last_output_type := last_output_type;
   if token = symbol_t or token = strlit_t or token = charlit_t or token = number_t or token = word_t then
      scannerState.value := identifiers( token ).value;
   end if;
@@ -2869,6 +2876,10 @@ begin
   firstpos := scannerState.first;
   cmdpos   := scannerState.cmdpos;
   lastpos  := scannerState.last;
+  itself   := scannerState.itself;
+  itself_type := scannerState.itself_type;
+  last_output := scannerState.last_output;
+  last_output_type := scannerState.last_output_type;
   if token = symbol_t or token = strlit_t or token = charlit_t or token = number_t or token = word_t then
      identifiers( token ).value := scannerState.value;
   end if;

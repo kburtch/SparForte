@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
--- BUSH Strings Package Parser                                              --
+-- Strings Package Parser                                                   --
 --                                                                          --
--- Part of BUSH                                                             --
+-- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2005 Ken O. Burtch & FSF                 --
+--            Copyright (C) 2001-2011 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -20,7 +20,6 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
--- CVS: $Header: /home/cvsroot/bush/src/parser_strings.adb,v 1.3 2005/08/23 12:27:14 ken Exp $
 
 with text_io;use text_io;
 with gnat.regexp,
@@ -191,7 +190,7 @@ begin
   begin
      if isExecutingCommand then
         result := to_unbounded_string( "" &
-           Element( str_val, positive'value( to_string( index_val ) ) ) );
+           Element( str_val, positive( long_float'value( to_string( index_val ) ) ) ) );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -226,8 +225,8 @@ begin
      if isExecutingCommand then
         result := to_unbounded_string(
            Slice( str_val,
-	     positive'value( to_string( low_val ) ),
-	     natural'value( to_string( hi_val ) )
+	     positive( long_float'value( to_string( low_val ) ) ),
+	     natural( long_float'value( to_string( hi_val ) ) )
 	   ) );
      end if;
   exception when others =>
@@ -380,8 +379,8 @@ begin
   begin
      if isExecutingCommand then
         result := Replace_Slice( str_val,
-	   positive'value( to_string( low_val ) ),
-	   natural'value( to_string( hi_val ) ),
+	   positive( long_float'value( to_string( low_val ) ) ),
+	   natural( long_float'value( to_string( hi_val ) ) ),
 	   to_string( by_val )
 	);
      end if;
@@ -417,7 +416,7 @@ begin
   begin
      if isExecutingCommand then
         result := Insert( str_val,
-	   positive'value( to_string( before_val ) ),
+	   positive( long_float'value( to_string( before_val ) ) ),
 	   to_string( new_val )
 	);
      end if;
@@ -453,7 +452,7 @@ begin
   begin
      if isExecutingCommand then
         result := Overwrite( str_val,
-	   positive'value( to_string( pos_val ) ),
+	   positive( long_float'value( to_string( pos_val ) ) ),
 	   to_string( new_val )
 	);
      end if;
@@ -489,8 +488,8 @@ begin
   begin
      if isExecutingCommand then
         result := Delete( str_val,
-	   positive'value( to_string( low_val ) ),
-	   natural'value( to_string( hi_val ) )
+	   positive( long_float'value( to_string( low_val ) ) ),
+	   natural( long_float'value( to_string( hi_val ) ) )
 	);
      end if;
   exception when others =>
@@ -1386,8 +1385,8 @@ begin
      if isExecutingCommand then
         result := to_unbounded_string(
            Slice( str_val,
-	     positive'value( to_string( low_val ) ),
-	     natural'value( to_string( hi_val ) )
+	     positive( long_float'value( to_string( low_val ) ) ),
+	     natural( long_float'value( to_string( hi_val ) ) )
 	   ) );
      end if;
   exception when others =>

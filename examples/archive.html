@@ -1,9 +1,9 @@
-<HEAD><TITLE>archive.bush</TITLE></HEAD>
+<HEAD><TITLE>archive.sp</TITLE></HEAD>
 <BODY>
-<HR><DIV ALIGN="center"><H1> File : archive.bush</H1></DIV><HR>
+<HR><DIV ALIGN="center"><H1> File : archive.sp</H1></DIV><HR>
 <PRE>
 
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
 <FONT COLOR=green><EM>-- Basic Directory Archive/Backup Script</EM></FONT>
 
@@ -76,7 +76,7 @@ command_line.set_exit_status( 0 );                            -- status OK
   <b>end</b> <b>if</b>;
 
   <FONT COLOR=green><EM>-- Since there is no files.is_readable (yet), try to cd to the directory</EM></FONT>
-  <FONT COLOR=green><EM>-- to make sure BUSH can read the directories.</EM></FONT>
+  <FONT COLOR=green><EM>-- to make sure SparForte can read the directories.</EM></FONT>
 
   <b>if</b> <b>not</b> files.is_readable( source_directory ) <b>then</b>
      put( standard_error, source_info.file )

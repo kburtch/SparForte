@@ -1,5 +1,3 @@
--- $Id: bush_os-sound.adb,v 1.2 2005/02/11 02:59:21 ken Exp $
---
 -- (c) Warren W. Gay VE3WWG ve3wwg@home.com, ve3wwg@yahoo.com
 --
 -- Protected under the GNU GPL License

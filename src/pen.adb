@@ -2,11 +2,11 @@
 -- PEN                                                                      --
 -- The Pen Graphics Package.                                                --
 --                                                                          --
--- Part of BUSH                                                             --
+-- Part of SparForte                                                        --
 -- Designed and Programmed by Ken O. Burtch                                 --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2005 Ken O. Burtch & FSF                 --
+--            Copyright (C) 2001-2011 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -22,7 +22,6 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
--- CVS: $Id: pen.adb,v 1.3 2005/08/17 23:46:30 ken Exp $
 
 -- with system;
 with system.address_to_access_conversions;
@@ -1608,7 +1607,7 @@ begin
      put_line( standard_error, "newScreenCanvas: falied for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
   end if;
   newcanvas.kind := screen;
-  newCanvas.name := to_unbounded_string( "Untitled Bush Screen Canvas" );
+  newCanvas.name := to_unbounded_string( "Untitled SparForte Screen Canvas" );
   canvasList.Queue( canvas, newCanvas );
   canvas_id := newcanvas.id;
 end newScreenCanvas;
@@ -1637,7 +1636,7 @@ begin
      put_line( standard_error, "newScreenCanvas: falied for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
   end if;
   newcanvas.kind := screen;
-  newCanvas.name := to_unbounded_string( "Untitled Bush Screen Canvas" );
+  newCanvas.name := to_unbounded_string( "Untitled SparForte Screen Canvas" );
   canvasList.Queue( canvas, newCanvas );
   canvas_id := newcanvas.id;
 end newGLScreenCanvas;
@@ -1663,8 +1662,8 @@ begin
      put_line( standard_error, "newWindowCanvas: falied for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
   end if;
   newCanvas.kind := window;
-  newCanvas.name := to_unbounded_string( "Untitled BUSH Window Canvas" );
-  SDL_EXT_Window_Title( "Untitled BUSH Window Canvas" & ASCII.NUL );
+  newCanvas.name := to_unbounded_string( "Untitled SparForte Window Canvas" );
+  SDL_EXT_Window_Title( "Untitled SparForte Window Canvas" & ASCII.NUL );
   canvasList.Queue( canvas, newCanvas );
   canvas_id := newCanvas.id;
 end newWindowCanvas;
@@ -1690,8 +1689,8 @@ begin
      put_line( standard_error, "newWindowCanvas: falied for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
   end if;
   newCanvas.kind := window;
-  newCanvas.name := to_unbounded_string( "Untitled BUSH Window Canvas" );
-  SDL_EXT_Window_Title( "Untitled BUSH Window Canvas" & ASCII.NUL );
+  newCanvas.name := to_unbounded_string( "Untitled SparForte Window Canvas" );
+  SDL_EXT_Window_Title( "Untitled SparForte Window Canvas" & ASCII.NUL );
   canvasList.Queue( canvas, newCanvas );
   canvas_id := newCanvas.id;
 end newGLWindowCanvas;
@@ -1736,7 +1735,7 @@ begin
   end if;
   newCanvas.kind := offscreen;
   newCanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
-  newCanvas.name := to_unbounded_string( "Untitled Bush Offscreen Canvas" );
+  newCanvas.name := to_unbounded_string( "Untitled SparForte Offscreen Canvas" );
   canvasList.Queue( canvas, newCanvas );
   canvas_id := newCanvas.id;
   -- NOTE: should use SDL_VideoInfo for additional information
