@@ -2,7 +2,7 @@
 
 bad_test() {
   echo "Running $1..."
-  ../bush --debug "$1" < /dev/null > /dev/null
+  ../spar --debug "$1" < /dev/null > /dev/null
   RESULT=$?
   TMP=`ls core 2>/dev/null`
   test -f ./test.txt && rm ./test.txt
@@ -25,7 +25,7 @@ bad_test() {
 
 bad_test_wparam() {
   echo "Running $1..."
-  ../bush --debug "$1" a b c < /dev/null > /dev/null
+  ../spar --debug "$1" a b c < /dev/null > /dev/null
   RESULT=$?
   TMP=`ls core 2>/dev/null`
   test -f ./test.txt && rm ./test.txt
@@ -48,12 +48,12 @@ bad_test_wparam() {
 
 good_test() {
   echo "Running $1..."
-  ../bush --debug "$1" a b c
+  ../spar --debug "$1" a b c
   if [ $? -ne 0 ] ; then
      echo "--- $1 TEST FAILED - status code $? ---"
      exit 1
   fi
-  ../bush --debug -n "$1" a b c
+  ../spar --debug -n "$1" a b c
   if [ $? -ne 0 ] ; then
      echo "--- $1 TEST FAILED - status code $? ---"
      exit 1
@@ -423,7 +423,7 @@ bad_test "badtestw9.bush"
 
 # Switch tests
 
-../bush -n
+../spar -n
 if [ $RESULT -eq 0 ] ; then
      echo
      echo "--- $1 TEST FAILED - status code $RESULT ---"
@@ -431,7 +431,7 @@ if [ $RESULT -eq 0 ] ; then
      cat "$1"
      exit 1
 fi
-../bush -c
+../spar -c
 if [ $RESULT -eq 0 ] ; then
      echo
      echo "--- $1 TEST FAILED - status code $RESULT ---"
@@ -440,7 +440,7 @@ if [ $RESULT -eq 0 ] ; then
      exit 1
 fi
 
-../bush -c -n goodtest.bush a b c
+../spar -c -n goodtest.bush a b c
 if [ $RESULT -eq 0 ] ; then
      echo
      echo "--- $1 TEST FAILED - status code $RESULT ---"

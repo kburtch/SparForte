@@ -258,7 +258,9 @@ as c
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
 <td>
-<br>put_line expression e to standard output
+<br>put_line expression e to standard output.  If appropriate, removes
+the decimal part of the expression (i.e. 41.0 will be displayed as 41)
+so as more human-friendly.
 <br>Restrictions: disabled with pragma ada_95
 <br>Example: ? 3*2;
 <br>Ada Equivalent: none (AdaScript extension taken from BASIC language)

@@ -51,7 +51,7 @@ a "library" unit.  The basic library unit is a main procedure (or
 sometimes called a main program or main subprogram).  Other library
 units may be introduced in the future (such as packages).</p>
 
-<p>If Pragma Ada_95 is used, the statements must be enclosed in a
+<p>If <tt>pragma ada_95</tt> is used, the statements must be enclosed in a
 library unit.</p>
 
 <p>Some features may not be available with a simple list of
@@ -116,6 +116,11 @@ no way to handle forward parameters (yet).<br>
         </div>
         </center>
 
+<p>Procedures and functions may be nested: you can declare them in the
+declaration parts of another procedure, function or declare block.
+These nested subprograms only exist for the scope of this parent
+block.</p>
+
 <p><b>Ada</b>: AdaScript doesn't support creating new arithmetic
 operators by defining functions with operator symbols.</p>
 
@@ -141,7 +146,8 @@ constants.&nbsp; The word "in" is optional before the type of parameter.</p>
         </center>
 
 <p>Procedures and functions can only declared inside the declaration section of
-a script's main procedure block.</p>
+a script's main procedure block (or declared nested inside other subprograms
+or declare blocks).</p>
 
         <center>
         <div class="code">
@@ -163,10 +169,78 @@ a script's main procedure block.</p>
                 <p class="code">
   i : integer;<br>
   i := 5;<br>
-  <b>procedure</b> my_proc <b>is</b> -- BAD
+  <b>procedure</b> my_proc <b>is</b> -- BAD...use a main procedure block
 </p>
         </div>
         </center>
+
+<h3>Separate Subprograms</h3>
+
+<p>Procedures and functions maybe loaded from a separate file.
+(This is referred to as a "subunit": a feature of a script stored
+in a separate file).</p>
+
+<p>Copy your subprogram (or create a new one) and put it in a file
+with the name of the subprogram.  For example, if you have a
+separate procedure called "t2", put it in a file called "t2.sp".
+The filename must match the name of the subprogram.</p>
+
+<p>Separate subprograms must begin with a <tt>separate</tt> statement as
+the first line in the file.  This indicates that the file is not
+an executable script.  The separate statement should include
+the name of the parent script.  Each separate subprogram belongs
+to a single, specific parent script.</p>
+
+
+        <center>
+        <div class="code">
+        <p class="code">
+        -- t2.sp is a separate procedure<br>
+	<b>separate</b>( t );<br>
+        <b>procedure</b> t2 <b>is</b><br>
+        <b>begin</b><br>
+        &nbsp;&nbsp;put_line( "t2 was called!" );<br>
+        <b>end</b> t2;<br>&nbsp;<br>
+        <div class="code_caption">
+                <b>Example</b>: t2.sp is a loadable by a script named t.sp
+        </div>
+        </div>
+        </center>
+
+<p>In the parent script (the one that will load the subprogram),
+declare the subprogram but replace the body of the subprogram
+with the word <tt>separate</tt>.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">
+	<b>procedure</b> t <b>is</b><br>
+        &nbsp;&nbsp;<b>procedure</b> t2 <b>is</b> <b>separate</b>;<br>
+        <b>begin</b><br>
+        &nbsp;&nbsp;t2;<br>
+        <b>end</b> t;<br>&nbsp;<br>
+        <div class="code_caption">
+                <b>Example</b>: t.sp loads t2.sp and executes t2
+        </div>
+        </div>
+        </center>
+
+<p>SparForte will search for the separate subprogram using the SparForte
+library path.  The path is specified using the <b>-L</b> command option or using
+the environment variable <b>SPARFORTE_LIBRARY_PATH</b>.  By default, SparForte
+will search the current directory.  The separate subprogram must exist and
+be readable in order to load it.</p>
+
+<p>In SparForte, procedures and functions can be nested.  Support for
+separate nested subprograms is planned but not yet implemented.</p>
+
+<p>Separate subprogram blocks are similar to include files in other
+languages except that the separate block is a part of a specific main
+script.</p>
+
+<p><b>Ada</b>: GCC Ada also has separate subunits.  They are implemented
+in the same way.</p>
+
 <br>&nbsp;
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>

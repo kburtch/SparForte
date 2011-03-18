@@ -6,8 +6,6 @@ POST TO CHANGE LOG
 
 ISSUES (BUSH Environment)
 
- - cleanup of integer values by ? broken with rounding
-
   * build system (BUSH Environment)
 
   * regression test suite (BUSH Environemnt)
@@ -33,6 +31,8 @@ ISSUES (BUSH Environment)
       the array.  See ParseDeclarationPart for how to handle this.
   - dir_separator, change_dir, remove_dir, get_current_dir, dir_name,
     base_name, file_extension, file_name, format_pathname, expand_path & test
+  - enum package neg tests
+  - is separate tests
 
   * sample programs
     - update the sample programs for subprograms

@@ -40,6 +40,8 @@
 	<!-- Content Area -->
 <h2><a name="3.30"></a>Common Error Messages</h2>
 
+<p>Note: Some of these may be obsolete.</p>
+
 <b>@ is not allowed with pragma ada_95</b> - @ (itself) is not an Ada
 95
 feature. Fill in the actual variable name.
@@ -134,6 +136,9 @@ program has attempted to read past the end of the file
 function only applied when reading files. When writing or appending to
 files, you are always at the end of file.
 <br>
+<b>expected parent unit FILE</b> - the name of the parent unit in
+the separate statement doesn't match the unit name.
+<br>
 <b>exception raised</b> - the operation was not permitted. For example,
 dividing by zero or doing arithmetic with a variable that has no value.
 <br>
@@ -157,6 +162,9 @@ parameters.
 <b>functions not implemented</b> - user-defined functions are not yet
 implemented
 <br>
+<b>include file FILE doesn't exist or is not readable</b> - SparForte
+is unable to find your separate subprogram.  The filename is
+spelled wrong, not in the search path, or cannot be read by SparForte.
 <b>invalid based numeric literal</b> - usually specifying a base and
 using number characters larger than the base allows
 <br>

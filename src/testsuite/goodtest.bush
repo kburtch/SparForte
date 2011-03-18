@@ -899,12 +899,12 @@ pragma assert( foo_dummy_variable_123 = "foo_123" );
 
 pragma assert( enums.first( boolean ) = false );
 pragma assert( enums.last( boolean ) = true );
-pragma assert( enums.prev( true ) = false );
+pragma assert( enums.pred( true ) = false );
 pragma assert( enums.succ( false ) = true );
 
 pragma assert( enums.first( new_enum2 ) = enum1 );
 pragma assert( enums.last( new_enum2 ) = enum3 );
-pragma assert( enums.prev( enum2 ) = enum1 );
+pragma assert( enums.pred( enum2 ) = enum1 );
 pragma assert( enums.succ( enum2 ) = enum3 );
 
 pragma assert( enums.first( new_enum ) = enum0 );

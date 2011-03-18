@@ -580,16 +580,6 @@ begin
      str := to_unbounded_string( long_long_integer'image( roundedVal ) );
   -- If it's anything else, including universals, don't do anything
   -- except convert to a string
-  --elsif baseType = uni_numeric_t then
-  ---- For universal numeric, represent it as an integer string if possible.
-  ---- Avoid throwing an exception when params expecting integers.
-  ---- This is taken from scanner.ads.  This could be more efficient.
-     --if long_float( roundedVal ) >= long_float( integerOutputType'first+0.9 ) and
-        --long_float( roundedVal ) <= maxInteger then
-        --str := to_unbounded_string( long_long_integer'val( val ) );
-     --else
-        --str := to_unbounded_string( val'img );
-     --end if;
   else
      -- return unchanged
      str := to_unbounded_string( val'img );

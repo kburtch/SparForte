@@ -425,6 +425,21 @@ begin
                 put( "'" );
                 put( ToEscaped( ident.value ) );
                 put( "'" );
+            elsif getUniType( ident.kind ) = root_enumerated_t then
+                for i in identifiers'first..identifiers_top-1 loop
+                    if identifiers( i ).kind = ident.kind then
+-- KLUDGE: even a constant is not an accurate way to identify if
+-- something is a enum item or not because you could have a constant
+-- variable.  But, counting from bottom of symbols, this is usually
+-- correct.
+                       if identifiers( i ).class = constClass then
+                          if identifiers( i ).value = ident.value then
+                             put( ToEscaped( identifiers( i ).name ) );
+                             exit;
+                          end if;
+                       end if;
+                    end if;
+               end loop;
             elsif not ident.list then
                 put( ToEscaped( ident.value ) );
             end if;
@@ -5156,7 +5171,9 @@ begin
   end loop;
 
   if fileLocation /= 0 then                                -- already incl.?
-     put_trace( "file already included" );                 -- note it
+     if trace or verboseOpt = true then
+        put_trace( "file already included" );                 -- note it
+     end if;
   elsif sourceFilesList.Length( sourceFiles ) = 255 then   -- too many?
      -- 255 is one byte minus 0, which is reserved
      err( optional_inverse( "too many include files and subunits" ) );
@@ -5185,7 +5202,10 @@ begin
           include_file : file_type;
         begin
           open( include_file, in_file, to_string( libraryPrefix & includeName ) );
-          put_trace( to_string( "Including " & libraryPrefix & includeName ) );
+          -- TODO: trace may not exist at this point
+          if trace or verboseOpt = true then
+             put_trace( to_string( "Including " & libraryPrefix & includeName ) );
+          end if;
           while not end_of_file( include_file ) loop
             includeText := includeText & ada.strings.unbounded.text_io.get_line( include_file ) & ASCII.LF;
           end loop;

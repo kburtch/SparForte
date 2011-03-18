@@ -1827,7 +1827,8 @@ begin
            if uniTypesOk( castType, kind ) then
               kind := castType;
               if isExecutingCommand then
-	         f := castToType( to_numeric( f ), kind );
+	         --f := castToType( to_numeric( f ), kind );
+	         f := castToType( f, kind );
               end if;
            end if;
         elsif identifiers( getBaseType( t ) ).list then        -- array(index)?
@@ -3605,7 +3606,8 @@ begin
               s : string := enum_index'img;
             begin
               -- drop leading space
-              identifiers( newtype_id ).value := to_unbounded_string( s(2..s'last) );
+              --identifiers( newtype_id ).value := to_unbounded_string( s(2..s'last) );
+              identifiers( newtype_id ).value := to_unbounded_string( s );
             end;
             identifiers( newtype_id ).kind := parent_id;   -- based on parent
          else                                              -- otherwise
@@ -5081,12 +5083,13 @@ procedure ParseSeparateProcHeader( proc_id : identifier; procStart : out natural
   i : integer;
   ch : character;
 begin
-   getFullParentUnitName( pu );
+   -- getFullParentUnitName( pu );
    -- separate
    expectSemicolon;
    expect( separate_t );
    expect( symbol_t, "(");
    ParseIdentifier( parent_id );
+   pu := identifiers( parent_id ).name;
    -- NOTE: the identifier token returned has the prefix stripped!  This needs
    -- to be fixed so I cannot check to see if it was full path before stripping.
    i := length( pu );
@@ -5280,6 +5283,7 @@ begin
    expect( separate_t );
    expect( symbol_t, "(");
    ParseIdentifier( parent_id );
+   pu := identifiers( parent_id ).name;
    -- NOTE: the identifier token returned has the prefix stripped!  This needs
    -- to be fixed so I cannot check to see if it was full path before stripping.
    i := length( pu );

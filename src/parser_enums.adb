@@ -107,7 +107,8 @@ begin
      declare
         s : string := best'img;
      begin
-        f := to_unbounded_string( s(2..s'last) );
+        --f := to_unbounded_string( s(2..s'last) );
+        f := to_unbounded_string( s );
      end;
   elsif syntax_check then
      kind := universal_t; -- type is unknown during syntax check
@@ -141,7 +142,8 @@ begin
         declare
            s : string := item'img;
         begin
-           f := to_unbounded_string( s(2..s'last) );
+           --f := to_unbounded_string( s(2..s'last) );
+           f := to_unbounded_string( s );
         end;
      exception when others =>
         err( "exception thrown" );
@@ -196,7 +198,8 @@ begin
         declare
            s : string := item'img;
         begin
-           f := to_unbounded_string( s(2..s'last) );
+           --f := to_unbounded_string( s(2..s'last) );
+           f := to_unbounded_string( s );
         end;
      exception when others =>
         err( "exception thrown" );

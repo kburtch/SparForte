@@ -1148,12 +1148,19 @@ begin
   end if;
   ParseExpression( expr_val, expr_type );
   -- this sould be moved to an image function
+  -- this does not work: variables intercepted and displayed instead
   if getUniType( expr_type ) = root_enumerated_t then
      for i in identifiers'first..identifiers_top-1 loop
          if identifiers( i ).kind = expr_type then
-            if identifiers( i ).value = expr_val then
-               expr_val := identifiers( i ).name;
-               exit; -- first occurrence should be original enumerated value
+-- KLUDGE: even a constant is not an accurate way to identify if
+-- something is a enum item or not because you could have a constant
+-- variable.  But, counting from bottom of symbols, this is usually
+-- correct.
+            if identifiers( i ).class = constClass then
+               if identifiers( i ).value = expr_val then
+                  expr_val := identifiers( i ).name;
+                  exit;
+               end if;
             end if;
          end if;
      end loop;
