@@ -42,7 +42,7 @@
 
 <p>Interactive sessions refer to a user typing commands at the SparForte
 command
-prompt.&nbsp; AdaScript has a number of built-in statements to be used
+prompt.&nbsp; AdaScript has a number of built-in commands to be used
 in interactive sessions:</p>
 
 <p><b>help [-h|-m] [command or script]</b></p>
@@ -251,59 +251,6 @@ top-left corner of the display.
 </center>
 &nbsp;<br>
 
-<h4>Interactive Sessions versus Scripts</h4>
-
-<p>Interactive sessions have the following limitations or features:</p>
-
-<ul>
-<li>The final semi-colon is optional.&nbsp; If it is missing, SparForte will
-append a semi-colon before executing the command.&nbsp;
-
-(If an error occurs, the entire line will be shown, including the extra
-semi-colon.)&nbsp; Semi-colons will have to be placed after every command
-except the final command.
-<pre>
-<b>=&gt;</b> ? "hello"
-hello
-<b>=&gt;</b> ? "hello";
-hello
-</pre>
-<li>Compound statements (statements that enclose other statements) can be
-used provided that the complete statement appears on a single line.
-<pre>
-<b>=&gt;</b> for i in 1..5 loop put_line( i ) ; end loop
-1
-2
-3
-4
-5
-</pre>
-
-</li>
-<li>During an assignment, if the variable being assigned isn't declared,
-it's automatically declared unless <a href="bushtutorial.html#pragmas">pragma
-ada_95</a> or <a href="bushtutorial.html#pragmas">pragma restriction(
-no_auto_declarations )</a> is used. The type of the variable is the type of
-the expression being assigned.
-<pre>
-<b>=&gt;</b> i := 5
-<b>=&gt;</b> (Assuming i is a new universal_numeric variable)
-</pre>
-</li>
-
-<li>External commands can be grouped into pipelines using the vertical
-bar character (|).&nbsp; Pipelines are a command line convenience feature
-and are not intended for use in scripts (this is true in other Linux shells
-as well).</li>
-</ul>
-&nbsp;<br>
-
-<p>Interactive sessions can only be terminated with the logout command.
-<br>
-</p>
-<p><br>
-</p>
-
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
                                 <p class="rmt"><a class="rightmenutext" href="ref_adascript.html">&nbsp;AdaScript versus GCC</a></p>
@@ -311,7 +258,7 @@ as well).</li>
                                 <p class="rmt"><a class="rightmenutext" href="ref_reserved.html">&nbsp;Reserved Words</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_comments.html">&nbsp;Comments</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_literals.html">&nbsp;Literals</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Arguments</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Word Expansions</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_types.html">&nbsp;Fundamental Types</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_typedecl.html">&nbsp;User-defined Types</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_enum.html">&nbsp;Enumerated Types</a></p>

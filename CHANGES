@@ -1,13 +1,24 @@
-pen.fill_rect - takes color or color name
-pen.paint_rect
-pen.clear
-pen.wait_to_reveal
-pen.reveal
-pen.reveal_now
-Add (lighten), subtract (darken), average (blend) added to pen mode
-for direct color screens (but not working correctly).
-Mandel.bush and Chessboard.bush
+SparForte 1.2:
 
-- load/save canvas
-- print
+1. Fixed: - if without end if no longer terminates the script
+2. Fixed: @ and % now work as expected with expressions using user-defined functions.
+(e.g. @ no longer equals return if return is the last line in the function)
+3. New: new annotations: bugs and todo
+4. New: characters supported in the "in" and "not in" operators.
+5. Fixed: arrays package now accepts constant arrays for arrays.first, arrays.last,
+arrays.length
+6. Fixed: return expressions can now start with a punctuation symbol
+7. Fixed: open for socket_type working again.
+8. Fixed: Initial Get on a socket_type now gets the first character.
+9. New: Type casting for numeric types now implemented on - +, -, *, /, mod, rem, := and := on declaration and on explicit cast. Universal types are not yet typecast on parameters.
+10. Change: Documentation has been restructured for easier navigation.
+11. New: Database support has been backported from Business Shell 2.0 prototype. You can now select MySQL, PostgreSQL, both or not when building Bush from sources.
+12. Change: The Bush project has been renamed "SparForte". It now accepts scripts ending in ".bush" and ".sp". The next release will likely be SparForte 1.2.
+13. Fixed: The documentation has been reviewed and some new examples added. Plus other cleanup.
+14. New: Built-in enums package. enums.first(), enums.last(), enums.prev(), enums.succ().
+15. Fixed: enums.prev renamed to enums.pred.
+16. Fixed: enumerateds format fixed, now display properly in env and "?".
+17. Change: "?" now displays numbers in a human readable format (e.g. 0.0 will be displayed as 0).
+18. New: Separate subprograms/subunits backported from Bush 2.0 developmental snapshot. Non-working features disabled.
+19. New: SparForte now on github.
 

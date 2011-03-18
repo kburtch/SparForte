@@ -40,7 +40,7 @@
 	<!-- Content Area -->
 <h2><a name="3.18"></a>Current Directory</h2>
 
-<p>There are two built-in BASH-style commands for managing your current
+<p>There are two built-in shell commands for managing your current
 directory:</p>
 
 <p><b>pwd</b></p>
@@ -67,8 +67,10 @@ directory.</p>
 <tr>
 <td align="left">
 <p>Change the present working directory. The tilde, '~', represents your
-home directory. The minus sign, '-', represents your previous directory.
-The cd command ignores the value of a CDPATH variable.</p>
+home directory.  The variable PWD will be set with the path of the
+current working directory.  The variable OLDPWD will be set to the
+previous value of PWD.  The minus sign, '-', represents your previous
+directory.  The cd command ignores the value of a CDPATH variable.</p>
 </p>
 <p><u>Example</u></p>
 
@@ -102,7 +104,7 @@ The cd command ignores the value of a CDPATH variable.</p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_reserved.html">&nbsp;Reserved Words</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_comments.html">&nbsp;Comments</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_literals.html">&nbsp;Literals</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Arguments</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Word Expansions</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_types.html">&nbsp;Fundamental Types</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_typedecl.html">&nbsp;User-defined Types</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_enum.html">&nbsp;Enumerated Types</a></p>

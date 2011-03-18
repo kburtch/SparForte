@@ -40,7 +40,13 @@
 	<!-- Content Area -->
 <h2><a name="3.15"></a>Redirection and Pipelines</h2>
 
-<p>There are several operands that control input/output redirection.</p>
+<p>The input to a command, or the output from a command, can be redirected
+to files or, in some cases, other commands.  Although there are
+subprograms in <a href="pkg_text_io.html">text_io</a> package to
+perform some of these operations (e.g. <tt>set_output</tt>), the
+familliar Bourne shell syntax is also supported.</p>
+
+<h3>Redirecting Standard Input, Output and Error</h3>
 
 <ul>
   <li> <tt><b>&gt; f</b> </tt>- redirect standard output to
@@ -69,21 +75,32 @@ after a standard output redirection to redirect both to the same file)</li>
 
         <center>
         <div class="code">
-                <p class="code">=&gt; ls &gt; list_output.txt 2&gt; list_errors.txt</p>
+                <p class="code"><b>=&gt;</b> ls &gt; list_output.txt 2&gt; list_errors.txt</p>
         </div>
         </center>
+
+<p>These redirection operands also work with built-in shell commands like
+<tt>env</tt> or <tt>help</tt>.  They will not work on subprograms
+like <tt>put_line</tt>.</p>
 
 <p>The redirect operands are considered to be a command line
 convenience.&nbsp;
 More powerful redirection is possible using the Text_IO package.
 </p>
+
+<p><b>Bourne shell</b>: SparForte doesn't use file descriptor numbers
+so redirecting arbitrary open files using the Bourne shell syntax is
+not possible.  Use the text_io package instead.</p>
+
+<h3>Pipelines</h3>
+
 <p>Command pipelines are created by connecting one or more commands
 using
 the pipe (|) symbol.</p>
 
         <center>
         <div class="code">
-                <p class="code">=&gt; ls | grep ".txt"</p>
+                <p class="code"><b>=&gt;</b> ls | grep ".txt"</p>
         </div>
         </center>
 
@@ -107,7 +124,7 @@ using
                                 <p class="rmt"><a class="rightmenutext" href="ref_reserved.html">&nbsp;Reserved Words</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_comments.html">&nbsp;Comments</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_literals.html">&nbsp;Literals</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Arguments</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Word Expansions</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_types.html">&nbsp;Fundamental Types</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_typedecl.html">&nbsp;User-defined Types</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_enum.html">&nbsp;Enumerated Types</a></p>

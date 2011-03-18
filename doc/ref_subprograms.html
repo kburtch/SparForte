@@ -41,7 +41,12 @@
 <h2><a name="3.23"></a>Block Statements and Subprograms</h2>
 
 <p>Bush scripts can be organized using declare blocks, procedures and
-functions.  This enables pieces of a program to be easily reused.</p>
+functions.  This enables pieces of a program to be easily reused.
+A procedure is a routine that can be called but returns no value.
+For example, <tt>put_line</tt> is a procedure.  A function always
+returns a value so it can be used as part of an expression.
+<tt>strings.length</tt> is an example of a function which responds
+with the length of a string.</p>
 
 <h3>Overall Structure</h3>
 
@@ -96,11 +101,6 @@ to clarify the structure of the program.</p>
 <p><b>Ada</b>: In Ada, the name of the subprogram is optional after
 <tt>end</tt>.  In AdaScript, the name is required.</p>
 
-<p>Procedures and functions cannot be forward declared (yet) as there
-is
-no way to handle forward parameters (yet).<br>
-</p>
-
         <center>
         <div class="code">
                 <p class="code">
@@ -121,15 +121,22 @@ declaration parts of another procedure, function or declare block.
 These nested subprograms only exist for the scope of this parent
 block.</p>
 
+<p>A procedure may be terminated early using a <tt>return</tt>
+statement.  A function uses <tt>return</tt> to return back a
+value.</p>
+
 <p><b>Ada</b>: AdaScript doesn't support creating new arithmetic
 operators by defining functions with operator symbols.</p>
 
 <h3>Procedure and Function Parameters</h3>
 
-<p>Both procedures and functions can have parameters.&nbsp; The
-parameters are what Ada refers to as "in" parameters: they give
-additional information to a subprogram and are treated as
-constants.&nbsp; The word "in" is optional before the type of parameter.</p>
+<p>Both procedures and functions can have parameters.&nbsp;  If a
+procedure or function has no parameters, do not include any
+parantheses.  If there are parameters, they are listed with
+a name, a mode and a type.  All parameters are "in" mode
+parameters: they give additional information to a subprogram
+and are treated as constants.&nbsp; The word "in" is optional
+before the type of parameter.</p>
 
         <center>
         <div class="code">
@@ -169,10 +176,24 @@ or declare blocks).</p>
                 <p class="code">
   i : integer;<br>
   i := 5;<br>
-  <b>procedure</b> my_proc <b>is</b> -- BAD...use a main procedure block
+  <b>procedure</b> my_proc <b>is</b> -- BAD...use a main procedure block<br>
+  ...
 </p>
         </div>
         </center>
+
+<p>The built-in procedures and functions found in the SparForte
+packages may include parameters with other modes.  <tt>in out</tt> mode
+means the value of the parameter is used by the subprogram and
+may be changed.  <tt>out</tt> mode means the parameter is not read by
+the subprogram but a value will be returned using the parameter.
+Functions may only use in mode.  The modes are described on the front
+page of the <b>Packages</b> section of this documentation.</p>
+
+<p><b>Ada</b>: <tt>in out</tt>, <tt>out</tt> and <tt>access</tt>
+mode parameters are not supported for user-defined subprograms.
+Named parameters are not supported.  Default values are not
+supported.</p>
 
 <h3>Forward Subprograms and Recursion</h3>
 
@@ -232,7 +253,7 @@ with the word <tt>separate</tt>.</p>
 
 <p>SparForte will search for the separate subprogram using the SparForte
 library path.  The path is specified using the <b>-L</b> command option or using
-the environment variable <b>SPARFORTE_LIBRARY_PATH</b>.  By default, SparForte
+the environment variable <b>SPAR_LIBRARY_PATH</b>.  By default, SparForte
 will search the current directory.  The separate subprogram must exist and
 be readable in order to load it.</p>
 
@@ -254,7 +275,7 @@ in the same way.</p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_reserved.html">&nbsp;Reserved Words</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_comments.html">&nbsp;Comments</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_literals.html">&nbsp;Literals</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Arguments</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Word Expansions</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_types.html">&nbsp;Fundamental Types</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_typedecl.html">&nbsp;User-defined Types</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_enum.html">&nbsp;Enumerated Types</a></p>
@@ -292,4 +313,3 @@ in the same way.</p>
 
 </body>
 </html>
-

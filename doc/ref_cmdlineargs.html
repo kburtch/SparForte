@@ -40,25 +40,78 @@
 	<!-- Content Area -->
 <h2><a name="3.14"></a>Command Argument Shortcuts</h2>
 
-<p>Parameters to the script are available using the built-in <a
- href="#cmdline">command_line</a>
-package. However, for&nbsp; compatibility, the Bourne shell syntax can
-also be used:</p>
+<p>Command line arguments are additional data passed to a script on the
+command that executes the script.  These may include things like
+filenames and option switches. Although there is a built-in package to
+handle arguments (<a href="pkg_cmdline.html">command_line</a>),
+for&nbsp; compatibility, the familiar Bourne shell syntax
+can also be used:</p>
 
 <ul>
   <li> <b><tt>$?</tt></b> - the status code for the last shell command
 executed</li>
   <li> <b><tt>$0</tt></b> - the script name (not completely
 implemented)</li>
-  <li> <tt><b>$1</b> - <b>$9</b></tt> - up to 9 arguments given to
-this
-script</li>
-
+  <li> <tt><b>$1</b>...<b>$9</b></tt> - the first 9 arguments given to
+this script (if they exist)</li>
   <li> <b><tt>$#</tt></b> - the number of arguments</li>
   <li> <b><tt>$$</tt></b> - the PID of this program, primarily used to
 uniquely
 name temporary files</li>
 </ul>
+
+<p>For example,</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+			<b>=&gt;</b> myscript a b c</p>
+        </div>
+        </center>
+
+<p>$1 is "a", $2 is "b" and $3 is "c".  The argument variables are
+always string.  The number of parameters, $#, will be 3.  Attempting
+to access an argument that doesn't exist, such as $4 in this example,
+is an error.  Redirection operators are not arguments because they
+are processed prior to running the command.</p>
+
+<p>If you run script as an argument to the spar command, any arguments
+occurring after the script name will be treated as the arguments to the
+script.</p>
+
+<p>For example,</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+			$ spar --trace myscript a b c</p>
+        </div>
+        </center>
+
+<p>In this example, $1 is still "a".  The "--trace" argument is not
+visible to your script.</p>
+
+<p>Here is a longer script example.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">-- a short-cut for ls -l for one optional parameter<br>
+&nbsp;<br>
+<b>procedure</b> ll <b>is</b><br>
+&nbsp;&nbsp;  dir : string := ".";<br>
+<b>begin</b><br>
+&nbsp;&nbsp;<b>if</b> $# &gt; 0 <b>then</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;dir := $1;<br>
+&nbsp;&nbsp;<b>end</b> <b>if</b>;<br>
+&nbsp;&nbsp;ls -l $dir;<br>
+<b>end</b> ll;<br>&nbsp;<br>
+</p>
+        <div class="code_caption">
+                <b>Example</b>: Using Bourne Shell arguments
+        </div>
+        </div>
+        </center>
+
 <p>If there are more than 9 arguments, they can be accessed with the
 command_line
 package.</p>
@@ -67,23 +120,35 @@ command_line package should normally be used in a well-structured
 script.
 </p>
 
+<p>SparForte also permits these command line tokens in dollar
+expansions.  Here is an example of removing a traditional shell
+temporary file.</p>
+
         <center>
         <div class="code">
-                <p class="code">rm ("/tmp/temp." &amp; $$)<br>
-if $? /= 0 then<br>
+                <p class="code">rm "/tmp/temp."$$<br>
+<b>if</b> $? /= 0 <b>then</b><br>
 &nbsp;&nbsp; put_line( standard_error, "unable to delete temp file");<br>
-end if;</p>
+<b>end</b> <b>if</b>;<br>&nbsp;<br>
 </p>
+        <div class="code_caption">
+                <b>Example</b>: Using Bourne Shell arguments - another example
+        </div>
         </div>
         </center>
 
 
 <p>The status code of the last command executed is returned from a
-script
-when it finishes executing.&nbsp; A specific status code can be
-returned
-using the command_line package.
-<br>
+script when it finishes executing.&nbsp; Traditionally, a non-zero
+status is an error condition.</p>
+
+<p>A SparForte script can set its status code using the
+command_line package.</p>
+
+<p><b>Bourne Shell</b>: <tt>$@</tt>, <tt>$#</tt> and <tt>shift</tt>
+are not available.  Use the command_line package for these and
+loop through the parameters.</p>
+<p>
 &nbsp;
 </p>
 
@@ -94,7 +159,7 @@ using the command_line package.
                                 <p class="rmt"><a class="rightmenutext" href="ref_reserved.html">&nbsp;Reserved Words</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_comments.html">&nbsp;Comments</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_literals.html">&nbsp;Literals</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Arguments</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Word Expansions</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_types.html">&nbsp;Fundamental Types</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_typedecl.html">&nbsp;User-defined Types</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_enum.html">&nbsp;Enumerated Types</a></p>
@@ -124,7 +189,7 @@ using the command_line package.
 
 		</tr>
 		<tr>
-			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" border="0" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
 			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
 	       	</tr>
 

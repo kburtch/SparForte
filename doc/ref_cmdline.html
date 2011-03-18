@@ -40,6 +40,13 @@
 	<!-- Content Area -->
 <h2><a name="3.16"></a>Command Line Interaction</h2>
 
+<p>SparForte supports all modern terminal or console windows, including
+the Linux text console, KDE's konsole, the Gnome console and most monochrome
+terminal emulations that cursor movement.  Support for inverse and bold print
+is preferred.</p>
+
+<h3>Command Line Key Bindings</h3>
+
 <p>SparForte recognizes the Linux console arrow keys and common key sequences
 for
 the "emacs" and "vi" text editors. The sequences are called key
@@ -67,15 +74,6 @@ key to search for.)</li>
   <li> <b>backspace/delete</b> - delete a character</li>
 </ul>
 
-<p>SparForte remembers up to 40 command lines for the current session, and you
-can cycle through them using control-p and control-n.</p>
-
-<p>Typing a control-c (sending a SIGINT signal) at the command prompt
-acts
-the same as a control-x.&nbsp; Pressing control-c while a script or
-command
-is running will cause it to stop.
-</p>
 <p>If you prefer to use <b>vi cursor movement</b> instead, press the
 escape
 key to enter vi mode. Press escape again to return to emacs mode. In vi
@@ -83,6 +81,88 @@ mode, you can use lower-case 'h', 'j', 'k', 'l', '^' and '$'. Filename
 completion is accomplished with two escape key presses in a row.
 </p>
 
+<h3>Command History</h3>
+
+<p>SparForte remembers up to 100 command lines for the current session, and you
+can cycle through them using control-p and control-n.  The <tt>history</tt>
+command will show your command history.</p>
+
+<h3>Filename Completion</h3>
+
+<p>Pressing a tab (or ESC twice) on the command line will cause SparForte
+to search for filenames to complete a command.</p>
+
+<p>If there are multiple machines, SparForte will complete as much of the
+filename as matches all cases.  Pressing tab again will show a list of
+the possible matches.</p>
+
+<p>If the filename contains a leading tilde, it will be treated as the
+path to your home directory.</p>
+
+<h3>SIGINT Handling</h3>
+
+<p>Typing a control-c (sending a SIGINT signal) at the command prompt
+acts
+the same as a control-x.&nbsp; Pressing control-c while a script or
+command
+is running will cause it to stop.
+</p>
+
+<h3>Interactive Sessions versus Scripts</h3>
+
+<p>Interactive sessions have the following limitations or features:</p>
+
+<ul>
+<li>The final semi-colon is optional.&nbsp; If it is missing, SparForte will
+append a semi-colon before executing the command.&nbsp;
+
+(If an error occurs, the entire line will be shown, including the extra
+semi-colon.)&nbsp; Semi-colons will have to be placed after every command
+except the final command.
+<pre>
+<b>=&gt;</b> ? "hello"
+hello
+<b>=&gt;</b> ? "hello";
+hello
+</pre>
+<li>Compound statements (statements that enclose other statements) can be
+used provided that the complete statement appears on a single line.
+<pre>
+<b>=&gt;</b> for i in 1..5 loop put_line( i ) ; end loop
+1
+2
+3
+4
+5
+</pre>
+
+</li>
+<li>During an assignment, if the variable being assigned isn't declared,
+it's automatically declared unless <a href="ref_pragmas.html">pragma
+ada_95</a> or <a href="ref_pragmas.html">pragma restriction(
+no_auto_declarations )</a> is used. The type of the variable is the type of
+the expression being assigned.
+<pre>
+<b>=&gt;</b> i := 5
+<b>=&gt;</b> (Assuming i is a new universal_numeric variable)
+</pre>
+</li>
+
+<li>External commands can be grouped into pipelines using the vertical
+bar character (|).&nbsp; Pipelines are a command line convenience feature
+and are not intended for use in scripts (this is true in other Linux shells
+as well).</li>
+
+<li>The <tt>typeset</tt> and <tt>unset</tt> commands can only be used
+in an interactive session.</li>
+
+<li>Interactive login sessions can only be terminated with the logout command.</li>
+
+</ul>
+<br>
+</p>
+
+<br>&nbsp;
 &nbsp;<br>
 
 
@@ -93,7 +173,7 @@ completion is accomplished with two escape key presses in a row.
                                 <p class="rmt"><a class="rightmenutext" href="ref_reserved.html">&nbsp;Reserved Words</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_comments.html">&nbsp;Comments</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_literals.html">&nbsp;Literals</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Arguments</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Word Expansions</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_types.html">&nbsp;Fundamental Types</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_typedecl.html">&nbsp;User-defined Types</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_enum.html">&nbsp;Enumerated Types</a></p>
@@ -123,7 +203,7 @@ completion is accomplished with two escape key presses in a row.
 
 		</tr>
 		<tr>
-			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" border="0" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
 			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
 	       	</tr>
 
@@ -131,4 +211,3 @@ completion is accomplished with two escape key presses in a row.
 
 </body>
 </html>
-

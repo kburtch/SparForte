@@ -42,7 +42,7 @@
 
 <h3>Running External Commands</h3>
 
-<p>The purpose of an AdaScript script is, ultimately, to execute shell
+<p>The purpose of a shell script is, ultimately, to execute shell
 commands.
 Any command not understood by AdaScript as a command is assumed to be a
 shell command. For example,</p>
@@ -53,9 +53,9 @@ shell command. For example,</p>
         </div>
         </center>
 
-<p>will run the Linux echo command and print a blank line to the
+<p>will run the Linux/UNIX echo command and print a blank line to the
 screen,
-the same as new_line.
+the same as new_line in the text_io package.
 </p>
 
 <h3>Command Parameters</h3>
@@ -95,12 +95,19 @@ builtins.adb bush.adb</p>
         </div>
 	</center>
 
+<p>For information on reading Bourne shell arguments, see
+<a href="ref_cmdlineargs.html">Command Argument Shortcuts</a>.</p>
+
 <h3>Variable Expansion</h3>
 
-<p>Bush can insert the values of variables using BASH-style "$"
+<p>SparForte can insert the values of variables using BASH-style "$"
 substitutions.&nbsp; "ls $HOME" will show the contents of your home
 directory.<br>
 </p>
+
+<p>See <a href="ref_shellargs.html">this page</a> for details on
+various expansions.</p>
+
 
 <h3>Quoting Commands</h3>
 
@@ -171,7 +178,7 @@ using the Text_IO package.</p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_reserved.html">&nbsp;Reserved Words</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_comments.html">&nbsp;Comments</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_literals.html">&nbsp;Literals</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Arguments</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="ref_shellargs.html">&nbsp;Bourne Shell Word Expansions</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_types.html">&nbsp;Fundamental Types</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_typedecl.html">&nbsp;User-defined Types</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="ref_enum.html">&nbsp;Enumerated Types</a></p>
@@ -201,7 +208,7 @@ using the Text_IO package.</p>
 
 		</tr>
 		<tr>
-			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" border="0" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
 			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
 	       	</tr>
 
