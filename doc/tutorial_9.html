@@ -26,7 +26,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="tutorial_8.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="tutorial_10.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -211,15 +211,18 @@ interactive prompt.</p>
 
 <h3>Breakout Pragmas</h3>
 
-<p>To break at a specific point in a script, use <b>pragma
-inspection_point</b>.  When this pragma is reached, SparForte will stop as if you
-typed a Control-C.  <b>pragma inspection_peek</b> works the same way
-without stopping the program.</p>
 <p>To monitor variables, use <b>pragma inspect</b>.  Each time the script
-stops at an inspection point or because of a Control-C, the value of all the
+stops because of a Control-C, the value of all the
 variables marked for inspection will be shown.  You can also use pragma inspect
 at the breakout prompt to start inspecting a variable, or <b>pragma
 uninspect</b> to stop inspecting a variable.</p>
+
+<p>To break at a specific point in a script without using Control-C, use <b>pragma
+inspection_point</b>.  When this pragma is reached, SparForte will stop as if you
+typed a Control-C.  That is, it marks a "break point" in your program.  All
+variables selected with pragma inspect will be displayed.  Use
+<b>pragma inspection_peek</b> to see the inspected variables without stopping
+the program.</p>
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
@@ -234,6 +237,7 @@ uninspect</b> to stop inspecting a variable.</p>
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_9.html">&nbsp;<b>Debugging Tutorial - Using the SparForte Debugger</b></a></p>
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_10.html">&nbsp;Creating a Profile Script</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_11.html">&nbsp;Calling SparForte from C: A Tutorial</a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_13.html">&nbsp;SparForte For PHP Developers</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_12.html">&nbsp;SparForte Best Practices</a></p>
 			</td>
 		</tr>

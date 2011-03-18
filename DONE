@@ -1,25 +1,40 @@
 
-Bush has been renamed "SparForte".
-
-Bush accepts files ending with ".bush" or ".sp".
-
-postresql and mysql are now separated in the code and selectable on
-configure.
+Release focus: removing barrier to adoption.
 
 pen.new_gl_window_canvas( h, v, r, c )
 
 pen.new_gl_screen_canvas - untested
 
+enums.prev -> fixed to enums.pred
+
+? displays integer values when reasonable to do so (e.g. 41.0
+is shown as 40)
+
 ---
 
-draco_ii and poetry broken...probably because numerics is broken
-from the rounding experiments
+Removing barriers to adoption:
 
+border="0" missing from some up-arrows in the docs.
+links in ref packages must be reviewed.
+
+aligncols broken: for Align in Left..Right loop: doesn't properly
+distinguish between "Align" and enumerated items between Left..Right
+
+That is:
+=> type align is (left, center, right )
+=> for i in left..right loop ? i ; end loop;
+left
+i
+i
 testing is separate and other features backported ported from 2.0
 but not tested
 
 enums package works but ? displays numbers instead of literals...why?
 enums.pos() and enums.val() not implemented yet
+
+pragma restriction( no_mysql );
+pragma restriction( no_postgresql );
+pragma initialize_scalars;
 
 implement other gnatprep stuff?
 

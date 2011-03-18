@@ -26,7 +26,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="ref_pragmas.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="ref_cmdref.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -42,8 +42,8 @@
 
 <p>There are several command options for SparForte.</p>
 
-<center><img src="pictures/bush_4.gif" alt="[SparForte screenshot]" height="227"
- width="591">
+<center><img src="pictures/bush_4.gif" alt="[SparForte screenshot]" height="365"
+ width="616">
 </center>
 <ul>
   <li> <b>--break (or -b)</b> - allow breakout to a shell prompt on a
@@ -71,10 +71,8 @@ compatible with smart editors and IDEs. Also disables bold and inverse
 printing in error messages.</li>
   <li> <b>--help (or -h)</b> - show help on command line options</li>
   <li> <b>--import-all (or -n)</b> - declare and import all
-environment
-variables
-when SparForte starts</li>
-
+environment variables when SparForte starts</li>
+  <li> <b>--L</b> - specify additional SPAR_LIBRARY_PATH directories (see below)</li>
   <li> <b>--login (or -l)</b> - simulate a login shell</li>
   <li> <b>--no-check (or -n)</b> - run without checking the syntax
 first</li>
@@ -84,9 +82,24 @@ first</li>
   <li> <b>--verbose (or -v)</b> - show interpreter progress</li>
   <li> <b>--version (or -V)</b> - show version of SparForte and exit</li>
 
-  <li> <b>--</b> - explicitly end of shell options</li>
+  <li> <b>--</b> - explicitly end of shell options. Use this before specifying
+files on the command line that contain a leading "-".</li>
 </ul>
 
+<h3>Environment Variables Affecting SparForte</h3>
+
+<p>When you run the "spar" command, certain variables affect how SparForte
+runs.</p>
+
+<ul>
+  <li><b>PATH</b> - the command search path (always imported)</li>
+  <li><b>PWD</b> - the present (current) working directory (always imported)</li>
+  <li><b>OLDPWD</b> - the last PWD (always imported)</li>
+  <li><b>HOME</b> - the user's home directory (always imported)</li>
+  <li><b>TERM</b> - the user's terminal emulation (always imported)</li>
+  <li><b>SHELL</b> - the user's shell (always imported)</li>
+  <li><b>SPAR_LIBRARY_PATH</b> - the search path for loadable components (always imported)</li>
+</ul>
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
                                 <p class="rmt"><a class="rightmenutext" href="ref_adascript.html">&nbsp;AdaScript versus GCC</a></p>

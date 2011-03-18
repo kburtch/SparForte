@@ -190,7 +190,7 @@ begin
   begin
      if isExecutingCommand then
         result := to_unbounded_string( "" &
-           Element( str_val, positive( long_float'value( to_string( index_val ) ) ) ) );
+           Element( str_val, positive( to_numeric( index_val ) ) ) );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -225,8 +225,8 @@ begin
      if isExecutingCommand then
         result := to_unbounded_string(
            Slice( str_val,
-	     positive( long_float'value( to_string( low_val ) ) ),
-	     natural( long_float'value( to_string( hi_val ) ) )
+	     positive( to_numeric( low_val ) ),
+	     natural( to_numeric( hi_val ) )
 	   ) );
      end if;
   exception when others =>
@@ -379,8 +379,8 @@ begin
   begin
      if isExecutingCommand then
         result := Replace_Slice( str_val,
-	   positive( long_float'value( to_string( low_val ) ) ),
-	   natural( long_float'value( to_string( hi_val ) ) ),
+	   positive( to_numeric( low_val ) ),
+	   natural( to_numeric( hi_val ) ),
 	   to_string( by_val )
 	);
      end if;
@@ -416,7 +416,7 @@ begin
   begin
      if isExecutingCommand then
         result := Insert( str_val,
-	   positive( long_float'value( to_string( before_val ) ) ),
+	   positive( to_numeric( before_val ) ),
 	   to_string( new_val )
 	);
      end if;
@@ -452,7 +452,7 @@ begin
   begin
      if isExecutingCommand then
         result := Overwrite( str_val,
-	   positive( long_float'value( to_string( pos_val ) ) ),
+	   positive( to_numeric( pos_val ) ),
 	   to_string( new_val )
 	);
      end if;
@@ -488,8 +488,8 @@ begin
   begin
      if isExecutingCommand then
         result := Delete( str_val,
-	   positive( long_float'value( to_string( low_val ) ) ),
-	   natural( long_float'value( to_string( hi_val ) ) )
+	   positive( to_numeric( low_val ) ),
+	   natural( to_numeric( hi_val ) )
 	);
      end if;
   exception when others =>
@@ -586,7 +586,7 @@ begin
   expect( symbol_t, ")" );
   begin
      if isExecutingCommand then
-        result := head( str_val, natural'value( to_string( cnt_val ) ),
+        result := head( str_val, natural( to_numeric( cnt_val ) ),
             pad_char );
      end if;
   exception when others =>
@@ -628,7 +628,7 @@ begin
   expect( symbol_t, ")" );
   begin
      if isExecutingCommand then
-        result := tail( str_val, natural'value( to_string( cnt_val ) ),
+        result := tail( str_val, natural( to_numeric( cnt_val ) ),
           pad_char );
      end if;
   exception when others =>
@@ -672,7 +672,7 @@ begin
   expect( symbol_t, ")" );
   begin
      if isExecutingCommand then
-        result := stringField( str_val, delim, natural'value( to_string( cnt_val ) ) );
+        result := stringField( str_val, delim, natural( to_numeric( cnt_val ) ) );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -715,7 +715,7 @@ begin
   expect( symbol_t, ")" );
   begin
      if isExecutingCommand then
-        result := stringCSVField( str_val, delim, natural'value( to_string( cnt_val ) ) );
+        result := stringCSVField( str_val, delim, natural( to_numeric( cnt_val ) ) );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -764,7 +764,7 @@ begin
   end if;
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( "" & character'val( natural'value( to_string( expr_val ) ) ) );
+       result := to_unbounded_string( "" & character'val( natural( to_numeric( expr_val ) ) ) );
     end if;
   exception when others =>
     err( "exception raised" );
@@ -922,7 +922,7 @@ begin
         getParameterValue( src_ref, tempStr );
         replaceField( tempStr,
            delim,
-           natural'value( to_string( cnt_val ) ),
+           natural( to_numeric( cnt_val ) ),
            to_string( tar_val ) );
         AssignParameter( src_ref, tempStr );
      end if;
@@ -976,7 +976,7 @@ begin
         getParameterValue( src_ref, tempStr );
         replaceCSVField( tempStr,
            delim,
-           natural'value( to_string( cnt_val ) ),
+           natural( to_numeric( cnt_val ) ),
            to_string( tar_val ) );
         assignParameter( src_ref, tempStr );
      end if;
@@ -1089,7 +1089,7 @@ begin
   begin
      if isExecutingCommand then
         split( src_val, leftStr, rightStr,
-               natural'value( to_string( field_val ) ) );
+               natural( to_numeric( field_val ) ) );
         assignParameter( left_ref, leftStr );
         assignParameter( right_ref, rightStr );
      end if;
@@ -1385,8 +1385,8 @@ begin
      if isExecutingCommand then
         result := to_unbounded_string(
            Slice( str_val,
-	     positive( long_float'value( to_string( low_val ) ) ),
-	     natural( long_float'value( to_string( hi_val ) ) )
+	     positive( to_numeric( low_val ) ),
+	     natural( to_numeric( hi_val ) )
 	   ) );
      end if;
   exception when others =>

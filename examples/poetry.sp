@@ -1,4 +1,4 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 pragma ada_95;
 
 procedure poetry is
@@ -288,27 +288,27 @@ begin
        case ch is
        when '1' =>
           new_poem := new_poem & strings.field( nouns,
-             numerics.truncation( float( noun_count ) * numerics.random ) + 1,
+             natural( float( noun_count ) * numerics.random ) + 1,
              separator );
        when '2' =>
           new_poem := new_poem & strings.field( verbs,
-             numerics.truncation( float( verb_count ) * numerics.random ) + 1,
+             natural( float( verb_count ) * numerics.random ) + 1,
              separator );
        when '3' =>
           new_poem := new_poem & strings.field( adverbs,
-             numerics.truncation( float( adverb_count ) * numerics.random ) + 1,
+             natural( float( adverb_count ) * numerics.random ) + 1,
              separator );
        when '4' =>
           new_poem := new_poem & strings.field( adjectives,
-             numerics.truncation( float( adjective_count ) * numerics.random ) + 1,
+             natural( float( adjective_count ) * numerics.random ) + 1,
              separator );
        when '5' =>
           new_poem := new_poem & strings.field( prepositions,
-             numerics.truncation( float( preposition_count ) * numerics.random ) + 1,
+             natural( float( preposition_count ) * numerics.random ) + 1,
              separator );
        when '6' =>
           new_poem := new_poem & strings.field( conjunctions,
-             numerics.truncation( float( conjunction_count ) * numerics.random ) + 1,
+             natural( float( conjunction_count ) * numerics.random ) + 1,
              separator );
        when others =>
           new_poem := new_poem & ch;

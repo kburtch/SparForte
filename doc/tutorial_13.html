@@ -1,0 +1,503 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Tutorials - SparForte for PHP Programmers</title>
+        <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF"><a name="top"></a>
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html"><b>Tutorials</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="tutorial_11.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="tutorial_12.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+				<!-- Content Area -->
+
+<h2><a name="2.13"></a>SparForte for PHP Programmers</h2>
+
+<p>This section describes the differences in philosophy and flavour
+between SparForte and PHP. </p>
+
+<h3>A Smart Development System</h3>
+
+<p class="plain">First off, the SparForte is
+<b>more than just a programming language</b>.  With PHP, if you want documentation
+generation tools or a debugger, these are all separate add-on packages.  With
+the SparForte, documentation management and debugging help are functions
+of the interpreter itself.</p>
+
+<p class="plain">Second, the SparForte is an ensamble tool designed to
+work as part of a solution with a team of other development tools throughout
+a business.  That's what I refer to as <b>ABEE</b> and I've gone to great efforts
+to keep the shell compatible with these tools and the <b>international standards</b>
+they are based on.  PHP stands alone and has many features that are incompatible
+with other development standards.</p>
+
+<p class="plain">So now let's look at a simple CGI program written in PHP
+and the SparForte and compare basic features.  This is a script written
+in PHP and SparForte that returns a list of users from a MySQL database table.</p>
+
+<h3>Documentation by Design</h3>
+
+<p class="plain"><b>Documentation</b>. In the SparForte, documentation
+is a part of the language by design.  In PHP, documentation can only be typed in comments.</p>
+<hr>
+<table>
+<tr>
+<td width="50%"><p><u>PHP</u></p>
+<pre>
+&lt;?php
+
+<b><font color="purple">/*
+   File: example.php
+   Author: Ken O. Burtch
+*/</font>
+</b>
+
+  error_reporting( <font color="blue">E_ALL</font> );
+  $debug = <font color="blue">true</font>;
+
+  $remote_addr = $_SERVER[<font color="red">'REMOTE_ADDR'</font>];
+
+  <font color="blue">if</font> ( $debug ) {
+     fprintf( STDERR, <font color="blue">__FILE__</font> . <font color="red">": "</font> . <font color="blue">__LINE__</font> . <font color="red">": started\n"</font> );
+  }
+
+  header( <font color="red">"Content-type: text/plain"</font> );
+
+  <font color="purple">// Database query</font>
+
+  mysql_connect( <font color="red">"localhost"</font>, <font color="red">"dbuser"</font>, <font color="red">"xyz123"</font> );
+  mysql_select_db( <font color="red">"test"</font> );
+  $res = mysql_query( <font color="red">"SELECT username, password, create_date FROM users"</font> );
+  <font color="blue">if</font> ( $debug &amp;&amp; ! $res ) {
+     fprintf( STDERR, <font color="blue">__FILE__</font> . <font color="red">": "</font> . <font color="blue">__LINE__</font> . <font color="red">": query failed"</font> );
+     exit( 192 );
+  }
+  <font color="purple">// Return the data</font>
+
+  print <font color="red">"usermachine: $remote_addr\n"</font>;
+  <font color="blue">while</font> ( $row = mysql_fetch_row( $res ) ) {
+    print <font color="red">"username: "</font> . $row[0] . <font color="red">"\n"</font>;
+  }
+
+  mysql_free_result( $res );
+?&gt;
+</td>
+<td><p><u>SparForte</u></p>
+<pre>
+<font color="purple">#!/usr/local/bin/spar</font>
+
+<b><font color="blue">pragma</font> annotate( <font color="red">"File: example.spar"</font> );
+<font color="blue">pragma</font> annotate( <font color="red">"Author: Ken O. Burtch"</font> );</b>
+
+<font color="blue">pragma</font> debug;
+<font color="blue">pragma</font> ada_95;
+<font color="blue">pragma</font> restriction( no_external_commands );
+
+<font color="blue">procedure</font> example <font color="blue">is</font>
+   REMOTE_ADDR : <font color="blue">constant</font> string := <font color="red">""</font>;
+   <font color="blue">pragma</font> import( shell, REMOTE_ADDR );
+<font color="blue">begin</font>
+  <font color="blue">pragma</font> debug( <font color="red">`put_line( standard_error,
+      source_info.source_location &amp; ": started" );`</font> );
+
+  cgi.put_cgi_header( <font color="red">"Content-type: text/plain"</font> );
+
+  <font color="purple">-- Database query</font>
+  mysql.connect( <font color="red">"test"</font>, <font color="red">"dbuser"</font>, <font color="red">"xyz123"</font> );
+  mysql.prepare( <font color="red">"SELECT username FROM users"</font> );
+  mysql.execute;
+  <font color="blue">pragma</font> assert( mysql.end_of_query = false );
+
+  <font color="purple">-- Return the data</font>
+
+  put_line( <font color="red">"usermachine: "</font> &amp; REMOTE_ADDR );
+  <font color="blue">while</font> <font color="blue">not</font> mysql.end_of_query <font color="blue">loop</font>
+    mysql.fetch;
+    put_line( <font color="red">"username: "</font> &amp; mysql.value(1) );
+  <font color="blue">end</font> <font color="blue">loop</font>;
+  mysql.clear;
+<font color="blue">end</font> example;
+</pre>
+</td>
+</tr>
+</table>
+<p class="plain"><b>Figure 3</b>: Documentation</b></p>
+<hr>
+
+<h3>Standards Compliance</h3>
+
+<p class="plain">In the SparForte, coding
+standards can be specified as a part of the language.  These provide guarantees
+that a script meets certain conditions.  With the restriction pragma, for example,
+SparForte guarantees that there are no calls to operating system commands, meaning the
+script is portable across operating systems.  In PHP, standards can
+only be enforced through peer review and there's no guarantees except my manually
+examining the program.</p>
+
+<hr>
+<table>
+<tr>
+<td width="50%"><p><u>PHP</u></p>
+<pre>
+&lt;?php
+
+<font color="purple">/*
+   File: example.php
+   Author: Ken O. Burtch
+*/</font>
+
+  error_reporting( <font color="blue">E_ALL</font> );
+  $debug = <font color="blue">true</font>;
+
+  $remote_addr = $_SERVER[<font color="red">'REMOTE_ADDR'</font>];
+
+  <font color="blue">if</font> ( $debug ) {
+     fprintf( STDERR, <font color="blue">__FILE__</font> . <font color="red">": "</font> . <font color="blue">__LINE__</font> . <font color="red">": started\n"</font> );
+  }
+
+  header( <font color="red">"Content-type: text/plain"</font> );
+
+  <font color="purple">// Database query</font>
+
+  mysql_connect( <font color="red">"localhost"</font>, <font color="red">"dbuser"</font>, <font color="red">"xyz123"</font> );
+  mysql_select_db( <font color="red">"test"</font> );
+  $res = mysql_query( <font color="red">"SELECT username, password, create_date FROM users"</font> );
+  <font color="blue">if</font> ( $debug &amp;&amp; ! $res ) {
+     fprintf( STDERR, <font color="blue">__FILE__</font> . <font color="red">": "</font> . <font color="blue">__LINE__</font> . <font color="red">": query failed"</font> );
+     exit( 192 );
+  }
+  <font color="purple">// Return the data</font>
+
+  print <font color="red">"usermachine: $remote_addr\n"</font>;
+  <font color="blue">while</font> ( $row = mysql_fetch_row( $res ) ) {
+    print <font color="red">"username: "</font> . $row[0] . <font color="red">"\n"</font>;
+  }
+
+  mysql_free_result( $res );
+?&gt;
+</td>
+<td><p><u>SparForte</u></p>
+<pre>
+<font color="purple">#!/usr/local/bin/spar</font>
+
+<font color="blue">pragma</font> annotate( <font color="red">"File: example.spar"</font> );
+<font color="blue">pragma</font> annotate( <font color="red">"Author: Ken O. Burtch"</font> );
+
+<font color="blue">pragma</font> debug;
+<b><font color="blue">pragma</font> ada_95;
+<font color="blue">pragma</font> restriction( no_external_commands );</b>
+
+<font color="blue">procedure</font> example <font color="blue">is</font>
+   REMOTE_ADDR : <font color="blue">constant</font> string := <font color="red">""</font>;
+   <font color="blue">pragma</font> import( shell, REMOTE_ADDR );
+<font color="blue">begin</font>
+  <font color="blue">pragma</font> debug( <font color="red">`put_line( standard_error,
+      source_info.source_location &amp; ": started" );`</font> );
+
+  cgi.put_cgi_header( <font color="red">"Content-type: text/plain"</font> );
+
+  <font color="purple">-- Database query</font>
+
+  mysql.connect( <font color="red">"test"</font>, <font color="red">"dbuser"</font>, <font color="red">"xyz123"</font> );
+  mysql.prepare( <font color="red">"SELECT username FROM users"</font> );
+  mysql.execute;
+  <font color="blue">pragma</font> assert( mysql.end_of_query = false );
+
+  <font color="purple">-- Return the data</font>
+
+  put_line( <font color="red">"usermachine: "</font> &amp; REMOTE_ADDR );
+  <font color="blue">while</font> <font color="blue">not</font> mysql.end_of_query <font color="blue">loop</font>
+    mysql.fetch;
+    put_line( <font color="red">"username: "</font> &amp; mysql.value(1) );
+  <font color="blue">end</font> <font color="blue">loop</font>;
+  mysql.clear;
+<font color="blue">end</font> example;
+</pre>
+</td>
+</tr>
+</table>
+<p class="plain"><b>Figure 4</b>: Standards Compliance</b></p>
+<hr>
+
+<h3>Debugging Statements</h3>
+
+<p class="plain">In the SparForte, debugging
+statements are a part of the language.  They can be isolated and can be enabled
+or disabled without editing the source
+code.  (Though in the case of a CGI script where command line options are not
+configurable in the web browser, you may have to edit a single "pragma debug"
+for a move to production.)  In PHP, debugging statements must be controlled with
+multi-line if's or deleted manually, both dangerous practices: the programmer runs
+the risks of deleting the wrong lines, missing lines or adding typos to the source
+code during moves to production.</p>
+
+<p class="plain">In this example, removing "pragma debug" immediately hides all
+debugging statements and asserts without further editing the source code.</p>
+
+<p class="plain">[June 17/08: KB: Actually, since SparForte is a shell, you can probably
+put the pragma debug in your .profile startup file on your development environment.]</p>
+<hr>
+<table>
+<tr>
+<td width="50%"><p><u>PHP</u></p>
+<pre>
+&lt;?php
+
+<font color="purple">/*
+   File: example.php
+   Author: Ken O. Burtch
+*/</font>
+
+  <b>error_reporting( <font color="blue">E_ALL</font> );</b>
+  <b>$debug = <font color="blue">true</font>;</b>
+
+  $remote_addr = $_SERVER[<font color="red">'REMOTE_ADDR'</font>];
+
+  <b><font color="blue">if</font> ( $debug ) {
+     fprintf( STDERR, <font color="blue">__FILE__</font> . <font color="red">": "</font> . <font color="blue">__LINE__</font> . <font color="red">": started\n"</font> );
+  }</b>
+
+  header( <font color="red">"Content-type: text/plain"</font> );
+
+  <font color="purple">// Database query</font>
+
+  mysql_connect( <font color="red">"localhost"</font>, <font color="red">"dbuser"</font>, <font color="red">"xyz123"</font> );
+  mysql_select_db( <font color="red">"test"</font> );
+  $res = mysql_query( <font color="red">"SELECT username, password, create_date FROM users"</font> );
+  <b><font color="blue">if</font> ( $debug &amp;&amp; ! $res ) {
+     fprintf( STDERR, <font color="blue">__FILE__</font> . <font color="red">": "</font> . <font color="blue">__LINE__</font> . <font color="red">": query failed"</font> );
+     exit( 192 );
+  }</b>
+
+  <font color="purple">// Return the data</font>
+
+  print <font color="red">"usermachine: $remote_addr\n"</font>;
+  <font color="blue">while</font> ( $row = mysql_fetch_row( $res ) ) {
+    print <font color="red">"username: "</font> . $row[0] . <font color="red">"\n"</font>;
+  }
+
+  mysql_free_result( $res );
+?&gt;
+</td>
+<td><p><u>SparForte</u></p>
+<pre>
+<font color="purple">#!/usr/local/bin/spar</font>
+
+<font color="blue">pragma</font> annotate( <font color="red">"File: example.spar"</font> );
+<font color="blue">pragma</font> annotate( <font color="red">"Author: Ken O. Burtch"</font> );
+
+<b><font color="blue">pragma</font> debug;</b>
+<font color="blue">pragma</font> ada_95;
+<font color="blue">pragma</font> restriction( no_external_commands );
+
+<font color="blue">procedure</font> example <font color="blue">is</font>
+   REMOTE_ADDR : <font color="blue">constant</font> string := <font color="red">""</font>;
+   <font color="blue">pragma</font> import( shell, REMOTE_ADDR );
+<font color="blue">begin</font>
+  <b><font color="blue">pragma</font> debug( <font color="red">`put_line( standard_error,
+      source_info.source_location &amp; ": started" );`</font> );</b>
+
+  cgi.put_cgi_header( <font color="red">"Content-type: text/plain"</font> );
+
+  <font color="purple">-- Database query</font>
+
+  mysql.connect( <font color="red">"test"</font>, <font color="red">"dbuser"</font>, <font color="red">"xyz123"</font> );
+  mysql.prepare( <font color="red">"SELECT username FROM users"</font> );
+  mysql.execute;
+  <b><font color="blue">pragma</font> assert( mysql.end_of_query = false );</b>
+
+  <font color="purple">-- Return the data</font>
+
+  put_line( <font color="red">"usermachine: "</font> &amp; REMOTE_ADDR );
+  <font color="blue">while</font> <font color="blue">not</font> mysql.end_of_query <font color="blue">loop</font>
+    mysql.fetch;
+    put_line( <font color="red">"username: "</font> &amp; mysql.value(1) );
+  <font color="blue">end</font> <font color="blue">loop</font>;
+  mysql.clear;
+<font color="blue">end</font> example;
+</pre>
+</td>
+</tr>
+</table>
+<p class="plain"><b>Figure 5</b>: Debugging</b></p>
+<hr>
+
+<h3>Variables and Types</h3>
+
+<p class="plain">In the SparForte, all variables
+are declared and have a specific type (unless you explicitly use the universal
+types, but these are intended for the command line).  In PHP, with no declarations
+and variables with constantly changing types, when you read a script you can never be sure if a variable
+is spelled correctly or what type of data it contains.  The widespread use of
+associative arrays, which are accessed with string values, makes debugging even worse.</p>
+
+<p class="plain">In this example, SparForte guarantees that REMOTE_ADDR exists, is a string,
+and has a value in the environment or the script will not run.</p>
+<hr>
+<table>
+<tr>
+<td width="50%"><p><u>PHP</u></p>
+<pre>
+&lt;?php
+<font color="purple">/*
+   File: example.php
+   Author: Ken O. Burtch
+*/</font>
+
+  error_reporting( <font color="blue">E_ALL</font> );
+  $debug = <font color="blue">true</font>;
+
+  <b>$remote_addr = $_SERVER[<font color="red">'REMOTE_ADDR'</font>];</b>
+
+  <font color="blue">if</font> ( $debug ) {
+     fprintf( STDERR, <font color="blue">__FILE__</font> . <font color="red">": "</font> . <font color="blue">__LINE__</font> . <font color="red">": started\n"</font> );
+  }
+
+  header( <font color="red">"Content-type: text/plain"</font> );
+
+  <font color="purple">// Database query</font>
+
+  mysql_connect( <font color="red">"localhost"</font>, <font color="red">"dbuser"</font>, <font color="red">"xyz123"</font> );
+  mysql_select_db( <font color="red">"test"</font> );
+  $res = mysql_query( <font color="red">"SELECT username, password, create_date FROM users"</font> );
+  <font color="blue">if</font> ( $debug &amp;&amp; ! $res ) {
+     fprintf( STDERR, <font color="blue">__FILE__</font> . <font color="red">": "</font> . <font color="blue">__LINE__</font> . <font color="red">": query failed"</font> );
+     exit( 192 );
+  }
+
+  <font color="purple">// Return the data</font>
+
+  <b>print <font color="red">"usermachine: $remote_addr\n"</font>;</b>
+  <font color="blue">while</font> ( $row = mysql_fetch_row( $res ) ) {
+    print <font color="red">"username: "</font> . $row[0] . <font color="red">"\n"</font>;
+  }
+  mysql_free_result( $res );
+?&gt;
+</td>
+<td><p><u>SparForte</u></p>
+<pre>
+<font color="purple">#!/usr/local/bin/spar</font>
+
+<font color="blue">pragma</font> annotate( <font color="red">"File: example.spar"</font> );
+<font color="blue">pragma</font> annotate( <font color="red">"Author: Ken O. Burtch"</font> );
+
+<font color="blue">pragma</font> debug;
+<font color="blue">pragma</font> ada_95;
+<font color="blue">pragma</font> restriction( no_external_commands );
+
+<font color="blue">procedure</font> example <font color="blue">is</font>
+   <b>REMOTE_ADDR : <font color="blue">constant</font> string := <font color="red">""</font>;
+   <font color="blue">pragma</font> import( shell, REMOTE_ADDR );</b>
+<font color="blue">begin</font>
+  <font color="blue">pragma</font> debug( <font color="red">`put_line( standard_error,
+      source_info.source_location &amp; ": started" );`</font> );
+
+  cgi.put_cgi_header( <font color="red">"Content-type: text/plain"</font> );
+
+  <font color="purple">-- Database query</font>
+
+  mysql.connect( <font color="red">"test"</font>, <font color="red">"dbuser"</font>, <font color="red">"xyz123"</font> );
+  mysql.prepare( <font color="red">"SELECT username FROM users"</font> );
+  mysql.execute;
+  <font color="blue">pragma</font> assert( mysql.end_of_query = false );
+
+  <font color="purple">-- Return the data</font>
+
+  <b>put_line( <font color="red">"usermachine: "</font> &amp; REMOTE_ADDR );</b>
+  <font color="blue">while</font> <font color="blue">not</font> mysql.end_of_query <font color="blue">loop</font>
+    mysql.fetch;
+    put_line( <font color="red">"username: "</font> &amp; mysql.value(1) );
+  <font color="blue">end</font> <font color="blue">loop</font>;
+  mysql.clear;
+<font color="blue">end</font> example;
+</pre>
+</td>
+</tr>
+</table>
+<p class="plain"><b>Figure 6</b>: Variables</b></p>
+<hr>
+
+<h3>The Small Stuff</h3>
+
+<p class="plain">The things everyone takes for granted
+as evils we have to live with in contemporary programming:
+<ul>
+<li class="plain"><i>Slash-Star Comments</i>.  Known for being un-nestable.  Removed from SparForte by design.</li>
+<li class="plain"><i>Curly Braces</i>.  Known for being hard to read and debug.  SparForte uses keywords for blocks.</li>
+<li class="plain"><i>Optional Blocks</i>.  Known for making code maintenance difficult.  SparForte requires blocks for all compound statements.</li>
+<li class="plain"><i>Single and Double Quotes</i>.  In PHP, they're interchangeable and lead to many arguments on how to use them.  In SparForte, each type of quote has a unique purpose and properties.</li>
+<li class="plain"><i>Readability</i>.  PHP relies heavily on punctuation symbols and shifted keyboard characters.  SparForte favours simple English words for basic constructs (though it also has some common short-cuts if they are enabled, especially for working on the command line).  Great for those 2 am debugging sessions.</li>
+<li class="plain"><i>Namespaces</i>.  PHP has thousands of global functions.  SparForte divides standard functions into packages.</li>
+</ul>
+
+<p class="plain">These scripts are roughly the same size.  But are they truly
+of equivalent value to a business?</p>
+<p class="plain">The example used here was very short: there are many more
+features in the SparForte to handle reuse, maintenance and correctness.
+And many of these choices I cannot take credit for as they are based on the
+software engineering language standard that SparForte is using.  As programs
+become larger, these features have an increasingly important role in keeping
+down development costs and programming time.</p>
+&nbsp;<br>
+
+<p>Ken Burtch<br />
+extract from "The Lone Coder: Doing it Right with the Business Shell"<br />
+June 15, 2008<br />
+http://www.pegasoft.ca/coder_june_2008.html</p>
+
+&nbsp;<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_1.html">&nbsp;Command Prompt Tutorial 1: SparForte as a Calculator</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_2.html">&nbsp;Command Prompt Tutorial 2: Basic Shell Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_3.html">&nbsp;Command Prompt Tutorial 3: Working with Databases</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_4.html">&nbsp;Script Tutorial 1: Basic Commands Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_5.html">&nbsp;Script Tutorial 2: Intermediate Program Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_6.html">&nbsp;Template Tutorial 1: Basic Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_7.html">&nbsp;Template Tutorial 2: Intermediate Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_8.html">&nbsp;GCC Tutorial: Compiling SparForte Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_9.html">&nbsp;Debugging Tutorial - Using the SparForte Debugger</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_10.html">&nbsp;Creating a Profile Script</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_11.html">&nbsp;Calling SparForte from C: A Tutorial</a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_13.html">&nbsp;<b>SparForte For PHP Developers</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_12.html">&nbsp;SparForte Best Practices</a></p>
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" border="0" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>

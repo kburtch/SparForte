@@ -26,7 +26,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="ref_types.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="ref_enum.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -62,8 +62,18 @@ the original, as if it was a renaming of the original type.
 <p>In this case, "int" is equivalent to "integer" and variables of both
 types can be mixed freely without type casting.</p>
 
-<p><b>Ada</b>: There is no way to place restrictions such as ranges on a
-subtype--they are simple renamings in AdaScript.</p>
+<p>Subtypes can be used where predefined types are used: you can use them
+to declare variables, as parameter types and as function return values.</p>
+
+<p><b>Ada</b>: In Ada, a subtype can be used to create a type with a
+smaller range of values, such as an integer with values 1 to 100.  In
+AdaScript, the range attribute is not (yet) supported for subtypes--they
+are simple renamings in AdaScript.</p>
+
+<p><b>Ada</b>: SparForte's output subprograms (like "?", put_line, etc.) understand
+how to output strings and all scalar types.  It work as if all necessary
+packages were "with"-ed and "use"-ed.  In Ada, you would have to
+use with or instantiate I/O packages you need for each type.</p>
 
 <h3>Types</h3>
 
@@ -93,6 +103,14 @@ variables (or other integers) without a typecast. Use new types to make sure
 variables
 that are logically different don't accidentally mix.
 </p>
+
+<p>Types can be used where predefined types are used: you can use them
+to declare variables, as parameter types and as function return values.</p>
+
+<p><b>Ada</b>: In Ada, a type can be used to create a type with a
+smaller range of values, such as an integer with values 1 to 100.  In
+AdaScript, the range attribute is not (yet) supported for types--they
+are simple incompatible renamings in AdaScript.</p>
 
 <h3>Type Casting</h3>
 

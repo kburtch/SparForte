@@ -1749,8 +1749,8 @@ begin
         if syntax_check then                           -- array index type
            kind := universal_t;                        -- not known at
         end if;                                        -- syntax check time
-     elsif token = enums_prev_t then                   -- enums.prev
-        ParseEnumsPrev( f, kind );
+     elsif token = enums_pred_t then                   -- enums.pred
+        ParseEnumsPred( f, kind );
      elsif token = enums_succ_t then                   -- enums.succ
         ParseEnumsSucc( f, kind );
      elsif token = stats_average_t then                -- stats.average
@@ -3674,48 +3674,55 @@ procedure ParseIfBlock is
   backup_sc : boolean;
 begin
 
+  -- The handling of an if block is very tricky because the blocks
+  -- do not only include what is between the parts of the if, but
+  -- the expressions themselves.  Plus there's the problem of exiting
+  -- gracefully if an exit statement is encountered.  All of this
+  -- makes handling this statement more complicated than you might
+  -- think.
+ 
   -- if expr then statements
 
   expect( if_t );                                          -- "if"
-  if token = if_t then                                     -- this is from
-     err( "redundant " & optional_bold( "if" ) );          -- GNAT
+  if token = if_t then                                     -- this error is
+     err( "redundant " & optional_bold( "if" ) );          -- from GNAT
   end if;
   ParseExpression( expr_val, expr_type );                  -- expression
-  if not baseTypesOk( boolean_t, expr_type ) then          -- not boolean result?
+  if not baseTypesOk( boolean_t, expr_type ) then          -- not a bool result?
      err( "boolean expression expected" );
-  else
-     b := expr_val = "1";                                  -- convert to boolean
+  else                                                     -- else convert bool
+     b := expr_val = "1";                                  -- to real boolean
   end if;
   expect( then_t );                                        -- "then"
-  if token = then_t then                                   -- this is from
-     err( "redundant " & optional_bold( "then" ) );        -- GNAT
+  if token = then_t then                                   -- this error is
+     err( "redundant " & optional_bold( "then" ) );        -- from GNAT
   end if;
-
-  -- elsif expr then statements
-
   if b then                                                -- was true?
      ParseBlock( elsif_t, else_t );                        -- handle if block
      handled := true;                                      -- remember we did it
                                                            -- even elsifs and else line
-     --syntax_check := true;
   else                                                     -- otherwise
      SkipBlock( elsif_t, else_t );                         -- skip if block
   end if;
 
+  -- elsif expr then statements
+
+  -- temporarily switch to syntax check mode when required to skip expression
+
   while token = elsif_t loop                               -- a(nother) elsif?
      if handled then                                       -- already handled?
         backup_sc := syntax_check;                         -- don't exec elsif
-        syntax_check := true;
+        syntax_check := true;                              -- expression
      end if;
      expect( elsif_t );                                    -- "elsif"
-     if token = elsif_t then                               -- this is from
-        err( "redundant " & optional_bold( "elsif" ) );    -- GNAT
+     if token = elsif_t then                               -- this error is
+        err( "redundant " & optional_bold( "elsif" ) );    -- from GNAT
      end if;
      ParseExpression( expr_val, expr_type );               -- expression
-     if not baseTypesOk( boolean_t, expr_type ) then     -- not boolean result?
+     if not baseTypesOk( boolean_t, expr_type ) then       -- not bool result?
         err( "boolean expression expected" );
-     else
-        b := expr_val = "1";                               -- convert to boolean
+     else                                                  -- else convert bool
+        b := expr_val = "1";                               -- to real boolean
      end if;
      if handled then                                       -- already handled?
         syntax_check := backup_sc;                         -- restore flag
@@ -3727,11 +3734,12 @@ begin
      if b and not handled then                             -- true (and not previously done)
         ParseBlock( elsif_t, else_t );                     -- handle the elsif block
         handled := true;                                   -- remember we did it
-        syntax_check := true;                              -- even elsifs and else line
      else                                                  -- otherwise
         SkipBlock( elsif_t, else_t );                      -- skip elsif block
      end if;
   end loop;
+
+  -- by this point syntax check mode should be restored (if it was altered)
 
   -- else statements
 

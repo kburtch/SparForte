@@ -965,7 +965,7 @@ begin
   elsif helpTopic = "enums" then
      Put_Line( "enums (package) - enumerated types" );
      New_Line;
-     Put_Line( "  enums.first(t)            enums.last(t)            enums.prev(e2)      ");
+     Put_Line( "  enums.first(t)            enums.last(t)            enums.pred(e2)      ");
      Put_Line( "  enums.succ(e2)                                                         ");
   elsif helpTopic = "env" then
      Put_Line( "env - show an identifier/all identifiers" );

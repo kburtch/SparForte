@@ -178,6 +178,7 @@ ISSUES (Bourne Shell)
     - SIGHUP handler: SIGHUP should be broadcast to all children like BASH
 
   - other shell issues (Shell Issues)
+    - SHELL variable doesn't always initialize to spar command path
     - pragma to disable emacs or vi mode
     - collating order with file globbing and locales
     - remove dependency on Ada.Command_Line.Environment -- not supported in Windows GNAT

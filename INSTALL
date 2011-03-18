@@ -54,7 +54,8 @@ The following software packages are required for SparForte:
   * gzip is needed to unpack the source code in the first place.  If you are
     reading this, you know this already.
 
-  * a optional database, either (or both):
+  * a optional database, either (or both or neither):
+
     * postgresql.  To verify that postgres is installed, try "psql --version".
       For more information, visit http://www.postgresql.org.
 
@@ -75,7 +76,7 @@ The following software packages are required for SparForte:
 
   The package name depends on your operating system.  For example:
 
-    - Debian Linux users can try gnat-3.3 (or similar)
+    - Debian Linux users can try gnat-4.1 (or similar)
     - Fedora Linux users can try gcc-gnat
     - SuSE Linux   users can try gcc-ada
 
@@ -112,6 +113,8 @@ INSTALLATION
 The latest version of SparForte is always located at the PegaSoft web site,
 http://www.pegasoft.ca.
 
+By default, SparForte will install under /usr/local.
+
 1. configure
 
    The first step of the installation procedure is to select your operating
@@ -126,11 +129,25 @@ http://www.pegasoft.ca.
    questions about your database software.  (Note: SparForte currently supports
    PostgreSQL and MySQL.)
 
-   configure recognizes the following environment variables:
+   configure recognizes the following options (you can also use environment
+   variables):
 
-    - ARCH - this will override the machine processor architecture (normally
-             determined by uname -p)
-    - GMAKE - use this to specify a path to GNU make if it cannot be found
+    --arch= (ARCH variable): specify a different machine processor
+            architecture (normally determined by uname -p)
+
+    --make= (GMAKE variable): the location of GNU make.  Use this if
+            configure can't find it in a standard location.
+
+    --prefix= (PREFIX variable): the root directory for the installation
+            (by default, /usr/local)
+
+    --manprefix= (MANPREFIX variable): the root directory for the
+            installation of the man page (by default, /usr/local)
+
+    --without-mysql (NO_MYSQL variable): disable MySQL database support
+
+    --without-postgres (NO_POSTGRES variable): disable PostgreSQL database
+            support
 
 2. make
 
@@ -177,6 +194,13 @@ You can now run the spar executable.
 
 Type "gmake help" for a list of all options.  There are more options in the
 src directory makefile.
+
+
+CREATING A LAUNCHER (DESKTOP ICON)
+
+If you are using Gnome desktop, right-click and select create launcher.
+Use a "Launch in Terminal" type.  An icon for your launcher can be
+found in the top directory of the SparForte download file.
 
 - END OF DOCUMENT -
 

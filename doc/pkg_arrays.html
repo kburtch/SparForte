@@ -26,7 +26,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="packages.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_calendar.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -40,439 +40,540 @@
 	<!-- Content Area -->
 <h2><a NAME="4.14"></a>Arrays Package</h2>
 
-<p>The arrays package provides general routines pretaining to SparForte arrays.  This
-includes determining the size of the array, sorting the array or moving the
-items in the array.</p>
+<p>The arrays package provides general routines pretaining to SparForte
+single-dimension arrays.  This includes determining the size of the array, sorting
+the array or moving the items in the array.</p>
 
 <p><u>GCC Ada Equivalent</u>: array attributes, GNAT sort packages<br>
-<p>
-<hr><b>i := arrays.bubble_sort( a )</b>
 
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+        <center>
+        <div class="code">
+<pre>
+  first( a )               last( a )                     length( a )
+  bubble_sort( a )         bubble_sort_descending( a )
+  heap_sort( a )           heap_sort_descending( a )
+  shuffle( a )             flip( a )
+  shift_left( a )          shift_right( a )
+  rotate_left( a )         rotate_right( a )
+</pre>
+                <br>&nbsp;<br>
+        <div class="code_caption">
+                <b>Help Command</b>: Contents of the arrays package</span>
+        </div>
+        </div>
+        </center>
+
+
+<h3>arrays.bubble_sort( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Bubble sort the array, treating the elements as strings or numbers
-depending on the element type.
-<br>Example: arrays.bubble_sort( sales_array );
-<br>Ada Equivalent: Uses GNAT.Bubble_Sort.
-<br>PHP Equivalent: sort
-<br>See Also: arrays.bubble_sort_descending, arrays.heap_sort, arrays.heap_sort_descending
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Bubble sort the array, treating the elements as strings or numbers
+depending on the element type.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">arrays.bubble_sort( sales_array );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>a</td>
-
-<td>in out</td>
-
-<td>any array type</td>
-
-<td>required</td>
-
-<td>the array to sort</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>a</span></td>
+<td><span>in out</span></td>
+<td><span>any array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to sort</span></td>
 </tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>arrays.bubble_sort_descending( a )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Bubble sort the array in descending order, treating the elements as
-strings or numbers depending on the element type.
-<br>Example: arrays.bubble_sort_descending( sales_array );
-<br>Ada Equivalent: Uses GNAT.Bubble_Sort.
-<br>PHP Equivalent: rsort
-<br>See Also: arrays.bubble_sort, arrays.heap_sort, arrays.heap_sort_descending
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>a</td>
-
-<td>in out</td>
-
-<td>any array type</td>
-
-<td>required</td>
-
-<td>the array to sort</td>
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>i := arrays.first( a )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the first (lowest) index of the array.
-<br>Example: i := arrays.first( sales_array );
-<br>Ada Equivalent: 'first attribute
-<br>See Also: arrays.last
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>a</td>
-
-<td>in</td>
-
-<td>array type</td>
-
-<td>required</td>
-
-<td>the array with the index</td>
-</tr>
-
-<tr>
-<td>i</td>
-
-<td>return value</td>
-
-<td>enumerated or numeric</td>
-
-<td>required</td>
-
-<td>the array's first bound</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>arrays.bubble_sort_descending<br>arrays.heap_sort<br>arrays.heap_sort_descending</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.Bubble_Sort<br>PHP: sort</p></td>
 </tr>
 </table>
-</td>
+
+<h3>arrays.bubble_sort_descending( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Bubble sort the array in descending order, treating the elements as
+strings or numbers depending on the element type.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">arrays.bubble_sort_descending( sales_array );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>a</span></td>
+<td><span>in out</span></td>
+<td><span>any array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to sort</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>arrays.heap_sort( a )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Heap sort the array, treating the elements as
-strings or numbers depending on the element type.
-<br>Example: arrays.heap_sort( sales_array );
-<br>Ada Equivalent: Uses GNAT.Heap_Sort.
-<br>PHP Equivalent: sort
-<br>See Also: arrays.bubble_sort, arrays.bubble_sort_descending, arrays.heap_sort_descending
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>a</td>
-
-<td>in out</td>
-
-<td>any array type</td>
-
-<td>required</td>
-
-<td>the array to sort</td>
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>arrays.heap_sort_descending( a )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-
-<tr>
-<td>
-<br>Heap sort the array in descending order, treating the elements as
-strings or numbers depending on the element type.
-<br>Example: arrays.heap_sort_descending( sales_array );
-<br>Ada Equivalent: Uses GNAT.Heap_Sort.
-<br>PHP Equivalent: rsort
-<br>See Also: arrays.bubble_sort, arrays.bubble_sort_descending, arrays.heap_sort
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>a</td>
-
-<td>in out</td>
-
-<td>any array type</td>
-
-<td>required</td>
-
-<td>the array to sort</td>
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>i := arrays.last( a )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-
-<tr>
-<td>
-<br>Return the last (highest) index of the arrays
-<br>Example: i := arrays.last( sales_array );
-<br>Ada Equivalent: 'last attribute
-<br>See Also: arrays.first
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>a</td>
-
-<td>in</td>
-
-<td>array type</td>
-
-<td>required</td>
-
-<td>the array with the index</td>
-</tr>
-
-<tr>
-<td>i</td>
-
-<td>return value</td>
-
-<td>enumerated or numeric</td>
-
-<td>required</td>
-
-<td>the array's last bound</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>arrays.bubble_sort<br>arrays.heap_sort<br>arrays.heap_sort_descending</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Uses GNAT.Bubble_Sort<br>PHP: rsort</p></td>
 </tr>
 </table>
-</td>
+
+<h3>i := arrays.first( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the first (lowest) index of the array.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">i := arrays.first( sales_array );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>a</span></td>
+<td><span>in</span></td>
+<td><span>array type</span></td>
+<td><span>required</span></td>
+<td><span>the array with the index</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>return value</span></td>
+<td><span>enumerated or numeric</span></td>
+<td><span>required</span></td>
+<td><span>the array's minimum bound</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>n := arrays.length( a )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Return the number of elements in the array (last index - first index + 1).
-<br>Example: n := arrays.length( sales_array );
-<br>Ada Equivalent: 'length attribute
-<br>PHP Equivalent: count
-<br>See Also: strings.length
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>a</td>
-
-<td>in</td>
-
-<td>array type</td>
-
-<td>required</td>
-
-<td>the array to examine</td>
-</tr>
-
-<tr>
-<td>n</td>
-
-<td>return value</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the number of elements in the array</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>arrays.last</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'first attribute</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>arrays.flip( a )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>arrays.heap_sort( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-
-<td>
-<br>Reverse the order of the elements in the array, moving the last element
-to the first position and the first element to the last position.  (This used
-to be arrays.reverse but was renamed to avoid a conflict with the Ada
-reserved word "reverse".)
-<br>Example: arrays.flip( backwards_array );
-<br>Ada Equivalent: N/A
-<br>PHP Equivalent: array_reverse
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Heap sort the array, treating the elements as
+strings or numbers depending on the element type.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">arrays.heap_sort( sales_array );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>a</td>
-
-<td>in out</td>
-
-<td>any array type</td>
-
-<td>required</td>
-
-<td>the array to reverse/flip</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>a</span></td>
+<td><span>in out</span></td>
+<td><span>any array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to sort</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>arrays.bubble_sort<br>arrays.bubble_sort_descending<br>arrays.heap_sort_descending</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Uses GNAT.Heap_Sort<br>PHP: sort</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-
-<p>
-<hr><b>arrays.rotate_left( a )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-
+<h3>arrays.heap_sort_descending( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Move all elements of the array one element toward the first position, moving
-the first element to the last position.
-<br>Example: arrays.rotate_left( work_queue );
-<br>Ada Equivalent: N/A
-<br>See Also: arrays.rotate_right, arrays.shift_left, arrays.shift_right
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Heap sort the array in descending order, treating the elements as
+strings or numbers depending on the element type.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">arrays.heap_sort_descending( sales_array );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>a</td>
-
-<td>in out</td>
-
-<td>any array type</td>
-
-<td>required</td>
-
-<td>the array to rotate</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>a</span></td>
+<td><span>in out</span></td>
+<td><span>any array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to sort</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>arrays.bubble_sort<br>arrays.bubble_sort_descending<br>arrays.heap_sort</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.Heap_Sort<br>PHP: rsort</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>arrays.rotate_right( a )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-
+<h3>i := arrays.last( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Move all elements of the array one element toward the last position, moving
-the last element to the first position.
-<br>Example: arrays.rotate_right( work_queue );
-<br>Ada Equivalent: N/A
-<br>See Also: arrays.rotate_left, arrays.shift_left, arrays.shift_right
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Return the last (highest) index of the array.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">i := arrays.last( sales_array );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>a</td>
-
-<td>in out</td>
-
-<td>any array type</td>
-
-<td>required</td>
-
-<td>the array to rotate</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>a</span></td>
+<td><span>in</span></td>
+<td><span>array type</span></td>
+<td><span>required</span></td>
+<td><span>the array with the index</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>return value</span></td>
+<td><span>enumerated or numeric</span></td>
+<td><span>required</span></td>
+<td><span>the array's maximum bound</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>arrays.first</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'last attribute</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>arrays.shift_left( a )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-
+<h3>n := arrays.length( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Move all elements of the array one element toward the first element,
-overwriting the first element.
-<br>Example: arrays.shift_left( work_stack );
-<br>Ada Equivalent: N/A
-<br>PHP Equivalent: array_pop, array_shift
-<br>See Also: arrays.rotate_left, arrays.rotate_right, arrays.shift_right
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of elements in the array (last index - first index + 1).</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">n := arrays.length( sales_array );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>a</td>
-
-<td>in out</td>
-
-<td>any array type</td>
-
-<td>required</td>
-
-<td>the array to rotate</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>a</span></td>
+<td><span>in</span></td>
+<td><span>array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to examine</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of elements in the array</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>strings.length</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'length attribute<br>PHP: count</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>arrays.shift_right( a )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-
+<h3>arrays.flip( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Move all elements of the array one element toward the last element,
-overwriting the last element.
-<br>Example: arrays.shift_right( work_stack );
-<br>Ada Equivalent: N/A
-<br>PHP Equivalent: array_push, array_unshift
-<br>See Also: arrays.rotate_left, arrays.rotate_right, arrays.shift_left
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Reverse the order of the elements in the array, moving the last element
+to the first position and the first element to the last position.  (Prior to
+version 1.1, this was arrays.reverse but was renamed to avoid a conflict with the Ada
+reserved word "reverse".)</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">arrays.flip( backwards_array );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>a</td>
-
-<td>in out</td>
-
-<td>any array type</td>
-
-<td>required</td>
-
-<td>the array to rotate</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>a</span></td>
+<td><span>in out</span></td>
+<td><span>any array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to sort</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A<br>PHP: array_reverse</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>arrays.shuffle( a )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-
+<h3>arrays.rotate_left( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Randomize the elements of the array.
-<br>Example: arrays.shuffle( playing_card_array );
-<br>Ada Equivalent: N/A
-<br>PHP Equivalent: shuffle
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Move all elements of the array one element toward the first position, moving
+the first element to the last position.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">arrays.rotate_left( work_queue );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>a</td>
-
-<td>in out</td>
-
-<td>any array type</td>
-
-<td>required</td>
-
-<td>the array to shuffle</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>a</span></td>
+<td><span>in out</span></td>
+<td><span>any array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to rotate</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>arrays.rotate_right<br>arrays.shift_left<br>arrays.shift_right</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A</p></td>
+</tr>
 </table>
-</td>
+
+<h3>arrays.rotate_right( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Move all elements of the array one element toward the last position, moving
+the last element to the first position.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">arrays.rotate_right( work_queue );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>a</span></td>
+<td><span>in out</span></td>
+<td><span>any array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to sort</span></td>
 </tr>
-</table></center>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>arrays.rotate_left<br>arrays.shift_left<br>arrays.shift_right</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A</p></td>
+</tr>
+</table>
+
+<h3>arrays.shift_left( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Move all elements of the array one element toward the first element,
+overwriting the first element.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">arrays.shift_left( work_stack );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>a</span></td>
+<td><span>in out</span></td>
+<td><span>any array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to rotate</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>arrays.rotate_left<br>arrays.rotate_right<br>arrays.shift_right</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A<br>PHP: array_pop, array_shift</p></td>
+</tr>
+</table>
+
+<h3>arrays.shift_right( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Move all elements of the array one element toward the last element,
+overwriting the last element.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">arrays.shift_right( work_stack );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>a</span></td>
+<td><span>in out</span></td>
+<td><span>any array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to rotate</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>arrays.rotate_left<br>arrays.rotate_right<br>arrays.shift_left</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A<br>PHP: array_push, array_unshift</p></td>
+</tr>
+</table>
+
+<h3>arrays.shuffle( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Randomize the elements of the array with a Fisher-Yates shuffle.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">arrays.shuffle( playing_card_array );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>a</span></td>
+<td><span>in out</span></td>
+<td><span>any array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to shuffle</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>arrays.bubble_sort_descending<br>arrays.heap_sort<br>arrays.heap_sort_descending</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A<br>PHP: shuffle</p></td>
+</tr>
+</table>
+
 &nbsp;<br>
 
 			</td>

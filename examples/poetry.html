@@ -4,13 +4,17 @@
 <IMG SRC="poetry.gif">
 <PRE>
 #!/usr/local/bin/spar
-
 <b>pragma</b> ada_95;
 
 <b>procedure</b> poetry <b>is</b>
 
   <FONT COLOR=green><EM>-- Ken's Business Shell Poetry Generator</EM></FONT>
-  <FONT COLOR=green><EM>-- created for PegaSoft Summer Programming Challenge</EM></FONT>
+
+  <b>pragma</b> annotate( "SparForte Poetry Generator" );
+  <b>pragma</b> annotate( "" );
+  <b>pragma</b> annotate( "  created for PegaSoft Summer Programming Challenge" );
+  <b>pragma</b> annotate( "" );
+  <b>pragma</b> annotate( "Usage: poetry" );
 
   nouns        : string;
   verbs        : string;
@@ -289,27 +293,27 @@ new_line;
        <b>case</b> ch <b>is</b>
        <b>when</b> '1' =&gt;
           new_poem := new_poem &amp; strings.field( nouns,
-             numerics.truncation( float( noun_count ) * numerics.random ) + 1,
+             natural( float( noun_count ) * numerics.random ) + 1,
              separator );
        <b>when</b> '2' =&gt;
           new_poem := new_poem &amp; strings.field( verbs,
-             numerics.truncation( float( verb_count ) * numerics.random ) + 1,
+             natural( float( verb_count ) * numerics.random ) + 1,
              separator );
        <b>when</b> '3' =&gt;
           new_poem := new_poem &amp; strings.field( adverbs,
-             numerics.truncation( float( adverb_count ) * numerics.random ) + 1,
+             natural( float( adverb_count ) * numerics.random ) + 1,
              separator );
        <b>when</b> '4' =&gt;
           new_poem := new_poem &amp; strings.field( adjectives,
-             numerics.truncation( float( adjective_count ) * numerics.random ) + 1,
+             natural( float( adjective_count ) * numerics.random ) + 1,
              separator );
        <b>when</b> '5' =&gt;
           new_poem := new_poem &amp; strings.field( prepositions,
-             numerics.truncation( float( preposition_count ) * numerics.random ) + 1,
+             natural( float( preposition_count ) * numerics.random ) + 1,
              separator );
        <b>when</b> '6' =&gt;
           new_poem := new_poem &amp; strings.field( conjunctions,
-             numerics.truncation( float( conjunction_count ) * numerics.random ) + 1,
+             natural( float( conjunction_count ) * numerics.random ) + 1,
              separator );
        <b>when</b> <b>others</b> =&gt;
           new_poem := new_poem &amp; ch;

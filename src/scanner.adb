@@ -642,11 +642,11 @@ begin
   -- web page.
 
   if boolean( debugOpt ) and processingTemplate then
-     put( "<table cellspacing=1 cellpadding=2 border=1 summary=""Bush Error"">" );
+     put( "<table cellspacing=1 cellpadding=2 border=1 summary=""SparForte Error"">" );
      put( "<tr>" );
      put( "<td bgcolor=""grey"">" );
      put( "<font face=""courier"" color=""white"" size=""2"">" );
-     put( "&nbsp;<i>BUSH</i>&nbsp;" );
+     put( "&nbsp;<i>SparForte</i>&nbsp;" );
      put( "</font></td>" );
      put( "<td bgcolor=""white""" );
      put( "<font face=""courier"" color=""black"" size=""2"">" );
@@ -940,7 +940,7 @@ procedure resetScanner is
     home_key   : unbounded_string := to_unbounded_string( "HOME=" );
     term_key   : unbounded_string := to_unbounded_string( "TERM=" );
     shell_key  : unbounded_string := to_unbounded_string( "SHELL=" );
-    library_key: unbounded_string := to_unbounded_string( "BUSH_LIBRARY_PATH=" );
+    library_key: unbounded_string := to_unbounded_string( "SPAR_LIBRARY_PATH=" );
     ev  : unbounded_string;                                     -- an env var
   begin
      for i in 1..environmentList.Length( initialEnvironment ) loop
@@ -1560,10 +1560,10 @@ begin
      declareIdent( temp_id, "SHELL", uni_string_t );          -- declare it
      identifiers( temp_id ).export := true;
      -- not exactly right, but works...
-     if C_is_executable_file( "/usr/local/bin/bush" & ASCII.NUL ) then
-        identifiers( temp_id ).value := to_unbounded_string( "/usr/local/bin/bush" );
-     elsif C_is_executable_file( "/bin/bush" & ASCII.NUL ) then
-        identifiers( temp_id ).value := to_unbounded_string( "/bin/bush" );
+     if C_is_executable_file( "/usr/local/bin/spar" & ASCII.NUL ) then
+        identifiers( temp_id ).value := to_unbounded_string( "/usr/local/bin/spar" );
+     elsif C_is_executable_file( "/bin/spar" & ASCII.NUL ) then
+        identifiers( temp_id ).value := to_unbounded_string( "/bin/spar" );
      end if;
   end if;
   findIdent( to_unbounded_string( "TERM" ), temp_id );        -- TERM
@@ -5165,7 +5165,7 @@ begin
      if length( workingPaths ) = 0 then                    -- none?
         workingPaths := to_unbounded_string( "." );        -- use current
      end if;                                               -- check env var
-     findIdent( to_unbounded_string( "BUSH_LIBRARY_PATH" ), temp_id );
+     findIdent( to_unbounded_string( "SPAR_LIBRARY_PATH" ), temp_id );
      if temp_id /= eof_t then                              -- exists?
         if length( identifiers( temp_id ).value ) > 0 then  -- non-blank?
            workingPaths := workingPaths & ":" & identifiers( temp_id ).value;

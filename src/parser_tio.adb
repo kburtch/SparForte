@@ -1223,6 +1223,22 @@ begin
      end;
   end if;
   if isExecutingCommand then -- fix this for no output on error!
+     if getUniType( expr_type ) = uni_numeric_t then
+        -- For universal numeric, represent it as an integer string if possible
+        -- to make it human-readable.
+        declare
+           val : long_float := to_numeric( expr_val );
+        begin
+           -- Within the range of a SparForte integer and no decimal (e.g.
+           -- casting results in the same value?
+           if long_float( val ) >= long_float( integerOutputType'first+0.9 ) and
+              long_float( val ) <= maxInteger then
+              if val = long_float'floor( val ) then
+                 expr_val := to_unbounded_string( val );
+              end if;
+           end if;
+        end;
+     end if;
      Put_Line( expr_val );
      last_output := expr_val;
      last_output_type := expr_type;

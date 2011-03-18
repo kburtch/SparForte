@@ -114,13 +114,13 @@ begin
   end if;
 end ParseEnumsLast;
 
-procedure ParseEnumsPrev( f : out unbounded_string; kind : out identifier ) is
+procedure ParseEnumsPred( f : out unbounded_string; kind : out identifier ) is
 --  -- Syntax: enums.prev( arraytypeorvar );
 --  -- Source: enumvar'prev
   var_id   : identifier;
   item     : natural;
 begin
-  expect( enums_prev_t );
+  expect( enums_pred_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   kind := identifiers( var_id ).kind;
@@ -149,7 +149,7 @@ begin
   elsif syntax_check then
      kind := universal_t; -- type is unknown during syntax check
   end if;
-end ParseEnumsPrev;
+end ParseEnumsPred;
 
 procedure ParseEnumsSucc( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: enums.succ( arraytypeorvar );
@@ -214,7 +214,7 @@ procedure StartupEnums is
 begin
   declareFunction( enums_first_t, "enums.first" );
   declareFunction( enums_last_t, "enums.last" );
-  declareFunction( enums_prev_t, "enums.prev" );
+  declareFunction( enums_pred_t, "enums.pred" );
   declareFunction( enums_succ_t, "enums.succ" );
 end StartupEnums;
 

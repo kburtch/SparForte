@@ -32,7 +32,7 @@ package parser_enums is
 
 enums_first_t        : identifier;
 enums_last_t         : identifier;
-enums_prev_t         : identifier;
+enums_pred_t         : identifier;
 enums_succ_t         : identifier;
 
 -----------------------------------------------------------------------------
@@ -48,7 +48,7 @@ procedure ShutdownEnums;
 
 procedure ParseEnumsFirst( f : out unbounded_string; kind : out identifier );
 procedure ParseEnumsLast( f : out unbounded_string; kind : out identifier );
-procedure ParseEnumsPrev( f : out unbounded_string; kind : out identifier );
+procedure ParseEnumsPred( f : out unbounded_string; kind : out identifier );
 procedure ParseEnumsSucc( f : out unbounded_string; kind : out identifier );
 
 end parser_enums;

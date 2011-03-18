@@ -110,6 +110,22 @@
 		color: black;
 		cursor: pointer;
 	}
+	.pkg_label {
+		font-family: Verdana, Arial, Helvetica, Sans-Serif;
+		font-size: 10pt;
+		font-weight: bold;
+		font-style: normal;
+		text-align: left;
+        	color: #1c1142;
+	}
+	.pkg_param {
+		font-family: Verdana, Arial, Helvetica, Sans-Serif;
+		font-size: 10pt;
+		font-weight: bold;
+		font-style: normal;
+		text-align: left;
+        	color: black;
+	}
 	img.padded_left {
 		margin: 15px 15px 15px 15px;
 		float: left;

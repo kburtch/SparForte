@@ -67,7 +67,7 @@ begin
         Put_Line( "  --gcc-errors or -g - simple GCC-style errors (good for IDEs)" );
         Put_Line( "  --help or -h       - show this help" );
         Put_Line( "  --import-all or -i - import all environment variables" );
-        Put_Line( "   -Ld or -L d       - add directory d to the separate files search list" );
+        Put_Line( "  --Ld or -L d       - add directory d to the separate files search list" );
         Put_Line( "                       (may be repeated)" );
         Put_Line( "  --login or -l      - simulate a login shell" );
         Put_Line( "  --no-check or -n   - run script without checking syntax" );

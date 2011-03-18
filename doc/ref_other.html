@@ -26,7 +26,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="ref_flow.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="ref_extcmds.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -92,10 +92,10 @@ where commands are required.  There are no arguments.</p>
 <table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
 <tr>
 <td>
-<p>Unconditionally terminate the script, procedure or function.&nbsp; Functions
-must have a return value.  In an interactive shell, return will terminate
-a shell that is not a login shell.</p>
-<p><u>See Also</u>: logout</p>
+<p>Unconditionally terminate an login session.  In breakout mode, exit the
+script.  In an interactive shell, return will terminate a shell that is not a
+login shell.</p>
+<p><u>See Also</u>: return</p>
 <p><u>Example</u>:</p>
 
 <pre>
@@ -105,10 +105,10 @@ logout;
 <b>=&gt;</b> return
 </pre>
 <u>GCC Ada equivalent</u>: <tt>return</tt><br>
-<u>Bash equivalent</u>: <tt>return</tt> or <tt>exit</tt><br>
+<u>Bash equivalent</u>: <tt>logout</tt><br>
 
-<u>Perl equivalent</u>: <tt>return</tt><br>
-<u>PHP  equivalent</u>: <tt>return</tt><br>
+<u>Perl equivalent</u>: <tt>n/a</tt><br>
+<u>PHP  equivalent</u>: <tt>n/a</tt><br>
 </td>
 </tr>
 </table>
