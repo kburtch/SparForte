@@ -112,6 +112,9 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
+     if restriction_no_postgresql_database then
+        err( "not allowed with " & bold( "pragma restriction( no_postgresql_database )" ) );
+     end if;
      begin
        begin
          Set_DB_Name( C, to_string( dbnameExpr ) );

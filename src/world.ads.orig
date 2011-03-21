@@ -132,6 +132,8 @@ err_message : unbounded_string;         -- last error message
 onlyAda95                        : boolean := false; -- pragma ada_95
 restriction_no_auto_declarations : boolean := false; -- pragma restriction
 restriction_no_external_commands : boolean := false; -- pragma restriction
+restriction_no_mysql_database    : boolean := false; -- pragma restriction
+restriction_no_postgresql_database: boolean := false; -- pragma restriction
 no_command_hash                  : boolean := false; -- pragma restriction
 
 type templateTypes is (noTemplate, htmlTemplate, textTemplate);

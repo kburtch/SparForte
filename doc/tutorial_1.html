@@ -42,15 +42,17 @@
 <h2><a name="2.1"></a>Command Prompt Tutorial 1: SparForte as a Calculator</h3>
 <p>Thanks for taking the time to look at the SparForte.&nbsp; This
 tutorial is a simple introduction to SparForte by using SparForte to perform
-interactive math like a pocket calculator.</p>
+interactive math like a pocket calculator.  Then there will be an example
+of running a script.</p>
+
 <p>When SparForte is started without an argument, it presents you with a
 welcome
 message and a command prompt, a "<tt>=&gt;</tt>". From this prompt, you
 can
 
-<a href="bushref.html#fundamental%20types">declare
+<a href="ref_types.html">declare
 variables</a>, execute AdaScript statements, or run <a
- href="bushref.html#shell%20cmds">external
+ href="ref_extcmds.html">external
 commands.</a><br>
 </p>
 <p>SparForte is case-sensitive, as are many other shells, because
@@ -94,46 +96,11 @@ Reference section of this manual.  Summaries of all built-in packages
 are found in the Packages section of this manual.<br>
 </p>
 <p>SparForte recognizes the console arrow keys and common key
-sequences for
-the "emacs" and "vi" text editors. The sequences are called <b>key
-bindings</b>
+sequences used by most shells.  The sequences are called <b>key
+bindings</b> and you can find out more about them in
+<a href="ref_cmdline.html">Command Line Interaction</a> in the Reference
+section.
 
-and represent cursor movement and editing functions.
-</p>
-<p>The <b>emacs mode</b> key bindings are:
-</p>
-<ul>
-  <li> <b>control-b</b> - move back (left) one character</li>
-  <li> <b>control-f</b> - move forward (right) one character</li>
-
-  <li> <b>control-p</b> - move to the previous command line you typed</li>
-  <li> <b>control-n</b> - move to the next command line you typed</li>
-  <li> <b>control-x</b> - erase the command line</li>
-
-  <li> <b>control-a</b> - move to start of the line</li>
-  <li> <b>control-e</b> - move to end of the line</li>
-  <li> <b>control-r</b> - search command lines (history) backwards</li>
-
-  <li> <b>control-]</b> - character search forwards. (Follow with the
-key
-to search
-for.)</li>
-  <li> <b>tab</b> - complete the filename if there is a unqiue match</li>
-  <li> <b>backspace/delete</b> - delete a character</li>
-
-</ul>
-<p>Typing a control-c (sending a SIGINT signal) at the command prompt
-acts
-the same as a control-x: the current line will be erased.&nbsp;
-Pressing control-c while a command is running will usually cause the
-command to stop running.
-</p>
-<p>If you prefer to use <b>vi cursor movement</b>, press the Escape
-key to enter <b>vi</b> mode. Press escape again to return to emacs
-mode. In vi mode, you can use lower-case 'h', 'j', 'k', 'l', '^' and
-'$'. Filename completion is accomplished with two escape key presses
-in a row.
-</p>
 <p>The <a href="pkg_text_io.html#consoleio">"?"
 command</a> (pronounced "print") will print the result of an
 expression. The basic
@@ -361,7 +328,7 @@ name.&nbsp; The assignment operator is ":=".</p>
 	</center>
 
 <p>Like many strong typed languages, all variables are declared to provide protection
-against spelling mistakes and to provide the variable with a <a href="bushref.html#fundamental%20types">type</a>.
+against spelling mistakes and to provide the variable with a <a href="ref_types.html">type</a>.
 For example, a string variable may only contain string values.&nbsp; This
 prevents variables containing fundamentally different
 values from being combined in nonsense ways.&nbsp; When SparForte declared
@@ -448,9 +415,9 @@ This script is included in the <b>examples</b> directory and can be run with
 "spar eliza.sp".
 
 </p>
-<p><img src="pictures/bush_3.gif" alt="[SparForte help command]" height="331"
- width="607"><br>
-<b>Screenshot of the example eliza.sp script</b>
+<p><img src="pictures/bush_3.gif" alt="[SparForte help command]" height="309"
+ width="616"><br>
+<b>Figure</b>:Screenshot of the example eliza.sp script
 </p>
 &nbsp;<br />
 			</td>

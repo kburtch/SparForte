@@ -47,6 +47,12 @@ at the command prompt, SparForte choses an appropriate type for the new
 variable.&nbsp;
 In scripts, all variables must be declared.</p>
 
+<hr>
+<p><img src="pictures/sparforte_type_tree.gif" alt="[SparForte Type Tree]"><br>
+&nbsp;<br>
+<b>Figure</b>: SparForte Predefined Scalar Data Types and their Relationships</p>
+<hr>
+
 <h3>Universal Types</h3>
 
 <p>There are three "universal types":</p>
@@ -154,7 +160,6 @@ types:</p>
     </tr>
     <tr>
       <td><tt>short_short_integer</tt></td>
-
       <td><tt>universal_numeric</tt></td>
       <td>very small integer</td>
       <td><tt>short_short_integer</tt></td>
@@ -170,7 +175,6 @@ types:</p>
       <td><tt>long_integer</tt></td>
       <td><tt>universal_numeric</tt></td>
       <td>large integer</td>
-
       <td><tt>long_long_integer</tt></td>
     </tr>
     <tr>
@@ -236,13 +240,6 @@ types:</p>
       <td><tt>boolean</tt></td>
     </tr>
     <tr>
-      <td><tt>file_type</tt></td>
-      <td>limited type</td>
-      <td>operating system files</td>
-      <td><tt>file_type</tt></td>
-
-    </tr>
-    <tr>
       <td><tt>file_mode</tt></td>
       <td>enumerated type</td>
       <td><tt>in_file</tt>, <tt>out_file</tt> or <tt>append_file</tt></td>
@@ -254,7 +251,24 @@ types:</p>
       <td>limited type</td>
       <td>alias for an operating system command</td>
       <td>&nbsp;-</td>
-
+    </tr>
+    <tr>
+      <td><tt>file_type</tt></td>
+      <td>limited record type</td>
+      <td>operating system files</td>
+      <td><tt>file_type</tt></td>
+    </tr>
+    <tr>
+      <td><tt>socket_type</tt></td>
+      <td>limited record type</td>
+      <td>operating system sockets</td>
+      <td><tt>-</tt></td>
+    </tr>
+    <tr>
+      <td><tt>complex</tt></td>
+      <td>record type</td>
+      <td>complex numbers</td>
+      <td><tt>complex</tt></td>
     </tr>
   </tbody>
 </table>
@@ -275,17 +289,8 @@ raised</p>
         </div>
         </center>
 
-<p>All types are <i>logical</i> types: that is, all numeric types are
-stored
-in the same format.&nbsp; A natural, integer or float are all stored as
-a universal numeric value.&nbsp; There are only minimal checks to make
-sure that variables of these types conform to their descriptions.
-However,
-types provide an indication to the reader of how a variable is intended
-to be used, and AdaScript will not allow these types to be combined
-without
-an appropriate type cast.
-</p>
+<p>Most types are incompatible with each other.  Types may be typecast
+into related types.</p>
 
         <center>
         <div class="code">
@@ -304,16 +309,19 @@ with type 'integer'<br>
 
 <p>You cannot typecast a numeric type into a string type
 directly.&nbsp;
-There are functions in the <a href="#numerics">numerics</a> and <a
- href="#strings">strings</a>
+There are functions in the <a href="pkg_numerics.html">numerics</a> and <a
+ href="pkg_strings.html">strings</a>
 packages to do these conversions.
 </p>
 
-<p>Since all values are stored as a universal type, this can cause some
+<h3>String Gotchas</h3>
+
+<p>Since all literals have a universal type, this can cause some
 unusual side-effects. A character variable can contain more than one
 character
-if you really want it to by assigning a string literal. Characters are
-stored as a universal_string and a string literal is a universal_string
+if you really want it to by assigning a string literal.
+Characters are
+stored as internally as a string and a string literal is a universal_string
 type.&nbsp; AdaScript will allow the assignment.&nbsp; However, the
 type
 checking will prevent a character variable from being assigned to a
@@ -326,9 +334,22 @@ variable.
                 <p class="code">=&gt; i : integer := 5<br>
 		=&gt; c : character;<br>
 		=&gt; c := "hello"; -- confusing, perhaps stupid, but legal<br>
-		=&gt; s : string := c; -- ILLEGAL</p>
+		=&gt; s : string := c; -- ILLEGAL<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ type <b>string</b> is not compatible with type <b>character</b><br>
+		=&gt; c := character( "hello" ); -- explicity typecast is not fooled<br>
+		c := character( "hello" );<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ character value must be one character long</p>
         </div>
         </center>
+
+<p>In this example, "hello" is a literal so it is a universal_string.  The
+variable c is a character, a type derived from universal_string.  So
+SparForte allows the assignment.  Internally, SparForte uses strings for
+characters so the entire value of "hello" is assigned to c and c is now
+a character variable with 5 characters in it.  However, SparForte's type
+rules prevent c from being assigned to a string, and typecasting will
+check the length of a character variable.  (This will likely get addressed
+in the future.)</p>
 
 <p>AdaScript strings are an unbounded string type--that is, they are
 stored

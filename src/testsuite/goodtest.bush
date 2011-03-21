@@ -1926,6 +1926,7 @@ pragma assert( i = 6 );
 i := long_long_integer( 2.5 ) * 2;
 pragma assert( i = 6 );
 
+
 -- Pragma ada_95 tests
 
 pragma ada_95;

@@ -122,6 +122,12 @@ commands. Provides portability by ensuring no commands besides SparForte's
 built-in
 commands are executed. Useful for applications using SparForte as a run-time
 scripting language and not for shell scripting.</li>
+  <li> <b>pragma restriction( no_mysql_database )</b> - disable
+connections to a MySQL database.  Doesn't prevent the mysql client or
+other programs from using MySQL.</li>
+  <li> <b>pragma restriction( no_postgresql_database )</b> - disable
+connections to a PostgreSQL database.  Doesn't prevent the psql client or
+other programs from using PostgreSQL.</li>
   <li> <b>pragma template( text|html [, template] )</b> - SparForte will
 act
 like an HTML

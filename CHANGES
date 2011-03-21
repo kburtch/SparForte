@@ -21,4 +21,11 @@ arrays.length
 17. Change: "?" now displays numbers in a human readable format (e.g. 0.0 will be displayed as 0).
 18. New: Separate subprograms/subunits backported from Bush 2.0 developmental snapshot. Non-working features disabled.
 19. New: SparForte now on github.
-
+20. New/Change: Several pen package routines fill/paint/clear updated to accept color names.
+21. New: Pen package drawing spool functions wait_to_reveal/reveal/reveal_now working.
+22. New: Add (lighten), subtract (darken), average (blend) added to pen mode
+for direct color screens (but not working correctly).
+23. Change mandel.sp and chessboard.sp updated for these changes.
+24. Change: typeset now typecasts the variable's value to the new type.
+25. New: pragma restriction( no_mysql_database ) - disable connections to a MySQL database. Doesn't prevent the mysql client or other programs from using MySQL
+26. New: pragma restriction( no_postgresql_database ) - disable connections to a PostgreSQL database. Doesn't prevent the psql client or other programs from using PostgreSQL

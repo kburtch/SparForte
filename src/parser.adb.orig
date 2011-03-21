@@ -3094,8 +3094,9 @@ procedure ParsePragma is
   type aPragmaType is ( ada_95, asserting, annotate, debug, debug_on,
      depreciated, export, gcc_errors, import, inspection, inspect_var,
      noCommandHash, peek, promptChange, restriction, restriction_auto,
-     restriction_external, template, unchecked_import, uninspect_var,
-     unrestricted_template, volatile );
+     restriction_external, restriction_mysql, restriction_postgresql,
+     template, unchecked_import, uninspect_var, unrestricted_template,
+     volatile );
   pragmaKind  : aPragmaType;
   expr_val    : unbounded_string;
   results     : unbounded_string;
@@ -3250,6 +3251,14 @@ begin
         discardUnusedIdentifier( token );
         getNextToken;
         pragmaKind := restriction_external;
+     elsif identifiers( token ).name = "no_mysql_database" then
+        discardUnusedIdentifier( token );
+        getNextToken;
+        pragmaKind := restriction_mysql;
+     elsif identifiers( token ).name = "no_postgresql_database" then
+        discardUnusedIdentifier( token );
+        getNextToken;
+        pragmaKind := restriction_postgresql;
      else
         discardUnusedIdentifier( token );
         err( "unknown restriction" );
@@ -3379,6 +3388,10 @@ begin
         restriction_no_auto_declarations := true;
      when restriction_external =>
         restriction_no_external_commands := true;
+     when restriction_mysql =>
+        restriction_no_mysql_database := true;
+     when restriction_postgresql =>
+        restriction_no_postgresql_database := true;
      when promptChange =>
         promptScript := expr_val;
      when template | unrestricted_template =>
@@ -4165,6 +4178,7 @@ end ParseDelay;
 procedure ParseTypeset is
   -- Syntax: typeset identifier is type
   -- Source: BUSH built-in
+  -- TODO: this should be converted to a build-in shell command
   id     : identifier;
   typeid : identifier := eof_t;
   b      : boolean;
@@ -4196,7 +4210,13 @@ begin
       elsif identifiers( typeid ).list then
          err( "typeset with array types not yet implemented" );
       else
-         identifiers( id ).kind := typeid;
+         begin
+            identifiers( id ).value := castToType( 
+               identifiers( id ).value, typeid );
+            identifiers( id ).kind := typeid;
+         exception when others =>
+            err( "exception raised" );
+         end;
       end if;
    else
       b := deleteIdent( id );

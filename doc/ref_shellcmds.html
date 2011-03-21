@@ -182,16 +182,29 @@ be used in an interactive session.  It cannot be used with pragma ada_95.
 <table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
 <tr>
 <td align="left">
-Change the type of a variable, declaring it if necssary.  Typeset can only
-be used in an interactive session.  It cannot be used with pragma ada_95.
+Change the type of a variable, declaring it if necssary.  It will attempt
+to typecast the value of the variable if the variable exists: this may
+raise an exception if the variable cannot be typecast.  Typeset
+can only be used in an interactive session.  It cannot be used with
+pragma ada_95.
 <p><u>Examples</u>:</p>
-<pre>
 
-<b>=&gt;</b> typeset i is integer
-<b>=&gt;</b> j : float
-<b>=&gt;</b> typeset j is short_float
-<b>=&gt;</b> env j
-j := ; -- identifier of the type short_float</pre>
+        <center>
+        <div class="code">
+                <p class="code">=&gt; y := 5.5<br>
+=&gt; (Assuming y is a new universal_numeric variable)<br>
+=&gt; <b>env</b> y<br>
+y :=  5.50000000000000E+00; -- identifier of the type universal_numeric<br>
+=&gt; <b>typeset</b> y <b>is</b> float<br>
+=&gt; <b>env</b> y<br>
+y :=  5.50000000000000E+00; -- identifier of the type float<br>
+=&gt; <b>typeset</b> y <b>is</b> integer<br>
+=&gt; <b>env</b> y<br>
+y :=  6; -- identifier of the type integer <br>&nbsp;<br>
+                </p>
+        </div>
+        </center>
+
 <u>Bash equivalent</u>: <tt>typeset</tt> or <tt>declare</tt><br>
 
 <u>Perl equivalent</u>: N/A<br>

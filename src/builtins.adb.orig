@@ -1451,8 +1451,16 @@ begin
           scriptFilePath := helpTopic;                     -- script name
           scriptFile := open( to_string( scriptFilePath ) & ASCII.NUL, 0, 660 ); -- open script
           if scriptFile < 1 then                           -- error?
-             scriptFilePath := scriptFilePath & ".bush";   -- try name with ".bush"
-             scriptFile := open( to_string( scriptFilePath ) & ASCII.NUL, 0, 660 );
+             scriptFile := open( to_string( scriptFilePath ) & ".sp" & ASCII.NUL, 0, 660 );
+             if scriptFile > 0 then
+                scriptFilePath := scriptFilePath & ".sp"  ;
+             end if;
+          end if;
+          if scriptFile < 1 then                           -- error?
+             scriptFile := open( to_string( scriptFilePath ) & ".bush" & ASCII.NUL, 0, 660 );
+             if scriptFile > 0 then
+                scriptFilePath := scriptFilePath & ".bush"  ;
+             end if;
           end if;
           if scriptFile > 0 then                           -- good?
              error_found := false;                         -- no error found
@@ -1469,7 +1477,7 @@ begin
             end if;
           else
            -- try manual entries
-            Put_Line( "Not a BUSH command or script...trying manual entries" );
+            Put_Line( "Not a SparForte command or script...trying manual entries" );
             delay 2.0;
             declare
               status : integer;
