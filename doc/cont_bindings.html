@@ -1,0 +1,271 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Contributors - Bindings</title>
+        <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF">
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html">Tutorials</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="dummy">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html"><b>Contributors</b></a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="dummy"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="dummy"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+	<!-- Content Area -->
+<h2><a NAME="5.4"></a>Making New Bindings for Built-in Packages</h2>
+<p>This is not a discussion on language design.&nbsp; This is a quick overview
+on adding new built-in packages.&nbsp; We'll use the Ada.Calendar.Year
+package as an example binding.</p>
+<p>In the current version of SparForte, packages are hard-coded into the parser.&nbsp;
+
+There's no ability to create separate files that can be loaded on demand.&nbsp;
+Some day this ability may be added.
+<p>If you're adding a third-party Ada project (like AdaCGI), create a subdirectory
+to hold the project and modify the main SparForte makefile to compile (and make
+clean) the project.&nbsp; Test your changes by making a clean rebuild of
+SparForte.
+<p>Now you need to declare your identifiers.  Each package should have a Startup
+and Shutdown procedure.  Edit <b>scanner.adb</b> and make sure your package Startup
+and Shutdown procedures are called (look for the others in the file).
+<p>Your package spec should declare all your the identifier variables.
+For example, if you were implementing the Ada.Calendar package,
+create a cal_clock_t, cal_year_t and so on for each identifier you'll need.&nbsp;
+Include any types.&nbsp; By convention these end in "_t" (for "token").
+<p><tt>-- Built-in Calendar package identifiers</tt><tt></tt>
+
+<p><tt>cal_clock_t : identifier; -- "calendar.clock"</tt>
+<p>Add declaration calls in your Startup procedure
+to declare the identifier variables (that is, add them to the symbol table
+and identify what types they are).&nbsp; Copy some of the other declarations
+that are similar to the ones you are doing.&nbsp; For example, to declare
+Ada.Calendar's time type,
+<p><tt>declareIdent( cal_time_t, "calendar.time", variable_t, typeClass
+);</tt>
+<p>There are several declare calls.&nbsp; <b>declareIdent</b> is a general
+purpose declaration that uses the identifier variable, the name of the
+identifier (as the user would type it), what root type it's derived from
+(variable_t is used for private types, integer_t for integers, string_t
+for strings, and so forth), and the class of identifier (typeClass for
+a type declaration, subClass for a subtype declaration, and so forth).
+<p>Recompile SparForte and check for errors.
+<p>The SparForte scanner now recognizes your identifiers.&nbsp; Move onto the
+SparForte parser.
+
+<p>Create an Ada package&nbsp; to contain your new SparForte built-in package.&nbsp;
+You can copy one of the existing packages and edit it.&nbsp; Each package
+consists of two files: a package specification and a package body.&nbsp;
+For now, create a package specification.&nbsp; For example, for Ada.Calendar
+you could create a file called "parser_cal.ads".
+<p>The package specification should contain a series of "Parse" procedures.&nbsp;
+These will be called by SparForte when it needs to run subprograms in the built-in
+package.&nbsp; If a parse procedure defines a function, it should have
+one out unbounded_string parameter (to return the result of the function).&nbsp;
+
+Procedures, which return nothing, have no parameters.&nbsp; For the Ada.Calendar
+package, you might have:
+<p><tt>procedure ParseCalClock( result : out unbounded_string );&nbsp;
+-- Ada.Calendar.Clock function</tt>
+<br><tt>procedure ParseCalYear( result : out unbounded_string );&nbsp;
+-- Ada.Calendar.Year function</tt>
+<br><tt>procedure ParseCalMonth( result : out unbounded_string ); -- Ada.Calendar.Month
+function</tt>
+<br><tt>procedure ParseCalSplit; -- Ada.Calendar.Split procedure</tt>
+<p>For each of these procedures, follow them with a <b>stub pragma</b>
+
+<p><tt><b>procedure</b> ParseCalClock( result : <b>out</b> unbounded_string ); -- Ada.Calendar.Clock
+function</tt>
+<br><tt><b>pragma</b> import( stubbed, ParseCalClock );</tt>
+<p>This GCC Ada pragma indicates that ParseCalClock has not been completed
+and it will raise a PROGRAM_ERROR exception if the procedure is called.&nbsp;
+When you complete the ParseCalClock procedure, remove the stub pragma.
+<p>Compile the package specification with <b>gcc -c</b> to make sure there
+are no obvious errors.
+<p>Now tie your package specification into the parser.&nbsp; Edit the parser.adb
+file and add the name of your package with the "with" and "use" statements
+at the top of the file.
+<p>Get SparForte to take action when it sees a procedure or function.&nbsp;
+(This is the purpose of those identifier variables you declared earlier.)&nbsp;
+
+SparForte checks for built-in package procedures in <b>ParseGeneralStatement</b>.&nbsp;
+It checks for built-in package functions in <b>ParseFactor</b>.
+<p>For an Ada.Calendar package, add the check for the Ada.Calendar.Split
+procedure in ParseGeneralStatement:
+<p><tt><b>elsif</b> token = cal_split_t <b>then</b> -- are we looking at "calendar.split"?</tt>
+<br><tt>&nbsp;&nbsp; ParseCalSplit;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-- then process a calendar.split call</tt>
+<p>Add functions like Ada.Calendar.Clock to ParseFactor.&nbsp; The parameter
+is always "f" (the value of the "factor" and the variable "kind" must be
+set to the identifier variable for the type of result (e.g. an integer
+result has a kind of integer_t).
+
+<p><tt><b>elsif</b> token = cal_clock_t <b>then</b> -- are we looking at "calendar.clock"?</tt>
+<br><tt>&nbsp; ParseCalClock( f );</tt>
+<br><tt>&nbsp; kind := cal_tile_t;</tt>
+<p>Recompile SparForte to check for errors.&nbsp; Try using the procedures and
+functions.&nbsp; Each should raise a PROGRAM_ERROR exception but should
+have no other errors.
+<p>The only thing left to do is to check the parameters to the subprograms
+and execute them.&nbsp; Create a package body file and being implementing
+the Parse procedures one at a time.&nbsp; As you implement each, remove
+the corresponding stub pragma from the specification file.
+
+<p>The variable "token" represents the current item in the source file.&nbsp;
+To move to the next item in the source file, use the <b>expect </b>procedure.&nbsp;
+Typically, you are only looking for an identifier or a punctuation mark.&nbsp;
+For example,
+<p><tt>&nbsp;&nbsp; expect( cal_clock_t ); -- expect the identifier "calendar.clock"</tt>
+<br><tt>&nbsp;&nbsp; expect( symbol_t, "(" ); -- expect the punctuation
+mark "("</tt>
+<p>The parser has some Parsing functions that automatically process and
+report errors.&nbsp; An important ones are:
+
+<p><tt>&nbsp;&nbsp; ParseExpessions( val, kind ); -- interpret any kind
+of expression.&nbsp; Return the value and the type.</tt>
+<p><tt>&nbsp;&nbsp; ParseIdentifier( id ); -- interpret an identifier.
+&nbsp; Return the id number for the identifier.</tt>
+<p><tt>&nbsp;&nbsp; ParseOutParameter( id, kind ); -- interpret an identifier.
+&nbsp; Return the id number of the identifier.  If it doesn't exist, it will be
+declared as a kind variable (if auto-declarations are allowed by the user).</tt>
+<p><tt>&nbsp;&nbsp; ParseInOutParameter( id, kind ); -- interpret an identifier.
+
+&nbsp; Return the id number of the identifier.</tt>
+<p>Using expect and ParseExpression you can read through the parameters
+for most functions.&nbsp; For example, to Ada.Calendar.Year has one parameter:
+<p><tt>&nbsp; year_value : unbounded_string;</tt>
+<br><tt>&nbsp; year_type : identifier;</tt>
+<br><tt><b>begin</b></tt>
+<br><tt>&nbsp; expect( cal_year_t );</tt>
+
+<br><tt>&nbsp; expect( symbol_t, "(" );</tt>
+<br><tt>&nbsp; ParseExpression( year_value, year_type );</tt>
+<br><tt>&nbsp; expect( symbol_t( ")" );</tt>
+<p>Don't check for a semi-colon.&nbsp; SparForte will do that later.
+<p>Now add the type checks.
+<p>The scanner has several functions to check the type of an identifier.&nbsp;
+The main procedure is <b>baseTypesOK</b>.&nbsp; This compares two type
+identifiers and verifies they are compatible with one another.&nbsp; You
+don't have to report the error: baseTypesOK will do this for you.&nbsp;
+
+baseTypes also handles derrived types and subtypes.
+<p><tt>expect( cal_year_t );</tt>
+<br><tt>expect( symbol_t, "(" );</tt>
+<br><tt>ParseExpression( year_value, year_type );</tt>
+<br><tt><b>if</b> baseTypesOK( year_type, cal_time_t ) <b>then</b>&nbsp; -- year should
+be a calendar.time type or compatible</tt>
+<br><tt>&nbsp;&nbsp; <b>null</b>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-- do nothing special if type is OK</tt>
+<br><tt><b>end</b> <b>if</b>;</tt>
+
+<br><tt>expect( symbol_t( ")" );</tt>
+<p>Recompile SparForte again and check your work.&nbsp; Although calendar.year
+does nothing yet, SparForte should understand the parameters.&nbsp; Using an
+integer or a character parameter instead of a calendar.time parameter should
+cause an error.&nbsp; Leaving out a "(" or ")" should also cause an error.&nbsp;
+Check your definition of types using the env command
+<p><tt>=&gt; env calendar.time</tt>
+<br><tt>calendar.time = ( private type )</tt>
+<br><tt>=&gt; env calendar.year</tt>
+
+<br><tt>calendar.year = ( identifier of type keyword )</tt>
+<p>SparForte has no formal representation for functions and procedures at this
+time.&nbsp; They will be reported as keywords.
+<p>Finally, you need to actually execute the subprogram.&nbsp; Before you
+execute anything, check to see if you should execute the function with
+the SparForte i<b>sExeuctingCommand</b> function.&nbsp; If SparForte is doing a syntax
+check of a script, or if an error was previously encountered, isExecutingCommand
+will be false.
+<p>It is also a good idea to wrap the function or procedure you are calling
+in an Ada declare block to catch and report any exceptions.&nbsp; Otherwise,
+SparForte will crash because of the exception.
+<p>All the parameters are unbounded strings and will have to be converted
+to the appropriate Ada type needed for the parameters.&nbsp; In the case
+of Ada.Calendar.Year,
+
+<p><tt><b>if</b> isExecutingCommand <b>then</b></tt>
+<br><tt>&nbsp;&nbsp; <b>begin</b></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; result := to_unbounded_string( year(
+time( to_numeric( year_value ) ) )'img );</tt>
+<br><tt>&nbsp;&nbsp; <b>exception</b> <b>when</b> <b>others</b> =&gt;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; err( "exception raised" );</tt>
+<br><tt>&nbsp;&nbsp; <b>end</b>;</tt>
+
+<br><tt><b>end</b> <b>if</b>;</tt>
+<p>An explaination of the conversions:
+<ul>
+<li>
+to_numeric - convert the unbounded_string year_value to a numeric type
+(in particular, a long_float)</li>
+
+<li>
+time() - convert the long float year_value to a calendar.time type</li>
+
+<li>
+year() - call the calendar.year function</li>
+
+<li>
+
+'img - convert the numeric result of calendar.year to a basic Ada fixed
+string</li>
+
+<li>
+to_unbounded_string - convert the fixed string result to an unbounded_string
+to be returned to ParseFactor</li>
+</ul>
+<p>Rebuild SparForte and test the function to make sure it works.&nbsp; You've
+completed the implementation of "calendar.year".&nbsp; Complete and test
+the rest of the bindings.</p>
+<p>The actual ParseCalYear function is in the parser_cal.adb file.&nbsp;
+The only difference to the calendar package compared to what you did here
+was that Ada.Calendar.Time was a private type so SparForte implements its own
+calendar package using a normal type so that time values can be converted
+to strings.</p>
+
+&nbsp;<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="cont_vision.html">&nbsp;Vision</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="cont_roadmap.html">&nbsp;Roadmap</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="cont_sguide.html">&nbsp;Source Guide</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="cont_uport.html">&nbsp;UNIX Ports</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="cont_wport.html">&nbsp;Window Ports</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="cont_bindings.html">&nbsp;<b>Bindings</b></a></p>
+
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" border="0" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>
+
