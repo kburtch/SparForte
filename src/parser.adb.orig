@@ -5844,16 +5844,30 @@ begin
            elsif pipe2Next then
               err( "> file should only be after the last pipeline command" );
            elsif isExecutingCommand then
-              redirectedOutputFd := open( to_string( shellWord.word ) & ASCII.NUL,
+<<retry1>> redirectedOutputFd := open( to_string( shellWord.word ) & ASCII.NUL,
                  O_WRONLY+O_TRUNC+O_CREAT, 8#644# );
               if redirectedOutputFd < 0 then
+                 if C_errno = EINTR then
+                    goto retry1;
+                 end if;
                  err( "Unable to open > file: " & OSerror( C_errno ) );
               else
-                 result := dup2( redirectedOutputFd, stdout );
+<<retry2>>       result := dup2( redirectedOutputFd, stdout );
                  if result < 0 then
-                    close( redirectedOutputFd );
-                    redirectedOutputFd := 0;
+                    if C_errno = EINTR then
+                       goto retry2;
+                    end if;
                     err( "unable to set output: " & OSerror( C_errno ) );
+                    -- close is defined as a procedure since you can usually
+                    -- ignore close errors.  however, we want to handle
+                    -- interrupted system calls to make sure we don't have
+                    -- file handle leaks.  we'll clear errno and check the
+                    -- result after the close call instead.
+<<retry3>>          C_reset_errno; close( redirectedOutputFd );
+                    if C_errno = EINTR then
+                       goto retry3;
+                    end if;
+                    redirectedOutputFd := 0;
                  end if;
               end if;
            end if;
@@ -5864,15 +5878,24 @@ begin
            if pipeFromLast then
               err( "< file should only be after the first pipeline command" );
            elsif isExecutingCommand then
-              redirectedInputFd := open( to_string( shellWord.word ) & ASCII.NUL, O_RDONLY, 8#644# );
+<<retry4>>    redirectedInputFd := open( to_string( shellWord.word ) & ASCII.NUL, O_RDONLY, 8#644# );
               if redirectedInputFd < 0 then
+                 if C_errno = EINTR then
+                    goto retry4;
+                 end if;
                  err( "Unable to open < file: " & OSerror( C_errno ) );
               else
-                 result := dup2( redirectedInputFd, stdin );
+<<retry5>>       result := dup2( redirectedInputFd, stdin );
                  if result < 0 then
-                    close( redirectedInputFd );
-                    redirectedInputFd := 0;
+                    if C_errno = EINTR then
+                       goto retry5;
+                    end if;
                     err( "unable to redirect input: " & OSerror( C_errno ) );
+<<retry6>>          C_reset_errno; close( redirectedInputFd );
+                    if C_errno = EINTR then
+                       goto retry6;
+                    end if;
+                    redirectedInputFd := 0;
                  end if;
               end if;
            end if;
@@ -5885,15 +5908,24 @@ begin
            elsif pipe2Next then
               err( ">> file should only be after the last pipeline command" );
            elsif isExecutingCommand then
-              redirectedAppendFd := open( to_string( shellWord.word ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
+<<retry7>>    redirectedAppendFd := open( to_string( shellWord.word ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
               if redirectedAppendFd < 0 then
+                 if C_errno = EINTR then
+                    goto retry7;
+                 end if;
                  err( "Unable to open >> file: " & OSerror( C_errno ) );
               else
-                 result := dup2( redirectedAppendFd, stdout );
+<<retry8>>       result := dup2( redirectedAppendFd, stdout );
                  if result < 0 then
-                    close( redirectedAppendFd );
-                    redirectedAppendFd := 0;
+                    if C_errno = EINTR then
+                       goto retry8;
+                    end if;
                     err( "unable to append output: " & OSerror( C_errno ) );
+<<retry9>>          C_reset_errno ; close( redirectedAppendFd );
+                    if C_errno = EINTR then
+                       goto retry9;
+                    end if;
+                    redirectedAppendFd := 0;
                  end if;
               end if;
            end if;
@@ -5902,28 +5934,43 @@ begin
         elsif expectRedirectErrOutFile then             -- expecting 2> file?
            expectRedirectErrOutFile := false;
            if redirectedErrAppendFD > 0 then
-              result := dup2( currentStandardError, stderr );  -- restore stderr
+<<retry10>>   result := dup2( currentStandardError, stderr );  -- restore stderr
               if result < 0 then                              -- check for error
+                 if C_errno = EINTR then
+                    goto retry10;
+                 end if;
                  err( "unable to restore current error output: " & OSerror( C_errno ) );
               end if;
-              close( redirectedErrOutputFd );                  -- done with file
+<<retry11>>   C_reset_errno; close( redirectedErrOutputFd );        -- done with file
+              if C_errno = EINTR then
+                 goto retry11;
+              end if;
               redirectedErrOutputFD := 0;
               err( "cannot redirect using both 2> and 2>>" );
            elsif pipe2Next then
               err( "2> file should only be after the last pipeline command" );
            elsif isExecutingCommand then
-              redirectedErrOutputFd := open( to_string( shellWord.word ) & ASCII.NUL,
+<<retry12>>   redirectedErrOutputFd := open( to_string( shellWord.word ) & ASCII.NUL,
                  O_WRONLY+O_TRUNC+O_CREAT, 8#644# );
               if redirectedErrOutputFd < 0 then
+                 if C_errno = EINTR then
+                    goto retry12;
+                 end if;
                  err( "Unable to open 2> file: " & OSerror( C_errno ) );
               elsif rshOpt then
                  err( "cannot redirect 2> in a " & optional_bold( "restricted shell" ) );
               else
-                 result := dup2( redirectedErrOutputFd, stderr );
+<<retry13>>      result := dup2( redirectedErrOutputFd, stderr );
                  if result < 0 then
-                    close( redirectedErrOutputFd );
-                    redirectedErrOutputFd := 0;
+                    if C_errno = EINTR then
+                       goto retry13;
+                    end if;
                     err( "unable to set error output: " & OSerror( C_errno ) );
+<<retry14>>         C_reset_errno; close( redirectedErrOutputFd );
+                    if C_errno = EINTR then
+                       goto retry14;
+                    end if;
+                    redirectedErrOutputFd := 0;
                  end if;
               end if;
            end if;
@@ -5932,25 +5979,40 @@ begin
         elsif expectRedirectErrAppendFile then
            expectRedirectErrAppendFile := false;
            if redirectedErrOutputFD > 0 then
-              result := dup2( currentStandardError, stderr );  -- restore stderr
+<<retry15>>   result := dup2( currentStandardError, stderr );  -- restore stderr
               if result < 0 then                              -- check for error
+                 if C_errno = EINTR then
+                    goto retry15;
+                 end if;
                  err( "unable to restore current error output: " & OSerror( C_errno ) );
               end if;
-              close( redirectedErrOutputFd );                  -- done with file
+<<retry16>>   C_reset_errno; close( redirectedErrOutputFd );           -- done with file
+              if C_errno = EINTR then
+                 goto retry16;
+              end if;
               redirectedErrOutputFD := 0;
               err( "cannot redirect using both 2> and 2>>" );
            elsif pipe2Next then
               err( "2>> file should only be after the last pipeline command" );
            elsif isExecutingCommand then
-              redirectedErrAppendFd := open( to_string( shellWord.word ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
+<<retry17>>   redirectedErrAppendFd := open( to_string( shellWord.word ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
               if redirectedErrAppendFd < 0 then
+                 if C_errno = EINTR then
+                    goto retry17;
+                 end if;
                  err( "Unable to open 2>> file: " & OSerror( C_errno ) );
               else
-                 result := dup2( redirectedErrAppendFd, stderr );
+<<retry18>>      result := dup2( redirectedErrAppendFd, stderr );
                  if result < 0 then
-                    close( redirectedErrAppendFd );
-                    redirectedErrAppendFd := 0;
+                    if C_errno = EINTR then
+                       goto retry18;
+                    end if;
                     err( "unable to append error output: " & OSerror( C_errno ) );
+<<retry19>>         C_reset_errno; close( redirectedErrAppendFd );
+                    if C_errno = EINTR then
+                       goto retry19;
+                    end if;
+                    redirectedErrAppendFd := 0;
                  end if;
               end if;
            end if;
@@ -5983,26 +6045,41 @@ begin
            paramCnt := paramCnt-1;
         elsif shellWord.wordType = redirectErr2OutWord then  -- expecting 2>&1 file?
            if redirectedErrOutputFD > 0 then       -- no file for this one
-              result := dup2( currentStandardError, stderr );  -- restore stderr
+<<retry20>>   result := dup2( currentStandardError, stderr );  -- restore stderr
               if result < 0 then                              -- check for error
+                 if C_errno = EINTR then
+                    goto retry20;
+                 end if;
                  err( "unable to restore current error output: " & OSerror( C_errno ) );
               end if;
-              close( redirectedErrOutputFd );                  -- done with file
+<<retry21>>   C_reset_errno; close( redirectedErrOutputFd );          -- done with file
+              if C_errno = EINTR then
+                 goto retry21;
+              end if;
               redirectedErrOutputFD := 0;
               err( "cannot redirect using two of 2>, 2>> and 2>&1" );
            elsif redirectedErrAppendFD > 0 then       -- no file for this one
-              result := dup2( currentStandardError, stderr );  -- restore stderr
+<<retry22>>   result := dup2( currentStandardError, stderr );  -- restore stderr
               if result < 0 then                              -- check for error
+                 if C_errno = EINTR then
+                    goto retry22;
+                 end if;
                  err( "unable to restore current error output: " & OSerror( C_errno ) );
               end if;
-              close( redirectedErrAppendFd );                  -- done with file
+<<retry23>>   C_reset_errno; close( redirectedErrAppendFd );          -- done with file
+              if C_errno = EINTR then
+                 goto retry23;
+              end if;
               redirectedErrAppendFD := 0;
               err( "cannot redirect using two of 2>, 2>> and 2>&1" );
            elsif pipe2Next then
               err( "2>&1 file should only be after the last pipeline command" );
            else
-              redirectedErrOutputFd := dup2( currentStandardOutput, stderr );
+<<retry24>>   redirectedErrOutputFd := dup2( currentStandardOutput, stderr );
               if redirectedErrOutputFd < 0 then
+                 if C_errno = EINTR then
+                    goto retry24;
+                 end if;
                  redirectedErrOutputFd := 0;
                  err( "unable to set error output: " & OSerror( C_errno ) );
               end if;
