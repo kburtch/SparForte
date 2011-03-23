@@ -1,5 +1,12 @@
 # For more options, use the src/GNUmakefile
+# DESTDIR, if defined, comes from rpmbuild and is the directory for the
+# temporary build.
+
+# These are substituted by configure
+#
 MAKE=GMAKETYPE
+PREFIX=PREFIXSUB
+MANPREFIX=MANPREFIXSUB
 
 all:
 	$(MAKE) -C src
@@ -13,16 +20,30 @@ distclean:
 test:
 	$(MAKE) test -C src
 
-install:
-	install -d /usr/local/bin
-	install -m 555 src/spar /usr/local/bin/spar
-	install -d /usr/local/man/man1
-	install -m 555 src/spar.1 /usr/local/man/man1/spar.1
+max:
+	$(MAKE) -C src max
 
+install:
+ifdef RPM_BUILD_ROOT
+	install -d ${DESTDIR}${PREFIX}/bin
+	install -m 555 src/spar ${DESTDIR}${PREFIX}/bin/spar
+	install -d ${DESTDIR}$(MANPREFIX)/man1
+	install -m 555 src/spar.1 ${DESTDIR}${MANPREFIX}/man1/spar.1
+else
+	install -d ${PREFIX}/bin
+	install -m 555 src/spar ${PREFIX}/bin/spar
+	install -d $(MANPREFIX)/man/man1
+	install -m 555 src/spar.1 ${MANPREFIX}/man/man1/spar.1
+endif
 
 uninstall:
-	rm /usr/local/bin/spar
-	rm /usr/local/man/man1/spar.1
+ifdef RPM_BUILD_ROOT
+	rm ${DESTDIR}/${PREFIX}/bin/spar
+	rm ${DESTDIR}/${MANPREFIX}/man1/spar.1
+else
+	rm ${PREFIX}/bin/spar
+	rm ${MANPREFIX}/man/man1/spar.1
+endif
 
 help:
 	@echo "Try make, make install or make uninstall"

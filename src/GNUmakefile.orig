@@ -13,14 +13,9 @@ GNATMAKE=gnatmake
 SDLLIBS=SDLLIBSTYPE
 SDLINCL=SDLINCLTYPE
 CFLAGS=CFLAGSTYPE
+PREFIX=PREFIXSUB
+MANPREFIX=MANPREFIXSUB
 # For SDL, sdl_config is not always available.
-
-# RPM Directories For Building an RPM file
-
-RPM_BUILD_DIR=~/rpm/tmp/spar-root
-RPM_BIN_DIR=${RPM_BUILD_ROOT}/usr/local/bin
-RPM_SYSCONF_DIR=/etc
-RPM_MAN_DIR=/usr/local/man
 
 # Libraries and Paths
 
@@ -118,7 +113,7 @@ max: clean c_os.o c_scanner.o
 	@echo "---------------------------------------------------------------"
 	@echo
 	$(GNATMAKE) -c -i -O3 $(CPU_FLAG)=$(CPU) -gnatf -gnatn -gnatp -ffast-math -c $(INCLUDE) spar
-	gnatbind -x $(INCLUDE) spar.ali
+	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali ./ADAVOX-0.51/wc/cglue.o c_os.o c_scanner.o $(LIBS)
 
 clean:
@@ -131,7 +126,7 @@ distclean:
 	$(MAKE) -C adacgi-1.6 clean
 	$(MAKE) -C ADAVOX-0.51 clobber
 	$(MAKE) -C apq-2.1 clobber
-	rm -f *.o *.ali t.t t.spar core spar.zip spar testsuite/write_only.txt testsuite/exec_only.txt
+	rm -f *.o *.ali *~ t.t t.spar core spar.zip spar testsuite/write_only.txt testsuite/exec_only.txt
 	rm -f bush_os.ads bush_os.adb bush_os-sdl.ads parser.adb parser_db.ads parser_db.adb parser_mysql.ads parser_mysql.adb world.ads builtins.adb
 
 test:	all
@@ -173,14 +168,26 @@ bintar: c_os.o all
 	@echo "Don't forget to unpack and repack under a descriptive directory"
 
 install:
-	install -d /usr/local/bin
-	install -m 555 spar /usr/local/bin/spar
-	install -d /usr/local/man/man1
-	install -m 555 spar.1 /usr/local/man/man1/spar.1
+ifdef RPM_BUILD_ROOT
+	install -d ${DESTDIR}${PREFIX}/bin
+	install -m 555 spar ${DESTDIR}${PREFIX}/bin/spar
+	install -d ${DESTDIR}$(MANPREFIX)/man1
+	install -m 555 spar.1 ${DESTDIR}${MANPREFIX}/man1/spar.1
+else
+	install -d ${PREFIX}/bin
+	install -m 555 spar ${PREFIX}/bin/spar
+	install -d $(MANPREFIX)/man/man1
+	install -m 555 spar.1 ${MANPREFIX}/man/man1/spar.1
+endif
 
 uninstall:
-	rm /usr/local/bin/spar
-	rm /usr/local/man/man1/spar.1
+ifdef RPM_BUILD_ROOT
+	rm ${DESTDIR}/${PREFIX}/bin/spar
+	rm ${DESTDIR}/${MANPREFIX}/man1/spar.1
+else
+	rm ${PREFIX}/bin/spar
+	rm ${MANPREFIX}/man1/spar.1
+endif
 
 help:
 	@echo "Run configure first, if you have not already done so."

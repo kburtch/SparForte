@@ -50,6 +50,27 @@ while [ $# -gt 0 ] ; do
   --without-postgres)
       NO_POSTGRES=0
       ;;
+# Unused RPM options
+# When building an RPM on OpenSUSE, many unnecesssary options were passed
+# to configure.  I'm not sure what they all mean.  Silently ignore them,
+# with the of mandir which we treat as manprefix.
+ --host) echo "--host not used" ;;
+ --build) echo "--build not used" ;;
+ --program-prefix) echo "--program-prefix not used" ;;
+ --exec-prefix) echo "--exec-prefix not used" ;;
+ --bindir) echo "--binddir not used" ;;
+ --sbindir) echo "--sbindir not used" ;;
+ --sysconfdir) echo "--sysconfdir not used" ;;
+ --datadir) echo "--datadir not used" ;;
+ --includedir) echo "--includedir not used" ;;
+ --libdir) echo "--libdir not used" ;;
+ --libexecdir) echo "--libexecdir not used" ;;
+ --localstatedir) echo "--localdatedir not used" ;;
+ --sharedstatedir) echo "--sharedstatedir not used" ;;
+ --mandir) 
+      MANPREFIX=`echo "$1" | cut -d= -f2`
+      ;;
+ --infodir) echo "--infodir not used" ;;
   *)
       echo "Unrecognized option $TMP"
       exit 192
@@ -793,11 +814,11 @@ MANPREFIX=`echo "$MANPREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 
 echo "Creating src/GNUmakefile..."
 
-sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/PREFIXSUB/$PREFIX/g;s/MANPREFIXSUB/$MANPREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/ADAVOXINCLSSUB/$ADAVOXINCLSSUB/g;s/ADAVOXLIBSSUB/$ADAVOXLIBSSUB/g;s/ADAVOXMAKESUB/$ADAVOXMAKESUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g" < GNUmakefile.orig > GNUmakefile
+sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/ADAVOXINCLSSUB/$ADAVOXINCLSSUB/g;s/ADAVOXLIBSSUB/$ADAVOXLIBSSUB/g;s/ADAVOXMAKESUB/$ADAVOXMAKESUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g" < GNUmakefile.orig > GNUmakefile
 
 cd ..
 echo "Creating GNUmakefile..."
-sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/GMAKETYPE/$GMAKETYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g" < GNUmakefile.orig > GNUmakefile
+sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/GMAKETYPE/$GMAKETYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g" < GNUmakefile.orig > GNUmakefile
 
 # Done
 

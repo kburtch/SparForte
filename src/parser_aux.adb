@@ -69,7 +69,10 @@ begin
      err( "makeTempFile: mkstemp failed" & OSError( C_errno ) );
      s := null_unbounded_string;
   else
-     close( result ); -- not the most secure
+<<retry1>> C_reset_errno; close( result ); -- not the most secure
+     if C_errno = EINTR then
+        goto retry1;
+     end if;
      for i in aLinuxPath'range loop
          exit when LinuxPath( i ) = ASCII.NUL;
          s := s & LinuxPath( i );
@@ -212,14 +215,20 @@ begin
 
   --Put_Line( "Connect( Result, Socket, Family/Address rec, F/A rec size )" );
 
-  Connect( Result, mySocket, myAddress, myAddress'size/8 );
+<<retry1>> Connect( Result, mySocket, myAddress, myAddress'size/8 );
 
   --Put( "Connect( " & Result'img & "," );
   --Put(  myAddress.family'img & "/" );
   --PutIPNum( myAddress.ip );
   --Put(  "," & integer'image( myAddress'size / 8 ) & ")" );
   if Result /= 0 then
-     close( aFileDescriptor( mySocket ) );
+     if C_errno = EINTR then
+        goto retry1;
+     end if;
+<<retry2>> C_reset_errno; close( aFileDescriptor( mySocket ) );
+     if C_errno = EINTR then
+        goto retry2;
+     end if;
      err( "error connecting to server: " & OSerror( C_errno ) );
      return -1;
   end if;
