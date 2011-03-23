@@ -1,66 +1,60 @@
 For the latest news, visit the Linux Cafe at the PegaSoft web site. 
 
-Bush 1.1 is a bug fix release.
+SparForte 1.2 is the initial release of Bush after it was renamed to
+SparForte.  The focus was to remove barriers to adoption.
 
-The issue numbers below refer to the Bush 2.0 (After 1.0.3) Change Log on
-the Business Shell web forums.  These have already been done in the unfinished
-Bush 2.0 and are being back-ported to version 1.0.x.
+1. Fixed: - if without end if no longer terminates the script
 
+2. Fixed: @ and % now work as expected with expressions using user-defined functions.
+(e.g. @ no longer equals return if return is the last line in the function)
 
-New Features
+3. New: new annotations: bugs and todo
 
-Configuration file improvements, including auto-detection of the correct calendar package
-and support for alpha and cygwin (though cygwin may require unavailable packages to
-compile--full cygwin support is in Bush 2.0).
+4. New: characters supported in the "in" and "not in" operators.
 
-Additional sample programs included.
+5. Fixed: arrays package now accepts constant arrays for arrays.first, arrays.last,
+arrays.length
 
-27. pragma inspection_peek is like pragma inspection_point except it never breaks to the debugger, even if --break is used. 
+6. Fixed: return expressions can now start with a punctuation symbol
 
-36. pragma annotate now accepts the following annotation fields as the first parameter: author, created, description, errors, modified, param, return, see also, summary. 
+7. Fixed: open for socket_type working again.
 
-45. help -m/-h - actually added earlier, help now displays HTML or UNIX man page output with these flags for scripts. This is for document generation with pragma annotate.
+8. Fixed: Initial Get on a socket_type now gets the first character.
 
-59. New: unset removes subcomponents of aggregate types (arrays and records).
+9. New: Type casting for numeric types now implemented on - +, -, *, /, mod, rem, := and := on declaration and on explicit cast. Universal types are not yet typecast on parameters.
 
-62. New: 64-bit support for pen (libSDL) package.
+10. Change: Documentation has been restructured for easier navigation.
 
+11. New: Database support has been backported from Business Shell 2.0 prototype. You can now select MySQL, PostgreSQL, both or not when building Bush from sources.
 
-Bug Fixes
+12. Change: The Bush project has been renamed "SparForte". It now accepts scripts ending in ".bush" and ".sp". The next release will likely be SparForte 1.2.
 
-5. arrays.first and arrays.last no longer report spurious type errors while exiting a block or loop. 
+13. Fixed: The documentation has been reviewed and some new examples added. Plus other cleanup.
 
-17. The main program identifier is no longer considered a keyword. 
+14. New: Built-in enums package. enums.first(), enums.last(), enums.prev(), enums.succ().
 
-18. arrays.reverse is now arrays.flip to avoid a conflict with the Ada reserved word reverse. 
+15. Fixed: enums.prev renamed to enums.pred.
 
-26. pragma debug now runs the debug statements in restricted shell mode.
+16. Fixed: enumerateds format fixed, now display properly in env and "?".
 
-49. Bug Fix: Order of Ada-style command parameters no longer reversed. That is, echo("A","B") now displays "A B" not "B A".
+17. Change: "?" now displays numbers in a human readable format (e.g. 0.0 will be displayed as 0).
 
-47. Fixed: file descriptor leak when opening sockets. 
+18. New: Separate subprograms/subunits backported from Bush 2.0 developmental snapshot. Non-working features disabled.
 
-50. Fixed: Case statement no longer locks up script when the script is exiting.
+19. New: SparForte now on github.
 
-51. Fixed: ParseShellWord no longer locks up script when the script is exiting.
+20. New/Change: Several pen package routines fill/paint/clear updated to accept color names.
 
-52. Fixed: Shell commands now return status code in $? or os.status.
+21. New: Pen package drawing spool functions wait_to_reveal/reveal/reveal_now working.
 
-53  Changes to eliminate several spurious compiler warnings.
+22. New: Add (lighten), subtract (darken), average (blend) added to pen mode
+for direct color screens (but not working correctly).
 
-54. Fixed: An error when running a script now returns an error code instead of 0 (success).
+23. Change mandel.sp and chessboard.sp updated for these changes.
 
-55. Fixed: Declaring procedures/functions no longer throw unexplained exceptions.
+24. Change: typeset now typecasts the variable's value to the new type.
 
-56. Change: case statement now allows constants as a selector, which is good because Bush subprogram parameters are treated as constants.
+25. New: pragma restriction( no_mysql_database ) - disable connections to a MySQL database. Doesn't prevent the mysql client or other programs from using MySQL
 
-57. Fixed: command type re-enabled.
-
-58. Fixed: env displays procedure and function types correctly.
-
-60. Fixed: pen.move_to now moves absolutely instead of relatively.
-
-61. Fixed: uniary (+,-,not) operations can now be used in front of subexpressions.
-
-63. Text_IO Open accepts an expression for the filename, no longer throws exception on $1
+26. New: pragma restriction( no_postgresql_database ) - disable connections to a PostgreSQL database. Doesn't prevent the psql client or other programs from using PostgreSQL
 
