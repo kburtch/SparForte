@@ -377,6 +377,7 @@ end PlayCD;
 procedure StopCD is
    dummy        : aDummyParam := 0;
    ioctl_result : integer;
+   res          : int;
 begin
    if cdrom_fd <= 0 then
       err( "CD-ROM drive is not in use" );
@@ -386,7 +387,13 @@ begin
    if ioctl_result < 0 then
       err( "Error stopping audio CD: " & OSError( C_errno ) );
    end if;
-   close( cdrom_fd );
+<<retry>>
+   res := close( cdrom_fd );
+   if res < 0 then
+      if C_errno = EINTR then
+         goto retry;
+      end if;
+   end if;
    cdrom_fd := -1;
 end StopCD;
 

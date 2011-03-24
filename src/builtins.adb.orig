@@ -21,7 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io,
+with interfaces.c,
+     ada.text_io,
      ada.strings.unbounded.text_io,
      ada.strings.fixed,
      ada.calendar,
@@ -43,7 +44,8 @@ with ada.text_io,
      parser_db,
      parser_mysql,
      parser;  -- for pragma annotate
-use  ada.text_io,
+use  interfaces.c,
+     ada.text_io,
      ada.strings.unbounded.text_io,
      ada.strings.fixed,
      ada.calendar,
@@ -1445,20 +1447,30 @@ begin
        genDate     : unbounded_string;
        -- not really in another script but we'll be safe...
        last_tag    : unbounded_string;
+       closeResult : int;
      begin
        saveScript( scriptState );
        if isExecutingCommand or Syntax_Check then
           scriptFilePath := helpTopic;                     -- script name
-          scriptFile := open( to_string( scriptFilePath ) & ASCII.NUL, 0, 660 ); -- open script
+<<retry1>> scriptFile := open( to_string( scriptFilePath ) & ASCII.NUL, 0, 660 ); -- open script
           if scriptFile < 1 then                           -- error?
-             scriptFile := open( to_string( scriptFilePath ) & ".sp" & ASCII.NUL, 0, 660 );
+             if C_errno = EINTR then
+                goto retry1;
+             end if;
+<<retry2>>   scriptFile := open( to_string( scriptFilePath ) & ".sp" & ASCII.NUL, 0, 660 );
              if scriptFile > 0 then
+                if C_errno = EINTR then
+                   goto retry2;
+                end if;
                 scriptFilePath := scriptFilePath & ".sp"  ;
              end if;
           end if;
           if scriptFile < 1 then                           -- error?
-             scriptFile := open( to_string( scriptFilePath ) & ".bush" & ASCII.NUL, 0, 660 );
+<<retry3>>   scriptFile := open( to_string( scriptFilePath ) & ".bush" & ASCII.NUL, 0, 660 );
              if scriptFile > 0 then
+                if C_errno = EINTR then
+                   goto retry3;
+                end if;
                 scriptFilePath := scriptFilePath & ".bush"  ;
              end if;
           end if;
@@ -1720,7 +1732,12 @@ begin
              put_line( "</p><p><i>Generated " & to_string( genDate ) & "</i><br></p>" );
           end if;
         end if;
-        close( scriptFile );
+<<retryclose>> closeResult := close( scriptFile );
+        if closeResult < 0 then
+           if C_errno = EINTR then
+              goto retryclose;
+           end if;
+        end if; 
         restoreScript( scriptState );
      end;
      discardUnusedIdentifier( token );

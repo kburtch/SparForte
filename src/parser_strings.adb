@@ -22,7 +22,8 @@
 ------------------------------------------------------------------------------
 
 with text_io;use text_io;
-with gnat.regexp,
+with interfaces.c,
+    gnat.regexp,
     gnat.regpat,
     base64,
     scanner,
@@ -30,7 +31,8 @@ with gnat.regexp,
     parser_aux,
     parser,
     bush_os;
-use gnat.regexp,
+use interfaces.c,
+    gnat.regexp,
     gnat.regpat,
     base64,
     scanner,
@@ -728,6 +730,7 @@ procedure ParseStringsMkTemp( result : in out unbounded_string ) is
   str_val : unbounded_string;
   str_type : identifier;
   mkstemp_result : aFileDescriptor;
+  closeResult : int;
 begin
   expect( mktemp_t );
   ParseSingleStringExpression( str_val, str_type );
@@ -740,10 +743,17 @@ begin
        if mkstemp_result < 0 then
           err( "mkstemp failed " & OSError( C_errno ) );
        else
-          close( mkstemp_result ); -- not the best...
+          -- not the best.  mkstemp is secure because it leaves the
+          -- file open but we're closing it anyway.
+<<retry>> closeResult := close( mkstemp_result );
+          if closeResult < 0 then
+             if C_errno = EINTR then
+                goto retry;
+             end if;
+          end if;
           for i in aLinuxPath'range loop
-            exit when LinuxPath( i ) = ASCII.NUL;
-            result := result & LinuxPath( i );
+              exit when LinuxPath( i ) = ASCII.NUL;
+              result := result & LinuxPath( i );
           end loop;
        end if;
      end;

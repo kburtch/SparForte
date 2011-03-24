@@ -5657,6 +5657,7 @@ procedure ParseShellCommand is
   redirectedErrAppendFd       : aFileDescriptor := 0; -- err out fd (if not 0)
 
   result                      : aFileDescriptor;
+  closeResult                 : int;
 
     procedure externalCommandParameters( ap : out argumentListPtr; list : in out shellWordList.List ) is
      len  : positive;
@@ -5858,14 +5859,11 @@ begin
                        goto retry2;
                     end if;
                     err( "unable to set output: " & OSerror( C_errno ) );
-                    -- close is defined as a procedure since you can usually
-                    -- ignore close errors.  however, we want to handle
-                    -- interrupted system calls to make sure we don't have
-                    -- file handle leaks.  we'll clear errno and check the
-                    -- result after the close call instead.
-<<retry3>>          C_reset_errno; close( redirectedOutputFd );
-                    if C_errno = EINTR then
-                       goto retry3;
+<<retry3>>          closeResult := close( redirectedOutputFd );
+                    if closeResult < 0 then
+                       if C_errno = EINTR then
+                          goto retry3;
+                       end if;
                     end if;
                     redirectedOutputFd := 0;
                  end if;
@@ -5891,9 +5889,11 @@ begin
                        goto retry5;
                     end if;
                     err( "unable to redirect input: " & OSerror( C_errno ) );
-<<retry6>>          C_reset_errno; close( redirectedInputFd );
-                    if C_errno = EINTR then
-                       goto retry6;
+<<retry6>>          closeResult := close( redirectedInputFd );
+                    if result < 0 then
+                       if C_errno = EINTR then
+                          goto retry6;
+                       end if;
                     end if;
                     redirectedInputFd := 0;
                  end if;
@@ -5921,9 +5921,11 @@ begin
                        goto retry8;
                     end if;
                     err( "unable to append output: " & OSerror( C_errno ) );
-<<retry9>>          C_reset_errno ; close( redirectedAppendFd );
-                    if C_errno = EINTR then
-                       goto retry9;
+<<retry9>>          closeResult := close( redirectedAppendFd );
+                    if closeResult < 0 then
+                       if C_errno = EINTR then
+                          goto retry9;
+                       end if;
                     end if;
                     redirectedAppendFd := 0;
                  end if;
@@ -5941,9 +5943,11 @@ begin
                  end if;
                  err( "unable to restore current error output: " & OSerror( C_errno ) );
               end if;
-<<retry11>>   C_reset_errno; close( redirectedErrOutputFd );        -- done with file
-              if C_errno = EINTR then
-                 goto retry11;
+<<retry11>>   closeResult := close( redirectedErrOutputFd );        -- done with file
+              if closeResult < 0 then
+                 if C_errno = EINTR then
+                    goto retry11;
+                 end if;
               end if;
               redirectedErrOutputFD := 0;
               err( "cannot redirect using both 2> and 2>>" );
@@ -5966,9 +5970,11 @@ begin
                        goto retry13;
                     end if;
                     err( "unable to set error output: " & OSerror( C_errno ) );
-<<retry14>>         C_reset_errno; close( redirectedErrOutputFd );
-                    if C_errno = EINTR then
-                       goto retry14;
+<<retry14>>         closeResult := close( redirectedErrOutputFd );
+                    if closeResult < 0 then
+                       if C_errno = EINTR then
+                          goto retry14;
+                       end if;
                     end if;
                     redirectedErrOutputFd := 0;
                  end if;
@@ -5986,9 +5992,11 @@ begin
                  end if;
                  err( "unable to restore current error output: " & OSerror( C_errno ) );
               end if;
-<<retry16>>   C_reset_errno; close( redirectedErrOutputFd );           -- done with file
-              if C_errno = EINTR then
-                 goto retry16;
+<<retry16>>   closeResult := close( redirectedErrOutputFd );           -- done with file
+              if closeResult < 0 then
+                 if C_errno = EINTR then
+                    goto retry16;
+                 end if;
               end if;
               redirectedErrOutputFD := 0;
               err( "cannot redirect using both 2> and 2>>" );
@@ -6008,9 +6016,11 @@ begin
                        goto retry18;
                     end if;
                     err( "unable to append error output: " & OSerror( C_errno ) );
-<<retry19>>         C_reset_errno; close( redirectedErrAppendFd );
-                    if C_errno = EINTR then
-                       goto retry19;
+<<retry19>>         closeResult := close( redirectedErrAppendFd );
+                    if closeResult < 0 then
+                       if C_errno = EINTR then
+                          goto retry19;
+                       end if;
                     end if;
                     redirectedErrAppendFd := 0;
                  end if;
@@ -6052,23 +6062,27 @@ begin
                  end if;
                  err( "unable to restore current error output: " & OSerror( C_errno ) );
               end if;
-<<retry21>>   C_reset_errno; close( redirectedErrOutputFd );          -- done with file
-              if C_errno = EINTR then
-                 goto retry21;
+<<retry21>>   closeResult := close( redirectedErrOutputFd );          -- done with file
+              if closeResult < 0 then
+                 if C_errno = EINTR then
+                    goto retry21;
+                 end if;
               end if;
               redirectedErrOutputFD := 0;
               err( "cannot redirect using two of 2>, 2>> and 2>&1" );
            elsif redirectedErrAppendFD > 0 then       -- no file for this one
 <<retry22>>   result := dup2( currentStandardError, stderr );  -- restore stderr
-              if result < 0 then                              -- check for error
+              if result < 0 then                               -- check for error
                  if C_errno = EINTR then
                     goto retry22;
                  end if;
                  err( "unable to restore current error output: " & OSerror( C_errno ) );
               end if;
-<<retry23>>   C_reset_errno; close( redirectedErrAppendFd );          -- done with file
-              if C_errno = EINTR then
-                 goto retry23;
+<<retry23>>   closeResult := close( redirectedErrAppendFd );   -- done with file
+              if closeResult < 0 then
+                 if C_errno = EINTR then
+                    goto retry23;
+                 end if;
               end if;
               redirectedErrAppendFD := 0;
               err( "cannot redirect using two of 2>, 2>> and 2>&1" );
@@ -6118,7 +6132,7 @@ begin
 
      externalCommandParameters( ap, wordList );
 
-     if boolean(rshOpt) and then Element( cmdName, 1 ) = '/' then    -- rsh & cmd path
+     if boolean(rshOpt) and then Element( cmdName, 1 ) = '/' then -- rsh & cmd path
         err( "absolute paths to commands not allowed in " &
              optional_bold( "restricted shells" ) );
      elsif not pipeFromLast and pipe2next then              -- first in pipeln?
@@ -6170,35 +6184,63 @@ begin
   -- should be set properly even if a parsing error occurred.
 
   if redirectedOutputFd > 0 then                            -- output redirect?
-     result := dup2( currentStandardOutput, stdout );       -- restore output
+<<retry24b>> result := dup2( currentStandardOutput, stdout );       -- restore output
      if result < 0 then                                     -- check for error
+        if C_errno = EINTR then
+           goto retry24b;
+        end if;
         err( "unable to restore current output: " & OSerror( C_errno ) );
      end if;
-     close( redirectedOutputFd );                           -- done with file
+<<retry25>> closeResult := close( redirectedOutputFd );     -- done with file
+     if closeResult < 0 then
+        if C_errno = EINTR then
+           goto retry25;
+        end if;
+     end if;
   elsif redirectedInputFd > 0 then                          -- input redirect?
      result := dup2( currentStandardInput, stdout );        -- restore input
      if result < 0 then                                     -- check for error
         err( "unable to restore current input: " & OSerror( C_errno ) );
      end if;
-     close( redirectedInputFd );                            -- done with file
+<<retry26>> closeResult := close( redirectedInputFd );      -- done with file
+     if result < 0 then
+        if C_errno = EINTR then
+           goto retry26;
+        end if;
+     end if;
   elsif redirectedAppendFd > 0 then                         -- append redirect?
      result := dup2( currentStandardOutput, stdout );       -- restore output
      if result < 0 then                                     -- check for error
         err( "unable to restore current output: " & OSerror( C_errno ) );
      end if;
-     close( redirectedAppendFd );                           -- done with file
+<<retry27>> closeResult := close( redirectedAppendFd );     -- done with file
+     if result < 0 then
+        if C_errno = EINTR then
+           goto retry27;
+        end if;
+     end if;
   elsif redirectedErrOutputFd > 0 then                      -- errout redirect?
      result := dup2( currentStandardError, stderr );        -- restore stderr
      if result < 0 then                                     -- check for error
         err( "unable to restore current error output: " & OSerror( C_errno ) );
      end if;
-     close( redirectedErrOutputFd );                        -- done with file
+<<retry28>> closeResult := close( redirectedErrOutputFd );  -- done with file
+     if closeResult < 0 then
+        if C_errno = EINTR then
+           goto retry28;
+        end if;
+     end if;
   elsif redirectedErrAppendFd > 0 then                      -- append redirect?
      result := dup2( currentStandardError, stderr );        -- restore stderr
      if result < 0 then                                     -- check for error
         err( "unable to restore current error output: " & OSerror( C_errno ) );
      end if;
-     close( redirectedErrAppendFd );                        -- done with file
+<<retry29>> closeResult := close( redirectedErrAppendFd );  -- done with file
+     if closeResult < 0 then
+        if C_errno = EINTR then
+           goto retry29;
+        end if;
+     end if;
   end if;
 
   -- restore the semi-colon we threw away at the beginning
@@ -6250,9 +6292,10 @@ procedure RunAndCaptureOutput( s : unbounded_string; results : out
   resultFile  : aFileDescriptor := -1;
   resultName  : unbounded_string;
   result      : aFileDescriptor;
-  unlinkResult : integer;
+  closeResult : int;
+  unlinkResult : int;
   ch          : character := ASCII.NUL;
-  chars       : long_integer;
+  chars       : size_t;
 begin
   -- saveScript( scriptState );                  -- save current script
 -- put_token; -- DEBUG
@@ -6302,7 +6345,12 @@ begin
      else                                               -- no error?
         currentStandardOutput := oldStandardOutput;     -- track fd
      end if;
-     close( resultFile );                               -- reopen results
+<<retry>> closeResult := close( resultFile );           -- reopen results
+     if closeResult < 0 then
+        if C_errno = EINTR then
+           goto retry;
+        end if;
+     end if;
      resultFile := open( to_string(resultName) & ASCII.NUL, O_RDONLY,
          8#644# );
      if resultFile < 0 then                                -- error?
@@ -6311,7 +6359,7 @@ begin
      else
         loop                                               -- for all results
 <<reread>>
-          read( chars, resultFile, ch, 1 );                -- slow (one char)
+          readchar( chars, resultFile, ch, 1 );            -- slow (one char)
           if chars = 0 then                                -- read none?
              exit;                                         --   done
           elsif chars < 0 then                             -- error
@@ -6323,7 +6371,12 @@ begin
           end if;
           results := results & ch;                         -- add to results
         end loop;
-        close( resultFile );                               -- close and delete
+<<reclose>> closeResult := close( resultFile );            -- close and delete
+        if closeResult < 0 then
+           if C_errno = EINTR then
+              goto reclose;
+           end if;
+        end if;
      end if;
      unlinkResult := unlink( to_string( resultName ) & ASCII.NUL );
      if unlinkResult < 0 then                              -- unable to delete?
@@ -7601,6 +7654,7 @@ end BUSH_interpretScript;
 
 procedure interpretScript( scriptPath : string ) is
   firstLine : aliased unbounded_string;
+  res : int;
 begin
   if syntax_check then
      if verboseOpt then
@@ -7687,7 +7741,12 @@ begin
      end if;
   end if;
   if not execOpt then                              -- not -e?
-     close( scriptFile );                          -- close the script file
+<<retry>> res := close( scriptFile );              -- close the script file
+     if res < 0 then
+        if C_errno = EINTR then
+           goto retry;
+        end if;
+     end if;
   end if;
 
 end interpretScript;
@@ -7783,13 +7842,19 @@ end SetStandardVariables;
 procedure doGlobalProfile is
   save_rshOpt  : commandLineOption;              -- for executing profile
   save_execOpt : commandLineOption;              -- for executing profile
+  res : int;
 begin
-  save_rshOpt := rshOpt;                   -- if restricted shell
-  save_execOpt := execOpt;                 -- if cmd line script
-  rshOpt := false;                         -- turn off for profile
-  if scriptFile > 0 then                       -- good?
-     close( scriptFile );                      -- close test fd
-     interpretScript( "/etc/bush_profile" );   -- run login script
+  save_rshOpt := rshOpt;                         -- if restricted shell
+  save_execOpt := execOpt;                       -- if cmd line script
+  rshOpt := false;                               -- turn off for profile
+  if scriptFile > 0 then                         -- good?
+<<retry>> res := close( scriptFile );            -- close test fd
+     if res < 0 then
+        if C_errno = EINTR then
+           goto retry;
+        end if;
+     end if;
+     interpretScript( "/etc/sparforte_profile" ); -- run login script
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -7800,6 +7865,7 @@ procedure doLocalProfile is
   save_rshOpt  : commandLineOption;              -- for executing profile
   save_execOpt : commandLineOption;              -- for executing profile
   home_id      : identifier;                     -- HOME variable
+  res          : int;
 begin
   save_rshOpt := rshOpt;                   -- if restricted shell
   save_execOpt := execOpt;                 -- if cmd line script
@@ -7813,7 +7879,12 @@ begin
      scriptFilePath := scriptFilePath & ".sparforte_profile";
      scriptFile := open( to_string( scriptFilePath ) & ASCII.NUL, 0, 660 ); -- open script
      if scriptFile > 0 then                       -- profile opened OK?
-        close( scriptFile );                      -- close test fd
+<<retry>> res := close( scriptFile );               -- close test fd
+        if res < 0 then
+           if C_errno = EINTR then
+              goto retry;
+           end if;
+        end if;
         interpretScript( to_string( scriptFilePath ) ); -- do profile
      end if;
   end if;

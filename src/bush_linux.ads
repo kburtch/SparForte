@@ -66,28 +66,41 @@ O_CREAT    : constant anOpenFLag := 8#100#;
 O_TRUNC    : constant anOpenFlag := 8#1000#;
 O_APPEND   : constant anOpenFlag := 8#2000#;
 O_NONBLOCK : constant anOpenFlag := 8#4000#;
+O_SYNC     : constant anOpenFlag := 8#10000#;
 -- /usr/include/bits/fcntl.h
 
 function getpid return aPID;
 pragma import( C, getpid );
 
-procedure read( result : out long_integer; fd : aFileDescriptor; char : in out character;
-  count : long_integer );
+procedure read( result : out size_t; fd : aFileDescriptor; buffer : in system.address;
+  count : size_t );
 pragma import( C, read );
 pragma import_valued_procedure( read );
-
-procedure write( result : out long_integer; fd : aFileDescriptor; char : in out character;
+procedure readchar( result : out size_t; fd : aFileDescriptor; char : in out character;
   count : long_integer );
+pragma import( C, readchar, "read" );
+pragma import_valued_procedure( readchar, "read" );
+
+procedure write( result : out size_t; fd : aFileDescriptor; buffer : in system.address;
+  count : size_t );
 pragma import( C, write );
 pragma import_valued_procedure( write );
+procedure writechar( result : out size_t; fd : aFileDescriptor; char : in out character;
+  count : long_integer );
+pragma import( C, writechar, "read" );
+pragma import_valued_procedure( writechar, "read" );
 
 function open( path : string; flags : anOpenFlag; mode : integer ) return aFileDescriptor;
 pragma import( C, open );
 
-procedure close( fd : aFileDescriptor );
+function close( fd : aFileDescriptor ) return int;
 pragma import( C, close );
 
-function unlink( s : string ) return integer;
+function fdatasync( fd : aFileDescriptor ) return int;
+pragma import( C, fdatasync );
+-- some *NIXes can use fsync() instead
+
+function unlink( s : string ) return int;
 pragma import( C, unlink );
 
 WHENCE_SEEK_SET : constant integer := 0;
@@ -350,6 +363,7 @@ E2BIG   : constant integer := 7;      -- Arg list too long
 ENOEXEC : constant integer := 8;      -- Exec format error
 EBADF   : constant integer := 9;      -- Bad file number
 ECHILD  : constant integer := 10;     -- No children
+EWOULDBLOCK : constant integer := 11;     -- Same as EAGAIN in Linux
 EAGAIN  : constant integer := 11;     -- No more processes
 ENOMEM  : constant integer := 12;     -- Not enough core
 EACCES  : constant integer := 13;     -- Permission denied
@@ -374,6 +388,8 @@ EDEADLK : constant integer := 45;     -- A deadlock would occur
 ENOLCK  : constant integer := 46;     -- System record lock table was full
 EILSEQ  : constant integer := 47;     -- Illegal byte sequence
 ELIBBAD : constant integer := 80;     -- Bad Library / Can't Run Interpreter
+EALREADY    : constant integer := 114;    -- socket busy
+EINPROGRESS : constant integer := 115;    -- socket busy
 ENOTEMPTY : constant integer := 247;    -- Directory not empty
 ENAMETOOLONG : constant integer := 248;    -- File name too long
 ENOSYS  : constant integer := 251;    -- Function not implemented
@@ -411,6 +427,7 @@ AF_INET : constant aProtocolFamily := 2;
 
 type aSocketType is new int;
 SOCK_STREAM : constant aSocketType := 1;
+SOCK_NONBLOCK : constant aSocketType := 8#4000#;
 
 -- this is for a steady connection.  Defined as 1 in
 -- /usr/include/linux/socket.h

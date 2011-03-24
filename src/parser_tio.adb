@@ -21,7 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io.editing,
+with interfaces.c,
+    ada.text_io.editing,
     ada.strings.unbounded.text_io,
     string_util,
     user_io,
@@ -30,7 +31,8 @@ with ada.text_io.editing,
     scanner.calendar,
     parser_cal,
     parser;
-use ada.text_io,
+use interfaces.c,
+    ada.text_io,
     ada.text_io.editing,
     ada.strings.unbounded,
     ada.strings.unbounded.text_io,
@@ -512,12 +514,12 @@ procedure DoGet( ref : reference ) is
   ch     : character := ASCII.NUL; -- a buffer to read the character into
   -- ASCII.NUL to suppress compiler warning
   eof    : boolean := false;   -- true if a character was read
-  result : long_integer;       -- bytes read by read
+  result : size_t;       -- bytes read by read
   fileInfo : unbounded_string;
 begin
    GetParameterValue( ref, fileInfo );
    fd := aFileDescriptor'value( to_string( stringField( fileInfo, recSep, fd_field ) ) );
-<<reread>> read( result, fd, ch, 1 );
+<<reread>> readchar( result, fd, ch, 1 );
    if result < 0 then                   -- a problem?
       if C_errno = EAGAIN  or C_errno = EINTR then
          goto reread;                   -- interrupted? try again
@@ -809,6 +811,7 @@ procedure ParseReset is
   name    : unbounded_string;
   modestr : unbounded_string;
   fd      : aFileDescriptor;
+  closeResult : int;
 begin
   expect( reset_t );
   expect( symbol_t, "(" );
@@ -840,7 +843,12 @@ begin
              to_string( modestr ) );
         end if;
      end if;
-     close( fd );
+<<retry>> closeResult := close( fd );
+     if closeResult < 0 then
+        if C_errno = EINTR then
+           goto retry;
+        end if;
+     end if;
      DoFileOpen( file_ref, mode, false, to_string( name ) );
   end if;
 end ParseReset;
@@ -851,6 +859,7 @@ procedure ParseClose is
   file_ref : reference;
   fd   : aFileDescriptor;
   kind : identifier;
+  closeResult : int;
 begin
   expect( close_t );
   expect( symbol_t, "(" );
@@ -865,7 +874,13 @@ begin
      elsif fd = currentStandardInput then
         err( "this file is the current error file" );
      else
-        close( fd );
+<<retry>>
+        closeResult := close( fd );
+        if closeResult < 0 then
+           if C_errno = EINTR then
+              goto retry;
+           end if;
+        end if;
         if trace then
            put_trace( "Closed file descriptor" & to_string( stringField( file_ref, fd_field ) ) );
         end if;
@@ -881,6 +896,7 @@ procedure ParseDelete is
   name : unbounded_string;
   fd   : aFileDescriptor;
   result : integer;
+  closeResult : int;
 begin
   expect( delete_t );
   expect( symbol_t, "(" );
@@ -899,9 +915,14 @@ begin
         err( "this file is the current error file" );
      else
         name := stringField( file_ref, name_field );
-        close( fd );
+<<retry>> closeResult := close( fd );
+        if closeResult < 0 then
+           if C_errno = EINTR then
+              goto retry;
+           end if;
+        end if;
         identifiers( file_ref.id ).value := null_unbounded_string;
-        result := unlink( to_string( name ) & ASCII.NUL );
+        result := integer( unlink( to_string( name ) & ASCII.NUL ) );
         if result /= 0 then
            err( "unable to delete file: " & OSerror( C_errno ) );
         end if;
@@ -918,7 +939,7 @@ procedure ParseSkipLine is
   file_ref : reference;
   --fd     : aFileDescriptor;
   ch     : character;
-  result : long_integer;
+  result : size_t;
   kind   : identifier;
   str    : unbounded_string;
 begin
@@ -957,7 +978,7 @@ begin
     else
       -- stdin (I don't like this)
      loop
-        read( result, stdin, ch, 1 );
+        readchar( result, stdin, ch, 1 );
         if result < 0 then
            if C_errno /= EAGAIN and C_errno /= EINTR then
               err( "unable to read file:" & OSerror( C_errno ) );
@@ -990,7 +1011,7 @@ procedure ParseGet is
   fd        : aFileDescriptor;
   ch        : character;
   id_ref    : reference;
-  result    : long_integer;
+  result    : size_t;
   fileInfo  : unbounded_string;
 begin
   file_ref.id := eof_t;
@@ -1029,7 +1050,7 @@ begin
         end if;
      else
         fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
-   <<reread>> read( result, fd, ch, 1 );
+   <<reread>> readchar( result, fd, ch, 1 );
          if result < 0 then
               if C_errno = EAGAIN  or C_errno = EINTR then
                  goto reread;
@@ -1060,7 +1081,7 @@ procedure ParsePutLine is
   stderr    : boolean := false;
   expr_val  : unbounded_string;
   expr_type : identifier;
-  result    : long_integer;
+  result    : size_t;
   ch        : character;
   fd        : aFileDescriptor;
 begin
@@ -1110,7 +1131,7 @@ begin
         fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
         for i in 1..length( expr_val ) loop
             ch := Element( expr_val, i );
-<<rewrite>> write( result, fd, ch, 1 );
+<<rewrite>> writechar( result, fd, ch, 1 );
             if result < 0 then
                if C_errno = EAGAIN or C_errno = EINTR then
                   goto rewrite;
@@ -1120,8 +1141,9 @@ begin
             end if;
         end loop;
         ch := ASCII.LF;
-        write( result, fd, ch, 1 ); -- add a line feed
-<<rewrite2>> if result < 0 then
+<<rewrite2>>
+        writechar( result, fd, ch, 1 ); -- add a line feed
+        if result < 0 then
            if C_errno = EAGAIN or C_errno = EINTR then
               goto rewrite2;
            end if;
@@ -1263,7 +1285,7 @@ procedure ParsePut is
   stderr    : boolean := false;
   expr_val  : unbounded_string;
   expr_type : identifier;
-  result    : long_integer;
+  result    : size_t;
   ch        : character;
   fd        : aFileDescriptor;
   pic       : Picture;
@@ -1334,7 +1356,7 @@ begin
         fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
         for i in 1..length( expr_val ) loop
             ch := Element( expr_val, i );
-            write( result, fd, ch, 1 );
+            writechar( result, fd, ch, 1 );
 <<rewrite>> if result < 0 then
                if C_errno = EAGAIN or C_errno = EINTR then
                   goto rewrite;
@@ -1354,7 +1376,7 @@ procedure ParseNewLine is
   kind   : identifier;
   fd     : aFileDescriptor;         -- Linux file descriptor of output file
   ch     : character;
-  result : long_integer;
+  result : size_t;
 begin
   expect( new_line_t );
   if token = symbol_t and identifiers( token ).value = "(" then
@@ -1372,7 +1394,7 @@ begin
      else
         fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
         ch := ASCII.LF;
-<<rewrite>> write( result, fd, ch, 1 );
+<<rewrite>> writechar( result, fd, ch, 1 );
         if result < 0 then
            if C_errno = EAGAIN or C_errno = EINTR then
               goto rewrite;

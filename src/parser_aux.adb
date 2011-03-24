@@ -62,6 +62,7 @@ procedure makeTempFile( s : out unbounded_string ) is
   -- create a unique temporary filename
   LinuxPath : string := "/tmp/sparXXXXXX" & ASCII.NUL;
   result : aFileDescriptor;
+  closeResult : int;
 begin
   s := null_unbounded_string;
   mkstemp( result, LinuxPath );
@@ -69,9 +70,11 @@ begin
      err( "makeTempFile: mkstemp failed" & OSError( C_errno ) );
      s := null_unbounded_string;
   else
-<<retry1>> C_reset_errno; close( result ); -- not the most secure
-     if C_errno = EINTR then
-        goto retry1;
+<<retry1>> closeResult := close( result ); -- not the most secure
+     if closeResult < 0 then
+        if C_errno = EINTR then
+           goto retry1;
+        end if;
      end if;
      for i in aLinuxPath'range loop
          exit when LinuxPath( i ) = ASCII.NUL;
@@ -225,11 +228,13 @@ begin
      if C_errno = EINTR then
         goto retry1;
      end if;
-<<retry2>> C_reset_errno; close( aFileDescriptor( mySocket ) );
-     if C_errno = EINTR then
-        goto retry2;
-     end if;
      err( "error connecting to server: " & OSerror( C_errno ) );
+<<retry2>> Result := close( aFileDescriptor( mySocket ) );
+     if Result < 0 then
+        if C_errno = EINTR then
+           goto retry2;
+        end if;
+     end if;
      return -1;
   end if;
   --New_Line;

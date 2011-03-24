@@ -21,8 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io, ada.strings.unbounded.text_io;
-use  ada.text_io, ada.strings.unbounded.text_io;
+with interfaces.c, ada.text_io, ada.strings.unbounded.text_io;
+use  interfaces.c, ada.text_io, ada.strings.unbounded.text_io;
 
 
 package body script_io is
@@ -33,7 +33,7 @@ function LineRead( lineptr : access unbounded_string ) return boolean is
 -- read a line from the current script file.  return false on eof
   buffer     : aLineReadBuffer;
   bufpos     : positive;
-  amountRead : long_integer;
+  amountRead : size_t;
   ch         : character := ASCII.NUL;
 begin
    buffer(1) := ' '; -- suppress GNAT warning about buffer having no value
@@ -44,7 +44,7 @@ begin
 -- start of the current token!
    bufpos := buffer'first;
    loop
-<<reread>> read( amountRead, scriptFile, ch, 1 );
+<<reread>> readchar( amountRead, scriptFile, ch, 1 );
      if amountRead < 0 and (C_errno = EAGAIN or C_errno = EINTR) then
         goto reread;
      end if;

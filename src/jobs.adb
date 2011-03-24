@@ -22,6 +22,7 @@
 ------------------------------------------------------------------------------
 
 with system,
+    interfaces.c,
     ada.text_io,
     ada.strings.unbounded.text_io,
     signal_flags,
@@ -32,7 +33,8 @@ with system,
     user_io,
     parser_aux, -- for OSError
     gen_list;
-use ada.text_io,
+use interfaces.c,
+    ada.text_io,
     ada.strings.unbounded,
     ada.strings.unbounded.text_io,
     signal_flags,
@@ -460,6 +462,7 @@ procedure run_inpipe( cmd : unbounded_string;
    myPID    : aPID;
    newJob   : aJob;
    result   : integer;
+   closeResult : int;
 begin
 
    -- setup the pipeline
@@ -496,15 +499,34 @@ begin
             err( "unable to fork and run the command" );
             Success := false;
          elsif myPID = 0 then                -- in child process?
-            close( stdout );                 -- redirect stdout to pipe
-            result := integer( dup2( pipeStack( pipeStackTop )( intoPipe ), stdout ) );
-            if result < 0 then               -- failed?
-               err( "unable to dup2 the pipe: errno " & C_errno'img );
-               Success := false;
-               return;
-            end if;
-            close( pipeStack( pipeStackTop )( intoPipe ) ); -- copied this
-            close( pipeStack( pipeStackTop )( outOfPipe ) ); -- not using pipe output
+<<retry1>> closeResult := close( stdout );                 -- redirect stdout to pipe
+           if closeResult < 0 then
+              if C_errno = EINTR then
+                 goto retry1;
+              end if;
+           end if;
+<<retry1b>>
+           result := integer( dup2( pipeStack( pipeStackTop )( intoPipe ), stdout ) );
+           if result < 0 then               -- failed?
+              if C_errno = EINTR then
+                 goto retry1b;
+              end if;
+              err( "unable to dup2 the pipe: errno " & C_errno'img );
+              Success := false;
+              return;
+           end if;
+<<retry2>> closeResult := close( pipeStack( pipeStackTop )( intoPipe ) ); -- copied this
+           if closeResult < 0 then
+              if C_errno = EINTR then
+                 goto retry2;
+              end if;
+           end if;
+<<retry3>> closeResult := close( pipeStack( pipeStackTop )( outOfPipe ) ); -- not using pipe output
+           if closeResult < 0 then
+              if C_errno = EINTR then
+                 goto retry3;
+              end if;
+           end if;
 
             if trace then
 	       put_trace( to_string( fullPath ) &
@@ -551,6 +573,7 @@ procedure run_frompipe( cmd : unbounded_string;
    che      : cmdHashEntry;
    oldStdin : aFileDescriptor;
    result   : integer;
+   closeResult : int;
 begin
 
    -- Locate the command
@@ -576,14 +599,28 @@ begin
 	 return;
       end if;
 
+<<retry1>>
       oldStdin := dup( stdin );             -- save original stdin
       if oldStdin < 0 then                  -- not OK? abort
+         if C_errno = EINTR then
+            goto retry1;
+         end if;
          err( "unable to save stdin: errno" & C_errno'img );
          return;
       end if;
-      close( stdin );                       -- redirect standard input
+<<retry2>>
+      closeResult := close( stdin );           -- redirect standard input
+      if closeResult < 0 then                  -- failed? show error
+         if C_errno = EINTR then
+            goto retry2;
+         end if;
+      end if;
+<<retry3>>
       result := integer( dup2( pipeStack( pipeStackTop )( outOfPipe), stdin ) );
       if result < 0 then                    -- failed?
+         if C_errno = EINTR then
+            goto retry3;
+         end if;
          err( "unable to dup2 the pipe for " & to_string( cmd ) &
 	    "input: errno " & C_errno'img );
          Success := false;
@@ -599,15 +636,31 @@ begin
          spawnCommandOrRunBuiltin(
             cmd, paramToken, fullPath, ap, noReturn => false,
             success => success );
-         close( stdin );                    -- closing pipe
+<<retry4>>
+         closeResult := close( stdin );          -- closing pipe
+         if closeResult < 0 then                 -- failed? show error
+            if C_errno = EINTR then
+               goto retry4;
+            end if;
+         end if;
       end if;
+<<retry5>>
       result := integer( dup2( oldStdin, stdin ) );
       if result < 0 then                    -- failed? show error
+         if C_errno = EINTR then
+            goto retry5;
+         end if;
          err( "internal error: unable to restore old stdin: " &
 	    " unable to dup2(" & oldStdin'img & "," &
 	    stdin'img & "): errno " & C_errno'img );
       end if;
-      close( oldStdin );                    -- discard original stdin copy
+<<retry6>>
+      closeResult := close( oldStdin );        -- discard original stdin copy
+      if closeResult < 0 then
+         if C_errno = EINTR then
+            goto retry6;
+         end if;
+      end if;
 
    end if;
 end run_frompipe;
@@ -675,17 +728,37 @@ begin
             err( "unable to fork to run " & to_string( cmd ) );
             Success := false;
          elsif myPID = 0 then
-            close( stdin );
+<<retrycloseout>>
+            result := integer( close( stdin ) );
+            if result < 0 then
+               if C_errno = EINTR then
+                  goto retrycloseout;
+               end if;
+            end if;
+<<retrydupout>>
             result := integer( dup2( pipeStack( pipeStackTop-1 )( outOfPipe ), stdin ) );
             if result < 0 then
+               if C_errno = EINTR then
+                  goto retrydupout;
+               end if;
                err( "unable to dup2 the pipe for " & to_string( cmd ) &
 		  " input: errno " & C_errno'img );
                Success := false;
                return;
             end if;
-            close( stdout );
+<<retryclosein>>
+            result := integer( close( stdout ) );
+            if result < 0 then
+               if C_errno = EINTR then
+                  goto retryclosein;
+               end if;
+            end if;
+<<retrydupin>>
             result := integer( dup2( pipeStack( pipeStackTop )( intoPipe ), stdout ) );
             if result < 0 then
+               if C_errno = EINTR then
+                  goto retrydupin;
+               end if;
                err( "unable to dup2 the pipe for " & to_string( cmd ) &
 		  " output: errno " & C_errno'img );
                Success := false;
@@ -724,11 +797,22 @@ begin
 end run_bothpipe;
 
 procedure closePipeline is
+  res : int;
   -- doesn't reset the top of stack
 begin
   for i in 1..pipeStackTop loop
-      close( pipeStack( i )( intoPipe ) );
-      close( pipeStack( i )( outOfPipe ) );
+<<retryin>> res := close( pipeStack( i )( intoPipe ) );
+      if res < 0 then
+         if C_errno = EINTR then
+           goto retryin;
+         end if;
+      end if;
+<<retryout>> res := close( pipeStack( i )( outOfPipe ) );
+      if res < 0 then
+         if C_errno = EINTR then
+           goto retryout;
+         end if;
+      end if;
   end loop;
 end closePipeline;
 

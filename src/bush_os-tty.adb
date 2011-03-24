@@ -86,11 +86,12 @@ function tput( attr : termAttributes ) return unbounded_string is
   oldStdout     : aFileDescriptor;
   ap            : argumentListPtr;
   ttyCode       : unbounded_string := null_unbounded_string;
-  amountRead    : long_integer;
+  amountRead    : size_t;
   ch            : character := ASCII.NUL;
   -- NUL to stop compiler warning
   term_id       : identifier;
   intResult     : integer;
+  closeResult   : int;
 begin
 
   -- Redirect standard output to a temp file
@@ -102,18 +103,55 @@ begin
      return null_unbounded_string;
   end if;
 
+<<retry1>>
   oldstdout := dup( stdout );
   if oldstdout < 0 then
-     close( tputResultsFD );
+     if C_errno = EINTR then
+        goto retry1;
+     end if;
+  end if;
+  if oldstdout < 0 then
+<<retry2>>
+     closeResult := close( tputResultsFD );
+     if closeResult < 0 then
+        if C_errno = EINTR then
+           goto retry2;
+        end if;
+     end if;
      put_line( standard_error, "Bush.TTY: Unable to save stdout" );
      put_line( standard_error, "Bush.TTY: Error # " & C_errno'img );
      return null_unbounded_string;
   end if;
 
+<<retry3>>
   result := dup2( tputResultsFD, stdout );
   if result < 0 then
-     close( tputResultsFD );
-     close( oldstdout );
+     if C_errno = EINTR then
+        goto retry3;
+     end if;
+  end if;
+  if result < 0 then
+<<retry4>>
+     closeResult := close( tputResultsFD );
+     if closeResult < 0 then
+        if C_errno = EINTR then
+           goto retry4;
+        end if;
+     end if;
+<<retry5>>
+     closeResult := close( tputResultsFD );
+     if closeResult < 0 then
+        if C_errno = EINTR then
+           goto retry5;
+        end if;
+     end if;
+<<retry6>>
+     closeResult := close( oldstdout );
+     if closeResult < 0 then
+        if C_errno = EINTR then
+           goto retry6;
+        end if;
+     end if;
      put_line( standard_error, "Bush.TTY: Unable to redirect stdout" );
      put_line( standard_error, "Bush.TTY: Error # " & C_errno'img );
      return null_unbounded_string;
@@ -186,14 +224,38 @@ begin
   free_list( ap );
   if C_errno > 0 then
      result := dup2( oldstdout, stdout );
-     close( oldstdout );
-     close( tputResultsFD );
+<<retry7>>
+     closeResult := close( oldstdout );
+     if closeResult < 0 then
+        if C_errno = EINTR then
+           goto retry7;
+        end if;
+     end if;
+<<retry8>>
+     closeResult := close( tputResultsFD );
+     if closeResult < 0 then
+        if C_errno = EINTR then
+           goto retry8;
+        end if;
+     end if;
      put_line( standard_error, to_string( "Unable to find/run " & tput_path1 ) );
      return null_unbounded_string;
   end if;
   result := dup2( oldstdout, stdout );
-  close( oldstdout );
-  close( tputResultsFD );
+<<retry9>>
+  closeResult := close( oldstdout );
+  if closeResult < 0 then
+     if C_errno = EINTR then
+        goto retry9;
+     end if;
+  end if;
+<<retry10>>
+  closeResult := close( tputResultsFD );
+  if closeResult < 0 then
+     if C_errno = EINTR then
+        goto retry10;
+     end if;
+  end if;
 
   -- Un-export TERM
  -- if term_id /= eof_t then
@@ -205,7 +267,7 @@ begin
   tputResultsFD := open( tputResults & ASCII.NUL, 0, 660 );
   if tputResultsFD > 0 then
      loop
-        read( amountRead, tputResultsFD, ch, 1 );
+        readchar( amountRead, tputResultsFD, ch, 1 );
         if amountRead < 0 then
            if C_errno /= EINTR and C_errno /= EAGAIN then
               ttyCode := null_unbounded_string;
@@ -217,7 +279,13 @@ begin
            exit;
         end if;
      end loop;
-     close( tputResultsFD );
+<<retry11>>
+     closeResult := close( tputResultsFD );
+     if closeResult < 0 then
+        if C_errno = EINTR then
+           goto retry11;
+        end if;
+     end if;
      result := aFileDescriptor( unlink( tputResults & ASCII.NUL ) );
   end if;
 
@@ -252,6 +320,7 @@ procedure updateDisplayInfo is
 -- detected. If ioctl() fails, try tput)
   res     : integer;
   ttyFile : aFileDescriptor;
+  closeResult : int;
 begin
   displayInfo.row := 0; -- defaults
   displayInfo.col := 0;
@@ -261,7 +330,13 @@ begin
   ttyFile := open( "/dev/tty" & ASCII.NUL, 0, 660 );
   if ttyFile >= 0 then
      ioctl_TIOCGWINSZ( res, ttyFile, TIOCGWINSZ, displayInfo );
-     close( ttyFile );
+<<retryclose>>
+     closeResult := close( ttyFile );
+     if closeResult < 0 then
+        if C_errno = EINTR then
+          goto retryclose;
+        end if;
+     end if;
   end if;
 
   -- No tty device or other problem?  Get the defaults from tput
@@ -296,13 +371,14 @@ procedure simpleGetKey( ch : out character ) is
 -- read a (raw) key from the keyboard without echoing to display
   tio        : termios;         -- tty setting for raw input
   oldtio     : termios;         -- previous tty settings
-  amountRead : long_integer;    -- characters read
+  amountRead : size_t;          -- characters read
   ttyFile    : aFileDescriptor; -- our controlling tty, for ioctl
   res        : integer;         -- results
+  closeResult : int;
 begin
   ch := ASCII.NUL;
   if isatty( stdin ) = 0 then                      -- not a tty?
-     read( amountRead, stdin, ch, 1 );             -- read a character
+     readchar( amountRead, stdin, ch, 1 );         -- read a character
      if amountRead = 0 then                        -- nothing read?
         ch := ASCII.EOT;                           -- return a control-d
      end if;
@@ -348,7 +424,7 @@ begin
               -- probably should raise an exception here
            else
               res := tcdrain( stdout );            -- flush pending output
-<<retry>>     read( amountRead, stdin, ch, 1 );    -- read a character
+<<retry>>     readchar( amountRead, stdin, ch, 1 );-- read a character
               if amountRead = 0 then               -- nothing read?
                  ch := ASCII.EOT;                  -- return a control-d
               elsif amountRead < 0 then            -- error?
@@ -360,7 +436,13 @@ begin
               ioctl_setattr( res, ttyFile, TCSETATTR, oldtio ); -- restore settings
            end if;
         end if;
-        close( ttyfile );
+<<retryclose>>
+        closeResult := close( ttyfile );
+        if closeResult < 0 then
+           if C_errno = EINTR then
+              goto retryclose;
+           end if;
+        end if;
      end if;
      -- international character support now
      -- if ch > ASCII.DEL then
@@ -373,12 +455,12 @@ end simpleGetKey;
 procedure simpleBeep is
 -- ring the bell on the terminal (ie. send a control-G)
   result : integer;
-  amountWritten : long_integer;
+  amountWritten : size_t;
   ch : character;
 begin
   for i in 1..length( term( bel ) ) loop
       ch := element( term( bel ), i );
-      write( amountWritten, stderr, ch, 1 );
+      writechar( amountWritten, stderr, ch, 1 );
   end loop;
   result := tcdrain( stderr );
 end simpleBeep;
