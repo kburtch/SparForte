@@ -1,0 +1,23 @@
+- NOTE: Tinyserver now returns socket on connection (in Bush, doesn't)
+
+- tinyserve's specification should be cleaned up
+
+- EOL handling for two characters needs to be fixed (right now only checks
+  for final character on a two-character EOL sequence).  First char could
+  no longer be in buffer if read buffer was updated, so it has to be flagged.
+  This is pretty inefficient if it can be avoided.
+
+- use of asynchronous I/O (C rt library has aio_cancel(3), aio_error(3),
+  aio_fsync(3), aio_read(3), aio_return(3), aio_suspend(3))
+  - O_ASYNC on open sends a signal (SIGIO) when a pipe is free for writing.
+    Must write a C signal catcher to flag when operations on a socket are
+    complete. (Good for game server talking back to clients.)
+
+- use of poll(2) to determine if a file can be written to (if non-blocking).
+  (like tinyserve's may not block function)
+
+Create syslog client
+Create redis client
+
+Create high-end server (gigaserve?) to correspond to tinyserve
+

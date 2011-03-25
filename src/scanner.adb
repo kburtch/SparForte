@@ -36,6 +36,7 @@ with system,
     bush_os,
     bush_os.tty,
     signal_flags,
+    pegasock.memcache,
     script_io,
     user_io,
     string_util,
@@ -68,6 +69,7 @@ use ada.text_io,
     bush_os,
     bush_os.tty,
     signal_flags,
+    pegasock.memcache,
     script_io,
     user_io,
     string_util,
@@ -237,6 +239,17 @@ begin
      end if;
      if ident.inspect then
         put( "inspected " );
+     end if;
+
+     -- if imported or exported, show the method
+
+     if ident.import or ident.export then
+        case ident.method is
+        when http_cgi  => put( "HTTP CGI " );
+        when local_memcache  => put( "local memcache " );
+        when shell => put( "shell environment " );
+        when others => put( "unknown " );
+        end case;
      end if;
 
      -- Show the class (type, constant, etc.)
@@ -1791,20 +1804,14 @@ procedure refreshVolatile( id : identifier ) is
   ev  : unbounded_string;                                     -- an env var
   refreshed : boolean := false;
 begin
-  key := identifiers( id ).name & "=";                        -- look for this
-  for i in 1..Environment_Count loop                          -- all env vars
-      ev := to_unbounded_string( Environment_Value( i ) );    -- get next one
-      if Head( ev, length( key ) ) = key then                 -- match?
-         identifiers( id ).value :=                           -- get value
-             Tail( ev, length( ev ) - length( key ) );        -- and assign
-         refreshed := true;
-         exit;                                                -- we're done
-      end if;
-  end loop;
-  -- fall back to initial environment
-  if not refreshed then
-     for i in 1..environmentList.Length( initialEnvironment ) loop
-         environmentList.Find( initialEnvironment, i, ev );
+  if identifiers( id ).method = local_memcache then
+     Get( localMemcacheCluster,
+          identifiers( id ).name,
+          identifiers( id ).value );
+  else
+     key := identifiers( id ).name & "=";                        -- look for this
+     for i in 1..Environment_Count loop                          -- all env vars
+         ev := to_unbounded_string( Environment_Value( i ) );    -- get next one
          if Head( ev, length( key ) ) = key then                 -- match?
             identifiers( id ).value :=                           -- get value
                 Tail( ev, length( ev ) - length( key ) );        -- and assign
@@ -1812,11 +1819,23 @@ begin
             exit;                                                -- we're done
          end if;
      end loop;
-  end if;
-  if not refreshed then
-     err( "unable to find variable " &
-          to_string( identifiers( id ).name ) &
-          " in O/S enviroment" );
+     -- fall back to initial environment
+     if not refreshed then
+        for i in 1..environmentList.Length( initialEnvironment ) loop
+            environmentList.Find( initialEnvironment, i, ev );
+            if Head( ev, length( key ) ) = key then                 -- match?
+               identifiers( id ).value :=                           -- get value
+                   Tail( ev, length( ev ) - length( key ) );        -- and assign
+               refreshed := true;
+               exit;                                                -- we're done
+            end if;
+        end loop;
+     end if;
+     if not refreshed then
+        err( "unable to find variable " &
+             to_string( identifiers( id ).name ) &
+             " in O/S enviroment" );
+     end if;
   end if;
 end refreshVolatile;
 

@@ -1,0 +1,34 @@
+PegaSock (PegaSoft Ada Sockets)
+
+A thick Ada binding on basic non-streaming networking sockets and some
+services commonly used by web applications such as HTTP.  This package
+is modelled on Text_IO and uses similar function and procedure names
+(such as Get, Put, Close).
+
+If you want a thin binding, consider adasockets.
+(www.rfc1149.net/devel/adasockets)
+
+PegaSock is arranged into child packages:
+
+pegasock - socket (and file) functions
+pegasock-http - HTTP protocol functions
+pegasock-memcache - basic Memcached client for 2:1 read/write ratio
+pegasock-memcached-highread - a Memcached client for 4:1 read/write ratio
+pegasock-smtp - simple mail transport protocol
+pegasock-syslog - syslog-ng support
+pegasoft-tinyserve - a lightweight socket server
+
+Requirements
+
+- GCC Ada with Ada 2005 support (any modern GCC)
+- Linux
+
+Installation
+
+Edit O/S defs and provide the correct settings for your operation
+system (I haven't written a configuration program yet).
+
+make test (requires memcache on port 11211 and 11212 and apache
+running on localhost)
+
+memcached -d -vv -p 1234

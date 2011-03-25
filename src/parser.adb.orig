@@ -35,6 +35,7 @@ with system,
     cgi,
     bush_os.exec,
     bush_os.sound,
+    pegasock.memcache,
     string_util,
     user_io,
     script_io,
@@ -70,6 +71,7 @@ use ada.text_io,
     bush_os,
     bush_os.exec,
     bush_os.sound,
+    pegasock.memcache,
     user_io,
     script_io,
     string_util,
@@ -3101,6 +3103,7 @@ procedure ParsePragma is
   expr_val    : unbounded_string;
   results     : unbounded_string;
   var_id      : identifier;
+  exportType  : unbounded_string;
   importType  : unbounded_string;
 begin
   expect( pragma_t );
@@ -3203,15 +3206,22 @@ begin
      expr_val := identifiers( token ).value;
      expect( strlit_t );
   when export =>                                -- pragma export
-     if identifiers( token ).name /= "shell" then
-        discardUnusedIdentifier( token );
-        err( "only 'shell' convention supported" );
-        return;
-     else
+     if identifiers( token ).name = "shell" then
+        exportType := identifiers( token ).name;
         discardUnusedIdentifier( token );
         getNextToken;
         expect( symbol_t, "," );
         ParseIdentifier( var_id );
+     elsif identifiers( token ).name = "local_memcache" then
+        exportType := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        expect( symbol_t, "," );
+        ParseIdentifier( var_id );
+     else
+        discardUnusedIdentifier( token );
+        err( "only 'shell', 'local_memcache' convention supported" );
+        return;
      end if;
   when import | unchecked_import =>             -- pragma unchecked/import
      if identifiers( token ).name = "shell" then
@@ -3221,6 +3231,12 @@ begin
         expect( symbol_t, "," );
         ParseIdentifier( var_id );
      elsif identifiers( token ).name = "cgi" then
+        importType := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        expect( symbol_t, "," );
+        ParseIdentifier( var_id );
+     elsif identifiers( token ).name = "local_memcache" then
         importType := identifiers( token ).name;
         discardUnusedIdentifier( token );
         getNextToken;
@@ -3333,13 +3349,22 @@ begin
         depreciatedMsg := "This script made obsolete by " & expr_val & '.';
      when export =>
         if identifiers( var_id ).class = userProcClass then
-           err( "procedures cannot be exported to the shell environment" );
+           err( "procedures cannot be exported" );
         elsif identifiers( var_id ).class = userFuncClass then
-           err( "functions cannot be exported to the shell environment" );
+           err( "functions cannot be exported" );
         elsif identifiers( var_id ).list then
-           err( "arrays cannot be exported to the shell environment" );
+           err( "arrays cannot be exported" );
         elsif uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
            identifiers( var_id ).export := true;
+           if exportType = "local_memcache" then
+              identifiers( var_id ).method := local_memcache;
+              checkAndInitializeLocalMemcacheCluster;
+           elsif exportType = "cgi" then
+              -- this should have been caught earlier
+              err( "cgi variables cannot be exported" );
+           else
+              identifiers( var_id ).method := shell;
+           end if;
         end if;
      when gcc_errors =>
         gccOpt := true;
@@ -3352,7 +3377,23 @@ begin
            err( "arrays cannot be imported" );
         elsif uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
            identifiers( var_id ).import := true;
-           if processingTemplate and importType = "cgi" then
+           if importType = "local_memcache" then
+              identifiers( var_id ).method := local_memcache;
+              checkAndInitializeLocalMemcacheCluster;
+              begin
+                 Get( localMemcacheCluster,
+                      identifiers( var_id ).name,
+                      identifiers( var_id ).value );
+                 if length( identifiers( var_id ).value ) = 0 then
+                    err( "unable to find variable " &
+                         to_string( identifiers( var_id ).name ) &
+                         " in the local memcache" );
+                 end if;
+              exception when others =>
+                 err( "exception raised" );
+              end;
+           elsif processingTemplate and importType = "cgi" then
+              identifiers( var_id ).method := http_cgi;
               identifiers( var_id ).value := null_unbounded_string;
               for i in 1..cgi.key_count( to_string( identifiers( var_id ).name ) ) loop
                   identifiers( var_id ).value := identifiers( var_id ).value &
@@ -3361,6 +3402,7 @@ begin
            elsif not processingTemplate and importType = "cgi" then
                err( "import type cgi must be used in a template" );
            else
+              identifiers( var_id ).method := shell;
               refreshVolatile( var_id );
            end if;
            if trace then
@@ -3436,23 +3478,48 @@ begin
         end if;
      when unchecked_import =>
         if uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
-           if inEnvironment( var_id ) then
-              identifiers( var_id ).import := true;
-              if processingTemplate then
+           if importType = "local_memcache" then
+              identifiers( var_id ).method := local_memcache;
+              checkAndInitializeLocalMemcacheCluster;
+              -- According to the SparForte manual, only update the
+              -- variable if imported value is found
+              declare
+                 temp : unbounded_string;
+              begin
+                 Get( localMemcacheCluster,
+                      identifiers( var_id ).name,
+                      temp );
+                 if length( temp ) > 0 then
+                    identifiers( var_id ).import := true;
+                    identifiers( var_id ).value := temp;
+                 end if;
+              exception when others =>
+                 err( "exception raised" );
+              end;
+           elsif processingTemplate and importType = "cgi" then
+              if inEnvironment( var_id ) then
+                 identifiers( var_id ).import := true;
+                 identifiers( var_id ).method := http_cgi;
                  identifiers( var_id ).value := null_unbounded_string;
                  for i in 1..cgi.key_count( to_string( identifiers( var_id ).name ) ) loop
                      identifiers( var_id ).value := identifiers( var_id ).value &
                         to_unbounded_string( cgi.value( to_string( identifiers( var_id ).value ), 1, false) );
                   end loop;
-              else
+              end if;
+           elsif importType = "cgi" then
+              err( "import type cgi must be used in a template" );
+           else
+              if inEnvironment( var_id ) then
+                 identifiers( var_id ).import := true;
+                 identifiers( var_id ).method := shell;
                  refreshVolatile( var_id );
               end if;
-              if trace then
-                  put_trace(
-                     to_string( identifiers( var_id ).name ) & " := """ &
-                     to_string( ToEscaped( identifiers( var_id ).value ) ) &
-                     """" );
-              end if;
+           end if;
+           if trace then
+              put_trace(
+                 to_string( identifiers( var_id ).name ) & " := """ &
+                 to_string( ToEscaped( identifiers( var_id ).value ) ) &
+                 """" );
            end if;
         end if;
      when inspect_var =>

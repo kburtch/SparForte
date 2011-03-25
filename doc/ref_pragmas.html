@@ -43,6 +43,8 @@
 <p>Pragmas, or interpreter directives, provide additional instructions to
 AdaScript.</p>
 
+<h3>The Pragmas</h3>
+
 <ul>
   <li> <b>pragma ada_95 </b>- requires the script syntax be as close
 to
@@ -73,27 +75,25 @@ The debugging commands are run in restricted shell mode.</li>
 execution,
 SparForte will warn that the script is obsolete and has been superceded for
 "newscript".</li>
-  <li> <b>pragma export( shell, var )</b> - export a string variable
-to
-the O/S
-environment. The first parameter must be "shell".</li>
+  <li> <b>pragma export( shell | local_memcache, var )</b> - export a string variable
+to the O/S environment. The first parameter must be "shell".</li>
   <li><span style="font-weight: bold;">pragma gcc_errors</span> - same
 as --gcc-errors.&nbsp; Show simplified gcc-style errors.<br>
-
   </li>
-  <li> <b>pragma import( shell | cgi, var )</b> - import a shell or
-environment variable as
-a Bush string variable. If the environment variable doesn't exist, SparForte
-will report an error (see unchecked_import). The first parameter must
-be
-"shell".</li>
+  <li> <b>pragma import( shell | cgi | local_memcache, var )</b> -
+import a variable.  For shell, from the O/S environment.  For cgi
+and if pragma template/unrestricted_template was used previously,
+a HTTP CGI variable from the O/S environment.  For local_memcache,
+get the value of the variable from a memcached server running on
+locahost port 11211.  Put the value in the SparForte variable.
+If the environment variable doesn't exist, then
+the SparForte will report an error (see unchecked_import).</li>
   <li> <b>pragma inspect( var )</b> - show a variable's description
 (as if
 'env var' was used) whenever a user breaks to a command prompt. Has no
 effect if --break option isn't used.</li>
   <li> <b>pragma inspection_peek</b> - like inspection_point, displaying
 inspect variables, except it doesn't break to a command prompt.</li>
-
   <li> <b>pragma inspection_point</b> - break to a command prompt as if
 SIGINT (control-C) was received, displaying the call stack and any
 variables marked for inspection with pragma inspect. Has no effect if
@@ -111,7 +111,6 @@ prompt
 is used.&nbsp; Make sure the final command ends with a
 semi-colon.&nbsp; Changing your prompt will also change the title of
 your terminal window.<br>
-
   </li>
   <li> <b>pragma restriction( no_auto_declarations )</b> - disable
 automatic declaration
@@ -144,12 +143,14 @@ format
 using the line number in the template as the line number for the error.
 The first parameter is the template type: "text" or "html".</li>
 
-  <li> <b>pragma unchecked_import( shell | cgi, var )</b> - import a
-CGI or
-environment variable
-as a SparForte string variable. If the environment variable doesn't exist,
-then
-the SparForte variable is unchanged. The first parameter must be "shell".</li>
+  <li> <b>pragma unchecked_import( shell | cgi | local_memcache, var )</b> -
+import a variable.  For shell, from the O/S environment.  For cgi
+and if pragma template/unrestricted_template was used previously,
+a HTTP CGI variable from the O/S environment.  For local_memcache,
+get the value of the variable from a memcached server running on
+locahost port 11211.  Put the value in the SparForte variable.
+If the environment variable doesn't exist, then
+the SparForte variable is unchanged.</li>
   <li> <b>pragma uninspect( var )</b> - undo a pragma inspect. Don't
 show
 a
@@ -170,6 +171,328 @@ variable which may change during the script's execution. The variable's
 value will be updated each time it is referenced in an expression. Only
 makes sense if the variable is imported as well.</li>
 </ul>
+
+<h3>Shell Variables</h3>
+
+<p>UNIX-like operating systems have environment variables.  These are
+variables that the operating system assign to your running program.</p>
+
+<p>You can also read environment variables using the command_line package.</p>
+
+<h4>Importing Shell Environment Variables</h4>
+
+<p>Normally, SparForte will not copy your environment variables into
+SparForte.  Instead, you request the variables using <b>pragma import</b>.
+SparForte will examine the environment variables and, if it finds one
+with the same name, the SparForte variable will have the same value
+as the environment variable.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+		=&gt; JAVA_HOME : string<br>
+		=&gt; <b>pragma</b> import( shell, JAVA_HOME )<br>
+		=&gt; ? JAVA_HOME<br>
+		/usr/lib64/jvm/java<br>&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: Importing an environment variable on the command line</span>
+        </div>
+        </div>
+        </center>
+
+<p>A few variables are automatically imported when SparForte runs.  These
+variables are needed for the proper functioning of the shell (for
+example, HOME).  You can also use the <b>--import-all</b> command line
+option to import all the environment variables.  However, --import-all is
+meant to be a convenience or debugging tool: it is a better technique to
+import only what your script needs to run.</p>
+
+<p>You can examine a variable with <b>env</b> to see if it is imported
+or exported.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+		=&gt; <b>env</b> HOME<br>
+		HOME := "/home/ken"; -- imported shell environment identifier of the type string
+		</p>
+        </div>
+        </center>
+
+<p>If the variable doesn't exist, SparForte will report an error.
+This behaviour can be overridden using <b>pragma unchecked_import</b>:
+if the variable doesn't exist in the environment, the value will
+be unchanged.  It is a good idea to assign a default value.</p>
+
+<p>If you are using SparForte as your login shell, there is nothing
+to import: there's no previous shell to import variable from to
+put them into SparForte.</p>
+
+<h4>Exporting Shell Environment Variables</h4>
+
+<p>To make your Sparforte variables visble to other programs, such
+as external commands, you must export the variable into the
+operating system environment variables with <b>pragma export</b>.
+This exporting process occurs whenever an external command is
+executed, the standard technique in shells.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+		=&gt; JAVA_HOME : string := "/usr/lib64/jvm/java"<br>
+		=&gt; <b>pragma</b> export( shell, JAVA_HOME )<br>
+		=&gt; eclipse &amp; -- a command that needs JAVA_HOME<br>
+		</p>
+        </div>
+        </center>
+
+<p>If you use SparForte as your login shell, variables like JAVA_HOME can
+be set up in your SparForte profile file so they are created and exported
+whenever you log in.</p>
+
+<h4>Both Importing and Exporting, and Volatile Shell Environment Variables</h4>
+
+<p>Environment variables can be both imported and exported by using
+both pragmas.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+		=&gt; DISPLAY : string;<br>
+		=&gt; <b>pragma</b> import( shell, DISPLAY )<br>
+		=&gt; <b>pragma</b> export( shell, DISPLAY )<br>
+		=&gt; <b>env</b> DISPLAY<br>
+		DISPLAY := ":0.0"; -- imported exported shell environment identifier of the type string<br>&nbsp;<br>
+		</p>
+        <div class="code_caption">
+                <b>Example</b>: Importing and Exporting the X Windows DISPLAY variable</span>
+        </div>
+        </div>
+        </center>
+
+<p><b>Pragma volatile</b> will mark a variable as "volatile", meaning that its
+value can change unexpectedly and SparForte should reload the value from the
+environment whenever it is referenced.  Although you can make volatile
+environment variables, it probably won't be useful: these variables are owned
+by the running process, which is SparForte, so it is virtually impossible
+to change their values except using the SparForte itself.</p>
+
+<h3>CGI Variables</h3>
+
+<p>CGI variables are the HTTP FORM tag variables submitted from a web
+page.  If you are in a web template (if you used <b>pragma template</b> or
+<b>pragma unrestricted_template</b>), you can read the variables using
+<b>pragma import</b>.</p>
+
+<p>If the variable doesn't exist, SparForte will report an error.
+This behaviour can be overridden using <b>pragma unchecked_import</b>:
+if the variable doesn't exist in the environment, the value will
+be unchanged.  It is a good idea to assign a default value.</p>
+
+<p>You cannot export CGI variables: there's nowhere to export the values
+to.</p>
+
+<p><b>Pragma volatile</b> can be used, but like shell variables, it
+has no meaningful effect: the CGI variables will not change while in
+a template.</p>
+
+<p>You can also read CGI variables using the CGI package.</p>
+
+<h3>Local Memcache Variables</h3>
+
+<p><b>Memcached</b> (or the Memcache Daemon) is a general-purpose
+networked memory caching system that
+was originally developed by Danga Interactive for LiveJournal, but is now
+used by many other sites. It is often used to speed up dynamic
+database-driven websites by caching data and objects in RAM to reduce the
+number of times an external data source (such as a database or API) must
+be read.  Memcached has been used by web sites including YouTube,
+Facebook and Twitter.</p>
+
+<p>SparForte supports memcached natively (that is, you don't need to
+use a special package to access memcached.)
+The memcached support is built on the PegaSoft <b>PegaSock</b>
+socket library, which supports local memcached caching as well as
+distributed, redundant memcached caching clusters.</p>
+
+<p>One important rule: PegaSock expects a non-empty string for all
+variable values (it uses an empty string to represent a cache miss.)</p>
+
+<p>When importing or exporting to local_memcache, the variables will be
+imported or exported from your local machine.  SparForte expects to
+find a memcached server running on <b>localhost and port 11211</b> (the default
+memcached port).</p>
+
+<p>All SparForte scripts running on the same server can access the
+memcache variables.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+		=&gt; s : string := "test"<br>
+		=&gt; <b>pragma</b> export( local_memcache, s )<br>
+		=&gt; <b>env</b> s<br>
+		s := "test"; -- exported local memcache identifier of the type string<br>
+		=&gt; <b>unset</b> s<br>
+		=&gt; s : string := "not test"<br>
+		=&gt; <b>pragma</b> import( local_memcache, s )<br>
+		=&gt; ? s<br>
+		test<br>&nbsp;<br>
+                </p>
+        <div class="code_caption">
+                <b>Example</b>: A simple command line example of local_memcache</span>
+        </div>
+        </div>
+	</center>
+
+<h4>Importing with Memcache</h4>
+
+<p>When importing, The variable will be read from memcache when <b>pragma
+import</b> is used.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+		=&gt; user_count : string<br>
+		=&gt; <b>pragma</b> import( local_memcache, user_count )<br>
+		=&gt; <b>env</b> user_count<br>
+		user_count := " 3"; -- imported local memcache identifier of the type string<br>&nbsp;<br>
+        <div class="code_caption">
+                <b>Example</b>: Importing a memcached variable on the command line</span>
+        </div>
+        </div>
+        </center>
+
+<p>(For example, if you import a variable named "user_count", SparForte
+will request the value of "user_count" from memcached hash table on
+the localhost using a memcached GET command.)</p>
+
+<p>If the variable doesn't exist, SparForte will report an error.
+This behaviour can be overridden using <b>pragma unchecked_import</b>:
+if the variable doesn't exist in the environment, the value will
+be unchanged.  It is a good idea to assign a default value.</p>
+
+<p>The variable will normally be read at the time of importing,
+though this behaviour can be changed with pragam volatile (see below).</p>
+
+<p>You can use a <b>declare block</b> to get the value at your discretion
+by using an imported variable.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+		<b>declare</b><br>
+        	&nbsp;&nbsp;-- Get current value from memcached<br>
+    		&nbsp;&nbsp;status : string;<br>
+    		&nbsp;&nbsp;<b>pragma</b> import( local_memcache, status );<br>
+  		<b>begin</b><br>
+    		&nbsp;&nbsp;-- do something with status<br>
+  		<b>end</b>;<br>&nbsp;<br>
+                </p>
+        <div class="code_caption">
+                <b>Example</b>: Using declare to import on demand</span>
+        </div>
+        </div>
+        </center>
+
+<h4>Exporting with Memcache</h4>
+
+<p>When exporting, the variable's final value will be stored in memcache
+with the memcache SET command when the varible goes out of scope or
+is destroyed with unset.</p>
+
+<p>You can update the value at any time using a declare block and an
+exported variable:</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+  		new_status_value := "good";<br>
+  		<b>declare</b><br>
+    		&nbsp;&nbsp;-- Push out new value to memcached<br>
+    		&nbsp;&nbsp;status : string := new_status_value;<br>
+    		&nbsp;&nbsp;<b>pragma</b> export( local_memcache, status );<br>
+  		<b>begin</b><br>
+    		&nbsp;&nbsp;<b>null</b>; -- do nothing<br>
+  		<b>end</b>; -- before discarding status, write it to memcached<br>&nbsp;<br>
+                </p>
+        <div class="code_caption">
+                <b>Example</b>: Using declare to export on demand</span>
+        </div>
+        </div>
+        </center>
+
+<h4>Importing, Exporting and Volatile with Memcache</h4>
+
+<p>It is possible to declare a variable as both imported and
+exported using both import/export pragmas.</p>
+
+<p><b>Pragma volatile</b> will mark a variable as "volatile", meaning that its
+value can change unexpectedly and SparForte should reload the value from the
+memcached whenever it is referenced.</p>
+
+<p>You can declare a variable as import, export and volatile.
+For example:</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+		<b>declare</b><br>
+		&nbsp;&nbsp;user_count : string;<br>
+		&nbsp;&nbsp;<b>pragma</b> import( local_memcache, user_count );<br>
+		&nbsp;&nbsp;<b>pragma</b> export( local_memcache, user_count );<br>
+		&nbsp;&nbsp;<b>pragma</b> volatile( user_count );<br>
+		<b>begin</b><br>
+		-- do some other work here<br>
+		&nbsp;&nbsp;user_count := strings.image( integer( numerics.value( @ ) + 1 ) );<br>
+  		<b>end</b></b>;<br>&nbsp;<br>
+                </p>
+        <div class="code_caption">
+                <b>Example</b>: Using import, export and volatile</span>
+        </div>
+        </div>
+        </center>
+
+<p>In this example, the assignment statement will get the latest value for
+user_count, convert it to a number, add 1 and convert the result back to
+a string.  When the declare block ends, the value of user_count will be
+stored in memcached.</p>
+
+<p>Bear in mind that this kind of operation is not atomic: another script
+could try to update user_count in memcache before the first script
+can write the result.  If you want to lock access to the variable to
+guarantee exclusive access, you will need to use the lock_file package
+or a similar approach.</p>
+
+<h4>Handling Server Failures</h4>
+
+<p>PegaSock uses a countdown system when a memcache server cannot
+be found.  If it cannot connect, it marks the server as off-line
+and will return cache misses for several commands.  After enough
+commands have passed, it will attempt to reconnect to memcached.
+These "back offs" are escallating: each failed reconnect attempt
+will result in a longer backoff period.  This is done for
+performance reasons: establishing new network connections is a
+very slow operation.</p>
+
+<p>If you don't have memcached running on your local machine, it
+will have the same effect.</p>
+
+<p>You'll periodically see warning messages from PegaSock because
+it is unable to establish a connection.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+		=&gt; s : string<br>
+		=&gt; <b>pragma</b> import( local_memcache, s )<br>
+		pegasock-memcache.adb:81: server localhost 11211 error - backing off for 8 tries<br>&nbsp;<br>
+</p>
+        <div class="code_caption">
+                <b>Example</b>: The memcached server is not running or cannot be accessed</span>
+        </div>
+        </div>
+        </center>
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>

@@ -21,13 +21,13 @@ MANPREFIX=MANPREFIXSUB
 
 #INCLUDE=-I./adacgi-1.6/ -I./apq-2.1/ -I./ADAVOX-0.51/bc -I./ADAVOX-0.51/wc -I./ADAVOX-0.51/main -I/usr/include/SDL
 # Compiling options for including files
-INCLUDE=-I./adacgi-1.6/ -I./apq-2.1/ -I./ADAVOX-0.51/bc -I./ADAVOX-0.51/wc -I./ADAVOX-0.51/main ${SDLINCL}
+INCLUDE=-I./adacgi-1.6/ -I./apq-2.1/ -I./ADAVOX-0.51/bc -I./ADAVOX-0.51/wc -I./ADAVOX-0.51/main -I./pegasock/ ${SDLINCL}
 # When binding, don't need to include the SDL files.  In particular, the -D
 # option created by the SDL config program will break gnatbind.
-INCLUDE_BIND=-I./adacgi-1.6/ -I./apq-2.1/ -I./ADAVOX-0.51/bc -I./ADAVOX-0.51/wc -I./ADAVOX-0.51/main
+INCLUDE_BIND=-I./adacgi-1.6/ -I./apq-2.1/ -I./ADAVOX-0.51/bc -I./ADAVOX-0.51/wc -I./ADAVOX-0.51/main -I./pegasock/
 #LIBS=-L`pg_config --libdir` -L./apq-1.92/ -lpq -lSDL ${PTHREAD_LIBS}
 #LIBS=-L`pg_config --libdir` -L./apq-2.1/ ./apq-2.1/c_mysql.o -l SDL -l SDL_image ${PTHREAD_LIBS}
-LIBS=-L`pg_config --libdir` `mysql_config --libs` -L./apq-2.1/ ./apq-2.1/c_mysql.o ${SDLLIBS}
+LIBS=-L`pg_config --libdir` `mysql_config --libs` -L./apq-2.1/ ./apq-2.1/c_mysql.o -L./pegasock/ ./pegasock/c_tinyserve.o ./pegasock/c_os.o ${SDLLIBS}
 # c_mysql.o missing in APQ 2.1 library
 
 # Make Rules Start
@@ -52,6 +52,12 @@ all: c_os.o c_scanner.o
 	@echo "---------------------------------------------------------------"
 	@echo
 	$(MAKE) CPU=$(CPU) -C ADAVOX-0.51
+	@echo
+	@echo "---------------------------------------------------------------"
+	@echo "  Making PegaSoft Socket Library"
+	@echo "---------------------------------------------------------------"
+	@echo
+	$(MAKE) -C pegasock/
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "  Making APQ (PostgreSQL/MySQL DBI)"
@@ -102,6 +108,12 @@ max: clean c_os.o c_scanner.o
 	$(MAKE) CPU=$(CPU) -C ADAVOX-0.51
 	@echo
 	@echo "---------------------------------------------------------------"
+	@echo "  Making PegaSoft Socket Library"
+	@echo "---------------------------------------------------------------"
+	@echo
+	$(MAKE) -C pegasock/
+	@echo
+	@echo "---------------------------------------------------------------"
 	@echo "  Making APQ (PostgreSQL/MySQL DBI)"
 	@echo "    http://home.cogeco.ca/~ve3wwg"
 	@echo "---------------------------------------------------------------"
@@ -120,12 +132,14 @@ clean:
 	$(MAKE) -C adacgi-1.6 clean
 	$(MAKE) -C apq-2.1 clean
 	$(MAKE) -C ADAVOX-0.51 clean
+	$(MAKE) -C pegasock clean
 	rm -f *.o *.ali t.t t.spar core spar.zip spar testsuite/write_only.txt testsuite/exec_only.txt
 
 distclean:
 	$(MAKE) -C adacgi-1.6 clean
 	$(MAKE) -C ADAVOX-0.51 clobber
 	$(MAKE) -C apq-2.1 clobber
+	$(MAKE) -C pegasock distclean
 	rm -f *.o *.ali *~ t.t t.spar core spar.zip spar testsuite/write_only.txt testsuite/exec_only.txt
 	rm -f bush_os.ads bush_os.adb bush_os-sdl.ads parser.adb parser_db.ads parser_db.adb parser_mysql.ads parser_mysql.adb world.ads builtins.adb
 

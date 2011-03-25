@@ -27,8 +27,10 @@ with system,
   ada.numerics.float_random,
   ada.unchecked_deallocation,
   ada.strings.unbounded,
-  gen_list;
-use ada.strings.unbounded;
+  gen_list,
+  pegasock.memcache;
+use ada.strings.unbounded,
+  pegasock.memcache;
 #if APQ
   with APQ;
   use APQ;
@@ -41,7 +43,7 @@ package world is
 ------------------------------------------------------------------------------
 
 version   : constant string := "1.2";
-copyright : constant string :=  " Copyright (c)2001-2010 PegaSoft Canada & Free Software Foundation";
+copyright : constant string :=  " Copyright (c)2001-2011 Free Software Foundation";
 
 random_generator : ada.numerics.float_random.generator;
 
@@ -204,6 +206,12 @@ type anIdentifierClass is ( constClass, subClass, typeClass, funcClass,
   userFuncClass, procClass, userProcClass, taskClass, mainProgramClass,
   otherClass );
 
+------------------------------------------------------------------------------
+--
+-- Import/Export Methods
+-- Note: http_cgi to avoid ambiguity over "cgi" package name
+
+type anImportMethod is ( none, http_cgi, local_memcache, shell );
  
 ------------------------------------------------------------------------------
 -- Identifier Declarations
@@ -219,6 +227,7 @@ type declaration is record
      class    : anIdentifierClass               -- identifier's class
                 := otherClass;
      import   : boolean := false;               -- marked by pragma import
+     method   : anImportMethod := none;         -- how to import
      export   : boolean := false;               -- marked by pragma export
      volatile : boolean := false;               -- marked by pragma volatile
      limit    : boolean := false;               -- limited type
@@ -466,7 +475,6 @@ itself_type : identifier;         -- type of @ or procedure identifier
 last_output : unbounded_string;   -- result of last output
 last_output_type : identifier;    -- type of last output
 
-
 ------------------------------------------------------------------------------
 -- Declarations
 ------------------------------------------------------------------------------
@@ -604,5 +612,19 @@ initialEnvironment : environmentList.List;
 
 procedure findField( recordVar : identifier; fieldNumber: natural;
   fieldVar : out identifier );
+
+-----------------------------------------------------------------------------
+-- Memcached
+-----------------------------------------------------------------------------
+
+-- PegaSock Cluster for a Local Memcache Server
+-- It is only initialized if it is used in pragma import/etc.
+
+
+localMemcacheCluster : aMemcacheCluster;
+
+-- Initialize the cluster.  If it is already initialized, this has no effect
+
+procedure checkAndInitializeLocalMemcacheCluster;
 
 end world;

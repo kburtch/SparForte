@@ -214,6 +214,32 @@ reference section.</p>
 
 <p>Put double quotes around the command name.</p>
 
+<h4>How do I create session variables?</h4>
+
+<p>Web session variables are on our to-do list.  In the meantime,
+you can create your session variables yourself.  Create a file
+in the /tmp directory.  Use a filename that is secure and
+consistent for the user's session: for example,
+the filename can be the MD5 value of the user's id.  Read and
+write variables to this file.  Write a cron task to periodically
+clean old files out of /tmp.  If performance is an issue, it
+is a common trick on web servers to move /tmp to a ramdisk.</p>
+
+<h4>Why can I only import and export string variables?</h4>
+
+<p>Variables in SparForte may be of many different types and
+the values are represented in ways specific to the language.
+When Ken designed pragma import/export, strings were believed
+to be the most fundamental way of transferring information
+between SparForte and other languages.  In addition,
+environment variables are actually strings.</p>
+
+<p>However, passing a numeric variable through import and
+export between SparForte scripts means converting the variable
+to/from a string, which is inconvenient.  It is possible that
+the importing/exporting numeric variables will be done in the
+future.</p>
+
 <h3>Design Questions</h3>
 
 <h4>Isn't Sparforte just another "my favourite language" shell?</h4>

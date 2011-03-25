@@ -47,6 +47,9 @@ pragma Optimize( time );
 
 package body world is
 
+localMemcacheClusterInitialized : boolean := false;
+-- flag: only initialize the local memcache cluster once
+
 --
 -- Symbol Table Utilities
 --
@@ -126,19 +129,36 @@ begin
         -- Destroying an array will also shift the other array id numbers
         -- since they are in a linked list!
         clearArray( arrayID( to_numeric( identifiers( id ).value ) ) );
+     elsif identifiers( id ).export and identifiers( id ).method = local_memcache then
+         -- if memcache, export before deleting
+         begin
+            Set( localMemcacheCluster,
+                 identifiers( id ).name,
+                 identifiers( id ).value );
+         exception when others => null;
+         end;
      end if;
      identifiers_top := identifiers_top - 1;                    -- pull stack
      return true;                                               -- delete ok
   end if;                                                       -- else
   if identifiers( id ).list and identifiers( id ).class = otherClass then
      clearArray( arrayID( to_numeric( identifiers( id ).value ) ) );
+  elsif identifiers( id ).export and identifiers( id ).method = local_memcache then
+      begin
+         Set( localMemcacheCluster,
+              identifiers( id ).name,
+              identifiers( id ).value );
+      exception when others => null;
+      end;
   end if;
+
   identifiers( id ).deleted := true;                            -- flag it
   -- When a variable with the same name is encountered, it will be
   -- reinitialized with a Kind of new but these will remain unchanged.
   -- Reset these to defaults to avoid confusing Bush...
   identifiers( id ).import := false;                            -- clear these
   identifiers( id ).export := false; 
+  identifiers( id ).method := none; 
   identifiers( id ).list   := false; 
   identifiers( id ).field_of  := eof_t; 
   identifiers( id ).volatile := false; 
@@ -184,6 +204,7 @@ begin
        value    => To_Unbounded_String( s(eqpos+1..s'last ) ),
        class    => otherClass,
        import   => true,                                        -- must import
+       method   => shell,
        export   => false,
        volatile => false,
        limit    => false,
@@ -212,6 +233,7 @@ begin
        value    => Null_Unbounded_String,
        class    => class,
        import   => false,
+       method   => none,
        export   => false,
        volatile => false,
        limit    => false,
@@ -308,6 +330,7 @@ begin
                  value    => value,
                  class    => constClass,
                  import   => false,
+                 method   => none,
                  export   => false,
                  volatile => false,
                  limit    => false,
@@ -340,6 +363,7 @@ begin
        value    => null_unbounded_string,
        class    => constClass,
        import   => false,
+       method   => none,
        export   => false,
        volatile => false,
        limit    => false,
@@ -527,5 +551,17 @@ begin
       end if;
   end loop;
 end findField;
+
+-- CHECK AND INITIALIZE LOCAL MEMCACHE CLUSTER
+
+procedure checkAndInitializeLocalMemcacheCluster is
+begin
+  if not localMemcacheClusterInitialized then
+     localMemcacheClusterInitialized := true;
+     RegisterServer( localMemcacheCluster, to_unbounded_string( "localhost" ), 11211 );
+     SetClusterName( localMemcacheCluster, to_unbounded_string( "Local Memcache" ) );
+     SetClusterType( localMemcacheCluster, normal );
+  end if;
+end checkAndInitializeLocalMemcacheCluster;
 
 end world;

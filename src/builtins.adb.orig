@@ -648,8 +648,9 @@ begin
                end if;
            end loop;
         -- single dimensional array.  Free dynamic memory. (notice not recursive)
-        elsif identifiers( identToUnset ).list then
-           clearArray( arrayID( to_numeric( identifiers( identToUnset ).value ) ) );
+        -- Removed 11/03/25 - this already done by  delete ident
+        --elsif identifiers( identToUnset ).list then
+        --   clearArray( arrayID( to_numeric( identifiers( identToUnset ).value ) ) );
         end if;
         if not deleteIdent( identToUnset ) then
            err( "unable to unset identifier" );
