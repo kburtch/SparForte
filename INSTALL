@@ -45,11 +45,10 @@ The following software packages are required for SparForte:
     installed under the name "gmake" and the SparForte makefile assumes this is the
     name of your software building program.
 
-  * GCC is required; SparForte is written in Ada and C, both of which are available
-    with GCC 3.x or later.  If you are running GCC 2.x, use add-on Ada compiler
-    GNAT 3.15.  Most modern Linux distributions, including Red Hat,  have
-    GCC 3.x with Ada and C support active or available from an online
-    repository.
+  * GCC is required; SparForte is written in Ada 2005 and C, both of which are
+    available recent versions of GCC.  Most modern Linux distributions,
+    including Red Hat,  have GCC with Ada and C support active or available
+    from an online repository.
 
   * gzip is needed to unpack the source code in the first place.  If you are
     reading this, you know this already.
@@ -80,13 +79,13 @@ The following software packages are required for SparForte:
     - Fedora Linux users can try gcc-gnat
     - SuSE Linux   users can try gcc-ada
 
-  Example: Debian Linux 3.1
+  Example: Debian Linux
 
   The default Debian database is PostgreSQL.  However, Debian doesn't
   install Ada, SDL, MySQL or the PostgreSQL development packages.  Check
   packages.debian.org for a list of software package names.
 
-  $ apt-get install gnat-3.3
+  $ apt-get install gnat-4.1
   $ apt-get install libncurses5-dev
   $ apt-get install libsdl1.2-dev
   $ apt-get install libsdl-image1.2

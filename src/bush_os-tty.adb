@@ -22,14 +22,17 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io; -- for DEBUG
-use ada.text_io; -- for DEBUG
-with Interfaces.C;
-
-with unchecked_deallocation;
-
-with bush_os.exec, signal_flags, world;
-use  bush_os.exec, signal_flags, world;
+with unchecked_deallocation,
+     interfaces.c,
+     ada.text_io,
+     gnat.source_info,
+     bush_os.exec,
+     signal_flags,
+     world;
+use  ada.text_io,
+     bush_os.exec,
+     signal_flags,
+     world;
 
 package body bush_os.tty is
 
@@ -98,62 +101,46 @@ begin
   
   mkstemp( tputResultsFD, tputResults );
   if tputResultsFD < 0 then
-     put_line( standard_error, "Bush.TTY: Unable to make temp file" );
-     put_line( standard_error, "BUSH.TTY: Error # " & C_errno'img );
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Unable to make temp file" );
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Error # " & C_errno'img );
      return null_unbounded_string;
   end if;
 
-<<retry1>>
-  oldstdout := dup( stdout );
+  <<retry1>> oldstdout := dup( stdout );
   if oldstdout < 0 then
      if C_errno = EINTR then
         goto retry1;
      end if;
-  end if;
-  if oldstdout < 0 then
-<<retry2>>
-     closeResult := close( tputResultsFD );
+     <<retry2>> closeResult := close( tputResultsFD );
      if closeResult < 0 then
         if C_errno = EINTR then
            goto retry2;
         end if;
      end if;
-     put_line( standard_error, "Bush.TTY: Unable to save stdout" );
-     put_line( standard_error, "Bush.TTY: Error # " & C_errno'img );
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Unable to save stdout" );
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Error # " & C_errno'img );
      return null_unbounded_string;
   end if;
 
-<<retry3>>
-  result := dup2( tputResultsFD, stdout );
+  <<retry3>> result := dup2( tputResultsFD, stdout );
   if result < 0 then
      if C_errno = EINTR then
         goto retry3;
      end if;
-  end if;
-  if result < 0 then
-<<retry4>>
-     closeResult := close( tputResultsFD );
+     <<retry4>> closeResult := close( tputResultsFD );
      if closeResult < 0 then
         if C_errno = EINTR then
            goto retry4;
         end if;
      end if;
-<<retry5>>
-     closeResult := close( tputResultsFD );
+    <<retry5>> closeResult := close( oldstdout );
      if closeResult < 0 then
         if C_errno = EINTR then
            goto retry5;
         end if;
      end if;
-<<retry6>>
-     closeResult := close( oldstdout );
-     if closeResult < 0 then
-        if C_errno = EINTR then
-           goto retry6;
-        end if;
-     end if;
-     put_line( standard_error, "Bush.TTY: Unable to redirect stdout" );
-     put_line( standard_error, "Bush.TTY: Error # " & C_errno'img );
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Unable to redirect stdout" );
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Error # " & C_errno'img );
      return null_unbounded_string;
   end if;
 
@@ -176,7 +163,7 @@ begin
      when lines =>   ap( 1 ) := tinfo_lines'access;
      when cols =>    ap( 1 ) := tinfo_cols'access;
      when others =>
-       put_line( standard_output, "Internal error: no such tcap code" );
+       put_line( standard_output, Gnat.Source_Info.Source_Location & "Internal error: no such tcap code" );
      end case;
   elsif tput_style = "termcap" then
      case attr is
@@ -223,34 +210,33 @@ begin
   end;
   free_list( ap );
   if C_errno > 0 then
-     result := dup2( oldstdout, stdout );
-<<retry7>>
-     closeResult := close( oldstdout );
+     <<retry6>> result := dup2( oldstdout, stdout );
+     if result < 0 and C_errno = EINTR then
+        goto retry6;
+     end if;
+     <<retry7>> closeResult := close( oldstdout );
      if closeResult < 0 then
         if C_errno = EINTR then
            goto retry7;
         end if;
      end if;
-<<retry8>>
-     closeResult := close( tputResultsFD );
+     <<retry8>> closeResult := close( tputResultsFD );
      if closeResult < 0 then
         if C_errno = EINTR then
            goto retry8;
         end if;
      end if;
-     put_line( standard_error, to_string( "Unable to find/run " & tput_path1 ) );
+     put_line( standard_error, Gnat.Source_Info.Source_Location & to_string( ": Unable to find/run " & tput_path1 ) );
      return null_unbounded_string;
   end if;
   result := dup2( oldstdout, stdout );
-<<retry9>>
-  closeResult := close( oldstdout );
+  <<retry9>> closeResult := close( oldstdout );
   if closeResult < 0 then
      if C_errno = EINTR then
         goto retry9;
      end if;
   end if;
-<<retry10>>
-  closeResult := close( tputResultsFD );
+  <<retry10>> closeResult := close( tputResultsFD );
   if closeResult < 0 then
      if C_errno = EINTR then
         goto retry10;
@@ -263,9 +249,14 @@ begin
  -- end if;
   
   -- Read results
-  
-  tputResultsFD := open( tputResults & ASCII.NUL, 0, 660 );
-  if tputResultsFD > 0 then
+ 
+<<retry11>> tputResultsFD := open( tputResults & ASCII.NUL, 0, 660 );
+  if tputResultsFD < 0 then
+     if C_errno = EINTR then
+        goto retry11;
+     end if;
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Unable to open " & tputResults );
+  else
      loop
         readchar( amountRead, tputResultsFD, ch, 1 );
         if amountRead < 0 then
@@ -279,11 +270,10 @@ begin
            exit;
         end if;
      end loop;
-<<retry11>>
-     closeResult := close( tputResultsFD );
+     <<retry12>> closeResult := close( tputResultsFD );
      if closeResult < 0 then
         if C_errno = EINTR then
-           goto retry11;
+           goto retry12;
         end if;
      end if;
      result := aFileDescriptor( unlink( tputResults & ASCII.NUL ) );
@@ -292,7 +282,7 @@ begin
   return ttyCode;
 
   exception when others =>
-       put( standard_error, "BUSH.Tty: Contraint thrown for " );
+       put( standard_error, Gnat.Source_Info.Source_Location & ": Contraint thrown for " );
        put_line( standard_error, attr'img );
        return ttyCode;
 end tput;
@@ -330,8 +320,7 @@ begin
   ttyFile := open( "/dev/tty" & ASCII.NUL, 0, 660 );
   if ttyFile >= 0 then
      ioctl_TIOCGWINSZ( res, ttyFile, TIOCGWINSZ, displayInfo );
-<<retryclose>>
-     closeResult := close( ttyFile );
+     <<retryclose>> closeResult := close( ttyFile );
      if closeResult < 0 then
         if C_errno = EINTR then
           goto retryclose;
@@ -386,16 +375,19 @@ begin
      -- read character here (non-canonical, set by termios
      -- MIN = 1  & TIME = 0).  Disable special chars separately
      -- strip high bit.  Normally, canonical + 0 min + 0 time
-     ttyFile := open( "/dev/tty" & ASCII.NUL, 0, 660 );
+     <<retryopen>>ttyFile := open( "/dev/tty" & ASCII.NUL, 0, 660 );
      if ttyFile < 0 then
-        put( standard_error, "getKey: unable to read keyboard settings - " );
+        if C_errno = EINTR then
+           goto retryopen;
+        end if;
+        put( standard_error, Gnat.Source_Info.Source_Location & ": unable to read keyboard settings - " );
         put( standard_error, "open /dev/tty failed - " );
         put_line( standard_error, "error " & bush_os.C_errno'img );
         raise CONSTRAINT_ERROR;                   -- for lack of a better error
      else
         ioctl_getattr( res, ttyFile, TCGETATTR, tio );
         if res /= 0 then
-           put( standard_error, "getKey: unable to load keyboard settings - " 
+           put( standard_error, Gnat.Source_Info.Source_Location & ": unable to load keyboard settings - " 
 );
            put_line( standard_error, "ioctl /dev/tty TCGETATTR failed" );
            raise CONSTRAINT_ERROR;                -- for lack of a better error
@@ -420,24 +412,24 @@ begin
            -- leave alone.
            ioctl_setattr( res, ttyFile, TCSETATTR, tio ); -- raw read mode
            if res /= 0 then                            -- very unlikely
-              put_line( "ioctl_set failed" );          -- but check anyway
+              put_line( standard_error, Gnat.Source_Info.Source_Location & ": ioctl_set failed" );          -- but check anyway
               -- probably should raise an exception here
            else
               res := tcdrain( stdout );            -- flush pending output
-<<retry>>     readchar( amountRead, stdin, ch, 1 );-- read a character
+<<retryread>> C_reset_errno;
+              readchar( amountRead, stdin, ch, 1 );-- read a character
               if amountRead = 0 then               -- nothing read?
                  ch := ASCII.EOT;                  -- return a control-d
               elsif amountRead < 0 then            -- error?
                  if bush_os.C_errno = EINTR and not wasSIGINT then
                     -- interrupted by signal (other than SIGINT)
-                    goto retry;                    -- then try again
+                    goto retryread;                -- then try again
                  end if;
               end if;
               ioctl_setattr( res, ttyFile, TCSETATTR, oldtio ); -- restore settings
            end if;
         end if;
-<<retryclose>>
-        closeResult := close( ttyfile );
+        <<retryclose>> closeResult := close( ttyfile );
         if closeResult < 0 then
            if C_errno = EINTR then
               goto retryclose;
@@ -460,7 +452,10 @@ procedure simpleBeep is
 begin
   for i in 1..length( term( bel ) ) loop
       ch := element( term( bel ), i );
-      writechar( amountWritten, stderr, ch, 1 );
+      amountWritten := 0;
+      while amountWritten = 0 loop
+         writechar( amountWritten, stderr, ch, 1 );
+      end loop;
   end loop;
   result := tcdrain( stderr );
 end simpleBeep;

@@ -58,3 +58,17 @@ for direct color screens (but not working correctly).
 
 26. New: pragma restriction( no_postgresql_database ) - disable connections to a PostgreSQL database. Doesn't prevent the psql client or other programs from using PostgreSQL
 
+27. Fixed: Interrupted system calls handled throughout the software
+
+28. Fixed: Fixed prefix/manprefix install issues in top-most makefile
+
+29. Fixed: Fixed make max
+
+30. New: rpm building script for opensuse
+
+31. New: local memcache variables. pragma import, pragma export, pragma volatile support local_memcache import method.
+
+32. New: memcache variables. pragma import, pragma export, pragma volatile
+support memcache import method.  New pragma register_memcache_server to add
+to a list of distributed memcache servers.
+

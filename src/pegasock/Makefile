@@ -40,5 +40,8 @@ tinyservetest:
 	time ./tinyservetester
 
 clean:
-	rm *.o *.ali tester test.txt tinyservetester
+	rm *.o *.ali
+	test -f tester && rm tester
+	test -f test.txt && test.txt || :
+	test -f tinyservetester && tinyservetester || :
 

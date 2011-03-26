@@ -75,12 +75,12 @@ The debugging commands are run in restricted shell mode.</li>
 execution,
 SparForte will warn that the script is obsolete and has been superceded for
 "newscript".</li>
-  <li> <b>pragma export( shell | local_memcache, var )</b> - export a string variable
+  <li> <b>pragma export( shell | local_memcache | memcache, var )</b> - export a string variable
 to the O/S environment. The first parameter must be "shell".</li>
   <li><span style="font-weight: bold;">pragma gcc_errors</span> - same
 as --gcc-errors.&nbsp; Show simplified gcc-style errors.<br>
   </li>
-  <li> <b>pragma import( shell | cgi | local_memcache, var )</b> -
+  <li> <b>pragma import( shell | cgi | local_memcache | memcache, var )</b> -
 import a variable.  For shell, from the O/S environment.  For cgi
 and if pragma template/unrestricted_template was used previously,
 a HTTP CGI variable from the O/S environment.  For local_memcache,
@@ -112,6 +112,8 @@ is used.&nbsp; Make sure the final command ends with a
 semi-colon.&nbsp; Changing your prompt will also change the title of
 your terminal window.<br>
   </li>
+  <li> <b>pragma register_memcache_server( host, port )</b> - add a
+memcache server which will be used with memcache method imports/exports</li>
   <li> <b>pragma restriction( no_auto_declarations )</b> - disable
 automatic declaration
 at the command prompt</li>
@@ -143,7 +145,7 @@ format
 using the line number in the template as the line number for the error.
 The first parameter is the template type: "text" or "html".</li>
 
-  <li> <b>pragma unchecked_import( shell | cgi | local_memcache, var )</b> -
+  <li> <b>pragma unchecked_import( shell | cgi | local_memcache | memcache, var )</b> -
 import a variable.  For shell, from the O/S environment.  For cgi
 and if pragma template/unrestricted_template was used previously,
 a HTTP CGI variable from the O/S environment.  For local_memcache,
@@ -494,6 +496,33 @@ it is unable to establish a connection.</p>
         </div>
         </center>
 
+<h3>Distributed Memcache Variables</h3>
+
+<p>If you have memcached running on two or more servers, you can create a
+redundant distributed cache using the "memcache" method instead of
+"local_memcache".
+In order to use a distributed cache, inform SparForte of what servers to
+use with pragma register_memcache_server.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+		=&gt; <b>pragma</b> register_memcache_server( "cachehost1", 11211 );<br>
+		=&gt; <b>pragma</b> register_memcache_server( "cachehost2", 11211 );<br>
+		=&gt; company_name : string<br>
+		=&gt; <b>pragma</b> import( memcache, company_name )<br>
+		=&gt; ? company_name<br>
+		PegaSoft Canada<br>
+		=&gt; <b>env</b> company_name<br>
+		company_name := "PegaSoft Canada"; -- imported memcache identifier of the type string<br>&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: Importing a variable stored on two hosts</span>
+        </div>
+        </div>
+        </center>
+
+<p>With more than one server, SparForte will store the variable on two servers.
+If one server should fail, it wil retrieve the variable value from the other.</p>
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
                                 <p class="rmt"><a class="rightmenutext" href="ref_adascript.html">&nbsp;AdaScript versus GCC</a></p>

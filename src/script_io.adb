@@ -21,7 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with interfaces.c, ada.text_io, ada.strings.unbounded.text_io;
+with interfaces.c, ada.text_io, ada.strings.unbounded.text_io,
+     Gnat.Source_Info;
 use  interfaces.c, ada.text_io, ada.strings.unbounded.text_io;
 
 
@@ -63,7 +64,7 @@ begin
      lineptr.all := lineptr.all & string( buffer(1..bufpos-1 ) );
   end if;
   if amountRead < 0 then
-     put_line( standard_error, "LineRead: error reading script file: errno " & C_errno'img );
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": error reading script file: errno " & C_errno'img );
      return false;
   elsif amountRead = 0 and length( lineptr.all ) = 0 then
      return false;

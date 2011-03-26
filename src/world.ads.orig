@@ -211,7 +211,7 @@ type anIdentifierClass is ( constClass, subClass, typeClass, funcClass,
 -- Import/Export Methods
 -- Note: http_cgi to avoid ambiguity over "cgi" package name
 
-type anImportMethod is ( none, http_cgi, local_memcache, shell );
+type anImportMethod is ( none, shell, http_cgi, local_memcache, memcache );
  
 ------------------------------------------------------------------------------
 -- Identifier Declarations
@@ -626,5 +626,9 @@ localMemcacheCluster : aMemcacheCluster;
 -- Initialize the cluster.  If it is already initialized, this has no effect
 
 procedure checkAndInitializeLocalMemcacheCluster;
+
+distributedMemcacheCluster : aMemcacheCluster;
+
+procedure checkAndInitializeDistributedMemcacheCluster;
 
 end world;

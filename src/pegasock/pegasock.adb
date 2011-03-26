@@ -280,7 +280,7 @@ end setReadBufferSize;
 
 procedure open( fd : out aBufferedFile; name : string; mode : aFileMode := blocking; perms : aFileAccess := Access_644 ) is
   flags : anOpenFlag := O_RDONLY;
-  os_perms : integer := 8#644#;
+  os_perms : aModeType := 8#644#;
 begin
   case mode is
   when nonblocking => flags := flags + O_NONBLOCK;
@@ -317,7 +317,7 @@ end open;
 
 procedure overwrite( fd : out aBufferedFile; name : string; mode : aFileMode := blocking; perms : aFileAccess := Access_644 ) is
   flags : anOpenFlag := O_CREAT+O_WRONLY+O_TRUNC;
-  os_perms : integer := 8#644#;
+  os_perms : aModeType := 8#644#;
 begin
   case mode is
   when nonblocking => flags := flags + O_NONBLOCK;
@@ -354,7 +354,7 @@ end overwrite;
 
 procedure append( fd : out aBufferedFile; name : string; mode : aFileMode := blocking; perms : aFileAccess := Access_644 ) is
   flags : anOpenFlag := O_WRONLY+O_APPEND;
-  os_perms : integer := 8#644#;
+  os_perms : aModeType := 8#644#;
 begin
   case mode is
   when nonblocking => flags := flags + O_NONBLOCK;

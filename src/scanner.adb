@@ -33,6 +33,7 @@ with system,
     ada.strings.fixed,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
+    gnat.source_info,
     bush_os,
     bush_os.tty,
     signal_flags,
@@ -247,6 +248,7 @@ begin
         case ident.method is
         when http_cgi  => put( "HTTP CGI " );
         when local_memcache  => put( "local memcache " );
+        when memcache  => put( "memcache " );
         when shell => put( "shell environment " );
         when others => put( "unknown " );
         end case;
@@ -1808,6 +1810,10 @@ begin
      Get( localMemcacheCluster,
           identifiers( id ).name,
           identifiers( id ).value );
+  elsif identifiers( id ).method = memcache then
+     Get( distributedMemcacheCluster,
+          identifiers( id ).name,
+          identifiers( id ).value );
   else
      key := identifiers( id ).name & "=";                        -- look for this
      for i in 1..Environment_Count loop                          -- all env vars
@@ -2265,7 +2271,7 @@ begin
   -- later.
 
   if script = null then
-     put_line( standard_error, "internal_error: getCommandLine: script is null" );
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": internal_error: getCommandLine: script is null" );
      cmdline        := null_unbounded_string;
      token_firstpos := cmdpos;
      token_lastpos  := cmdpos;
@@ -2278,7 +2284,7 @@ begin
   -- raised later.
 
   if cmdpos > script'length then
-     put_line( standard_error, "internal_error: getCommandLine: cmdpos " & cmdpos'img & " is greater than length of script " & script'length'img );
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": internal_error: getCommandLine: cmdpos " & cmdpos'img & " is greater than length of script " & script'length'img );
      cmdline        := null_unbounded_string;
      token_firstpos := cmdpos;
      token_lastpos  := cmdpos;
@@ -5041,14 +5047,14 @@ begin
   -- later.
 
   if script = null then
-     put_line( standard_error, "internal_error: copyByteCodeLines: script is null" );
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": internal_error: copyByteCodeLines: script is null" );
      return "";
   end if;
 
   -- Invalid range test
 
   if point1 > point2 then
-     put_line( standard_error, "internal error: copyByteCodeLines: point1 " & point1'img & " is greater than point2 " & point2'img );
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": internal error: copyByteCodeLines: point1 " & point1'img & " is greater than point2 " & point2'img );
      return "";
   end if;
 
@@ -5056,7 +5062,7 @@ begin
   -- raised later.
 
   if point2 > script'length then
-     put_line( standard_error, "internal_error: copyByteCodeLines: cmdpos " & cmdpos'img & " is greater than length of script " & script'length'img );
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": internal_error: copyByteCodeLines: cmdpos " & cmdpos'img & " is greater than length of script " & script'length'img );
      return "";
   end if;
 
@@ -5272,7 +5278,7 @@ procedure insertInclude( includeName : unbounded_string ) is
   includeText : unbounded_string;
 begin
   if script = null then                                       -- no script?
-     err( "internal_error: no script" );
+     err( Gnat.Source_Info.Source_Location & "internal_error: no script" );
   else
 
      -- includes are based on a byte code position (the file name is not

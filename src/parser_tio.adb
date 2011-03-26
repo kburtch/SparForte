@@ -24,6 +24,7 @@
 with interfaces.c,
     ada.text_io.editing,
     ada.strings.unbounded.text_io,
+    gnat.source_info,
     string_util,
     user_io,
     script_io,
@@ -154,7 +155,7 @@ begin
      elsif identifier'value( to_string( result ) ) = append_file_t then
         result := identifiers( append_file_t ).value;
      else
-        err( "internal error: unable to determine file mode" );
+        err( Gnat.Source_Info.Source_Location & ": internal error: unable to determine file mode" );
      end if;
   end if;
 end ParseMode;
@@ -529,10 +530,11 @@ begin
    elsif result = 0 then                -- nothing read?
       eof := true;                      -- then it's the end of file
    end if;
+put_line( "DoGet: read " & result'img ); -- DEBUG
    if ref.id = current_output_t or      -- SHOULD NEVER BE TRUE BUT...
       ref.id = current_input_t or
       ref.id = current_error_t then
-      err( "Internal Error: DoGet was given a file alias not a real file" );
+      err( Gnat.Source_Info.Source_Location & ": Internal Error: DoGet was given a file alias not a real file" );
    else
       if eof then                       -- eof? set eof_field
          replaceField( fileInfo, recSep, eof_field, "1" );
@@ -594,7 +596,7 @@ begin
   elsif mode = append_file_t then
      result := open( name & ASCII.NUL, flags+O_WRONLY+O_APPEND, 8#644# );
   else
-     err( "internal error: unexpected file mode" );
+     err( Gnat.Source_Info.Source_Location & ": internal error: unexpected file mode" );
   end if;
   if result < 0 then
      err( "Unable to open file: " & OSerror( C_errno ) );
@@ -839,7 +841,7 @@ begin
         elsif to_string( modestr ) = append_file_t'img then
            mode := append_file_t;
         else
-           err( "internal error: unable to determine file mode " &
+           err( Gnat.Source_Info.Source_Location & ": internal error: unable to determine file mode " &
              to_string( modestr ) );
         end if;
      end if;

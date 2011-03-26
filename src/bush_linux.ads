@@ -69,6 +69,9 @@ O_NONBLOCK : constant anOpenFlag := 8#4000#;
 O_SYNC     : constant anOpenFlag := 8#10000#;
 -- /usr/include/bits/fcntl.h
 
+type aModeType is new int;
+-- Linux is int, FreeBSD is short
+
 function getpid return aPID;
 pragma import( C, getpid );
 
@@ -87,10 +90,10 @@ pragma import( C, write );
 pragma import_valued_procedure( write );
 procedure writechar( result : out size_t; fd : aFileDescriptor; char : in out character;
   count : long_integer );
-pragma import( C, writechar, "read" );
-pragma import_valued_procedure( writechar, "read" );
+pragma import( C, writechar, "write" );
+pragma import_valued_procedure( writechar, "write" );
 
-function open( path : string; flags : anOpenFlag; mode : integer ) return aFileDescriptor;
+function open( path : string; flags : anOpenFlag; mode : aModeType ) return aFileDescriptor;
 pragma import( C, open );
 
 function close( fd : aFileDescriptor ) return int;

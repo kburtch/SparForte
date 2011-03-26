@@ -3095,12 +3095,13 @@ end ParseDeclarationPart;
 procedure ParsePragma is
   type aPragmaType is ( ada_95, asserting, annotate, debug, debug_on,
      depreciated, export, gcc_errors, import, inspection, inspect_var,
-     noCommandHash, peek, promptChange, restriction, restriction_auto,
-     restriction_external, restriction_mysql, restriction_postgresql,
-     template, unchecked_import, uninspect_var, unrestricted_template,
-     volatile );
+     noCommandHash, peek, promptChange, register_memcache_server,
+     restriction, restriction_auto, restriction_external,
+     restriction_mysql, restriction_postgresql, template,
+     unchecked_import, uninspect_var, unrestricted_template, volatile );
   pragmaKind  : aPragmaType;
   expr_val    : unbounded_string;
+  expr_val2   : unbounded_string;
   results     : unbounded_string;
   var_id      : identifier;
   exportType  : unbounded_string;
@@ -3135,6 +3136,8 @@ begin
      pragmaKind := noCommandHash;
   elsif identifiers( token ).name = "prompt_script" then
      pragmaKind := promptChange;
+  elsif identifiers( token ).name = "register_memcache_server" then
+     pragmaKind := register_memcache_server;
   elsif identifiers( token ).name = "restriction" then
      pragmaKind := restriction;
   elsif identifiers( token ).name = "restrictions" then
@@ -3218,9 +3221,15 @@ begin
         getNextToken;
         expect( symbol_t, "," );
         ParseIdentifier( var_id );
+     elsif identifiers( token ).name = "memcache" then
+        exportType := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        expect( symbol_t, "," );
+        ParseIdentifier( var_id );
      else
         discardUnusedIdentifier( token );
-        err( "only 'shell', 'local_memcache' convention supported" );
+        err( "only 'shell', 'local_memcache', 'memcache' convention supported" );
         return;
      end if;
   when import | unchecked_import =>             -- pragma unchecked/import
@@ -3242,6 +3251,12 @@ begin
         getNextToken;
         expect( symbol_t, "," );
         ParseIdentifier( var_id );
+     elsif identifiers( token ).name = "memcache" then
+        importType := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        expect( symbol_t, "," );
+        ParseIdentifier( var_id );
      else
         discardUnusedIdentifier( token );
         err( "only 'shell' or 'cgi' convention supported" );
@@ -3258,6 +3273,12 @@ begin
   when promptChange =>                       -- pragma prompt_script
      expr_val := identifiers( token ).value;
      expect( backlit_t );
+  when register_memcache_server =>           -- pragma register_memcache_server
+     expr_val := identifiers( token ).value;
+     expect( strlit_t );
+     expect( symbol_t, "," );
+     expr_val2 := identifiers( token ).value;
+     expect( number_t );
   when restriction =>                        -- pragma restriction
      if identifiers( token ).name = "no_auto_declarations" then
         discardUnusedIdentifier( token );
@@ -3359,6 +3380,9 @@ begin
            if exportType = "local_memcache" then
               identifiers( var_id ).method := local_memcache;
               checkAndInitializeLocalMemcacheCluster;
+           elsif exportType = "memcache" then
+              identifiers( var_id ).method := memcache;
+              checkAndInitializeLocalMemcacheCluster;
            elsif exportType = "cgi" then
               -- this should have been caught earlier
               err( "cgi variables cannot be exported" );
@@ -3392,6 +3416,21 @@ begin
               exception when others =>
                  err( "exception raised" );
               end;
+           elsif importType = "memcache" then
+              identifiers( var_id ).method := memcache;
+              checkAndInitializeLocalMemcacheCluster;
+              begin
+                 Get( distributedMemcacheCluster,
+                      identifiers( var_id ).name,
+                      identifiers( var_id ).value );
+                 if length( identifiers( var_id ).value ) = 0 then
+                    err( "unable to find variable " &
+                         to_string( identifiers( var_id ).name ) &
+                         " in the memcache" );
+                 end if;
+              exception when others =>
+                 err( "exception raised" );
+              end;
            elsif processingTemplate and importType = "cgi" then
               identifiers( var_id ).method := http_cgi;
               identifiers( var_id ).value := null_unbounded_string;
@@ -3416,6 +3455,9 @@ begin
         if breakoutOpt then
            wasSIGINT := true;                            -- pretend ctrl-c
         end if;
+     when noCommandHash =>
+        clearCommandHash;
+        no_command_hash := true;
      when peek =>
         for i in 1..identifiers_top-1 loop
             if identifiers( i ).inspect then
@@ -3423,9 +3465,17 @@ begin
             end if;
         end loop;
         -- put_line( getStackTrace );
-     when noCommandHash =>
-        clearCommandHash;
-        no_command_hash := true;
+     when register_memcache_server =>
+         checkAndInitializeDistributedMemcacheCluster;
+         begin
+            RegisterServer( distributedMemcacheCluster,
+               expr_val,
+               natural'value( ' ' & to_string( expr_val2 ) ) );
+         exception when name_error =>
+            err( "server already registered or too many servers registered" );
+         when others =>
+            err( "exception raised" );
+         end;
      when restriction_auto =>
         restriction_no_auto_declarations := true;
      when restriction_external =>
@@ -3487,6 +3537,24 @@ begin
                  temp : unbounded_string;
               begin
                  Get( localMemcacheCluster,
+                      identifiers( var_id ).name,
+                      temp );
+                 if length( temp ) > 0 then
+                    identifiers( var_id ).import := true;
+                    identifiers( var_id ).value := temp;
+                 end if;
+              exception when others =>
+                 err( "exception raised" );
+              end;
+           elsif importType = "memcache" then
+              identifiers( var_id ).method := memcache;
+              checkAndInitializeLocalMemcacheCluster;
+              -- According to the SparForte manual, only update the
+              -- variable if imported value is found
+              declare
+                 temp : unbounded_string;
+              begin
+                 Get( distributedMemcacheCluster,
                       identifiers( var_id ).name,
                       temp );
                  if length( temp ) > 0 then

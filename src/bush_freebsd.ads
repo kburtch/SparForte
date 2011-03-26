@@ -59,36 +59,51 @@ stdin  : constant aFileDescriptor := 0;
 stdout : constant aFileDescriptor := 1;
 stderr : constant aFileDescriptor := 2;
 
-type anOpenFlag is new integer;
+type anOpenFlag is new int;
 O_RDONLY   : constant anOpenFlag := 0;
 O_WRONLY   : constant anOpenFlag := 1;
 O_CREAT    : constant anOpenFLag := 16#0200#;
 O_TRUNC    : constant anOpenFlag := 16#0400#;
 O_APPEND   : constant anOpenFlag := 16#0008#;
 O_NONBLOCK : constant anOpenFlag := 16#0004#;
+O_SYNC     : constant anOpenFlag := 16#0080#;
 -- /usr/include/fcntl.h
+
+type aModeType is new short;
 
 function getpid return aPID;
 pragma import( C, getpid );
 
-procedure read( result : out long_integer; fd : aFileDescriptor; char : in out character;
-  count : long_integer );
+procedure read( result : out size_t; fd : aFileDescriptor; buffer : in system.address;
+  count : size_t );
 pragma import( C, read );
 pragma import_valued_procedure( read );
-
-procedure write( result : out long_integer; fd : aFileDescriptor; char : in out character;
+procedure readchar( result : out size_t; fd : aFileDescriptor; char : in out character;
   count : long_integer );
+pragma import( C, readchar, "read" );
+pragma import_valued_procedure( readchar, "read" );
+
+procedure write( result : out size_t; fd : aFileDescriptor; buffer : in system.address;
+  count : size_t );
 pragma import( C, write );
 pragma import_valued_procedure( write );
+procedure writechar( result : out size_t; fd : aFileDescriptor; char : in out character;
+  count : long_integer );
+pragma import( C, writechar, "write" );
+pragma import_valued_procedure( writechar, "write" );
 
-function open( path : string; flags : anOpenFlag; mode : short_integer ) return aFileDescriptor;
+function open( path : string; flags : anOpenFlag; mode : aModeType ) return aFileDescriptor;
 pragma import( C, open );
 -- FreeBSD is short_integer mode, Linux is integer
 
-procedure close( fd : aFileDescriptor );
+function close( fd : aFileDescriptor ) return int;
 pragma import( C, close );
 
-function unlink( s : string ) return integer;
+function fdatasync( fd : aFileDescriptor ) return int;
+pragma import( C, fdatasync, "fsync" );
+-- FreeBSD does not support fdatasync...use fsync instead.
+
+function unlink( s : string ) return int;
 pragma import( C, unlink );
 
 WHENCE_SEEK_SET : constant integer := 0;
@@ -378,6 +393,7 @@ EPIPE         : constant integer := 32; -- Broken pipe
 EDOM          : constant integer := 33; -- Numerical argument out of domain
 ERANGE        : constant integer := 34; -- Result too large
 EAGAIN        : constant integer := 35; -- Resource temporarily unavailable
+EWOULDBLOCK   : constant integer := 35; -- same as EAGAIN in FreeBSD
 EINPROGRESS   : constant integer := 36; -- Operation now in progress
 EALREADY      : constant integer := 37; -- Operation already in progress
 ENOTSOCK      : constant integer := 38; -- Socket operation on non-socket
@@ -465,6 +481,7 @@ AF_INET : constant aProtocolFamily := 2;
 
 type aSocketType is new int;
 SOCK_STREAM : constant aSocketType := 1;
+SOCK_NONBLOCK : constant aSocketType := 0; -- Linux-specific
 
 -- this is for a steady connection.  Defined as 1 in
 -- /usr/include/linux/socket.h
@@ -657,5 +674,4 @@ pragma import( C, C_install_sigwinch_handler, "C_install_sigwinch_handler" );
 --  Mark an Ada boolean variable that will be TRUE if SIGWINCH occurs
 
 end bush_os;
-
 

@@ -31,6 +31,7 @@ with system,
     ada.strings.fixed,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
+    gnat.source_info,
     bush_os,
     scanner_arrays;
 use ada.text_io,
@@ -48,7 +49,8 @@ pragma Optimize( time );
 package body world is
 
 localMemcacheClusterInitialized : boolean := false;
--- flag: only initialize the local memcache cluster once
+distributedMemcacheClusterInitialized : boolean := false;
+-- flag: only initialize the memcache clusters once
 
 --
 -- Symbol Table Utilities
@@ -137,6 +139,14 @@ begin
                  identifiers( id ).value );
          exception when others => null;
          end;
+     elsif identifiers( id ).export and identifiers( id ).method = memcache then
+         -- if memcache, export before deleting
+         begin
+            Set( distributedMemcacheCluster,
+                 identifiers( id ).name,
+                 identifiers( id ).value );
+         exception when others => null;
+         end;
      end if;
      identifiers_top := identifiers_top - 1;                    -- pull stack
      return true;                                               -- delete ok
@@ -146,6 +156,13 @@ begin
   elsif identifiers( id ).export and identifiers( id ).method = local_memcache then
       begin
          Set( localMemcacheCluster,
+              identifiers( id ).name,
+              identifiers( id ).value );
+      exception when others => null;
+      end;
+  elsif identifiers( id ).export and identifiers( id ).method = memcache then
+      begin
+         Set( distributedMemcacheCluster,
               identifiers( id ).name,
               identifiers( id ).value );
       exception when others => null;
@@ -454,7 +471,7 @@ function toHighASCII( ch : character ) return character is
    -- exception.  We'll do the range checking manually as a work around...
 begin
    if ch > ASCII.DEL then
-      put_line( standard_error, "Internal error: cannot set high bit on character" & character'pos( ch )'img );
+      put_line( standard_error, Gnat.Source_Info.Source_Location & ": Internal error: cannot set high bit on character" & character'pos( ch )'img );
       raise PROGRAM_ERROR;
    end if;
    return character'val( 128+character'pos( ch ) );
@@ -466,7 +483,7 @@ function toHighASCII( id : identifier ) return character is
    -- exception.  We'll do the range checking manually as a work around...
 begin
    if id > 127 then
-      put_line( standard_error, "Internal error: cannot set high bit on identifier number" & id'img );
+      put_line( standard_error, Gnat.Source_Info.Source_Location & ": Internal error: cannot set high bit on identifier number" & id'img );
       raise PROGRAM_ERROR;
    end if;
    return character'val( 128+integer(id) );
@@ -485,7 +502,7 @@ function toLowASCII( ch : character ) return character is
    -- exception.  We'll do the range checking manually as a work around...
 begin
    if ch <= ASCII.DEL then
-      put_line( standard_error, "Internal error: cannot clear high bit on character" & character'pos( ch )'img );
+      put_line( standard_error, Gnat.Source_Info.Source_Location & ": Internal error: cannot clear high bit on character" & character'pos( ch )'img );
       raise PROGRAM_ERROR;
    end if;
    return character'val( character'pos( ch )-128 );
@@ -497,7 +514,7 @@ function toLowASCII( id : identifier ) return character is
    -- exception.  We'll do the range checking manually as a work around...
 begin
    if id <= 128 then
-      put_line( standard_error, "Internal error: cannot clear high bit on identifier number" & id'img );
+      put_line( standard_error, Gnat.Source_Info.Source_Location & ": Internal error: cannot clear high bit on identifier number" & id'img );
       raise PROGRAM_ERROR;
    end if;
    return character'val( integer(id)-128 );
@@ -563,5 +580,16 @@ begin
      SetClusterType( localMemcacheCluster, normal );
   end if;
 end checkAndInitializeLocalMemcacheCluster;
+
+-- CHECK AND INITIALIZE DISTRIBLED MEMCACHE CLUSTER
+
+procedure checkAndInitializeDistributedMemcacheCluster is
+begin
+  if not localMemcacheClusterInitialized then
+     distributedMemcacheClusterInitialized := true;
+     SetClusterName( distributedMemcacheCluster, to_unbounded_string( "Distributed Memcache" ) );
+     SetClusterType( distributedMemcacheCluster, normal );
+  end if;
+end checkAndInitializeDistributedMemcacheCluster;
 
 end world;

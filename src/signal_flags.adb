@@ -22,21 +22,21 @@
 ------------------------------------------------------------------------------
 -- CVS: $Id: signal_flags.adb,v 1.2 2005/02/11 02:59:31 ken Exp $
 
-with Ada.Text_IO, bush_os;
-use Ada.Text_IO, bush_os;
+with Ada.Text_IO, Gnat.Source_Info, bush_os;
+use Ada.Text_IO,  Gnat.Source_Info,bush_os;
 
 package body signal_flags is
 
   procedure startSignalFlags is
   begin
     if not C_install_sigint_handler( wasSIGINT'address ) then
-       put_line( standard_error, "failed to install SIGINT handler" );
+       put_line( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGINT handler" );
     end if;
     if not C_install_sigchld_handler( wasSIGCHLD'address ) then
-       put_line( standard_error, "failed to install SIGCHLD handler" );
+       put_line( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGCHLD handler" );
     end if;
     if not C_install_sigwinch_handler( wasSIGWINCH'address ) then
-       put_line( standard_error, "failed to install SIGWINCH handler" );
+       put_line( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGWINCH handler" );
     end if;
   end startSignalFlags;
   
