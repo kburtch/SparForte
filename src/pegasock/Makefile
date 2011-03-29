@@ -41,7 +41,7 @@ tinyservetest:
 
 clean:
 	rm *.o *.ali
-	test -f tester && rm tester
+	test -f tester && rm tester || :
 	test -f test.txt && test.txt || :
 	test -f tinyservetester && tinyservetester || :
 
