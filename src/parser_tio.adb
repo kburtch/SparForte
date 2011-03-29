@@ -530,7 +530,6 @@ begin
    elsif result = 0 then                -- nothing read?
       eof := true;                      -- then it's the end of file
    end if;
-put_line( "DoGet: read " & result'img ); -- DEBUG
    if ref.id = current_output_t or      -- SHOULD NEVER BE TRUE BUT...
       ref.id = current_input_t or
       ref.id = current_error_t then

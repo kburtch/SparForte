@@ -148,6 +148,13 @@ By default, SparForte will install under /usr/local.
     --without-postgres (NO_POSTGRES variable): disable PostgreSQL database
             support
 
+    Common Problems
+
+    - pg_config not found.
+
+      You'll need to install the postgresql development packages (or equivalent
+      for your O/S) if you want to add support for this database.
+
 2. make
 
    Use GNU make to build SparForte.  Linux users can just type "make" or "make all".

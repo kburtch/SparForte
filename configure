@@ -312,27 +312,36 @@ if [ -z "$TMP" ] ; then
    # was libgnat.  For freebsd, just settle on having adalib in the hints
    if [ -z "$TMP" ] ; then
       echo "no"
-      echo -n "checking for static libgnat.a only (e.g. Slackware)... "
-      TMP=`/usr/bin/locate adalib/libgnat`
-      if [ $? -eq 0 ] ; then
-         TMP2=`/usr/bin/locate adalib/libgnat.a`
-      else
-         TMP2="fail-me"
-      fi
-      if [ "$TMP" = "$TMP2" ] ; then
+      # Some FreeBSD put libgnat under /usr/local/lib but doesn't show
+      # up in ldconfig -r
+      echo -n "checking in /usr/local/lib (e.g. some FreeBSD)... "
+      TMP=`find /usr/local/lib -type f -name "libgnat*"`
+      if [ ! -z "$TMP" ] ; then
          echo "yes"
       else
          echo "no"
-         echo
-         echo "GCC Ada or GNAT is installed but the Ada Run-Time Environment"
-         echo "(libgnat) was not found.  If libgnat.so was installed, you"
-         echo "may need to run ldconfig (as root) to update the shared"
-         echo "library search paths.  You may need to edit ld.so.conf first"
-         echo "and add the path to libgnat's directory.  If libgnat.a was"
-         echo "installed, run updatedb (as root) and this script should"
-         echo "detect it."
-         echo
-         exit 1
+         echo -n "checking for static libgnat.a only (e.g. Slackware)... "
+         TMP=`/usr/bin/locate adalib/libgnat`
+         if [ $? -eq 0 ] ; then
+            TMP2=`/usr/bin/locate adalib/libgnat.a`
+         else
+            TMP2="fail-me"
+         fi
+         if [ "$TMP" = "$TMP2" ] ; then
+            echo "yes"
+         else
+            echo "no"
+            echo
+            echo "GCC Ada or GNAT is installed but the Ada Run-Time Environment"
+            echo "(libgnat) was not found.  If libgnat.so was installed, you"
+            echo "may need to run ldconfig (as root) to update the shared"
+            echo "library search paths.  You may need to edit ld.so.conf first"
+            echo "and add the path to libgnat's directory.  If libgnat.a was"
+            echo "installed, run updatedb (as root) and this script should"
+            echo "detect it."
+            echo
+            exit 1
+          fi
       fi
    else
       echo "yes"

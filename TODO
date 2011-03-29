@@ -1,14 +1,13 @@
 LOTS TO WORK ON
 ---------------
+Languages are complicated.
 
-POST TO CHANGE LOG
 
+ISSUES (SparForte Environment)
 
-ISSUES (BUSH Environment)
+  * build system (SparForte Environment)
 
-  * build system (BUSH Environment)
-
-  * regression test suite (BUSH Environemnt)
+  * regression test suite (SparForte Environemnt)
     - break up good test into lesser tests (just too many for debugging
       when there's a new error in the middle after massive changes)
     - should test in-line for with ada and shell statements
@@ -42,6 +41,11 @@ ISSUES (BUSH Environment)
 
 ISSUES (AdaScript)
 
+  * latest
+    - SOCK_NONBLOCK - obsolete in Linux, must be replaced
+    - rpmlint complains about gethostbyname (IP4-specific) -> getaddrinfo
+
+
   * general syntax (AdaScript Issues)
     - implement scientific notation numeric literals
     - implement overloadable enumerateds
@@ -58,7 +62,7 @@ ISSUES (AdaScript)
 
   * pen package (AdaScript Issues)
     - pen package fails on AMD/Linux
-    - pen package fails on FreeBSD with SDL/SVGALIB (interfers with BUSH
+    - pen package fails on FreeBSD with SDL/SVGALIB (interfers with Spar
       keyboard/mouse/display functions)
     - deferred picture load
     - locking issues
@@ -266,7 +270,7 @@ MAJOR REDESIGNS
       wc-streams-endian.ads:160:04: representation item appears too late
       wc-streams-endian.ads:183:04: representation item appears too late
       on Fedora Core 3 - commented out (for now)
-   - BUSH hangs with vt52 40x8 login, throws exception (perhaps division by
+   - Spar hangs with vt52 40x8 login, throws exception (perhaps division by
      zero because attributes like bold null strings??)  Also has ctrl-q's
      so maybe a flow of control problem
 

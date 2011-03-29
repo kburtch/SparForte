@@ -3,6 +3,15 @@ For the latest news, visit the Linux Cafe at the PegaSoft web site.
 SparForte 1.2 is the initial release of Bush after it was renamed to
 SparForte.  The focus was to remove barriers to adoption.
 
+The focus on this release was to fix barriers to adoption.
+
+KNOWN BUGS
+
+- integer type casting is not working on parameters
+- freebsd rounding of 2.5 fails because freebsd rounds down instead of up (FreeBSD Ada bug??)
+
+CHANGES
+
 1. Fixed: - if without end if no longer terminates the script
 
 2. Fixed: @ and % now work as expected with expressions using user-defined functions.
@@ -71,4 +80,8 @@ for direct color screens (but not working correctly).
 32. New: memcache variables. pragma import, pragma export, pragma volatile
 support memcache import method.  New pragma register_memcache_server to add
 to a list of distributed memcache servers.
+
+33. Fix: Error line numbers fixed for lines over 255.
+
+34. Fix: Configure script now finds libgnat on FreeBSD under /usr/local/lib.
 

@@ -2326,7 +2326,7 @@ begin
   line_firstpos := line_firstpos + 1;               -- skip NUL
   file_number := character'pos( script( line_firstpos ) );
   line_number := ( character'pos( script( line_firstpos + 1 ) ) -1 )
-               + ( character'pos( script( line_firstpos + 2 ) ) - 1 ) * 256;
+               + ( character'pos( script( line_firstpos + 2 ) ) - 1 ) * 255;
   line_firstpos := line_firstpos + 3;               -- skip line number info
   line_lastpos := line_lastpos - 1;
   indent := natural( integer( character'pos( script( line_firstpos ) ) - 1 ) );
@@ -3061,7 +3061,7 @@ procedure setByteCodeLine( lineno : natural ) is
   -- pragma suppress( RANGE_CHECK ); -- GCC 3.3.3 might falsely say overflow
 begin
   SourceLineNoLo := lineno mod 255;
-  SourceLineNoHi := lineno / 255;
+  SourceLineNoHi := lineno / 254;
 end setByteCodeLine;
 
 
@@ -3091,7 +3091,7 @@ end nextByteCodeLine;
 
 function getByteCodeLineNo return natural is
 begin
-  return (SourceLineNoLo) + (SourceLineNoHi) * 255;
+  return (SourceLineNoLo) + (SourceLineNoHi) * 254;
 end getByteCodeLineNo;
 
 -----------------------------------------------------------------------------
