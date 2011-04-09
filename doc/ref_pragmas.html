@@ -50,28 +50,28 @@ environment.</p>
         <center>
         <div class="code">
 <pre>
-  pragma ada_95
-  pragma annotate( [type,]"text" )
-  pragma assert( condition )
-  pragma debug( `commands` )
-  pragma depreciated/deprecated( "newscript" )
-  pragma export( shell | local_memcache | memcache , var )
-  pragma gcc_errors
-  pragma import( shell | cgi | local_memcache | memcache, var )
-  pragma inspect( var )
-  pragma inspection_peek
-  pragma inspection_point
-  pragma no_command_hash
-  pragma prompt_script( `commands` )
-  pragma restriction( no_auto_declarations )
-  pragma restriction( no_external_commands )
-  pragma restriction( no_mysql_database )
-  pragma restriction( no_postgresql_database )
-  pragma template( html [, path] )
-  pragma unchecked_import( shell | cgi | local_memcache | memcache, var )
-  pragma uninspect( var )
-  pragma unrestricted_template( html [, path] )
-  pragma volatile( var )
+  <b>pragma</b> ada_95
+  <b>pragma</b> annotate( [type,]"text" )
+  <b>pragma</b> assert( condition )
+  <b>pragma</b> debug( `commands` )
+  <b>pragma</b> depreciated/deprecated( "newscript" )
+  <b>pragma</b> export( shell | local_memcache | memcache , var )
+  <b>pragma</b> gcc_errors
+  <b>pragma</b> import( shell | cgi | local_memcache | memcache, var )
+  <b>pragma</b> inspect( var )
+  <b>pragma</b> inspection_peek
+  <b>pragma</b> inspection_point
+  <b>pragma</b> no_command_hash
+  <b>pragma</b> prompt_script( `commands` )
+  <b>pragma</b> restriction( no_auto_declarations )
+  <b>pragma</b> restriction( no_external_commands )
+  <b>pragma</b> restriction( no_mysql_database )
+  <b>pragma</b> restriction( no_postgresql_database )
+  <b>pragma</b> template( html [, path] )
+  <b>pragma</b> unchecked_import( shell | cgi | local_memcache | memcache, var )
+  <b>pragma</b> uninspect( var )
+  <b>pragma</b> unrestricted_template( html [, path] )
+  <b>pragma</b> volatile( var )
 </pre>
                 <br>&nbsp;<br>
         <div class="code_caption">
@@ -228,11 +228,9 @@ pragma template except that the embedded scripts are executed in a
 normal
 shell with no security restrictions.</li>
   <li> <b>pragma volatile( var )</b> - the variable is assumed to be
-an
-environment
-variable which may change during the script's execution. The variable's
-value will be updated each time it is referenced in an expression. Only
-makes sense if the variable is imported as well.</li>
+an variable which may change unexpectedly during the script's execution.
+The variable's value will be updated each time it is referenced in an
+expression. Has no effect unless the variable is imported as well.</li>
 </ul>
 
 <h4>Miscellaneous Pragmas</h4>
