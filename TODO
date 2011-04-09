@@ -225,6 +225,9 @@ ISSUES (Bourne Shell)
 
 MAJOR REDESIGNS
 
+  - architecture
+    - pragmas for business architecture.  e.g. pragma licence (gpl),
+      pragma license_limit_instances( 15 ), pragam license_limit_users( 12 )
   - redesigning the symbol table to handle non-string values
     - allows byte_io package based on sequential_io
     - implement use clause

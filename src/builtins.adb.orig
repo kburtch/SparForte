@@ -1185,6 +1185,18 @@ begin
      Put_Line( "  " & bold( "pragma" ) & " " &
        "prompt_script( `commands` ) - commands to draw command prompt" );
      Put_Line( "  " & bold( "pragma" ) & " " &
+       "restriction( no_auto_declarations ) - " &
+         "no auto command line declarations" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
+       "restriction( no_external_commands ) - " &
+         "disable operating system commands" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
+       "restriction( no_mysql_database ) - " &
+         "disable connections to mysql" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
+       "restriction( no_postgresql_database ) - " &
+         "disable connections to postgresql" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
        "template( html [, path] ) - script is acting as an HTML template processor" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "unchecked_import( shell | cgi | local_memcache | memcache, var ) - import without checking for existence" );
@@ -1194,12 +1206,6 @@ begin
        "unrestricted_template( html [, path] ) - don't run template in restricted shell" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "volatile( var ) - load value from environment on every access" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "restriction( no_auto_declarations ) - " &
-         "no auto command line declarations" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "restriction( no_external_commands ) - " &
-         "disable operating system commands" );
   elsif helpTopic = "put" then
      Put_Line( "put - write to output, no new line" );
      Put_Line( "  put ( [file], expression [,picture] )" );

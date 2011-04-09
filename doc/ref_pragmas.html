@@ -41,79 +41,62 @@
 <h2><a name="3.26"></a>Interpreter Directives</font></h2>
 
 <p>Pragmas, or interpreter directives, provide additional instructions to
-AdaScript.</p>
+AdaScript.  This section also contains information on importing variables to
+and exporting variables from other software, such as the operating system
+environment.</p>
 
 <h3>The Pragmas</h3>
 
+        <center>
+        <div class="code">
+<pre>
+  pragma ada_95
+  pragma annotate( [type,]"text" )
+  pragma assert( condition )
+  pragma debug( `commands` )
+  pragma depreciated/deprecated( "newscript" )
+  pragma export( shell | local_memcache | memcache , var )
+  pragma gcc_errors
+  pragma import( shell | cgi | local_memcache | memcache, var )
+  pragma inspect( var )
+  pragma inspection_peek
+  pragma inspection_point
+  pragma no_command_hash
+  pragma prompt_script( `commands` )
+  pragma restriction( no_auto_declarations )
+  pragma restriction( no_external_commands )
+  pragma restriction( no_mysql_database )
+  pragma restriction( no_postgresql_database )
+  pragma template( html [, path] )
+  pragma unchecked_import( shell | cgi | local_memcache | memcache, var )
+  pragma uninspect( var )
+  pragma unrestricted_template( html [, path] )
+  pragma volatile( var )
+</pre>
+                <br>&nbsp;<br>
+        <div class="code_caption">
+                <b>Help Command</b>: The List of Pragmas</span>
+        </div>
+        </div>
+	</center>
+
+<h4>Architectural Pragmas</h4>
+
+<p>Interpreter directives addressing business concerns, data design,
+application design, technical design / use-of-hardware or the overall
+vision of a project.  This includes portability, standards compliance,
+licensing and feature restriction.</p>
+
 <ul>
   <li> <b>pragma ada_95 </b>- requires the script syntax be as close
-to
-Ada 95
-as possible, otherwise errors will occur.</li>
-  <li> <b>pragma annotate( [type,] "text" )</b> - embed a comment. The
-contents of any or all annotate pragmas are shown when you use the help
-command on a script.  Type type of annotation field can be: author, bugs,
-created, description, errors, modified, param, return,
-see also, summary, todo or version.</li>
-  <li> <b>pragma assert( expression )</b> - evaluates the expression.
-If
-it isn't
-true, the program stops and "assertion failed" is displayed.&nbsp;
-
-Requires
---debug option or asserts will have no effect.</li>
-  <li> <b>pragma debug( `commands` )</b> - these are a set of
-debugging commands to run when debugging
-is turned on with --debug.&nbsp; Make sure the final command ends with
-a semi-colon.  Without a parameter, same as --debug (turn on debugging).
-The debugging commands are run in restricted shell mode.</li>
+  to Ada 95 as possible, otherwise errors will occur.</li>
   <li><b>pragma deprecated( "newscript" )</b>
 - another name for pragma depreciated.<br>
   </li>
-
   <li> <b>pragma depreciated( "newscript" )</b> - when script finishes
 execution,
 SparForte will warn that the script is obsolete and has been superceded for
 "newscript".</li>
-  <li> <b>pragma export( shell | local_memcache | memcache, var )</b> - export a string variable
-to the O/S environment. The first parameter must be "shell".</li>
-  <li><span style="font-weight: bold;">pragma gcc_errors</span> - same
-as --gcc-errors.&nbsp; Show simplified gcc-style errors.<br>
-  </li>
-  <li> <b>pragma import( shell | cgi | local_memcache | memcache, var )</b> -
-import a variable.  For shell, from the O/S environment.  For cgi
-and if pragma template/unrestricted_template was used previously,
-a HTTP CGI variable from the O/S environment.  For local_memcache,
-get the value of the variable from a memcached server running on
-locahost port 11211.  Put the value in the SparForte variable.
-If the environment variable doesn't exist, then
-the SparForte will report an error (see unchecked_import).</li>
-  <li> <b>pragma inspect( var )</b> - show a variable's description
-(as if
-'env var' was used) whenever a user breaks to a command prompt. Has no
-effect if --break option isn't used.</li>
-  <li> <b>pragma inspection_peek</b> - like inspection_point, displaying
-inspect variables, except it doesn't break to a command prompt.</li>
-  <li> <b>pragma inspection_point</b> - break to a command prompt as if
-SIGINT (control-C) was received, displaying the call stack and any
-variables marked for inspection with pragma inspect. Has no effect if
---break option isn't used. A "breakpoint".</li>
-  <li><span style="font-weight: bold;">pragma no_command_hash</span> -
-Bush normally remembers the location of a command once it has found
-it.&nbsp; This pragma forces Bush to search for the location of the
-command, ignoring the previous location.<br>
-  </li>
-  <li> <b>pragma prompt_script( `commands` )</b> - commands to draw
-the
-command
-prompt.&nbsp; If the string is an empty string, the default "=&gt;"
-prompt
-is used.&nbsp; Make sure the final command ends with a
-semi-colon.&nbsp; Changing your prompt will also change the title of
-your terminal window.<br>
-  </li>
-  <li> <b>pragma register_memcache_server( host, port )</b> - add a
-memcache server which will be used with memcache method imports/exports</li>
   <li> <b>pragma restriction( no_auto_declarations )</b> - disable
 automatic declaration
 at the command prompt</li>
@@ -129,6 +112,92 @@ other programs from using MySQL.</li>
   <li> <b>pragma restriction( no_postgresql_database )</b> - disable
 connections to a PostgreSQL database.  Doesn't prevent the psql client or
 other programs from using PostgreSQL.</li>
+</ul>
+
+<h4>Debugging Pragmas</h4>
+
+<p>Interpreter directives used to investigate problems in the source
+code or used with SparForte's breakout prompt.</p>
+
+<ul>
+  <li> <b>pragma assert( expression )</b> - evaluates the expression.
+If it isn't true, the program stops and "assertion failed" is displayed.&nbsp;
+Requires --debug option or asserts will have no effect.</li>
+  <li> <b>pragma debug( `commands` )</b> - these are a set of
+debugging commands to run when debugging
+is turned on with --debug.&nbsp; Make sure the final command ends with
+a semi-colon.  Without a parameter, same as --debug (turn on debugging).
+The debugging commands are run in restricted shell mode.</li>
+  <li><span style="font-weight: bold;">pragma gcc_errors</span> - same
+as --gcc-errors.&nbsp; Show simplified gcc-style errors.<br>
+  </li>
+  <li> <b>pragma inspect( var )</b> - show a variable's description
+(as if
+'env var' was used) whenever a user breaks to a command prompt. Has no
+effect if --break option isn't used.</li>
+  <li> <b>pragma inspection_peek</b> - like inspection_point, displaying
+inspect variables, except it doesn't break to a command prompt.</li>
+  <li> <b>pragma inspection_point</b> - break to a command prompt as if
+SIGINT (control-C) was received, displaying the call stack and any
+variables marked for inspection with pragma inspect. Has no effect if
+--break option isn't used. A "breakpoint".</li>
+  <li> <b>pragma uninspect( var )</b> - undo a pragma inspect. Don't
+show
+a
+variable's description whenever a user breaks to a command prompt. Has
+no
+effect if --break option isn't used.</li>
+  </li>
+</ul>
+
+<h4>Documentation Pragmas</h4>
+
+<p>Interpreter directives used to describe a project, particularily real
+world concerns that are not expressed in the source code.</p>
+
+<ul>
+  <li> <b>pragma annotate( [type,] "text" )</b> - embed a comment. The
+contents of any or all annotate pragmas are shown when you use the help
+command on a script.  Type type of annotation field can be:
+<ul>
+<li><b>author</b> - who wrote the script</li>
+<li><b>bugs</b> - known bugs</li>
+<li><b>created</b> - when the script was first released</li>
+<li><b>description</b> - a detailed description of what the script does</li>
+<li><b>errors</b> - errors returned from the script</li>
+<li><b>modified</b> - when the script was last modified</li>
+<li><b>param</b> - description of a parameter to the script</li>
+<li><b>return</b> - return value</li>
+<li><b>see also</b> - a reference to another document or script</li>
+<li><b>summary</b> - a short description of what the script does</li>
+<li><b>todo</b> - unfinished work</li>
+<li><b>version</b> - the version of the script</li>
+</ul></li>
+</ul>
+<p>Annotations are used by the help command to produce documentation.</p>
+
+<h4>Interfacing Pragmas</h4>
+
+<p>Interpreter directives that affect SparForte's environment or how it 
+interacts with other software.</p>
+
+<ul>
+  <li> <b>pragma export( shell | local_memcache | memcache, var )</b> - export a string variable
+to the O/S environment. The first parameter must be "shell".</li>
+  <li> <b>pragma import( shell | cgi | local_memcache | memcache, var )</b> -
+import a variable.  For shell, from the O/S environment.  For cgi
+and if pragma template/unrestricted_template was used previously,
+a HTTP CGI variable from the O/S environment.  For local_memcache,
+get the value of the variable from a memcached server running on
+locahost port 11211.  Put the value in the SparForte variable.
+If the environment variable doesn't exist, then
+the SparForte will report an error (see unchecked_import).</li>
+  <li><span style="font-weight: bold;">pragma no_command_hash</span> -
+Bush normally remembers the location of a command once it has found
+it.&nbsp; This pragma forces Bush to search for the location of the
+command, ignoring the previous location.<br>
+  <li> <b>pragma register_memcache_server( host, port )</b> - add a
+memcache server which will be used with memcache method imports/exports</li>
   <li> <b>pragma template( text|html [, template] )</b> - SparForte will
 act
 like an HTML
@@ -144,7 +213,6 @@ no_external_commands restriction. Errors are shown in --gcc-errors
 format
 using the line number in the template as the line number for the error.
 The first parameter is the template type: "text" or "html".</li>
-
   <li> <b>pragma unchecked_import( shell | cgi | local_memcache | memcache, var )</b> -
 import a variable.  For shell, from the O/S environment.  For cgi
 and if pragma template/unrestricted_template was used previously,
@@ -153,25 +221,32 @@ get the value of the variable from a memcached server running on
 locahost port 11211.  Put the value in the SparForte variable.
 If the environment variable doesn't exist, then
 the SparForte variable is unchanged.</li>
-  <li> <b>pragma uninspect( var )</b> - undo a pragma inspect. Don't
-show
-a
-variable's description whenever a user breaks to a command prompt. Has
-no
-effect if --break option isn't used.</li>
   <li> <b>pragma unrestricted_template( text|html [, template] )</b> -
 SparForte will act
 like an HTML template processor (like PHP). This pragma is the same as
 pragma template except that the embedded scripts are executed in a
 normal
 shell with no security restrictions.</li>
-
   <li> <b>pragma volatile( var )</b> - the variable is assumed to be
 an
 environment
 variable which may change during the script's execution. The variable's
 value will be updated each time it is referenced in an expression. Only
 makes sense if the variable is imported as well.</li>
+</ul>
+
+<h4>Miscellaneous Pragmas</h4>
+
+<p>Interpreter directives that don't fit in any other category.</p>
+
+<ul>
+  <li> <b>pragma prompt_script( `commands` )</b> - commands to draw
+the command prompt.&nbsp; If the string is an empty string, the default "=&gt;"
+prompt
+is used.&nbsp; Make sure the final command ends with a
+semi-colon.&nbsp; Changing your prompt will also change the title of
+your terminal window.<br>
+  </li>
 </ul>
 
 <h3>Shell Variables</h3>
