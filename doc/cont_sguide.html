@@ -40,21 +40,43 @@
 	<!-- Content Area -->
 <h2><a NAME="5.1"></a>Source Guide</h2>
 
-<h3>GCC Ada</h3>
+<h3>GCC Ada File Structure</h3>
 
-<p>SparForte is written in GCC Ada (GNAT) and GCC&nbsp;C.</p>
-<p>Files named ".ads" are Ada package specifications.&nbsp; They contain
-the definitions of package functions (like a C&nbsp;header file) and document
-the functions inside a package.
-<p>Files named ".adb" are Ada package bodies.&nbsp; They contain the actual
-implementation of the package (like a C ".c" file).
+<p>SparForte is written for GCC Ada (GNAT) and GCC&nbsp;C.  Most of the
+source files are Ada 95 but some are Ada 2005.</p>
 
-<p>Except for the main program (bush.adb), all other packages have a specification
-and a body.
-<p>The SparForte project files can be divided up into 4 layers which build one
+<p>Ada source code is divided into modules called packages.  Files with
+an ".ads" suffix are package specifications: they contain the definitions
+of the contents of the package which are visible to other modules.
+Specifications are similar to C header files.</p>
+
+<p>Files with ".adb" suffixes are Ada package bodies.&nbsp; They contain the
+complete implementation of the package contents.  These are somewhat like
+".c" files in C.</p>
+
+<p>Most of SparForte, except for the main program and C support files,
+is all contained in Ada package files.</p>
+
+<h3>.orig Files</h3>
+
+<p>In order for configure to remove undesired feature, such as support for a
+particular database engine, some files end with an ".orig" suffix.  These
+are the original files, the ones with full capability, before configure
+removes any features.  For example, parser.adb.orig is the complete version
+of parser.adb.</p>
+
+<p>When editing files that have a .orig version, make your changes to the
+.orig version and then run configure to produce a new version of the file
+to build SparForte.  For example, to change parser.adb, edit parser.adb.orig
+and then run configure to produce a new parser.adb.</p>
+
+<h3>Overall Project Structure</h3>
+
+<p>The SparForte package files can be divided up into 4 layers which build one
 on top of another:
 <br>&nbsp;
-<ul>
+
+<ol>
 <li>
 <b>utilities</b> - packages containing commonly used functions shared by
 several packages</li>
@@ -70,24 +92,37 @@ syntactic and semantic errors.&nbsp; This part of SparForte "runs" the script
 and reports error messages.</li>
 
 <li>
-<b>main program</b></li>
-</ul>
+<b>main program</b> - the procedure that runs when SparForte is started
+(spar.adb)</li>
+</ol>
 
 <h3>Utility Packages</h3>
+
+<p>Loosely, utility packages contain commonly used functions shared by
+other packages.</p>
 
 <ul>
 
 <li>
-<b>bush_os</b> - the package containing binding to your operating system as chosen
-by the configure script.  That is, it's a copy of bush_linux, bush_freebsd, etc.
+<b>bush_os</b> - the package containing a thin binding to your operating system.
+For example, opening files, deleting files, creating pipes, operating system
+error codes, etc.
+When the configure script is run, these files are created by copying bush_linux,
+or another bush_ file as appropriate for your operating system.
 There are several child packages: support for the O/S terminal (bush_os.tty),
 support for the SDL library (bush_os.sdl) and executing programs (bush_os.exec).</li>
 
 <li>
-<b>bush_linux</b> - bush_os for Linux</li>
+<b>bush_alpha</b> - bush_os for Linux on DEC Alpha computers</li>
 
 <li>
-<b>bush_freebsd</b> - bush_os for FreeBSD</li>
+<b>bush_cygwin</b> - bush_os for the Cygwin system on Microsoft Windows computers</li>
+
+<li>
+<b>bush_freebsd</b> - bush_os for FreeBSD operating system</li>
+
+<li>
+<b>bush_linux</b> - bush_os for the Linux on i386/x86_64 systems</li>
 
 <li>
 <b>world</b> - the symbol table and global type declarations</li>
@@ -95,6 +130,9 @@ support for the SDL library (bush_os.sdl) and executing programs (bush_os.exec).
 <li>
 <b>gen_list</b> - a generic (template) package for single-direction linked
 lists.</li>
+
+<li>
+<b>pen</b> - the pen drawing package (uses SDL).</li>
 
 <li>
 <b>script_io</b> - routines to read a script file</li>
@@ -108,8 +146,10 @@ Also implements the emacs and vi editing modes.</li>
 
 <li>
 <b>c_os</b> - support functions written in the C language.&nbsp; In particular,
-the signal handlers are written in C.</li>
+the signal handlers are written in C, and helper functions for graphics.</li>
 
+<li>
+<b>c_scanner</b> - a function based on the GCC Ada source code dealing with the calendar, required by the SparForte calendar package.</li>
 </ul>
 
 <h3>Scanner Packages</h3>
@@ -126,27 +166,48 @@ identifier declarations, byte code compiler,&nbsp; tokenizing functions,
 and error reproting.</li>
 
 <li>
+<b>scanner-arrays </b>- the implementation of SparForte single-dimensional
+arrays.<li>
+
 <b>scanner-calendar </b>- implementation of Ada.Calendar package.&nbsp;
 (This is the GCC Ada calendar package with the time type as non-private
 so it can be used from SparForte.)</li>
+
+<li>
+<b>scanner-calendar-latest.ads</b> / <b>scanner-calendar-pre441.ads</b> /
+<b>scanner-calendar-pre431.ads</b> / <b>scan-cal-gnat314.ads</b> - different
+versions of the Ada.Calendar
+package from different version of GCC Ada modified for use with SparForte.
+"pre441", for example, means
+the Calendar package prior to GCC 4.4.1.  The configure script chooses
+one and copies it to the name scanner-calendar</li>
+
 </ul>
+
 
 <h3>Parser Packages</h3>
 
 <ul>
 <li>
 <b>builtins</b> - implementation of built-in shell commands.&nbsp; That
-is, "cd", "pwd", "history" and "env".</li>
+is, "cd", "pwd", "history", "help" and so on.</li>
 
 <li>
-<b>parser</b> - implements the core AdaScript language and Text_IO functions.&nbsp;
+<b>parser</b> - implements the core AdaScript language and any packages not
+separated into another file (e.g. sound).&nbsp;
 Handles syntax checking, running scripts and running commands at the SparForte
 command prompt.</li>
+
+<li>
+<b>parser_arrays</b> - implementation of the built-in arrays package.</li>
 
 <li>
 <b>parser_aux</b> - utility functions soley for the parser.&nbsp; For example,
 working with file_type variables, creating temp files and opening network
 sockets.</li>
+
+<li>
+<b>parser_awk</b> - implementation of the Gnat.Awk package (not implemented)</li>
 
 <li>
 <b>parser_cal</b> - implementation of the built-in calendar package; interface
@@ -165,16 +226,44 @@ interface to Ada.Command_Line</li>
 to Warren Gay's APQ Postgres binding</li>
 
 <li>
+<b>parser_dirops</b> - implementation of the directory_operations package;
+interface to Gnat.Directory_Operations package</li>
+
+<li>
+<b>parser_enums</b> - implementation of the built-in enums package,
+interface to various Ada enumerated type features/packages</li>
+
+<li>
+<b>parser_files</b> -&nbsp; implementation of the built-in files package</li>
+
+<li>
 <b>parser_lock </b>- implementation of the built-in lock_files package,
 interface to GNAT.Lock_Files</li>
+
+<li>
+<b>parser_mysql</b> - implementation of the built-in mysql package; interface
+to Warren Gay's APQ Postgres binding</li>
 
 <li>
 <b>parser_numerics</b> - implementation of the built-in numerics package,
 interface to various Ada numeric features/packages</li>
 
 <li>
+<b>parser_os</b> -&nbsp; implementation of the built-in os package</li>
+
+<li>
+<b>parser_pen</b> -&nbsp; implementation of the built-in pen package</li>
+
+<li>
+<b>parser_stats</b> -&nbsp; implementation of the built-in stats package</li>
+
+<li>
 <b>parser_strings</b> - implementation of the built-in strings package,
 interface to various Ada string features/packages</li>
+
+<li>
+<b>parser_tio</b> - implementation of the built-in Text_IO package,
+interface to the Ada.Text_IO package.</li>
 
 <li>
 <b>parser_units</b> - implementation of the built-in units package,
@@ -186,8 +275,22 @@ interface to various measurement conversion routines.</li>
 <ul>
 <li>
 
-<b>bush</b> - shows --help instrutions, interprets command line option
+<b>spar</b> - shows --help instrutions, interprets command line option
 switches, invokes the SparForte parser</li>
+</ul>
+
+<h3>Third-Party Projects</h3>
+
+<p>SparForte has been built with some third-party source code included in the
+release.  Most of these projects are contained in subdirectories.</p>
+
+<ul>
+<li><b>adacgi</b> - David Wheeler's CGI library</li>
+<li><b>ADAVOX</b> - Warren Gay's Sound library</li>
+<li><b>apq</b> - Warren Gay's Database library</li>
+<li><b>base64</b> - Tom Moran's Base64 encoding library</li>
+<li><b>MD5</b> - Christoph Grein's MD5 library</li>
+<li><b>pegasock</b> - Ken Burtch's socket library</li>
 </ul>
 
 &nbsp;<br>

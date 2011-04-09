@@ -39,24 +39,16 @@
 			<td align="left" valign="top">
 	<!-- Content Area -->
 <h2><a NAME="5.2"></a>UNIX Porting</h2>
-<p>You will need a basic knowledge of Ada (how to declare a procedure, how to
-declare variables, etc.).&nbsp; For example, read chapter
-10 of the Big Online Book of Linux Ada Programming (http://www.pegasoft.ca/resources/boblap/book.html).</p>
-<p>Install  GCC with the Ada language enabled.&nbsp; Either use GCC
-3.x or later with the Ada language active or downloaded a version of GNAT
-for your computer from New York University (ftp://cs.nyu.edu/pub/gnat).&nbsp;
-The NYU site has Solaris An SCO UNIX version is available at
-http://www.gnuada.org/sco.html.&nbsp;
+<p>Install  GCC with the Ada 2005 language enabled.&nbsp; Either use GCC
+4.x or later with the Ada language active or downloaded a version of GNAT
+for your computer from Ada Core Technologies.
 
-A NetBSD version is available at http://www.gnuada.org/netbsd.html.&nbsp;
-Older versions for other operating systems are lurking around on the web,
-but GCC 3.x might be your best solution.
 <p>The bush_os packages (bush_linux, etc.) contain binding to UNIX/Linux
 system calls and other operating system constants.&nbsp; To port SparForte to
 a UNIX-based operating system, make a copy of bush_linux and rename it
 to your operating system.&nbsp; Then edit the file and make sure all the
 system calls and constants are updated to reflect your version of UNIX.&nbsp;
-This is (theoretically) the only SparForte package that needs to be modified.
+This should be the only SparForte package that needs to be modified.
 <p>You will have to check the man pages and the C include files to find
 the necessary information.&nbsp; For example, to get tty driver ioctl()
 values (TCGETATTR, etc.) you may have to read the C include files looking

@@ -39,27 +39,40 @@
 			<td align="left" valign="top">
 	<!-- Content Area -->
 <h2><a NAME="5.4"></a>Making New Bindings for Built-in Packages</h2>
-<p>This is not a discussion on language design.&nbsp; This is a quick overview
-on adding new built-in packages.&nbsp; We'll use the Ada.Calendar.Year
-package as an example binding.</p>
+<p>This is a quick overview on adding new built-in packages to SparForte.&nbsp;
+We'll use the Ada.Calendar.Year package as an example binding.</p>
+
 <p>In the current version of SparForte, packages are hard-coded into the parser.&nbsp;
 
 There's no ability to create separate files that can be loaded on demand.&nbsp;
-Some day this ability may be added.
-<p>If you're adding a third-party Ada project (like AdaCGI), create a subdirectory
+Some day this ability may be added.</p>
+
+<h3>1. Install The Source Code (If Needed)</h3>
+
+<p>If you're adding a third-party project (like AdaCGI), create a subdirectory
 to hold the project and modify the main SparForte makefile to compile (and make
 clean) the project.&nbsp; Test your changes by making a clean rebuild of
-SparForte.
-<p>Now you need to declare your identifiers.  Each package should have a Startup
-and Shutdown procedure.  Edit <b>scanner.adb</b> and make sure your package Startup
-and Shutdown procedures are called (look for the others in the file).
-<p>Your package spec should declare all your the identifier variables.
-For example, if you were implementing the Ada.Calendar package,
-create a cal_clock_t, cal_year_t and so on for each identifier you'll need.&nbsp;
-Include any types.&nbsp; By convention these end in "_t" (for "token").
-<p><tt>-- Built-in Calendar package identifiers</tt><tt></tt>
+SparForte.</p>
 
-<p><tt>cal_clock_t : identifier; -- "calendar.clock"</tt>
+<h3>2. Create a Parser Package</h3>
+
+<p>Create a new "parser_" package for binding.  You may want to copy one of
+the existing ones and edit it rather than starting one from scratch.</p>
+
+<p>Call your package startup/shutdown procedure in the scanner package.</p>
+
+<h3>3. Declare Your Identifiers</h3>
+
+<p>All identifiers are declared as variables.  In your parser_*.ads package,
+declare an indentifier for your SparForte subprogram.  Using Ada.Calendar.Year
+as an example, create
+
+<pre>
+calendar_year_t : identifier; -- Ada.Calendar.Year
+</pre>
+
+<p>The "_t" suffix stands for "token".</p>
+
 <p>Add declaration calls in your Startup procedure
 to declare the identifier variables (that is, add them to the symbol table
 and identify what types they are).&nbsp; Copy some of the other declarations
@@ -67,28 +80,53 @@ that are similar to the ones you are doing.&nbsp; For example, to declare
 Ada.Calendar's time type,
 <p><tt>declareIdent( cal_time_t, "calendar.time", variable_t, typeClass
 );</tt>
+
 <p>There are several declare calls.&nbsp; <b>declareIdent</b> is a general
 purpose declaration that uses the identifier variable, the name of the
 identifier (as the user would type it), what root type it's derived from
 (variable_t is used for private types, integer_t for integers, string_t
 for strings, and so forth), and the class of identifier (typeClass for
-a type declaration, subClass for a subtype declaration, and so forth).
-<p>Recompile SparForte and check for errors.
-<p>The SparForte scanner now recognizes your identifiers.&nbsp; Move onto the
-SparForte parser.
+a type declaration, subClass for a subtype declaration, and so forth).</p>
 
-<p>Create an Ada package&nbsp; to contain your new SparForte built-in package.&nbsp;
-You can copy one of the existing packages and edit it.&nbsp; Each package
-consists of two files: a package specification and a package body.&nbsp;
-For now, create a package specification.&nbsp; For example, for Ada.Calendar
-you could create a file called "parser_cal.ads".
-<p>The package specification should contain a series of "Parse" procedures.&nbsp;
+<pre>
+procedure StartupCalendar is
+begin
+  declareIdent( cal_time_t, "calendar.time", variable_t, typeClass );
+  declareIdent( cal_year_number_t, "calendar.year_number", integer_t,
+    typeClass );
+  declareIdent( cal_month_number_t, "calendar.month_number", integer_t,
+    typeClass );
+  declareIdent( cal_day_number_t, "calendar.day_number", integer_t,
+    typeClass );
+  declareIdent( cal_day_duration_t, "calendar.day_duration", duration_t,
+    typeClass );
+
+  declareFunction( cal_clock_t, "calendar.clock" );
+  declareFunction( cal_year_t, "calendar.year" );
+  declareFunction( cal_month_t, "calendar.month" );
+  declareFunction( cal_day_t, "calendar.day" );
+  declareFunction( cal_seconds_t, "calendar.seconds" );
+  declareProcedure( cal_split_t, "calendar.split" );
+  declareFunction( cal_time_of_t, "calendar.time_of" );
+  declareFunction( cal_to_julian_t, "calendar.to_julian" );
+  declareFunction( cal_to_time_t, "calendar.to_time" );
+  declareFunction( cal_day_of_week_t, "calendar.day_of_week" );
+end StartupCalendar;
+</pre>
+
+<p>Recompile SparForte and check for errors.</p>
+
+
+<h3>4. Add Empty Bindings</h3>
+
+<p>The parser_ package specification should contain a series of "Parse" procedures.&nbsp;
 These will be called by SparForte when it needs to run subprograms in the built-in
 package.&nbsp; If a parse procedure defines a function, it should have
-one out unbounded_string parameter (to return the result of the function).&nbsp;
+one out unbounded_string parameter (to return the result of the function).</p>
 
-Procedures, which return nothing, have no parameters.&nbsp; For the Ada.Calendar
-package, you might have:
+<p>Procedures, which return nothing, have no parameters.&nbsp; For the Ada.Calendar
+package, you might have:</p>
+
 <p><tt>procedure ParseCalClock( result : out unbounded_string );&nbsp;
 -- Ada.Calendar.Clock function</tt>
 <br><tt>procedure ParseCalYear( result : out unbounded_string );&nbsp;
@@ -130,6 +168,9 @@ result has a kind of integer_t).
 <p>Recompile SparForte to check for errors.&nbsp; Try using the procedures and
 functions.&nbsp; Each should raise a PROGRAM_ERROR exception but should
 have no other errors.
+
+<h3>5. Run Your Bindings</h3>
+
 <p>The only thing left to do is to check the parameters to the subprograms
 and execute them.&nbsp; Create a package body file and being implementing
 the Parse procedures one at a time.&nbsp; As you implement each, remove
@@ -188,13 +229,14 @@ does nothing yet, SparForte should understand the parameters.&nbsp; Using an
 integer or a character parameter instead of a calendar.time parameter should
 cause an error.&nbsp; Leaving out a "(" or ")" should also cause an error.&nbsp;
 Check your definition of types using the env command
-<p><tt>=&gt; env calendar.time</tt>
-<br><tt>calendar.time = ( private type )</tt>
-<br><tt>=&gt; env calendar.year</tt>
 
-<br><tt>calendar.year = ( identifier of type keyword )</tt>
-<p>SparForte has no formal representation for functions and procedures at this
-time.&nbsp; They will be reported as keywords.
+<pre>
+=&gt; <b>env</b> calendar.time
+ ( private type )
+=&gt; <b>env</b> calendar.year
+; -- built-in function
+</pre>
+
 <p>Finally, you need to actually execute the subprogram.&nbsp; Before you
 execute anything, check to see if you should execute the function with
 the SparForte i<b>sExeuctingCommand</b> function.&nbsp; If SparForte is doing a syntax
@@ -237,6 +279,31 @@ string</li>
 to_unbounded_string - convert the fixed string result to an unbounded_string
 to be returned to ParseFactor</li>
 </ul>
+
+<p>The complete calendar.year function looks like this:</p>
+
+<pre>
+<b>procedure</b> ParseCalYear( result : <b>out</b> unbounded_string ) <b>is</b>
+  expr_val  : unbounded_string;
+  expr_type : identifier;
+<b>begin</b>
+  expect( cal_year_t );
+  expect( symbol_t, "(" );
+  ParseExpression( expr_val, expr_type );
+  <b>if</b> baseTypesOK( expr_type, cal_time_t ) <b>then</b>
+     <b>null</b>;
+  <b>end</b> <b>if</b>;
+  expect( symbol_t, ")" );
+  <b>if</b> isExecutingCommand <b>then</b>
+     <b>begin</b>
+       result := to_unbounded_string( year( time( to_numeric( expr_val ) ) )'img );
+     <b>exception</b> <b>when</b> <b>others</b> =&gt;
+       err( "exception raised" );
+     <b>end</b>;
+  <b>end</b> <b>if</b>;
+<b>end</b> <b>ParseCalYear</b>;
+</pre>
+
 <p>Rebuild SparForte and test the function to make sure it works.&nbsp; You've
 completed the implementation of "calendar.year".&nbsp; Complete and test
 the rest of the bindings.</p>

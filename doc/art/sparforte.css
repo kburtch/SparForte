@@ -41,7 +41,7 @@
 		text-align: left;
 		color: black;
 	}
-	ul {
+	ol,ul {
         	/* margin-left: 3.0em 0 0 0; */
 		font-family: Verdana, Arial, Helvetica, Sans-Serif;
 		font-size: 14px;
