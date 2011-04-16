@@ -1,0 +1,71 @@
+<HEAD><TITLE>timestamp.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : timestamp.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar timestamp.sp 
+--------------------------------(Fri Apr 15 21:45:06 EDT 2011)------
+--------------------------------(Fri Apr 15 21:46:06 EDT 2011)------
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>procedure</b> timestamp <b>is</b>
+
+<b>pragma</b> annotate( "timestamp" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "prints the current time at interval seconds (default 60)" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Translated from a shell script by Heiner Steven" );
+<b>pragma</b> annotate( "http://www.shelldorado.com/scripts/cmds/timestamp.txt" );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+delay_amount : duration := 60.0;
+
+<b>procedure</b> usage <b>is</b>
+<b>begin</b>
+  put( "usage: " ) @ (source_info.file);
+  put_line (" [interval]" )
+         @ ( "prints the current time at interval seconds (default" &amp;
+             strings.image( delay_amount ) &amp;
+             ")" );
+  command_line.set_exit_status( 1 );
+<b>end</b> usage;
+
+<b>begin</b>
+
+  <b>if</b> $# = 0 <b>then</b>
+    <b>null</b>;
+  <b>elsif</b> $# &gt; 1 <b>then</b>
+    usage;
+    <b>return</b>;
+  <b>elsif</b> $1 = "-h" <b>or</b> $1 = "<FONT COLOR=green><EM>--help" then</EM></FONT>
+    usage;
+    <b>return</b>;
+  <b>else</b>
+    delay_amount := duration( numerics.value( $1 ) );
+    <b>if</b> delay_amount = 0 <b>then</b>
+       put_line( standard_error, source_info.source_location &amp; ": delay amount must be greater than zero" );
+       command_line.set_exit_status( 192 );
+       <b>return</b>;
+    <b>end</b> <b>if</b>;
+  <b>end</b> <b>if</b>;
+
+  <b>loop</b>
+    ? "<FONT COLOR=green><EM>--------------------------------(" &amp; `date;` &amp; ")------";</EM></FONT>
+    <b>delay</b> delay_amount;
+  <b>end</b> <b>loop</b>;
+
+<b>end</b> timestamp;
+
+</PRE></BODY></HTML>

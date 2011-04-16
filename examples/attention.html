@@ -1,0 +1,89 @@
+<HEAD><TITLE>attention.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : attention.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar attention.sp
+attention.sp: Don't Forget!
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>procedure</b> attention <b>is</b>
+
+<b>pragma</b> annotate( "attention" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "plays a sound to get the user's attention" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Translated from a shell script by Heiner Steven" );
+<b>pragma</b> annotate( "http://www.shelldorado.com/scripts/cmds/attention.txt" );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+sound_path : <b>constant</b> string := "/usr/share/doc/packages/sox/monkey.au";
+devdsp     : <b>constant</b> string := "/dev/dsp";
+devaudio   : <b>constant</b> string := "/dev/audio";
+tty        : <b>constant</b> string := `tty;`;
+
+<b>procedure</b> usage <b>is</b>
+<b>begin</b>
+  put( "usage: " ) @ (source_info.file);
+  put_line ( "plays a sound to get the user's attention" );
+  command_line.set_exit_status( 1 );
+<b>end</b> usage;
+
+<b>procedure</b> beeps <b>is</b>
+  <FONT COLOR=green><EM>-- beep 3 times.  If not available, display a string</EM></FONT>
+  tput_beep  : <b>constant</b> string := `tput bel;`;
+  beep  : string := tput_beep;
+<b>begin</b>
+  <b>if</b> strings.length( beep ) = 0 <b>then</b>
+     beep := "[Beep]";
+  <b>end</b> <b>if</b>;
+  put( beep );
+  <b>delay</b> 0.5;
+  put( beep );
+  <b>delay</b> 0.5;
+  put( beep );
+<b>end</b> beeps;
+
+<b>begin</b>
+
+  <b>if</b> $# /= 0 <b>then</b>
+    usage;
+    <b>return</b>;
+  <b>else</b>
+    <b>if</b> files.is_readable_file( sound_path ) <b>then</b>
+       <FONT COLOR=green><EM>-- audio exists? try to play sound if an .au file</EM></FONT>
+       <b>if</b> files.is_writable( devaudio ) <b>then</b>
+          <b>if</b> strings.tail( sound_path, 3 ) = ".au" <b>then</b>
+             cat "$sound_path" &gt;&gt; "$devaudio";
+          <b>else</b>
+             beeps;
+          <b>end</b> <b>if</b>;
+       <FONT COLOR=green><EM>-- dsp exists? try to play sound</EM></FONT>
+       <b>elsif</b> files.is_writable( devdsp ) <b>then</b>
+          sound.play( sound_path );
+       <b>else</b>
+          beeps;
+       <b>end</b> <b>if</b>;
+    <b>else</b>
+       put_line( standard_error, source_info.source_location &amp; ": sound file doesn't exist or isn't readable" );
+       beeps;
+    <b>end</b> <b>if</b>;
+  <b>end</b> <b>if</b>;
+  put(source_info.file) @ ( ": Don't Forget!" );
+  new_line;
+
+<b>end</b> attention;
+
+</PRE></BODY></HTML>
