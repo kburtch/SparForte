@@ -33,6 +33,7 @@ sound_path : <b>constant</b> string := "/usr/share/doc/packages/sox/monkey.au";
 devdsp     : <b>constant</b> string := "/dev/dsp";
 devaudio   : <b>constant</b> string := "/dev/audio";
 tty        : <b>constant</b> string := `tty;`;
+played     : boolean := false;
 
 <b>procedure</b> usage <b>is</b>
 <b>begin</b>
@@ -67,23 +68,23 @@ tty        : <b>constant</b> string := `tty;`;
        <b>if</b> files.is_writable( devaudio ) <b>then</b>
           <b>if</b> strings.tail( sound_path, 3 ) = ".au" <b>then</b>
              cat "$sound_path" &gt;&gt; "$devaudio";
-          <b>else</b>
-             beeps;
+             played := true;
           <b>end</b> <b>if</b>;
+       <b>end</b> <b>if</b>;
        <FONT COLOR=green><EM>-- dsp exists? try to play sound</EM></FONT>
-       <b>elsif</b> files.is_writable( devdsp ) <b>then</b>
+       <b>if</b> <b>not</b> played <b>and</b> files.is_writable( devdsp ) <b>then</b>
           sound.play( sound_path );
-       <b>else</b>
-          beeps;
+          played := true;
        <b>end</b> <b>if</b>;
     <b>else</b>
        put_line( standard_error, source_info.source_location &amp; ": sound file doesn't exist or isn't readable" );
-       beeps;
     <b>end</b> <b>if</b>;
+  <b>end</b> <b>if</b>;
+  <b>if</b> <b>not</b> played <b>then</b>
+     beeps;
   <b>end</b> <b>if</b>;
   put(source_info.file) @ ( ": Don't Forget!" );
   new_line;
 
 <b>end</b> attention;
-
 </PRE></BODY></HTML>

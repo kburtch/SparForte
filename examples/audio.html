@@ -1,0 +1,71 @@
+<HEAD><TITLE>audio.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : audio.sp </H1></DIV><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>procedure</b> audio <b>is</b>
+
+<b>pragma</b> annotate( "audio" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "play audio files" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Translated from a shell script by Heiner Steven" );
+<b>pragma</b> annotate( "http://www.shelldorado.com/scripts/cmds/audio.txt" );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+sound_path : <b>constant</b> string := "/usr/share/doc/packages/sox/";
+<b>pragma</b> unchecked_import( shell, sound_path );
+devdsp     : <b>constant</b> string := "/dev/dsp";
+devaudio   : <b>constant</b> string := "/dev/audio";
+tty        : <b>constant</b> string := `tty;`;
+played     : boolean := false;
+
+<b>procedure</b> usage <b>is</b>
+<b>begin</b>
+  put( "usage: " ) @ (source_info.file);
+  put_line ( "[-l] file...") @ ( "play audio files" );
+  command_line.set_exit_status( 1 );
+<b>end</b> usage;
+
+<b>begin</b>
+
+  <b>if</b> $# = 0 <b>then</b>
+    usage;
+    <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  <b>for</b> i <b>in</b> 1..command_line.argument_count <b>loop</b>
+      <b>if</b> command_line.argument(i) = "-h" <b>or</b>
+         command_line.argument(i) = "<FONT COLOR=green><EM>--help" then</EM></FONT>
+         usage;
+         <b>return</b>;
+      <b>elsif</b> command_line.argument(i) = "-l" <b>or</b>
+         command_line.argument(i) = "<FONT COLOR=green><EM>--list" then</EM></FONT>
+         ls -C "$sound_path";
+      <b>else</b>
+         <b>declare</b>
+           sound_file :string := sound_path &amp; command_line.argument(i);
+         <b>begin</b>
+           <b>if</b> files.is_readable_file( sound_file ) <b>then</b>
+              <FONT COLOR=green><EM>-- audio exists? try to play sound if an .au file</EM></FONT>
+              <b>if</b> files.is_writable( devaudio ) <b>then</b>
+                 <b>if</b> strings.tail( sound_file, 3 ) = ".au" <b>then</b>
+                    cat "$sound_file" &gt;&gt; "$devaudio";
+                    played := true;
+                 <b>end</b> <b>if</b>;
+              <b>end</b> <b>if</b>;
+              <FONT COLOR=green><EM>-- dsp exists? try to play sound with wavplay</EM></FONT>
+              <b>if</b> <b>not</b> played <b>and</b> files.is_writable( devdsp ) <b>then</b>
+                 sound.play( sound_file );
+                 played := true;
+              <b>end</b> <b>if</b>;
+           <b>else</b>
+              put_line( standard_error, source_info.source_location &amp; ": sound file doesn't exist or isn't readable" );
+           <b>end</b> <b>if</b>;
+         <b>end</b>;
+      <b>end</b> <b>if</b>;      
+  <b>end</b> <b>loop</b>;
+<b>end</b> audio;
+
+</PRE></BODY></HTML>

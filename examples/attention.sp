@@ -14,6 +14,7 @@ sound_path : constant string := "/usr/share/doc/packages/sox/monkey.au";
 devdsp     : constant string := "/dev/dsp";
 devaudio   : constant string := "/dev/audio";
 tty        : constant string := `tty;`;
+played     : boolean := false;
 
 procedure usage is
 begin
@@ -48,19 +49,20 @@ begin
        if files.is_writable( devaudio ) then
           if strings.tail( sound_path, 3 ) = ".au" then
              cat "$sound_path" >> "$devaudio";
-          else
-             beeps;
+             played := true;
           end if;
+       end if;
        -- dsp exists? try to play sound
-       elsif files.is_writable( devdsp ) then
+       if not played and files.is_writable( devdsp ) then
           sound.play( sound_path );
-       else
-          beeps;
+          played := true;
        end if;
     else
        put_line( standard_error, source_info.source_location & ": sound file doesn't exist or isn't readable" );
-       beeps;
     end if;
+  end if;
+  if not played then
+     beeps;
   end if;
   put(source_info.file) @ ( ": Don't Forget!" );
   new_line;

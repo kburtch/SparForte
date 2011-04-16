@@ -1,0 +1,50 @@
+<HEAD><TITLE>isxwindow.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : isxwindow.sp </H1></DIV><HR>
+<PRE>
+#!/usr/local/bin/bush
+
+<b>procedure</b> isxwindow <b>is</b>
+
+<b>pragma</b> annotate( "isxwindow" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "return status zero if is started under X-Windows" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Translated from a shell script by Heiner Steven" );
+<b>pragma</b> annotate( "http://www.shelldorado.com/scripts/cmds/isxwindows.txt" );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+DISPLAY : string := "";
+<b>pragma</b> unchecked_import( shell, DISPLAY );
+
+WINDOWID : string := "";
+<b>pragma</b> unchecked_import( shell, WINDOWID );
+
+<b>procedure</b> usage <b>is</b>
+<b>begin</b>
+  put( "usage: " ) @ (source_info.file);
+  put_line ( "return status zero if is started under X-Windows" );
+  command_line.set_exit_status( 1 );
+<b>end</b> usage;
+
+<b>begin</b>
+
+  <b>if</b> $# /= 0 <b>then</b>
+    usage;
+    <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  command_line.set_exit_status( 2 );
+  <b>if</b> DISPLAY /= "" <b>then</b>
+     <b>if</b> WINDOWID /= "" <b>then</b>
+        command_line.set_exit_status( 0 );
+     <b>elsif</b> strings.head( TERM, 5 ) = "xterm" <b>then</b>
+        command_line.set_exit_status( 0 );
+     <b>elsif</b> strings.head( TERM, 7 ) = "sum-cmd" <b>then</b>
+        command_line.set_exit_status( 0 );
+     <b>end</b> <b>if</b>;
+  <b>end</b> <b>if</b>;
+
+<b>end</b> isxwindow;
+
+</PRE></BODY></HTML>
