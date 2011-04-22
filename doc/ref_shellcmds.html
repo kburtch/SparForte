@@ -45,7 +45,7 @@ command
 prompt.&nbsp; AdaScript has a number of built-in commands to be used
 in interactive sessions:</p>
 
-<p><b>help [-h|-m] [command or script]</b></p>
+<p><b>help [-h|-m|-l] [command or script]</b></p>
 <center>
 <table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
 <tr>
@@ -53,13 +53,16 @@ in interactive sessions:</p>
 <p>Display a summary of SparForte commands or show annotations (see pragma
 annotate) in a script.  When showing annotations, -h will show the annotations
 in HTML, -m as a Linux man page and, with no options, SparForte will show the
-annotations as plain text.</p>
+annotations as plain text.  With -l, SparForte will show the script license as
+set with pragma license.</p>
 <p><u>Examples</u>:</p>
 
 <pre>
 <b>=&gt;</b> help reset
 reset - reopen a file
   reset( file [,mode])
+<b>=&gt;</b> help -l bjack.sp
+public_domain
 <b>=&gt;</b> help bjack.sp
 Help for script bjack.sp:
 

@@ -1497,6 +1497,7 @@ begin
   declareStandardConstant( "System.Default_Bit_Order", uni_string_t, system.default_bit_order'img );
   declareStandardConstant( "System.Login_Shell", boolean_t,  integer'image( boolean'pos(isLoginShell))(2) & "" );
   declareStandardConstant( "System.Restricted_Shell", boolean_t, integer'image( commandLineOption'pos(rshOpt))(2) & "" );
+  declareStandardConstant( "System.Script_License", uni_string_t, "" );
 
 -- most of the source_info must be filled in later by the parser
 

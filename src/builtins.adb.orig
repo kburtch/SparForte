@@ -800,6 +800,7 @@ procedure help( ap : argumentListPtr ) is
   helpTopic : unbounded_string;
   HTMLOutput : boolean := false;
   MANOutput  : boolean := false;
+  LicenseOutput  : boolean := false;
 begin
   if ap'length = 0 then
      helpTopic := null_unbounded_string;
@@ -816,6 +817,14 @@ begin
         end if;
      elsif helpTopic = "-m" then
         MANOutput := true;
+        if ap'length = 1 then
+           helpTopic := null_unbounded_string;
+        else
+           helpTopic := to_unbounded_string( ap( 2 ).all );
+           delete( helpTopic, length( helpTopic ), length( helpTopic ) );
+        end if;
+     elsif helpTopic = "-l" then
+        LicenseOUtput := true;
         if ap'length = 1 then
            helpTopic := null_unbounded_string;
         else
@@ -1023,6 +1032,7 @@ begin
      Put_Line( "help - show help or script annotations" );
      Put_Line( "  -h - HTML output" );
      Put_Line( "  -m - UNIX manual page output" );
+     Put_Line( "  -l - show script license" );
   elsif helpTopic = "history" then
      Put_Line( "history - list or clear the command line history" );
      Put_Line( "  history -c" );
@@ -1273,7 +1283,7 @@ begin
      Put_Line( "  System.Max_Nonbinary_Modulus  System.Memory_Size" );
      Put_Line( "  System.Max_Base_Digits        System.Default_Bit_Order" );
      Put_Line( "  System.Max_Mantissa           System.Login_Shell" );
-     Put_Line( "  System.Restricted_Shell" );
+     Put_Line( "  System.Restricted_Shell       System.Script_License" );
      discardUnusedIdentifier( token );
   elsif helpTopic = "trace" then
      Put_Line( "trace - show verbose debugging information" );
@@ -1521,6 +1531,8 @@ begin
                  ASCII.Quotation & to_string( genDate ) & ASCII.Quotation & " " &
                  ASCII.Quotation & "Company" & ASCII.Quotation & " " &
                  ASCII.Quotation & "Manual" & ASCII.Quotation );
+          elsif LicenseOutput then
+             null;
           else
              Put_Line( "Help for script " & bold( to_string( scriptFilePath ) ) & ":" );
              New_Line;
@@ -1535,7 +1547,24 @@ begin
              getNextToken;                            -- load first token
              if token = pragma_t then
                 getNextToken;
-                if identifiers( token ).name = "annotate" then
+                if identifiers( token ).name = "license" then
+                   if LicenseOutput then
+                      discardUnusedIdentifier( token );
+                      getNextToken;
+                      if token = symbol_t and identifiers( token ).value = "(" then
+                         getNextToken;
+                         info := identifiers( token ).name;
+                         discardUnusedIdentifier( token );
+                         getNextToken;
+                         if token = symbol_t and identifiers( token ).value = "," then
+                           expect( symbol_t, "," );
+                           info := info & ": " & identifiers( token ).value;
+                           expect( strlit_t );
+                         end if;
+                         put_line( to_string( info ) );
+                      end if;
+                   end if;
+                elsif identifiers( token ).name = "annotate" then
                    discardUnusedIdentifier( token );
                    getNextToken;
                    if token = symbol_t and identifiers( token ).value = "(" then

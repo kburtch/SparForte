@@ -1,9 +1,6 @@
 For the latest news, visit the Linux Cafe at the PegaSoft web site. 
 
-SparForte 1.2 is the initial release of Bush after it was renamed to
-SparForte.  The focus was to remove barriers to adoption.
-
-The focus on this release was to fix barriers to adoption.
+SparForte 1.3's focus was on removing barriers to scaling.
 
 KNOWN BUGS
 
@@ -12,77 +9,14 @@ KNOWN BUGS
 
 CHANGES
 
-1. Fixed: - if without end if no longer terminates the script
+1. New: pragma restriction( no_mysql_database / no_postgresql_database ) to
+disable connections to a database engine.
 
-2. Fixed: @ and % now work as expected with expressions using user-defined functions.
-(e.g. @ no longer equals return if return is the last line in the function)
+2. Change: more error detection on pragma import / export / unchecked_import
 
-3. New: new annotations: bugs and todo
+3. New: pragma license - declare a script's license
 
-4. New: characters supported in the "in" and "not in" operators.
+4. New: System.Script_License - read the license name in a running script
 
-5. Fixed: arrays package now accepts constant arrays for arrays.first, arrays.last,
-arrays.length
-
-6. Fixed: return expressions can now start with a punctuation symbol
-
-7. Fixed: open for socket_type working again.
-
-8. Fixed: Initial Get on a socket_type now gets the first character.
-
-9. New: Type casting for numeric types now implemented on - +, -, *, /, mod, rem, := and := on declaration and on explicit cast. Universal types are not yet typecast on parameters.
-
-10. Change: Documentation has been restructured for easier navigation.
-
-11. New: Database support has been backported from Business Shell 2.0 prototype. You can now select MySQL, PostgreSQL, both or not when building Bush from sources.
-
-12. Change: The Bush project has been renamed "SparForte". It now accepts scripts ending in ".bush" and ".sp". The next release will likely be SparForte 1.2.
-
-13. Fixed: The documentation has been reviewed and some new examples added. Plus other cleanup.
-
-14. New: Built-in enums package. enums.first(), enums.last(), enums.prev(), enums.succ().
-
-15. Fixed: enums.prev renamed to enums.pred.
-
-16. Fixed: enumerateds format fixed, now display properly in env and "?".
-
-17. Change: "?" now displays numbers in a human readable format (e.g. 0.0 will be displayed as 0).
-
-18. New: Separate subprograms/subunits backported from Bush 2.0 developmental snapshot. Non-working features disabled.
-
-19. New: SparForte now on github.
-
-20. New/Change: Several pen package routines fill/paint/clear updated to accept color names.
-
-21. New: Pen package drawing spool functions wait_to_reveal/reveal/reveal_now working.
-
-22. New: Add (lighten), subtract (darken), average (blend) added to pen mode
-for direct color screens (but not working correctly).
-
-23. Change mandel.sp and chessboard.sp updated for these changes.
-
-24. Change: typeset now typecasts the variable's value to the new type.
-
-25. New: pragma restriction( no_mysql_database ) - disable connections to a MySQL database. Doesn't prevent the mysql client or other programs from using MySQL
-
-26. New: pragma restriction( no_postgresql_database ) - disable connections to a PostgreSQL database. Doesn't prevent the psql client or other programs from using PostgreSQL
-
-27. Fixed: Interrupted system calls handled throughout the software
-
-28. Fixed: Fixed prefix/manprefix install issues in top-most makefile
-
-29. Fixed: Fixed make max
-
-30. New: rpm building script for opensuse
-
-31. New: local memcache variables. pragma import, pragma export, pragma volatile support local_memcache import method.
-
-32. New: memcache variables. pragma import, pragma export, pragma volatile
-support memcache import method.  New pragma register_memcache_server to add
-to a list of distributed memcache servers.
-
-33. Fix: Error line numbers fixed for lines over 255.
-
-34. Fix: Configure script now finds libgnat on FreeBSD under /usr/local/lib.
-
+5. New: help -l - read a script license without running a script
 

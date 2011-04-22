@@ -61,6 +61,7 @@ environment.</p>
   <b>pragma</b> inspect( var )
   <b>pragma</b> inspection_peek
   <b>pragma</b> inspection_point
+  <b>pragma</b> license( license_name [, extra] )
   <b>pragma</b> no_command_hash
   <b>pragma</b> prompt_script( `commands` )
   <b>pragma</b> restriction( no_auto_declarations )
@@ -97,6 +98,31 @@ licensing and feature restriction.</p>
 execution,
 SparForte will warn that the script is obsolete and has been superceded for
 "newscript".</li>
+  <li><b>pragma license( license_name [, "extra"] )</b> - declare the
+license for the script.  license_name can be:<br>
+<ul>
+<li><b>agpl</b> - Affero GPL</li>
+<li><b>apache</b> - Apache Software License v1.0</li>
+<li><b>apache_2</b> - Apache Software License v2.0</li>
+<li><b>artistic</b> - Artistic License</li>
+<li><b>bsd_original</b> - BSD License (Original)</li>
+<li><b>bsd_revised</b> - BSD License (Revised)</li>
+<li><b>commercial</b> - A commercial license</li>
+<li><b>freeware</b>- A freeware license</li>
+<li><b>gpl</b> - GNU General Public License</li>
+<li><b>gplv2</b> - GNU General Public License v2.0</li>
+<li><b>gplv3</b> - GNU General Public License v3.0</li>
+<li><b>mit</b> - MIT License</li>
+<li><b>public_domain</b> - Public Domain</li>
+<li><b>restricted</b> - An restricted license</li>
+<li><b>shareware</b> - A shareware license</li>
+<li><b>unrestricted</b> - An unrestricted license</li>
+</ul>
+If extra exists, it is a string further describing the license (for example,
+commercial/"trial license" or commercial/"15 users".<br>
+<u>GCC Ada</u>: unrestricted, gpl and unrestricted are recognized by Ada.  It
+doesn't support the extra string.  It treats these as levels and will
+try to validate license compatibility where possible.</li>
   <li> <b>pragma restriction( no_auto_declarations )</b> - disable
 automatic declaration
 at the command prompt</li>
@@ -596,6 +622,87 @@ use with pragma register_memcache_server.</p>
 
 <p>With more than one server, SparForte will store the variable on two servers.
 If one server should fail, it wil retrieve the variable value from the other.</p>
+
+<h3>Managing Script Licenses</h3>
+
+<p>Tracking and keeping accurate information about licenses is important for
+large companies and organizations.  Such groups may run third-party license
+management software which scans source code and tries to guess at what license
+applies.  However, typos and copying errors putting license info into comments
+makes this an imperfect task.  Software may be bundled together with multiple
+licenses.  Licenses are further qualified by server limits,
+user limits, evaluation periods or other real world or legal concerns.</p>
+
+<p>SparForte can help manage licenses with the license pragma.  This pragma
+declares the license for a script in a structured way.  This approach assists
+in automating license compliance, helps to make the best use of licenses while
+reducing the risk from a license audit.  Since there are thousands
+of licenses, SparForte doesn't attempt to know, enforce or reconcile every
+license&mdash;it leaves these concerns for specialized license software.
+However, many of the most popular licenses are known by SparForte.</p>
+
+<p>For example, if myscript.sp contains this pragma:</p>
+
+	<center>
+        <div class="code">
+	<b>pragma</b> license( public_domain );<br>
+	</div>
+	</center>
+
+<p>then you can use the help command to see the license without running the script.</p>
+
+	<center>
+        <div class="code">
+	$ spar -e "help -l myscript.sp;"<br>
+	public_domain<br>
+	</div>
+	</center>
+
+<p>If you use license management software, configure it to run the spar help
+command to get an accurate license name.</p>
+
+<p>If you have a commercial license, declare it as commercial and include
+more details in the second parameter.</p>
+
+	<center>
+        <div class="code">
+	<b>pragma</b> license( commercial, "bogodb license" );<br>
+	</div>
+	</center>
+
+<p>The help command will show the license with the additional text.</p>
+
+	<center>
+        <div class="code">
+	$ spar -e "help -l myscript.sp;"<br>
+	commercial: bogodb license<br>
+	</div>
+	</center>
+
+<p>A script may only have one license pragma.</p>
+
+<p>Other examples:</p>
+
+	<center>
+        <div class="code">
+	<b>pragma</b> license( gpl );<br>
+	<b>pragma</b> license( freeware, "2 week evaluation" );<br>
+	<b>pragma</b> license( gplv2, "LGPL" );<br>
+	<b>pragma</b> license( commercial, "bogodb license: 15 users" );<br>
+	</div>
+	</center>
+
+<p>Running scripts may check the license string with System.Script_License.</p>
+
+	<center>
+        <div class="code">
+	=&gt; <b>pragma</b> license(bsd_original)<br>
+	=&gt; ? System.Script_License<br>
+	bsd_original<br>
+	</div>
+	</center>
+
+&nbsp;<br>
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
                                 <p class="rmt"><a class="rightmenutext" href="ref_adascript.html">&nbsp;AdaScript versus GCC</a></p>

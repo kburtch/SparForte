@@ -123,6 +123,8 @@ begin
             nosyntaxOpt := true;
          elsif Argument(i) = "--restricted" then
             rshOpt := true;
+         --elsif Argument(i) = "--script-license" then
+         --   scriptLicenseOpt := true;
          elsif Argument(i) = "--verbose" then
             verboseOpt := true;
          elsif Argument(i) = "--version" then

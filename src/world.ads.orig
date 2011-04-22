@@ -103,7 +103,7 @@ last_status : aStatusCode := 0;           -- status of last shell command
 -- We're using a record for allow storing additional information in the future.
 
 type aSourceFile is record                -- source file info
-     pos  : natural;                               -- for identifying includes
+     pos  : natural;                      -- for identifying includes
      name : unbounded_string;             -- name of the source file
 end record;
 -- note: POS should be a byte code position
@@ -147,6 +147,7 @@ templateType              : templateTypes;
 
 depreciatedMsg : unbounded_string := null_unbounded_string; -- pragma dep.
 
+licenseSet : boolean := false;
 
 ------------------------------------------------------------------------------
 -- Command Line Options

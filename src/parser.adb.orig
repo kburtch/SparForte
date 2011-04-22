@@ -3095,7 +3095,7 @@ end ParseDeclarationPart;
 procedure ParsePragma is
   type aPragmaType is ( ada_95, asserting, annotate, debug, debug_on,
      depreciated, export, gcc_errors, import, inspection, inspect_var,
-     noCommandHash, peek, promptChange, register_memcache_server,
+     license, noCommandHash, peek, promptChange, register_memcache_server,
      restriction, restriction_auto, restriction_external,
      restriction_mysql, restriction_postgresql, template,
      unchecked_import, uninspect_var, unrestricted_template, volatile );
@@ -3130,6 +3130,8 @@ begin
      pragmaKind := inspect_var;
   elsif identifiers( token ).name = "inspection_point" then
      pragmaKind := inspection;
+  elsif identifiers( token ).name = "license" then
+     pragmaKind := license;
   elsif identifiers( token ).name = "inspection_peek" then
      pragmaKind := peek;
   elsif identifiers( token ).name = "no_command_hash" then
@@ -3190,6 +3192,7 @@ begin
            identifiers( token ).name /= "return" and
            identifiers( token ).name /= "see also" and
            identifiers( token ).name /= "summary" and
+           identifiers( token ).name /= "todo" and
            identifiers( token ).name /= "version" then
            err( "unknown annotation field type" );
         else
@@ -3303,6 +3306,154 @@ begin
      end if;
   when inspect_var =>                        -- pragma inspect
      ParseIdentifier( var_id );
+  when license =>                            -- pragma license
+     if identifiers( token ).name = "unrestricted" then
+        expr_val := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           expr_val := expr_val & ": " & identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     elsif identifiers( token ).name = "gpl" then
+        expr_val := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           expr_val := expr_val & ": " & identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     elsif identifiers( token ).name = "gplv2" then
+        expr_val := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           expr_val := expr_val & ": " & identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     elsif identifiers( token ).name = "gplv3" then
+        expr_val := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           expr_val := expr_val & ": " & identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     elsif identifiers( token ).name = "agpl" then
+        expr_val := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           expr_val := expr_val & ": " & identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     elsif identifiers( token ).name = "bsd_original" then
+        expr_val := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           expr_val := expr_val & ": " & identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     elsif identifiers( token ).name = "bsd_revised" then
+        expr_val := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           expr_val := expr_val & ": " & identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     elsif identifiers( token ).name = "artistic" then
+        expr_val := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           expr_val := expr_val & ": " & identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     elsif identifiers( token ).name = "mit" then
+        expr_val := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           expr_val := expr_val & ": " & identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     elsif identifiers( token ).name = "apache" then
+        expr_val := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           expr_val := expr_val & ": " & identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     elsif identifiers( token ).name = "apache_2" then
+        expr_val := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           expr_val := expr_val & ": " & identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     elsif identifiers( token ).name = "freeware" then
+        expr_val := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           expr_val := expr_val & ": " & identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     elsif identifiers( token ).name = "shareware" then
+        expr_val := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           expr_val := expr_val & ": " & identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     elsif identifiers( token ).name = "public_domain" then
+        expr_val := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           expr_val := expr_val & ": " & identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     elsif identifiers( token ).name = "commercial" then
+        expr_val := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           expr_val := expr_val & ": " & identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     elsif identifiers( token ).name = "restricted" then
+        expr_val := identifiers( token ).name;
+        discardUnusedIdentifier( token );
+        getNextToken;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           expr_val := expr_val & ": " & identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     else
+        err( "unknown license " & bold( to_string( expr_val ) ) );
+     end if;
   when template | unrestricted_template =>   -- pragma (unrestricted) template
      if rshOpt then
         err( "templates are not allowed in a restricted shell" );
@@ -3458,6 +3609,22 @@ begin
      when inspection =>
         if breakoutOpt then
            wasSIGINT := true;                            -- pretend ctrl-c
+        end if;
+     when license =>
+        if licenseSet then
+           err( "license already set" );
+        else
+          declare
+            id : identifier;
+          begin
+            findIdent( to_unbounded_string( "System.Script_License" ), id );
+            if id /= eof_t then
+               identifiers( id ).value := expr_val;
+               licenseSet := true;
+            end if;
+          exception when others =>
+            err( "exception raised" );
+          end;
         end if;
      when noCommandHash =>
         clearCommandHash;
