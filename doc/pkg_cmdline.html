@@ -43,6 +43,24 @@
 calling program. This package sets the exit status and processes command
 line option switches. command_line contains following routines:</p>
 <p><u>GCC Ada equivalent</u>: Ada.Command_Line
+
+        <center>
+        <div class="code">
+<pre>
+  argument( i ) - return argument i
+  argument_count - number of arguments
+  command_name - name used to execute the script
+  environment.environment_count - number of variables in the O/S environment 
+  environment.environment_value - return environment value i
+  set_exit_status( i ) - change script exit status code
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the command_line package</span>
+        </div>
+        </div>
+        </center>
+
 <p>
 <hr><b>n := command_line.argument_count</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
@@ -255,6 +273,8 @@ $0)
                                 <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>

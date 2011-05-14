@@ -50,6 +50,24 @@ is_readable, is_readable_file, is_writable, is_writable_file</li>
 <li><b>File type</b>: is_regular_file, is_directory
 <li><b>Misc</b>: is_waiting_file, last_modified, length
 </ul>
+
+        <center>
+        <div class="code">
+<pre>
+  exists( p )               is_absolute_path( p )    is_regular_file( p )
+  is_directory( p )         is_writable_file( p )    is_executable_file( p )
+  is_readable_file( p )     is_waiting_file( p )     file_length( p )
+  basename( p )             dirname( p )             last_modified( p )
+  last_changed( p )         last_accessed( p )       is_writable( p )  
+  is_readable( p )          is_executable( p )
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the files package</span>
+        </div>
+        </div>
+        </center>
+
 <p>
 <hr><b>b := files.basename( p )</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
@@ -660,6 +678,8 @@ not empty.
                                 <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;<b>files</b></a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>

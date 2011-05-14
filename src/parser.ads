@@ -55,7 +55,6 @@ procedure ParseExpressionOperator( op : out identifier );
 procedure ParseExpression( ex : out unbounded_string; expr_type : out identifier );
 procedure ParseAssignPart( expr_value : out unbounded_string; expr_type : out identifier );
 procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean );
-procedure ParsePragma;
 procedure ParseType;
 procedure ParseSubtype;
 procedure ParseIfBlock;
@@ -69,6 +68,11 @@ procedure SkipBlock( termid1, termid2 : identifier := keyword_t );
 procedure ParseBlock( termid1, termid2 : identifier := keyword_t );
 procedure ParseShellCommand;
 procedure ParseGeneralStatement;
+
+procedure RunAndCaptureOutput( s : unbounded_string; results : out
+  unbounded_string; fragment : boolean := true );
+procedure CompileRunAndCaptureOutput( commands : unbounded_string; results : out
+  unbounded_string );
 
 -- procedure parse;
 -- parse is never executed directly: use an interpret procedure

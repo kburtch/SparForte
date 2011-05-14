@@ -69,6 +69,21 @@ current time.  "calendar.clock + 2.5" adds 2.5 seconds to the current time.
 <p>Comparing times: time values can be compared with &gt;, &gt;=, <, &lt;=, =,
 /=, in, and not in.
 <p>
+
+        <center>
+        <div class="code">
+<pre>
+  t := clock               y := year( t )           m := month( t )
+  d := day( t )            s := seconds( t )        split( t, y, m, d, s )
+  t := time_of( y,m,d,s )  i := day_of_week( t )    t := to_time( j )
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the calendar package</span>
+        </div>
+        </div>
+        </center>
+
 <hr><b>t := calendar.clock</b>
 
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
@@ -423,6 +438,8 @@ current time.  "calendar.clock + 2.5" adds 2.5 seconds to the current time.
                                 <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>

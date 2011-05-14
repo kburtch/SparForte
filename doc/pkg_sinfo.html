@@ -44,6 +44,23 @@ about the current script. It can be used to create error messages
 that identify the file and the line number where a problem was encountered.</p>
 <p><font color="#000000"><u>GCC Ada equivalent</u>: GNAT.Source_Info</font>
 
+        <center>
+        <div class="code">
+<pre>
+  enclosing_entity - name of script (if a procedure block)
+  file - file name without a path
+  line - current line number
+  script_size - size of compiled script (bytes)
+  source_location - file and line number
+  symbol_table_size - number of variables
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the source_info package</span>
+        </div>
+        </div>
+        </center>
+
 <p>
 <hr><b>s := source_info.enclosing_entity</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
@@ -224,6 +241,8 @@ the basename for the script.
                                 <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>

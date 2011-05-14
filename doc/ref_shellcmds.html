@@ -43,7 +43,93 @@
 <p>Interactive sessions refer to a user typing commands at the SparForte
 command
 prompt.&nbsp; AdaScript has a number of built-in commands to be used
-in interactive sessions:</p>
+in interactive sessions.  The commands behave as if they were external
+commands.</p>
+
+<p><b>cd -|dirname</b></p>
+<center>
+<table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
+<tr>
+<td align="left">
+<p>change directory. "-" is the previous directory.&nbsp;
+A leading '~' is your home directory.</p>
+
+<u>Bash equivalent</u>: <tt>cd</tt><br>
+<u>Perl equivalent</u>: <tt>chdir</tt><br>
+<u>PHP  equivalent</u>: <tt>chdir</tt><br>
+</td>
+</tr>
+</table>
+</center>
+&nbsp;<br>
+
+<p><b>clear</b></p>
+<center>
+<table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
+<tr>
+<td align="left">
+<p>Reset the display device and clear the screen, placing the cursor in the
+top-left corner of the display.</p>
+
+<u>Bash equivalent</u>: <tt>tput reset; stty sane; tput clear</tt><br>
+<u>Perl equivalent</u>: N/A<br>
+<u>PHP  equivalent</u>: N/A<br>
+</td>
+</tr>
+</table>
+</center>
+&nbsp;<br>
+
+<p><b>env [ident]</b></p>
+<center>
+<table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
+<tr>
+<td align="left">
+<p>Display a list of all declared identifiers, their values and their
+properties, or the properties of a particular identifier.</p>
+<p><u>Examples</u>:</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; i : integer := 3<br>
+=&gt; <b>env</b> i<br>
+i :=  3; -- identifier of the type integer<br>
+=&gt; c : <b>constant</b> string := "company"<br>
+=&gt; <b>env</b> c<br>
+c := "company"; -- constant string<br>
+=&gt; <b>env</b> HOME<br>
+HOME := "/home/ken"; -- imported shell environment identifier of the type string<br>
+=&gt; <b>env</b> TERM<br>
+TERM := "xterm"; -- imported exported shell environment identifier of the type string<br>
+=&gt; <b>=> env</b> true<br>
+true := true; -- constant boolean enumerated item<br>
+=&gt; <b>env</b> strings.length<br>
+; -- built-in function <br>
+=&gt; <b>env</b> if<br>
+ ( AdaScript reserved word )<br>
+=&gt; <b>env</b> ASCII.CR<br>
+ASCII.CR := '[# 13]'; -- constant character<br>
+=&gt; <b>env</b> | tail -5<br>
+<pre>
+PWD                  | /home/ken/ada/bush/example | imported identifier of the type string<br>
+                     | s                          |<br>
+HOME                 | /home/ken                  | imported identifier of the type string<br>
+OLDPWD               | /home/ken                  | identifier of the type universal_string<br>
+tail                 |                            | identifier of the type new
+</pre></p>
+        </div>
+        </center>
+
+<u>Bash equivalent</u>: <tt>env</tt><br>
+<u>Perl equivalent</u>: <tt>Data::Dumper</tt><br>
+<u>PHP  equivalent</u>: <tt>var_dump</tt><br>
+
+</ul>
+</td>
+</tr>
+</table>
+</center>
+&nbsp;<br>
 
 <p><b>help [-h|-m|-l] [command or script]</b></p>
 <center>
@@ -74,7 +160,7 @@ Usage: bjack
 </pre>
 <u>Bash equivalent</u>: <tt>help</tt><br>
 <u>Perl equivalent</u>: <tt>perldoc</tt><br>
-<u>PHP  equivalent</u>: N/A<br>
+<u>PHP  equivalent</u>: <tt>phpdoc</tt><br>
 
 </td>
 </tr>
@@ -82,30 +168,80 @@ Usage: bjack
 </center>
 &nbsp;<br>
 
-<p><b>env [ident [ident...]]</b></p>
+<p><b>history [n]</b></p>
 <center>
 <table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
 <tr>
 <td align="left">
-<p>Display a list of all declared identifiers, their values and their
-properties, or the properties of a particular identifier.</p>
+<p>show the command history (up to n lines).  If the number of lines is
+not specified, show all the command history</p>
+
+<u>Bash equivalent</u>: <tt>pwd</tt><br>
+<u>Perl equivalent</u>: <tt>getcwd</tt><br>
+<u>PHP  equivalent</u>: <tt>cwd</tt><br>
+</td>
+</tr>
+</table>
+</center>
+&nbsp;<br>
+<p><b>jobs</b></p>
+<center>
+<table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
+<tr>
+<td align="left">
+<p>list status of current background processes</p>
+
+<u>Bash equivalent</u>: <tt>jobs</tt><br>
+<u>Perl equivalent</u>: N/A<br>
+<u>PHP  equivalent</u>: N/A<br>
+</td>
+</tr>
+</table>
+</center>
+&nbsp;<br>
+
+<p><b>logout</b></p>
+<center>
+<table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
+<tr>
+
+<td align="left">
+<p>Stop an interactive, login session and leave the SparForte shell.  SparForte uses a
+login session if SparForte is your login shell or if you start SparForte with the
+<tt>--login</tt> option.  When in the debugger (breakout mode), stop debugging
+and leave the SparForte shell.  If the session is not a login session, an error is
+displayed.  Normally, <tt>return</tt> will exit SparForte.  login is required for
+login sessions to prevent the user from mistakenly logging themselves out if
+quitting multiple shells, to let the user know they are in their top-most
+shell.</p>
 <p><u>Examples</u>:</p>
-
 <pre>
-=&gt; env ASCII.CR
-ASCII.CR := '[# 13]'; -- constant character
-=&gt; env | tail -5
-PWD                  | /home/ken/ada/bush/example | imported identifier of the type string
-                     | s                          |
-HOME                 | /home/ken                  | imported identifier of the type string
-OLDPWD               | /home/ken                  | identifier of the type universal_string
-tail                 |                            | identifier of the type new
-</pre>
-<u>Bash equivalent</u>: <tt>env</tt><br>
-<u>Perl equivalent</u>: <tt>Data::Dumper</tt><br>
-<u>PHP  equivalent</u>: <tt>var_dump</tt><br>
+<b>=&gt;</b> return
+return;
+^----^ warning: This is a login shell.  Use <b>logout</b> to quit.
 
-</ul>
+<b>=&gt;</b> logout
+</pre>
+<u>Bash equivalent</u>: <tt>logout</tt><br>
+<u>Perl equivalent</u>: N/A<br>
+<u>PHP  equivalent</u>: N/A<br>
+</td>
+</tr>
+</table>
+
+</center>
+&nbsp;<br>
+
+<p><b>pwd</b></p>
+<center>
+<table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
+<tr>
+<td align="left">
+<p>show the present (current) working directory</p>
+
+<u>Bash equivalent</u>: <tt>pwd</tt><br>
+<u>Perl equivalent</u>: <tt>getcwd</tt><br>
+<u>PHP  equivalent</u>: <tt>cwd</tt><br>
 </td>
 </tr>
 </table>
@@ -147,33 +283,8 @@ Trace is on
 
 </pre>
 <u>Bash equivalent</u>: <tt>set -x</tt><br>
-<u>Perl equivalent</u>: N/A<br>
-<u>PHP  equivalent</u>: N/A<br>
-</td>
-</tr>
-</table>
-</center>
-&nbsp;<br>
-
-<p><b>unset ident</b></p>
-<center>
-<table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
-<tr>
-<td align="left">
-Permanently delete an identifier.  Keywords cannot be unset.  Unset can only
-be used in an interactive session.  It cannot be used with pragma ada_95.
-<p><u>Examples</u>:</p>
-<pre>
-<b>=&gt;</b> i : integer
-<b>=&gt;</b> unset i
-
-<b>=&gt;</b> ? i
-? i;
-  ^ <b>i</b> not declared</pre>
-<u>Bash equivalent</u>: <tt>unset</tt><br>
-<u>Perl equivalent</u>: N/A<br>
-<u>PHP  equivalent</u>: <tt>unset</tt><br>
-
+<u>Perl equivalent</u>: Debug::Trace<br>
+<u>PHP  equivalent</u>: xdebug<br>
 </td>
 </tr>
 </table>
@@ -185,11 +296,11 @@ be used in an interactive session.  It cannot be used with pragma ada_95.
 <table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
 <tr>
 <td align="left">
-Change the type of a variable, declaring it if necssary.  It will attempt
+<p>Change the type of a variable, declaring it if necssary.  It will attempt
 to typecast the value of the variable if the variable exists: this may
 raise an exception if the variable cannot be typecast.  Typeset
 can only be used in an interactive session.  It cannot be used with
-pragma ada_95.
+pragma ada_95.</p>
 <p><u>Examples</u>:</p>
 
         <center>
@@ -218,54 +329,47 @@ y :=  6; -- identifier of the type integer <br>&nbsp;<br>
 </center>
 &nbsp;<br>
 
-<p><b>logout</b></p>
+<p><b>unset ident</b></p>
 <center>
 <table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
 <tr>
-
 <td align="left">
-Stop an interactive, login session and leave the SparForte shell.  SparForte uses a
-login session if SparForte is your login shell or if you start SparForte with the
-<tt>--login</tt> option.  When in the debugger (breakout mode), stop debugging
-and leave the SparForte shell.  If the session is not a login session, an error is
-displayed.  Normally, <tt>return</tt> will exit SparForte.  login is required for
-login sessions to prevent the user from mistakenly logging themselves out if
-quitting multiple shells, to let the user know they are in their top-most
-shell.
+<p>Permanently delete an identifier.  Keywords cannot be unset.  Unset can only
+be used in an interactive session.  It cannot be used with pragma ada_95.</p>
 <p><u>Examples</u>:</p>
 <pre>
-<b>=&gt;</b> return
-return;
-^----^ warning: This is a login shell.  Use <b>logout</b> to quit.
+<b>=&gt;</b> i : integer
+<b>=&gt;</b> unset i
 
-<b>=&gt;</b> logout
-</pre>
-<u>Bash equivalent</u>: <tt>logout</tt><br>
+<b>=&gt;</b> ? i
+? i;
+  ^ <b>i</b> not declared</pre>
+<u>Bash equivalent</u>: <tt>unset</tt><br>
 <u>Perl equivalent</u>: N/A<br>
-<u>PHP  equivalent</u>: N/A<br>
+<u>PHP  equivalent</u>: <tt>unset</tt><br>
+
 </td>
 </tr>
 </table>
-
 </center>
 &nbsp;<br>
 
-<p><b>clear</b></p>
+<p><b>wait</b></p>
 <center>
 <table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
 <tr>
 <td align="left">
-Reset the display device and clear the screen, placing the cursor in the
-top-left corner of the display.
-<u>Bash equivalent</u>: <tt>tput reset; stty sane; tput clear</tt><br>
-<u>Perl equivalent</u>: N/A<br>
+<p>wait for all background processes to finish running</p>
 
+<u>Bash equivalent</u>: <tt>wait</tt><br>
+<u>Perl equivalent</u>: N/A<br>
 <u>PHP  equivalent</u>: N/A<br>
 </td>
 </tr>
 </table>
 </center>
 &nbsp;<br>
+
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>

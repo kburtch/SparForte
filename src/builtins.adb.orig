@@ -854,7 +854,7 @@ begin
      Put_Line( "  directory_operations lock_files   return              while                " );
      Put_Line( "  end_of_file       logout          set_input           ""?""            " );
      Put_Line( "  end_of_line       loop            sound               enums            " );
-     Put_Line( "  env               mode            source_info                          " );
+     Put_Line( "  env               mode            source_info         memcache         " );
      New_Line;
      Put_Line( "You can also type an O/S word or a SparForte script name." );
      return;
@@ -1131,6 +1131,17 @@ begin
   elsif helpTopic = "delay" then
      Put_Line( "delay - wait (sleep) for a specific time" );
      Put_Line( "  " & bold( "delay" ) & " secs" );
+  elsif helpTopic = "memcache" then
+     Put_Line( "memcache - distributed memcache package functions" );
+     New_Line;
+     Put_Line( "  add( cl, k, v )             prepend( cl, k, v )" );
+     Put_Line( "  append( cl, k, v )          register_server( cl, h, p )" );
+     Put_Line( "  clear_servers( cl )         replace( cl, k, v )" );
+     Put_Line( "  delete( cl, k )             set( cl, k, v )" );
+     Put_Line( "  flush( cl )                 set_cluster_name( cl, s )" );
+     Put_Line( "  is_valid_memcache_key( k )  set_cluster_type( cl, e )" );
+     Put_Line( "  v := get( cl, k )           s := stats( cl )" );
+     Put_Line( "  cl := new_cluster           s := version( cl )" );
   elsif helpTopic = "mode" then
      Put_Line( "mode - the file mode (in_file, out_file, append_file)" );
      Put_Line( "  mode( file )" );

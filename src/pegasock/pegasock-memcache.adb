@@ -211,6 +211,8 @@ function isValidMemcacheKey( key : unbounded_string ) return boolean is
 begin
   if length( key ) > 250 then
      return false;
+  elsif length( key ) = 0 then
+     return false;
   else
      for i in 1..length( key ) loop
          ch := element( key, i );

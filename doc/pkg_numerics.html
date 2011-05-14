@@ -89,6 +89,43 @@ packages and type attributes
 
 <p><br>Absolute value (abs) is not technically a part of the numerics package
 but is documented here.
+
+        <center>
+        <div class="code">
+<pre>
+  e                    log2_e                  log10_e             ln10
+  ln2                  pi                      pi_by_2             pi_by_4
+  pi_under_1                                   pi_under_2
+  sqrt_pi_under_2                              sqrt_2
+  sqrt_2_under_1
+
+  sqrt( x )            log( x [,base] )         exp( x )           random
+  shift_left( x, b )   rotate_left( x, b )      shift_right_arithmeric( x, b )
+  shift_right( x, b )  rotate_right( x, b )     floor( x )         ceiling( x )
+  rounding( x )        truncation( x )          unbiased_rounding( x )         
+  remainder( x, y )    copy_sign( x, y )        leading_part( x, y )           
+  exponent( x )        fraction( x )            max( m, n )         min( m, n )
+  machine( x )         scaling( x, y )          value( s )          pos( c )   
+  sturges( l, h, t )   md5( s )                 rnd( n )            serial     
+  odd( i )             even( i )                                               
+
+  sin( x [,cycle] )    arcsin( x [,cycle] )     sinh( x )          arcsinh( x )
+  cos( x [,cycle] )    arccos( x [,cycle] )     cosh( x )          arccosh( x )
+  tan( x [,cycle] )    arctan( x, y [,cycle] )  tanh( x )          arctanh( x )
+  cot( x [,cycle] )    arccot( x, y [,cycle] )  coth( x )          arccoth( x )
+
+  re( complex )        im( complex )            modulus( complex )            
+  set_re( complex, r ) set_im( complex, i )     argument( complex )           
+
+  abs( x ) is not "numerics.abs( x )" because it's not in the numerics package
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the numerics package</span>
+        </div>
+        </div>
+        </center>
+
 <p>
 <hr><b>f := abs( e )</b>
 
@@ -2193,6 +2230,8 @@ will be raised.
                                 <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;<b>numerics</b></a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>

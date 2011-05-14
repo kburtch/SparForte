@@ -66,6 +66,33 @@ and to_string functions should be used.
 <li><b>strings.direction</b> - direction.forward or direction.backward</li>
 <li><b>strings.trim_end</b> - trim_end.left, trim_end.right or trim_end.both</li>
 </ul>
+
+        <center>
+        <div class="code">
+<pre>
+  element( s, i )           slice( s, l, h )         index( s, p [, d] )
+  index_non_blank( s [,d] ) count( s, p )            replace_slice( s, l, h, b )
+  insert( s, b, n )         overwrite( s, p, n )     delete( s, l, h )
+  trim( s , e )             head( s, c [, p] )       tail( s, c [, p] )
+  length( s )               match( e, s )            glob( e, s ) 
+  image( s )                val( n )                 field( s, c [, d] ) 
+  mktemp( p )               lookup( s, t, d )        replace( s,f, t [,d] )
+  csv_field( s, c [,d] )    is_typo_of( s1, s2 )     csv_replace( s,f,t [,d] )
+  to_lower( s )             to_upper( s )            to_proper( s )
+  to_basic( s )             to_escaped( s )          split( s,l,r,n)
+  is_slashed_date( s )      is_control( s )          is_graphic( s ) 
+  is_letter( s )            is_lower( s )            is_upper( s ) 
+  is_basic( s )             is_digit( s )            is_hexadecimal_digit( s )
+  is_alphanumeric( s )      is_special( s )          is_fixed( s ) 
+  unbounded_slice( s, l, h ) set_unbounded_string( s, u ) 
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the strings package</span>
+        </div>
+        </div>
+        </center>
+
 <p>
 <hr><b>n := strings.count( s, p )</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
@@ -2528,6 +2555,8 @@ compatibility with Ada--normally use strings.slice.
                                 <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>

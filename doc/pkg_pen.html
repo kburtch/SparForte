@@ -125,6 +125,36 @@ pen pixels will be bright red.</p>
 
 </ul>
 
+        <center>
+        <div class="code">
+<pre>
+  set_rect(r, l, t, r, b)   b := is_empty_rect( r )  offset_rect( r, dx, dy )
+  inset_rect( r, dx, dy )   intersect_rect( r,r1,r2) b := inside_rect( ir, or )
+  b := in_rect( x, y, r )                                                     
+
+  frame_ellipse( id, r )    frame_rect( id, r )      fill_ellipse( id, r )    
+  paint_rect( id, r )       fill_rect(id,rct,r,g,b)  fill_rect(id,r,cn)       
+  line_to( id, x, y )       line( id, dx, dy )       hline( id, x1, x2, y )   
+  vline( id, x, y1, y2 )    move_to( id, x, y )      move( id, dx, dy )       
+  clear                     clear( r, g, b)          clear( cn )              
+
+  get_pen_mode( id )        get_pen_brush( id )      set_pen_ink(id,r,g,b)    
+  set_pen_ink(id,cn)        set_pen_mode( id, m)     set_pen_pattern( id,pid) 
+  set_pen_brush( id,brush )                                                   
+  p := greyscale( r,g,b) blend(r1,g1,b1,r2,g2,b2,r,g,b) fade(r1,g1,b1,p,r,g,b)
+
+  new_canvas(h,v,c,id) new_screen_canvas(h,v,c,id) new_window_canvas(h,v,c,id)
+  new_gl_screen_canvas(h,v,c,id)                            
+  close_canvas( id )        wait_to_reveal( id )     reveal( id )             
+  reveal_now( id )
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the pen package</span>
+        </div>
+        </div>
+        </center>
+
 <p>
 <hr><b>pen.fill_ellipse( c, r )</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
@@ -1654,6 +1684,8 @@ window title bar.
                                 <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>

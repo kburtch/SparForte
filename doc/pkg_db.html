@@ -83,6 +83,39 @@ binding.  For full details on these routines, consult the APQ documentation.</p>
         </center>
 <br>&nbsp;
 
+        <center>
+        <div class="code">
+<pre>
+  connect( dbname [,user ,pswd [,host [,port] ] ] )
+  append( stmt [,after] )     prepare( stmt [,after] )
+  append_line( stmt )         append_quoted( stmt )
+  execute                     execute_checked( msg )
+  disconnect                  is_connected
+  reset                       s := error_message
+  s := notice_message         b := in_abort_state
+  s := options                set_rollback_on_finalize( b )
+  open_db_trace( f [,m] )     b := will_rollback_on_finalize
+  close_db_trace              set_trace( b )
+  b := is_trace               clear
+  raise_exceptions( [b] )     report_errors( [b] )
+  begin_work                  rollback_work
+  commit_work                 rewind
+  fetch[(r)]                  b := end_of_query
+  n := tuple( t )             n := tuples
+  n := columns                s := column_name( c )
+  i := column_index( s )      b := is_null( c )
+  s := value( c )             d := engine_of 
+  show                        list
+  schema( t )                 users
+  databases                        
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the db package</span>
+        </div>
+        </div>
+        </center>
+
 <p>
 <hr><b>db.append( s [, a] )</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
@@ -1322,6 +1355,8 @@ finishes, a rollback will be issued if the connection is still open).
                                 <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>

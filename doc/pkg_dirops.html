@@ -60,6 +60,22 @@ slash or back slash).</li>
 <li><b>directory_operations.path_style</b>: the format of a pathname - path_style.unix, path_style.dos, path_style.system_default</li>
 <li><b>directory_operations.environment_style</b>: the format for environment variable substitution - environment_style.unix, environment_style.dos, environment_style.both, environment_style.system_default</li>
 </ul>
+
+        <center>
+        <div class="code">
+<pre>
+  dir_separator             change_dir( p )          remove_dir( p [, r])
+  get_current_dir           dir_name( p )            base_name( p [, s])
+  file_extension( p )       file_name( p )           format_pathname(p [,s])
+  expand_path( p [,s] )
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the directory_operations package</span>
+        </div>
+        </div>
+        </center>
+
 <p>
 <hr><b>c := directory_operations.dir_separator</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
@@ -526,6 +542,8 @@ that a variable must start with a letter.
                                 <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>

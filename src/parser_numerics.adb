@@ -52,103 +52,138 @@ serialNumber : long_float := 0.0;
 
 -----------------------------------------------------------------------------
 
---procedure ParseSingleNumericExpression( expr_val : out unbounded_string;
---  expr_type : out identifier ) is
---begin
---  expect( symbol_t, "(" );
---  ParseExpression( expr_val, expr_type );
---  if uniTypesOk( expr_type, uni_numeric_t ) then
---     expect( symbol_t, ")" );
---  end if;
---end ParseSingleNumericExpression;
+discard_result : boolean;
 
-procedure ParseSingleStringExpression( expr_val : out unbounded_string;
-  expr_type : out identifier ) is
-begin
-  expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
-     expect( symbol_t, ")" );
-  end if;
-end ParseSingleStringExpression;
+--  PARSE SINGLE STRING PARAMETER
+--
+-- Expect a parameter with a single string expression.  If there is no expected
+-- type, assume it's a universal string type.
 
-procedure ParseFirstStringExpression( expr_val : out unbounded_string;
-  expr_type : out identifier ) is
-begin
-  expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
-     expect( symbol_t, "," );
-  end if;
-end ParseFirstStringExpression;
-
-procedure ParseNextStringExpression( expr_val : out unbounded_string;
-  expr_type : out identifier ) is
-begin
-  ParseExpression( expr_val, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
-     expect( symbol_t, "," );
-  end if;
-end ParseNextStringExpression;
-
-procedure ParseLastStringExpression( expr_val : out unbounded_string;
-  expr_type : out identifier ) is
-begin
-  ParseExpression( expr_val, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
-     expect( symbol_t, ")" );
-  end if;
-end ParseLastStringExpression;
-
-procedure ParseSingleNumericExpression( expr_val : out unbounded_string;
-  expr_type : out identifier ) is
+procedure ParseSingleStringParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier := uni_string_t  ) is
 begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if isExecutingCommand then
-     expr_val := castToType( expr_val, expr_type );
+     expr_val := castToType( expr_val, expected_type );
   end if;
-  if uniTypesOk( expr_type, uni_numeric_t ) then
-     expect( symbol_t, ")" );
-  end if;
-end ParseSingleNumericExpression;
+  discard_result := baseTypesOk( expr_type, expected_type );
+  expect( symbol_t, ")" );
+end ParseSingleStringParameter;
 
-procedure ParseFirstNumericExpression( expr_val : out unbounded_string;
-  expr_type : out identifier ) is
+
+--  PARSE FIRST STRING PARAMETER
+--
+-- Expect a first parameter that is string expression.  If there is no expected
+-- type, assume it's a universal string type.
+
+procedure ParseFirstStringParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier := uni_string_t ) is
 begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if isExecutingCommand then
-     expr_val := castToType( expr_val, expr_type );
+     expr_val := castToType( expr_val, expected_type );
   end if;
-  if uniTypesOk( expr_type, uni_numeric_t ) then
-     expect( symbol_t, "," );
-  end if;
-end ParseFirstNumericExpression;
+  discard_result := baseTypesOk( expr_type, expected_type );
+  expect( symbol_t, "," );
+end ParseFirstStringParameter;
 
-procedure ParseNextNumericExpression( expr_val : out unbounded_string;
-  expr_type : out identifier ) is
+
+--  PARSE NEXT STRING PARAMETER
+--
+-- Expect another parameter that is string expression.  If there is no expected
+-- type, assume it's a universal string type.
+
+procedure ParseNextStringParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier := uni_string_t ) is
 begin
   ParseExpression( expr_val, expr_type );
   if isExecutingCommand then
-     expr_val := castToType( expr_val, expr_type );
+     expr_val := castToType( expr_val, expected_type );
   end if;
-  if uniTypesOk( expr_type, uni_numeric_t ) then
-     expect( symbol_t, "," );
-  end if;
-end ParseNextNumericExpression;
+  discard_result := baseTypesOk( expr_type, expected_type );
+  expect( symbol_t, "," );
+end ParseNextStringParameter;
 
-procedure ParseLastNumericExpression( expr_val : out unbounded_string;
-  expr_type : out identifier ) is
+
+--  PARSE LAST STRING PARAMETER
+--
+-- Expect another parameter that is string expression.  If there is no expected
+-- type, assume it's a universal string type.
+
+procedure ParseLastStringParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier := uni_string_t ) is
 begin
   ParseExpression( expr_val, expr_type );
   if isExecutingCommand then
-     expr_val := castToType( expr_val, expr_type );
+     expr_val := castToType( expr_val, expected_type );
   end if;
-  if uniTypesOk( expr_type, uni_numeric_t ) then
-     expect( symbol_t, ")" );
+  discard_result := baseTypesOk( expr_type, expected_type );
+  expect( symbol_t, ")" );
+end ParseLastStringParameter;
+
+
+--  PARSE SINGLE NUMERIC PARAMETER
+--
+-- typeTypesOk not yet implemented here
+
+procedure ParseSingleNumericParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier := uni_numeric_t ) is
+begin
+  expect( symbol_t, "(" );
+  ParseExpression( expr_val, expr_type );
+  if isExecutingCommand then
+     expr_val := castToType( expr_val, expected_type );
   end if;
-end ParseLastNumericExpression;
+  discard_result := intTypesOk( expr_type, expected_type );
+  expect( symbol_t, ")" );
+end ParseSingleNumericParameter;
+
+--  PARSE FIRST NUMERIC PARAMETER
+--
+
+procedure ParseFirstNumericParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier := uni_numeric_t ) is
+begin
+  expect( symbol_t, "(" );
+  ParseExpression( expr_val, expr_type );
+  if isExecutingCommand then
+     expr_val := castToType( expr_val, expected_type );
+  end if;
+  discard_result := intTypesOk( expr_type, expected_type );
+  expect( symbol_t, "," );
+end ParseFirstNumericParameter;
+
+
+--  PARSE NEXT NUMERIC PARAMETER
+--
+
+procedure ParseNextNumericParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier := uni_numeric_t ) is
+begin
+  ParseExpression( expr_val, expr_type );
+  if isExecutingCommand then
+     expr_val := castToType( expr_val, expected_type );
+  end if;
+  discard_result := intTypesOk( expr_type, expected_type );
+  expect( symbol_t, "," );
+end ParseNextNumericParameter;
+
+
+--  PARSE LAST NUMERIC PARAMETER
+--
+
+procedure ParseLastNumericParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier := uni_numeric_t ) is
+begin
+  ParseExpression( expr_val, expr_type );
+  if isExecutingCommand then
+     expr_val := castToType( expr_val, expected_type );
+  end if;
+  discard_result := intTypesOk( expr_type, expected_type );
+  expect( symbol_t, ")" );
+end ParseLastNumericParameter;
 
 
 -----------------------------------------------------------------------------
@@ -327,7 +362,7 @@ procedure ParseNumericsSqrt( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( sqrt_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_unbounded_string( sqrt( to_numeric( expr_val ) ) );
@@ -379,7 +414,7 @@ procedure ParseNumericsExp( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( exp_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
         result := to_unbounded_string( exp( to_numeric( expr_val ) ) );
@@ -693,7 +728,7 @@ procedure ParseNumericsSinH( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( sinh_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_unbounded_string( sinh( to_numeric( expr_val ) ) );
@@ -710,7 +745,7 @@ procedure ParseNumericsCosH( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( cosh_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_unbounded_string( cosh( to_numeric( expr_val ) ) );
@@ -727,7 +762,7 @@ procedure ParseNumericsTanH( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( tanh_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_unbounded_string( tanh( to_numeric( expr_val ) ) );
@@ -744,7 +779,7 @@ procedure ParseNumericsCoth( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( coth_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_unbounded_string( coth( to_numeric( expr_val ) ) );
@@ -761,7 +796,7 @@ procedure ParseNumericsArcSinH( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( arcsinh_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_unbounded_string( arcsinh( to_numeric( expr_val ) ) );
@@ -778,7 +813,7 @@ procedure ParseNumericsArcCosH( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( arccosh_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_unbounded_string( arccosh( to_numeric( expr_val ) ) );
@@ -795,7 +830,7 @@ procedure ParseNumericsArcTanH( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( arctanh_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_unbounded_string( arctanh( to_numeric( expr_val ) ) );
@@ -812,7 +847,7 @@ procedure ParseNumericsArcCotH( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( arccoth_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_unbounded_string( arccoth( to_numeric( expr_val ) ) );
@@ -829,7 +864,7 @@ procedure ParseNumericsFloor( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( floor_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_unbounded_string( long_float'floor( to_numeric( expr_val ) ) );
@@ -846,7 +881,7 @@ procedure ParseNumericsCeiling( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( ceiling_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_unbounded_string( long_float'ceiling( to_numeric( expr_val ) ) );
@@ -863,7 +898,7 @@ procedure ParseNumericsRounding( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( rounding_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
       result := to_unbounded_string( long_float'rounding( to_numeric( expr_val ) ) );
@@ -880,7 +915,7 @@ procedure ParseNumericsUnbiasedRounding( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( unbiased_rounding_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
       result := to_unbounded_string( long_float'unbiased_rounding( to_numeric( expr_val ) ) );
@@ -897,7 +932,7 @@ procedure ParseNumericsTruncation( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( truncation_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
       result := to_unbounded_string( long_float'truncation( to_numeric( expr_val ) ) );
@@ -942,7 +977,7 @@ procedure ParseNumericsExponent( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( exponent_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
       result := to_unbounded_string( long_float( long_float'exponent( to_numeric( expr_val ) ) ) );
@@ -959,7 +994,7 @@ procedure ParseNumericsFraction( result : out unbounded_string ) is
   expr_type : identifier;
 begin
   expect( fraction_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
       result := to_unbounded_string( long_float'fraction( to_numeric( expr_val ) ) );
@@ -1125,7 +1160,7 @@ procedure ParseNumericsMachine( result : out unbounded_string ) is
   expr_type  : identifier;
 begin
   expect( machine_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
       result := to_unbounded_string( long_float'machine( to_numeric( expr_val ) ) );
@@ -1214,7 +1249,7 @@ procedure ParseNumericsAbs( result : out unbounded_string ) is
   expr_type  : identifier;
 begin
   expect( abs_t );
-  ParseSingleNumericExpression( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type );
   begin
      if isExecutingCommand then
        --result := trim( to_unbounded_string( abs( to_numeric( expr_val ) ) ), left );
@@ -1298,11 +1333,12 @@ procedure ParseNumericsOdd( result : out unbounded_string ) is
   expr_type  : identifier;
 begin
   expect( odd_t );
-  expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
-  if intTypesOk( expr_type, integer_t ) then
-     expect( symbol_t, ")" );
-  end if;
+  ParseSingleNumericParameter( expr_val, expr_type, integer_t );
+  --expect( symbol_t, "(" );
+  --ParseExpression( expr_val, expr_type );
+  --if intTypesOk( expr_type, integer_t ) then
+  --   expect( symbol_t, ")" );
+  --end if;
   begin
      if isExecutingCommand then
        result := to_bush_boolean( integer( to_numeric( expr_val ) ) mod 2 = 1 );

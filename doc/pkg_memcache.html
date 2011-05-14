@@ -1,0 +1,938 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Packages - Memcache</title>
+	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF"><a name="top"></a>
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html">Tutorials</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html"><b>Packages</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="packages.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_calendar.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+	<!-- Content Area -->
+<h2><a NAME="4.14"></a>Memcache Package</h2>
+
+<p>Memcached (or the Memcache Daemon) is a general-purpose networked memory
+caching system that was originally developed by Danga Interactive for
+LiveJournal, but is now used by many other sites. It is often used to speed up
+dynamic database-driven websites by caching data and objects in RAM to reduce the
+number of times an external data source (such as a database or API) must be read.
+Memcached has been used by web sites including YouTube, Facebook and Twitter.</p>
+
+<p>Values are store as keys (names or labels) and the associated value.</p>
+
+<p>SparForte supports memcached natively (that is, using pragmas you can import
+and export variable to/from Memcached.) The memcached support is built on the
+PegaSoft PegaSock socket library, which supports local memcached caching as well
+as distributed, redundant memcached caching clusters.</p>
+
+<p>The Memcache package is a binding to the PegaSock library, giving a more
+flexible interface to memcache than the pragmas provide.  For example, you
+can use any keys you want, rather than using the variable name as the key.
+The names of the procedures and functions are equivalent to the commands
+of the memcached protocol: you can find out more information on them by
+consulting the memcached documentation.</p>
+
+<p>The following is a trivial example with one memcached server running
+on localhost port 11211.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; c := memcache.new_cluster<br>
+=&gt; (Assuming c is a new memcache.memcache_cluster variable)<br>
+=&gt; memcache.register_server( c, "localhost", 11211 )<br>
+=&gt; key : string := "candy"<br>
+=&gt; memcache.set( c, key, "cane" )<br>
+=&gt; ? memcache.get( c, key )<br>
+cane<br>
+=&gt;<br>&nbsp;<br>
+                </p>
+        <div class="code_caption">
+                <b>Example</b>: Setting key "candy" to value "cane" and retrieving it again</span>
+        </div>
+        </div>
+        </center>
+
+
+<p>Normally a memcache cluster would have two or more servers.  The key
+would automatically be stored on two servers.  If a server in the cluster
+fails, a program can still retrieve the data.</p>
+
+<p>PegaSock implements an escallating backoff mechanism: if a server cannot
+be accessed, it is marked as down.  After a suitable period, PegaSock will
+attempt to reconnect.  If both servers containing the data are down, the next
+few memcache calls automatically fail.  If the servers are still down, it
+backs off for a longer period of time.  This is done to prevent a cascading
+failure.</p>
+
+<p>Some functionality (such as cas) is not implemented.</p>
+
+<p>Because memcached has no security features, running in a restricted
+shell will disable the memcache package.</p>
+
+
+<p><u>GCC Ada Equivalent</u>: N/A<br>
+
+        <center>
+        <div class="code">
+<pre>
+  add( cl, k, v )             prepend( cl, k, v )
+  append( cl, k, v )          register_server( cl, h, p )
+  clear_servers( cl )         replace( cl, k, v )
+  delete( cl, k )             set( cl, k, v )
+  flush( cl )                 set_cluster_name( cl, s )
+  is_valid_memcache_key( k )  set_cluster_type( cl, e )
+  v := get( cl, k )           s := stats( cl )
+  cl := new_cluster           s := version( cl )
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the memcache package</span>
+        </div>
+        </div>
+        </center>
+
+<h3>memcache.add( cl, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Store value v for key k in memcache cluster cl if the key does not exist.
+Otherwise, an error is displayed but execution continues.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">memcache.add( mc_cluster, "company_name", "PegaSoft"  );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>cl</span></td>
+<td><span>in out</span></td>
+<td><span>memcache.memcache_cluster</span></td>
+<td><span>required</span></td>
+<td><span>the memcache cluster to use</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the name to identify the value</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the value to store</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if no servers are defined in the cluster</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>memcache.set<br>memcache.replace</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: PegaSock.Memcache.Add<br>PHP: memcached::add</p></td>
+</tr>
+</table>
+
+<h3>memcache.append( cl, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Concatenate value v to the end of the current value for key k in
+memcache cluster cl.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.append( mc_cluster, "company_name", " Inc.";<br>-- company_name is "PegaSoft Inc." </span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>cl</span></td>
+<td><span>in out</span></td>
+<td><span>memcache.memcache_cluster</span></td>
+<td><span>required</span></td>
+<td><span>the memcache cluster to use</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the name to identify the value</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the value to append</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if no servers are defined in the cluster</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>memcache.prepend</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: PegaSock.Memcache.Append<br>PHP: memcached::append</p></td>
+</tr>
+</table>
+
+<h3>memcache.clear_servers( cl )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Delete all registered servers for memcache cluster cl.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">memcache.clear_servers( cl ); -- there are now no servers in the cluster</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>cl</span></td>
+<td><span>in out</span></td>
+<td><span>memcache.memcache_cluster</span></td>
+<td><span>required</span></td>
+<td><span>the memcache cluster to use</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>memcache.register_server</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.Bubble_Sort<br>PHP: sort</p></td>
+</tr>
+</table>
+
+<h3>memcache.delete( cl, k )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Remove key k from memcache cluster cl, discarding the key's value.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">memcache.delete( mc_cluster, "company_name", "PegaSoft"  );<br>-- company_name no longer exists</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>cl</span></td>
+<td><span>in out</span></td>
+<td><span>memcache.memcache_cluster</span></td>
+<td><span>required</span></td>
+<td><span>the memcache cluster to use</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the key name to unset</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if no servers are defined in the cluster</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>memcache.flush</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: PegaSock.Memcache.Delete<br>PHP: memcached::delete</p></td>
+</tr>
+</table>
+
+<h3>memcache.flush( cl )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Delete all keys.  The memory is not actually freed: all keys are
+marked invalid and are gradually replaced as new items are stored.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">memcache.flush( mc_cluster );-- all keys are destroyed</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>cl</span></td>
+<td><span>in out</span></td>
+<td><span>memcache.memcache_cluster</span></td>
+<td><span>required</span></td>
+<td><span>the memcache cluster to use</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if no servers are defined in the cluster</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>memcache.delete</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: PegaSock.Memcache.Flush<br>PHP: memcached::flush</p></td>
+</tr>
+</table>
+
+<h3>memcache.is_valid_memcache_key( k )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if the string k is valid as a key for memcached.  A key must be
+between 1 and 250 characters and not contain spaces or control characters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := memcache.is_valid_memcache_key( "foo bar" );-- b is false</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the name of the key</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if no servers are defined in the cluster</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: PegaSock.Memcache.isValidMemcacheKey<br>PHP: N/A</p></td>
+</tr>
+</table>
+
+<h3>v := memcache.get( cl, k )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Look up the value previously stored for the key k in memcache cluster cl
+and return it.  If the key does not exist, return an empty string.  If there
+are two or more servers in the cluster, get will alternate between the servers
+with the key in order to distribute load.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>? memcache.get( mc_cluster, "company_name" );<br>-- displays "PegaSoft" </span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>cl</span></td>
+<td><span>in out</span></td>
+<td><span>memcache.memcache_cluster</span></td>
+<td><span>required</span></td>
+<td><span>the memcache cluster to use</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the name to identify the value</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>return value</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the value</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if no servers are defined in the cluster</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: PegaSock.Memcache.Get<br>PHP: memcached::get</p></td>
+</tr>
+</table>
+
+<h3>cl := memcache.new_cluster</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Allocate a new memcache cluster record.  The record is used to identify
+servers and manage connections.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mc_cluster := memcache.new_cluster;</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>cl</span></td>
+<td><span>return value</span></td>
+<td><span>memcache.memcache_cluster</span></td>
+<td><span>required</span></td>
+<td><span>the new memcache cluster</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if no servers are defined in the cluster</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Because the memcache_cluster record is private, SparForte allocates
+clusters internally using a linked list.  The records are not freed until
+the script execution end.</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A<br>PHP: new memcached</p></td>
+</tr>
+</table>
+
+<h3>memcache.prepend( cl, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Concatenate value v to the head of the current value for key k in
+memcache cluster cl.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.prepend( mc_cluster, "company_name", "This is " );<br>-- company_name is "This is PegaSoft" </span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>cl</span></td>
+<td><span>in out</span></td>
+<td><span>memcache.memcache_cluster</span></td>
+<td><span>required</span></td>
+<td><span>the memcache cluster to use</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the name to identify the value</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the value to prepend</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if no servers are defined in the cluster</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>memcache.append</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: PegaSock.Memcache.Prepend<br>PHP: memcached::prepend</p></td>
+</tr>
+</table>
+
+<h3>memcache.register_server( cl, h, p )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Identify a new server to use in the memcache cluster.  The server is
+identified by hostname h and TCP/IP port p.  The servers should always be
+registered in the same order for this cluster.  No network connection is
+opened: network connections are opened when data is read or written.  Do not
+register the same server twice.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">memcache.register_server( mc_cluster, "memcached1.somecompany.com", 11211 );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>cl</span></td>
+<td><span>in out</span></td>
+<td><span>memcache.memcache_cluster</span></td>
+<td><span>required</span></td>
+<td><span>the memcache cluster to use</span></td>
+</tr><tr>
+<td><span>h</span></td>
+<td><span>in</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the host name</span></td>
+</tr><tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the TCP/IP port</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if a server is registered twice.</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>memcache.clear_servers</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: PegaSock.Memcache.RegisterServer<br>PHP: memcached::addServer</p></td>
+</tr>
+</table>
+
+<h3>memcache.replace( cl, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Overwrite the current value of key k memcache cluster cl with value v, if
+a value already exists.  If the key doesn't exist, a warning is displayed but
+execution continues.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.replace( mc_cluster, "company_name", "MegaCorp";<br>-- company_name is "MegaCorp"</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>cl</span></td>
+<td><span>in out</span></td>
+<td><span>memcache.memcache_cluster</span></td>
+<td><span>required</span></td>
+<td><span>the memcache cluster to use</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the name to identify the value</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the value to overwrite with</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if no servers are defined in the cluster</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>memcache.add<br>memcache.set</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: PegaSock.Memcache.Replace<br>PHP: memcached::replace</p></td>
+</tr>
+</table>
+
+<h3>memcache.set( cl, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Assign value v as the current value for key k in memcache cluster cl.  If
+the key already has a value, it will be overwritten.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>-- company_name is "PegaSoft" </span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>cl</span></td>
+<td><span>in out</span></td>
+<td><span>memcache.memcache_cluster</span></td>
+<td><span>required</span></td>
+<td><span>the memcache cluster to use</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the name to identify the value</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the value to assign</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if no servers are defined in the cluster</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>memcache.add<br>memcache.replace</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: PegaSock.Memcache.Set<br>PHP: memcached::set</p></td>
+</tr>
+</table>
+
+<h3>memcache.set_cluster_name( cl, s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Assign the string s as the name of the cluster.  The name is used in
+some error messages.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">memcache.set_cluster_name( mc_cluster, "main cluster" );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>cl</span></td>
+<td><span>in out</span></td>
+<td><span>memcache.memcache_cluster</span></td>
+<td><span>required</span></td>
+<td><span>the memcache cluster to use</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the name of the cluster</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if no servers are defined in the cluster</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: PegaSock.Memcache.SetClusterName<br>PHP: N/A</p></td>
+</tr>
+</table>
+
+<h3>memcache.set_cluster_type( cl, t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Assign the type of cluster.  Currently, there is only one type:
+memcache.memcache_cluster_type.normal.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">memcache.set_cluster_type( mc_cluster, memcache.memcache_cluster_type.normal );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>cl</span></td>
+<td><span>in out</span></td>
+<td><span>memcache.memcache_cluster</span></td>
+<td><span>required</span></td>
+<td><span>the memcache cluster to use</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>memcache.memcache_cluster_type</span></td>
+<td><span>required</span></td>
+<td><span>the type of cluster</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if no servers are defined in the cluster</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: PegaSock.Memcache.SetClusterType<br>PHP: memcache::setOption</p></td>
+</tr>
+</table>
+
+<h3>s := memcache.stats( cl )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return detailed memached statistics for all servers in the cluster.  The
+first item in the row is the server number.  For the meaning of the stats,
+consult the memcached documentation.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">? memcache.stats( mc_cluster );-- display all stats</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>cl</span></td>
+<td><span>in out</span></td>
+<td><span>memcache.memcache_cluster</span></td>
+<td><span>required</span></td>
+<td><span>the memcache cluster to use</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the memcached stats</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if no servers are defined in the cluster</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>memcache.version</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: PegaSock.Memcache.Stats<br>PHP: memcached::getStats</p></td>
+</tr>
+</table>
+
+<h3>s := memcache.version( cl )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Chooses a server from the cluster at random and display the version
+of memcached that is running on the server.  (It would be advisable to run
+the same version on all servers.)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">? memcache.version( mc_cluster ); -- displays the version e.g. 1.4.5</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>cl</span></td>
+<td><span>in out</span></td>
+<td><span>memcache.memcache_cluster</span></td>
+<td><span>required</span></td>
+<td><span>the memcache cluster to use</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the memcached version</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if no servers are defined in the cluster</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>memcache.stats</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: PegaSock.Memcache.Version<br>PHP: memcached::getVersion</p></td>
+</tr>
+</table>
+
+&nbsp;<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="packages.html">&nbsp;Summary</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_arrays.html">&nbsp;arrays</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_calendar.html">&nbsp;calendar</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cgi.html">&nbsp;cgi</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cmdline.html">&nbsp;command_line</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_db.html">&nbsp;db/ postgresql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;<b>memcache</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_pen.html">&nbsp;pen</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sound.html">&nbsp;sound</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sinfo.html">&nbsp;source_info</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;stats</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_strings.html">&nbsp;strings</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
+</a></p>
+
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" border="0" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>
+

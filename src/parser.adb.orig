@@ -42,6 +42,7 @@ with system,
     builtins,
     jobs,
     signal_flags,
+    parser_pragmas,
     parser_tio,
     parser_strings,
     parser_numerics,
@@ -58,7 +59,8 @@ with system,
     parser_stats,
     parser_pen,
     parser_os,
-    parser_dirops;
+    parser_dirops,
+    parser_memcache;
 use ada.text_io,
     ada.text_io.editing,
     ada.command_line,
@@ -78,6 +80,7 @@ use ada.text_io,
     builtins,
     jobs,
     signal_flags,
+    parser_pragmas,
     parser_tio,
     parser_strings,
     parser_numerics,
@@ -94,7 +97,8 @@ use ada.text_io,
     parser_stats,
     parser_pen,
     parser_os,
-    parser_dirops;
+    parser_dirops,
+    parser_memcache;
 
 package body parser is
 
@@ -102,13 +106,6 @@ package body parser is
 ---------------------------------------------------------
 -- START OF ADASCRIPT PARSER
 ---------------------------------------------------------
-
-procedure RunAndCaptureOutput( s : unbounded_string; results : out
-  unbounded_string; fragment : boolean := true );
--- forward declaration: this runs the commands found in string s
-
-procedure CompileRunAndCaptureOutput( commands : unbounded_string; results : out
-  unbounded_string );
 
 procedure ParseBasicShellWord( shell_word : out unbounded_string ) is
   -- Check token for a shell word.
@@ -1800,6 +1797,21 @@ begin
      elsif token = pen_greyscale_t then                -- pen.greyscale
         ParsePenGreyscale( f );
         kind := pen_rgbcomponent_t;
+     elsif token = memcache_is_valid_memcache_key_t then -- memcache.is_valid_memcache_key
+        ParseMemcacheIsValidMemcacheKey( f );
+        kind := boolean_t;
+     elsif token = memcache_new_cluster_t then         -- memcache.new_cluster
+        ParseMemcacheNewCluster( f );
+        kind := memcache_cluster_t;
+     elsif token = memcache_version_t then             -- memcache.version
+        ParseMemcacheVersion( f );
+        kind := string_t;
+     elsif token = memcache_stats_t then               -- memcache.stats
+        ParseMemcacheStats( f );
+        kind := string_t;
+     elsif token = memcache_get_t then                 -- memcache.get
+        ParseMemcacheGet( f );
+        kind := string_t;
      elsif identifiers( token ).class = userFuncClass then
         declare
           funcToken : identifier := token;
@@ -3091,695 +3103,6 @@ begin
      discardUnusedIdentifier( id );
   end if;
 end ParseDeclarationPart;
-
-procedure ParsePragma is
-  type aPragmaType is ( ada_95, asserting, annotate, debug, debug_on,
-     depreciated, export, gcc_errors, import, inspection, inspect_var,
-     license, noCommandHash, peek, promptChange, register_memcache_server,
-     restriction, restriction_auto, restriction_external,
-     restriction_mysql, restriction_postgresql, template,
-     unchecked_import, uninspect_var, unrestricted_template, volatile );
-  pragmaKind  : aPragmaType;
-  expr_val    : unbounded_string;
-  expr_val2   : unbounded_string;
-  results     : unbounded_string;
-  var_id      : identifier;
-  exportType  : unbounded_string;
-  importType  : unbounded_string;
-begin
-  expect( pragma_t );
-  if identifiers( token ).name = "ada_95" then
-     pragmaKind := ada_95;
-  elsif identifiers( token ).name = "assert" then
-     pragmaKind :=  asserting;
-  elsif identifiers( token ).name = "debug" then
-     pragmaKind :=  debug;
-  elsif identifiers( token ).name = "annotate" then
-     pragmaKind :=  annotate;
-  elsif identifiers( token ).name = "deprecated" then
-     pragmaKind :=  depreciated;
-  elsif identifiers( token ).name = "depreciated" then
-     pragmaKind :=  depreciated;
-  elsif identifiers( token ).name = "export" then
-     pragmaKind := export;
-  elsif identifiers( token ).name = "gcc_errors" then
-     pragmaKind := gcc_errors;
-  elsif identifiers( token ).name = "import" then
-     pragmaKind := import;
-  elsif identifiers( token ).name = "inspect" then
-     pragmaKind := inspect_var;
-  elsif identifiers( token ).name = "inspection_point" then
-     pragmaKind := inspection;
-  elsif identifiers( token ).name = "license" then
-     pragmaKind := license;
-  elsif identifiers( token ).name = "inspection_peek" then
-     pragmaKind := peek;
-  elsif identifiers( token ).name = "no_command_hash" then
-     pragmaKind := noCommandHash;
-  elsif identifiers( token ).name = "prompt_script" then
-     pragmaKind := promptChange;
-  elsif identifiers( token ).name = "register_memcache_server" then
-     pragmaKind := register_memcache_server;
-  elsif identifiers( token ).name = "restriction" then
-     pragmaKind := restriction;
-  elsif identifiers( token ).name = "restrictions" then
-     discardUnusedIdentifier( token );
-     err( "pragma restriction not restrictions" );
-     return;
-  elsif identifiers( token ).name = "template" then
-     pragmaKind := template;
-  elsif identifiers( token ).name = "unchecked_import" then
-     pragmaKind := unchecked_import;
-  elsif identifiers( token ).name = "uninspect" then
-     pragmaKind := uninspect_var;
-  elsif identifiers( token ).name = "unrestricted_template" then
-     pragmaKind := unrestricted_template;
-  elsif identifiers( token ).name = "volatile" then
-     pragmaKind := volatile;
-  else
-     discardUnusedIdentifier( token );
-     err( "unknown pragma" );
-     return;
-  end if;
-  discardUnusedIdentifier( token );
-  -- don't declare a new identifier for a pragma
-
-  -- Parse the pragma parameters (if any)
-
-  getNextToken;
-  if pragmaKind /= ada_95 and pragmaKind /= inspection and pragmaKind /=
-     noCommandHash and pragmaKind /= peek then
-     if pragmaKind = debug and (token /= symbol_t or identifiers( token ).value /= "(") then
-        pragmaKind := debug_on;
-     else
-        expect( symbol_t, "(" );
-     end if;
-  end if;
-
-  case pragmaKind is
-  when ada_95 =>                             -- pragma ada_95
-     null;
-  when asserting =>                          -- pragma assert
-     ParseExpression( expr_val, var_id );
-  when annotate =>                           -- pragma annotate
-     if token /= strlit_t then
-        if identifiers( token ).name /= "author" and
-           identifiers( token ).name /= "created" and
-           identifiers( token ).name /= "description" and
-           identifiers( token ).name /= "errors" and
-           identifiers( token ).name /= "modified" and
-           identifiers( token ).name /= "param" and
-           identifiers( token ).name /= "return" and
-           identifiers( token ).name /= "see also" and
-           identifiers( token ).name /= "summary" and
-           identifiers( token ).name /= "todo" and
-           identifiers( token ).name /= "version" then
-           err( "unknown annotation field type" );
-        else
-           discardUnusedIdentifier( token );
-           getNextToken;
-           expect( symbol_t, "," );
-        end if;
-     end if;
-     expr_val := identifiers( token ).value;
-     expect( strlit_t );
-  when debug =>                              -- pragma debug
-     expr_val := identifiers( token ).value;
-     expect( backlit_t );
-  when debug_on =>                              -- pragma debug (no param)
-     null;
-  when depreciated =>                           -- pragma depreciated
-     expr_val := identifiers( token ).value;
-     expect( strlit_t );
-  when export =>                                -- pragma export
-     if identifiers( token ).name = "shell" then
-        exportType := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        expect( symbol_t, "," );
-        ParseIdentifier( var_id );
-     elsif identifiers( token ).name = "local_memcache" then
-        exportType := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        expect( symbol_t, "," );
-        ParseIdentifier( var_id );
-     elsif identifiers( token ).name = "memcache" then
-        exportType := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        expect( symbol_t, "," );
-        ParseIdentifier( var_id );
-     else
-        discardUnusedIdentifier( token );
-        err( "only 'shell', 'local_memcache', 'memcache' convention supported" );
-        return;
-     end if;
-  when import | unchecked_import =>             -- pragma unchecked/import
-     if identifiers( token ).name = "shell" then
-        importType := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        expect( symbol_t, "," );
-        ParseIdentifier( var_id );
-     elsif identifiers( token ).name = "cgi" then
-        importType := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        expect( symbol_t, "," );
-        ParseIdentifier( var_id );
-     elsif identifiers( token ).name = "local_memcache" then
-        importType := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        expect( symbol_t, "," );
-        ParseIdentifier( var_id );
-     elsif identifiers( token ).name = "memcache" then
-        importType := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        expect( symbol_t, "," );
-        ParseIdentifier( var_id );
-     else
-        discardUnusedIdentifier( token );
-        err( "only 'shell' or 'cgi' convention supported" );
-        return;
-     end if;
-  when gcc_errors =>                         -- pragma gcc_errors
-     null;
-  when inspection =>                         -- pragma inspection point
-     null;
-  when peek =>                               -- pragma inspection peek
-     null;
-  when noCommandHash =>                      -- pragma no_command_hash
-     null;
-  when promptChange =>                       -- pragma prompt_script
-     expr_val := identifiers( token ).value;
-     expect( backlit_t );
-  when register_memcache_server =>           -- pragma register_memcache_server
-     expr_val := identifiers( token ).value;
-     expect( strlit_t );
-     expect( symbol_t, "," );
-     expr_val2 := identifiers( token ).value;
-     expect( number_t );
-  when restriction =>                        -- pragma restriction
-     if identifiers( token ).name = "no_auto_declarations" then
-        discardUnusedIdentifier( token );
-        getNextToken;
-        pragmaKind := restriction_auto;
-     elsif identifiers( token ).name = "no_external_commands" then
-        discardUnusedIdentifier( token );
-        getNextToken;
-        pragmaKind := restriction_external;
-     elsif identifiers( token ).name = "no_mysql_database" then
-        discardUnusedIdentifier( token );
-        getNextToken;
-        pragmaKind := restriction_mysql;
-     elsif identifiers( token ).name = "no_postgresql_database" then
-        discardUnusedIdentifier( token );
-        getNextToken;
-        pragmaKind := restriction_postgresql;
-     else
-        discardUnusedIdentifier( token );
-        err( "unknown restriction" );
-        return;
-     end if;
-  when inspect_var =>                        -- pragma inspect
-     ParseIdentifier( var_id );
-  when license =>                            -- pragma license
-     if identifiers( token ).name = "unrestricted" then
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expr_val := expr_val & ": " & identifiers( token ).value;
-           expect( strlit_t );
-        end if;
-     elsif identifiers( token ).name = "gpl" then
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expr_val := expr_val & ": " & identifiers( token ).value;
-           expect( strlit_t );
-        end if;
-     elsif identifiers( token ).name = "gplv2" then
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expr_val := expr_val & ": " & identifiers( token ).value;
-           expect( strlit_t );
-        end if;
-     elsif identifiers( token ).name = "gplv3" then
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expr_val := expr_val & ": " & identifiers( token ).value;
-           expect( strlit_t );
-        end if;
-     elsif identifiers( token ).name = "agpl" then
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expr_val := expr_val & ": " & identifiers( token ).value;
-           expect( strlit_t );
-        end if;
-     elsif identifiers( token ).name = "bsd_original" then
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expr_val := expr_val & ": " & identifiers( token ).value;
-           expect( strlit_t );
-        end if;
-     elsif identifiers( token ).name = "bsd_revised" then
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expr_val := expr_val & ": " & identifiers( token ).value;
-           expect( strlit_t );
-        end if;
-     elsif identifiers( token ).name = "artistic" then
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expr_val := expr_val & ": " & identifiers( token ).value;
-           expect( strlit_t );
-        end if;
-     elsif identifiers( token ).name = "mit" then
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expr_val := expr_val & ": " & identifiers( token ).value;
-           expect( strlit_t );
-        end if;
-     elsif identifiers( token ).name = "apache" then
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expr_val := expr_val & ": " & identifiers( token ).value;
-           expect( strlit_t );
-        end if;
-     elsif identifiers( token ).name = "apache_2" then
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expr_val := expr_val & ": " & identifiers( token ).value;
-           expect( strlit_t );
-        end if;
-     elsif identifiers( token ).name = "freeware" then
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expr_val := expr_val & ": " & identifiers( token ).value;
-           expect( strlit_t );
-        end if;
-     elsif identifiers( token ).name = "shareware" then
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expr_val := expr_val & ": " & identifiers( token ).value;
-           expect( strlit_t );
-        end if;
-     elsif identifiers( token ).name = "public_domain" then
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expr_val := expr_val & ": " & identifiers( token ).value;
-           expect( strlit_t );
-        end if;
-     elsif identifiers( token ).name = "commercial" then
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expr_val := expr_val & ": " & identifiers( token ).value;
-           expect( strlit_t );
-        end if;
-     elsif identifiers( token ).name = "restricted" then
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expr_val := expr_val & ": " & identifiers( token ).value;
-           expect( strlit_t );
-        end if;
-     else
-        err( "unknown license " & bold( to_string( expr_val ) ) );
-     end if;
-  when template | unrestricted_template =>   -- pragma (unrestricted) template
-     if rshOpt then
-        err( "templates are not allowed in a restricted shell" );
-     else
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
-           expect( symbol_t, "," );
-           expect( strlit_t );
-        else
-           var_id := eof_t;
-        end if;
-     end if;
-     gccOpt := true;
-  when uninspect_var =>                      -- pragma uninspect
-     ParseIdentifier( var_id );
-  when volatile =>                           -- pragma volatile
-     ParseIdentifier( var_id );
-  when others =>
-     err( "Internal error: can't handle pragma" );
-  end case;
-
-  if pragmaKind /= ada_95 and pragmaKind /= inspection and pragmaKind /=
-     noCommandHash and pragmaKind /= debug_on and pragmaKind /= peek then
-     expect( symbol_t, ")" );
-  end if;
-
-  -- Execute the pragma
-
-  if isExecutingCommand then
-     case pragmaKind is
-     when ada_95 =>
-        onlyAda95 := true;
-     when asserting =>
-        if debugOpt then
-           if not syntax_check then   -- has no meaning during syntax check
-              if baseTypesOk( boolean_t, var_id ) then
-                 if expr_val = "0" then
-                    err( "assertion failed" );
-                 end if;
-              end if;
-           end if;
-        end if;
-     when annotate =>
-        null;
-     when debug =>
-        if debugOpt then
-           if not syntax_check then
-              declare
-                 savershOpt : commandLineOption := rshOpt;
-              begin
-                 rshOpt := true;            -- force restricted shell mode
-                 CompileRunAndCaptureOutput( expr_val, results );
-                 rshOpt := savershOpt;
-                 put( results );
-              end;
-           end if;
-        end if;
-     when debug_on =>
-        debugOpt := true;
-     when depreciated =>
-        -- later, this should create a list of depreciation message
-        -- for now, only the entire script is depreciated
-        depreciatedMsg := "This script made obsolete by " & expr_val & '.';
-     when export =>
-        if identifiers( var_id ).class = userProcClass then
-           err( "procedures cannot be exported" );
-        elsif identifiers( var_id ).class = userFuncClass then
-           err( "functions cannot be exported" );
-        elsif identifiers( var_id ).list then
-           err( "arrays cannot be exported" );
-        elsif identifiers( var_id ).export then
-           err( "variable is already exported" );
-        elsif uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
-           identifiers( var_id ).export := true;
-           if exportType = "local_memcache" then
-              identifiers( var_id ).method := local_memcache;
-              checkAndInitializeLocalMemcacheCluster;
-           elsif exportType = "memcache" then
-              identifiers( var_id ).method := memcache;
-              checkAndInitializeLocalMemcacheCluster;
-           elsif exportType = "cgi" then
-              -- this should have been caught earlier
-              err( "cgi variables cannot be exported" );
-           else
-              identifiers( var_id ).method := shell;
-           end if;
-        end if;
-     when gcc_errors =>
-        gccOpt := true;
-     when import =>
-        if identifiers( var_id ).class = userProcClass then
-           err( "procedures cannot be imported" );
-        elsif identifiers( var_id ).class = userFuncClass then
-           err( "functions cannot be imported" );
-        elsif identifiers( var_id ).list then
-           err( "arrays cannot be imported" );
-        elsif identifiers( var_id ).import then
-           err( "variable is already imported" );
-        elsif uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
-           identifiers( var_id ).import := true;
-           if importType = "local_memcache" then
-              identifiers( var_id ).method := local_memcache;
-              checkAndInitializeLocalMemcacheCluster;
-              begin
-                 Get( localMemcacheCluster,
-                      identifiers( var_id ).name,
-                      identifiers( var_id ).value );
-                 if length( identifiers( var_id ).value ) = 0 then
-                    err( "unable to find variable " &
-                         to_string( identifiers( var_id ).name ) &
-                         " in the local memcache" );
-                 end if;
-              exception when others =>
-                 err( "exception raised" );
-              end;
-           elsif importType = "memcache" then
-              identifiers( var_id ).method := memcache;
-              checkAndInitializeLocalMemcacheCluster;
-              begin
-                 Get( distributedMemcacheCluster,
-                      identifiers( var_id ).name,
-                      identifiers( var_id ).value );
-                 if length( identifiers( var_id ).value ) = 0 then
-                    err( "unable to find variable " &
-                         to_string( identifiers( var_id ).name ) &
-                         " in the memcache" );
-                 end if;
-              exception when others =>
-                 err( "exception raised" );
-              end;
-           elsif processingTemplate and importType = "cgi" then
-              identifiers( var_id ).method := http_cgi;
-              identifiers( var_id ).value := null_unbounded_string;
-              for i in 1..cgi.key_count( to_string( identifiers( var_id ).name ) ) loop
-                  identifiers( var_id ).value := identifiers( var_id ).value &
-                     to_unbounded_string( cgi.value( to_string( identifiers( var_id ).value ), 1, true ) );
-               end loop;
-           elsif not processingTemplate and importType = "cgi" then
-               err( "import type cgi must be used in a template" );
-           else
-              identifiers( var_id ).method := shell;
-              refreshVolatile( var_id );
-           end if;
-           if trace then
-               put_trace(
-                  to_string( identifiers( var_id ).name ) & " := """ &
-                  to_string( ToEscaped( identifiers( var_id ).value ) ) &
-                  """" );
-           end if;
-        end if;
-     when inspection =>
-        if breakoutOpt then
-           wasSIGINT := true;                            -- pretend ctrl-c
-        end if;
-     when license =>
-        if licenseSet then
-           err( "license already set" );
-        else
-          declare
-            id : identifier;
-          begin
-            findIdent( to_unbounded_string( "System.Script_License" ), id );
-            if id /= eof_t then
-               identifiers( id ).value := expr_val;
-               licenseSet := true;
-            end if;
-          exception when others =>
-            err( "exception raised" );
-          end;
-        end if;
-     when noCommandHash =>
-        clearCommandHash;
-        no_command_hash := true;
-     when peek =>
-        for i in 1..identifiers_top-1 loop
-            if identifiers( i ).inspect then
-               Put_Identifier( i );
-            end if;
-        end loop;
-        -- put_line( getStackTrace );
-     when register_memcache_server =>
-         checkAndInitializeDistributedMemcacheCluster;
-         begin
-            RegisterServer( distributedMemcacheCluster,
-               expr_val,
-               natural'value( ' ' & to_string( expr_val2 ) ) );
-         exception when name_error =>
-            err( "server already registered or too many servers registered" );
-         when others =>
-            err( "exception raised" );
-         end;
-     when restriction_auto =>
-        restriction_no_auto_declarations := true;
-     when restriction_external =>
-        restriction_no_external_commands := true;
-     when restriction_mysql =>
-        restriction_no_mysql_database := true;
-     when restriction_postgresql =>
-        restriction_no_postgresql_database := true;
-     when promptChange =>
-        promptScript := expr_val;
-     when template | unrestricted_template =>
-        templateType := noTemplate;
-        if expr_val = "html" then
-           templateType := htmlTemplate;
-        elsif expr_val = "text" then
-           templateType := textTemplate;
-        else
-           err( "unknown template type" );
-        end if;
-        if processingTemplate then
-           err( "template already used" );
-        elsif inputMode = interactive or inputMode = breakout then
-           err( "template is not allowed in an interactive session" );
-        end if;
-        if var_id = eof_t  then
-           templatePath := basename( scriptFilePath );
-           if length( templatePath ) > 3 and then tail( templatePath, 3 ) = ".sp" then
-              Delete( templatePath, length(templatePath)-2, length( templatePath ) );
-           elsif length( templatePath ) > 5 and then tail( templatePath, 5 ) = ".bush" then
-              Delete( templatePath, length(templatePath)-4, length( templatePath ) );
-           elsif length( templatePath ) > 4 and then tail( templatePath, 4 ) = ".cgi" then
-              Delete( templatePath, length(templatePath)-3, length( templatePath ) );
-           end if;
-           templatePath := templatePath & ".tmpl";
-        else
-           templatePath := identifiers( strlit_t ).value;
-        end if;
-        processingTemplate := true;
-        if pragmaKind = unrestricted_template then
-           unrestrictedTemplate := true;
-        end if;
-        -- Always output CGI header as soon as possible to avoid a HTTP/500
-        -- error.  Give the web server a minimal header to return to the
-        -- browser in case something goes wrong later that would prevent
-        -- the header from being sent.
-        if templateType = htmlTemplate then
-           cgi.put_cgi_header( "Content-type: text/html" );
-        elsif templateType = textTemplate then
-           cgi.put_cgi_header( "Content-type: text/plain" );
-        end if;
-     when unchecked_import =>
-        if identifiers( var_id ).class = userProcClass then
-           err( "procedures cannot be imported" );
-        elsif identifiers( var_id ).class = userFuncClass then
-           err( "functions cannot be imported" );
-        elsif identifiers( var_id ).list then
-           err( "arrays cannot be imported" );
-        elsif identifiers( var_id ).import then
-           err( "variable is already imported" );
-        elsif uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
-           if importType = "local_memcache" then
-              identifiers( var_id ).method := local_memcache;
-              checkAndInitializeLocalMemcacheCluster;
-              -- According to the SparForte manual, only update the
-              -- variable if imported value is found
-              declare
-                 temp : unbounded_string;
-              begin
-                 Get( localMemcacheCluster,
-                      identifiers( var_id ).name,
-                      temp );
-                 if length( temp ) > 0 then
-                    identifiers( var_id ).import := true;
-                    identifiers( var_id ).value := temp;
-                 end if;
-              exception when others =>
-                 err( "exception raised" );
-              end;
-           elsif importType = "memcache" then
-              identifiers( var_id ).method := memcache;
-              checkAndInitializeLocalMemcacheCluster;
-              -- According to the SparForte manual, only update the
-              -- variable if imported value is found
-              declare
-                 temp : unbounded_string;
-              begin
-                 Get( distributedMemcacheCluster,
-                      identifiers( var_id ).name,
-                      temp );
-                 if length( temp ) > 0 then
-                    identifiers( var_id ).import := true;
-                    identifiers( var_id ).value := temp;
-                 end if;
-              exception when others =>
-                 err( "exception raised" );
-              end;
-           elsif processingTemplate and importType = "cgi" then
-              if inEnvironment( var_id ) then
-                 identifiers( var_id ).import := true;
-                 identifiers( var_id ).method := http_cgi;
-                 identifiers( var_id ).value := null_unbounded_string;
-                 for i in 1..cgi.key_count( to_string( identifiers( var_id ).name ) ) loop
-                     identifiers( var_id ).value := identifiers( var_id ).value &
-                        to_unbounded_string( cgi.value( to_string( identifiers( var_id ).value ), 1, false) );
-                  end loop;
-              end if;
-           elsif importType = "cgi" then
-              err( "import type cgi must be used in a template" );
-           else
-              if inEnvironment( var_id ) then
-                 identifiers( var_id ).import := true;
-                 identifiers( var_id ).method := shell;
-                 refreshVolatile( var_id );
-              end if;
-           end if;
-           if trace then
-              put_trace(
-                 to_string( identifiers( var_id ).name ) & " := """ &
-                 to_string( ToEscaped( identifiers( var_id ).value ) ) &
-                 """" );
-           end if;
-        end if;
-     when inspect_var =>
-        identifiers( var_id ).inspect := true;
-     when uninspect_var =>
-        identifiers( var_id ).inspect := false;
-     when volatile =>
-        identifiers( var_id ).volatile := true;
-     when others =>
-        err( "Internal error: unable to execute pragma" );
-     end case;
-  end if;
-end ParsePragma;
 
 procedure ParseRecordFields( record_id : identifier; field_no : in out integer ) is
 -- Syntax: field = declaration [; declaration ... ]
@@ -7583,6 +6906,28 @@ begin
      ParseDirOpsMakeDir;
   elsif token = dirops_remove_dir_t then           -- Dir_Ops.Remove_Dir
      ParseDirOpsRemoveDir;
+  elsif token = memcache_register_server_t then    -- memcache.register_server
+     ParseMemcacheRegisterServer;
+  elsif token = memcache_clear_servers_t then      -- memcache.clear_servers
+     ParseMemcacheClearServers;
+  elsif token = memcache_set_cluster_name_t then   -- memcache.set_cluster_name
+     ParseMemcacheSetClusterName;
+  elsif token = memcache_set_t then                -- memcache.set
+     ParseMemcacheSet;
+  elsif token = memcache_add_t then                -- memcache.add
+     ParseMemcacheAdd;
+  elsif token = memcache_replace_t then            -- memcache.replace
+     ParseMemcacheReplace;
+  elsif token = memcache_append_t then             -- memcache.append
+     ParseMemcacheAppend;
+  elsif token = memcache_prepend_t then            -- memcache.prepend
+     ParseMemcachePrepend;
+  elsif token = memcache_delete_t then             -- memcache.delete
+     ParseMemcacheDelete;
+  elsif token = memcache_flush_t then              -- memcache.flush
+     ParseMemcacheFlush;
+  elsif token = memcache_set_cluster_type_t then   -- memcache.set_cluster_type
+     ParseMemcacheSetClusterType;
   elsif Token = else_t then
      err( "else without if" );
   elsif Token = elsif_t then

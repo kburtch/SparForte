@@ -58,7 +58,8 @@ with system,
     parser_stats,
     parser_tio,
     parser_pen,
-    parser_dirops;
+    parser_dirops,
+    parser_memcache;
 use ada.text_io,
     ada.integer_text_io,
     ada.command_line,
@@ -91,7 +92,8 @@ use ada.text_io,
     parser_stats,
     parser_tio,
     parser_pen,
-    parser_dirops;
+    parser_dirops,
+    parser_memcache;
 
 pragma Optimize( time );
 
@@ -885,6 +887,7 @@ end dumpSymbolTable;
 procedure shutdownScanner is
 begin
 
+  ShutdownMemcache;
   ShutdownDirOps;
   ShutdownPen;
   ShutdownStats;
@@ -1530,6 +1533,7 @@ begin
   StartupCalendar;
   StartupUnits;
   StartupDirOps;
+  StartupMemcache;
 
   declareProcedure( sound_play_t, "sound.play" );
   declareProcedure( sound_playcd_t, "sound.playcd" );
