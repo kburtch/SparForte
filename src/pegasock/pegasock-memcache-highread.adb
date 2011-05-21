@@ -96,9 +96,24 @@ end Delete;
 procedure Stats( mc : in out aMemcacheDualCluster; value : out unbounded_string ) is
   tempStats : unbounded_string;
 begin
-  Stats( mc.alphaCluster, value );
+  Stats( mc.alphaCluster, tempStats );
+  tempStats := "alpha" & tempStats;
+  for i in 1..length( tempStats )-1 loop
+      if element( tempStats, i ) = ASCII.LF then
+         value := value & ASCII.LF & "alpha";
+      else
+         value := value & element( tempStats, i );
+      end if;
+  end loop;
   Stats( mc.betaCluster, tempStats );
-  value := value & tempStats;
+  tempStats := "beta" & tempStats;
+  for i in 1..length( tempStats )-1 loop
+      if element( tempStats, i ) = ASCII.LF then
+         value := value & ASCII.LF & "beta";
+      else
+         value := value & element( tempStats, i );
+      end if;
+  end loop;
 end Stats;
 
 procedure Version( mc : in out aMemcacheDualCluster; value : out unbounded_string ) is

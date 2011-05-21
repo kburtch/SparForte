@@ -1142,6 +1142,17 @@ begin
      Put_Line( "  is_valid_memcache_key( k )  set_cluster_type( cl, e )" );
      Put_Line( "  v := get( cl, k )           s := stats( cl )" );
      Put_Line( "  cl := new_cluster           s := version( cl )" );
+     New_Line;
+     Put_Line( "memcache.highread - distributed dual memcache package functions" );
+     New_Line;
+     Put_Line( "  add( cl, k, v )             register_alpha_server( cl, h, p )" );
+     Put_Line( "  append( cl, k, v )          register_beta_server( cl, h, p )" );
+     Put_Line( "  clear_servers( cl )         replace( cl, k, v )" );
+     Put_Line( "  delete( cl, k )             set( cl, k, v )" );
+     Put_Line( "  flush( cl )                 set_cluster_name( cl, s )" );
+     Put_Line( "  v := get( cl, k )           set_cluster_type( cl, e )" );
+     Put_Line( "  cl := new_cluster           s := stats( cl )" );
+     Put_Line( "  prepend( cl, k, v )         s := version( cl )" );
   elsif helpTopic = "mode" then
      Put_Line( "mode - the file mode (in_file, out_file, append_file)" );
      Put_Line( "  mode( file )" );

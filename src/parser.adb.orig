@@ -1812,6 +1812,18 @@ begin
      elsif token = memcache_get_t then                 -- memcache.get
         ParseMemcacheGet( f );
         kind := string_t;
+     elsif token = highread_new_cluster_t then         -- memcache.highread.new_cluster
+        ParseHighreadNewCluster( f );
+        kind := highread_cluster_t;
+     elsif token = highread_version_t then             -- memcache.highread.version
+        ParseHighreadVersion( f );
+        kind := string_t;
+     elsif token = highread_stats_t then               -- memcache.highread.stats
+        ParseHighreadStats( f );
+        kind := string_t;
+     elsif token = highread_get_t then                 -- memcache.highread.get
+        ParseHighreadGet( f );
+        kind := string_t;
      elsif identifiers( token ).class = userFuncClass then
         declare
           funcToken : identifier := token;
@@ -6928,6 +6940,30 @@ begin
      ParseMemcacheFlush;
   elsif token = memcache_set_cluster_type_t then   -- memcache.set_cluster_type
      ParseMemcacheSetClusterType;
+  elsif token = highread_register_alpha_server_t then  -- memcache.highread.register_alpha_server
+     ParseHighreadRegisterAlphaServer;
+  elsif token = highread_register_beta_server_t then  -- memcache.highread.register_beta_server
+     ParseHighreadRegisterBetaServer;
+  elsif token = highread_clear_servers_t then      -- memcache.highread.clear_servers
+     ParseHighreadClearServers;
+  elsif token = highread_set_cluster_name_t then   -- memcache.highread.set_cluster_name
+     ParseHighreadSetClusterName;
+  elsif token = highread_set_t then                -- memcache.highread.set
+     ParseHighreadSet;
+  elsif token = highread_add_t then                -- memcache.highread.add
+     ParseHighreadAdd;
+  elsif token = highread_replace_t then            -- memcache.highread.replace
+     ParseHighreadReplace;
+  elsif token = highread_append_t then             -- memcache.highread.append
+     ParseHighreadAppend;
+  elsif token = highread_prepend_t then            -- memcache.highread.prepend
+     ParseHighreadPrepend;
+  elsif token = highread_delete_t then             -- memcache.highread.delete
+     ParseHighreadDelete;
+  elsif token = highread_flush_t then              -- memcache.highread.flush
+     ParseHighreadFlush;
+  elsif token = highread_set_cluster_type_t then   -- memcache.highread.set_cluster_type
+     ParseHighreadSetClusterType;
   elsif Token = else_t then
      err( "else without if" );
   elsif Token = elsif_t then

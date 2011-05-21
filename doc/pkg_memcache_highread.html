@@ -38,7 +38,7 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-<h2><a NAME="4.14"></a>Memcache Package</h2>
+<h2><a NAME="4.14"></a>Memcache.Highread Package</h2>
 
 <p>Memcached (or the Memcache Daemon) is a general-purpose networked memory
 caching system that was originally developed by Danga Interactive for
@@ -54,7 +54,7 @@ and export variable to/from Memcached.) The memcached support is built on the
 PegaSoft PegaSock socket library, which supports local memcached caching as well
 as distributed, redundant memcached caching clusters.</p>
 
-<p>The Memcache package is a binding to the PegaSock library, giving a more
+<p>The Memcache.highread package is a binding to the PegaSock library, giving a more
 flexible interface to memcache than the pragmas provide.  For example, you
 can use any keys you want, rather than using the variable name as the key.
 The names of the procedures and functions are equivalent to the commands
@@ -66,12 +66,13 @@ on localhost port 11211.</p>
 
         <center>
         <div class="code">
-                <p class="code">=&gt; c := memcache.new_cluster<br>
-=&gt; (Assuming c is a new memcache.memcache_cluster variable)<br>
-=&gt; memcache.register_server( c, "localhost", 11211 )<br>
+                <p class="code">=&gt; c := memcache.highread.new_cluster<br>
+=&gt; (Assuming c is a new memcache.memcache_dual_cluster variable)<br>
+=&gt; memcache.highread.register_alpha_server( c, "localhost", 11211 )<br>
+=&gt; memcache.highread.register_beta_server( c, "localhost", 11212 )<br>
 =&gt; key : string := "candy"<br>
-=&gt; memcache.set( c, key, "cane" )<br>
-=&gt; ? memcache.get( c, key )<br>
+=&gt; memcache.highread.set( c, key, "cane" )<br>
+=&gt; ? memcache.highread.get( c, key )<br>
 cane<br>
 =&gt;<br>&nbsp;<br>
                 </p>
@@ -86,6 +87,12 @@ cane<br>
 would automatically be stored on two servers.  If a server in the cluster
 fails, a program can still retrieve the data.</p>
 
+<p>The highread package uses two normal memcache clusters, using them as if
+they were a single cluster.  Data is stored up to four times in servers, and
+the get function can read from any of the four servers.  This makes it a
+good choice for high redundancy tasks, or takes where there are more reads
+than writes.</p>
+
 <p>PegaSock implements an escallating backoff mechanism: if a server cannot
 be accessed, it is marked as down.  After a suitable period, PegaSock will
 attempt to reconnect.  If both servers containing the data are down, the next
@@ -96,7 +103,7 @@ failure.</p>
 <p>Some functionality (such as cas) is not implemented.</p>
 
 <p>Because memcached has no security features, running in a restricted
-shell will disable the memcache package.</p>
+shell will disable the memcache.highread package.</p>
 
 
 <p><u>GCC Ada Equivalent</u>: N/A<br>
@@ -104,23 +111,23 @@ shell will disable the memcache package.</p>
         <center>
         <div class="code">
 <pre>
-  add( cl, k, v )             prepend( cl, k, v )
-  append( cl, k, v )          register_server( cl, h, p )
+  add( cl, k, v )             register_alpha_server( cl, h, p )
+  append( cl, k, v )          register_beta_server( cl, h, p )
   clear_servers( cl )         replace( cl, k, v )
   delete( cl, k )             set( cl, k, v )
   flush( cl )                 set_cluster_name( cl, s )
-  is_valid_memcache_key( k )  set_cluster_type( cl, e )
-  v := get( cl, k )           s := stats( cl )
-  cl := new_cluster           s := version( cl )
+  v := get( cl, k )           set_cluster_type( cl, e )
+  cl := new_cluster           s := stats( cl )
+  prepend( cl, k, v )         s := version( cl )
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the memcache package</span>
+        <b>Help Command</b>: Contents of the memcache.highread package</span>
         </div>
         </div>
         </center>
 
-<h3>memcache.add( cl, k, v )</h3>
+<h3>memcache.highread.add( cl, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -128,7 +135,7 @@ shell will disable the memcache package.</p>
 Otherwise, an error is displayed but execution continues.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.add( mc_cluster, "company_name", "PegaSoft"  );</span></p>
+<td><span class="code">memcache.highread.add( mc_cluster, "company_name", "PegaSoft"  );</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -141,7 +148,7 @@ Otherwise, an error is displayed but execution continues.</p></td>
 </tr><tr>
 <td><span>cl</span></td>
 <td><span>in out</span></td>
-<td><span>memcache.memcache_cluster</span></td>
+<td><span>memcache.memcache_dual_cluster</span></td>
 <td><span>required</span></td>
 <td><span>the memcache cluster to use</span></td>
 </tr><tr>
@@ -160,20 +167,20 @@ Otherwise, an error is displayed but execution continues.</p></td>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is thrown if no servers are defined in the cluster</p>
+<td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
 <td><p>Not allowed in a restricted shell</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.set<br>memcache.replace</p>
+<td><p>memcache.highread.set<br>memcache.highread.replace</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: PegaSock.Memcache.Add<br>PHP: memcached::add</p></td>
+<td><p>Ada: PegaSock.Memcache.Highread.Add</p></td>
 </tr>
 </table>
 
-<h3>memcache.append( cl, k, v )</h3>
+<h3>memcache.highread.append( cl, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -181,7 +188,7 @@ Otherwise, an error is displayed but execution continues.</p></td>
 memcache cluster cl.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.append( mc_cluster, "company_name", " Inc.";<br>-- company_name is "PegaSoft Inc." </span></p>
+<td><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.highread.append( mc_cluster, "company_name", " Inc.";<br>-- company_name is "PegaSoft Inc." </span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -194,7 +201,7 @@ memcache cluster cl.</p></td>
 </tr><tr>
 <td><span>cl</span></td>
 <td><span>in out</span></td>
-<td><span>memcache.memcache_cluster</span></td>
+<td><span>memcache.memcache_dual_cluster</span></td>
 <td><span>required</span></td>
 <td><span>the memcache cluster to use</span></td>
 </tr><tr>
@@ -213,20 +220,20 @@ memcache cluster cl.</p></td>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is thrown if no servers are defined in the cluster</p>
+<td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
 <td><p>Not allowed in a restricted shell</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.prepend</p>
+<td><p>memcache.highread.prepend</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: PegaSock.Memcache.Append<br>PHP: memcached::append</p></td>
+<td><p>Ada: PegaSock.Memcache.Append</p></td>
 </tr>
 </table>
 
-<h3>memcache.clear_servers( cl )</h3>
+<h3>memcache.highread.clear_servers( cl )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -234,7 +241,7 @@ memcache cluster cl.</p></td>
 flushed from memcached.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.clear_servers( cl ); -- there are now no servers in the cluster</span></p>
+<td><span class="code">memcache.highread.clear_servers( cl ); -- there are now no servers in the cluster</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -247,7 +254,7 @@ flushed from memcached.</p></td>
 </tr><tr>
 <td><span>cl</span></td>
 <td><span>in out</span></td>
-<td><span>memcache.memcache_cluster</span></td>
+<td><span>memcache.memcache_dual_cluster</span></td>
 <td><span>required</span></td>
 <td><span>the memcache cluster to use</span></td>
 </tr>
@@ -257,24 +264,24 @@ flushed from memcached.</p></td>
 <td><p>-</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p></td>
+<td><p>Not allowed in a restricted shell</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.register_server</p></td>
+<td><p>memcache.highread.register_alpha_server<br>memcache.highread.register_beta_server</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Pegasock.Memcache.Highread.Clear_Servers</p></td>
 </tr>
 </table>
 
-<h3>memcache.delete( cl, k )</h3>
+<h3>memcache.highread.delete( cl, k )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Remove key k from memcache cluster cl, discarding the key's value.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.delete( mc_cluster, "company_name", "PegaSoft"  );<br>-- company_name no longer exists</span></p>
+<td><span class="code">memcache.highread.delete( mc_cluster, "company_name", "PegaSoft"  );<br>-- company_name no longer exists</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -287,7 +294,7 @@ flushed from memcached.</p></td>
 </tr><tr>
 <td><span>cl</span></td>
 <td><span>in out</span></td>
-<td><span>memcache.memcache_cluster</span></td>
+<td><span>memcache.memcache_dual_cluster</span></td>
 <td><span>required</span></td>
 <td><span>the memcache cluster to use</span></td>
 </tr><tr>
@@ -300,20 +307,20 @@ flushed from memcached.</p></td>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is thrown if no servers are defined in the cluster</p>
+<td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
 <td><p>Not allowed in a restricted shell</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.flush</p>
+<td><p>memcache.highread.flush</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: PegaSock.Memcache.Delete<br>PHP: memcached::delete</p></td>
+<td><p>Ada: PegaSock.Memcache.Highread.Delete</p></td>
 </tr>
 </table>
 
-<h3>memcache.flush( cl )</h3>
+<h3>memcache.highread.flush( cl )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -321,7 +328,7 @@ flushed from memcached.</p></td>
 marked invalid and are gradually replaced as new items are stored.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.flush( mc_cluster );-- all keys are destroyed</span></p>
+<td><span class="code">memcache.highread.flush( mc_cluster );-- all keys are destroyed</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -334,65 +341,27 @@ marked invalid and are gradually replaced as new items are stored.</p></td>
 </tr><tr>
 <td><span>cl</span></td>
 <td><span>in out</span></td>
-<td><span>memcache.memcache_cluster</span></td>
+<td><span>memcache.memcache_dual_cluster</span></td>
 <td><span>required</span></td>
 <td><span>the memcache cluster to use</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is thrown if no servers are defined in the cluster</p>
+<td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
 <td><p>Not allowed in a restricted shell</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.delete</p>
+<td><p>memcache.highread.delete</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: PegaSock.Memcache.Flush<br>PHP: memcached::flush</p></td>
+<td><p>Ada: PegaSock.Memcache.Highread.Flush</p></td>
 </tr>
 </table>
 
-<h3>memcache.is_valid_memcache_key( k )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>True if the string k is valid as a key for memcached.  A key must be
-between 1 and 250 characters and not contain spaces or control characters.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">b := memcache.is_valid_memcache_key( "foo bar" );-- b is false</span></p>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>k</span></td>
-<td><span>in</span></td>
-<td><span>any string type</span></td>
-<td><span>required</span></td>
-<td><span>the name of the key</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is thrown if no servers are defined in the cluster</p>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: PegaSock.Memcache.isValidMemcacheKey<br>PHP: N/A</p></td>
-</tr>
-</table>
-
-<h3>v := memcache.get( cl, k )</h3>
+<h3>v := memcache.highread.get( cl, k )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -402,7 +371,7 @@ are two or more servers in the cluster, get will alternate between the servers
 with the key in order to distribute load.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>? memcache.get( mc_cluster, "company_name" );<br>-- displays "PegaSoft" </span></p>
+<td><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br>? memcache.highread.get( mc_cluster, "company_name" );<br>-- displays "PegaSoft" </span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -415,7 +384,7 @@ with the key in order to distribute load.</p></td>
 </tr><tr>
 <td><span>cl</span></td>
 <td><span>in out</span></td>
-<td><span>memcache.memcache_cluster</span></td>
+<td><span>memcache.memcache_dual_cluster</span></td>
 <td><span>required</span></td>
 <td><span>the memcache cluster to use</span></td>
 </tr><tr>
@@ -434,17 +403,17 @@ with the key in order to distribute load.</p></td>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is thrown if no servers are defined in the cluster</p>
+<td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: PegaSock.Memcache.Get<br>PHP: memcached::get</p></td>
+<td><p>Ada: PegaSock.Memcache.Highread.Get</p></td>
 </tr>
 </table>
 
-<h3>cl := memcache.new_cluster</h3>
+<h3>cl := memcache.highread.new_cluster</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -452,7 +421,7 @@ with the key in order to distribute load.</p></td>
 servers and manage connections.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">mc_cluster := memcache.new_cluster;</span></p>
+<td><span class="code">mc_cluster := memcache.highread.new_cluster;</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -465,14 +434,14 @@ servers and manage connections.</p></td>
 </tr><tr>
 <td><span>cl</span></td>
 <td><span>return value</span></td>
-<td><span>memcache.memcache_cluster</span></td>
+<td><span>memcache.memcache_dual_cluster</span></td>
 <td><span>required</span></td>
 <td><span>the new memcache cluster</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is thrown if no servers are defined in the cluster</p>
+<td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
 <td><p>Not allowed in a restricted shell</p>
@@ -486,11 +455,11 @@ the script execution end.</p>
 <td><p>-</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: N/A<br>PHP: new memcached</p></td>
+<td><p>Ada: N/A</p></td>
 </tr>
 </table>
 
-<h3>memcache.prepend( cl, k, v )</h3>
+<h3>memcache.highread.prepend( cl, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -498,7 +467,7 @@ the script execution end.</p>
 memcache cluster cl.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.prepend( mc_cluster, "company_name", "This is " );<br>-- company_name is "This is PegaSoft" </span></p>
+<td><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.highread.prepend( mc_cluster, "company_name", "This is " );<br>-- company_name is "This is PegaSoft" </span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -511,7 +480,7 @@ memcache cluster cl.</p></td>
 </tr><tr>
 <td><span>cl</span></td>
 <td><span>in out</span></td>
-<td><span>memcache.memcache_cluster</span></td>
+<td><span>memcache.memcache_dual_cluster</span></td>
 <td><span>required</span></td>
 <td><span>the memcache cluster to use</span></td>
 </tr><tr>
@@ -530,20 +499,20 @@ memcache cluster cl.</p></td>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is thrown if no servers are defined in the cluster</p>
+<td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
 <td><p>Not allowed in a restricted shell</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.append</p>
+<td><p>memcache.highspeed.append</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: PegaSock.Memcache.Prepend<br>PHP: memcached::prepend</p></td>
+<td><p>Ada: PegaSock.Memcache.Highspeed.Prepend</p></td>
 </tr>
 </table>
 
-<h3>memcache.register_server( cl, h, p )</h3>
+<h3>memcache.highread.register_alpha_server( cl, h, p )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -554,7 +523,7 @@ opened: network connections are opened when data is read or written.  Do not
 register the same server twice.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.register_server( mc_cluster, "memcached1.somecompany.com", 11211 );</span></p>
+<td><span class="code">memcache.highread.register_alpha_server( mc_cluster, "memcached1.somecompany.com", 11211 );</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -567,7 +536,7 @@ register the same server twice.</p></td>
 </tr><tr>
 <td><span>cl</span></td>
 <td><span>in out</span></td>
-<td><span>memcache.memcache_cluster</span></td>
+<td><span>memcache.memcache_dual_cluster</span></td>
 <td><span>required</span></td>
 <td><span>the memcache cluster to use</span></td>
 </tr><tr>
@@ -592,23 +561,25 @@ register the same server twice.</p></td>
 <td><p>Not allowed in a restricted shell</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.clear_servers</p>
+<td><p>memcache.highread.clear_servers</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: PegaSock.Memcache.RegisterServer<br>PHP: memcached::addServer</p></td>
+<td><p>Ada: PegaSock.Memcache.Highread.RegisterBetaServer</p></td>
 </tr>
 </table>
 
-<h3>memcache.replace( cl, k, v )</h3>
+<h3>memcache.highread.register_beta_server( cl, h, p )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Overwrite the current value of key k memcache cluster cl with value v, if
-a value already exists.  If the key doesn't exist, a warning is displayed but
-execution continues.</p></td>
+<td><p>Identify a new server to use in the memcache cluster.  The server is
+identified by hostname h and TCP/IP port p.  The servers should always be
+registered in the same order for this cluster.  No network connection is
+opened: network connections are opened when data is read or written.  Do not
+register the same server twice.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.replace( mc_cluster, "company_name", "MegaCorp";<br>-- company_name is "MegaCorp"</span></p>
+<td><span class="code">memcache.highread.register_beta_server( mc_cluster, "memcached2.somecompany.com", 11211 );</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -621,7 +592,61 @@ execution continues.</p></td>
 </tr><tr>
 <td><span>cl</span></td>
 <td><span>in out</span></td>
-<td><span>memcache.memcache_cluster</span></td>
+<td><span>memcache.memcache_dual_cluster</span></td>
+<td><span>required</span></td>
+<td><span>the memcache cluster to use</span></td>
+</tr><tr>
+<td><span>h</span></td>
+<td><span>in</span></td>
+<td><span>any string type</span></td>
+<td><span>required</span></td>
+<td><span>the host name</span></td>
+</tr><tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the TCP/IP port</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if a server is registered twice.</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>memcache.highread.clear_servers</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: PegaSock.Memcache.Highread.RegisterAlphaServer</p></td>
+</tr>
+</table>
+
+<h3>memcache.highread.replace( cl, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Overwrite the current value of key k memcache cluster cl with value v, if
+a value already exists.  If the key doesn't exist, a warning is displayed but
+execution continues.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.highread.replace( mc_cluster, "company_name", "MegaCorp";<br>-- company_name is "MegaCorp"</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>cl</span></td>
+<td><span>in out</span></td>
+<td><span>memcache.memcache_dual_cluster</span></td>
 <td><span>required</span></td>
 <td><span>the memcache cluster to use</span></td>
 </tr><tr>
@@ -640,20 +665,20 @@ execution continues.</p></td>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is thrown if no servers are defined in the cluster</p>
+<td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
 <td><p>Not allowed in a restricted shell</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.add<br>memcache.set</p>
+<td><p>memcache.highread.add<br>memcache.highread.set</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: PegaSock.Memcache.Replace<br>PHP: memcached::replace</p></td>
+<td><p>Ada: PegaSock.Memcache.Highread.Replace</p></td>
 </tr>
 </table>
 
-<h3>memcache.set( cl, k, v )</h3>
+<h3>memcache.highread.set( cl, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -661,7 +686,7 @@ execution continues.</p></td>
 the key already has a value, it will be overwritten.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>-- company_name is "PegaSoft" </span></p>
+<td><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br>-- company_name is "PegaSoft" </span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -674,7 +699,7 @@ the key already has a value, it will be overwritten.</p></td>
 </tr><tr>
 <td><span>cl</span></td>
 <td><span>in out</span></td>
-<td><span>memcache.memcache_cluster</span></td>
+<td><span>memcache.memcache_dual_cluster</span></td>
 <td><span>required</span></td>
 <td><span>the memcache cluster to use</span></td>
 </tr><tr>
@@ -693,20 +718,20 @@ the key already has a value, it will be overwritten.</p></td>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is thrown if no servers are defined in the cluster</p>
+<td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
 <td><p>Not allowed in a restricted shell</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.add<br>memcache.replace</p>
+<td><p>memcache.highread.add<br>memcache.highread.replace</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: PegaSock.Memcache.Set<br>PHP: memcached::set</p></td>
+<td><p>Ada: PegaSock.Memcache.Highread.Set</p></td>
 </tr>
 </table>
 
-<h3>memcache.set_cluster_name( cl, s )</h3>
+<h3>memcache.highread.set_cluster_name( cl, s )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -714,7 +739,7 @@ the key already has a value, it will be overwritten.</p></td>
 some error messages.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.set_cluster_name( mc_cluster, "main cluster" );</span></p>
+<td><span class="code">memcache.highread.set_cluster_name( mc_cluster, "main cluster" );</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -727,7 +752,7 @@ some error messages.</p></td>
 </tr><tr>
 <td><span>cl</span></td>
 <td><span>in out</span></td>
-<td><span>memcache.memcache_cluster</span></td>
+<td><span>memcache.memcache_dual_cluster</span></td>
 <td><span>required</span></td>
 <td><span>the memcache cluster to use</span></td>
 </tr><tr>
@@ -740,7 +765,7 @@ some error messages.</p></td>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is thrown if no servers are defined in the cluster</p>
+<td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
 <td><p>Not allowed in a restricted shell</p>
@@ -749,11 +774,11 @@ some error messages.</p></td>
 <td><p>-</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: PegaSock.Memcache.SetClusterName<br>PHP: N/A</p></td>
+<td><p>Ada: PegaSock.Memcache.Highread.SetClusterName</p></td>
 </tr>
 </table>
 
-<h3>memcache.set_cluster_type( cl, t )</h3>
+<h3>memcache.highread.set_cluster_type( cl, t )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -761,7 +786,7 @@ some error messages.</p></td>
 memcache.memcache_cluster_type.normal.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.set_cluster_type( mc_cluster, memcache.memcache_cluster_type.normal );</span></p>
+<td><span class="code">memcache.highread.set_cluster_type( mc_cluster, memcache.memcache_cluster_type.normal );</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -774,20 +799,20 @@ memcache.memcache_cluster_type.normal.</p></td>
 </tr><tr>
 <td><span>cl</span></td>
 <td><span>in out</span></td>
-<td><span>memcache.memcache_cluster</span></td>
+<td><span>memcache.memcache_dual_cluster</span></td>
 <td><span>required</span></td>
 <td><span>the memcache cluster to use</span></td>
 </tr><tr>
 <td><span>s</span></td>
 <td><span>in</span></td>
-<td><span>memcache.memcache_cluster_type</span></td>
+<td><span>memcache.highread.memcache_cluster_type</span></td>
 <td><span>required</span></td>
 <td><span>the type of cluster</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is thrown if no servers are defined in the cluster</p>
+<td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
 <td><p>Not allowed in a restricted shell</p>
@@ -796,20 +821,20 @@ memcache.memcache_cluster_type.normal.</p></td>
 <td><p>-</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: PegaSock.Memcache.SetClusterType<br>PHP: memcache::setOption</p></td>
+<td><p>Ada: PegaSock.Memcache.Highread.SetClusterType</p></td>
 </tr>
 </table>
 
-<h3>s := memcache.stats( cl )</h3>
+<h3>s := memcache.highread.stats( cl )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Return detailed memached statistics for all servers in the cluster.  The
-first item in the row is the server number.  For the meaning of the stats,
-consult the memcached documentation.</p></td>
+first item in the row is either "alpha" or "beta" followed by the server number.
+For the meaning of the stats, consult the memcached documentation.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">? memcache.stats( mc_cluster );-- display all stats</span></p>
+<td><span class="code">? memcache.highread.stats( mc_cluster );-- display all stats</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -822,7 +847,7 @@ consult the memcached documentation.</p></td>
 </tr><tr>
 <td><span>cl</span></td>
 <td><span>in out</span></td>
-<td><span>memcache.memcache_cluster</span></td>
+<td><span>memcache.memcache_dual_cluster</span></td>
 <td><span>required</span></td>
 <td><span>the memcache cluster to use</span></td>
 </tr><tr>
@@ -835,20 +860,20 @@ consult the memcached documentation.</p></td>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is thrown if no servers are defined in the cluster</p>
+<td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
 <td><p>Not allowed in a restricted shell</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.version</p>
+<td><p>memcache.highread.version</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: PegaSock.Memcache.Stats<br>PHP: memcached::getStats</p></td>
+<td><p>Ada: PegaSock.Memcache.Highread.Stats</p></td>
 </tr>
 </table>
 
-<h3>s := memcache.version( cl )</h3>
+<h3>s := memcache.highread.version( cl )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -857,7 +882,7 @@ of memcached that is running on the server.  (It would be advisable to run
 the same version on all servers.)</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">? memcache.version( mc_cluster ); -- displays the version e.g. 1.4.5</span></p>
+<td><span class="code">? memcache.highread.version( mc_cluster ); -- displays the version e.g. 1.4.5</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -870,7 +895,7 @@ the same version on all servers.)</p></td>
 </tr><tr>
 <td><span>cl</span></td>
 <td><span>in out</span></td>
-<td><span>memcache.memcache_cluster</span></td>
+<td><span>memcache.memcache_dual_cluster</span></td>
 <td><span>required</span></td>
 <td><span>the memcache cluster to use</span></td>
 </tr><tr>
@@ -883,16 +908,16 @@ the same version on all servers.)</p></td>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is thrown if no servers are defined in the cluster</p>
+<td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
 <td><p>Not allowed in a restricted shell</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.stats</p>
+<td><p>memcache.highread.stats</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: PegaSock.Memcache.Version<br>PHP: memcached::getVersion</p></td>
+<td><p>Ada: PegaSock.Memcache.Highread.Version</p></td>
 </tr>
 </table>
 
@@ -910,8 +935,8 @@ the same version on all servers.)</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;<b>memcache</b></a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;<b>memcache.highread</b></a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>

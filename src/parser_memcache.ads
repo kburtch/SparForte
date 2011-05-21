@@ -51,9 +51,12 @@ memcache_stats_t                 : identifier;
 memcache_version_t               : identifier;
 memcache_flush_t                 : identifier;
 
+highread_cluster_t               : identifier;
+
 highread_new_cluster_t           : identifier;
 highread_clear_servers_t         : identifier;
-highread_register_server_t       : identifier;
+highread_register_alpha_server_t : identifier;
+highread_register_beta_server_t  : identifier;
 highread_set_cluster_name_t      : identifier;
 highread_set_cluster_type_t      : identifier;
 highread_set_t                   : identifier;
@@ -75,7 +78,7 @@ procedure StartupMemcache;
 procedure ShutdownMemcache;
 
 ------------------------------------------------------------------------------
--- PARSE THE NUMERICS PACKAGE
+-- PARSE THE MEMCACHE PACKAGE
 ------------------------------------------------------------------------------
 
 procedure ParseMemcacheIsValidMemcacheKey( result : out unbounded_string );
@@ -94,5 +97,26 @@ procedure ParseMemcacheDelete;
 procedure ParseMemcacheStats( result : out unbounded_string );
 procedure ParseMemcacheVersion( result : out unbounded_string );
 procedure ParseMemcacheFlush;
+
+------------------------------------------------------------------------------
+-- PARSE THE MEMCACHE HIGHREAD PACKAGE
+------------------------------------------------------------------------------
+
+procedure ParseHighreadNewCluster( result : out unbounded_string );
+procedure ParseHighreadRegisterAlphaServer;
+procedure ParseHighreadRegisterBetaServer;
+procedure ParseHighreadClearServers;
+procedure ParseHighreadSetClusterName;
+procedure ParseHighreadSetClusterType;
+procedure ParseHighreadSet;
+procedure ParseHighreadAdd;
+procedure ParseHighreadReplace;
+procedure ParseHighreadAppend;
+procedure ParseHighreadPrepend;
+procedure ParseHighreadGet( result : out unbounded_string );
+procedure ParseHighreadDelete;
+procedure ParseHighreadStats( result : out unbounded_string );
+procedure ParseHighreadVersion( result : out unbounded_string );
+procedure ParseHighreadFlush;
 
 end parser_memcache;

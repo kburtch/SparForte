@@ -22,3 +22,5 @@ disable connections to a database engine.
 
 6. New: memcache package.  add( cl, k, v ), prepend( cl, k, v ), append( cl, k, v ), register_server( cl, h, p ), clear_servers( cl ), replace( cl, k, v ), delete( cl, k ), set( cl, k, v ), flush( cl ), set_cluster_name( cl, s ), is_valid_memcache_key( k ), set_cluster_type( cl, e ), v := get( cl, k ), s := stats( cl ), cl := new_cluster, s := version( cl )
 
+7. New: memcache.highread package.  add( cl, k, v ), prepend( cl, k, v ), append( cl, k, v ), register_alpha_server( cl, h, p ), register_beta_server( cl, h, p ), clear_servers( cl ), replace( cl, k, v ), delete( cl, k ), set( cl, k, v ), flush( cl ), set_cluster_name( cl, s ), set_cluster_type( cl, e ), v := get( cl, k ), s := stats( cl ), cl := new_cluster, s := version( cl )
+
