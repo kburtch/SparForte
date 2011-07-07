@@ -1,4 +1,0 @@
-# This should fail
-
-set_input standard_input ); -- missing parenthesis
-

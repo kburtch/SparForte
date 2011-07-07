@@ -1,0 +1,5 @@
+
+type a is array( 1..2 ) of integer;
+s : string := "[1,2]";
+arrays.from_json( a, s );
+

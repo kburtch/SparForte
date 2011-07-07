@@ -2,6 +2,7 @@
 
 declare
   declare -- declare in declare sectoin
+    i : integer;
   begin
     null;
   end;

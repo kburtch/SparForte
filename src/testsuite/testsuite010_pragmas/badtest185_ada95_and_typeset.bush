@@ -1,6 +1,7 @@
 # This should fail
 
-i : integer;
+pragma ada_95;
 
+i : integer;
 typeset i is float; -- not allowed
 

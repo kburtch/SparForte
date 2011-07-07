@@ -888,9 +888,10 @@ history -c;
 
 pragma annotate( "This is a test" );
 pragma depreciated( "<This is not an error>" );
-pragma import( shell, PATH );
-pragma export( shell, PATH );
-pragma volatile( PATH );
+FOOBAR : string;
+pragma import( shell, FOOBAR );
+pragma export( shell, FOOBAR );
+pragma volatile( FOOBAR );
 foo_dummy_variable_123: string := "foo_123";
 pragma unchecked_import( shell, foo_dummy_variable_123 );
 pragma assert( foo_dummy_variable_123 = "foo_123" );
@@ -1175,6 +1176,138 @@ declare
    pragma assert( i=3 );
 begin
    null;
+end;
+
+-- json
+
+declare
+  i0 : array( 1..0 ) of integer;
+  i1 : array( 1..1 ) of integer := (23);
+  i2 : array( 2..2 ) of integer := (24);
+  i3 : array( 1..3 ) of integer := (25,26,27);
+  s0 : array( 1..0 ) of string;
+  s1 : array( 1..1 ) of string  := ("arch");
+  s2 : array( 2..2 ) of string  := ("able");
+  s3 : array( 1..3 ) of string  := ("adam","atom","axe");
+begin
+  -- to json
+  arrays.to_json( s, i0 );
+  pragma assert( s = "[]" );
+  arrays.to_json( s, i1 );
+  pragma assert( s = "[23]" );
+  arrays.to_json( s, i2 );
+  pragma assert( s = "[24]" );
+  arrays.to_json( s, i3 );
+  pragma assert( s = "[25,26,27]" );
+  arrays.to_json( s, s0 );
+  pragma assert( s = "[]" );
+  arrays.to_json( s, s1 );
+  pragma assert( s = "[" & ASCII.Quotation & "arch" & ASCII.Quotation & "]" );
+  arrays.to_json( s, s2 );
+  pragma assert( s = "[" & ASCII.Quotation & "able" & ASCII.Quotation & "]" );
+  arrays.to_json( s, s3 );
+  pragma assert( s = "[" &
+     ASCII.Quotation & "adam" & ASCII.Quotation & "," &
+     ASCII.Quotation & "atom" & ASCII.Quotation & "," &
+     ASCII.Quotation & "axe" & ASCII.Quotation & "]" );
+  -- from json
+  arrays.from_json( i0, "[]" );
+  arrays.from_json( i1, "[33]" );
+  pragma assert( i1(1) = 33 );
+  arrays.from_json( i2, "[34]" );
+  pragma assert( i2(2) = 34 );
+  arrays.from_json( i3, "[35,36,37]" );
+  pragma assert( i3(1) = 35 );
+  pragma assert( i3(2) = 36 );
+  pragma assert( i3(3) = 37 );
+  arrays.from_json( s0, "[]" );
+  arrays.from_json( s1, "[" & ASCII.Quotation & "bear" & ASCII.Quotation & "]" );
+  pragma assert( s1(1) = "bear" );
+  arrays.from_json( s2, "[" & ASCII.Quotation & "bare" & ASCII.Quotation & "]" );
+  pragma assert( s2(2) = "bare" );
+  arrays.from_json( s3, "[" &
+     ASCII.Quotation & "bug" & ASCII.Quotation & "," &
+     ASCII.Quotation & "bat" & ASCII.Quotation & "," &
+     ASCII.Quotation & "box" & ASCII.Quotation & "]" );
+  pragma assert( s3(1) = "bug" );
+  pragma assert( s3(2) = "bat" );
+  pragma assert( s3(3) = "box" );
+  -- special chars
+  s1(1) := "" & ASCII.Quotation;
+  arrays.to_json( s, s1 ); 
+  pragma assert( s = "[" & ASCII.Quotation & "\" & ASCII.Quotation & ASCII.Quotation & "]" );
+  s1(1) := "\";
+  arrays.to_json( s, s1 ); 
+  pragma assert( s = "[" & ASCII.Quotation & "\\" & ASCII.Quotation & "]" );
+  s1(1) := "/";
+  arrays.to_json( s, s1 ); 
+  pragma assert( s = "[" & ASCII.Quotation & "\/" & ASCII.Quotation & "]" );
+  s1(1) := "" & ASCII.BS;
+  arrays.to_json( s, s1 ); 
+  pragma assert( s = "[" & ASCII.Quotation & "\b" & ASCII.Quotation & "]" );
+  s1(1) := "" & ASCII.FF;
+  arrays.to_json( s, s1 ); 
+  pragma assert( s = "[" & ASCII.Quotation & "\f" & ASCII.Quotation & "]" );
+  s1(1) := "" & ASCII.LF;
+  arrays.to_json( s, s1 ); 
+  pragma assert( s = "[" & ASCII.Quotation & "\n" & ASCII.Quotation & "]" );
+  s1(1) := "" & ASCII.CR;
+  arrays.to_json( s, s1 ); 
+  pragma assert( s = "[" & ASCII.Quotation & "\r" & ASCII.Quotation & "]" );
+  s1(1) := "" & ASCII.HT;
+  arrays.to_json( s, s1 ); 
+  pragma assert( s = "[" & ASCII.Quotation & "\t" & ASCII.Quotation & "]" );
+  --
+  arrays.from_json( s1, "[" & ASCII.Quotation & "\" & ASCII.Quotation & ASCII.Quotation & "]" );
+  pragma assert( s1(1) = "" & ASCII.Quotation );
+  arrays.from_json( s1, "[" & ASCII.Quotation & "\\" & ASCII.Quotation & "]" );
+  pragma assert( s1(1) = "\" );
+  arrays.from_json( s1, "[" & ASCII.Quotation & "\/" & ASCII.Quotation & "]" );
+  pragma assert( s1(1) = "/" );
+  arrays.from_json( s1, "[" & ASCII.Quotation & "\b" & ASCII.Quotation & "]" );
+  pragma assert( s1(1) = "" & ASCII.BS );
+  arrays.from_json( s1, "[" & ASCII.Quotation & "\f" & ASCII.Quotation & "]" );
+  pragma assert( s1(1) = "" & ASCII.FF );
+  arrays.from_json( s1, "[" & ASCII.Quotation & "\n" & ASCII.Quotation & "]" );
+  pragma assert( s1(1) = "" & ASCII.LF );
+  arrays.from_json( s1, "[" & ASCII.Quotation & "\r" & ASCII.Quotation & "]" );
+  pragma assert( s1(1) = "" & ASCII.CR );
+  arrays.from_json( s1, "[" & ASCII.Quotation & "\t" & ASCII.Quotation & "]" );
+  pragma assert( s1(1) = "" & ASCII.HT );
+  --
+  s := strings.to_json( "a" & ASCII.Quotation );
+  pragma assert( s = ASCII.Quotation & "a\" & ASCII.Quotation & ASCII.Quotation );
+  s := strings.to_json( "b\" );
+  pragma assert( s = ASCII.Quotation & "b\\" & ASCII.Quotation );
+  s := strings.to_json( "c/" );
+  pragma assert( s = ASCII.Quotation & "c\/" & ASCII.Quotation );
+  s := strings.to_json( "d" & ASCII.BS );
+  pragma assert( s = ASCII.Quotation & "d\b" & ASCII.Quotation );
+  s := strings.to_json( "e" & ASCII.FF );
+  pragma assert( s = ASCII.Quotation & "e\f" & ASCII.Quotation );
+  s := strings.to_json( "f" & ASCII.LF );
+  pragma assert( s = ASCII.Quotation & "f\n" & ASCII.Quotation );
+  s := strings.to_json( "g" & ASCII.CR );
+  pragma assert( s = ASCII.Quotation & "g\r" & ASCII.Quotation );
+  s := strings.to_json( "h" & ASCII.HT );
+  pragma assert( s = ASCII.Quotation & "h\t" & ASCII.Quotation );
+  --
+  s := strings.from_json( ASCII.Quotation & "a\" & ASCII.Quotation & ASCII.Quotation );
+  pragma assert( s = "a" & ASCII.Quotation );
+  s := strings.from_json( ASCII.Quotation & "b\\" & ASCII.Quotation );
+  pragma assert( s = "b\" );
+  s := strings.from_json( ASCII.Quotation & "c\/" & ASCII.Quotation );
+  pragma assert( s = "c/" );
+  s := strings.from_json( ASCII.Quotation & "d\b" & ASCII.Quotation );
+  pragma assert( s = "d" & ASCII.BS );
+  s := strings.from_json( ASCII.Quotation & "e\f" & ASCII.Quotation );
+  pragma assert( s = "e" & ASCII.FF );
+  s := strings.from_json( ASCII.Quotation & "f\n" & ASCII.Quotation );
+  pragma assert( s = "f" & ASCII.LF );
+  s := strings.from_json( ASCII.Quotation & "g\r" & ASCII.Quotation );
+  pragma assert( s = "g" & ASCII.CR );
+  s := strings.from_json( ASCII.Quotation & "h\t" & ASCII.Quotation );
+  pragma assert( s = "h" & ASCII.HT );
 end;
 
 -- if statements
@@ -1575,6 +1708,8 @@ echo '*';
 echo '\*';
 echo \\;
 echo \\\\;
+echo "[]";
+echo [];
 
 -- Shell Variable Substitution Tests
 
@@ -1584,6 +1719,9 @@ pragma assert( s = "1" );
 i := 2;
 s := `echo "$i";`;
 pragma assert( s = "2" );
+i := 0;
+s := `echo "$i;";`;
+pragma assert( s = "0;" );
 i := 3;
 s := `echo '$i';`;
 pragma assert( s = "$i" );
@@ -1705,13 +1843,13 @@ iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
 
 -- output redirection
 
-create( ft, out_file, "./t.t" );
+create( ft, out_file, "./test2.txt" );
 set_output( ft );
 pragma assert( mode( current_output ) = mode( ft ) );
 pragma assert( name( current_output ) = name( ft ) );
 put_line( ft, "testing" );
 close( ft );
-open( ft, append_file, "./t.t" );
+open( ft, append_file, "./test2.txt" );
 set_output( ft );
 pragma assert( mode( current_output ) = mode( ft ) );
 pragma assert( name( current_output ) = name( ft ) );
@@ -1728,7 +1866,7 @@ pragma assert( name( current_output ) = name( standard_output ) );
 
 -- input redirection
 
-open( ft, in_file, "./t.t" );
+open( ft, in_file, "./test2.txt" );
 set_input( ft );
 pragma assert( mode( current_input ) = mode( ft ) );
 pragma assert( name( current_input ) = name( ft ) );
@@ -1747,13 +1885,13 @@ pragma assert( name( current_input ) = name( standard_input ) );
 
 -- error redirection
 
-open( ft, out_file, "./t.t" );
+open( ft, out_file, "./test2.txt" );
 set_error( ft );
 pragma assert( mode( current_error ) = mode( ft ) );
 pragma assert( name( current_error ) = name( ft ) );
 set_error( standard_error );
 close( ft );
-open( ft, append_file, "./t.t" );
+open( ft, append_file, "./test2.txt" );
 set_error( ft );
 pragma assert( mode( current_error ) = mode( ft ) );
 pragma assert( name( current_error ) = name( ft ) );

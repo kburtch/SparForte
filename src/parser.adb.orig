@@ -973,6 +973,12 @@ begin
      elsif token = is_typo_of_t then                      -- is_typo_of function
         ParseStringsIsTypoOf( f );
         kind := boolean_t;
+     elsif token = strings_to_json_t then                 -- strings.to_json function
+        ParseStringsToJSON( f );
+        kind := string_t;
+     elsif token = strings_from_json_t then               -- strings.from_json function
+        ParseStringsFromJSON( f );
+        kind := string_t;
      elsif token = random_t then                          -- random function
         ParseNumericsRandom( f );
         kind := float_t;
@@ -4109,7 +4115,18 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
        close( currentDir );    
     end if;
   exception when ERROR_IN_REGEXP =>
-    err( "error in globbing expression """ & globExpr & """" );
+    -- The globbing expression may be bad.  For example,
+    -- '/</{ :loop s/<[^>]*>//g /</{ N b loop } }'
+    -- will be split into ... / globExpr = { N b loop } }
+    -- which will fail with this exception.  There's no way to know if the
+    -- expression produced by basename will be glob-able.  So this is not
+    -- an error...there's just nothing to glob.
+    --
+    -- Was:
+    -- err( "error in globbing expression """ & globExpr & """" );
+    --
+    -- Now, queue the shell word as the word just counts as-is.
+    shellWordList.Queue( list, aShellWord'( normalWord, pattern, word ) );
     if isOpen then
        close( currentDir );    
     end if;
@@ -4353,9 +4370,22 @@ begin
           inDollar := true;                                -- start new one
        end if;
        expansionVar := null_unbounded_string;
+
     else
 
        -- End of quote handling...now we have a character, handle it
+
+       -- if name is greater than 1 char, dollarExpansion ends when
+       -- non-alpha/underscore is read.  Pass through to allow the
+       -- character to otherwise be treated normally.
+
+       if inDollar then
+          if ch /= '_' and ch not in 'A'..'Z'  and ch not in 'a'..'z' then
+             if length( expansionVar ) > 0 then
+                dollarExpansion;
+             end if;
+          end if;
+       end if;
 
        -- Terminating characters (whitespace or semi-colon)
        exit when (ch = ' ' or ch = ASCII.HT or ch = ';' or ch = '|' )
@@ -4375,6 +4405,7 @@ begin
              case ch is                                    -- is a glob char?
              when '*' => pattern := pattern & "\";         -- escape *
              when '[' => pattern := pattern & "\";         -- escape [
+             when ']' => pattern := pattern & "\";         -- escape ]
              when '\' => pattern := pattern & "\";         -- escape \
              when '?' => pattern := pattern & "\";         -- escape *
              when others => null;                          -- others? no esc
@@ -4494,6 +4525,7 @@ end ParseShellWords;
 
 
 procedure ParseVm is
+-- THIS IS NOT USED AT THIS TIME.
 -- vm regtype, regnum
   regtype_val  : unbounded_string;
   regtype_kind : identifier;
@@ -4514,6 +4546,38 @@ end ParseVm;
 procedure ParseProcedureBlock;
 procedure ParseFunctionBlock;
 
+procedure ParseWith is
+  -- Syntax: with separate "file";
+  include_file : unbounded_string;
+begin
+  -- is this true?
+  --if inputMode = interactive or inputMode = breakout then
+  --   err( "with can only be used in a script" );
+  --end if;
+  expect( with_t );
+  expect( separate_t );
+  if token = strlit_t then
+     if syntax_check then
+        if rshOpt then
+           err( "subscripts are not allowed in a " & optional_bold( "restricted shell" ) );
+        else
+           insertInclude( identifiers( token ).value );
+        end if;
+     end if;
+  end if;
+  expect( strlit_t );
+  expectSemicolon;
+  -- That was the end of the with separate statement.  However, remember that
+  -- the subscript is embedded in the main script so we have to read the
+  -- subscript header.  Only pragmas allowed before separate keyword.
+  while token = pragma_t loop
+      ParsePragma;
+      expectSemicolon;
+  end loop;
+  expect( separate_t );
+  expectSemicolon;
+end ParseWith;
+
 procedure ParseDeclarations is
   -- Syntax: declaration = "new-ident decl-part"
   var_id : identifier;
@@ -4529,6 +4593,12 @@ begin
      elsif token = subtype_t then
         ParseSubtype;
         expectSemicolon;
+     elsif Token = with_t then
+        -- When parsing a procedure declaration, we never want to run it.
+        save_syntax_check := syntax_check;
+        syntax_check := true;
+        ParseWith;
+        syntax_check := save_syntax_check;
      elsif Token = procedure_t then
         -- When parsing a procedure declaration, we never want to run it.
         save_syntax_check := syntax_check;
@@ -6844,6 +6914,10 @@ begin
      ParseArraysShiftLeft;
   elsif token = arrays_shift_right_t then           -- Shift_Right
      ParseArraysShiftRight;
+  elsif token = arrays_from_json_t then             -- From_JSON
+     ParseArraysFromJSON;
+  elsif token = arrays_to_json_t then               -- To_JSON
+     ParseArraysToJSON;
   -- elsif token = sdl_init_t then                     -- SDL.Init
   --    ParseSDLInit;
   -- elsif token = sdl_quit_t then                     -- SDL.Quit
@@ -6969,7 +7043,7 @@ begin
   elsif Token = elsif_t then
      err( "elsif without if" );
   elsif Token = with_t then
-     err( "with not implemented" );
+     err( "with only allowed in declaration section" );
   elsif Token = use_t then
      err( "use not implemented" );
   elsif Token = task_t then

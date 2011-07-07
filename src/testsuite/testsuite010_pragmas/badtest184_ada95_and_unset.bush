@@ -1,5 +1,7 @@
 # This should fail
 
+pragma ada_95;
+
 i : integer;
 unset i; -- not allowed
 

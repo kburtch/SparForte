@@ -652,10 +652,21 @@ begin
         promptScript := expr_val;
      when template | unrestricted_template =>
         templateType := noTemplate;
+        -- http://www.webmaster-toolkit.com/mime-types.shtml
         if expr_val = "html" then
            templateType := htmlTemplate;
+        elsif expr_val = "css" then
+           templateType := cssTemplate;
+        elsif expr_val = "js" then
+           templateType := jsTemplate;
+        elsif expr_val = "json" then
+           templateType := jsonTemplate;
         elsif expr_val = "text" then
            templateType := textTemplate;
+        elsif expr_val = "wml" then
+           templateType := wmlTemplate;
+        elsif expr_val = "xml" then
+           templateType := xmlTemplate; -- text/xml
         else
            err( "unknown template type" );
         end if;
@@ -687,8 +698,18 @@ begin
         -- the header from being sent.
         if templateType = htmlTemplate then
            cgi.put_cgi_header( "Content-type: text/html" );
+        elsif templateType = cssTemplate then
+            cgi.put_cgi_header( "Content-type: text/css" );
+        elsif templateType = jsTemplate then
+            cgi.put_cgi_header( "Content-type: application/x-javascript" );
+        elsif templateType = jsonTemplate then
+            cgi.put_cgi_header( "Content-type: application/json" );
         elsif templateType = textTemplate then
            cgi.put_cgi_header( "Content-type: text/plain" );
+        elsif templateType = xmlTemplate then
+           cgi.put_cgi_header( "Content-type: text/xml" );
+        elsif templateType = wmlTemplate then
+            cgi.put_cgi_header( "Content-type: text/vnd.wap.wml" );
         end if;
      when unchecked_import =>
         if identifiers( var_id ).class = userProcClass then

@@ -3,5 +3,6 @@
 if true then
   null;
 elsif then -- missing expression
+  null;
 end if;
 

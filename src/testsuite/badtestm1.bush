@@ -1,4 +1,0 @@
-# This should fail
-
-s : string := `echo` -- missing semi-colon
-

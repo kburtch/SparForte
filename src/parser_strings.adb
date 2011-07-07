@@ -1430,6 +1430,96 @@ begin
   end;
 end ParseStringsSetUnboundedString;
 
+procedure ParseStringsToJSON( result : in out unbounded_string) is
+  -- Syntax: strings.to_json( x );
+  -- Source: N/A
+  expr_val   : unbounded_string;
+  expr_type  : identifier;
+  ch         : character;
+begin
+  expect( strings_to_json_t );
+  ParseSingleUniStringExpression( expr_val, expr_type );
+  begin
+    if isExecutingCommand then
+       result := to_unbounded_string( """" );
+       for i in 1..length( expr_val ) loop
+           ch := element( expr_val, i );
+           if ch = '"' then
+              result := result & "\""";
+           elsif ch = '\' then
+              result := result & "\\";
+           elsif ch = '/' then
+              result := result & "\/";
+           elsif ch = ASCII.BS then
+              result := result & "\b";
+           elsif ch = ASCII.FF then
+              result := result & "\f";
+           elsif ch = ASCII.LF then
+              result := result & "\n";
+           elsif ch = ASCII.CR then
+              result := result & "\r";
+           elsif ch = ASCII.HT then
+              result := result & "\t";
+           -- Note : \u not implemented
+           else
+              result := result & ch;
+           end if;
+       end loop;
+       result := result & '"';
+    end if;
+  exception when others =>
+    err( "exception raised" );
+  end;
+end ParseStringsToJSON;
+
+procedure ParseStringsFromJSON( result : in out unbounded_string) is
+  -- Syntax: strings.from_json( x );
+  -- Source: N/A
+  expr_val   : unbounded_string;
+  expr_type  : identifier;
+  ch         : character;
+  i          : integer;
+begin
+  expect( strings_from_json_t );
+  ParseSingleUniStringExpression( expr_val, expr_type );
+  begin
+    if isExecutingCommand then
+       result := null_unbounded_string;
+       i := 2;
+       loop
+         exit when i > length(expr_val)-1;
+         if element( expr_val, i ) = '\' then
+            i := i + 1;
+            ch := element( expr_val, i );
+            -- Note : \u not implemented
+            if ch = '"' then
+               result := result & '"';
+            elsif ch = '\' then
+               result := result & '\';
+            elsif ch = '/' then
+               result := result & '/';
+            elsif ch =  'b' then
+               result := result & ASCII.BS;
+            elsif ch = 'f' then
+               result := result & ASCII.FF;
+            elsif ch = 'n' then
+               result := result & ASCII.LF;
+            elsif ch = 'r' then
+               result := result & ASCII.CR;
+            elsif ch = 't' then
+               result := result & ASCII.HT;
+            end if;
+         else
+            result := result & element( expr_val, i );
+         end if;
+         i := i + 1;
+       end loop;
+    end if;
+  exception when others =>
+    err( "exception raised" );
+  end;
+end ParseStringsFromJSON;
+
 
 procedure StartupStrings is
 begin
@@ -1520,6 +1610,8 @@ begin
   declareFunction( is_typo_of_t, "strings.is_typo_of" );
   declareProcedure( set_unbounded_string_t, "strings.set_unbounded_string" );
   declareFunction( unbounded_slice_t, "strings.unbounded_slice" );
+  declareFunction( strings_from_json_t, "strings.from_json" );
+  declareFunction( strings_to_json_t, "strings.to_json" );
 end StartupStrings;
 
 procedure ShutdownStrings is

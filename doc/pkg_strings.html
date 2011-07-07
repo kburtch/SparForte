@@ -497,6 +497,50 @@ similar to PERL split.
 </table></center>
 
 <p>A bad position returns an empty string (like the Linux/UNIX cut command).
+
+<p>
+<hr><b>r := strings.from_json( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+
+<td>
+<br>convert JSON encoding of a string into the original string.  Encoding
+arbitrary control
+characters with \u is not yet supported, though carriage returns, line feeds,
+etc. are supported.
+<br>Example: r :=  strings.from_json( ASCII.Quotation &amp; "foobar\ntest" &amp; ASCII.Quotation ); -- returns a string with foobar, a line feed, and test 
+<br>Ada Equivalent: none (AdaScript extension)
+<br>See Also: arrays.from_json
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the JSON expression to decode</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the decoded string</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
 <p>
 <hr><b>b := strings.glob( e, s )</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
@@ -2258,6 +2302,49 @@ with "[# n]" where n is the ASCII/Latin-1 position.
 </tr>
 </table></center>
 
+<p>
+<hr><b>r := strings.to_json( s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+
+<td>
+<br>return the JSON encoding of the string.  Encoding arbitrary control
+characters with \u is not yet supported, though carriage returns, line feeds,
+etc. are supported.
+<br>Example: r := strings.to_json( "foobar" &amp; ASCII.LF &amp; "test" ); -- returns "foobar\ntest" 
+<br>Ada Equivalent: none (AdaScript extension)
+<br>See Also: arrays.to_json
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the string expression to encode</td>
+</tr>
+
+<tr>
+<td>r</td>
+
+<td>return value</td>
+
+<td>string</td>
+
+<td>required</td>
+
+<td>the JSON string</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+
+&nbsp;<br>
 <p>
 <hr><b>s := strings.to_string( u )</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >

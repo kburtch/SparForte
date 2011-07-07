@@ -267,6 +267,85 @@ script.</p>
 <p><b>Ada</b>: GCC Ada also has separate subunits.  They are implemented
 in the same way.</p>
 
+<h3>Separate Declarations</h3>
+
+<p>A separate declaration file is the SparForte equivalent of an include
+file.  It is an set of declaration statements stored in a separate file.
+The file
+can include variables, constants, types, functions, procedures, pragmas,
+etc.  A declaration file is used to share common declarations across
+many scripts.</p>
+
+<p>The separate declaration file is inserted into another script using "with separate".
+Since the declaration file is inserted, they have the same scope as the declaration
+block they are used in.  Any subscript pragmas will also affect
+the file loading the declaration file.  The with separate statement can occur in
+a declaration section of any block (a main procedure, procedures, functions
+or a declare block).</p>
+
+        <center>
+        <div class="code">
+        <p class="code">
+        <b>procedure</b> main <b>is</b><br>
+	&nbsp;&nbsp;<b>with</b> <b>separate</b> "globals.sp";<br>
+        <b>begin</b><br>
+        &nbsp;&nbsp;? company_name; -- displays "PegaSoft"<br>
+        <b>end</b> main;<br>&nbsp;<br>
+        <div class="code_caption">
+                <b>Example</b>: Loading a separate declaration file
+        </div>
+        </div>
+        </center>
+
+<p>Unlike separate procedures / functions, declaration files are not tied to
+a particular script.  The subscript fragment must have "separate" as its
+first statement.  This identifies it as a separate declaration file.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">
+        -- This is the file named globals.sp<br>
+	<b>separate</b>;<br>
+        company_name : <b>constant</b> string := "PegaSoft";<br>&nbsp;<br>
+        <div class="code_caption">
+                <b>Example</b>: A very short separate declaration file containing one constant
+        </div>
+        </div>
+        </center>
+
+<p>Like separate subprograms, SparForte will search for the declaration file
+using the SparForte library path. The path is specified using the <b>-L</b> command
+option or using the environment variable <b>SPAR_LIBRARY_PATH</b>. By default,
+SparForte will search the current directory. The declaration file must
+exist and be readable in order to load it.</p>
+
+<p>The separate declaration file may contain more "with separate" statements.  If the same
+file is included twice in the same scope, duplicate declaration errors will
+occur.  Having a file include itself, or having a nested with separate include
+the file, will result in a loop and SparForte will report an error.</p>
+
+<p>Subscripts are loaded before a script starts execution.  If you do something
+unusual such as to create a
+for loop containing a declare block with a "with separate", the with separate
+only executes once.  However, the subprograms contained in the separate
+declaration file will
+access the new variable values as the for loop iterates, just as if they were
+declared without the with separate.</p>
+
+<p>Subscripts are permitted with pragma ada_95, even though they are not a part
+of the Ada 95 standard, to allow large scripts to be broken up.</p>
+
+<p>Subscripts are permitted in a restricted shell to allow large scripts to
+be broken up.</p>
+
+<p><b>Implementation Note</b>: with separate has a string literal as a parameter.  Because
+the separate file is loaded before the program is running, any variables that might
+contain the file path cannot exist when the file is loaded.  So you're stuck
+with a string literal.</p>
+
+<p><b>Implementation Note</b>: Subscripts are intended as a simple mechanism to
+break up large scripts until loadable user-defined packages are completed.</p>
+
 <br>&nbsp;
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>

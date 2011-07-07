@@ -68,10 +68,10 @@ environment.</p>
   <b>pragma</b> restriction( no_external_commands )
   <b>pragma</b> restriction( no_mysql_database )
   <b>pragma</b> restriction( no_postgresql_database )
-  <b>pragma</b> template( html [, path] )
+  <b>pragma</b> template( css|html|js|json|text|wml|xml [, path] )
   <b>pragma</b> unchecked_import( shell | cgi | local_memcache | memcache, var )
   <b>pragma</b> uninspect( var )
-  <b>pragma</b> unrestricted_template( html [, path] )
+  <b>pragma</b> unrestricted_template( css|html|js|json|text|wml|xml [, path] )
   <b>pragma</b> volatile( var )
 </pre>
                 <br>&nbsp;<br>
@@ -119,7 +119,8 @@ license for the script.  license_name can be:<br>
 <li><b>unrestricted</b> - An unrestricted license</li>
 </ul>
 If extra exists, it is a string further describing the license (for example,
-commercial/"trial license" or commercial/"15 users".<br>
+commercial/"trial license" or commercial/"15 users".  The extra string
+can also be a URL to a complex license.<br>
 <u>GCC Ada</u>: unrestricted, gpl and unrestricted are recognized by Ada.  It
 doesn't support the extra string.  It treats these as levels and will
 try to validate license compatibility where possible.</li>
@@ -224,21 +225,18 @@ it.&nbsp; This pragma forces Bush to search for the location of the
 command, ignoring the previous location.<br>
   <li> <b>pragma register_memcache_server( host, port )</b> - add a
 memcache server which will be used with memcache method imports/exports</li>
-  <li> <b>pragma template( text|html [, template] )</b> - SparForte will
-act
-like an HTML
-template processor (like PHP). When the script finishes executing, SparForte
-will open a file called "file.tmpl" where file is the name of the
-script.
-If an alternate file path is included in the pragma, that file is used
-as the
-template instead. A HTTP header is written and SparForte parses the template
-along with any embedded scripts. For security, the embedded scripts in
-the template will be run in a restricted shell and with the
-no_external_commands restriction. Errors are shown in --gcc-errors
-format
-using the line number in the template as the line number for the error.
-The first parameter is the template type: "text" or "html".</li>
+  <li> <b>pragma template( css|html|js|json|text|wml|xml [, template] )</b> - SparForte
+will act like a template processor (like PHP). When the script finishes
+executing, SparForte will open a file called "file.tmpl" where file is the
+name of the script.  If an alternate file path is included in the pragma,
+that file is used as the template instead. A HTTP header is written and
+SparForte parses the template along with any embedded scripts. For security,
+the embedded scripts in the template will be run in a restricted shell and
+with the no_external_commands restriction. Errors are shown in --gcc-errors
+format using the line number in the template as the line number for the
+error.  The first parameter is the template type: "css" (a style sheet),
+"html" (HTML web page), "js" (Javascript script), "json" (JSON encoded
+text), "text" (plain text), "wml" (WML text) or "xml" (XML text).</li>
   <li> <b>pragma unchecked_import( shell | cgi | local_memcache | memcache, var )</b> -
 import a variable.  For shell, from the O/S environment.  For cgi
 and if pragma template/unrestricted_template was used previously,
@@ -247,12 +245,11 @@ get the value of the variable from a memcached server running on
 locahost port 11211.  Put the value in the SparForte variable.
 If the environment variable doesn't exist, then
 the SparForte variable is unchanged.</li>
-  <li> <b>pragma unrestricted_template( text|html [, template] )</b> -
-SparForte will act
-like an HTML template processor (like PHP). This pragma is the same as
-pragma template except that the embedded scripts are executed in a
-normal
-shell with no security restrictions.</li>
+  <li> <b>pragma unrestricted_template( css|html|js|json|text|wml|xml [, template] )</b> -
+SparForte will act like a template processor (like PHP). This pragma is
+the same as pragma template except that the embedded scripts are executed
+in a normal shell with no security restrictions.  The type parameter
+is described under pragma template.</li>
   <li> <b>pragma volatile( var )</b> - the variable is assumed to be
 an variable which may change unexpectedly during the script's execution.
 The variable's value will be updated each time it is referenced in an
@@ -662,7 +659,8 @@ However, many of the most popular licenses are known by SparForte.</p>
 command to get an accurate license name.</p>
 
 <p>If you have a commercial license, declare it as commercial and include
-more details in the second parameter.</p>
+more details in the second parameter, or use the second parameter as a
+URL to the text of the license.</p>
 
 	<center>
         <div class="code">

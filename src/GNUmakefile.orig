@@ -145,9 +145,9 @@ distclean:
 
 test:	all
 	@echo "---------------------------------------------------------------"
-	@echo "  RUNNING TESTSUITE"
+	@echo "  RUNNING TEST SUITE"
 	@echo "---------------------------------------------------------------"
-	(cd testsuite; sh test.sh)
+	(cd testsuite; sh runtests.sh)
 
 zip: distclean
 	(cd ..; zip -9r *; cd src)

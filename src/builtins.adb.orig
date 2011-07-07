@@ -868,6 +868,7 @@ begin
      Put_Line( "  shuffle( a )             flip( a )" );
      Put_Line( "  shift_left( a )          shift_right( a )" );
      Put_Line( "  rotate_left( a )         rotate_right( a )" );
+     Put_Line( "  from_json( s, a )        to_json( s, a )" );
   elsif helpTopic = "calendar" then
      Put_Line( "calendar (package) - time and date operations:" );
      New_Line;
@@ -1229,13 +1230,13 @@ begin
        "restriction( no_postgresql_database ) - " &
          "disable connections to postgresql" );
      Put_Line( "  " & bold( "pragma" ) & " " &
-       "template( html [, path] ) - script is acting as an HTML template processor" );
+       "template( css|html|js|json|text|wml|xml [, path] ) - script is acting as a template processor" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "unchecked_import( shell | cgi | local_memcache | memcache, var ) - import without checking for existence" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "uninspect( var ) - undo pragma inspect" );
      Put_Line( "  " & bold( "pragma" ) & " " &
-       "unrestricted_template( html [, path] ) - don't run template in restricted shell" );
+       "unrestricted_template( css|html|js|json|text|wml|xml [, path] ) - don't run template in restricted shell" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "volatile( var ) - load value from environment on every access" );
   elsif helpTopic = "put" then
@@ -1464,6 +1465,7 @@ begin
      Put_Line( "  is_basic( s )             is_digit( s )            is_hexadecimal_digit( s )" );
      Put_Line( "  is_alphanumeric( s )      is_special( s )          is_fixed( s ) " );
      Put_Line( "  unbounded_slice( s, l, h ) set_unbounded_string( s, u ) " );
+     Put_Line( "  from_json( s )            to_json( s ) " );
      discardUnusedIdentifier( token );
   elsif helpTopic = "variables" then
      Put_Line( "Variables" );

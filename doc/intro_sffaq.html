@@ -125,8 +125,17 @@ documentation.</p>
 
 <h4>Why do I get an error when I run commands in backquotes?</h4>
 
-<p>Bush requires all commands to be terminated with a semi-colon.  This
+<p>SparForte requires all commands to be terminated with a semi-colon.  This
 includes commands in backquotes.</p>
+
+<h4>Why do I get an error when I run a command with a long option on the command prompt?</h4>
+
+<p>In a command like "ls --help", SparForte appends a semi-colon before
+running the command.  But "--" is the comment symbol and the semi-colon
+is hidden as part of the comment, producing a "shell word or semi-colon
+expected" error.  The solution is to escape the double-minus.  For example,
+use quotes around the long option, or backslashes before each minus sign,
+or use AdaScript parameters.</p>
 
 <h4>Why can't I use put_line, ?, etc. to start a command pipeline?</h4>
 
@@ -214,6 +223,16 @@ reference section.</p>
 
 <p>Put double quotes around the command name.</p>
 
+<h4>How do I write a shell command over multiple lines?</h4>
+
+<p>SparForte supports shell commands over multiple lines.  You do not use
+a backslash at the end of a line as in a Bourne Shell.  For example,
+these commands are the same:</p>
+
+<span><tt>ls -l;</tt></span><br>
+<span><tt>ls</tt></span><br>
+<span><tt>-l;</tt></span><br>
+
 <h4>How do I create session variables?</h4>
 
 <p>Web session variables are on our to-do list.  In the meantime,
@@ -237,7 +256,7 @@ environment variables are actually strings.</p>
 <p>However, passing a numeric variable through import and
 export between SparForte scripts means converting the variable
 to/from a string, which is inconvenient.  It is possible that
-the importing/exporting numeric variables will be done in the
+the importing/exporting other types of variables will be done in the
 future.</p>
 
 <h3>Design Questions</h3>
@@ -271,7 +290,8 @@ either case, the restrictions should not be undone.</p>
 <h4>Where does the idea of "itself" come from?</h4>
 
 <p>The itself operand was a part of "Pegasus Pascal", a Python-like
-language I wrote for the Apple II in the mid-1990's.</p>
+language Ken wrote for the Apple II in the mid-1990's before Ken
+had heard of Python and before Python was popular.</p>
 
 <h4>Why are there no objects or exceptions?</h4>
 

@@ -100,6 +100,8 @@ mktemp_t     : identifier;
 is_typo_of_t : identifier;
 set_unbounded_string_t  : identifier;
 unbounded_slice_t  : identifier;
+strings_to_json_t : identifier;
+strings_from_json_t : identifier;
 
 ------------------------------------------------------------------------------
 -- HOUSEKEEPING
@@ -160,5 +162,7 @@ procedure ParseStringsIsFixed( result : in out unbounded_string);
 procedure ParseStringsIsTypoOf( result : in out unbounded_string);
 procedure ParseStringsSetUnboundedString;
 procedure ParseStringsUnboundedSlice( result : in out unbounded_string);
+procedure ParseStringsFromJSON( result : in out unbounded_string);
+procedure ParseStringsToJSON( result : in out unbounded_string);
 
 end parser_strings;

@@ -138,7 +138,8 @@ restriction_no_mysql_database    : boolean := false; -- pragma restriction
 restriction_no_postgresql_database: boolean := false; -- pragma restriction
 no_command_hash                  : boolean := false; -- pragma restriction
 
-type templateTypes is (noTemplate, htmlTemplate, textTemplate);
+type templateTypes is (noTemplate, htmlTemplate, textTemplate,
+cssTemplate, jsTemplate, jsonTemplate, wmlTemplate, xmlTemplate );
 
 processingTemplate        : boolean := false; -- pragma tempate
 unrestrictedTemplate      : boolean := false; -- pragma unrestricted_t
@@ -163,7 +164,6 @@ debugOpt     : commandLineOption := false;           -- true if -d
 execOpt      : commandLineOption := false;           -- true if -e
 gccOpt       : commandLineOption := false;           -- true if -g
 importOpt    : commandLineOption := false;           -- true if -i
-nosyntaxOpt  : commandLineOption := false;           -- true if -n
 rshOpt       : commandLineOption := false;           -- true if -r
 verboseOpt   : commandLineOption := false;           -- true if -v
 traceOpt     : commandLineOption := false;           -- true if -x

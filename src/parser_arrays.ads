@@ -43,6 +43,8 @@ arrays_rotate_left_t : identifier;
 arrays_rotate_right_t: identifier;
 arrays_shift_left_t  : identifier;
 arrays_shift_right_t : identifier;
+arrays_from_json_t   : identifier;
+arrays_to_json_t     : identifier;
 
 -----------------------------------------------------------------------------
 -- HOUSEKEEPING
@@ -68,5 +70,7 @@ procedure ParseArraysRotateLeft;
 procedure ParseArraysRotateRight;
 procedure ParseArraysShiftLeft;
 procedure ParseArraysShiftRight;
+procedure ParseArraysFromJSON;
+procedure ParseArraysToJSON;
 
 end parser_arrays;

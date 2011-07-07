@@ -1,0 +1,106 @@
+<HEAD><TITLE>bases.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : bases.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar bases.sp 0xD7
+hex=D7
+dec=215
+oct=327
+bin=11010111
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( "bases" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "Print a number to different bases using bc" );
+<b>pragma</b> annotate( "" );
+<b>pragma</b> annotate( "based on a shell script by Heiner Steven" );
+<b>pragma</b> annotate( "http://www.shelldorado.com/scripts/cmds/base.sh.txt" );
+<b>pragma</b> annotate( "by Ken O. Burtch" );
+
+<b>procedure</b> bases <b>is</b>
+
+  <b>procedure</b> print_bases( i : string ) <b>is</b>
+    ibase  : string;                              <FONT COLOR=green><EM>-- base of the input number</EM></FONT>
+    number : string;                                   <FONT COLOR=green><EM>-- the number, cleaned</EM></FONT>
+    dec    : string;                                       <FONT COLOR=green><EM>-- test conversion</EM></FONT>
+  <b>begin</b>
+    <FONT COLOR=green><EM>-- determine the input base</EM></FONT>
+    <b>if</b> strings.head( i, 2 ) = "0b" <b>then</b>
+       ibase := "2";
+    <b>elsif</b> strings.head( i, 2 ) = "0x" <b>then</b>
+       ibase := "16";
+    <b>elsif</b> strings.head( i, 1 ) = "0" <b>then</b>
+       ibase := "8";
+    <b>elsif</b> strings.head( i, 1 ) &gt;= "1" <b>and</b> strings.head( i, 1 ) &lt;= "9" <b>then</b>
+       ibase := "10";
+    <b>else</b>
+       put_line( standard_error, source_info.source_location &amp; "unknown number format" );
+       command_line.set_exit_status( 192 );
+       <b>return</b>;
+    <b>end</b> <b>if</b>;
+    <FONT COLOR=green><EM>-- strip off the type and convert hex chars to uppercase</EM></FONT>
+    number := `echo $i |  sed -e "s/^0[bBxX]//" | tr "[a-f]" "[A-F]";`;
+    <FONT COLOR=green><EM>-- convert to base 10 to ensure it's valid</EM></FONT>
+    dec := `echo "ibase=$ibase; $number" | bc;`;
+    <FONT COLOR=green><EM>-- if we got a valid result, show the number in other bases</EM></FONT>
+    <b>if</b> strings.length( dec ) &gt; 0 <b>then</b>
+       <b>if</b> strings.head( dec, 1 ) &gt;= "0" <b>and</b> strings.head( dec, 1 ) &lt;= "9" <b>then</b>
+          echo "obase=16; \"hex=\"; $dec" | bc;
+          echo "obase=10; \"dec=\"; $dec" | bc;
+          echo "obase=8;  \"oct=\"; $dec" | bc;
+          echo "obase=2;  \"bin=\"; $dec" | bc;
+       <b>end</b> <b>if</b>;
+    <b>end</b> <b>if</b>;
+  <b>end</b> print_bases;
+
+  <b>procedure</b> usage <b>is</b>
+  <b>begin</b>
+    put( source_info.file );
+    put( " - print number to different bases" );
+    new_line;
+    put_line( "usage: " &amp; source_info.file &amp; " [number ...]" );
+    new_line;
+    put_line( "If no number is given, the numbers are read from standard input." )
+           @( "  A number may be" )
+           @( "  binary (base 2)		starting with 0b (i.e. 0b1100)" )
+           @( "  octal (base 8)		starting with 0  (i.e. 014)" )
+           @( "  hexadecimal (base 16)	starting with 0x (i.e. 0xc)" )
+           @( "  decimal			otherwise (i.e. 12)" );
+  <b>end</b> usage;
+
+<b>begin</b>
+  command_line.set_exit_status( 0 );
+
+  <b>if</b> command_line.argument_count = 0 <b>then</b>
+     usage;
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  <b>for</b> arg <b>in</b> 1..command_line.argument_count <b>loop</b>
+      <b>if</b> command_line.argument( arg ) = "-h" <b>then</b>
+         usage;
+         <b>return</b>;
+      <b>elsif</b> command_line.argument( arg ) = "<FONT COLOR=green><EM>--help" then</EM></FONT>
+         usage;
+         <b>return</b>;
+      <b>else</b>
+         print_bases( command_line.argument( arg ) );
+      <b>end</b> <b>if</b>;
+  <b>end</b> <b>loop</b>;
+
+<b>end</b> bases;
+
+</PRE></BODY></HTML>

@@ -1,0 +1,4 @@
+# This should fail
+
+set_error standard_error ); -- missing parenthesis
+

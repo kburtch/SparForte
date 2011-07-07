@@ -37,6 +37,9 @@ use  bush_os,
      parser,
      parser_aux;
 
+with ada.text_io;
+use  ada.text_io;
+
 package body parser_arrays is
 
 
@@ -229,12 +232,13 @@ begin
   expect( arrays_bubble_sort_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-     var_id := getBaseType( var_id );
-     if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
-     end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
+  --   var_id := getBaseType( var_id );
+  --   if not identifiers( var_id ).list then
+  --      err( "Array or array type expected" );
+  --   end if;
+  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -262,12 +266,13 @@ begin
   expect( arrays_bubble_sort_descending_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-     var_id := getBaseType( var_id );
-     if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
-     end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
+  --   var_id := getBaseType( var_id );
+  --   if not identifiers( var_id ).list then
+  --      err( "Array or array type expected" );
+  --   end if;
+  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -295,12 +300,13 @@ begin
   expect( arrays_heap_sort_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-     var_id := getBaseType( var_id );
-     if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
-     end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
+  --   var_id := getBaseType( var_id );
+  --   if not identifiers( var_id ).list then
+  --      err( "Array or array type expected" );
+  --   end if;
+  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -328,12 +334,13 @@ begin
   expect( arrays_heap_sort_descending_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-     var_id := getBaseType( var_id );
-     if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
-     end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
+  --   var_id := getBaseType( var_id );
+  --   if not identifiers( var_id ).list then
+  --      err( "Array or array type expected" );
+  --   end if;
+  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -363,12 +370,13 @@ begin
   expect( arrays_shuffle_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-     var_id := getBaseType( var_id );
-     if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
-     end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
+  --   var_id := getBaseType( var_id );
+  --   if not identifiers( var_id ).list then
+  --      err( "Array or array type expected" );
+  --   end if;
+  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -399,12 +407,13 @@ begin
   expect( arrays_flip_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-     var_id := getBaseType( var_id );
-     if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
-     end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
+  --   var_id := getBaseType( var_id );
+  --   if not identifiers( var_id ).list then
+  --      err( "Array or array type expected" );
+  --   end if;
+  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -430,12 +439,13 @@ begin
   expect( arrays_shift_right_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-     var_id := getBaseType( var_id );
-     if not identifiers( var_id ).list then
-        err( "Array expected" );
-     end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
+  --   var_id := getBaseType( var_id );
+  --   if not identifiers( var_id ).list then
+  --      err( "Array expected" );
+  --   end if;
+  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
      err( "Array expected" );
   end if;
   expect( symbol_t, ")" );
@@ -459,12 +469,13 @@ begin
   expect( arrays_shift_left_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-     var_id := getBaseType( var_id );
-     if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
-     end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
+  --   var_id := getBaseType( var_id );
+  --   if not identifiers( var_id ).list then
+  --      err( "Array or array type expected" );
+  --   end if;
+  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -488,12 +499,13 @@ begin
   expect( arrays_rotate_right_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-     var_id := getBaseType( var_id );
-     if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
-     end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
+  --   var_id := getBaseType( var_id );
+  --   if not identifiers( var_id ).list then
+  --      err( "Array or array type expected" );
+  --   end if;
+  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -519,12 +531,13 @@ begin
   expect( arrays_rotate_left_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-     var_id := getBaseType( var_id );
-     if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
-     end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
+  --   var_id := getBaseType( var_id );
+  --   if not identifiers( var_id ).list then
+  --      err( "Array or array type expected" );
+  --   end if;
+  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -541,6 +554,224 @@ begin
      moveElement( 0, integer( len ) );
   end if;
 end ParseArraysRotateLeft;
+
+procedure ParseArraysFromJSON is
+  -- Syntax: from_json( str_array | num_array, string )
+  -- Example: arrays.from_json( a, "[1,2]" )
+  --          arrays.from_json( d, "[" & ASCII.Quotation & "foo" &
+  --          ASCII.Quotation & "," & ASCII.Quotation & "bar" &
+  --          ASCII.Quotation & "]" );
+  -- Source: N/A
+  target_var_id : identifier;
+  --target_base_id: identifier;
+  target_first  : long_integer;
+  target_last   : long_integer;
+  target_len    : long_integer;
+  source_val    : unbounded_string;
+  source_type   : identifier;
+  source_len    : long_integer;
+  item          : unbounded_string;
+  decoded_item  : unbounded_string;
+  targetArrayId : arrayID;
+  arrayElement  : long_integer;
+  kind          : identifier;
+  j             : integer;
+  ch            : character;
+begin
+  expect( arrays_from_json_t );
+  expect( symbol_t, "(" );
+  ParseIdentifier( target_var_id );
+  --if identifiers( target_var_id ).class = typeClass or identifiers( target_var_id ).class = subClass then
+  --   target_base_id := getBaseType( target_var_id );
+  --   if not identifiers( target_base_id ).list then
+  --      err( "Array or array type expected" );
+  --   end if;
+  --elsif not (class_ok( target_var_id, otherClass ) and identifiers( target_var_id ).list) then
+  if not (class_ok( target_var_id, otherClass ) and identifiers( target_var_id ).list) then
+     err( "Array or array type expected" );
+  end if;
+  expect( symbol_t, "," );
+  ParseExpression( source_val, source_type );
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     targetArrayId := arrayID( to_numeric( identifiers( target_var_id ).value ) );
+     target_first := firstBound( targetArrayID );
+     target_last  := lastBound( targetArrayID );
+     target_len   := target_last - target_first + 1;
+     --offsetArrayBeingSorted  := target_first - 1;
+     kind := getUniType( identifiers( target_var_id ).kind );
+
+     -- count items
+     source_len := 0;
+     if length( source_val ) > 2 then -- length zero for []
+        for i in 2..length(source_val)-1 loop
+            ch := element( source_val, i );
+            if ch = ',' then
+               source_len := source_len + 1;
+            end if;
+        end loop;
+        source_len := source_len + 1;
+    end if;
+
+     if source_len /= target_len then
+        err( "arrays are of different sizes" );
+     elsif kind = uni_string_t then
+        arrayElement := target_first;
+        for i in 2..length( source_val ) loop
+            ch := element( source_val, i );
+            if ch = ',' or ch = ']' then
+               j := 2;
+               decoded_item := null_unbounded_string;
+               loop
+                 exit when j > length(item)-1;
+                 ch := element( item, j );
+                 if ch = '\' then
+                    j := j + 1;
+                    ch := element( item, j );
+                    if ch = '"' then
+                       decoded_item := decoded_item & '"';
+                    elsif ch = '\' then
+                       decoded_item := decoded_item & '\';
+                    elsif ch = '/' then
+                       decoded_item := decoded_item & '/';
+                    elsif ch =  'b' then
+                       decoded_item := decoded_item & ASCII.BS;
+                    elsif ch = 'f' then
+                       decoded_item := decoded_item & ASCII.FF;
+                    elsif ch = 'n' then
+                       decoded_item := decoded_item & ASCII.LF;
+                    elsif ch = 'r' then
+                       decoded_item := decoded_item & ASCII.CR;
+                    elsif ch = 't' then
+                       decoded_item := decoded_item & ASCII.HT;
+                    end if;
+                 else
+                    decoded_item := decoded_item & ch;
+                 end if;
+                 j := j + 1;
+               end loop;
+               --assignElement( targetArrayId, arrayElement+offsetArrayBeingSorted, decoded_item );
+               assignElement( targetArrayId, arrayElement, decoded_item );
+               arrayElement := arrayElement + 1;
+               item := null_unbounded_string;
+            else
+               item := item & ch;
+            end if;
+        end loop;
+     elsif kind = uni_numeric_t then
+        arrayElement := target_first;
+        for i in 2..length( source_val ) loop
+            ch := element( source_val, i );
+            if ch = ',' or ch = ']' then
+               --assignElement( targetArrayId, arrayElement+offsetArrayBeingSorted, item );
+               assignElement( targetArrayId, arrayElement, item );
+               arrayElement := arrayElement + 1;
+               item := null_unbounded_string;
+            else
+               item := item & ch;
+            end if;
+        end loop;
+     else
+        err( "array of string or numeric values expected" );
+     end if;
+  end if;
+end ParseArraysFromJSON;
+
+procedure ParseArraysToJSON is
+  -- Syntax: to_json( string, str_array | num_array )
+  -- Example: arrays.to_json( s, a )
+  -- Source: N/A
+  source_var_id : identifier;
+  --source_base_id: identifier;
+  source_first  : long_integer;
+  source_last   : long_integer;
+  source_len    : long_integer;
+  target_ref    : reference;
+  item          : unbounded_string;
+  encoded_item  : unbounded_string;
+  sourceArrayId : arrayID;
+  kind          : identifier;
+  ch            : character;
+  data          : unbounded_string;
+  result        : unbounded_string;
+begin
+  expect( arrays_to_json_t );
+  expect( symbol_t, "(" );
+  ParseOutParameter( target_ref, string_t );
+  expect( symbol_t, "," );
+  ParseIdentifier( source_var_id );
+  --if identifiers( source_var_id ).class = typeClass or identifiers( source_var_id ).class = subClass then
+  --   source_base_id := getBaseType( source_var_id );
+  --   if not identifiers( source_base_id ).list then
+  --      err( "Array or array type expected" );
+  --   end if;
+  --elsif not (class_ok( source_var_id, otherClass ) and identifiers( source_var_id ).list) then
+  if not (class_ok( source_var_id, otherClass ) and identifiers( source_var_id ).list) then
+     err( "Array or array type expected" );
+  end if;
+  expect( symbol_t, ")" );
+
+  if isExecutingCommand then
+     sourceArrayId := arrayID( to_numeric( identifiers( source_var_id ).value ) );
+     source_first := firstBound( sourceArrayID );
+     source_last  := lastBound( sourceArrayID );
+     source_len   := source_last - source_first + 1;
+     --offsetArrayBeingSorted  := source_first - 1;
+     kind := getUniType( identifiers( source_var_id ).kind );
+     if kind = uni_string_t then
+        result := to_unbounded_string( "[" );
+        for arrayElementPos in source_first..source_last loop
+           --data := arrayElement( sourceArrayId, arrayElementPos+offsetArrayBeingSorted );
+           data := arrayElement( sourceArrayId, arrayElementPos );
+           item := to_unbounded_string( """" );
+           for i in 1..length( data ) loop
+               ch := element( data, i );
+               if ch = '"' then
+                  item := item & "\""";
+               elsif ch = '\' then
+                  item := item & "\\";
+               elsif ch = '/' then
+                  item := item & "\/";
+               elsif ch = ASCII.BS then
+                  item := item & "\b";
+               elsif ch = ASCII.FF then
+                  item := item & "\f";
+               elsif ch = ASCII.LF then
+                  item := item & "\n";
+               elsif ch = ASCII.CR then
+                  item := item & "\r";
+               elsif ch = ASCII.HT then
+                  item := item & "\t";
+               else
+                  item := item & ch;
+               end if;
+           end loop;
+           item := item & '"';
+           if arrayElementPos /= source_last then
+              result := result & item & to_unbounded_string( "," );
+           end if;
+        end loop;
+        result := result & item & to_unbounded_string( "]" );
+        assignParameter( target_ref, result );
+     elsif kind = uni_numeric_t then
+        result := to_unbounded_string( "[" );
+        for arrayElementPos in source_first..source_last loop
+           --data := arrayElement( sourceArrayId, arrayElementPos+offsetArrayBeingSorted );
+           data := arrayElement( sourceArrayId, arrayElementPos );
+           if element( data, 1 ) = ' ' then
+              delete( data, 1, 1 );
+           end if;
+           if arrayElementPos /= source_last then
+              result := result & data & to_unbounded_string( "," );
+           end if;
+        end loop;
+        result := result & data & to_unbounded_string( "]" );
+        assignParameter( target_ref, result );
+     else
+        err( "array of string or numeric values expected" );
+     end if;
+  end if;
+end ParseArraysToJSON;
 
 -------------------------------------------------------------------------------
 -- Housekeeping
@@ -561,6 +792,8 @@ begin
   declareProcedure( arrays_rotate_right_t, "arrays.rotate_right" );
   declareProcedure( arrays_shift_left_t, "arrays.shift_left" );
   declareProcedure( arrays_shift_right_t, "arrays.shift_right" );
+  declareProcedure( arrays_from_json_t, "arrays.from_json" );
+  declareProcedure( arrays_to_json_t, "arrays.to_json" );
 end StartupArrays;
 
 procedure ShutdownArrays is

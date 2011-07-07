@@ -1,7 +1,8 @@
 # This should fail
 
 f : file_type;
-open( f, in_file, "t.t" ); -- created by previous test
+touch test.txt;
+open( f, in_file, "test.txt" );
 set_output( f ); -- only input from an in_file
 
 -- note: t.t left created after this test

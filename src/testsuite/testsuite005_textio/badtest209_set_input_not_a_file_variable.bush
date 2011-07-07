@@ -1,7 +1,8 @@
 # This should fail
 
 f : file_type;
-open( f, in_file, "t.t" );
+touch test.txt;
+open( f, in_file, "test.txt" );
 delete( f );
 -- erase after last test
 

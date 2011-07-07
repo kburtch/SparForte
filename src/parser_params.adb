@@ -42,6 +42,8 @@ package body parser_params is
 
 discard_result : boolean;
 
+-- parser has Out/InOut Param and should be moved here
+
 --  PARSE SINGLE STRING PARAMETER
 --
 -- Expect a parameter with a single string expression.  If there is no expected
@@ -74,7 +76,6 @@ begin
   --   expr_val := castToType( expr_val, expected_type );
   --end if;
   discard_result := baseTypesOk( identifiers( param_id ).kind, expected_type );
-  expect( symbol_t, "," );
 end ParseFirstInOutParameter;
 
 
@@ -110,7 +111,6 @@ begin
      expr_val := castToType( expr_val, expected_type );
   end if;
   discard_result := baseTypesOk( expr_type, expected_type );
-  expect( symbol_t, "," );
 end ParseFirstStringParameter;
 
 
@@ -122,12 +122,12 @@ end ParseFirstStringParameter;
 procedure ParseNextStringParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_string_t ) is
 begin
+  expect( symbol_t, "," );
   ParseExpression( expr_val, expr_type );
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
   discard_result := baseTypesOk( expr_type, expected_type );
-  expect( symbol_t, "," );
 end ParseNextStringParameter;
 
 
@@ -139,6 +139,7 @@ end ParseNextStringParameter;
 procedure ParseLastStringParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_string_t ) is
 begin
+  expect( symbol_t, "," );
   ParseExpression( expr_val, expr_type );
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
@@ -155,6 +156,7 @@ end ParseLastStringParameter;
 procedure ParseLastEnumParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier ) is
 begin
+  expect( symbol_t, "," );
   ParseExpression( expr_val, expr_type );
   -- no cast to type
   discard_result := baseTypesOk( expr_type, expected_type );
@@ -190,7 +192,6 @@ begin
      expr_val := castToType( expr_val, expected_type );
   end if;
   discard_result := intTypesOk( expr_type, expected_type );
-  expect( symbol_t, "," );
 end ParseFirstNumericParameter;
 
 
@@ -200,12 +201,12 @@ end ParseFirstNumericParameter;
 procedure ParseNextNumericParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_numeric_t ) is
 begin
+  expect( symbol_t, "," );
   ParseExpression( expr_val, expr_type );
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
   discard_result := intTypesOk( expr_type, expected_type );
-  expect( symbol_t, "," );
 end ParseNextNumericParameter;
 
 
@@ -215,6 +216,7 @@ end ParseNextNumericParameter;
 procedure ParseLastNumericParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_numeric_t ) is
 begin
+  expect( symbol_t, "," );
   ParseExpression( expr_val, expr_type );
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );

@@ -1,5 +1,4 @@
 # This should fail
 
-pragma ada_95;
 return 0;
 

@@ -264,7 +264,8 @@ but is documented here.
 <td>
 <br>trig arctan function
 <br>Example: f := numerics.arctan( x, y );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.arctan
+<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.arctan (In Ada, the
+second parameter is optional.)
 <br>Parameters:
 <table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
 
@@ -444,7 +445,8 @@ but is documented here.
 <td>
 <br>trig arccot function
 <br>Example: f := numerics.arccot( x, y );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.arccot
+<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.arccot (In Ada,
+the second parameter is optional.)
 <br>Parameters:
 <table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
 <tr>
@@ -527,46 +529,54 @@ but is documented here.
 </td>
 </tr>
 </table></center>
+&nbsp;<br>
 
-<p>
-<hr><b>f := numerics.ceiling( e )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>f := numerics.ceiling( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>truncate decimal part, round up
-<br>Example: f := ceiling( 5.5 );
-<br>Ada Equivalent: 'ceiling attribute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
+<td width="15%">&nbsp;</td>
+<td><p>Convert a float value to an integer by truncating the decimal part
+and adding one.  This is the smallest integer value that is greater than or
+equal to Y.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f1 := numerics.ceiling( 5.5 ); -- returns 6<br>
+f2 := numerics.ceiling( -5.5 ); -- returns 5</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to to take the ceiling of</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the numeric value to take the ceiling of</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the ceiling result</span></td>
 </tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.floor<br>numerics.rounding<br>numerics.truncation<br>numerics.unbiased_rounding</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'ceiling attribute<br>PHP: ceil<br>Java: java.lang.Math.ceil</p></td>
 </tr>
 </table>
-
-</td>
-</tr>
-</table></center>
+&nbsp;<br>
 
 <p>
 <hr><b>f := numerics.copy_sign( x, y )</b>
@@ -574,7 +584,7 @@ but is documented here.
 <tr>
 <td>
 <br>return float x with sign of float y
-<br>Example: f := numerics.copy_sign( 5.5, -1.0 );
+<br>Example: f := numerics.copy_sign( 5.5, -1.0 ); -- returns -5.5
 <br>Ada Equivalent: 'copy_sign attribute
 <br>Parameters:
 <table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
@@ -913,45 +923,56 @@ but is documented here.
 </td>
 </tr>
 </table></center>
+&nbsp;<br>
 
-<p>
-<hr><b>f := numerics.floor( x )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>f := numerics.floor( x )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>truncate decimal part, round down
-<br>Example: f := numerics.floor( 5.5 );
-<br>Ada Equivalent: 'floor attribute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Convert a float value to an integer by truncating the decimal part.
+This is different from truncation.  The function yields the largest (most
+positive) integral value less than or equal to X. When X is zero, the result
+has the sign of X; a zero result otherwise has a positive sign</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f1 := numerics.floor( 5.5 ); -- returns 5<br>
+f2 := numerics.floor( -5.5 ); -- returns 6</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to take the floor of</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>x</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the numeric value to truncate</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the truncated result</span></td>
 </tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.ceiling<br>numerics.rounding<br>numerics.truncation<br>numerics.unbiased_rounding</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'floor attribute<br>PHP: floor<br>Java: java.lang.Math.floor</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
+&nbsp;<br>
+
 
 <p>
 <hr><b>f := numerics.fraction( x )</b>
@@ -959,7 +980,9 @@ but is documented here.
 <tr>
 
 <td>
-<br>Ada's fraction attribute
+<br>Ada's fraction attribute.  The
+function yields the value X*T'Machine_Radix**(-k), where k is the
+normalized exponent of X.
 <br>Example: f := numerics.fraction( 10.0 ); -- returns 0.625
 <br>Ada Equivalent: 'fraction attribute
 <br>Parameters:
@@ -997,7 +1020,13 @@ but is documented here.
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
 <td>
-<br>Ada's leading part attribute (not quite sure what this does)
+<br>Ada's leading part attribute.
+Let v be the value T'Machine_Radix**(k-Radix_Digits), where k is the
+normalized exponent of X. The function yields the value
+Floor(X/v)*v, when X is nonnegative and Radix_Digits is positive; 
+Ceiling(X/v)*v, when X is negative and Radix_Digits is positive. 
+Constraint_Error is raised when Radix_Digits is zero or negative. A zero
+result, which can only occur when X is zero, has the sign of X. 
 <br>Example: f := numerics.leading_part( x, y );
 
 <br>Ada Equivalent: 'leading_part attribute
@@ -1090,7 +1119,13 @@ but is documented here.
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
 <td>
-<br>Ada's machine attribute (not sure what this does)
+<br>Ada's machine attribute.
+If X is a machine number of the type T, the function yields X; otherwise, it
+yields the value obtained by rounding or truncating X to either one of the
+adjacent machine numbers of the type T. Constraint_Error is raised if rounding
+or truncating X to the precision of the machine numbers results in a value
+outside the base range of S. A zero result has the sign of X when
+a machine has signed zeros.
 <br>Example: f := numerics.machine( 10.0 ); -- returns 10.0
 <br>Ada Equivalent: 'machine attribute
 <br>Parameters:
@@ -1495,7 +1530,12 @@ but is documented here.
 <tr>
 
 <td>
-<br>remainder of a floating point divide of x by y
+<br>remainder of a floating point divide of x by y.  According to the Ada
+Reference Manual: For nonzero Y, let v be the value X-n*Y, where n is the
+integer nearest to the exact value of X/Y; if |n-X/Y|=1/2, then n is chosen to
+be even. If v is a machine number of the type T, the function yields v;
+otherwise, it yields zero. Constraint_Error is raised if Y is zero. A zero
+result has the sign of X when a machine has signed zeros.
 <br>Example: f := numerics.remainder( 16.5, 2.0 );
 <br>Ada Equivalent: 'remainder attribute
 <br>Parameters:
@@ -1539,51 +1579,62 @@ but is documented here.
 </td>
 </tr>
 </table></center>
+&nbsp;<br>
 
-<p>
-<hr><b>f := numerics.rounding( e )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>f := numerics.rounding( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>truncate decimal part, round to nearest. Round up on .5
-<br>Example: f := numerics.rounding( 5.5 );
-
-<br>Ada Equivalent: 'rounding attribute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Round a float value to an integer.  Round to the farthest from zero
+if exactly between two integers. That is, 5.5 will round up to 6 and 6.5
+will round to 7.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.rounding( 5.5 ); -- returns 6</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to round</td>
-
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the numeric value to round</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the rounded result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.ceiling<br>numerics.floor<br>numerics.truncation<br>numerics.unbiased_rounding</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'rounding attribute<br>PHP: round<br>Java: java.lang.Math.round</p></td>
 </tr>
 </table>
-
-</td>
-</tr>
-</table></center>
+&nbsp;<br>
 
 <p>
 <hr><b>f := numerics.scaling( x, y )</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
 <td>
-<br>multiply floating point number by 2 to the power of integer y
+<br>multiply floating point number by 2 to the power of integer y.
+Let v be the value X*T'Machine_Radix**Adjustment. If v is a machine number of the type T, or if |v|&gt;=T'Model_Small, 
+The function yields v; otherwise, it yields either one of the machine numbers of the type T adjacent to v. Constraint_Error is optionally raised if v is outside the base range of S. A zero result has the sign of X when a machine has signed zeros.
 <br>Example: f := numerics.scaling( 5.5, 3 );
 <br>Ada Equivalent: 'scaling attribute
 <br>Parameters:
@@ -1948,7 +1999,8 @@ sign
 <tr>
 <td>
 <br>Sturge's method: compute a grouping size for data with a low value
-of l, high value of h, and a sum total of t
+of l, high value of h, and a sum total of t.  This is used for setting
+the scale of graphs.
 <br>Example: f := numerics.sturges( 18, 64, 421 );
 <br>Ada Equivalent: none (AdaScript extension)
 <br>Parameters:
@@ -2097,124 +2149,144 @@ of l, high value of h, and a sum total of t
 </tr>
 </table></center>
 
-<p>
-<hr><b>f := numerics.truncation( e )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>f := numerics.truncation( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>truncate decimal part
-<br>Example: f := numerics.truncation( 5.5 );
-<br>Ada Equivalent: 'truncation attribute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
+<td width="15%">&nbsp;</td>
+<td><p>Convert a float value to an integer by truncating the decimal part.
+This is different from floor.  The function yields the value Ceiling(X) when
+X is negative, and Floor(X) otherwise. A zero result has the sign of X when
+a machine has signed zeros.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f1 := numerics.truncation( 5.5 ); -- returns 5<br>
+f2 := numerics.truncation( -5.5 ); -- returns -5</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to truncate</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the numeric value to truncate</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the truncated result</span></td>
 </tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
-</tr>
-</table>
-
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.unbiased_rounding( e )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>round to nearest even number if exactly between two integers. That
-is, 5.5 will round up to 6 and 6.5 will round down to 6.
-<br>Example: f := numerics.unbiased_rounding( 5.5 );
-<br>Ada Equivalent: 'unbiased_rounding attribute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to round</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.ceiling<br>numerics.floor<br>numerics.rounding<br>numerics.unbiased_rounding</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'truncation attribute<br>PHP: N/A<br>Java: N/A</p></td>
 </tr>
 </table>
-</td>
+&nbsp;<br>
+
+<h3>f := numerics.unbiased_rounding( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Round a float value to an integer.  Round to the nearest even integer
+if exactly between two integers. That is, 5.5 will round up to 6 and 6.5
+will round down to 6.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.value( " 32.5" ) * numerics.value( "-1.2" );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the numeric value to round</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the rounded result</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.value( s )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>convert string s to a numeric value (inverse of strings.image). If
-the number is positive, the string must begin with a space or an exception
-will be raised.
-<br>Example: f := numerics.value( " 32.5" ) * numerics.value( "-1.2" );
-<br>Ada Equivalent: 'value attribute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>universal_string</td>
-
-<td>required</td>
-
-<td>the expression to convert to a number.</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.ceiling<br>numerics.floor<br>numerics.rounding<br>numerics.truncation</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'unbiased_rounding attribute<br>PHP: round<br>Java: java.lang.Math.rint</p></td>
 </tr>
 </table>
-</td>
+&nbsp;<br>
+
+<h3>f := numerics.value( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Convert string s to a numeric value (inverse of strings.image).  The
+string is trimmed first.  This function only parses numbers.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.value( " 32.5" ) * numerics.value( "-1.2" );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string value to evaluate</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the numeric value</span></td>
 </tr>
-</table></center>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p><span class="code"> An exception will be raised with any string that
+cannot be converted.</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>strings.image</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'value attribute<br>PHP: floatval, etc.<br>Java: parseFloat, etc.</p></td>
+</tr>
+</table>
 
 &nbsp;<br>
 

@@ -59,7 +59,7 @@ begin
   if Argument_Count = 1 then
      if Argument(1) = "-h" or Argument( 1 ) = "--help" then
         Put_Line( "SparForte (Business Shell) usage" );
-        Put_Line( "spar [-bcdeghilnrvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--no-check][--verbose][--version][--restricted][--trace][--] [script [param1 ...] ]" );
+        Put_Line( "spar [-bcdeghilrvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--restricted][--trace][--] [script [param1 ...] ]" );
         Put_Line( "  --break or -b      - enable breakout debugging prompt" );
         Put_Line( "  --check or -c      - syntax check the script but do not run" );
         Put_Line( "  --debug or -d      - enable pragma assert and pragma debug" );
@@ -70,7 +70,6 @@ begin
         Put_Line( "  --Ld or -L d       - add directory d to the separate files search list" );
         Put_Line( "                       (may be repeated)" );
         Put_Line( "  --login or -l      - simulate a login shell" );
-        Put_Line( "  --no-check or -n   - run script without checking syntax" );
         Put_Line( "  --restricted or -r - restricted shell mode" );
         Put_Line( "  --trace or -x      - show script lines as they run" );
         Put_Line( "  --verbose or -v    - show shell activity" );
@@ -119,8 +118,6 @@ begin
             importOpt := true;
          elsif Argument(i) = "--login" then
             isLoginShell := true;
-         elsif Argument(i) = "--no-check" then
-            nosyntaxOpt := true;
          elsif Argument(i) = "--restricted" then
             rshOpt := true;
          --elsif Argument(i) = "--script-license" then
@@ -184,8 +181,6 @@ begin
                       importOpt := true;
                    elsif Args(letter) = 'l' then
                       isLoginShell := true;
-                   elsif Args(letter) = 'n' then
-                      nosyntaxOpt := true;
                    elsif Args(letter) = 'g' then
                       gccOpt := true;
                    elsif Args(letter) = 'r' then
@@ -217,11 +212,7 @@ begin
      Set_Exit_Status( 192 );
      return;
   end if;
-  if syntaxOpt and nosyntaxOpt then
-     Put_Line( standard_error, Command_Name & ": -c and -n cannot be used together" );
-     Set_Exit_Status( 192 );
-     return;
-  elsif (boolean(syntaxOpt) or boolean(nosyntaxOpt)) and
+  if boolean(syntaxOpt) and
      optionOffset > Argument_Count then
      Put_Line( standard_error, Command_Name & ": missing command name" );
      Set_Exit_Status( 192 );
