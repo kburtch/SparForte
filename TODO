@@ -55,6 +55,7 @@ ISSUES (AdaScript)
       parseRange
     - enumerateds should be upper-case, if this doesn't conflict with type-
       sensitivity
+    - byte code changed to support more compressed reserved words
 
   * assignments
     - naturals and positives compatibility (intTypesOK) not handled at
@@ -78,6 +79,8 @@ ISSUES (AdaScript)
     - turning off formatting in pipelines or redirection (especially SQL
       commands which are unusable in wide layout format)
     - \ at end of line will cause an error on SQL statements
+    - a database connection pool
+    - use ligda (GNU data access) for portable data needs?
 
   * Text_IO package (AdaScript issues)
     - enumerated subtypes - put_line / ? do not print the correct enum item

@@ -48,6 +48,7 @@ with system,
     parser_numerics,
     parser_arrays,
     parser_enums,
+    parser_records,
     parser_cal,
     parser_cgi,
     parser_cmd,
@@ -86,6 +87,7 @@ use ada.text_io,
     parser_numerics,
     parser_arrays,
     parser_enums,
+    parser_records,
     parser_cal,
     parser_cgi,
     parser_cmd,
@@ -975,7 +977,7 @@ begin
         kind := boolean_t;
      elsif token = strings_to_json_t then                 -- strings.to_json function
         ParseStringsToJSON( f );
-        kind := string_t;
+        kind := json_string_t;
      elsif token = strings_from_json_t then               -- strings.from_json function
         ParseStringsFromJSON( f );
         kind := string_t;
@@ -6418,7 +6420,7 @@ begin
 
   startToken := Token;
   markScanner( cmdStart );
-  -- put( "PGS: " ); put_token; -- DEBUG
+  --put( "PGS: " ); put_token; -- DEBUG
 
   -- interrupt handling
 
@@ -6914,10 +6916,14 @@ begin
      ParseArraysShiftLeft;
   elsif token = arrays_shift_right_t then           -- Shift_Right
      ParseArraysShiftRight;
-  elsif token = arrays_from_json_t then             -- From_JSON
-     ParseArraysFromJSON;
+  elsif token = arrays_to_array_t then              -- To_Array
+     ParseArraysToArray;
   elsif token = arrays_to_json_t then               -- To_JSON
      ParseArraysToJSON;
+  elsif token = records_to_record_t then            -- To_Record
+     ParseRecordsToRecord;
+  elsif token = records_to_json_t then              -- To_JSON
+     ParseRecordsToJSON;
   -- elsif token = sdl_init_t then                     -- SDL.Init
   --    ParseSDLInit;
   -- elsif token = sdl_quit_t then                     -- SDL.Quit

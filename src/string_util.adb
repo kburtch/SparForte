@@ -417,6 +417,37 @@ begin
   return newstr;
 end ToEscaped;
 
+
+function ToJSONEscaped( s : unbounded_string ) return unbounded_string is
+-- convert special characters in string to JSON escape codes
+  item : unbounded_string;
+  ch : character;
+begin
+  for i in 1..length( s ) loop
+      ch := element( s, i );
+      if ch = '"' then
+         item := item & "\""";
+      elsif ch = '\' then
+         item := item & "\\";
+      elsif ch = '/' then
+         item := item & "\/";
+      elsif ch = ASCII.BS then
+         item := item & "\b";
+      elsif ch = ASCII.FF then
+         item := item & "\f";
+      elsif ch = ASCII.LF then
+         item := item & "\n";
+      elsif ch = ASCII.CR then
+         item := item & "\r";
+      elsif ch = ASCII.HT then
+         item := item & "\t";
+      else
+         item := item & ch;
+      end if;
+  end loop;
+  return item;
+end ToJSONEscaped;
+
 function AorAN( s : unbounded_string ) return unbounded_string is
   ch : character := Element( s, 1 );
 begin

@@ -868,7 +868,7 @@ begin
      Put_Line( "  shuffle( a )             flip( a )" );
      Put_Line( "  shift_left( a )          shift_right( a )" );
      Put_Line( "  rotate_left( a )         rotate_right( a )" );
-     Put_Line( "  from_json( s, a )        to_json( s, a )" );
+     Put_Line( "  to_array( a, s )         to_json( s, a )" );
   elsif helpTopic = "calendar" then
      Put_Line( "calendar (package) - time and date operations:" );
      New_Line;
@@ -1247,6 +1247,11 @@ begin
      Put_Line( "  put_line ( [file], expression )" );
   elsif helpTopic = "pwd" then
      Put_Line( "pwd - present working directory" );
+  elsif helpTopic = "records" then
+     Put_Line( "records - records package functions" );
+     New_Line;
+     Put_Line( "  to_record( r, s )        to_json( s, r )" );
+     New_Line;
   elsif helpTopic = "reset" then
      Put_Line( "reset - reopen a file" );
      Put_Line( "  reset( file [,mode])" );

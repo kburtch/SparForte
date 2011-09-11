@@ -29,6 +29,7 @@ with interfaces.c,
     scanner,
     string_util,
     parser_aux,
+    parser_params,
     parser,
     bush_os;
 use interfaces.c,
@@ -37,6 +38,7 @@ use interfaces.c,
     base64,
     scanner,
     string_util,
+    parser_params,
     parser_aux,
     parser,
     bush_os;
@@ -1442,29 +1444,7 @@ begin
   begin
     if isExecutingCommand then
        result := to_unbounded_string( """" );
-       for i in 1..length( expr_val ) loop
-           ch := element( expr_val, i );
-           if ch = '"' then
-              result := result & "\""";
-           elsif ch = '\' then
-              result := result & "\\";
-           elsif ch = '/' then
-              result := result & "\/";
-           elsif ch = ASCII.BS then
-              result := result & "\b";
-           elsif ch = ASCII.FF then
-              result := result & "\f";
-           elsif ch = ASCII.LF then
-              result := result & "\n";
-           elsif ch = ASCII.CR then
-              result := result & "\r";
-           elsif ch = ASCII.HT then
-              result := result & "\t";
-           -- Note : \u not implemented
-           else
-              result := result & ch;
-           end if;
-       end loop;
+       result := result & ToJSONEscaped( identifiers( field_t ).value );
        result := result & '"';
     end if;
   exception when others =>
@@ -1481,7 +1461,7 @@ procedure ParseStringsFromJSON( result : in out unbounded_string) is
   i          : integer;
 begin
   expect( strings_from_json_t );
-  ParseSingleUniStringExpression( expr_val, expr_type );
+  ParseSingleStringParameter( expr_val, expr_type, json_string_t );
   begin
     if isExecutingCommand then
        result := null_unbounded_string;

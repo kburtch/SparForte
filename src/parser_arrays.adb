@@ -555,10 +555,10 @@ begin
   end if;
 end ParseArraysRotateLeft;
 
-procedure ParseArraysFromJSON is
-  -- Syntax: from_json( str_array | num_array, string )
-  -- Example: arrays.from_json( a, "[1,2]" )
-  --          arrays.from_json( d, "[" & ASCII.Quotation & "foo" &
+procedure ParseArraysToArray is
+  -- Syntax: to_array( str_array | num_array, string )
+  -- Example: arrays.to_array( a, "[1,2]" )
+  --          arrays.to_array( d, "[" & ASCII.Quotation & "foo" &
   --          ASCII.Quotation & "," & ASCII.Quotation & "bar" &
   --          ASCII.Quotation & "]" );
   -- Source: N/A
@@ -569,7 +569,7 @@ procedure ParseArraysFromJSON is
   target_len    : long_integer;
   source_val    : unbounded_string;
   source_type   : identifier;
-  source_len    : long_integer;
+  sourceLen     : long_integer;
   item          : unbounded_string;
   decoded_item  : unbounded_string;
   targetArrayId : arrayID;
@@ -577,8 +577,10 @@ procedure ParseArraysFromJSON is
   kind          : identifier;
   j             : integer;
   ch            : character;
+  inBackslash   : boolean;
+  inQuotes      : boolean;
 begin
-  expect( arrays_from_json_t );
+  expect( arrays_to_array_t );
   expect( symbol_t, "(" );
   ParseIdentifier( target_var_id );
   --if identifiers( target_var_id ).class = typeClass or identifiers( target_var_id ).class = subClass then
@@ -592,7 +594,9 @@ begin
   end if;
   expect( symbol_t, "," );
   ParseExpression( source_val, source_type );
-  expect( symbol_t, ")" );
+  if baseTypesOK( source_type, json_string_t ) then
+     expect( symbol_t, ")" );
+  end if;
   if isExecutingCommand then
      targetArrayId := arrayID( to_numeric( identifiers( target_var_id ).value ) );
      target_first := firstBound( targetArrayID );
@@ -601,20 +605,36 @@ begin
      --offsetArrayBeingSorted  := target_first - 1;
      kind := getUniType( identifiers( target_var_id ).kind );
 
-     -- count items
-     source_len := 0;
+     -- Count the number of items in the JSON string
+     sourceLen := 0;
+     inBackslash := false;
+     inQuotes := false;
      if length( source_val ) > 2 then -- length zero for []
-        for i in 2..length(source_val)-1 loop
+        for i in 2..length( source_val )-1 loop
             ch := element( source_val, i );
-            if ch = ',' then
-               source_len := source_len + 1;
+            if inBackslash then
+               inBackslash := false;
+            else
+               if ch = '\' then
+                  inBackslash := true;
+               else
+                  if not inBackslash and ch = '"' then
+                     inQuotes := not inQuotes;
+                  elsif not inQuotes and ch = ',' then
+                     sourceLen := sourceLen + 1;
+                  end if;
+               end if;
             end if;
         end loop;
-        source_len := source_len + 1;
+        sourceLen := sourceLen + 1;
     end if;
 
-     if source_len /= target_len then
-        err( "arrays are of different sizes" );
+     if sourceLen /= target_len then
+       err( "array has" &
+            target_len'img &
+            " item(s) but JSON string has" &
+            sourceLen'img );
+-- boolean not handled yet
      elsif kind = uni_string_t then
         arrayElement := target_first;
         for i in 2..length( source_val ) loop
@@ -675,7 +695,7 @@ begin
         err( "array of string or numeric values expected" );
      end if;
   end if;
-end ParseArraysFromJSON;
+end ParseArraysToArray;
 
 procedure ParseArraysToJSON is
   -- Syntax: to_json( string, str_array | num_array )
@@ -697,7 +717,7 @@ procedure ParseArraysToJSON is
 begin
   expect( arrays_to_json_t );
   expect( symbol_t, "(" );
-  ParseOutParameter( target_ref, string_t );
+  ParseOutParameter( target_ref, json_string_t );
   expect( symbol_t, "," );
   ParseIdentifier( source_var_id );
   --if identifiers( source_var_id ).class = typeClass or identifiers( source_var_id ).class = subClass then
@@ -718,7 +738,21 @@ begin
      source_len   := source_last - source_first + 1;
      --offsetArrayBeingSorted  := source_first - 1;
      kind := getUniType( identifiers( source_var_id ).kind );
-     if kind = uni_string_t then
+     if getBaseType( identifiers( source_var_id ).kind ) = boolean_t then
+        result := to_unbounded_string( "[" );
+        for arrayElementPos in source_first..source_last loop
+            if integer( to_numeric( identifiers( source_var_id ).value ) ) = 0 then
+               item := to_unbounded_string( "false" );
+            else
+               item := to_unbounded_string( "true" );
+            end if;
+            if arrayElementPos /= source_last then
+               result := result & item & to_unbounded_string( "," );
+            end if;
+        end loop;
+        result := result & item & to_unbounded_string( "]" );
+        assignParameter( target_ref, result );
+     elsif kind = uni_string_t then
         result := to_unbounded_string( "[" );
         for arrayElementPos in source_first..source_last loop
            --data := arrayElement( sourceArrayId, arrayElementPos+offsetArrayBeingSorted );
@@ -767,6 +801,7 @@ begin
         end loop;
         result := result & data & to_unbounded_string( "]" );
         assignParameter( target_ref, result );
+-- boolean
      else
         err( "array of string or numeric values expected" );
      end if;
@@ -792,7 +827,7 @@ begin
   declareProcedure( arrays_rotate_right_t, "arrays.rotate_right" );
   declareProcedure( arrays_shift_left_t, "arrays.shift_left" );
   declareProcedure( arrays_shift_right_t, "arrays.shift_right" );
-  declareProcedure( arrays_from_json_t, "arrays.from_json" );
+  declareProcedure( arrays_to_array_t, "arrays.to_array" );
   declareProcedure( arrays_to_json_t, "arrays.to_json" );
 end StartupArrays;
 

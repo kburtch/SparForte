@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- Arrays Package Parser                                                    --
+-- Records Package Parser                                                   --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
@@ -24,53 +24,27 @@
 with ada.strings.unbounded, world, scanner;
 use  ada.strings.unbounded, world, scanner;
 
-package parser_arrays is
+package parser_records is
 
 ------------------------------------------------------------------------------
--- Arrays package identifiers
+-- Records package identifiers
 ------------------------------------------------------------------------------
 
-arrays_first_t       : identifier;
-arrays_last_t        : identifier;
-arrays_length_t      : identifier;
-arrays_bubble_sort_t : identifier;
-arrays_bubble_sort_descending_t : identifier;
-arrays_heap_sort_t   : identifier;
-arrays_heap_sort_descending_t : identifier;
-arrays_shuffle_t     : identifier;
-arrays_flip_t        : identifier;
-arrays_rotate_left_t : identifier;
-arrays_rotate_right_t: identifier;
-arrays_shift_left_t  : identifier;
-arrays_shift_right_t : identifier;
-arrays_to_array_t    : identifier;
-arrays_to_json_t     : identifier;
+records_to_json_t        : identifier;
+records_to_record_t      : identifier;
 
 -----------------------------------------------------------------------------
 -- HOUSEKEEPING
 ------------------------------------------------------------------------------
 
-procedure StartupArrays;
-procedure ShutdownArrays;
+procedure StartupRecords;
+procedure ShutdownRecords;
 
 ------------------------------------------------------------------------------
--- PARSE THE ARRAYS PACKAGE
+-- PARSE THE RECORDS PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseArraysFirst( f : out unbounded_string; kind : out identifier );
-procedure ParseArraysLast( f : out unbounded_string; kind : out identifier );
-procedure ParseArraysLength( f : out unbounded_string );
-procedure ParseArraysBubbleSort;
-procedure ParseArraysBubbleSortDescending;
-procedure ParseArraysHeapSort;
-procedure ParseArraysHeapSortDescending;
-procedure ParseArraysShuffle;
-procedure ParseArraysFlip;
-procedure ParseArraysRotateLeft;
-procedure ParseArraysRotateRight;
-procedure ParseArraysShiftLeft;
-procedure ParseArraysShiftRight;
-procedure ParseArraysToArray;
-procedure ParseArraysToJSON;
+procedure ParseRecordsToJson;
+procedure ParseRecordsToRecord;
 
-end parser_arrays;
+end parser_records;

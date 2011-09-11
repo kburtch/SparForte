@@ -454,6 +454,8 @@ complex_imaginary_t   : identifier;
 false_t               : identifier; -- Boolean.false
 true_t                : identifier; -- Boolean.true
 
+json_string_t         : identifier;
+
 ------------------------------------------------------------------------------
 -- Shortcut operands
 --

@@ -45,6 +45,7 @@ with system,
     parser_os,
     parser_arrays,
     parser_enums,
+    parser_records,
     parser_files,
     parser_lock,
     parser_cmd,
@@ -79,6 +80,7 @@ use ada.text_io,
     parser_os,
     parser_arrays,
     parser_enums,
+    parser_records,
     parser_files,
     parser_lock,
     parser_cmd,
@@ -900,6 +902,7 @@ begin
   ShutdownCalendar;
   ShutdownUnits;
   ShutdownFiles;
+  ShutdownRecords;
   ShutdownEnums;
   ShutdownArrays;
   ShutdownMySQL;
@@ -1085,6 +1088,8 @@ begin
 
   declareStandardConstant( false_t, "false", boolean_t, "0" );
   declareStandardConstant( true_t, "true", boolean_t, "1" );
+
+  declareIdent( json_string_t, "json_string", string_t, typeClass );
 
   -- Standard Package constants: ASCII
 
@@ -1524,6 +1529,7 @@ begin
   StartupCalendar;
   StartupUnits;
   StartupFiles;
+  StartupRecords;
   StartupEnums;
   StartupArrays;
   StartupMySQL;

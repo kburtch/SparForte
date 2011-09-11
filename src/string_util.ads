@@ -104,6 +104,9 @@ function ToBasic( s : unbounded_string ) return unbounded_string;
 function ToEscaped( s : unbounded_string ) return unbounded_string;
 -- convert special characters in string to ASCII codes
 
+function ToJSONEscaped( s : unbounded_string ) return unbounded_string;
+-- convert special characters in string to JSON escape codes
+
 function AorAN( s : unbounded_string ) return unbounded_string;
 -- return the word s with a leading "a " or "an " depending on whether or
 -- not it begins with a vowel

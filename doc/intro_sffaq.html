@@ -259,6 +259,23 @@ to/from a string, which is inconvenient.  It is possible that
 the importing/exporting other types of variables will be done in the
 future.</p>
 
+<h4>Can you do Continuous Integration with SparForte?</h4>
+
+<p>CI is a technique were tests are automatically run on a regular basis to
+detect errors as quickly as possible.  This requires a set of test programs
+that can perform tests without human intervention.  Most CI frameworks
+will run a shell command or script to start the tests.  As long as you can
+create a start script and a set of test programs, you can use CI with
+SparForte.</p>
+
+<p>A very minimal test would be to use SparForte's syntax check feature to
+check for syntax errors one time each night.</p>
+
+<p>You can get a rough idea of test coverage by running SparForte with
+the trace feature turned on.  This displays the lines the language reads,
+not the lines it executes, but it will give you and idea a script is
+doing during a test.</p>
+
 <h3>Design Questions</h3>
 
 <h4>Isn't Sparforte just another "my favourite language" shell?</h4>
@@ -296,6 +313,18 @@ had heard of Python and before Python was popular.</p>
 <h4>Why are there no objects or exceptions?</h4>
 
 <p>Objects, exceptions, user-defined packages, etc. are scheduled to be added to Sparforte.  See the project roadmap map.</p>
+
+<h4>Does the choice of language really improve productivity and reduce maintenance?</h4>
+
+<p>Robert L. Glass, Tom Demacro and other industry leaders say that choice of
+language doesn't have a significant impact on the product.</p>
+
+<p>Most programming languages focus on implementation.  SparForte (and Ada,
+the language SparForte is modelled on) includes features
+that improve other stages of software building and facilliate team communication.
+Ada has been shown in large studies to have productivity improvements as much as
+double other programming languages.  Expect SparForte to address more of these
+kind of time-consuming issues that other languages neglect.</p>
 
 &nbsp;<br>
 
