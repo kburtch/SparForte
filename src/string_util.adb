@@ -42,7 +42,7 @@ package body string_util is
 -- Misc String Handling
 ------------------------------------------------------------------------------
 
-procedure FixSpacing( s : in out unbounded_string ) is
+procedure FixSpacing( s : in out unbounded_string; inside : boolean := true ) is
 -- remove leading and trailing spaces, as well as any double-spaces inside
    i  : integer;
 begin
@@ -54,14 +54,16 @@ begin
     exit when Element( s, length(s) ) /= ' ';
     Delete( s, length(s), length(s) );
   end loop;
-  i := 1;
-  while i < length(s) loop
-    if Element( s, i ) = ' ' and then Element( s, i+1 ) = ' ' then
-       Delete( s, i, i );
-       i := i - 1;
-    end if;
-    i := i + 1;
-  end loop;
+  if inside then
+     i := 1;
+     while i < length(s) loop
+       if Element( s, i ) = ' ' and then Element( s, i+1 ) = ' ' then
+          Delete( s, i, i );
+          i := i - 1;
+       end if;
+       i := i + 1;
+     end loop;
+  end if;
 end FixSpacing;
 
 function TypoOf( BadString, GoodString : unbounded_string ) return boolean is

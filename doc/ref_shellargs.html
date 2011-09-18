@@ -58,101 +58,104 @@ Bourne shell word.&nbsp; Argument expansion occurs at run-time since it
 depends on the current working directory and the current value of
 variables.</p>
 
+<h3>Shell Expansion Coverage</h3>
+
 <p>Bourne shell expansions include:</p>
 
 <br>
 <table style="text-align: left; width: 100%;" border="1" cellpadding="2"
  cellspacing="2">
      <tr>
-      <td style="vertical-align: top;"><b>Expansion</b><br>
+      <td style="vertical-align: top;"><span><b>Expansion</b><br></span>
       </td>
-      <td style="vertical-align: top;"><b>Before</b><br>
+      <td style="vertical-align: top;"><span><b>Before</b></span><br>
       </td>
-      <td style="vertical-align: top;"><b>After</b><br>
+      <td style="vertical-align: top;"><span><b>After</b></span><br>
       </td>
-      <td style="vertical-align: top;"><b>Bush</b><br>
+      <td style="vertical-align: top;"><span><b>SparForte</b></span><br>
       </td>
     </tr>
   <tbody>
     <tr>
-      <td style="vertical-align: top;">Brace Expansion<br>
+      <td style="vertical-align: top;"><span>Brace Expansion</span><br>
       </td>
 
-      <td style="vertical-align: top;">a.{txt,.dat}<br>
+      <td style="vertical-align: top;"><tt>a.{txt,.dat}</tt><br>
       </td>
-      <td style="vertical-align: top;">a.txt a.dat<br>
+      <td style="vertical-align: top;"><tt>a.txt a.dat</tt><br>
       </td>
-      <td style="vertical-align: top;">not implemented<br>
+      <td style="vertical-align: top;"><span>not implemented</span><br>
       </td>
     </tr>
 
     <tr>
-      <td style="vertical-align: top;">Tilde Expansion<br>
+      <td style="vertical-align: top;"><span>Tilde Expansion</span><br>
       </td>
-      <td style="vertical-align: top;">~a/a.txt<br>
+      <td style="vertical-align: top;"><tt>~a/a.txt</tt><br>
       </td>
-      <td style="vertical-align: top;">/home/user/a.txt<br>
+      <td style="vertical-align: top;"><tt>/home/user/a.txt</tt><br>
       </td>
 
-      <td style="vertical-align: top;">OK<br>
+      <td style="vertical-align: top;"><span>OK</span><br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">Variable Expansion<br>
+      <td style="vertical-align: top;"><span>Variable Expansion</span><br>
       </td>
-      <td style="vertical-align: top;">$HOME/a.txt<br>
+      <td style="vertical-align: top;"><tt>$HOME/a.txt</tt><br>
 
       </td>
-      <td style="vertical-align: top;">/home/usr/a.txt<br>
+      <td style="vertical-align: top;"><tt>/home/usr/a.txt</tt><br>
       </td>
-      <td style="vertical-align: top;">OK<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">Command Substitution<br>
-
-      </td>
-      <td style="vertical-align: top;">`/bin/echo a.txt`<br>
-      </td>
-      <td style="vertical-align: top;">a.txt<br>
-      </td>
-      <td style="vertical-align: top;">Backquotes only<br>
+      <td style="vertical-align: top;"><span>OK</span><br>
       </td>
 
     </tr>
     <tr>
-      <td style="vertical-align: top;">Arithmetic Expansion<br>
-      </td>
-      <td style="vertical-align: top;">$((2+2))<br>
-      </td>
-      <td style="vertical-align: top;">4<br>
+      <td style="vertical-align: top;"><span>Command Substitution</span><br>
 
       </td>
-      <td style="vertical-align: top;">not implemented<br>
-(use AdaScript parameters)<br>
+      <td style="vertical-align: top;"><tt>`/bin/echo a.txt`</tt><br>
+      </td>
+      <td style="vertical-align: top;"><tt>a.txt</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>Backquotes only</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Arithmetic Expansion</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>$((2+2))</tt><br>
+      </td>
+      <td style="vertical-align: top;"><tt>4</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><span>not implemented</span><br>
+<span>(use AdaScript parameters)</span><br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">Pathname Expansion<br>
+      <td style="vertical-align: top;"><span>Pathname Expansion</span><br>
       </td>
 
-      <td style="vertical-align: top;">a.*<br>
+      <td style="vertical-align: top;"><tt>a.*</tt><br>
       </td>
-      <td style="vertical-align: top;">a.txt a.dat<br>
+      <td style="vertical-align: top;"><tt>a.txt a.dat</tt><br>
       </td>
-      <td style="vertical-align: top;">OK<br>
+      <td style="vertical-align: top;"><span>OK</span><br>
       </td>
     </tr>
 
     <tr>
-      <td style="vertical-align: top;">Word Splitting<br>
+      <td style="vertical-align: top;"><span>Word Splitting</span><br>
       </td>
-      <td style="vertical-align: top;">a\ word<br>
+      <td style="vertical-align: top;"><tt>a\ word</tt><br>
       </td>
-      <td style="vertical-align: top;">"a word"<br>
+      <td style="vertical-align: top;"><tt>"a word"</tt><br>
       </td>
 
-      <td style="vertical-align: top;">OK<br>
+      <td style="vertical-align: top;"><span>OK</span><br>
       </td>
     </tr>
   </tbody>
@@ -164,6 +167,53 @@ features.&nbsp; For example, many of the special $ substitutions
 (${...}, $(...) and others) are not implemented.&nbsp; Otherwise, the
 basic Bourne shell features implemented in SparForte conform to
 the POSIX standard.</p>
+
+<h3>Spaces and Dollar Expansions</h3>
+
+<p>Dollar expansions are affected by quotation and the data type of
+expansion variable.  If no quotes are used, the leading and trailing
+spaces are discarded.  If in single quotes, no dollar expansion
+occurs at all.  If double quotes are used, the affect on spaces
+depends on the data type.  If the value is numeric, the leading space
+for a positive variable is discarded (to mimic shell behaviour) but
+other variable types maintain any leading or trailing spaces.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; s : string := " hello "<br>
+=&gt; put_line( s )<br>
+ hello <br>
+=&gt; echo $s<br>
+hello<br>
+=&gt; echo "$s"<br>
+&nbsp;hello&nbsp;<br>
+=&gt; echo '$s'<br>
+$s<br>
+=&gt; echo `pwd;`"$s"<br>
+/home/ken/ada/SparForte/src hello&nbsp;<br>
+=&gt; t : string<br>
+=&gt; t := `echo $s;`<br>
+=&gt; <b>env</b> t<br>
+t := "hello"; -- identifier of the type string<br>
+=&gt; t := `echo "$s";`<br>
+=&gt; <b>env</b> t<br>
+t := " hello "; -- identifier of the type string<br>
+
+=&gt; i : integer := 5<br>
+=&gt; put_line( i )<br>
+&nbsp;5<br>
+=&gt; echo $i<br>
+5<br>
+=&gt; echo "$i"<br>
+5<br>&nbsp;<br>
+               </p>
+        <div class="code_caption">
+                <b>Example</b>: The leading/trailing space is affected by quotations and variable type
+        </div>
+        </div>
+        </center>
+
+
 <br>&nbsp;
 
 			</td>

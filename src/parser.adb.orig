@@ -3038,6 +3038,7 @@ begin
 
   -- Check for optional assignment
 
+put_line( " checking := " ); -- DEBUG
   if (token = symbol_t and identifiers( token ).value = ":=") or -- assign part?
      expr_expected then
      if identifiers( type_token ).limit then
@@ -3113,8 +3114,13 @@ begin
                to_string( ToEscaped( expr_value ) ) & """" );
         end if;
       end if;
-  else
+  elsif (token = symbol_t and identifiers( token ).value = ";") then
      identifiers( id ).kind := type_token;
+  else
+     -- neither an ending ; or a :=?  destory the variable.  A syntax
+     -- error will occur when expect semi-colon runs
+     identifiers( id ).kind := new_t;
+     discardUnusedIdentifier( id );
   end if;
   -- failed somewhere to set a real type?
   -- blow away half-declared variable
@@ -4007,7 +4013,10 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
           err( optional_bold( to_string( expansionVar ) ) & " not declared" );
        else
           subword := identifiers( id ).value;              -- word to substit.
-          if getUniType( id ) = uni_numeric_t then         -- a number?
+          if not inDQuote then                             -- strip spaces
+             subword := Ada.Strings.Unbounded.Trim(        -- unless double
+                subword, Ada.Strings.Both );               -- quotes;
+          elsif getUniType( id ) = uni_numeric_t then      -- a number?
              if length( subword ) > 0 then                 -- something there?
                 if element( subword, 1 ) = ' ' then        -- leading space
                    delete( subword, 1, 1 );                -- we don't want it
@@ -4278,10 +4287,10 @@ begin
        -- perform the expansion.
 
     if ch = '"' and not inSQuote and not inBackslash then    -- unescaped "?
-       inDQuote := not inDQuote;                             -- toggle " flag
        if inDollar then                                      -- was doing $?
           dollarExpansion;                                   -- complete it
        end if;
+       inDQuote := not inDQuote;                             -- toggle " flag
        if not stripQuoteMarks then                           -- SQL word?
 	  if inDollar then                                   -- in an exp?
 	     addExpansionDQuote := true;                     -- add after exp
@@ -4296,10 +4305,10 @@ begin
        -- perform the expansion.
 
     elsif ch = ''' and not inDQuote and not inBackslash then -- unescaped '?
-       inSQuote := not inSQuote;                             -- toggle ' flag
        if inDollar then                                      -- was doing $?
           dollarExpansion;                                   -- complete it
        end if;
+       inSQuote := not inSQuote;                             -- toggle ' flag
        if not stripQuoteMarks then                           -- SQL word?
 	  if inDollar then                                   -- in an exp?
 	     addExpansionSQuote := true;                     -- add after exp
@@ -6274,6 +6283,7 @@ begin
      end if;
      var_kind := identifiers( var_kind ).kind; -- array of what?
   end if;
+
   ParseAssignPart( expr_value, right_type );
 
   if inputMode = interactive or inputMode = breakout then
@@ -7373,7 +7383,9 @@ begin
     end if;
     error_found := false;                               -- no err found (prompt)
     exit_block := false;                                -- not exit-ing a block
-    fixSpacing( command );                              -- strip leading/trailing spaces
+    -- fix spacing is not smart enough to remove double spaces inside a cmd.
+    -- the cmd may have quotes and spaces may be significant
+    fixSpacing( command, inside => false );             -- strip leading/trailing spaces
     if length( command ) > 0 then                       -- something there?
        if Element( command, length( command ) ) /= ';' then -- missing ending ;?
           command := command & ";";                     -- it's implicit so add it

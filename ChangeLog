@@ -41,3 +41,10 @@ words with characters that cannot be globbed.
 
 14. Change: Reorganized regression testsuite.
 
+15. Fix: string space handling in shell word splitting.
+
+16. Fix: double spaces being dropped inside of string literals on command
+line.
+
+17. Fix: assignment variable unset for an errornous assignment part
+

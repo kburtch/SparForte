@@ -36,8 +36,9 @@ package string_util is
 -- Basic String Handling
 ------------------------------------------------------------------------------
 
-procedure FixSpacing( s : in out unbounded_string );
+procedure FixSpacing( s : in out unbounded_string; inside : boolean := true );
 -- remove leading and trailing spaces, as well as any double-spaces inside
+-- inside = true to remove inside
 
 
 ------------------------------------------------------------------------------

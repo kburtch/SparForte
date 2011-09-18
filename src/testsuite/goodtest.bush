@@ -37,6 +37,7 @@ ft  : file_type;
 st  : socket_type;
 fm  : file_mode;
 j,k : integer;
+js  : json_string;
 
 -- assignment during declaration (syntax only)
 
@@ -1746,6 +1747,13 @@ pragma assert( s = "n9" );
 i := 0;
 s := `echo "$i$i";`;
 pragma assert( s = "00" );
+-- Space Handling in Double Quotes
+s1 := " h ";
+s := `echo $s;`;
+pragma assert( s = "h" );
+s1 := " i ";
+s := `echo " $s ";`;
+pragma assert( s = " h " );
 
 -- Shell Globbing Tests
 
