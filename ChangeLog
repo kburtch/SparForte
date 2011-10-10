@@ -48,3 +48,16 @@ line.
 
 17. Fix: assignment variable unset for an errornous assignment part
 
+18. New: pragma restriction( annotations_not_optional )
+
+19. New: pragma restriction( no_annotate_todos )
+
+20. New: Check for unreachable code after return command.
+
+21. New: Check for unreachable code after stand-alone exit command.
+
+22. Fix: Out parameters no longer overwrite the type of an existing variable.
+
+23. New: JSON subprograms: arrays.to_array, arrays.to_json, records.to_json,
+records.to_record.  New data type: json_string.
+

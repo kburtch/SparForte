@@ -111,6 +111,42 @@ is prerelease and unstable: it may not compile or function.  It is
 intended for use by SparForte developers.  Periodic snapshots are put
 on the SparForte home page.</p>
 
+<h4>How Do I Use Vim with Sparforte?</h4>
+
+<p>Even with many popular IDE's available, vi continues to be the most
+commonly used editor for writing programs on Linux/UNIX systems.</p>
+
+<p>The SparForte download page has a file called "spar.vim".  If you have
+access to the vim syntax folder (usually /usr/share/vim/.../syntax),
+you can copy this file to that folder.
+
+<p>If you can't install the spar.vim file, you use it as a local, custom
+syntax file as described at <a href="http://www.fleiner.com/vim/create.html">http://www.fleiner.com/vim/create.html</a>.</p>
+
+<p>To make vim use the syntax hilighting, you can add this to your .vimrc
+configuration file.</p>
+
+<pre>
+syntax on
+filetype on
+vim autoload it for spar files with au BufNewFile,BufRead *.sp set filetype=spar.
+</pre>
+
+<p>Or enable modeline support with "set modeline"  in your .vimrc</p>
+
+<pre>
+syntax on
+filetype on
+set modeline
+</pre>
+
+<p>and include the file type in vim instructions embedded in a comment in your
+program like this:</p>
+
+<pre>
+-- vim: ft=spar
+</pre>
+
 <h4>How Do I Install Sparforte?</h4>
 
 <p>Follow the instructions in the INSTALL text file included with
@@ -233,6 +269,12 @@ these commands are the same:</p>
 <span><tt>ls</tt></span><br>
 <span><tt>-l;</tt></span><br>
 
+<h4>Can I use out or in out mode parameters?</h4>
+
+<p>The current version supports only in parameters in user-defined
+subprograms.  Other parameter modes will be implemented in the
+future.</p>
+
 <h4>How do I create session variables?</h4>
 
 <p>Web session variables are on our to-do list.  In the meantime,
@@ -276,6 +318,13 @@ the trace feature turned on.  This displays the lines the language reads,
 not the lines it executes, but it will give you and idea a script is
 doing during a test.</p>
 
+<h4>Is there a libspar I can call to run Spar scripts from another
+language, like I can with lua?</h4>
+
+<p>Business Shell 2.0 had a "libbush" that could be called to run
+scripts from C.  Expect this feature to be backported eventually
+into SparForte 1.x.</p>
+
 <h3>Design Questions</h3>
 
 <h4>Isn't Sparforte just another "my favourite language" shell?</h4>
@@ -314,17 +363,67 @@ had heard of Python and before Python was popular.</p>
 
 <p>Objects, exceptions, user-defined packages, etc. are scheduled to be added to Sparforte.  See the project roadmap map.</p>
 
+<h4>Won't big project features slow development of small nimble project?</h4>
+
+<p>While reducing keystrokes is not a goal of SparForte, it does have
+several convenience features for the command prompt.  However, outside of
+the command prompt, the number of keystokes has little to do with the
+speed of project development.  Projects are dominated by reading,
+debugging, maintenance, etc. and these are managed by SparForte's
+design.</p>
+
+<h4>Why target code reading, debugging and maintenance?  A programming
+language cannot make a person think faster.</h4>
+
+<p>While reading, debugging and designing/extending software are
+think-intensive tasks, studies show that choice of language has
+a measurable impact on these tasks.</p>
+
+<h4>Isn't your idea of Code Evolution is all about General Purpose languages?  I believe in Domain Specific languages which tailor solutions to specific environments.</h4>
+
+<p>This is a false dichotomy.  A language doesn't have to be completely
+general or completely incompatible with another language.  Part of
+SparForte's design uses domain-specific features, aspects of the
+language that target specific environments such as the command prompt.
+These features may be disallowed outside of their intended
+environment.</p>
+
+<p>Not everything evolves to produce superior features endure.
+Is a shell's if statement really tailor-made to solve
+shell scripting problems?  It's a throwback to when memory was critical
+and shells did not have the ability to process an if expression.
+If shells standardized the if statement, it wouldn't mean that the
+shell was less effective at doing "shell stuff".</p>
+
 <h4>Does the choice of language really improve productivity and reduce maintenance?</h4>
 
 <p>Robert L. Glass, Tom Demacro and other industry leaders say that choice of
-language doesn't have a significant impact on the product.</p>
+language doesn't have a significant impact on the product.  Fred Brooks'
+"No Silver Bullet" essay suggests choice of a language has less than 5%
+impact on a project.</p>
 
-<p>Most programming languages focus on implementation.  SparForte (and Ada,
-the language SparForte is modelled on) includes features
+<p>Most programming languages focus on the initial implementation phase
+of a project, which is a small percentage of a developer's time.  SparForte
+(and Ada, the language SparForte is modelled on) includes features
 that improve other stages of software building and facilliate team communication.
 Ada has been shown in large studies to have productivity improvements as much as
 double other programming languages.  Expect SparForte to address more of these
 kind of time-consuming issues that other languages neglect.</p>
+
+<h4>How fast is SparForte?</h4>
+
+<p>Sparforte is not a language that emphasizes performance.  In version 1.x,
+the focus is on implementing features.  SparForte does a lot of error
+detection and language setup that other, simpler languages do not.  The speed
+depends on what features are used.  Arrays, for example, are quite slow.
+Using features like local variables or custom types can affect performance
+when comparing with other languages.</p>
+
+<p>SparForte takes around twice as long as PHP to initialize prior to running
+a program.  A simple test of a palindrome checker took about twice as long as
+PHP to run.</p>
+
+<p>Expect performance improvements after the core features are complete.</p>
 
 &nbsp;<br>
 

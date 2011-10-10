@@ -1218,6 +1218,12 @@ begin
      Put_Line( "  " & bold( "pragma" ) & " " &
        "prompt_script( `commands` ) - commands to draw command prompt" );
      Put_Line( "  " & bold( "pragma" ) & " " &
+       "restriction( no_annotate_todos ) - " &
+         "must not have annotate/todo" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
+       "restriction( annotations_not_optional ) - " &
+         "must have pragma annotate" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
        "restriction( no_auto_declarations ) - " &
          "no auto command line declarations" );
      Put_Line( "  " & bold( "pragma" ) & " " &

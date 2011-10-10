@@ -1190,6 +1190,56 @@ declare
   s1 : array( 1..1 ) of string  := ("arch");
   s2 : array( 2..2 ) of string  := ("able");
   s3 : array( 1..3 ) of string  := ("adam","atom","axe");
+
+  type json_test_enum is ( jte1, jte2, jte3 );
+
+  subtype alt_boolean is boolean;
+
+  js : json_string;
+
+  type json_arr1 is array(1..1) of string;
+  ja : json_arr1;
+
+  type json_arr2 is array(1..1) of integer;
+  ja2 : json_arr2;
+
+  type json_arr3 is array(1..1) of boolean;
+  ja3 : json_arr3;
+
+  type json_arr4 is array(1..1) of alt_boolean;
+  ja4 : json_arr4;
+
+  type json_arr5 is array(1..1) of json_test_enum;
+  ja5 : json_arr5;
+
+  type json_rec1 is record
+    s : string;
+  end record;
+  rs : json_rec1;
+
+  type json_rec2 is record
+    s : string;
+    n : natural;
+  end record;
+  rs2 : json_rec2;
+
+  type json_rec3 is record
+    isTrue : boolean;
+    isFalse : boolean;
+  end record;
+  rs3 : json_rec3;
+
+  type json_rec4 is record
+    enum : json_test_enum;
+  end record;
+  rs4 : json_rec4;
+
+  type json_rec5 is record
+    isTrue : alt_boolean;
+    isFalse : alt_boolean;
+  end record;
+  rs5 : json_rec5;
+
 begin
   -- to json
   arrays.to_json( s, i0 );
@@ -1309,6 +1359,207 @@ begin
   pragma assert( s = "g" & ASCII.CR );
   s := strings.from_json( ASCII.Quotation & "h\t" & ASCII.Quotation );
   pragma assert( s = "h" & ASCII.HT );
+
+  js := "[" & ASCII.Quotation & "this" & ASCII.Quotation & "]";
+
+  arrays.to_array( ja, js );
+
+  pragma assert( ja(1) = "this" );
+
+  ---
+
+  js := "[123]";
+
+  arrays.to_array( ja2, js );
+
+  pragma assert( ja2(1) = 123 );
+
+  ---
+
+  js := "[true]";
+  arrays.to_array( ja3, js );
+  pragma assert( ja3(1) = true );
+
+  js := "[false]";
+  arrays.to_array( ja3, js );
+  pragma assert( ja3(1) = false );
+
+  -- Ensure subtype deref works
+
+  js := "[true]";
+  arrays.to_array( ja4, js );
+  pragma assert( ja4(1) = true );
+
+  js := "[false]";
+  arrays.to_array( ja4, js );
+  pragma assert( ja4(1) = false );
+
+  -- Non-boolean enumerated array
+
+  js := "[1]";
+  arrays.to_array( ja5, js );
+  pragma assert( ja5(1) = jte1 );
+
+  js := "[2]";
+  arrays.to_array( ja5, js );
+  pragma assert( ja5(1) = jte2 );
+
+  -- Arrays to Json
+
+  ja(1) := "that";
+  arrays.to_json( js, ja );
+  pragma assert( js = "[" & ASCII.Quotation & "that" & ASCII.Quotation & "]" );
+
+  ja2(1) := 123;
+  arrays.to_json( js, ja5 );
+  pragma assert( js = "[123]" );
+
+  ja3(1) := false;
+  arrays.to_json( js, ja5 );
+  pragma assert( js = "[false]" );
+
+  ja3(1) := true;
+  arrays.to_json( js, ja5 );
+  pragma assert( js = "[true]" );
+
+  ja4(1) := false;
+  arrays.to_json( js, ja4 );
+  pragma assert( js = "[false]" );
+
+  ja4(1) := true;
+  arrays.to_json( js, ja4 );
+  pragma assert( js = "[true]" );
+
+  ja5(1) := jte1;
+  arrays.to_json( js, ja5 );
+  pragma assert( js = "[0]" );
+
+  -- Json to Records
+
+  js := "{" &
+       ASCII.Quotation & "s" & ASCII.Quotation &
+       ":" &
+       ASCII.Quotation & "this" & ASCII.Quotation &
+       "}";
+  records.to_record( rs, js );
+  pragma assert( rs.s = "this" );
+
+  js := "{" &
+       ASCII.Quotation & "s" & ASCII.Quotation &
+       ":" &
+       ASCII.Quotation & "\" & ASCII.Quotation & "this" & ASCII.Quotation &
+       "}";
+  records.to_record( rs, js );
+  pragma assert( rs.s = ASCII.Quotation & "this" );
+
+  js := "{" &
+       ASCII.Quotation & "s" & ASCII.Quotation &
+       ":" &
+       ASCII.Quotation & "this:" & ASCII.Quotation &
+       "}";
+  records.to_record( rs, js );
+  pragma assert( rs.s = "this:" );
+
+  js := "{" &
+     ASCII.Quotation & "s" & ASCII.Quotation &
+     ":" &
+     ASCII.Quotation & "this," & ASCII.Quotation &
+     "}";
+  records.to_record( rs, js );
+  pragma assert( rs.s = "this," );
+
+  js := "{" &
+       ASCII.Quotation & "s" & ASCII.Quotation &
+       ":" &
+       ASCII.Quotation & "\" & ASCII.Quotation & "this," & ASCII.Quotation &
+       "}";
+  records.to_record( rs, js );
+  pragma assert( rs.s = ASCII.Quotation & "this," );
+
+  js := "{" &
+       ASCII.Quotation & "s" & ASCII.Quotation &
+       ":" &
+       ASCII.Quotation & "this" & ASCII.Quotation &
+       "," &
+       ASCII.Quotation & "n" & ASCII.Quotation &
+       ":5}";
+  records.to_record( rs2, js );
+  pragma assert( rs2.s = "this" );
+  pragma assert( rs2.n = 5 );
+
+  js := "{" &
+       ASCII.Quotation & "n" & ASCII.Quotation &
+       ":6," &
+       ASCII.Quotation & "s" & ASCII.Quotation &
+       ":" &
+       ASCII.Quotation & "that" & ASCII.Quotation &
+       "}";
+  records.to_record( rs2, js );
+  pragma assert( rs2.s = "that" );
+  pragma assert( rs2.n = 6 );
+
+  rs3.isTrue := true;
+  rs3.isFalse := false;
+  js := "{" &
+       ASCII.Quotation & "isTrue" & ASCII.Quotation &
+       ":true," &
+       ASCII.Quotation & "isFalse" & ASCII.Quotation &
+       ":false}";
+  records.to_record( rs3, js );
+  pragma assert( rs3.isTrue = true );
+  pragma assert( rs3.isFalse = false );
+
+  rs4.enum := jte1;
+  js := "{" &
+       ASCII.Quotation & "enum" & ASCII.Quotation &
+       ":1}";
+  records.to_record( rs4, js );
+  pragma assert( rs4.enum = jte2 );
+
+  js := "{" &
+       ASCII.Quotation & "isTrue" & ASCII.Quotation &
+       ":true," &
+       ASCII.Quotation & "isFalse" & ASCII.Quotation &
+       ":false}";
+
+  records.to_record( rs5, js );
+  pragma assert( rs5.isTrue = true );
+  pragma assert( rs5.isFalse = false );
+
+  -- Records to Json
+
+  rs.s := "code browser";
+  records.to_json( js, rs );
+  pragma assert( js = "{" & ASCII.Quotation & "s" & ASCII.Quotation &
+         ":" & ASCII.Quotation & "code browser" & ASCII.Quotation & "}" );
+
+  rs2.s := "wet sock";
+  rs2.n := 15;
+  records.to_json( js, rs2 );
+  pragma assert( js = "{" & ASCII.Quotation & "s" & ASCII.Quotation &
+         ":" & ASCII.Quotation & "wet sock" & ASCII.Quotation &
+         "," & ASCII.Quotation & "n" & ASCII.Quotation &
+         ": 15}" );
+
+  rs3.isTrue := true;
+  rs3.isFalse := false;
+  records.to_json( js, rs3 );
+  pragma assert( js = "{" & ASCII.Quotation & "isTrue" & ASCII.Quotation &
+         ":true," & ASCII.Quotation & "isFalse" & ASCII.Quotation &
+         ":false}" );
+
+  rs4.enum := jte2;
+  records.to_json( js, rs4 );
+  pragma assert( js = "{" & ASCII.Quotation & "enum" & ASCII.Quotation &
+         ": 1}" );
+
+  rs5.isTrue := true;
+  rs5.isFalse := false;
+  records.to_json( js, rs5 );
+  pragma assert( js = "{" & ASCII.Quotation & "isTrue" & ASCII.Quotation &
+         ":true," & ASCII.Quotation & "isFalse" & ASCII.Quotation &
+         ":false}" );
+
 end;
 
 -- if statements
@@ -2114,5 +2365,4 @@ pragma assert( ada95_i=10 );
 trace( false );
 new_line;
 put_line( "CONGRATULATIONS! BUSH HAS SUCCESSFULLY RUN THIS TEST SCRIPT" );
-
 

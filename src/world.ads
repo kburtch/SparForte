@@ -31,10 +31,8 @@ with system,
   pegasock.memcache;
 use ada.strings.unbounded,
   pegasock.memcache;
-#if APQ
   with APQ;
   use APQ;
-#end if;
 
 package world is
 
@@ -176,13 +174,7 @@ traceOpt     : commandLineOption := false;           -- true if -x
 terminalWindowNaming : boolean := false;
 -- true if terminal emulation supports xterm window naming
 
-#if APQ
 currentEngine : Database_Type; --:= Engine_PostgreSQL;
-#else
--- APQ disabled.  All we need are dummy values here
-type Database_Type is ( Engine_PostgreSQL, Engine_MySQL, Engine_None );
-currentEngine : Database_Type := Engine_None;
-#end if;
 engineOpen    : boolean := false;
 -- current database being used.  Unfortunately, APQ has no Engine_None so we
 -- need two variables.

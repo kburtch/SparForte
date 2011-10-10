@@ -183,53 +183,6 @@ strings or numbers depending on the element type.</p>
 </tr>
 </table>
 
-<h3>arrays.from_json( a, s )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Decode a JSON string, storing the values in the array.  Encoding
-arbitrary control characters with \u is not yet supported, though carriage
-returns, line feeds, etc. are supported.
-</p>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">s := "[32]";<br>
-arrays.from_json( a, s ); -- a(1) is 32</span></p>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>a</span></td>
-<td><span>out</span></td>
-<td><span>an array type of strings or numeric types</span></td>
-<td><span>required</span></td>
-<td><span>the array to assign values to</span></td>
-</tr><tr>
-<td><span>s</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the JSON expression</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>Exception is raised if the number of items don't match</p>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>arrays.to_json<br>strings.from_json<br>strings.to_json</p>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: N/A<br>PHP: json_decode</p></td>
-</tr>
-</table>
-
 <h3>arrays.heap_sort( a )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
@@ -621,17 +574,61 @@ overwriting the last element.</p>
 </tr>
 </table>
 
+<h3>arrays.to_array( a, s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Decode a JSON string, storing the values in the array.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := "[32]";<br>
+arrays.to_array( a, s ); -- a(1) is 32</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>a</span></td>
+<td><span>out</span></td>
+<td><span>an array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to assign values to</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>json_string</span></td>
+<td><span>required</span></td>
+<td><span>the JSON expression</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>For more details and exceptions, see the Reference Manual section
+<a href="ref_types.html">JSON and SparForte Types</a>.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>arrays.to_json<br>records.to_record<br>records.to_json<br>strings.from_json<br>strings.to_json</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A<br>PHP: json_decode</p></td>
+</tr>
+</table>
+
+
 <h3>arrays.to_json( s, a )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Encode the array contents as a JSON string.  Encoding arbitrary control
-characters with \u is not yet supported, though carriage returns, line feeds,
-etc. are supported.</p>
+<td><p>Encode the array contents as a JSON string.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">a : array(1..1) of string := "apple";<br>
-arrays.to_json( s, a ); -- s is ["apple"]</span></p>
+arrays.to_json( s, a ); -- s is ["apple]"</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -644,23 +641,24 @@ arrays.to_json( s, a ); -- s is ["apple"]</span></p>
 </tr><tr>
 <td><span>s</span></td>
 <td><span>out</span></td>
-<td><span>string</span></td>
+<td><span>json_string</span></td>
 <td><span>required</span></td>
 <td><span>the JSON expression</span></td>
 </tr><tr>
 <td><span>a</span></td>
 <td><span>in</span></td>
-<td><span>an array type of strings or numeric types</span></td>
+<td><span>an array type</span></td>
 <td><span>required</span></td>
 <td><span>the array to get values from</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><span class="code">-</span></p>
+<td><p>For more details and exceptions, see the Reference Manual section
+<a href="ref_types.html">JSON and SparForte Types</a>.</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>arrays.from_json<br>strings.from_json<br>strings.to_json</p>
+<td><p>arrays.to_array<br>records.to_record<br>records.to_json<br>strings.from_json<br>strings.to_json</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: N/A<br>PHP: json_encode</p></td>
@@ -688,6 +686,7 @@ arrays.to_json( s, a ); -- s is ["apple"]</span></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_pen.html">&nbsp;pen</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_records.html">&nbsp;records</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_sound.html">&nbsp;sound</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_sinfo.html">&nbsp;source_info</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;stats</a></p>

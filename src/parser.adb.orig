@@ -509,7 +509,8 @@ begin
 
      -- ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
      ref.kind := identifiers( ref.id ).kind;
-     for i in 1..integer'value( to_string( identifiers( ref.kind ).value ) ) loop         for j in 1..identifiers_top-1 loop
+     for i in 1..integer'value( to_string( identifiers( ref.kind ).value ) ) loop
+         for j in 1..identifiers_top-1 loop
              if identifiers( j ).field_of = ref.kind then
                 if integer'value( to_string( identifiers( j ).value )) = i then
                    declare
@@ -532,7 +533,13 @@ begin
          end loop;
      end loop;
   else
-     ref.kind := identifiers( ref.id ).kind;
+    -- If it's a regular identifier, if it's new, assign the type.  Otherwise
+    -- if it already exists it must match the default type.
+    if identifiers( ref.id ).kind = new_t then
+       ref.kind := identifiers( ref.id ).kind;
+    elsif baseTypesOK( identifiers( ref.id ).kind, defaultType ) then
+       null;
+    end if;
   end if;
 end ParseOutParameter;
 
@@ -3038,7 +3045,6 @@ begin
 
   -- Check for optional assignment
 
-put_line( " checking := " ); -- DEBUG
   if (token = symbol_t and identifiers( token ).value = ":=") or -- assign part?
      expr_expected then
      if identifiers( type_token ).limit then
@@ -6215,12 +6221,46 @@ begin
               ParseExpression( expr_val, expr_type );
         end if;
         expectSemicolon;
+        -- look for unreachable code only during syntax check
+        if syntax_check then
+           --declare
+           --   cmdStart   : aScannerState;
+           --begin
+           --   markScanner( cmdStart );
+              -- we need to advance one to hilight the right token
+           --   getNextToken;
+              -- these are block ending tokens
+              if token /= eof_t and token /= end_t and token /= elsif_t and
+                 token /= else_t and token /= when_t and token /= others_t and
+                 token /= exception_t then
+                 err( "unreachable code" );
+              end if;
+           --   resumeScanning( cmdStart );                    --   overwrite EOF token
+           --end;
+        end if;
         if isExecutingCommand then
            DoReturn;
         end if;
      else
         -- no return value?  do return
         expectSemicolon;
+        -- look for unreachable code only during syntax check
+        if syntax_check then
+           --declare
+           --   cmdStart   : aScannerState;
+           --begin
+           --   markScanner( cmdStart );
+              -- we need to advance one to hilight the right token
+           --   getNextToken;
+              -- these are block ending tokens
+              if token /= eof_t and token /= end_t and token /= elsif_t and
+                 token /= else_t and token /= when_t and token /= others_t and
+                 token /= exception_t then
+                 err( "unreachable code" );
+              end if;
+           --   resumeScanning( cmdStart );                    --   overwrite EOF token
+           --end;
+        end if;
         if isExecutingCommand then
            DoReturn;
         end if;
@@ -7080,6 +7120,21 @@ begin
            must_exit :=  expr_value = "1";
         end if;
      else
+        -- check for unreachable code on a stand-alone exit
+        if syntax_check then
+           if token = symbol_t and identifiers( token ).value = ";" then
+              -- we need to advance one to hilight the right token
+              getNextToken;
+              -- these are block ending tokens
+              if token /= eof_t and token /= end_t and token /= elsif_t and
+                 token /= else_t and token /= when_t and token /= others_t and
+                 token /= exception_t then
+                 err( "unreachable code" );
+              end if;
+              resumeScanning( cmdStart ); -- restore original position
+              getNextToken;
+           end if;
+        end if;
         must_exit := true;
      end if;
      if isExecutingCommand and must_exit then
@@ -7708,6 +7763,22 @@ begin
         put( standard_error, getLineNo'img );
         put( standard_error, ":" );
         put_line( standard_error, "warning--" & depreciatedMsg );
+     end if;
+     if restriction_annotations_not_optional and not annotationsFound then
+        -- pragma restriction( annotations_not_optional )
+        put( standard_error, scriptFilePath );       -- show the message
+        put( standard_error, ":" );                  -- as a warning
+        put( standard_error, getLineNo'img );
+        put( standard_error, ":" );
+        put_line( standard_error, "annotations are required but missing" );
+     end if;
+     if restriction_no_annotate_todos and annotationTodoFound then
+        -- pragma restriction( annotations_no_todos )
+        put( standard_error, scriptFilePath );       -- show the message
+        put( standard_error, ":" );                  -- as a warning
+        put( standard_error, getLineNo'img );
+        put( standard_error, ":" );
+        put_line( standard_error, "annotation todo found but none expected" );
      end if;
      if processingTemplate then                      -- doing a template
         if verboseOpt then

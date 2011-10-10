@@ -1,5 +1,6 @@
 
-type a is array( 1..2 ) of integer;
+type a1 is array( 1..2 ) of integer;
 s : string;
+a : a1;
 arrays.to_json( s, a );
 

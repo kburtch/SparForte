@@ -95,6 +95,12 @@ ISSUES (AdaScript)
     - line count for a file doesn't work if put_line doesn't include the file
       variable or if it's a built-in file (standard_output, current_output,
       etc.)
+    - managing files like types, by negotiating and have spar provide a
+      recommended handle.  This would make the language more cloud-ready.
+      e.g. type <filehandle> for <type> range <1..num_records>... to
+      return a file handle on a device that meets these size requirements,
+      whether in memory, on a hard drive, etc.  Similarily, specify if it needs
+      to be fast, indexed, etc.  The architect could specify the options.
 
   * TCP/IP client sockets
     - "file /= eof_t" is wrong: standard_input could be specified explicitly
@@ -103,7 +109,7 @@ ISSUES (AdaScript)
     - optimize fd - don't need to pull it out with stringField for every DoGet
 
   * command_line package (AdaScript issues)
-    - command_line.arguement() cannot be used in open...get an error.  Expects
+    - command_line.argument() cannot be used in open...get an error.  Expects
       a type not a keyword...why?
     - implement gnat command_line
 

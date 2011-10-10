@@ -1,0 +1,6 @@
+type enum is ( e1, e2, e3 );
+type enum_array is array(1..1) of enum;
+a : enum_array;
+js : json_string := "[3]";
+arrays.to_array( a, js ); -- out of range
+

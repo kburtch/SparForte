@@ -490,6 +490,61 @@ n : <b>constant</b> <b>command</b> := l;<br>
 </p>
         </div>
         </center>
+
+<h3>JSON and SparForte Types</h3>
+
+<p>JSON is an acronym for JavaScript Object Notaiton.  It is an easier-to-use
+and more limited standard for data interchange compared to XML.  Many
+programming languages support JSON.</p>
+
+<p>SparForte contains several functions to convert variable values into JSON,
+and JSON into variable values.  JSON doesn't support enumerated types, so
+SparForte converts enumerated types into integer, the ordinal position of
+the enumerated values.  Records are coverted into JSON objects.</p>
+
+<p>Currently, SparForte doesn't support UTF-8.  It doesn't support
+characters larger than 8 bits.  Encoding arbitrary control characters with
+\u is not yet supported.  Carriage returns, line feeds, and other backslash
+escapes are supported.</p>
+
+<table bgcolor="#F3F5F7" border="1" cols="3" width="100%">
+<tr>
+<td><b>JSON type</b></td>
+<td><b>SparForte type</b></td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>boolean</td>
+</tr>
+<tr>
+<td>number</td>
+<td>numeric or non-boolean enumerated types</td>
+</tr>
+<tr>
+<td>string</td>
+<td>string types</td>
+</tr>
+<tr>
+<td>array</td>
+<td>array</td>
+</tr>
+<tr>
+<td>object</td>
+<td>record</td>
+</tr>
+</table>
+
+<p>Exceptions are raised for a number of conditions:</p>
+
+<ul>
+<li><p>Exception is raised if the number of items don't match</p></li>
+<li><p>Exception is raised if a string value is given to a numeric array,
+or a numeric value is given to a string array.</p></li>
+<li><p>Exception is raised if the an enumerated ordinal value is out of
+range</p></li>
+<li><p>Exception is raised if the a boolean value is not true or false</p></li>
+</ul>
+
 &nbsp;<br>
 
 			</td>

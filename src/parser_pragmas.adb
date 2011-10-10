@@ -75,9 +75,10 @@ package body parser_pragmas is
 type aPragmaKind is ( ada_95, asserting, annotate, debug, debug_on,
      depreciated, export, gcc_errors, import, inspection, inspect_var,
      license, noCommandHash, peek, promptChange, register_memcache_server,
-     restriction, restriction_auto, restriction_external,
-     restriction_mysql, restriction_postgresql, template,
-     unchecked_import, uninspect_var, unrestricted_template, volatile );
+     restriction, restriction_annotations, restriction_auto,
+     restriction_external, restriction_mysql, restriction_postgresql,
+     restriction_todos, template, unchecked_import, uninspect_var,
+     unrestricted_template, volatile );
 
 --  PARSE PRAGMA KIND
 --
@@ -153,7 +154,9 @@ end parsePragmaKind;
 procedure ParseAnnotateKind is
   name : string := to_string( identifiers( token ).name );
 begin
+  annotationsFound := true;
   if token /= strlit_t then
+     annotationTodoFound := name = "todo";
      if name /= "author" and
         name /= "created" and
         name /= "description" and
@@ -426,6 +429,14 @@ begin
         discardUnusedIdentifier( token );
         getNextToken;
         pragmaKind := restriction_auto;
+     elsif identifiers( token ).name = "no_annotate_todos" then
+        discardUnusedIdentifier( token );
+        getNextToken;
+        pragmaKind := restriction_todos;
+     elsif identifiers( token ).name = "annotations_not_optional" then
+        discardUnusedIdentifier( token );
+        getNextToken;
+        pragmaKind := restriction_annotations;
      elsif identifiers( token ).name = "no_external_commands" then
         discardUnusedIdentifier( token );
         getNextToken;
@@ -642,12 +653,16 @@ begin
          end;
      when restriction_auto =>
         restriction_no_auto_declarations := true;
+     when restriction_annotations =>
+        restriction_annotations_not_optional := true;
      when restriction_external =>
         restriction_no_external_commands := true;
      when restriction_mysql =>
         restriction_no_mysql_database := true;
      when restriction_postgresql =>
         restriction_no_postgresql_database := true;
+     when restriction_todos =>
+        restriction_no_annotate_todos := true;
      when promptChange =>
         promptScript := expr_val;
      when template | unrestricted_template =>

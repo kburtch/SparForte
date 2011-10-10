@@ -64,6 +64,8 @@ environment.</p>
   <b>pragma</b> license( license_name [, extra] )
   <b>pragma</b> no_command_hash
   <b>pragma</b> prompt_script( `commands` )
+  <b>pragma</b> restriction( annotations_not_optional )
+  <b>pragma</b> restriction( no_annotate_todos )
   <b>pragma</b> restriction( no_auto_declarations )
   <b>pragma</b> restriction( no_external_commands )
   <b>pragma</b> restriction( no_mysql_database )
@@ -124,6 +126,14 @@ can also be a URL to a complex license.<br>
 <u>GCC Ada</u>: unrestricted, gpl and unrestricted are recognized by Ada.  It
 doesn't support the extra string.  It treats these as levels and will
 try to validate license compatibility where possible.</li>
+  <li> <b>pragma restriction( annotations_not_options )</b> - if no pragma
+annotate's are in the script, report an error after the script runs.
+This is indended as a way to require developers to write
+documentation.</li>
+  <li> <b>pragma restriction( no_annotate_todos )</b> - if pragma
+annotate todo is used, report an error after the script runs.  This
+is intended for use in UAT or production environments where all
+"todo" work should be completed earlier.</li>
   <li> <b>pragma restriction( no_auto_declarations )</b> - disable
 automatic declaration
 at the command prompt</li>

@@ -615,18 +615,34 @@ begin
      baseType = integer_t or
      baseType = long_integer_t or
      baseType = long_long_integer_t then
-     roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
+     begin
+       roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
+     exception when others =>
+       err( "exception raised" );
+     end;
      str := to_unbounded_string( long_long_integer'image( roundedVal ) );
   -- If it's a natural type, round it and check for negative
   elsif baseType = natural_t then
-     roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
+     begin
+       roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
+     exception when others =>
+       err( "exception raised" );
+     end;
      if roundedVal < 0 then
         err( "natural value is less than zero" );
      end if;
-     str := to_unbounded_string( long_long_integer'image( roundedVal ) );
+     begin
+       str := to_unbounded_string( long_long_integer'image( roundedVal ) );
+     exception when others =>
+       err( "exception raised" );
+     end;
   -- If it's a positive type, round it and check for negative or zero
   elsif baseType = positive_t then
-     roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
+     begin
+       roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
+     exception when others =>
+       err( "exception raised" );
+     end;
      if roundedVal <= 0 then
         err( "positive value is less than zero" );
      end if;
