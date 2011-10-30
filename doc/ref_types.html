@@ -334,6 +334,47 @@ There are functions in the <a href="pkg_numerics.html">numerics</a> and <a
 packages to do these conversions.
 </p>
 
+<h3>Type Attributes</h3>
+
+<p>The System package contains information about the representation of
+types on your computer.  You can use this package to determine the
+minimum integer, or the precision of a floating-point number.  Array
+properties can be discovered with the arrays package.  In this
+case, this is a 64-bit computer (with 8-bit bytes) and it has a
+maximum integer of 999,999,999,999,999.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">? System.Min_Int<br>
+-999999999999999<br>
+=&gt; ? System.Max_Int<br>
+&nbsp;999999999999999<br>
+=&gt; ? System.Max_Mantissa<br>
+ 63<br>
+=&gt; ? System.Max_Binary_Modulus<br>
+&nbsp;1.84467440737095516E+19<br>
+=&gt; ? System.Max_Nonbinary_Modulus<br>
+&nbsp;4294967295<br>
+=&gt; ? System.Fine_Delta<br>
+&nbsp;1.08420217248550443E-19<br>
+=&gt; ? System.Storage_Unit<br>
+&nbsp;8<br>
+=&gt; ? System.Word_Size<br>
+&nbsp;64<br>
+=&gt; <b>type</b> my_array <b>is</b> <b>array</b>( 1..20 ) <b>of</b> integer<br>
+=&gt; ? arrays.length( my_array )<br>
+&nbsp;20<br>
+=&gt; ? arrays.first( my_array )<br>
+&nbsp;1<br>
+=&gt; ? arrays.last( my_array )<br>
+&nbsp;20<br>
+
+</p>
+        </div>
+        </center>
+
+<p>See the description of the System package for more information.</p>
+
 <h3>String Gotchas</h3>
 
 <p>Since all literals have a universal type, this can cause some
@@ -502,6 +543,11 @@ and JSON into variable values.  JSON doesn't support enumerated types, so
 SparForte converts enumerated types into integer, the ordinal position of
 the enumerated values.  Records are coverted into JSON objects.</p>
 
+<p>If an array or record has a json_string component within it, the content
+of the json_string is assumed to be JSON data and will be added as-is
+to the json-encoded aggregate.  Use json_string to build up more
+complex JSON structures like arrays of arrays.</p>
+
 <p>Currently, SparForte doesn't support UTF-8.  It doesn't support
 characters larger than 8 bits.  Encoding arbitrary control characters with
 \u is not yet supported.  Carriage returns, line feeds, and other backslash
@@ -524,6 +570,7 @@ escapes are supported.</p>
 <td>string</td>
 <td>string types</td>
 </tr>
+</tr>
 <tr>
 <td>array</td>
 <td>array</td>
@@ -537,13 +584,64 @@ escapes are supported.</p>
 <p>Exceptions are raised for a number of conditions:</p>
 
 <ul>
-<li><p>Exception is raised if the number of items don't match</p></li>
+<li><p>Exception is raised if the number of components don't match</p></li>
 <li><p>Exception is raised if a string value is given to a numeric array,
 or a numeric value is given to a string array.</p></li>
 <li><p>Exception is raised if the an enumerated ordinal value is out of
 range</p></li>
 <li><p>Exception is raised if the a boolean value is not true or false</p></li>
 </ul>
+
+        <center>
+        <div class="code">
+                <p class="code"><b>type</b> a_sample_enum <b>is</b> ( e1, e2 , e3 );<br>
+<b>type</b> an_example_record <b>is</b> <b>record</b><br>
+&nbsp;&nbsp;&nbsp;s : string;<br>
+&nbsp;&nbsp;&nbsp;i : integer;<br>
+&nbsp;&nbsp;&nbsp;b : boolean;<br>
+&nbsp;&nbsp;&nbsp;e : a_sample_enum;<br>
+<b>end</b> <b>record</b>;<br>
+<br>
+r : an_example_record;<br>
+r.s := "aardvark";<br>
+r.i := 54321;<br>
+r.b := true;<br>
+r.e := e2;<br>
+<br>
+js : json_string;<br>
+records.to_json( js, r );<br>
+<b>?</b> js; -- displays {"s":"aardvark","i": 54321,"b":true,"e": 1}<br>&nbsp;<br>
+</p>
+        <div class="code_caption">
+                <b>Example</b>: Encoding a record as a JSON string</span>
+        </div>
+        </div>
+        </center>
+
+        <center>
+        <div class="code">
+                <p class="code">&lt;?php<br>
+$r = <b>json_decode</b>( '{"s":"aardvark","i": 54321,"b":true,"e": 1}' );<br>
+<b>var_dump</b>( $r );<br>
+<br>
+/* displays this:<br>
+object(stdClass)#1 (4) {<br>
+  ["s"]=&gt;<br>
+  string(8) "aardvark"<br>
+  ["i"]=&gt;<br>
+  int(54321)<br>
+  ["b"]=&gt;<br>
+  bool(true)<br>
+  ["e"]=&gt;<br>
+  int(1)<br>
+}<br>
+*/<br>&nbsp;<br>
+</p>
+        <div class="code_caption">
+                <b>Example</b>: Deccoding JSON string into a PHP Object</span>
+        </div>
+        </div>
+        </center>
 
 &nbsp;<br>
 

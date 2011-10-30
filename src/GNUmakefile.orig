@@ -71,7 +71,7 @@ all: c_os.o c_scanner.o
 	@echo "   http://www.pegasoft.ca/sparforte.html"
 	@echo "---------------------------------------------------------------"
 	@echo
-	$(GNATMAKE) -c -i -O1 $(CPU_FLAG)=$(CPU) -gnatfaon -fstack-check -c $(INCLUDE) spar
+	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -gnatfaon -fstack-check -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali ./ADAVOX-0.51/wc/cglue.o c_os.o c_scanner.o $(LIBS)
 	@echo
@@ -124,7 +124,7 @@ max: clean c_os.o c_scanner.o
 	@echo "Making SparForte"
 	@echo "---------------------------------------------------------------"
 	@echo
-	$(GNATMAKE) -c -i -O3 $(CPU_FLAG)=$(CPU) -gnatf -gnatn -gnatp -ffast-math -c $(INCLUDE) spar
+	$(GNATMAKE) -j2 -c -i -O3 $(CPU_FLAG)=$(CPU) -gnatf -gnatn -gnatp -ffast-math -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali ./ADAVOX-0.51/wc/cglue.o c_os.o c_scanner.o $(LIBS)
 

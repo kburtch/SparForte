@@ -96,7 +96,7 @@ The Lone Coder: The Business Shell in an Age of Hype<br />
 December 23, 2009<br />
 http://www.pegasoft.ca/coder_december_2009.html</p>
 
-<h3><a name="tech"></a>Cowbody's Not Welcome</h3>
+<h3><a name="day"></a>A Programmer's Day</h3>
 
 <center>
 <table cellspacing="0" cellpadding="0" width="80%" border="0">
@@ -108,6 +108,39 @@ http://www.pegasoft.ca/coder_december_2009.html</p>
 </table>
 </center>
 
+<p>A typical programmer views his day as doing productive coding or sitting
+in toxic meetings.</p>
+
+<p><img src="pictures/programmers_day.png" alt="[Pie Graph of Programmers Day - Wrong]" width="481" height="289"></p>
+
+<p>If this view is true, a good language is one that makes coding faster.
+One that automates work, reduces keystrokes.  But in "No Silver Bullet",
+an essay by Fred ("I invented the 8-bit byte") Brooks, Brooks claims that
+no programming language produces more than a 5% improvement over another.
+This doesn't match up with the view of a programmer's day, where there's a
+lot of time spent coding and a small improvement in any of it should give a
+good reward.</p>
+
+<p>The graph above is how a programmer <i>feels</i> their time was spent.
+It's "gut level reasoning", how it feels in their emotions.
+Video tapes of programmers show that they spend very little time typing
+at all.  When you're working on solving tough problems, you may not be
+aware of what you are actually doing.  Programmers are terrible at
+evaluating how they spend their time.  When you scientifically examine
+the work done over the life of a project, the results will vary depending
+on the project, but on average a programmers's time looks like this:</p>
+
+<p><img src="pictures/programmers_real_day.png" alt="[Pie Graph of Programmers Day - Right"><br>Source: Facts and Fallacies of Software Engineering</p>
+
+<p>In this view, it's clear why most scripting languages (including PHP,
+Perl, Ruby and Lua) are really all the same: they all focus on a tiny
+slice of the programmer's day, the time spent typing.  What they should
+be focusing on are the big slices of time: maintenance/studying old code,
+designing/thinking and debugging/testing.  The language that saves you
+the most here will save you the most time over a project.</p>
+
+<h3><a name="tech"></a>Why SparForte is Different</h3>
+
 <p>SparForte doesn't aim to minimize keystrokes.  It targets solutions
 to what studies show are real problems in today's software teams:</p>
 
@@ -115,6 +148,9 @@ to what studies show are real problems in today's software teams:</p>
 <li><b>Programming-in-the-Large</b> - scaling up for large projects and
 teams, following existing standards where possible.  SparForte chooses
 proven technologies in these areas and adapts them for scripting.</li>
+<li><b>Architecture</b> - features that control the overall scope or
+shape of a project, including the ability to enable/disable language
+features for a project or enforce high-level design requirements.</li>
 <li><b>Code Reuse</b> - source code should be sharable between the client or server,
 templates or applications, or other software developers by adopting some
 standard syntax and semantics.</li>
@@ -127,7 +163,8 @@ different language.  This results in statements that are semantically correct
 but syntactically wrong for a particular tool.  SparForte addresses this
 issue with compatibility with common standards, such as the ability to run
 SQL queries on the command line.</li>
-<li><b>Code Aging</b> - related to scalability, script tend to evolve over time
+<li><b>Code Aging</b> - related to architecture and code reuse, script
+tend to evolve over time
 outstripping the capabilities of the original languages.  These legacy
 scripts need to be ported to a different environment which often requires
 a complete rewrite into a different language.  SparForte starts with a
@@ -151,6 +188,8 @@ low-level language issues.  Error reduction is a key goal in SparForte.</li>
 <li><b>Maintenance</b> - SparForte uses an easy-to-read syntax, with
 data hiding, modularity and program restrictions to oversee the design of
 a project, while maintaining portability and quality.</li>
+<li><b>Programming-by-Contract</b> - By using custom data types, developers
+can focus on business data requirements instead of low-level bytes and ints.</li>
 </ul>
 
 <p>By tackling these issues, SparForte attempts to greatly reduce the

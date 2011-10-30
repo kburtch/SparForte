@@ -1,0 +1,70 @@
+<HEAD><TITLE>json_health_check.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : json_health_check.sp </H1></DIV><HR>
+<PRE>
+<b>procedure</b> json_health_check <b>is</b>
+
+  <b>pragma</b> annotate( summary, "json_example.sp" );
+  <b>pragma</b> annotate( description, "An example of a JSON API web service call to" );
+  <b>pragma</b> annotate( description, "perform a health check: return the string 'OK'" );
+  <b>pragma</b> annotate( author, "Ken O. Burtch" );
+
+  <b>pragma</b> license( public_domain );
+
+  <b>pragma</b> restriction( no_external_commands );
+
+  <FONT COLOR=green><EM>-- A standard response</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- make it a record because it might contain more fields in the future</EM></FONT>
+
+  <b>type</b> standard_response <b>is</b> <b>record</b>
+     message : string;
+  <b>end</b> <b>record</b>;
+
+  <FONT COLOR=green><EM>-- HTTP headers for success and failure</EM></FONT>
+
+  http_success_header : <b>constant</b> string :=
+    "HTTP/1.0 200 OK" &amp; ASCII.LF &amp; ASCII.CR &amp;
+    "Content-Type: application/json" &amp; ASCII.CR &amp; ASCII.LF;
+
+  http_fail_header : <b>constant</b> string :=
+    "HTTP/1.0 404 Not Found" &amp; ASCII.LF &amp; ASCII.CR &amp;
+    "Content-Type: application/json" &amp; ASCII.CR &amp; ASCII.LF;
+
+  <FONT COLOR=green><EM>-- this is our response</EM></FONT>
+
+  response : standard_response;
+
+  <FONT COLOR=green><EM>-- true if call is successful</EM></FONT>
+
+  success : boolean := false;
+
+<b>begin</b>
+  <FONT COLOR=green><EM>-- Standard error normally goes to the web server logs</EM></FONT>
+  put_line( standard_error, source_info.source_location &amp; ": health check" );
+
+  
+  response.message := "OK";
+  success := true;
+
+  <FONT COLOR=green><EM>-- Package up the JSON response.  Calculate the length of the content.</EM></FONT>
+  <FONT COLOR=green><EM>-- Send the response back to the caller.</EM></FONT>
+
+  <b>declare</b>
+     json_response : json_string;
+     content_length : natural;
+  <b>begin</b>
+     records.to_json( json_response, response );
+     content_length := strings.length( json_response );
+     <b>if</b> success <b>then</b>
+        cgi.put_cgi_header( http_success_header &amp;
+          "Content-Length:" &amp; strings.image( content_length ) );
+     <b>else</b>
+        cgi.put_cgi_header( http_fail_header &amp;
+          "Content-Length:" &amp; strings.image( content_length ) );
+     <b>end</b> <b>if</b>;
+     put( json_response );
+  <b>end</b>;
+<b>end</b> json_health_check;
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+</PRE></BODY></HTML>

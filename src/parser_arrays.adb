@@ -566,22 +566,9 @@ procedure ParseArraysToArray is
   -- Source: N/A
   target_var_id : identifier;
   --target_base_id: identifier;
-  target_first  : long_integer;
-  target_last   : long_integer;
-  target_len    : long_integer;
   source_val    : unbounded_string;
   source_type   : identifier;
-  sourceLen     : long_integer;
-  item          : unbounded_string;
-  decoded_item  : unbounded_string;
-  targetArrayId : arrayID;
-  arrayElement  : long_integer;
-  kind          : identifier;
-  elementKind   : identifier;
-  j             : integer;
-  ch            : character;
-  inBackslash   : boolean;
-  inQuotes      : boolean;
+
 begin
   expect( arrays_to_array_t );
   expect( symbol_t, "(" );
@@ -593,7 +580,7 @@ begin
   --   end if;
   --elsif not (class_ok( target_var_id, otherClass ) and identifiers( target_var_id ).list) then
   if not (class_ok( target_var_id, otherClass ) and identifiers( target_var_id ).list) then
-     err( "Array or array type expected" );
+     err( "Array expected" );
   end if;
   expect( symbol_t, "," );
   ParseExpression( source_val, source_type );
@@ -601,208 +588,16 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     targetArrayId := arrayID( to_numeric( identifiers( target_var_id ).value ) );
-     target_first := firstBound( targetArrayID );
-     target_last  := lastBound( targetArrayID );
-     target_len   := target_last - target_first + 1;
-     --offsetArrayBeingSorted  := target_first - 1;
-     kind := getUniType( identifiers( target_var_id ).kind );
-     elementKind := getBaseType( identifiers( identifiers( target_var_id ).kind ).kind );
-
-     -- Count the number of items in the JSON string
-     sourceLen := 0;
-     inBackslash := false;
-     inQuotes := false;
-     if length( source_val ) > 2 then -- length zero for []
-        for i in 2..length( source_val )-1 loop
-            ch := element( source_val, i );
-            if inBackslash then
-               inBackslash := false;
-            else
-               if ch = '\' then
-                  inBackslash := true;
-               else
-                  if not inBackslash and ch = '"' then
-                     inQuotes := not inQuotes;
-                  elsif not inQuotes and ch = ',' then
-                     sourceLen := sourceLen + 1;
-                  end if;
-               end if;
-            end if;
-        end loop;
-        sourceLen := sourceLen + 1;
-    end if;
-
-     if sourceLen /= target_len then
-       err( "array has" &
-            target_len'img &
-            " item(s) but JSON string has" &
-            sourceLen'img );
--- boolean not handled yet
-     elsif kind = root_enumerated_t then
-     -- In JSON, enumerateds (or, at least, booleans) are by the name,
-     -- not the value.
-        if elementKind = boolean_t then
-           -- for a boolean array, we will have to covert true or false
-           -- as well as raise an error on illegal values
-           arrayElement := target_first;
-           for i in 2..length( source_val ) loop
-               ch := element( source_val, i );
-               if ch = ',' or ch = ']' then
-                  if item = "false" then
-                     assignElement( targetArrayId, arrayElement, to_unbounded_string( "0" ) );
-                     arrayElement := arrayElement + 1;
-                     item := null_unbounded_string;
-                  elsif item = "true" then
-                     assignElement( targetArrayId, arrayElement, to_unbounded_string( "1" ) );
-                     arrayElement := arrayElement + 1;
-                     item := null_unbounded_string;
-                  else
-                     err( optional_bold( to_string( item ) ) & " is neither JSON true nor false" );
-                  end if;
-               else
-                  item := item & ch;
-               end if;
-           end loop;
-        else
-           -- for non-boolean array of enumerated types, use the ordinal
-           -- position and treat it as an array of integers
-
-           -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-           -- kind := indexType( array_id );
-           -- lastlong_integer'image( lastBound( array_id ) );
-      
-           -- i don't actually record the maximum value for an enumerated type
-           -- the only way to tell is to search the symbol table for a match.
-
-           declare
-             maxEnum : integer;
-             enumVal : integer;
-           begin
-              for i in reverse keywords_top..identifiers_top-1  loop
-                  if identifiers( i ).kind = elementKind then
-                     if identifiers( i ).class = constClass then
-                        if identifiers( i ).class = constClass then
-                           maxEnum := integer( to_numeric( identifiers( i ).value ) );
-                           exit;
-                        end if;
-                     end if;
-                  end if;
-              end loop;
-
-              arrayElement := target_first;
-              for i in 2..length( source_val ) loop
-                  ch := element( source_val, i );
-                  if ch = ',' or ch = ']' then
-                     enumVal := integer'value( ' ' & to_string( item ) );
-                     if enumVal < 0 or enumVal > maxEnum then
-                        err( "enumerated position " &
-                             optional_bold( to_string( item ) ) &
-                             " is out of range for " &
-                             optional_bold( to_string( identifiers( elementKind ).name ) ) );
-                     else
-                        assignElement( targetArrayId, arrayElement, item );
-                        arrayElement := arrayElement + 1;
-                        item := null_unbounded_string;
-                     end if;
-                  else
-                     item := item & ch;
-                  end if;
-              end loop;
-             end;
-           end if;
-     elsif kind = uni_string_t then
-        arrayElement := target_first;
-        for i in 2..length( source_val ) loop
-            ch := element( source_val, i );
-            if ch = ',' or ch = ']' then
-               -- if first character is a quote, it's a string value
-               -- use this to validate later on
-               ch := element( item, 1 );
-               if ch /= '"' then
-                  err( "JSON string value expected" );
-               end if;
-               j := 2;
-               -- escape special characters
-               decoded_item := null_unbounded_string;
-               loop
-                 exit when j > length(item)-1;
-                 ch := element( item, j );
-                 if ch = '\' then
-                    j := j + 1;
-                    ch := element( item, j );
-                    if ch = '"' then
-                       decoded_item := decoded_item & '"';
-                    elsif ch = '\' then
-                       decoded_item := decoded_item & '\';
-                    elsif ch = '/' then
-                       decoded_item := decoded_item & '/';
-                    elsif ch =  'b' then
-                       decoded_item := decoded_item & ASCII.BS;
-                    elsif ch = 'f' then
-                       decoded_item := decoded_item & ASCII.FF;
-                    elsif ch = 'n' then
-                       decoded_item := decoded_item & ASCII.LF;
-                    elsif ch = 'r' then
-                       decoded_item := decoded_item & ASCII.CR;
-                    elsif ch = 't' then
-                       decoded_item := decoded_item & ASCII.HT;
-                    end if;
-                 else
-                    decoded_item := decoded_item & ch;
-                 end if;
-                 j := j + 1;
-               end loop;
-               --assignElement( targetArrayId, arrayElement+offsetArrayBeingSorted, decoded_item );
-               assignElement( targetArrayId, arrayElement, decoded_item );
-               arrayElement := arrayElement + 1;
-               item := null_unbounded_string;
-            else
-               item := item & ch;
-            end if;
-        end loop;
-     elsif kind = uni_numeric_t then
-        arrayElement := target_first;
-        for i in 2..length( source_val ) loop
-            ch := element( source_val, i );
-            if ch = ',' or ch = ']' then
-               --assignElement( targetArrayId, arrayElement+offsetArrayBeingSorted, item );
-               -- if first character is a quote, it's a string value not number
-               ch := element( item, 1 );
-               if ch = '"' then
-                  err( "JSON number value expected" );
-               end if;
-               assignElement( targetArrayId, arrayElement, item );
-               arrayElement := arrayElement + 1;
-               item := null_unbounded_string;
-            else
-               item := item & ch;
-            end if;
-        end loop;
-     else
-        err( "array of string or numeric values expected" );
-     end if;
+     DoJsonToArray( target_var_id, source_val );
   end if;
 end ParseArraysToArray;
 
 procedure ParseArraysToJSON is
-  -- Syntax: to_json( string, str_array | num_array )
+  -- Syntax: to_json( string, array )
   -- Example: arrays.to_json( s, a )
   -- Source: N/A
   source_var_id : identifier;
-  --source_base_id: identifier;
-  source_first  : long_integer;
-  source_last   : long_integer;
-  source_len    : long_integer;
   target_ref    : reference;
-  item          : unbounded_string;
-  encoded_item  : unbounded_string;
-  sourceArrayId : arrayID;
-  kind          : identifier;
-  elementKind   : identifier;
-  ch            : character;
-  data          : unbounded_string;
-  result        : unbounded_string;
 begin
   expect( arrays_to_json_t );
   expect( symbol_t, "(" );
@@ -816,88 +611,12 @@ begin
   --   end if;
   --elsif not (class_ok( source_var_id, otherClass ) and identifiers( source_var_id ).list) then
   if not (class_ok( source_var_id, otherClass ) and identifiers( source_var_id ).list) then
-     err( "Array or array type expected" );
+     err( "Array expected" );
   end if;
   expect( symbol_t, ")" );
 
   if isExecutingCommand then
-     sourceArrayId := arrayID( to_numeric( identifiers( source_var_id ).value ) );
-     source_first := firstBound( sourceArrayID );
-     source_last  := lastBound( sourceArrayID );
-     source_len   := source_last - source_first + 1;
-     --offsetArrayBeingSorted  := source_first - 1;
-     kind := getUniType( identifiers( source_var_id ).kind );
-     elementKind := getBaseType( identifiers( identifiers( source_var_id ).kind ).kind );
-     -- In JSON, enumerateds (or, at least, booleans) are by the name,
-     -- not the value.
-     if elementKind = boolean_t then
-        result := to_unbounded_string( "[" );
-        for arrayElementPos in source_first..source_last loop
-            if integer( to_numeric( identifiers( source_var_id ).value ) ) = 0 then
-               item := to_unbounded_string( "false" );
-            else
-               item := to_unbounded_string( "true" );
-            end if;
-            if arrayElementPos /= source_last then
-               result := result & item & to_unbounded_string( "," );
-            end if;
-        end loop;
-        result := result & item & to_unbounded_string( "]" );
-        assignParameter( target_ref, result );
-
-     elsif kind = uni_string_t then
-        result := to_unbounded_string( "[" );
-        for arrayElementPos in source_first..source_last loop
-           --data := arrayElement( sourceArrayId, arrayElementPos+offsetArrayBeingSorted );
-           data := arrayElement( sourceArrayId, arrayElementPos );
-           item := to_unbounded_string( """" );
-           for i in 1..length( data ) loop
-               ch := element( data, i );
-               if ch = '"' then
-                  item := item & "\""";
-               elsif ch = '\' then
-                  item := item & "\\";
-               elsif ch = '/' then
-                  item := item & "\/";
-               elsif ch = ASCII.BS then
-                  item := item & "\b";
-               elsif ch = ASCII.FF then
-                  item := item & "\f";
-               elsif ch = ASCII.LF then
-                  item := item & "\n";
-               elsif ch = ASCII.CR then
-                  item := item & "\r";
-               elsif ch = ASCII.HT then
-                  item := item & "\t";
-               else
-                  item := item & ch;
-               end if;
-           end loop;
-           item := item & '"';
-           if arrayElementPos /= source_last then
-              result := result & item & to_unbounded_string( "," );
-           end if;
-        end loop;
-        result := result & item & to_unbounded_string( "]" );
-        assignParameter( target_ref, result );
-     elsif kind = uni_numeric_t or kind = root_enumerated_t then
-
-        result := to_unbounded_string( "[" );
-        for arrayElementPos in source_first..source_last loop
-           --data := arrayElement( sourceArrayId, arrayElementPos+offsetArrayBeingSorted );
-           data := arrayElement( sourceArrayId, arrayElementPos );
-           if element( data, 1 ) = ' ' then
-              delete( data, 1, 1 );
-           end if;
-           if arrayElementPos /= source_last then
-              result := result & data & to_unbounded_string( "," );
-           end if;
-        end loop;
-        result := result & data & to_unbounded_string( "]" );
-        assignParameter( target_ref, result );
-     else
-        err( "array of string or numeric values expected" );
-     end if;
+     DoArrayToJson( target_ref, source_var_id );
   end if;
 end ParseArraysToJSON;
 

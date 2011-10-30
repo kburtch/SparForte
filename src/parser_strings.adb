@@ -1437,14 +1437,13 @@ procedure ParseStringsToJSON( result : in out unbounded_string) is
   -- Source: N/A
   expr_val   : unbounded_string;
   expr_type  : identifier;
-  ch         : character;
 begin
   expect( strings_to_json_t );
   ParseSingleUniStringExpression( expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_unbounded_string( """" );
-       result := result & ToJSONEscaped( identifiers( field_t ).value );
+       result := result & ToJSONEscaped( expr_val );
        result := result & '"';
     end if;
   exception when others =>
@@ -1457,43 +1456,12 @@ procedure ParseStringsFromJSON( result : in out unbounded_string) is
   -- Source: N/A
   expr_val   : unbounded_string;
   expr_type  : identifier;
-  ch         : character;
-  i          : integer;
 begin
   expect( strings_from_json_t );
   ParseSingleStringParameter( expr_val, expr_type, json_string_t );
   begin
     if isExecutingCommand then
-       result := null_unbounded_string;
-       i := 2;
-       loop
-         exit when i > length(expr_val)-1;
-         if element( expr_val, i ) = '\' then
-            i := i + 1;
-            ch := element( expr_val, i );
-            -- Note : \u not implemented
-            if ch = '"' then
-               result := result & '"';
-            elsif ch = '\' then
-               result := result & '\';
-            elsif ch = '/' then
-               result := result & '/';
-            elsif ch =  'b' then
-               result := result & ASCII.BS;
-            elsif ch = 'f' then
-               result := result & ASCII.FF;
-            elsif ch = 'n' then
-               result := result & ASCII.LF;
-            elsif ch = 'r' then
-               result := result & ASCII.CR;
-            elsif ch = 't' then
-               result := result & ASCII.HT;
-            end if;
-         else
-            result := result & element( expr_val, i );
-         end if;
-         i := i + 1;
-       end loop;
+       DoStringFromJson( result, expr_val );
     end if;
   exception when others =>
     err( "exception raised" );

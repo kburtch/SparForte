@@ -147,6 +147,13 @@ program like this:</p>
 -- vim: ft=spar
 </pre>
 
+<h4>Why are the documentation colours wrong in Firefox on Linux?</h4>
+
+<p>Firefox colour correction feature behaves oddly with certain graphics
+drivers on Linux.  Try opening the URL about:config, confirm the warning
+and change gfx.color_management.mode from 2 to 0 to disable colour
+management.</p>
+
 <h4>How Do I Install Sparforte?</h4>
 
 <p>Follow the instructions in the INSTALL text file included with
@@ -162,16 +169,18 @@ documentation.</p>
 <h4>Why do I get an error when I run commands in backquotes?</h4>
 
 <p>SparForte requires all commands to be terminated with a semi-colon.  This
-includes commands in backquotes.</p>
+includes commands in backquotes.  For example,</p>
+
+<p><tt>files : string := `ls;`;</tt></p>
 
 <h4>Why do I get an error when I run a command with a long option on the command prompt?</h4>
 
 <p>In a command like "ls --help", SparForte appends a semi-colon before
 running the command.  But "--" is the comment symbol and the semi-colon
 is hidden as part of the comment, producing a "shell word or semi-colon
-expected" error.  The solution is to escape the double-minus.  For example,
-use quotes around the long option, or backslashes before each minus sign,
-or use AdaScript parameters.</p>
+expected" or "End of File" error.  The solution is to escape the
+double-minus.  For example, use quotes around the long option, or
+backslashes before each minus sign, or use AdaScript parameters.</p>
 
 <h4>Why can't I use put_line, ?, etc. to start a command pipeline?</h4>
 
@@ -327,6 +336,11 @@ into SparForte 1.x.</p>
 
 <h3>Design Questions</h3>
 
+<h4>Is SparForte a real shell?</h4>
+
+<p>Yes.  SparForte implements its command line features natively.  It is not
+a preprocessor for another shell.</p>
+
 <h4>Isn't Sparforte just another "my favourite language" shell?</h4>
 
 <p>There are several open source shells such as Java's bean shell and
@@ -395,6 +409,16 @@ and shells did not have the ability to process an if expression.
 If shells standardized the if statement, it wouldn't mean that the
 shell was less effective at doing "shell stuff".</p>
 
+<h4>Doesn't a web framework like Rails make a bigger difference than
+SparForte?</h4>
+
+<p>Web frameworks only work while you use them the way the designers
+intended.  If you try to add advanced features, you end up working
+against the framework, and that increases your work.  Some frameworks
+use complicated configuration files so you use configuration files as
+if they were programs.  Rails, in particular, is well-known to speed
+up quick demos or samples but doesn't scale to real web sites.</p>
+
 <h4>Does the choice of language really improve productivity and reduce maintenance?</h4>
 
 <p>Robert L. Glass, Tom Demacro and other industry leaders say that choice of
@@ -412,18 +436,32 @@ kind of time-consuming issues that other languages neglect.</p>
 
 <h4>How fast is SparForte?</h4>
 
-<p>Sparforte is not a language that emphasizes performance.  In version 1.x,
-the focus is on implementing features.  SparForte does a lot of error
-detection and language setup that other, simpler languages do not.  The speed
-depends on what features are used.  Arrays, for example, are quite slow.
-Using features like local variables or custom types can affect performance
-when comparing with other languages.</p>
+<p>SparForte programs will likely run slower than other languages you are
+used to.  There are several reasons for this.</p>
 
-<p>SparForte takes around twice as long as PHP to initialize prior to running
+<p>First, SparForte version 1.x is focused on implementing core features,
+not on optimizing performance.  Some features are not implemented for speed.
+Arrays, for example, are very slow compared to other languages.</p>
+
+<p>Second, SparForte is built with the maximum error checking possible.
+This included checks done by GCC Ada (which does more compile time and run
+time checking compared to most langauges), as well as SparForte's own
+extensive error checking.</p>
+
+<p>Third, it is has more powerful features than other languages, and these
+features may require more setup to use.  As a general rule, the simpler
+the language, the faster the interpreter will run.  SparForte is more
+high level than many languages.</p>
+
+<p>These things mean that your scripts will probably run slower.  For example,
+SparForte takes around twice as long as PHP to initialize prior to running
 a program.  A simple test of a palindrome checker took about twice as long as
 PHP to run.</p>
 
-<p>Expect performance improvements after the core features are complete.</p>
+<p>When evaluating performance, consider the trade-offs for loss of
+execution speed compared to SparForte's other benefits.</p>
+
+<p>Expect performance improvements as the language continues to evolve.</p>
 
 &nbsp;<br>
 

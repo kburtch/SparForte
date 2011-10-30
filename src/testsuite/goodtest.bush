@@ -1212,6 +1212,15 @@ declare
   type json_arr5 is array(1..1) of json_test_enum;
   ja5 : json_arr5;
 
+  type json_arr6 is array(1..2) of json_string;
+  ja6 : json_arr6;
+
+  type json_arr7 is array(1..2) of json_string;
+  ja7 : json_arr7;
+
+  type json_arr8 is array(1..2) of json_string;
+  ja8 : json_arr8;
+
   type json_rec1 is record
     s : string;
   end record;
@@ -1240,43 +1249,62 @@ declare
   end record;
   rs5 : json_rec5;
 
+  type json_rec6 is record
+    i : integer;
+    a : json_string;
+  end record;
+  rs6 : json_rec6;
+
+  type json_rec7 is record
+    i : integer;
+    s : string;
+    j : json_string;
+    k : json_string;
+  end record;
+  rs7 : json_rec7;
+
+  type json_rec8 is record
+    j : json_string;
+  end record;
+  rs8 : json_rec8;
+
 begin
   -- to json
-  arrays.to_json( s, i0 );
-  pragma assert( s = "[]" );
-  arrays.to_json( s, i1 );
-  pragma assert( s = "[23]" );
-  arrays.to_json( s, i2 );
-  pragma assert( s = "[24]" );
-  arrays.to_json( s, i3 );
-  pragma assert( s = "[25,26,27]" );
-  arrays.to_json( s, s0 );
-  pragma assert( s = "[]" );
-  arrays.to_json( s, s1 );
-  pragma assert( s = "[" & ASCII.Quotation & "arch" & ASCII.Quotation & "]" );
-  arrays.to_json( s, s2 );
-  pragma assert( s = "[" & ASCII.Quotation & "able" & ASCII.Quotation & "]" );
-  arrays.to_json( s, s3 );
+  arrays.to_json( js, i0 );
+  pragma assert( js = "[]" );
+  arrays.to_json( js, i1 );
+  pragma assert( js = "[23]" );
+  arrays.to_json( js, i2 );
+  pragma assert( js = "[24]" );
+  arrays.to_json( js, i3 );
+  pragma assert( js = "[25,26,27]" );
+  arrays.to_json( js, s0 );
+  pragma assert( js = "[]" );
+  arrays.to_json( js, s1 );
+  pragma assert( js = "[" & ASCII.Quotation & "arch" & ASCII.Quotation & "]" );
+  arrays.to_json( js, s2 );
+  pragma assert( js = "[" & ASCII.Quotation & "able" & ASCII.Quotation & "]" );
+  arrays.to_json( js, s3 );
   pragma assert( s = "[" &
      ASCII.Quotation & "adam" & ASCII.Quotation & "," &
      ASCII.Quotation & "atom" & ASCII.Quotation & "," &
      ASCII.Quotation & "axe" & ASCII.Quotation & "]" );
   -- from json
-  arrays.from_json( i0, "[]" );
-  arrays.from_json( i1, "[33]" );
+  arrays.to_array( i0, "[]" );
+  arrays.to_array( i1, "[33]" );
   pragma assert( i1(1) = 33 );
-  arrays.from_json( i2, "[34]" );
+  arrays.to_array( i2, "[34]" );
   pragma assert( i2(2) = 34 );
-  arrays.from_json( i3, "[35,36,37]" );
+  arrays.to_array( i3, "[35,36,37]" );
   pragma assert( i3(1) = 35 );
   pragma assert( i3(2) = 36 );
   pragma assert( i3(3) = 37 );
-  arrays.from_json( s0, "[]" );
-  arrays.from_json( s1, "[" & ASCII.Quotation & "bear" & ASCII.Quotation & "]" );
+  arrays.to_array( s0, "[]" );
+  arrays.to_array( s1, "[" & ASCII.Quotation & "bear" & ASCII.Quotation & "]" );
   pragma assert( s1(1) = "bear" );
-  arrays.from_json( s2, "[" & ASCII.Quotation & "bare" & ASCII.Quotation & "]" );
+  arrays.to_array( s2, "[" & ASCII.Quotation & "bare" & ASCII.Quotation & "]" );
   pragma assert( s2(2) = "bare" );
-  arrays.from_json( s3, "[" &
+  arrays.to_array( s3, "[" &
      ASCII.Quotation & "bug" & ASCII.Quotation & "," &
      ASCII.Quotation & "bat" & ASCII.Quotation & "," &
      ASCII.Quotation & "box" & ASCII.Quotation & "]" );
@@ -1285,63 +1313,63 @@ begin
   pragma assert( s3(3) = "box" );
   -- special chars
   s1(1) := "" & ASCII.Quotation;
-  arrays.to_json( s, s1 ); 
-  pragma assert( s = "[" & ASCII.Quotation & "\" & ASCII.Quotation & ASCII.Quotation & "]" );
+  arrays.to_json( js, s1 ); 
+  pragma assert( js = "[" & ASCII.Quotation & "\" & ASCII.Quotation & ASCII.Quotation & "]" );
   s1(1) := "\";
-  arrays.to_json( s, s1 ); 
-  pragma assert( s = "[" & ASCII.Quotation & "\\" & ASCII.Quotation & "]" );
+  arrays.to_json( js, s1 ); 
+  pragma assert( js = "[" & ASCII.Quotation & "\\" & ASCII.Quotation & "]" );
   s1(1) := "/";
-  arrays.to_json( s, s1 ); 
-  pragma assert( s = "[" & ASCII.Quotation & "\/" & ASCII.Quotation & "]" );
+  arrays.to_json( js, s1 ); 
+  pragma assert( js = "[" & ASCII.Quotation & "\/" & ASCII.Quotation & "]" );
   s1(1) := "" & ASCII.BS;
-  arrays.to_json( s, s1 ); 
-  pragma assert( s = "[" & ASCII.Quotation & "\b" & ASCII.Quotation & "]" );
+  arrays.to_json( js, s1 ); 
+  pragma assert( js = "[" & ASCII.Quotation & "\b" & ASCII.Quotation & "]" );
   s1(1) := "" & ASCII.FF;
-  arrays.to_json( s, s1 ); 
-  pragma assert( s = "[" & ASCII.Quotation & "\f" & ASCII.Quotation & "]" );
+  arrays.to_json( js, s1 ); 
+  pragma assert( js = "[" & ASCII.Quotation & "\f" & ASCII.Quotation & "]" );
   s1(1) := "" & ASCII.LF;
-  arrays.to_json( s, s1 ); 
-  pragma assert( s = "[" & ASCII.Quotation & "\n" & ASCII.Quotation & "]" );
+  arrays.to_json( js, s1 ); 
+  pragma assert( js = "[" & ASCII.Quotation & "\n" & ASCII.Quotation & "]" );
   s1(1) := "" & ASCII.CR;
-  arrays.to_json( s, s1 ); 
-  pragma assert( s = "[" & ASCII.Quotation & "\r" & ASCII.Quotation & "]" );
+  arrays.to_json( js, s1 ); 
+  pragma assert( js = "[" & ASCII.Quotation & "\r" & ASCII.Quotation & "]" );
   s1(1) := "" & ASCII.HT;
-  arrays.to_json( s, s1 ); 
-  pragma assert( s = "[" & ASCII.Quotation & "\t" & ASCII.Quotation & "]" );
+  arrays.to_json( js, s1 ); 
+  pragma assert( js = "[" & ASCII.Quotation & "\t" & ASCII.Quotation & "]" );
   --
-  arrays.from_json( s1, "[" & ASCII.Quotation & "\" & ASCII.Quotation & ASCII.Quotation & "]" );
+  arrays.to_array( s1, "[" & ASCII.Quotation & "\" & ASCII.Quotation & ASCII.Quotation & "]" );
   pragma assert( s1(1) = "" & ASCII.Quotation );
-  arrays.from_json( s1, "[" & ASCII.Quotation & "\\" & ASCII.Quotation & "]" );
+  arrays.to_array( s1, "[" & ASCII.Quotation & "\\" & ASCII.Quotation & "]" );
   pragma assert( s1(1) = "\" );
-  arrays.from_json( s1, "[" & ASCII.Quotation & "\/" & ASCII.Quotation & "]" );
+  arrays.to_array( s1, "[" & ASCII.Quotation & "\/" & ASCII.Quotation & "]" );
   pragma assert( s1(1) = "/" );
-  arrays.from_json( s1, "[" & ASCII.Quotation & "\b" & ASCII.Quotation & "]" );
+  arrays.to_array( s1, "[" & ASCII.Quotation & "\b" & ASCII.Quotation & "]" );
   pragma assert( s1(1) = "" & ASCII.BS );
-  arrays.from_json( s1, "[" & ASCII.Quotation & "\f" & ASCII.Quotation & "]" );
+  arrays.to_array( s1, "[" & ASCII.Quotation & "\f" & ASCII.Quotation & "]" );
   pragma assert( s1(1) = "" & ASCII.FF );
-  arrays.from_json( s1, "[" & ASCII.Quotation & "\n" & ASCII.Quotation & "]" );
+  arrays.to_array( s1, "[" & ASCII.Quotation & "\n" & ASCII.Quotation & "]" );
   pragma assert( s1(1) = "" & ASCII.LF );
-  arrays.from_json( s1, "[" & ASCII.Quotation & "\r" & ASCII.Quotation & "]" );
+  arrays.to_array( s1, "[" & ASCII.Quotation & "\r" & ASCII.Quotation & "]" );
   pragma assert( s1(1) = "" & ASCII.CR );
-  arrays.from_json( s1, "[" & ASCII.Quotation & "\t" & ASCII.Quotation & "]" );
+  arrays.to_array( s1, "[" & ASCII.Quotation & "\t" & ASCII.Quotation & "]" );
   pragma assert( s1(1) = "" & ASCII.HT );
   --
-  s := strings.to_json( "a" & ASCII.Quotation );
-  pragma assert( s = ASCII.Quotation & "a\" & ASCII.Quotation & ASCII.Quotation );
-  s := strings.to_json( "b\" );
-  pragma assert( s = ASCII.Quotation & "b\\" & ASCII.Quotation );
-  s := strings.to_json( "c/" );
-  pragma assert( s = ASCII.Quotation & "c\/" & ASCII.Quotation );
-  s := strings.to_json( "d" & ASCII.BS );
-  pragma assert( s = ASCII.Quotation & "d\b" & ASCII.Quotation );
-  s := strings.to_json( "e" & ASCII.FF );
-  pragma assert( s = ASCII.Quotation & "e\f" & ASCII.Quotation );
-  s := strings.to_json( "f" & ASCII.LF );
-  pragma assert( s = ASCII.Quotation & "f\n" & ASCII.Quotation );
-  s := strings.to_json( "g" & ASCII.CR );
-  pragma assert( s = ASCII.Quotation & "g\r" & ASCII.Quotation );
-  s := strings.to_json( "h" & ASCII.HT );
-  pragma assert( s = ASCII.Quotation & "h\t" & ASCII.Quotation );
+  js := strings.to_json( "a" & ASCII.Quotation );
+  pragma assert( js = ASCII.Quotation & "a\" & ASCII.Quotation & ASCII.Quotation );
+  js := strings.to_json( "b\" );
+  pragma assert( js = ASCII.Quotation & "b\\" & ASCII.Quotation );
+  js := strings.to_json( "c/" );
+  pragma assert( js = ASCII.Quotation & "c\/" & ASCII.Quotation );
+  js := strings.to_json( "d" & ASCII.BS );
+  pragma assert( js = ASCII.Quotation & "d\b" & ASCII.Quotation );
+  js := strings.to_json( "e" & ASCII.FF );
+  pragma assert( js = ASCII.Quotation & "e\f" & ASCII.Quotation );
+  js := strings.to_json( "f" & ASCII.LF );
+  pragma assert( js = ASCII.Quotation & "f\n" & ASCII.Quotation );
+  js := strings.to_json( "g" & ASCII.CR );
+  pragma assert( js = ASCII.Quotation & "g\r" & ASCII.Quotation );
+  js := strings.to_json( "h" & ASCII.HT );
+  pragma assert( js = ASCII.Quotation & "h\t" & ASCII.Quotation );
   --
   s := strings.from_json( ASCII.Quotation & "a\" & ASCII.Quotation & ASCII.Quotation );
   pragma assert( s = "a" & ASCII.Quotation );
@@ -1398,11 +1426,11 @@ begin
 
   js := "[1]";
   arrays.to_array( ja5, js );
-  pragma assert( ja5(1) = jte1 );
+  pragma assert( ja5(1) = jte2 );
 
   js := "[2]";
   arrays.to_array( ja5, js );
-  pragma assert( ja5(1) = jte2 );
+  pragma assert( ja5(1) = jte3 );
 
   -- Arrays to Json
 
@@ -1411,15 +1439,15 @@ begin
   pragma assert( js = "[" & ASCII.Quotation & "that" & ASCII.Quotation & "]" );
 
   ja2(1) := 123;
-  arrays.to_json( js, ja5 );
+  arrays.to_json( js, ja2 );
   pragma assert( js = "[123]" );
 
   ja3(1) := false;
-  arrays.to_json( js, ja5 );
+  arrays.to_json( js, ja3 );
   pragma assert( js = "[false]" );
 
   ja3(1) := true;
-  arrays.to_json( js, ja5 );
+  arrays.to_json( js, ja3 );
   pragma assert( js = "[true]" );
 
   ja4(1) := false;
@@ -1559,6 +1587,44 @@ begin
   pragma assert( js = "{" & ASCII.Quotation & "isTrue" & ASCII.Quotation &
          ":true," & ASCII.Quotation & "isFalse" & ASCII.Quotation &
          ":false}" );
+
+  ja6(1) := "[1,2]";
+  ja6(2) := "[3,4]";
+  arrays.to_json( js, ja6 );
+  pragma assert( js = "[[1,2],[3,4]]" );
+
+  rs6.i := 0;
+  rs6.a := "[1,2]";
+  records.to_json( js, rs6 );
+  pragma assert( js = "{" &
+    ASCII.Quotation & "i" & ASCII.Quotation & ": 0," &
+    ASCII.Quotation & "a" & ASCII.Quotation & ":[1,2]}" );
+
+  ja7(1) := "{" & ASCII.Quotation & "i" & ASCII.Quotation & ": 0}";
+  ja7(2) := "[1,2]";
+  arrays.to_json( js, ja7 );
+  pragma assert( js = "[{" & ASCII.Quotation &
+  "i" & ASCII.Quotation & ": 0},[1,2]]" );
+
+  ja8 : json_arr8;
+  js := "[{" &'"' & 'i' & '"' & ":0},[2,3]]";
+  arrays.to_array( ja8, js );
+  pragma assert( ja8(1) = "{" &'"' & 'i' & '"' & ":0}" );
+  pragma assert( ja8(2) = "[2,3]" );
+
+  js := "{" & '"' & "i" & '"' & ":4," &
+     '"' & "s" & '"' & ":" & '"' & "hello" & '"' & "," &
+    '"' & "j" & '"' & ":[1,2,3]," &
+    '"' & "k" & '"' & ":{" & '"' & "x" & '"' & ":0}}";
+  records.to_record( rs7, js );
+  pragma assert( rs7.i = 4 );
+  pragma assert( rs7.s = "hello" );
+  pragma assert( rs7.j = "[1,2,3]" );
+  pragma assert( rs7.k = "{" & '"' & "x" & '"' & ":0}" );
+
+  js := "{" & '"' & "j" & '"' & ":[1,2,3]" & "}";
+  records.to_record( rs8, js );
+  pragma assert( rs8.j = "[1,2,3]" );
 
 end;
 
@@ -2365,4 +2431,3 @@ pragma assert( ada95_i=10 );
 trace( false );
 new_line;
 put_line( "CONGRATULATIONS! BUSH HAS SUCCESSFULLY RUN THIS TEST SCRIPT" );
-

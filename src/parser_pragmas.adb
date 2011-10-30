@@ -73,12 +73,13 @@ use ada.text_io,
 package body parser_pragmas is
 
 type aPragmaKind is ( ada_95, asserting, annotate, debug, debug_on,
-     depreciated, export, gcc_errors, import, inspection, inspect_var,
+     depreciated, export, export_json, gcc_errors, import, import_json,
+     inspection, inspect_var,
      license, noCommandHash, peek, promptChange, register_memcache_server,
      restriction, restriction_annotations, restriction_auto,
      restriction_external, restriction_mysql, restriction_postgresql,
-     restriction_todos, template, unchecked_import, uninspect_var,
-     unrestricted_template, volatile );
+     restriction_todos, template, unchecked_import, unchecked_import_json,
+     uninspect_var, unrestricted_template, volatile );
 
 --  PARSE PRAGMA KIND
 --
@@ -103,10 +104,14 @@ begin
      pragmaKind :=  depreciated;
   elsif name = "export" then
      pragmaKind := export;
+  elsif name = "export_json" then
+     pragmaKind := export_json;
   elsif name = "gcc_errors" then
      pragmaKind := gcc_errors;
   elsif name = "import" then
      pragmaKind := import;
+  elsif name = "import_json" then
+     pragmaKind := import_json;
   elsif name = "inspect" then
      pragmaKind := inspect_var;
   elsif name = "inspection_point" then
@@ -369,6 +374,8 @@ procedure ParsePragma is
   var_id      : identifier;
   exportType  : unbounded_string;
   importType  : unbounded_string;
+  ref         : reference;
+  newValue    : unbounded_string;
 begin
   expect( pragma_t );
 
@@ -403,9 +410,9 @@ begin
   when depreciated =>                           -- pragma depreciated
      expr_val := identifiers( token ).value;
      expect( strlit_t );
-  when export =>                                -- pragma export
+  when export | export_json =>                  -- pragma export/json
      ParseExportKind( var_id, exportType );
-  when import | unchecked_import =>             -- pragma unchecked/import
+  when import | unchecked_import | import_json => -- pragma unchecked/import/json
      ParseImportKind( var_id, importType );
   when gcc_errors =>                         -- pragma gcc_errors
      null;
@@ -523,16 +530,31 @@ begin
         -- later, this should create a list of depreciation message
         -- for now, only the entire script is depreciated
         depreciatedMsg := "This script made obsolete by " & expr_val & '.';
-     when export =>
-        if identifiers( var_id ).class = userProcClass then
-           err( "procedures cannot be exported" );
-        elsif identifiers( var_id ).class = userFuncClass then
-           err( "functions cannot be exported" );
-        elsif identifiers( var_id ).list then
-           err( "arrays cannot be exported" );
-        elsif identifiers( var_id ).export then
-           err( "variable is already exported" );
-        elsif uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
+     when export | export_json  =>
+        if pragmaKind = export_json then
+           identifiers( var_id ).mapping := json;
+           if identifiers( var_id ).class = userProcClass then
+              err( "procedures cannot be exported" );
+           elsif identifiers( var_id ).class = userFuncClass then
+              err( "functions cannot be exported" );
+           elsif identifiers( var_id ).export then
+              err( "variable is already exported" );
+           end if;
+        else
+           identifiers( var_id ).mapping := none; -- should not be necessary
+           if identifiers( var_id ).class = userProcClass then
+              err( "procedures cannot be exported" );
+           elsif identifiers( var_id ).class = userFuncClass then
+              err( "functions cannot be exported" );
+           elsif identifiers( var_id ).list then
+              err( "arrays cannot be exported without JSON" );
+           elsif identifiers( var_id ).export then
+              err( "variable is already exported" );
+           elsif not uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
+              err( "string variable exported" );
+           end if;
+        end if;
+        if not error_found then
            identifiers( var_id ).export := true;
            if exportType = "local_memcache" then
               identifiers( var_id ).method := local_memcache;
@@ -549,16 +571,33 @@ begin
         end if;
      when gcc_errors =>
         gccOpt := true;
-     when import =>
-        if identifiers( var_id ).class = userProcClass then
-           err( "procedures cannot be imported" );
-        elsif identifiers( var_id ).class = userFuncClass then
-           err( "functions cannot be imported" );
-        elsif identifiers( var_id ).list then
-           err( "arrays cannot be imported" );
-        elsif identifiers( var_id ).import then
-           err( "variable is already imported" );
-        elsif uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
+     when import | import_json =>
+        -- Check for a reasonable identifier type
+        if pragmaKind = import_json then
+           identifiers( var_id ).mapping := json;
+           if identifiers( var_id ).class = userProcClass then
+              err( "procedures cannot be imported" );
+           elsif identifiers( var_id ).class = userFuncClass then
+              err( "functions cannot be imported" );
+           elsif identifiers( var_id ).import then
+              err( "variable is already imported" );
+           end if;
+        else
+           identifiers( var_id ).mapping := none;
+           if identifiers( var_id ).class = userProcClass then
+              err( "procedures cannot be imported" );
+           elsif identifiers( var_id ).class = userFuncClass then
+              err( "functions cannot be imported" );
+           elsif identifiers( var_id ).list then
+              err( "arrays cannot be imported without JSON" );
+           elsif identifiers( var_id ).import then
+              err( "variable is already imported" );
+           elsif uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
+              err( "string variable exported" );
+           end if;
+        end if;
+        -- All clear? Get the value
+        if not error_found then
            identifiers( var_id ).import := true;
            if importType = "local_memcache" then
               identifiers( var_id ).method := local_memcache;
@@ -566,8 +605,8 @@ begin
               begin
                  Get( localMemcacheCluster,
                       identifiers( var_id ).name,
-                      identifiers( var_id ).value );
-                 if length( identifiers( var_id ).value ) = 0 then
+                      newValue );
+                 if length( newValue ) = 0 then
                     err( "unable to find variable " &
                          to_string( identifiers( var_id ).name ) &
                          " in the local memcache" );
@@ -581,8 +620,8 @@ begin
               begin
                  Get( distributedMemcacheCluster,
                       identifiers( var_id ).name,
-                      identifiers( var_id ).value );
-                 if length( identifiers( var_id ).value ) = 0 then
+                      newValue );
+                 if length( newValue ) = 0 then
                     err( "unable to find variable " &
                          to_string( identifiers( var_id ).name ) &
                          " in the memcache" );
@@ -592,22 +631,54 @@ begin
               end;
            elsif processingTemplate and importType = "cgi" then
               identifiers( var_id ).method := http_cgi;
-              identifiers( var_id ).value := null_unbounded_string;
               for i in 1..cgi.key_count( to_string( identifiers( var_id ).name ) ) loop
-                  identifiers( var_id ).value := identifiers( var_id ).value &
-                     to_unbounded_string( cgi.value( to_string( identifiers( var_id ).value ), 1, true ) );
+                  newValue := newValue & to_unbounded_string( cgi.value(
+                      to_string( identifiers( var_id ).value ), 1, true ) );
                end loop;
            elsif not processingTemplate and importType = "cgi" then
                err( "import type cgi must be used in a template" );
            else
               identifiers( var_id ).method := shell;
-              refreshVolatile( var_id );
+              declare
+                -- this worked when we had a string.  now this could be an
+                -- array and refreshing the var id will blow away the array
+                -- value!  This is a kludge: replace refreshVolatile with
+                -- something non-destructive for arrays, or make it smarter.
+                tmp : unbounded_string := identifiers( var_id ).value;
+              begin 
+                refreshVolatile( var_id );
+                newValue := identifiers( var_id ).value;
+                identifiers( var_id ).value := tmp;
+              end;
            end if;
+           -- show a trace of what's imported.  If JSON, show JSON as it
+           -- could be multiple values
            if trace then
                put_trace(
                   to_string( identifiers( var_id ).name ) & " := """ &
-                  to_string( ToEscaped( identifiers( var_id ).value ) ) &
+                  to_string( ToEscaped( newValue ) ) &
                   """" );
+           end if;
+           -- Apply the translation mapping.
+           -- if it's JSON, translate from JSON.  The translation routine
+           -- depends on the variable type.
+           if pragmaKind = import_json then
+              if getUniType( identifiers( var_id ).kind ) = uni_string_t then
+                 DoStringFromJson( identifiers( var_id ).value, newValue );
+              elsif identifiers( var_id ).list then
+                 DoJsonToArray( var_id, newValue );
+              elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then
+                 ref.id := var_id;
+                 ref.kind := identifiers( var_id ).kind;
+                 DoJsonToRecord( ref, newValue );
+              elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then
+                 identifiers( var_id ).value := newValue;
+              else
+                 err( "internal error: unexpected import translation type" );
+              end if;
+           else
+              -- otherwise, just copy new value
+              identifiers( var_id ).value := newValue;
            end if;
         end if;
      when inspection =>
@@ -726,16 +797,34 @@ begin
         elsif templateType = wmlTemplate then
             cgi.put_cgi_header( "Content-type: text/vnd.wap.wml" );
         end if;
-     when unchecked_import =>
-        if identifiers( var_id ).class = userProcClass then
-           err( "procedures cannot be imported" );
-        elsif identifiers( var_id ).class = userFuncClass then
-           err( "functions cannot be imported" );
-        elsif identifiers( var_id ).list then
-           err( "arrays cannot be imported" );
-        elsif identifiers( var_id ).import then
-           err( "variable is already imported" );
-        elsif uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
+     when unchecked_import | unchecked_import_json =>
+        -- Check for a reasonable identifier type
+        if pragmaKind = import_json then
+           identifiers( var_id ).mapping := json;
+           if identifiers( var_id ).class = userProcClass then
+              err( "procedures cannot be imported" );
+           elsif identifiers( var_id ).class = userFuncClass then
+              err( "functions cannot be imported" );
+           elsif identifiers( var_id ).import then
+              err( "variable is already imported" );
+           end if;
+        else
+           identifiers( var_id ).mapping := none;
+           if identifiers( var_id ).class = userProcClass then
+              err( "procedures cannot be imported" );
+           elsif identifiers( var_id ).class = userFuncClass then
+              err( "functions cannot be imported" );
+           elsif identifiers( var_id ).list then
+              err( "arrays cannot be imported without JSON" );
+           elsif identifiers( var_id ).import then
+              err( "variable is already imported" );
+           elsif uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
+              err( "string variable exported" );
+           end if;
+        end if;
+        -- All clear? Get the value
+        if not error_found then
+           identifiers( var_id ).import := true;
            if importType = "local_memcache" then
               identifiers( var_id ).method := local_memcache;
               checkAndInitializeLocalMemcacheCluster;
@@ -749,7 +838,7 @@ begin
                       temp );
                  if length( temp ) > 0 then
                     identifiers( var_id ).import := true;
-                    identifiers( var_id ).value := temp;
+                    newValue := temp;
                  end if;
               exception when others =>
                  err( "exception raised" );
@@ -767,7 +856,7 @@ begin
                       temp );
                  if length( temp ) > 0 then
                     identifiers( var_id ).import := true;
-                    identifiers( var_id ).value := temp;
+                    newValue := temp;
                  end if;
               exception when others =>
                  err( "exception raised" );
@@ -778,26 +867,60 @@ begin
                  identifiers( var_id ).method := http_cgi;
                  identifiers( var_id ).value := null_unbounded_string;
                  for i in 1..cgi.key_count( to_string( identifiers( var_id ).name ) ) loop
-                     identifiers( var_id ).value := identifiers( var_id ).value &
+                     newValue := identifiers( var_id ).value &
                         to_unbounded_string( cgi.value( to_string( identifiers( var_id ).value ), 1, false) );
                   end loop;
               end if;
-           elsif importType = "cgi" then
-              err( "import type cgi must be used in a template" );
+           elsif not processingTemplate and importType = "cgi" then
+               err( "import type cgi must be used in a template" );
            else
               if inEnvironment( var_id ) then
                  identifiers( var_id ).import := true;
                  identifiers( var_id ).method := shell;
-                 refreshVolatile( var_id );
+                 declare
+                   -- this worked when we had a string.  now this could be an
+                   -- array and refreshing the var id will blow away the array
+                   -- value!  This is a kludge: replace refreshVolatile with
+                   -- something non-destructive for arrays, or make it smarter.
+                   tmp : unbounded_string := identifiers( var_id ).value;
+                 begin 
+                   refreshVolatile( var_id );
+                   newValue := identifiers( var_id ).value;
+                   identifiers( var_id ).value := tmp;
+                 end;
               end if;
            end if;
+           -- show a trace of what's imported.  If JSON, show JSON as it
+           -- could be multiple values
            if trace then
-              put_trace(
-                 to_string( identifiers( var_id ).name ) & " := """ &
-                 to_string( ToEscaped( identifiers( var_id ).value ) ) &
-                 """" );
+               put_trace(
+                  to_string( identifiers( var_id ).name ) & " := """ &
+                  to_string( ToEscaped( newValue ) ) &
+                  """" );
+           end if;
+           -- Apply the translation mapping.
+           -- if it's JSON, translate from JSON.  The translation routine
+           -- depends on the variable type.
+           if pragmaKind = import_json then
+              if getUniType( identifiers( var_id ).kind ) = uni_string_t then
+                 DoStringFromJson( identifiers( var_id ).value, newValue );
+              elsif identifiers( var_id ).list then
+                 DoJsonToArray( var_id, newValue );
+              elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then
+                 ref.id := var_id;
+                 ref.kind := identifiers( var_id ).kind;
+                 DoJsonToRecord( ref, newValue );
+              elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then
+                 identifiers( var_id ).value := newValue;
+              else
+                 err( "internal error: unexpected import translation type" );
+              end if;
+           else
+              -- otherwise, just copy new value
+              identifiers( var_id ).value := newValue;
            end if;
         end if;
+
      when inspect_var =>
         identifiers( var_id ).inspect := true;
      when uninspect_var =>

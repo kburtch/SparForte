@@ -125,6 +125,8 @@ begin
      return false;                                              -- delete fail
   elsif id = identifiers_top-1 then                             -- last id?
      --kind := identifiers( id ).kind;
+     -- if we're using json, then we're not actually exporting the
+     -- array value but the json string representing the array
      -- don't delete array types, just array vars.
      if identifiers( id ).list and identifiers( id ).class = otherClass then
         -- Note: You can't discard the array type: others may be using it.
@@ -176,6 +178,7 @@ begin
   identifiers( id ).import := false;                            -- clear these
   identifiers( id ).export := false; 
   identifiers( id ).method := none; 
+  identifiers( id ).mapping := none; 
   identifiers( id ).list   := false; 
   identifiers( id ).field_of  := eof_t; 
   identifiers( id ).volatile := false; 
@@ -222,6 +225,7 @@ begin
        class    => otherClass,
        import   => true,                                        -- must import
        method   => shell,
+       mapping  => none,
        export   => false,
        volatile => false,
        limit    => false,
@@ -251,6 +255,7 @@ begin
        class    => class,
        import   => false,
        method   => none,
+       mapping  => none,
        export   => false,
        volatile => false,
        limit    => false,
@@ -348,6 +353,7 @@ begin
                  class    => constClass,
                  import   => false,
                  method   => none,
+                 mapping  => none,
                  export   => false,
                  volatile => false,
                  limit    => false,
@@ -381,6 +387,7 @@ begin
        class    => constClass,
        import   => false,
        method   => none,
+       mapping  => none,
        export   => false,
        volatile => false,
        limit    => false,

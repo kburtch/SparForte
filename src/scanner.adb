@@ -256,6 +256,9 @@ begin
         when shell => put( "shell environment " );
         when others => put( "unknown " );
         end case;
+        if ident.mapping = json then
+           put( "json " );
+        end if;
      end if;
 
      -- Show the class (type, constant, etc.)

@@ -9,8 +9,7 @@ KNOWN BUGS
 
 CHANGES
 
-1. New: pragma restriction( no_mysql_database / no_postgresql_database ) to
-disable connections to a database engine.
+1. New: pragma restriction( no_mysql_database / no_postgresql_database ) to disable connections to a database engine.
 
 2. Change: more error detection on pragma import / export / unchecked_import
 
@@ -31,11 +30,9 @@ files / separate procuedures and functions.
 
 10. Fix: ] is escaped when searching in globbing pattern for shell words.
 
-11. Fix: Dollar expansion variables names now terminated by first
-non-alpha/underscore character, which is more like a typical Bourne shell.
+11. Fix: Dollar expansion variables names now terminated by first non-alpha/underscore character, which is more like a typical Bourne shell.
 
-12. Fix: "error in globbing expression" expressions no longer raised on shell
-words with characters that cannot be globbed.
+12. Fix: "error in globbing expression" expressions no longer raised on shell words with characters that cannot be globbed.
 
 13. New: Additional template types: css, js, json, wml and xml.
 
@@ -43,8 +40,7 @@ words with characters that cannot be globbed.
 
 15. Fix: string space handling in shell word splitting.
 
-16. Fix: double spaces being dropped inside of string literals on command
-line.
+16. Fix: double spaces being dropped inside of string literals on command line.
 
 17. Fix: assignment variable unset for an errornous assignment part
 
@@ -58,6 +54,16 @@ line.
 
 22. Fix: Out parameters no longer overwrite the type of an existing variable.
 
-23. New: JSON subprograms: arrays.to_array, arrays.to_json, records.to_json,
-records.to_record.  New data type: json_string.
+23. New: JSON subprograms: arrays.to_array, arrays.to_json, records.to_json, records.to_record.  New data type: json_string.
+
+24. New: JSON subprograms: strings.to_json
+
+25. Fix: New spar.vim syntax file for download for the VIM vi editor.
+
+26. New: pragma import_json.
+
+27. Change: JSON capabilities now implement recusion so they can now handle arrays and records with json_string components.
+
+28. Change: make configuration now uses two processes instead of one for
+faster builds.
 

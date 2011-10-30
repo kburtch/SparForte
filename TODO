@@ -146,8 +146,10 @@ ISSUES (AdaScript)
   * subprograms (AdaScript Issues)
     - parseFunction/ProcedureCallSemicolon requires rewriting parseGeneralStatement (that is, not one expect( ; ) for all general statements)
     - expressions should be able to return records and arrays
+      - functions should be able to return records and arrays
     - forward procedures broken (commented out in tests) - params are broke
       when expecting forward subprogram
+    - out and in out parameter types in user-defined procedures
 
   * command types (AdaScript Issues)
       - can command types be implemented using appropriate pragmas
@@ -253,6 +255,7 @@ MAJOR REDESIGNS
     - allow raise, don't worry about declaring exceptions until later
 
  - performance enhancements
+    - arrays are very slow
     - lineRead still reads as unbounded_string instead of copying directly
       into script variable, causing double buffering and conversion slowdowns
     - more sophisticated byte code for speed
@@ -262,7 +265,7 @@ MAJOR REDESIGNS
          tokenize the script file.
     - change system calls to get tput results - remove system() reliance
     - "kind" field should be a pointer for speed, not an array index
-    - no type-checking after syntax-check stage
+    - no type-checking after syntax-check stage?
     - a pragma inline should be created in order to cache other scripts
     - DoRunTimeStatments should probably fork and use pipes to read results
       instead of using a temp file

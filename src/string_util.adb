@@ -450,6 +450,44 @@ begin
   return item;
 end ToJSONEscaped;
 
+function ToJSONUnescaped( s : unbounded_string ) return unbounded_string is
+-- convert JSON escape codes in string back to actual characters
+  item : unbounded_string;
+  ch   : character;
+  k    : natural := 1;
+begin
+  item := null_unbounded_string;
+  while k <= length( s ) loop
+     ch := element( s, k );
+     if ch = '\' then
+        k := k + 1;
+        exit when k > length( s ); -- don't crash on trailing backslash
+        ch := element( s, k );
+        if ch = '"' then
+           item := item & '"';
+        elsif ch = '\' then
+           item := item & '\';
+        elsif ch = '/' then
+           item := item & '/';
+        elsif ch =  'b' then
+           item := item & ASCII.BS;
+        elsif ch = 'f' then
+           item := item & ASCII.FF;
+        elsif ch = 'n' then
+           item := item & ASCII.LF;
+        elsif ch = 'r' then
+           item := item & ASCII.CR;
+        elsif ch = 't' then
+           item := item & ASCII.HT;
+        end if;
+     else
+        item := item & ch;
+     end if;
+      k := k + 1;
+  end loop;
+  return item;
+end ToJSONUnescaped;
+
 function AorAN( s : unbounded_string ) return unbounded_string is
   ch : character := Element( s, 1 );
 begin

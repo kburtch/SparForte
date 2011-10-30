@@ -573,9 +573,14 @@ an exception.</td>
 <td>
 <br>Write the CGI header to current_output, including two carriage returns.
 This header determines the form of the program's reply (by default, an
-HTML document).
-<br>Example: first_value := cgi.key_value( 1 );
-<br>Ada Equivalent: CGI.Value (NOTE: a different name)
+HTML document).  A typical program would first call this function which tells
+the calling HTTP server what kind of information will be returned. Usually
+the CGI header is a reply saying "I will reply a generated HTML document",
+so that is the default of Put_CGI_Header, but you could reply something else
+(for example, a Location: header to automatically redirect someone to a
+different URL.
+<br>Example: cgi.put_cgi_header;
+<br>Ada Equivalent: cgi.put_cgi_header
 <br>Parameters:
 <table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
 <tr>

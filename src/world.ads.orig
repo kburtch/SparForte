@@ -216,7 +216,18 @@ type anIdentifierClass is ( constClass, subClass, typeClass, funcClass,
 -- Note: http_cgi to avoid ambiguity over "cgi" package name
 
 type anImportMethod is ( none, shell, http_cgi, local_memcache, memcache );
- 
+type anImportMapping is ( none, json );
+
+------------------------------------------------------------------------------
+--
+-- This is not actually used.
+--
+-- Callbacks to execute a build-in procedure or function (such as put_line).
+
+type aBuiltinProcedureCallback is access procedure;
+type aBuiltinFunctionCallback is access procedure( value : out unbounded_string );
+
+
 ------------------------------------------------------------------------------
 -- Identifier Declarations
 --
@@ -232,6 +243,7 @@ type declaration is record
                 := otherClass;
      import   : boolean := false;               -- marked by pragma import
      method   : anImportMethod := none;         -- how to import
+     mapping  : anImportMapping := none;        -- how to translate on import
      export   : boolean := false;               -- marked by pragma export
      volatile : boolean := false;               -- marked by pragma volatile
      limit    : boolean := false;               -- limited type

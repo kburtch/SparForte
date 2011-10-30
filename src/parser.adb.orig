@@ -5302,6 +5302,9 @@ procedure ParseShellCommand is
        exportList := new argumentList( 1..positive( exportCnt ) );
        for id in 1..identifiers_top-1 loop
            if identifiers( id ).export and not identifiers( id ).deleted then
+              -- a regular export means exporting the variable's value.  If
+              -- it's a json export, then we have to convert the value to
+              -- a json string (especially if it is a complex type)
               tempStr := identifiers( id ).name & "=" & identifiers( id ).value;
               if trace then
                  put_trace( "exporting '" & to_string( tempStr ) & "'" );
