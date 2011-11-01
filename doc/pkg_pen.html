@@ -156,11 +156,284 @@ pen pixels will be bright red.</p>
         </center>
 
 <p>
+<hr><b>blend(r1,g1,b1,r2,g2,b2,r,g,b)</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Compute the average for the two RGB colours and return
+the resulting RGB colour.
+<br>Example: pen.blend( 0, 0, 0, 100, 100, 100, r, g, b ); -- RGB will be 50
+<br>Ada Equivalent: N/A - Pen (SparForte package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>r1</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of red in the first color</td>
+</tr><tr>
+<td>g1</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of green in the first color</td>
+</tr><tr>
+<td>b1</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of blue in the first color</td>
+</tr><tr>
+<td>r2</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of red in the second color</td>
+</tr><tr>
+<td>g2</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of green in the second color</td>
+</tr><tr>
+<td>b2</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of blue in the second color</td>
+</tr><tr>
+<td>r</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of red in the averaged color</td>
+</tr><tr>
+<td>g</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of green in the averaged color</td>
+</tr><tr>
+<td>b</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of blue in the averaged color</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.clear( c ) / pen.clear( c, r, g, b) / pen.clear( c, cn )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Fill the drawing area with the specified color.  The color
+may be specified as a color name or an RGB percentage value.
+If the color name is omitted, the current pen color is used.
+This is not affected by wait_to_reveal.  It is intended primarily
+for use at the command prompt.  To fill the drawing area with
+a color in a way that is affected by wait_to_reveal, use
+fill_rect.
+<br>Example: pen.clear( my_canvas, pen_color_name.turquoise );
+<br>Ada Equivalent: N/A - Pen (SparForte package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>r</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of red in the color</td>
+</tr><tr>
+<td>g</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of green in the color</td>
+</tr><tr>
+<td>b</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of blue in the color</td>
+</tr><tr>
+<td>cn</td>
+
+<td>in</td>
+
+<td>pen.pen_color_name</td>
+
+<td>optional</td>
+
+<td>the name of the colour to clear with</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>fade(r1,g1,b1,p,r,g,b)</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Brighten or darken a color by percentage p and return
+the resulting RGB colour.
+<br>Example: pen.fade( 100, 100, 100, 50, r, g, b); -- RGB will be 50
+<br>Ada Equivalent: N/A - Pen (SparForte package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>r1</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of red in the color to fade</td>
+</tr><tr>
+<td>g1</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of green in the color to fade</td>
+</tr><tr>
+<td>b1</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of blue in the color to fade</td>
+</tr><tr>
+<td>p</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>required</td>
+
+<td>percentage to fade by</td>
+</tr><tr>
+<td>r</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>required</td>
+
+<td>percentage of red in the new color</td>
+</tr><tr>
+<td>g</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>required</td>
+
+<td>percentage of green in the new color</td>
+</tr><tr>
+<td>b2</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>required</td>
+
+<td>percentage of blue in the new color</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
 <hr><b>pen.fill_ellipse( c, r )</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
 <td>
 <br>Fill ellipse bounded by rectangle r in canvas c using the current pen.
+If wait_to_reveal is used, the results will not appear until revealed.
 <br>Example: pen.fill_ellipse( canvas_id, pie_graph_rect );
 <br>Ada Equivalent: N/A - Pen.fillRect (SparForte package)
 <br>Parameters:
@@ -199,6 +472,7 @@ pen pixels will be bright red.</p>
 <tr>
 <td>
 <br>Fill rectange r in canvas c using the current pen.
+If wait_to_reveal is used, the results will not appear until revealed.
 <br>Example: pen.fill_rect( canvas_id, background_rect );
 <br>Ada Equivalent: N/A - Pen.fillRect (SparForte package)
 <br>Parameters:
@@ -238,6 +512,7 @@ pen pixels will be bright red.</p>
 <tr>
 <td>
 <br>Draw an outline around ellipse bounded by rectangle r in canvas c using the current pen.
+If wait_to_reveal is used, the results will not appear until revealed.
 <br>Example: pen.fill_ellipse( canvas_id, pie_graph_rect );
 <br>Ada Equivalent: N/A - Pen.frameRect (SparForte package)
 <br>Parameters:
@@ -277,6 +552,7 @@ pen pixels will be bright red.</p>
 <td>
 
 <br>Draw an outline around rectange r in canvas c using the current pen.
+If wait_to_reveal is used, the results will not appear until revealed.
 <br>Example: pen.frame_rect( canvas_id, background_rect );
 <br>Ada Equivalent: N/A - Pen.fillRect (SparForte package)
 <br>Parameters:
@@ -449,12 +725,74 @@ pen pixels will be bright red.</p>
 &nbsp;<br>
 
 <p>
+<hr><b>p := greyscale( r,g,b)</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Compute the grescale for the RGB color and return the RGB
+percentage (where RGB will be the same).  This is weighted for
+the human eye.
+<br>Example: p := pen.greyscale( 10, 20, 30 );
+<br>Ada Equivalent: N/A - Pen (SparForte package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+</tr><tr>
+<tdpr</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>return value</td>
+
+<td>percentage to use for red, green and blue in the grey color</td>
+</tr><tr>
+<td>r</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of red in the color</td>
+</tr><tr>
+<td>g</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of green in the color</td>
+</tr><tr>
+<td>b</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of blue in the color</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
 <hr><b>pen.hline( c, x1, x2, y )</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
 <td>
 
 <br>Draw a horizontal line between (x1,y) and (x2,y) on canvas c in the current pen.  Ignores clipping region.
+If wait_to_reveal is used, the results will not appear until revealed.
 <br>Example: pen.hline( canvas_id, 0, 100, 50);
 <br>Ada Equivalent: N/A - Pen.hline (SparForte package)
 <br>Parameters:
@@ -754,6 +1092,7 @@ the rectangle to grow.  The center of the rectangle remains unchanged.
 
 <br>Draw a line in the current pen from the current pen position to a new relative position
 offset by dx and dy. 
+If wait_to_reveal is used, the results will not appear until revealed.
 <br>Example: pen.line( canvas_id, 0, 10 );
 <br>Ada Equivalent: N/A - Pen.line (SparForte package)
 <br>Parameters:
@@ -803,6 +1142,7 @@ offset by dx and dy.
 <tr>
 <td>
 <br>Draw a line with the pen from the current pen position to a new position (x,y).
+If wait_to_reveal is used, the results will not appear until revealed.
 <br>Example: pen.line_to( canvas_id, 75, 10 );
 <br>Ada Equivalent: N/A - Pen.line (SparForte package)
 <br>Parameters:
@@ -1310,6 +1650,68 @@ unchanged.
 &nbsp;<br>
 
 <p>
+<hr><b>pen.reveal( c )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Undo a wait_to_reveal.  The time of hiding the drawing has been
+completed and the results are ready to be shown.  Repeated use of this
+function decrements a counter and the results are not shown until all
+reveals are performed (to allow the drawing to be nested).
+<br>Example: pen.reveal( c )
+<br>Ada Equivalent: N/A - Pen (SparForte package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.reveal_now( c )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Undo all wait_to_reveal calls and immediately show the results of
+any hidden drawing.  Further drawing will be immediately visible.  This
+is intended for debugging or use at the command prompt.  Further
+reveal's will have no effect.
+<br>Example: pen.reveal_now( c )
+<br>Ada Equivalent: N/A - Pen (SparForte package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
 <hr><b>pen.set_pen_brush( c, b )</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
@@ -1611,12 +2013,47 @@ window title bar.
 &nbsp;<br>
 
 <p>
+<hr><b>pen.wait_to_reveal( c )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Begin to hide the results of the drawing commands.  Continue to hide
+until revealed when the final results are shown.  Repeated use of this
+function increments a counter and the results are not shown until all
+reveals are performed (to allow the drawing to be nested).  This call
+speeds drawing in two ways (1) it only shows the final result in the
+case of overlapping drawing, (2) the display will not have to be
+refreshed after each drawing operation.
+<br>Example: pen.wait_to_reveal( c )
+<br>Ada Equivalent: N/A - Pen (SparForte package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
 <hr><b>pen.vline( c, x, y1, y2 )</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
 <td>
 
 <br>Draw a vertical line between (x,y1) and (x,y2) on canvas c in the current pen.  Ignores clipping region.
+If wait_to_reveal is used, the results will not appear until revealed.
 <br>Example: pen.set_vline( canvas_id, 50, 0, 100);
 <br>Ada Equivalent: N/A - Pen.vline (SparForte package)
 <br>Parameters:
