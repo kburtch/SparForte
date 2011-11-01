@@ -276,7 +276,7 @@ This is not affected by wait_to_reveal.  It is intended primarily
 for use at the command prompt.  To fill the drawing area with
 a color in a way that is affected by wait_to_reveal, use
 fill_rect.
-<br>Example: pen.clear( my_canvas, pen_color_name.turquoise );
+<br>Example: pen.clear( my_canvas, pen.pen_color_name.turquoise );
 <br>Ada Equivalent: N/A - Pen (SparForte package)
 <br>Parameters:
 <table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
@@ -467,13 +467,14 @@ If wait_to_reveal is used, the results will not appear until revealed.
 &nbsp;<br>
 
 <p>
-<hr><b>pen.fill_rect( c, r )</b>
+<hr><b>pen.fill_rect( c, rt, r, g, b ) / pen.fill_rect( c, rt, cn )</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
 <td>
-<br>Fill rectange r in canvas c using the current pen.
+<br>Fill rectangle rt in canvas c using the specified RGB color
+or color name.
 If wait_to_reveal is used, the results will not appear until revealed.
-<br>Example: pen.fill_rect( canvas_id, background_rect );
+<br>Example: pen.fill_rect( canvas_id, background_rect, pen.pen_color_name.yellow );
 <br>Ada Equivalent: N/A - Pen.fillRect (SparForte package)
 <br>Parameters:
 <table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
@@ -488,7 +489,7 @@ If wait_to_reveal is used, the results will not appear until revealed.
 
 <td>the drawing area canvas</td>
 </tr><tr>
-<td>r</td>
+<td>rt</td>
 
 <td>in</td>
 
@@ -497,6 +498,46 @@ If wait_to_reveal is used, the results will not appear until revealed.
 <td>required</td>
 
 <td>the rectangle to fill</td>
+</tr><tr>
+<td>r</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of red in the color</td>
+</tr><tr>
+<td>g</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of green in the color</td>
+</tr><tr>
+<td>b2</td>
+
+<td>in</td>
+
+<td>pen.rgbcomponent</td>
+
+<td>optional</td>
+
+<td>percentage of blue in the color</td>
+</tr><tr>
+<td>cn</td>
+
+<td>in</td>
+
+<td>pen.pen_color_name</td>
+
+<td>optional</td>
+
+<td>the name of the colour</td>
 </tr>
 
 </table>
@@ -551,7 +592,7 @@ If wait_to_reveal is used, the results will not appear until revealed.
 <tr>
 <td>
 
-<br>Draw an outline around rectange r in canvas c using the current pen.
+<br>Draw an outline around rectangle r in canvas c using the current pen.
 If wait_to_reveal is used, the results will not appear until revealed.
 <br>Example: pen.frame_rect( canvas_id, background_rect );
 <br>Ada Equivalent: N/A - Pen.fillRect (SparForte package)
@@ -1640,6 +1681,47 @@ unchanged.
 <td>required</td>
 
 <td>the vertical change to the top and bottom</td>
+
+</tr>
+
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<hr><b>pen.paint_rect( c, r )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+
+<br>Fill rectangle r in canvas c using the current pen.
+If wait_to_reveal is used, the results will not appear until revealed.
+<br>Example: pen.frame_rect( canvas_id, background_rect );
+<br>Ada Equivalent: N/A - Pen.fillRect (SparForte package)
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the drawing area canvas</td>
+</tr><tr>
+<td>r</td>
+
+<td>in</td>
+
+<td>pen.rect</td>
+
+<td>required</td>
+
+<td>the rectangle to border</td>
 
 </tr>
 
