@@ -24,17 +24,21 @@
 with text_io;use text_io;
 with pen,
     bush_os.sdl,
+    user_io,
     world,
     scanner,
     string_util,
+    scanner_arrays,
     parser_aux,
     parser;
 use pen,
     bush_os,
     bush_os.sdl,
+    user_io,
     world, 
     scanner,
     string_util,
+    scanner_arrays,
     parser_aux,
     parser,
     bush_os;
@@ -835,6 +839,34 @@ begin
   end if;
 end ParsePenNewCanvas;
 
+procedure ParsePenSaveCanvas is
+  -- Syntax: pen.save_canvas( H_Res, V_Res, old_canvas_id, canvas_id );
+  --         pen.save_canvas( path, canvas_id );
+  -- Source: Pen.saveCanvas
+  h_val       : unbounded_string;
+  h_type      : identifier;
+  canvas_id   : identifier;
+begin
+  if rshOpt then
+     err( "not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
+  expect( pen_save_canvas_t );
+  expect( symbol_t, "(" );
+  ParseExpression( h_val, h_type );
+  expect( symbol_t, "," );
+  ParseIdentifier( canvas_id );
+  if baseTypesOk( identifiers( canvas_id ).kind, pen_canvas_id_t ) then
+     expect( symbol_t, ")" );
+  end if;
+  if isExecutingCommand then
+     begin
+        saveCanvas( to_string( h_val ), aCanvasID( to_numeric( identifiers( canvas_id ).value ) ) );
+     exception when others =>
+        err( "exception raised" );
+     end;
+  end if;
+end ParsePenSaveCanvas;
+
 procedure ParsePenMoveTo is
   -- Syntax: pen.move_to( canvas_id, dx, dy );
   -- Source: Pen.MoveTo
@@ -1565,7 +1597,7 @@ begin
         if baseTypesOk( bexpr_type, pen_rgbcomponent_t ) then
            expect( symbol_t, "," );
            ParseExpression( pexpr_val, pexpr_type );
-           if baseTypesOk( pexpr_type, pen_rgbcomponent_t ) then
+           if baseTypesOk( pexpr_type, float_t ) then
               expect( symbol_t, "," );
               ParseOutParameter( r3, pen_rgbcomponent_t );
               if baseTypesOk( r3.kind, pen_rgbcomponent_t ) then
@@ -1602,6 +1634,45 @@ begin
      end;
   end if;
 end ParsePenFade;
+
+procedure ParsePenPlot is
+  -- Syntax: pen.plot( c, a );
+  -- Source: Pen.Plot
+  canvas_id : identifier;
+  array_var_id : identifier;
+  first, last : long_integer;
+  array_id : arrayID;
+begin
+  expect( pen_plot_t );
+  expect( symbol_t, "(" );
+  ParseIdentifier( canvas_id );
+  if baseTypesOk( identifiers( canvas_id ).kind, pen_canvas_id_t ) then
+     expect( symbol_t, "," );
+     ParseIdentifier( array_var_id );
+     if not (class_ok( array_var_id, otherClass ) and identifiers( array_var_id ).list) then
+        err( "Array expected" );
+     end if;
+     if uniTypesOK( identifiers( array_var_id ).kind, uni_numeric_t ) then
+        expect( symbol_t, ")" );
+     end if;
+  end if;
+  if isExecutingCommand then
+     array_id := arrayID( to_numeric( identifiers( array_var_id ).value ) );
+     first := firstBound( array_id );
+     last  := lastBound( array_id );
+     declare
+        values : plotValues( first..last );
+     begin
+        -- copy values into an Ada array
+        for i in first..last loop
+            values(i) := to_numeric( arrayElement( array_id, i) );
+        end loop;
+        Plot( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ), values );
+     exception when others =>
+        err( "exception raised" );
+     end;
+  end if;
+end ParsePenPlot;
 
 procedure StartupPen is
 begin
@@ -1682,6 +1753,7 @@ begin
   declareProcedure( pen_new_window_canvas_t, "pen.new_window_canvas" );
   declareProcedure( pen_new_gl_window_canvas_t, "pen.new_gl_window_canvas" );
   declareProcedure( pen_new_canvas_t, "pen.new_canvas" );
+  declareProcedure( pen_save_canvas_t, "pen.save_canvas" );
   declareProcedure( pen_set_title_t, "pen.set_title" );
   declareProcedure( pen_close_canvas_t, "pen.close_canvas" );
 
@@ -1694,6 +1766,8 @@ begin
   declareProcedure( pen_greyscale_t, "pen.greyscale" );
   declareProcedure( pen_blend_t, "pen.blend" );
   declareProcedure( pen_fade_t, "pen.fade" );
+
+  declareProcedure( pen_plot_t, "pen.plot" );
 
 declareIdent( pen_pen_color_name_t, "pen.color_name", root_enumerated_t, typeClass );
 declareStandardConstant( color_name_aliceblue_t, "pen_color_name.aliceblue", pen_pen_color_name_t, "0" );

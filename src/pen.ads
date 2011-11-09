@@ -1050,6 +1050,14 @@ procedure newCanvas( H_Res, V_Res : positive; old_canvas_id : aCanvasID; canvas_
 procedure newCanvas( path : string; canvas_id : out aCanvasID );
 
 
+---> SAVE CANVAS
+--
+-- Save a canvas to a BMP image file.
+-----------------------------------------------------------------------------
+
+procedure saveCanvas( path : string; canvas_id : aCanvasID );
+
+
 ---> SET TITLE NAME
 --
 -- Set the name of the canvas.  For a window canvas, change window title.
@@ -1114,6 +1122,19 @@ procedure vline( theCanvas : in out aCanvas; x, y1, y2 : aCoordinate );
 procedure vline( canvas_id : aCanvasID; x, y1, y2 : aCoordinate );
 
 procedure Stretch( sourceCanvas : aCanvas; targetCanvas : in out aCanvas; target_x, target_y : aCoordinate; newWidth, newHeight : aCoordinate );
+
+---> GRAPHING
+--
+-- Drawing graphs.
+-----------------------------------------------------------------------------
+
+-- - considering a simple plot (graph) function?
+-- compare R langauge http://en.wikipedia.org/wiki/R_%28programming_language%29
+
+type plotValues is array(long_integer range <>) of long_float;
+
+procedure plot( theCanvas : aCanvas; values : plotValues );
+procedure plot( canvas_id : aCanvasID; values : plotValues );
 
 end pen;
 

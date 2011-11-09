@@ -164,7 +164,9 @@ Requires --debug option or asserts will have no effect.</li>
 debugging commands to run when debugging
 is turned on with --debug.&nbsp; Make sure the final command ends with
 a semi-colon.  Without a parameter, same as --debug (turn on debugging).
-The debugging commands are run in restricted shell mode.</li>
+The debugging commands are run in restricted shell mode.  Because this
+is a pragma, it can be placed in variable declarations or other places
+executable statements are not normally allowed.</li>
   <li><span style="font-weight: bold;">pragma gcc_errors</span> - same
 as --gcc-errors.&nbsp; Show simplified gcc-style errors.<br>
   </li>

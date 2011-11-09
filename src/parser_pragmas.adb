@@ -551,7 +551,7 @@ begin
            elsif identifiers( var_id ).export then
               err( "variable is already exported" );
            elsif not uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
-              err( "string variable exported" );
+              err( "only string variables exported" );
            end if;
         end if;
         if not error_found then
@@ -592,8 +592,8 @@ begin
               err( "arrays cannot be imported without JSON" );
            elsif identifiers( var_id ).import then
               err( "variable is already imported" );
-           elsif uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
-              err( "string variable exported" );
+           elsif not uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
+              err( "only string variables exported" );
            end if;
         end if;
         -- All clear? Get the value
@@ -818,8 +818,8 @@ begin
               err( "arrays cannot be imported without JSON" );
            elsif identifiers( var_id ).import then
               err( "variable is already imported" );
-           elsif uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
-              err( "string variable exported" );
+           elsif not uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
+              err( "only string variables exported" );
            end if;
         end if;
         -- All clear? Get the value

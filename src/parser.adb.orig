@@ -536,9 +536,9 @@ begin
     -- If it's a regular identifier, if it's new, assign the type.  Otherwise
     -- if it already exists it must match the default type.
     if identifiers( ref.id ).kind = new_t then
-       ref.kind := identifiers( ref.id ).kind;
+       ref.kind := new_t; -- identifiers( ref.id ).kind;
     elsif baseTypesOK( identifiers( ref.id ).kind, defaultType ) then
-       null;
+       ref.kind := identifiers( ref.id ).kind;
     end if;
   end if;
 end ParseOutParameter;
@@ -3720,7 +3720,9 @@ begin
         if identifiers( token ).kind = new_t then          -- for var
            for_var := token;                               -- brand new? ok
         else                                               -- else declare locally
-           declareIdent( for_var, identifiers( token ).name, uni_numeric_t);
+           declareIdent( for_var,                          -- will be const below
+              identifiers( token ).name,
+              uni_numeric_t );
         end if;
         getNextToken;
         expect( in_t );                                    -- "in"
@@ -3751,12 +3753,14 @@ begin
               if isReverse then
                  identifiers( for_var ).value := expr2_val;     -- for var is
                  identifiers( for_var ).kind := expr2_type;     -- this type
+                 identifiers( for_var ).class := constClass;    -- make const
                  if isExecutingCommand then
                     expr2_num := to_numeric( expr1_val );
                  end if;
               else
                  identifiers( for_var ).value := expr1_val;     -- for var is
                  identifiers( for_var ).kind := expr1_type;     -- this type
+                 identifiers( for_var ).class := constClass;    -- make const
                  if isExecutingCommand then
                     expr2_num := to_numeric( expr2_val );
                  end if;
@@ -4393,11 +4397,12 @@ begin
        -- End of quote handling...now we have a character, handle it
 
        -- if name is greater than 1 char, dollarExpansion ends when
-       -- non-alpha/underscore is read.  Pass through to allow the
+       -- non-alpha/digit/underscore is read.  Pass through to allow the
        -- character to otherwise be treated normally.
 
        if inDollar then
-          if ch /= '_' and ch not in 'A'..'Z'  and ch not in 'a'..'z' then
+          if ch /= '_' and ch not in 'A'..'Z'  and ch not in 'a'..'z'
+             and ch not in '0'..'9' then
              if length( expansionVar ) > 0 then
                 dollarExpansion;
              end if;
@@ -6300,9 +6305,13 @@ begin
   itself := identifiers( var_id ).value;
   var_kind := identifiers( var_id ).kind;
   itself_type := var_kind;
-  if not class_ok( var_id, otherClass ) then
+  -- at a breakout prompt, constant assignment is permitted
+  if inputMode = breakout and identifiers( var_id ).class = constClass then
+     put_trace( "Warning: assigning a new value to a constant" );
+  elsif not class_ok( var_id, otherClass ) then
      null;
-  elsif identifiers( var_kind ).limit then
+  end if;
+  if identifiers( var_kind ).limit then
      err( "limited variables cannot be assigned a value" );
   elsif identifiers( var_id ).kind = root_record_t then
      err( "cannot assign to an entire record" );
@@ -7029,6 +7038,8 @@ begin
      ParsePenNewGLWindowCanvas;
   elsif token = pen_new_canvas_t then              -- Pen.New_Canvas
      ParsePenNewCanvas;
+  elsif token = pen_save_canvas_t then             -- Pen.Save_Canvas
+     ParsePenSaveCanvas;
   elsif token = pen_wait_to_reveal_t then          -- Pen.Wait_To_Reveal
      ParsePenWaitToReveal;
   elsif token = pen_reveal_t then                  -- Pen.Reveal
@@ -7043,6 +7054,8 @@ begin
      ParsePenBlend;
   elsif token = pen_fade_t then                    -- Pen.Fade
      ParsePenFade;
+  elsif token = pen_plot_t then                    -- Pen.Plot
+     ParsePenPlot;
   elsif token = pen_close_canvas_t then            -- Pen.Close_Canvas
      ParsePenCloseCanvas;
   elsif token = dirops_change_dir_t then           -- Dir_Ops.Change_Dir

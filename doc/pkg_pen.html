@@ -123,6 +123,22 @@ is an enumerated type with the standard X windows color names.</p>
 pencil pixels will overwrite whatever pixels currently on the canvas background).  The
 pen pixels will be bright red.</p>
 
+<p>This is how you would load and draw an image.  (Not all features are
+supported yet.)</p>
+
+<pre>
+=&gt; pen.set_rect( r, 0, 0, 100, 100 )
+=&gt; (Assuming r is a new pen.rect variable)
+=&gt; pen.new_window_canvas( 100,100, 32, c )
+=&gt; (Assuming c is a new pen.canvas_id variable)
+=&gt; pen.new_canvas("i.png", img )
+=&gt; (Assuming img is a new pen.canvas_id variable)
+=&gt; pen.set_pen_pattern( c, img )
+=&gt; pen.set_pen_brush( c, pen_brush.tile )
+=&gt; pen.set_pen_mode( c, pen_mode.copy )
+=&gt; pen.paint_rect(c, r )
+</pre>
+
 </ul>
 
         <center>
@@ -144,7 +160,7 @@ pen pixels will be bright red.</p>
   p := greyscale( r,g,b) blend(r1,g1,b1,r2,g2,b2,r,g,b) fade(r1,g1,b1,p,r,g,b)
 
   new_canvas(h,v,c,id) new_screen_canvas(h,v,c,id) new_window_canvas(h,v,c,id)
-  new_gl_screen_canvas(h,v,c,id)                            
+  new_canvas(p,id)     new_gl_screen_canvas(h,v,c,id)  save_canvas(p,id) 
   close_canvas( id )        wait_to_reveal( id )     reveal( id )             
   reveal_now( id )
 </pre>
@@ -155,738 +171,696 @@ pen pixels will be bright red.</p>
         </div>
         </center>
 
-<p>
-<hr><b>blend(r1,g1,b1,r2,g2,b2,r,g,b)</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>pen.blend( r1, g1, b1, r2 ,g2 ,b2 ,r, g, b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Compute the average for the two RGB colours and return
-the resulting RGB colour.
-<br>Example: pen.blend( 0, 0, 0, 100, 100, 100, r, g, b ); -- RGB will be 50
-<br>Ada Equivalent: N/A - Pen (SparForte package)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Compute the average for the two RGB colours and return
+the resulting RGB colour.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">pen.blend( 0, 0, 0, 100, 100, 100, r, g, b ); -- RGB will be 50;</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>r1</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of red in the first color</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td>g1</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of green in the first color</td>
+<td><span>r1</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of red in the first color</span></td>
 </tr><tr>
-<td>b1</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of blue in the first color</td>
+<td><span>g1</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of green in the first color</span></td>
 </tr><tr>
-<td>r2</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of red in the second color</td>
+<td><span>b1</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of blue in the first color</span></td>
 </tr><tr>
-<td>g2</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of green in the second color</td>
+<td><span>r2</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of red in the second color</span></td>
 </tr><tr>
-<td>b2</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of blue in the second color</td>
+<td><span>g2</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of red in the second color</span></td>
 </tr><tr>
-<td>r</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of red in the averaged color</td>
+<td><span>b2</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of red in the second color</span></td>
 </tr><tr>
-<td>g</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of green in the averaged color</td>
+<td><span>r</span></td>
+<td><span>out</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of red in the averaged color</span></td>
 </tr><tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of blue in the averaged color</td>
+<td><span>g</span></td>
+<td><span>out</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of green in the averaged color</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>out</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of blue in the averaged color</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>pen.fade<br>pen.greyscale</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-&nbsp;<br>
 
-<p>
-<hr><b>pen.clear( c ) / pen.clear( c, r, g, b) / pen.clear( c, cn )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>pen.clear( c )<br>pen.clear( c, r, g, b)<br>pen.clear( c, cn )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Fill the drawing area with the specified color.  The color
+<td width="15%">&nbsp;</td>
+<td><p>Fill the drawing area with the specified color.  The color
 may be specified as a color name or an RGB percentage value.
-If the color name is omitted, the current pen color is used.
-This is not affected by wait_to_reveal.  It is intended primarily
-for use at the command prompt.  To fill the drawing area with
-a color in a way that is affected by wait_to_reveal, use
-fill_rect.
-<br>Example: pen.clear( my_canvas, pen.pen_color_name.turquoise );
-<br>Ada Equivalent: N/A - Pen (SparForte package)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+If the color name is omitted, the current pen color is used.  It
+is the equivalent of paint_rect/fill_rect on the entire canvas,
+or the built-in clear command for a terminal session.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">pen.clear( my_canvas, pen.pen_color_name.turquoise );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>pen.canvas_id</td>
-
-<td>required</td>
-
-<td>the drawing area canvas</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td>r</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of red in the color</td>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>pen.canvas_id</span></td>
+<td><span>required</span></td>
+<td><span>the drawing area canvas</span></td>
 </tr><tr>
-<td>g</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of green in the color</td>
+<td><span>r</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of red in the color</span></td>
 </tr><tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of blue in the color</td>
+<td><span>g</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of green in the color</span></td>
 </tr><tr>
-<td>cn</td>
-
-<td>in</td>
-
-<td>pen.pen_color_name</td>
-
-<td>optional</td>
-
-<td>the name of the colour to clear with</td>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of blue in the color</span></td>
+</tr><tr>
+<td colspan="5"><p>OR</p></td>
+</tr><tr>
+<td><span>cn</span></td>
+<td><span>in</span></td>
+<td><span>pen.pen_color_name</span></td>
+<td><span>required</span></td>
+<td><span>the name of the colour to clear with</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>pen.paint_rect<br>pen.fill_rect<br>pen.frame_rect</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-&nbsp;<br>
 
-<p>
-<hr><b>fade(r1,g1,b1,p,r,g,b)</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>pen.fade( r1, g1, b1, p, r, g, b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Brighten or darken a color by percentage p and return
-the resulting RGB colour.
-<br>Example: pen.fade( 100, 100, 100, 50, r, g, b); -- RGB will be 50
-<br>Ada Equivalent: N/A - Pen (SparForte package)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Brighten or darken a color by percentage p and return
+the resulting RGB colour.  The color will be brightened if the
+percentage is negative.  The resulting color will never have
+components more than 100.0 or less than 0.0.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">pen.fade( 100, 100, 50, 50, r, g, b); -- RGB will be 50/50/25</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>r1</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of red in the color to fade</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td>g1</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of green in the color to fade</td>
+<td><span>r1</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of red in the color</span></td>
 </tr><tr>
-<td>b1</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of blue in the color to fade</td>
+<td><span>g1</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of green in the color</span></td>
 </tr><tr>
-<td>p</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>required</td>
-
-<td>percentage to fade by</td>
+<td><span>b1</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of blue in the color</span></td>
 </tr><tr>
-<td>r</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>required</td>
-
-<td>percentage of red in the new color</td>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>float</span></td>
+<td><span>required</span></td>
+<td><span>percentage to fade or brighten by</span></td>
 </tr><tr>
-<td>g</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>required</td>
-
-<td>percentage of green in the new color</td>
+<td><span>r</span></td>
+<td><span>out</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of red in the faded color</span></td>
 </tr><tr>
-<td>b2</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>required</td>
-
-<td>percentage of blue in the new color</td>
+<td><span>g</span></td>
+<td><span>out</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of green in the faded color</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>out</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of blue in the faded color</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>pen.blend<br>pen.greyscale</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-&nbsp;<br>
 
-<p>
-<hr><b>pen.fill_ellipse( c, r )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>pen.fill_ellipse( c, r )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Fill ellipse bounded by rectangle r in canvas c using the current pen.
-If wait_to_reveal is used, the results will not appear until revealed.
-<br>Example: pen.fill_ellipse( canvas_id, pie_graph_rect );
-<br>Ada Equivalent: N/A - Pen.fillRect (SparForte package)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>pen.canvas_id</td>
-
-<td>required</td>
-
-<td>the drawing area canvas</td>
+<td width="15%">&nbsp;</td>
+<td><p>Fill ellipse bounded by rectangle r in canvas c using the current pen.
+If wait_to_reveal is used, the results will not appear until revealed.</p></td>
 </tr><tr>
-<td>r</td>
-
-<td>in</td>
-
-<td>pen.rect</td>
-
-<td>required</td>
-
-<td>the rectangle surrounding ellipse to fill</td>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">pen.fill_ellipse( canvas_id, pie_graph_rect );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>pen.canvas_id</span></td>
+<td><span>required</span></td>
+<td><span>the drawing area canvas</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>in</span></td>
+<td><span>pen.rect</span></td>
+<td><span>required</span></td>
+<td><span>the rectangle surrounding ellipse to fill</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>pen.frame_ellipse</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-&nbsp;<br>
 
-<p>
-<hr><b>pen.fill_rect( c, rt, r, g, b ) / pen.fill_rect( c, rt, cn )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>pen.fill_rect( c, rt, r, g, b )
+<br>pen.fill_rect( c, rt, cn )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Fill rectangle rt in canvas c using the specified RGB color
-or color name.
-If wait_to_reveal is used, the results will not appear until revealed.
-<br>Example: pen.fill_rect( canvas_id, background_rect, pen.pen_color_name.yellow );
-<br>Ada Equivalent: N/A - Pen.fillRect (SparForte package)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Fill rectangle rt in canvas c using the specified RGB color
+or color name.  If wait_to_reveal is used, the results will not appear
+until revealed.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">pen.fill_rect( canvas_id, background_rect, pen.pen_color_name.yellow );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>pen.canvas_id</td>
-
-<td>required</td>
-
-<td>the drawing area canvas</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td>rt</td>
-
-<td>in</td>
-
-<td>pen.rect</td>
-
-<td>required</td>
-
-<td>the rectangle to fill</td>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>pen.canvas_id</span></td>
+<td><span>required</span></td>
+<td><span>the drawing area canvas</span></td>
 </tr><tr>
-<td>r</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of red in the color</td>
+<td><span>rt</span></td>
+<td><span>in</span></td>
+<td><span>pen.rect</span></td>
+<td><span>required</span></td>
+<td><span>the rectangle surrounding ellipse to fill</span></td>
 </tr><tr>
-<td>g</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of green in the color</td>
+<td><span>r</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of red in the color</span></td>
 </tr><tr>
-<td>b2</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of blue in the color</td>
+<td><span>g</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of green in the color</span></td>
 </tr><tr>
-<td>cn</td>
-
-<td>in</td>
-
-<td>pen.pen_color_name</td>
-
-<td>optional</td>
-
-<td>the name of the colour</td>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of blue in the color</span></td>
+</tr><tr>
+<td colspan="5"><p>OR</p></td>
+</tr><tr>
+<td><span>cn</span></td>
+<td><span>in</span></td>
+<td><span>pen.pen_color_name</span></td>
+<td><span>required</span></td>
+<td><span>the name of the color</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>pen.frame_rect<br>pen.paint_rect<br>pen.clear</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-&nbsp;<br>
 
-<p>
-<hr><b>pen.frame_ellipse( c, r )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>pen.frame_ellipse( c, r )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Draw an outline around ellipse bounded by rectangle r in canvas c using the current pen.
-If wait_to_reveal is used, the results will not appear until revealed.
-<br>Example: pen.fill_ellipse( canvas_id, pie_graph_rect );
-<br>Ada Equivalent: N/A - Pen.frameRect (SparForte package)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>pen.canvas_id</td>
-
-<td>required</td>
-
-<td>the drawing area canvas</td>
+<td width="15%">&nbsp;</td>
+<td><p>Draw an outline around ellipse bounded by rectangle r in canvas c using
+the current pen.  If wait_to_reveal is used, the results will not appear until
+revealed.</p></td>
 </tr><tr>
-<td>r</td>
-
-<td>in</td>
-
-<td>pen.rect</td>
-
-<td>required</td>
-
-<td>the rectangle surrounding ellipse to border</td>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">pen.fill_ellipse( canvas_id, pie_graph_rect );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>pen.canvas_id</span></td>
+<td><span>required</span></td>
+<td><span>the drawing area canvas</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>in</span></td>
+<td><span>pen.rect</span></td>
+<td><span>required</span></td>
+<td><span>the rectangle surrounding ellipse to border</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>pen.fill_ellipse</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-&nbsp;<br>
 
-<p>
-<hr><b>pen.frame_rect( c, r )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>pen.frame_rect( c, r )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-
-<br>Draw an outline around rectangle r in canvas c using the current pen.
-If wait_to_reveal is used, the results will not appear until revealed.
-<br>Example: pen.frame_rect( canvas_id, background_rect );
-<br>Ada Equivalent: N/A - Pen.fillRect (SparForte package)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>pen.canvas_id</td>
-
-<td>required</td>
-
-<td>the drawing area canvas</td>
+<td width="15%">&nbsp;</td>
+<td><p>Draw an outline around rectangle r in canvas c using the current pen.
+If wait_to_reveal is used, the results will not appear until revealed.</p></td>
 </tr><tr>
-<td>r</td>
-
-<td>in</td>
-
-<td>pen.rect</td>
-
-<td>required</td>
-
-<td>the rectangle to border</td>
-
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">pen.frame_rect( canvas_id, background_rect );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>pen.canvas_id</span></td>
+<td><span>required</span></td>
+<td><span>the drawing area canvas</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>in</span></td>
+<td><span>pen.rect</span></td>
+<td><span>required</span></td>
+<td><span>the rectangle to border</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>pen.clear<br>pen.fill_rect<br>pen.paint_rect</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-&nbsp;<br>
 
-<p>
-<hr><b>b := pen.get_pen_brush( c )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>b := pen.get_pen_brush( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Return the current pen brush for canvas c.
-<br>Example: pen_brush := pen.get_pen_brush( canvas_id );
-<br>Ada Equivalent: N/A - Pen.getPenBrush (SparForte package)
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>b</td>
-
-<td>result</td>
-
-<td>pen.pen_brush</td>
-
-<td>required</td>
-
-<td>the pattern application mode</td>
-
+<td width="15%">&nbsp;</td>
+<td><p>Return the current pen brush for canvas c.</p></td>
 </tr><tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>pen.canvas_id</td>
-
-<td>required</td>
-
-<td>the drawing area canvas</td>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">pen_brush := pen.get_pen_brush( canvas_id );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>pen.pen_brush</span></td>
+<td><span>required</span></td>
+<td><span>the pattern application mode</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>pen.canvas_id</span></td>
+<td><span>required</span></td>
+<td><span>the drawing area canvas</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>pen.set_pen_brush</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-&nbsp;<br>
 
-<p>
-<hr><b>pen.get_pen_ink( c, r, g, b )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>pen.get_pen_ink( c, r, g, b )
+</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Return the current pen solid drawing colour in canvas c.
-<br>Example: pen.get_pen_ink( canvas_id, red, green, blue );
-<br>Ada Equivalent: N/A - Pen.getPenInk (SparForte package)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
+<td width="15%">&nbsp;</td>
+<td><p>Return the current pen solid drawing colour in canvas c.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">pen.get_pen_ink( canvas_id, red, green, blue );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>pen.canvas_id</td>
-
-<td>required</td>
-
-<td>the drawing area canvas</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td>r</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>required</td>
-
-<td>percentage of red in the color</td>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>pen.canvas_id</span></td>
+<td><span>required</span></td>
+<td><span>the drawing area canvas</span></td>
 </tr><tr>
-<td>g</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>required</td>
-
-<td>percentage of green in the color</td>
+<td><span>r</span></td>
+<td><span>out</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of red in the ink color</span></td>
 </tr><tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>required</td>
-
-<td>percentage of blue in the color</td>
+<td><span>g</span></td>
+<td><span>out</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of green in the ink color</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>out</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of blue in the ink color</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>pen.set_pen_ink</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-&nbsp;<br>
 
-<p>
-<hr><b>m := pen.get_pen_mode( c )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>m := pen.get_pen_mode( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Return the current pen mode for canvas c.
-<br>Example: pen_mode := pen.get_pen_mode( canvas_id );
-<br>Ada Equivalent: N/A - Pen.getPenMode (SparForte package)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>m</td>
-
-<td>result</td>
-
-<td>pen.pen_mode</td>
-
-<td>required</td>
-
-<td>the pen mode</td>
+<td width="15%">&nbsp;</td>
+<td><p>Return the current pen mode for canvas c.</p></td>
 </tr><tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>pen.canvas_id</td>
-
-<td>required</td>
-
-<td>the drawing area canvas</td>
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-&nbsp;<br>
-
-<p>
-<hr><b>p := greyscale( r,g,b)</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">pen_mode := pen.get_pen_mode( canvas_id );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>
-<br>Compute the grescale for the RGB color and return the RGB
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>pen.pen_mode</span></td>
+<td><span>required</span></td>
+<td><span>the pen mode</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>pen.canvas_id</span></td>
+<td><span>required</span></td>
+<td><span>the drawing area canvas</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>pen.set_pen_mode</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<h3>p := pen.greyscale( r, g, b ) </h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Compute the greyscale for the RGB color and return the RGB
 percentage (where RGB will be the same).  This is weighted for
-the human eye.
-<br>Example: p := pen.greyscale( 10, 20, 30 );
-<br>Ada Equivalent: N/A - Pen (SparForte package)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+the human eye.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">p := pen.greyscale( 10, 20, 30 );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<tdpr</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>return value</td>
-
-<td>percentage to use for red, green and blue in the grey color</td>
+<td><span>p</span></td>
+<td><span>return value</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage to use for red, green and blue in the grey color</span></td>
 </tr><tr>
-<td>r</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of red in the color</td>
+<td><span>r</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of red in the color</span></td>
 </tr><tr>
-<td>g</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of green in the color</td>
+<td><span>g</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of green in the color</span></td>
 </tr><tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>pen.rgbcomponent</td>
-
-<td>optional</td>
-
-<td>percentage of blue in the color</td>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of blue in the color</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>pen.blend<br>pen.fade</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-&nbsp;<br>
 
-<p>
-<hr><b>pen.hline( c, x1, x2, y )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>pen.hline( c, x1, x2, y )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-
-<br>Draw a horizontal line between (x1,y) and (x2,y) on canvas c in the current pen.  Ignores clipping region.
-If wait_to_reveal is used, the results will not appear until revealed.
-<br>Example: pen.hline( canvas_id, 0, 100, 50);
-<br>Ada Equivalent: N/A - Pen.hline (SparForte package)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Draw a horizontal line between (x1,y) and (x2,y) on canvas c in the
+current pen.  Ignores clipping region.  If wait_to_reveal is used, the results
+will not appear until revealed.</p></td>
+</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">pen.hline( canvas_id, 0, 100, 50);</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>pen.canvas_id</td>
-
-<td>required</td>
-
-<td>the drawing area canvas</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td>x1</td>
-
-<td>in</td>
-
-<td>pen.coordinate</td>
-
-<td>required</td>
-
-<td>the left-most x coordinate</td>
-
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>pen.canvas_id</span></td>
+<td><span>required</span></td>
+<td><span>the drawing area canvas</span></td>
 </tr><tr>
-<td>x2</td>
-
-<td>in</td>
-
-<td>pen.coordinate</td>
-
-<td>required</td>
-
-<td>the right-most x coordiante</td>
+<td><span>x1</span></td>
+<td><span>in</span></td>
+<td><span>pen.coordinate</span></td>
+<td><span>required</span></td>
+<td><span>the left-most x coordinate</span></td>
 </tr><tr>
-<td>y</td>
-
-<td>in</td>
-
-<td>pen.coordinate</td>
-
-<td>required</td>
-
-<td>the y coordinate</td>
+<td><span>x2</span></td>
+<td><span>in</span></td>
+<td><span>pen.coordinate</span></td>
+<td><span>required</span></td>
+<td><span>the right-most x coordinate</span></td>
+</tr><tr>
+<td><span>y</span></td>
+<td><span>in</span></td>
+<td><span>pen.coordinate</span></td>
+<td><span>required</span></td>
+<td><span>the y coordinate</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>pen.line<br>pen.vline</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
 </table>
-</td>
-</tr>
-
-</table></center>
-&nbsp;<br>
 
 <p>
 <hr><b>b := pen.in_rect( x, y, r )</b>
@@ -1328,13 +1302,18 @@ drawn.
 &nbsp;<br>
 
 <p>
-<hr><b>pen.new_canvas( h, v, c, id )</b><br><b>pen.new_canvas( s, id )</b>
+<hr><b>pen.new_canvas( h, v, c, id )</b>
+<br><b>pen.new_canvas( s, id )</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
 <td>
-<br>Create a new drawing area canvas that does not appear on the display.  If the first
-parameter is a string, load the image file from path s into a canvas big enough to hold it.
-<br>Example: pen.new_canvas( 100, 100, 16, canvas_id );
+<br>Create a new drawing area canvas that does not appear on the display.
+If the first parameter is a string, load the image file from path s into a
+canvas big enough to hold it.  Otherwise, the parameters are the horizontal
+and vertical dimensions of the new canvas and the canvas id of an existing
+on-screen canvas to copy over any additional settings.  To apply the contents
+of the canvas to the on-screen canvas, use set_pen_pattern.
+<br>Example: pen.new_canvas( 100, 100, main_canvas_id, hidden_canvas_id );
 <br>Example: pen.new_canvas( "company_logo.png", logo_id );
 <br>Ada Equivalent: N/A - Pen.newCanvas (SparForte package)
 
@@ -1370,7 +1349,7 @@ parameter is a string, load the image file from path s into a canvas big enough 
 
 <td>required</td>
 
-<td>the minimum pixel bits (8, 16, 24 or 32)</td>
+<td>the existing on-screen canvas to use as a basis for the new canvas</td>
 </tr><tr>
 <td>id</td>
 
@@ -1380,7 +1359,7 @@ parameter is a string, load the image file from path s into a canvas big enough 
 
 <td>required</td>
 
-<td>the identification number for the offscreen canvas</td>
+<td>the identification number for the off-screen canvas</td>
 </tr><tr>
 <td>s</td>
 
@@ -1397,6 +1376,7 @@ parameter is a string, load the image file from path s into a canvas big enough 
 </td>
 </tr>
 </table></center>
+<p>An exception may be thrown if the existing canvas does not exist.</p>
 &nbsp;<br>
 
 <p>
@@ -1466,7 +1446,8 @@ screen.
 <tr>
 <td>
 <br>Create a new OpenGL drawing area canvas in a separate
-operating system window.
+operating system window.  Multiple windows may not be supported
+by the SDL library.
 <br>Example: pen.new_gl_window_canvas( 100, 100, 16, canvas_id );
 <br>Ada Equivalent: N/A - Pen.newGLWindowCanvas (SparForte package)
 <br>Parameters:
@@ -1586,6 +1567,7 @@ operating system window.
 <tr>
 <td>
 <br>Create a new drawing area canvas in a separate operating system window.
+Multiple windows may not be supported by the SDL library.
 <br>Example: pen.new_window_canvas( 100, 100, 16, canvas_id );
 <br>Ada Equivalent: N/A - Pen.newWindowCanvas (SparForte package)
 <br>Parameters:
@@ -1787,6 +1769,48 @@ reveal's will have no effect.
 <td>the drawing area canvas</td>
 </tr>
 
+</table>
+</td>
+</tr>
+</table></center>
+&nbsp;<br>
+
+<p>
+<br><b>pen.save_canvas( s, id )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Save the canvas as a BMP image file.  An exception is raised
+if the image cannot be saved.
+<br>Example: pen.save_canvas( "company_logo.png", logo_id );
+<br>Ada Equivalent: N/A - Pen
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+</tr><tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal_string</td>
+
+<td>required</td>
+
+<td>the path to a file to save the image as</td>
+</tr><tr>
+<td>id</td>
+
+<td>out</td>
+
+<td>pen.canvas_id</td>
+
+<td>required</td>
+
+<td>the identification number for the offscreen canvas</td>
+</tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
 </table>
 </td>
 </tr>

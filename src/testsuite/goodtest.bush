@@ -1285,7 +1285,7 @@ begin
   arrays.to_json( js, s2 );
   pragma assert( js = "[" & ASCII.Quotation & "able" & ASCII.Quotation & "]" );
   arrays.to_json( js, s3 );
-  pragma assert( s = "[" &
+  pragma assert( js = "[" &
      ASCII.Quotation & "adam" & ASCII.Quotation & "," &
      ASCII.Quotation & "atom" & ASCII.Quotation & "," &
      ASCII.Quotation & "axe" & ASCII.Quotation & "]" );
@@ -1606,7 +1606,6 @@ begin
   pragma assert( js = "[{" & ASCII.Quotation &
   "i" & ASCII.Quotation & ": 0},[1,2]]" );
 
-  ja8 : json_arr8;
   js := "[{" &'"' & 'i' & '"' & ":0},[2,3]]";
   arrays.to_array( ja8, js );
   pragma assert( ja8(1) = "{" &'"' & 'i' & '"' & ":0}" );
@@ -1823,16 +1822,17 @@ if false then
 end if;
 pragma assert( i = 1 );
 
-i := 1;
-while i < 3 loop
-  i := 2;
-  exit;
-  while i < 3 loop
-    i := 3;
-    exit;
-  end loop;
-end loop;
-pragma assert( i = 2 );
+-- fails with new unreachable code tests
+--i := 1;
+--while i < 3 loop
+--  i := 2;
+--  exit;
+--  while i < 3 loop
+--    i := 3;
+--    exit;
+--  end loop;
+--end loop;
+--pragma assert( i = 2 );
 
 -- for loop and itself operand
 
@@ -1905,16 +1905,17 @@ if false then
 end if;
 pragma assert( i = 1 );
 
-i := 1;
-for j in 1..5 loop
-  i := 2;
-  exit;
-  for j in 1..5 loop
-    i := 3;
-    exit;
-  end loop;
-end loop;
-pragma assert( i = 2 );
+-- this fails new unreachable code tests
+--i := 1;
+--for j in 1..5 loop
+--  i := 2;
+--  exit;
+--  for j in 1..5 loop
+--    i := 3;
+--    exit;
+--  end loop;
+--end loop;
+--pragma assert( i = 2 );
 
 -- loop loop
 
@@ -1964,16 +1965,17 @@ if false then
 end if;
 pragma assert( i = 1 );
 
-i := 1;
-loop
-  i := 2;
-  exit;
-  loop
-    i := 3;
-    exit;
- end loop;
-end loop;
-pragma assert( i = 2 );
+-- this fails new unreachable code tests
+--i := 1;
+--loop
+--  i := 2;
+--  exit;
+--  loop
+--    i := 3;
+--    exit;
+-- end loop;
+--end loop;
+--pragma assert( i = 2 );
 
 -- O/S commands
 
@@ -2066,11 +2068,11 @@ s := `echo "$i$i";`;
 pragma assert( s = "00" );
 -- Space Handling in Double Quotes
 s1 := " h ";
-s := `echo $s;`;
+s := `echo $s1;`;
 pragma assert( s = "h" );
-s1 := " i ";
-s := `echo " $s ";`;
-pragma assert( s = " h " );
+s1 := " h ";
+s := `echo " $s1 ";`;
+pragma assert( s = "  h  " );
 
 -- Shell Globbing Tests
 

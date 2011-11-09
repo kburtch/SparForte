@@ -875,5 +875,8 @@ pragma import( C, SDL_EXT_Window_Title, "SDL_EXT_window_title" );
 procedure SDL_EXT_Get_Pixel_Masks( res : Interfaces.C.int; Rmask, Gmask, Bmask, Amask : out SDL_RGB_Mask );
 pragma import( C, SDL_EXT_Get_Pixel_Masks, "SDL_EXT_get_pixel_masks" );
 
+function SDL_EXT_Save_BMP( s : system.address; path : string ) return SDL_Success;
+pragma import( C, SDL_EXT_Save_BMP, "SDL_EXT_save_bmp" );
+
 end bush_os.sdl;
 

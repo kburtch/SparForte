@@ -62,8 +62,13 @@ files / separate procuedures and functions.
 
 26. New: pragma import_json.
 
-27. Change: JSON capabilities now implement recusion so they can now handle arrays and records with json_string components.
+27. Change: JSON capabilities now implement recusion so they can handle arrays and records with json_string components.
 
 28. Change: make configuration now uses two processes instead of one for
 faster builds.
+
+29. New: Pen subprogram: pen.save_canvas.
+
+30. Change: for variable is now a constant.  Assignment to constant (with a
+warning) now permitted at a breakout prompt.
 

@@ -1754,7 +1754,7 @@ begin
   if newcanvas.surface_ptr /= null then
     newCanvas.name := to_unbounded_string( path );
   else
-    put_line( "Load failed, SDL error = " & to_string( get_sdl_error ) );
+    put_line( standard_error, "Load failed, SDL error = " & to_string( get_sdl_error ) );
   end if;
   newcanvas.kind := offscreen;
   newcanvas.displayInfo.H_Res := integer( newCanvas.surface_ptr.w );
@@ -1765,6 +1765,33 @@ begin
   canvas_id := newcanvas.id;
   -- should use SDL_VideoInfo for additional information
 end newCanvas;
+
+
+---> SAVE CANVAS
+--
+-- Save a canvas to a BMP image file.
+-----------------------------------------------------------------------------
+
+procedure saveCanvas( path : string; canvas_id : aCanvasID ) is
+  theCanvas : aCanvas;
+  canvasIndex : canvasList.aListIndex := 0;
+  res : SDL_success;
+begin
+  theCanvas.id := canvas_id;
+  canvasList.Find( canvas, theCanvas, 1, canvasIndex );
+  if canvasIndex = 0 then
+     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+  else
+     canvasList.Find( canvas, canvasIndex, theCanvas );
+     canvasList.Replace( canvas, canvasIndex, theCanvas );
+     if theCanvas.kind = window then
+        res := SDL_EXT_Save_BMP( theCanvas.surface, path & ASCII.NUL );
+        if res /= 0 then
+           put_line( standard_error, "unable to save canvas id -" & canvas_id'img );
+        end if;
+     end if;
+  end if;
+end saveCanvas;
 
 
 ---> GET DISPLAY INFO
@@ -2117,6 +2144,26 @@ begin
   end if;
 end vline;
 
+procedure plot( theCanvas : aCanvas; values : plotValues ) is
+begin
+  put_line( "plot called" ); -- DEBUG
+end plot;
+
+procedure plot( canvas_id : aCanvasID; values : plotValues ) is
+  theCanvas : aCanvas;
+  canvasIndex : canvasList.aListIndex := 0;
+begin
+  theCanvas.id := canvas_id;
+  canvasList.Find( canvas, theCanvas, 1, canvasIndex );
+  if canvasIndex = 0 then
+     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+  else
+     canvasList.Find( canvas, canvasIndex, theCanvas );
+     plot( theCanvas, values );
+     canvasList.Replace( canvas, canvasIndex, theCanvas );
+  end if;
+end plot;
+
 procedure Stretch( sourceCanvas : aCanvas; targetCanvas : in out aCanvas; target_x, target_y : aCoordinate; newWidth, newHeight : aCoordinate ) is
   scaledSurface      : system.address;
   source_x1          : SDL_HCoordinate;
@@ -2168,7 +2215,7 @@ put_line( "A" );
   end if;
   NoVerticalChange  := (source_y2 = scaled_y2);
   NoHorizontalChange:= (source_x2 = scaled_x2);
-put_line( "B" );
+put_line( "B" ); -- DEBUG
 
   -- Copy the pixels
 

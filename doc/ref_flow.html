@@ -98,8 +98,11 @@ c : country;<br>
         </center>
 
 <p>The "when" cases must not be variables (although constants are OK).
-The
-"when others" case is always required.</p>
+The "when others" case is always required.  You can create a do nothing
+case by using the <tt>null</tt> statement.</p>
+
+<p><b>Ada</b>: The when others clause is optional in Ada.  It's required
+in SparForte.</p>
 
 <h3>The While Loop Statement</h3>
 
@@ -124,13 +127,14 @@ the first line of the loop is executed.</p>
 <h3>The For Loop Statement</h3>
 
 <p>The for loop increments its index variable by 1 until it iterates
-through
-the specified range. The index variable is automatically declared for
-you
-and only exists for the scope of the the loop.&nbsp; The range can
-either
-be numeric or enumerated.
-</p>
+through the specified range.  The range can either be numeric
+or enumerated.</p>
+
+<p>The index identifier is automatically
+declared for you and only exists for the scope of the the loop.&nbsp;
+The index identifier is declared as a constant: you cannot assign a
+new value to it inside of the loop.  (However, it can be changed at
+a breakout prompt for debugging purposes.)</p>
 
         <center>
         <div class="code">
@@ -145,11 +149,8 @@ be numeric or enumerated.
         </div>
         </center>
 
-<p>To loop in reverse in a for loop, use "in reverse" instead of "in".
+<p>To loop through values in the reverse order, use "in reverse" instead of "in".
 </p>
-
-<p><b>Ada:</b>: The for loop variable is a constant.  In SparForte, it is a
-variable which can be altered at the breakout prompt.</p>
 
 <h3>The Exit Statement</h3>
 

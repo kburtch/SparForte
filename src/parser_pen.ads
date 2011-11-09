@@ -91,6 +91,7 @@ pen_new_gl_screen_canvas_t : identifier;
 pen_new_window_canvas_t : identifier;
 pen_new_gl_window_canvas_t : identifier;
 pen_new_canvas_t     : identifier;
+pen_save_canvas_t    : identifier;
 pen_set_title_t      : identifier;
 pen_close_canvas_t   : identifier;
 
@@ -103,6 +104,8 @@ pen_clip_rect_t      : identifier;
 pen_greyscale_t      : identifier;
 pen_blend_t          : identifier;
 pen_fade_t           : identifier;
+
+pen_plot_t           : identifier;
 
 pen_pen_color_name_t : identifier;
 color_name_aliceblue_t : identifier;
@@ -610,6 +613,7 @@ procedure ParsePenNewGLScreenCanvas;
 procedure ParsePenNewWindowCanvas;
 procedure ParsePenNewGLWindowCanvas;
 procedure ParsePenNewCanvas;
+procedure ParsePenSaveCanvas;
 procedure ParsePenSetTitle;
 procedure ParsePenCloseCanvas;
 
@@ -620,5 +624,7 @@ procedure ParsePenRevealNow;
 procedure ParsePenGreyscale( result : out unbounded_string );
 procedure ParsePenBlend;
 procedure ParsePenFade;
+
+procedure ParsePenPlot;
 
 end parser_pen;

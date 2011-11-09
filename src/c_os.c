@@ -1110,6 +1110,17 @@ void SDL_EXT_window_title( char * title ) {
 
 
 /* ------------------------------------------------------------------------ */
+/* SDL EXT(ension) SAVE BMP                                                 */
+/*                                                                          */
+/* Call SDL_SaveBMP (a C macro).                                            */
+/* ------------------------------------------------------------------------ */
+
+int SDL_EXT_save_bmp( SDL_Surface *surface, char *path ) {
+  return SDL_SaveBMP( surface, path );
+} /* SDL EXT save bmp */
+
+
+/* ------------------------------------------------------------------------ */
 /* SDL EXT(ension) GET PIXEL MASKS                                          */
 /*                                                                          */
 /* Get pixel masks for this hardware for use in creating new software       */

@@ -43,7 +43,7 @@
 <p>Interactive sessions refer to a user typing commands at the SparForte
 command
 prompt.&nbsp; AdaScript has a number of built-in commands to be used
-in interactive sessions.  The commands behave as if they were external
+at a command prompt.  The commands behave as if they were external
 commands.</p>
 
 <p><b>cd -|dirname</b></p>
@@ -256,7 +256,7 @@ return;
 <p>When trace is true, the lines being executed are displayed, along with
 additional information in parentheses, showing how Bush interprets the commands.
 The line number is displayed in square brackets after the line.  The first
-line is not shown which means trace, at the Bush command prompt, always
+line is not shown which means trace, at the command prompt, always
 displays "End of File" for line 2 because there is only one line to run.
 trace by itself shows the current status (true or false).</p>
 <p><u>Examples</u>:</p>
@@ -299,8 +299,8 @@ Trace is on
 <p>Change the type of a variable, declaring it if necssary.  It will attempt
 to typecast the value of the variable if the variable exists: this may
 raise an exception if the variable cannot be typecast.  Typeset
-can only be used in an interactive session.  It cannot be used with
-pragma ada_95.</p>
+can only be used in an interactive session (the command prompt).  It cannot
+be used with pragma ada_95.</p>
 <p><u>Examples</u>:</p>
 
         <center>
@@ -335,7 +335,8 @@ y :=  6; -- identifier of the type integer <br>&nbsp;<br>
 <tr>
 <td align="left">
 <p>Permanently delete an identifier.  Keywords cannot be unset.  Unset can only
-be used in an interactive session.  It cannot be used with pragma ada_95.</p>
+be used in an interactive session (the command prompt).  It cannot be used with
+pragma ada_95.</p>
 <p><u>Examples</u>:</p>
 <pre>
 <b>=&gt;</b> i : integer
