@@ -28,7 +28,7 @@ while [ $# -gt 0 ] ; do
       echo "--without-mysql"
       echo "--without-postgres"
 #      echo "--without-sdl"
-#      echo "--without-sound"
+      echo "--without-sound"
       echo
       echo "Read INSTALL for complete information"
       ;;
@@ -49,6 +49,9 @@ while [ $# -gt 0 ] ; do
       ;;
   --without-postgres)
       NO_POSTGRES=0
+      ;;
+  --without-sound)
+      NO_SOUND=0
       ;;
 # Unused RPM options
 # When building an RPM on OpenSUSE, many unnecesssary options were passed
@@ -657,22 +660,29 @@ sleep 1
 
 echo
 echo -n "adavox library: checking for /dev/dsp... "
-if test ! -z "$BASH" ; then
-   test -a /dev/dsp
+if [ -z "$NO_SOUND" ] ; then
+   if test ! -z "$BASH" ; then
+      test -a /dev/dsp
+   else
+      test -r /dev/dsp
+   fi
+   if [ $? -eq 0 ] ; then
+      echo "yes"
+   else
+         echo "no"
+         echo
+         echo "ADAVOX requires /dev/dsp.  Create a /dev/dsp symlink to your real audio device"
+         echo "(If you don't care about audio support, try ln -s /dev/null /dev/dsp)"
+         exit 1
+   fi
 else
-   test -r /dev/dsp
+   echo "no"
 fi
-if [ $? -eq 0 ] ; then
-   echo "yes"
+if [ -z "$NO_SOUND" ] ; then
+   echo "ADAVOX library is configured"
 else
-      echo "no"
-      echo
-      echo "ADAVOX requires /dev/dsp.  Create a /dev/dsp symlink to your real audio device"
-      echo "(If you don't care about audio support, try ln -s /dev/null /dev/dsp)"
-      exit 1
+   echo "ADAVOX library will not be used"
 fi
-
-echo "ADAVOX library is configured"
 
 # APQ library
 
@@ -741,6 +751,11 @@ if [ ! -z "$HAS_MYSQL" ] ; then
    NEEDS_APQ=1
 else
    GNATPREP_OPTS="$GNATPREP_OPTS -DMYSQL=false"
+fi
+if [ -z "$NO_SOUND" ] ; then
+   GNATPREP_OPTS="$GNATPREP_OPTS -DSOUND=true"
+else
+   GNATPREP_OPTS="$GNATPREP_OPTS -DSOUND=false"
 fi
 # this is for world.ads. APQ=true if either DB is installed
 if [ ! -z "$NEEDS_APQ" ] ; then
@@ -816,6 +831,15 @@ if [ -z "$HAS_POSTGRES" ] ; then
       APQLIBSSUB=""
       APQINCLSSUB=""
    fi
+fi
+if [ -z "$NO_SOUND" ] ; then
+   ADAVOXINCLSSUB='-I.\/ADAVOX-0.51\/bc -I.\/ADAVOX-0.51\/wc -I.\/ADAVOX-0.51\/main'
+   ADAVOXLIBSSUB='.\/ADAVOX-0.51\/wc\/cglue.o'
+   ADAVOXMAKESUB='$(MAKE) CPU=$(CPU) -C ADAVOX-0.51'
+else
+   ADAVOXINCLSSUB=""
+   ADAVOXLIBSSUB=""
+   ADAVOXMAKESUB="@echo \"Disabled\""
 fi
 
 PREFIX=`echo "$PREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`

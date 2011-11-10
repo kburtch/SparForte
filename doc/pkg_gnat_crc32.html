@@ -4,7 +4,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <META NAME="description" CONTENT="SparForte language documentation">
-	<title>SparForte - Packages - Records</title>
+	<title>SparForte - Packages - GNAT CRC32</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
@@ -26,7 +26,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="packages.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_calendar.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_pen.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_sinfo.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -38,121 +38,131 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-<h2><a NAME="4.14"></a>Records Package</h2>
+<h2><a NAME="4.4"></a>GNAT.CRC32 Package</h2>
 
-<p>The SparForte built-in records package provides subprograms to manipulate
-record variables or types.</p>
+<p>The gnat.crc32 package is the standard CRC package included with GCC Ada
+(Gnat).</p>
 
-<p><u>GCC Ada Equivalent</u>: n/a<br>
+<p>The gnat.crc32 package includes one type: gnat.crc32.crc32.</p>
+
 
         <center>
         <div class="code">
 <pre>
-  to_record( s, r )         to_json( s, r )
+     gnat.crc32.initialize( c )
+     gnat.crc32.update( c, s )
+     i := gnat.crc32.get_value( c )
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the records package</span>
+        <b>Help Command</b>: Contents of the gnat.crc32 package</span>
         </div>
         </div>
         </center>
 
-<h3>records.to_record( r, s )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<p>
+<hr><b>gnat.crc32.initialize( c )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td width="15%">&nbsp;</td>
-<td><p>Decode a JSON string, storing the values in the record.
-</p>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">type rt is record s : string; end record;<br>
-r : rt;<br>
-r.s := "{" &amp; ASCII.Quotation &amp; "s" &amp; ASCII.Quotation &amp;<br> 
-":" &amp; ASCII.Quotation &amp; "foo" &amp; ASCII.Quotation &amp; "}";<br>
-records.to_record( r, s ); -- r.s is "foo"</span></p>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td>
+<br>Initialize CRC value by assigning the standard Init value (16#FFFF_FFFF)
+<br>Example: gnat.crc32.initialize( c )
+<br>Ada Equivalent: GNAT.CRC32.Initialize
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
 <tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>r</span></td>
-<td><span>out</span></td>
-<td><span>a record type</span></td>
-<td><span>required</span></td>
-<td><span>the record to assign values to</span></td>
-</tr><tr>
-<td><span>s</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the JSON expression</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>For more details and exceptions, see the Reference Manual section
-<a href="ref_types.html">JSON and SparForte Types</a>.</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>arrays.to_array<br>arrays.to_json<br>records.to_json<br>strings.from_json<br>strings.to_json</p>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: N/A<br>PHP: json_decode</p></td>
+<td>c</td>
+
+<td>out</td>
+
+<td>gnat.crc32.gnatcrc32</td>
+
+<td>required</td>
+
+<td>the CRC32 counter</td>
 </tr>
 </table>
-
-<h3>records.to_json( s, a )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Encode the record contents as a JSON string.</p>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">type rt is record s : string; end record;<br>
-r : rt;<br>
-r.s := "foo";<br>
-records.to_json( j, r ); -- j is {"s":"foo"}</span></p>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>s</span></td>
-<td><span>out</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the JSON expression</span></td>
-</tr><tr>
-<td><span>r</span></td>
-<td><span>in</span></td>
-<td><span>a record type</span></td>
-<td><span>required</span></td>
-<td><span>the record to get values from</span></td>
+</td>
 </tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>For more details and exceptions, see the Reference Manual section
-<a href="ref_types.html">JSON and SparForte Types</a>.</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>arrays.to_array<br>arrays.to_json<br>records.to_record<br>strings.from_json<br>strings.to_json</p>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: N/A<br>PHP: json_encode</p></td>
+</table></center>
+
+<p>
+<hr><b>gnat.crc32.update( c, s )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Evolve CRC by including the contribution from Character'Pos (Value) for
+each character in the string.
+<br>Example: gnat.crc32.update( c, "fred" )
+<br>Ada Equivalent: GNAT.CRC32.Update
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in out</td>
+
+<td>gnat.crc32.gnatcrc32</td>
+
+<td>required</td>
+
+<td>the CRC32 counter</td>
+</tr>
+<tr>
+<td>s</td>
+
+<td>in</td>
+
+<td>universal string</td>
+
+<td>required</td>
+
+<td>the string type to evaluate</td>
 </tr>
 </table>
+</td>
+</tr>
+</table></center>
 
+<p>
+<hr><b>i := gnat.crc32.get_value( c )</b>
+<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<tr>
+<td>
+<br>Computes the CRC32 value by performing an XOR with the standard XorOut
+value (16#FFFF_FFFF). Note that this does not change the value of c, so it
+may be used to retrieve intermediate values of the CRC32 value during a
+sequence of update calls.
+<br>Example: counter := gnat.crc32.get_value( c )
+<br>Ada Equivalent: GNAT.CRC32.Get_Value
+<br>Parameters:
+<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<tr>
+<td>c</td>
+
+<td>in out</td>
+
+<td>gnat.crc32.gnatcrc32</td>
+
+<td>required</td>
+
+<td>the CRC32 counter</td>
+</tr>
+<tr>
+<td>i</td>
+
+<td>result</td>
+
+<td>integer (note: this may change in the future)</td>
+
+<td>required</td>
+
+<td>the partial result</td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
 
 &nbsp;<br>
 
@@ -167,7 +177,7 @@ records.to_json( j, r ); -- j is {"s":"foo"}</span></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_gnat_crc32.html">&nbsp;gnat.crc32</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_gnat_crc32.html">&nbsp;<b>gnat.crc32</b></a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
@@ -175,7 +185,7 @@ records.to_json( j, r ); -- j is {"s":"foo"}</span></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_pen.html">&nbsp;pen</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_records.html">&nbsp;<b>records</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_records.html">&nbsp;records</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_sound.html">&nbsp;sound</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_sinfo.html">&nbsp;source_info</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;stats</a></p>

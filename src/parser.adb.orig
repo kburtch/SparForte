@@ -34,7 +34,11 @@ with system,
     gnat.directory_operations,
     cgi,
     bush_os.exec,
+#if SOUND
     bush_os.sound,
+#else
+    -- sound disabled
+#end if;
     pegasock.memcache,
     string_util,
     user_io,
@@ -60,6 +64,7 @@ with system,
     parser_stats,
     parser_pen,
     parser_os,
+    parser_gnat_crc,
     parser_dirops,
     parser_memcache;
 use ada.text_io,
@@ -73,7 +78,11 @@ use ada.text_io,
     gnat.directory_operations,
     bush_os,
     bush_os.exec,
+#if SOUND
     bush_os.sound,
+#else
+    -- sound disabled
+#end if;
     pegasock.memcache,
     user_io,
     script_io,
@@ -99,6 +108,7 @@ use ada.text_io,
     parser_stats,
     parser_pen,
     parser_os,
+    parser_gnat_crc,
     parser_dirops,
     parser_memcache;
 
@@ -646,11 +656,15 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
+#if SOUND
      begin
        Play( expr_val, integer( to_numeric( pri_val ) ) );
      exception when others =>
        err( "exception raised" );
      end;
+#else
+      err( "sound support not installed" );
+#end if;
   end if;
 end ParsePlay;
 
@@ -667,7 +681,11 @@ begin
      end if;
   end if;
   if isExecutingCommand then
+#if SOUND
      PlayCD( dev_name );
+#else
+      err( "sound support not installed" );
+#end if;
   end if;
 end ParsePlayCD;
 
@@ -675,7 +693,11 @@ procedure ParseStopCD is
 begin
   expect( sound_stopcd_t );
   if isExecutingCommand then
+#if SOUND
      StopCD;
+#else
+      err( "sound support not installed" );
+#end if;
   end if;
 end ParseStopCD;
 
@@ -683,7 +705,11 @@ procedure ParseMute is
 begin
   expect( sound_mute_t );
   if isExecutingCommand then
+#if SOUND
      Mute;
+#else
+      err( "sound support not installed" );
+#end if;
   end if;
 end ParseMute;
 
@@ -691,7 +717,11 @@ procedure ParseUnmute is
 begin
   expect( sound_unmute_t );
   if isExecutingCommand then
+#if SOUND
      Unmute;
+#else
+      err( "sound support not installed" );
+#end if;
   end if;
 end ParseUnmute;
 -- this stuff should be in parser_sound.
@@ -1839,6 +1869,9 @@ begin
      elsif token = highread_get_t then                 -- memcache.highread.get
         ParseHighreadGet( f );
         kind := string_t;
+     elsif token = gnat_crc32_get_value_t then         -- gnat.crc32.get_value
+        ParseGnatCRC32GetValue( f );
+        kind := integer_t; -- should be unsigned_32
      elsif identifiers( token ).class = userFuncClass then
         declare
           funcToken : identifier := token;
@@ -7110,6 +7143,10 @@ begin
      ParseHighreadFlush;
   elsif token = highread_set_cluster_type_t then   -- memcache.highread.set_cluster_type
      ParseHighreadSetClusterType;
+  elsif token = gnat_crc32_initialize_t then       -- gnat.crc32.initialize
+     ParseGnatCRC32Initialize;
+  elsif token = gnat_crc32_update_t then           -- gnat.crc32.update
+     ParseGnatCRC32Update;
   elsif Token = else_t then
      err( "else without if" );
   elsif Token = elsif_t then

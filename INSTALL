@@ -148,6 +148,8 @@ By default, SparForte will install under /usr/local.
     --without-postgres (NO_POSTGRES variable): disable PostgreSQL database
             support
 
+    --without-sound (NO_SOUND variable): disable ADAVOX sound support
+
     Common Problems
 
     - pg_config not found.

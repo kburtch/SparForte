@@ -1822,17 +1822,16 @@ if false then
 end if;
 pragma assert( i = 1 );
 
--- fails with new unreachable code tests
---i := 1;
---while i < 3 loop
---  i := 2;
---  exit;
---  while i < 3 loop
---    i := 3;
---    exit;
---  end loop;
---end loop;
---pragma assert( i = 2 );
+i := 1;
+while i < 3 loop
+  i := 2;
+  exit when true;
+  while i < 3 loop
+    i := 3;
+    exit;
+  end loop;
+end loop;
+pragma assert( i = 2 );
 
 -- for loop and itself operand
 
@@ -1905,17 +1904,16 @@ if false then
 end if;
 pragma assert( i = 1 );
 
--- this fails new unreachable code tests
---i := 1;
---for j in 1..5 loop
---  i := 2;
---  exit;
---  for j in 1..5 loop
---    i := 3;
---    exit;
---  end loop;
---end loop;
---pragma assert( i = 2 );
+i := 1;
+for j in 1..5 loop
+  i := 2;
+  exit when true;
+  for j in 1..5 loop
+    i := 3;
+    exit;
+  end loop;
+end loop;
+pragma assert( i = 2 );
 
 -- loop loop
 
@@ -1965,17 +1963,16 @@ if false then
 end if;
 pragma assert( i = 1 );
 
--- this fails new unreachable code tests
---i := 1;
---loop
---  i := 2;
---  exit;
---  loop
---    i := 3;
---    exit;
--- end loop;
---end loop;
---pragma assert( i = 2 );
+i := 1;
+loop
+  i := 2;
+  exit when true;
+  loop
+    i := 3;
+    exit;
+ end loop;
+end loop;
+pragma assert( i = 2 );
 
 -- O/S commands
 

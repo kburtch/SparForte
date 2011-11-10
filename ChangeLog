@@ -72,3 +72,7 @@ faster builds.
 30. Change: for variable is now a constant.  Assignment to constant (with a
 warning) now permitted at a breakout prompt.
 
+31. New: configure option "--without-sound".  Backported from Bush 2.0.
+
+32. New: gnat.crc32 package.  Backported from Bush 2.0.
+

@@ -12,6 +12,9 @@ MAKE=GMAKETYPE
 GNATMAKE=gnatmake
 SDLLIBS=SDLLIBSTYPE
 SDLINCL=SDLINCLTYPE
+ADAVOXINCL=ADAVOXINCLSSUB
+ADAVOXLIBS=ADAVOXLIBSSUB
+ADAVOXMAKE=ADAVOXMAKESUB
 CFLAGS=CFLAGSTYPE
 PREFIX=PREFIXSUB
 MANPREFIX=MANPREFIXSUB
@@ -21,10 +24,10 @@ MANPREFIX=MANPREFIXSUB
 
 #INCLUDE=-I./adacgi-1.6/ -I./apq-2.1/ -I./ADAVOX-0.51/bc -I./ADAVOX-0.51/wc -I./ADAVOX-0.51/main -I/usr/include/SDL
 # Compiling options for including files
-INCLUDE=-I./adacgi-1.6/ -I./apq-2.1/ -I./ADAVOX-0.51/bc -I./ADAVOX-0.51/wc -I./ADAVOX-0.51/main -I./pegasock/ ${SDLINCL}
+INCLUDE=-I./adacgi-1.6/ -I./apq-2.1/ -I./pegasock/ ${SDLINCL} ${ADAVOXINCL}
 # When binding, don't need to include the SDL files.  In particular, the -D
 # option created by the SDL config program will break gnatbind.
-INCLUDE_BIND=-I./adacgi-1.6/ -I./apq-2.1/ -I./ADAVOX-0.51/bc -I./ADAVOX-0.51/wc -I./ADAVOX-0.51/main -I./pegasock/
+INCLUDE_BIND=-I./adacgi-1.6/ -I./apq-2.1/ ${ADAVOXINCL} -I./pegasock/
 #LIBS=-L`pg_config --libdir` -L./apq-1.92/ -lpq -lSDL ${PTHREAD_LIBS}
 #LIBS=-L`pg_config --libdir` -L./apq-2.1/ ./apq-2.1/c_mysql.o -l SDL -l SDL_image ${PTHREAD_LIBS}
 LIBS=-L`pg_config --libdir` `mysql_config --libs` -L./apq-2.1/ ./apq-2.1/c_mysql.o -L./pegasock/ ./pegasock/c_tinyserve.o ./pegasock/c_os.o ${SDLLIBS}
@@ -51,7 +54,7 @@ all: c_os.o c_scanner.o
 	@echo "    http://home.cogeco.ca/~ve3wwg"
 	@echo "---------------------------------------------------------------"
 	@echo
-	$(MAKE) CPU=$(CPU) -C ADAVOX-0.51
+	$(ADAVOXMAKE)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "  Making PegaSoft Socket Library"
@@ -73,7 +76,7 @@ all: c_os.o c_scanner.o
 	@echo
 	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -gnatfaon -fstack-check -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
-	gnatlink spar.ali ./ADAVOX-0.51/wc/cglue.o c_os.o c_scanner.o $(LIBS)
+	gnatlink spar.ali ${ADAVOXLIBS} c_os.o c_scanner.o $(LIBS)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "  Thanks for choosing SparForte"
@@ -105,7 +108,7 @@ max: clean c_os.o c_scanner.o
 	@echo "Making AdaVOX"
 	@echo "---------------------------------------------------------------"
 	@echo
-	$(MAKE) CPU=$(CPU) -C ADAVOX-0.51
+	$(ADAVOXMAKE)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "  Making PegaSoft Socket Library"
@@ -126,7 +129,7 @@ max: clean c_os.o c_scanner.o
 	@echo
 	$(GNATMAKE) -j2 -c -i -O3 $(CPU_FLAG)=$(CPU) -gnatf -gnatn -gnatp -ffast-math -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
-	gnatlink spar.ali ./ADAVOX-0.51/wc/cglue.o c_os.o c_scanner.o $(LIBS)
+	gnatlink spar.ali ${ADAVOXLIBS} c_os.o c_scanner.o $(LIBS)
 
 clean:
 	$(MAKE) -C adacgi-1.6 clean
@@ -177,7 +180,7 @@ rpm:	all
 
 bintar: c_os.o all
 	gnatbind -x $(INCLUDE_BIND) spar.ali
-	gnatlink spar.ali ./ADAVOX-0.51/wc/cglue.o c_os.o c_scanner.o $(LIBS)
+	gnatlink spar.ali ${ADAVOXLIBS} c_os.o c_scanner.o $(LIBS)
 	(cd ..; rm -f spar.tgz; tar cfvz spar.tgz src/spar src/spar.1 README COPYING INSTALL examples doc GNUmakefile sparforte_icon.xpm; rm -f spar )
 	@echo "Don't forget to unpack and repack under a descriptive directory"
 
