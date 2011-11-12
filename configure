@@ -672,7 +672,8 @@ if [ -z "$NO_SOUND" ] ; then
          echo "no"
          echo
          echo "ADAVOX requires /dev/dsp.  Create a /dev/dsp symlink to your real audio device"
-         echo "(If you don't care about audio support, try ln -s /dev/null /dev/dsp)"
+         echo "(If you don't care about audio support, try ln -s /dev/null /dev/dsp) or use"
+         echo "--without-sound)."
          exit 1
    fi
 else

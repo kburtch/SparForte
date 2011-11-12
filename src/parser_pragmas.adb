@@ -822,7 +822,9 @@ begin
         end if;
         -- All clear? Get the value
         if not error_found then
-           identifiers( var_id ).import := true;
+           -- set import flag to false.  we will use this to determine if
+           -- something was found.
+           identifiers( var_id ).import := false;
            if importType = "local_memcache" then
               identifiers( var_id ).method := local_memcache;
               checkAndInitializeLocalMemcacheCluster;
@@ -897,26 +899,34 @@ begin
                   """" );
            end if;
            -- Apply the translation mapping.
-           -- if it's JSON, translate from JSON.  The translation routine
-           -- depends on the variable type.
+           -- if it's JSON, translate from JSON.  The translation routine depends
+           -- on the variable type.  import is only true if a value was found.
            if pragmaKind = import_json then
-              if getUniType( identifiers( var_id ).kind ) = uni_string_t then
-                 DoStringFromJson( identifiers( var_id ).value, newValue );
-              elsif identifiers( var_id ).list then
-                 DoJsonToArray( var_id, newValue );
-              elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then
-                 ref.id := var_id;
-                 ref.kind := identifiers( var_id ).kind;
-                 DoJsonToRecord( ref, newValue );
-              elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then
-                 identifiers( var_id ).value := newValue;
-              else
-                 err( "internal error: unexpected import translation type" );
+              if identifiers( var_id ).import then
+                 if getUniType( identifiers( var_id ).kind ) = uni_string_t then
+                    DoStringFromJson( identifiers( var_id ).value, newValue );
+                 elsif identifiers( var_id ).list then
+                    DoJsonToArray( var_id, newValue );
+                 elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then
+                    ref.id := var_id;
+                    ref.kind := identifiers( var_id ).kind;
+                    DoJsonToRecord( ref, newValue );
+                 elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then
+                    identifiers( var_id ).value := newValue;
+                 else
+                    err( "internal error: unexpected import translation type" );
+                 end if;
               end if;
            else
-              -- otherwise, just copy new value
-              identifiers( var_id ).value := newValue;
+              -- otherwise, if a value was found, just copy new value.  import
+              -- is only true if a value was found.
+              if identifiers( var_id ).import then
+                 identifiers( var_id ).value := newValue;
+              end if;
            end if;
+           -- whether imported or not, set it to true because it may be used
+           -- later with volatile to try to find a value.
+           identifiers( var_id ).import := true;
         end if;
 
      when inspect_var =>
