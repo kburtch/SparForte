@@ -83,6 +83,7 @@ pen_frame_rect_t     : identifier;
 pen_paint_rect_t     : identifier;
 pen_fill_rect_t      : identifier;
 pen_frame_ellipse_t  : identifier;
+pen_paint_ellipse_t  : identifier;
 pen_fill_ellipse_t   : identifier;
 pen_clear_t          : identifier;
 
@@ -605,6 +606,7 @@ procedure ParsePenFrameRect;
 procedure ParsePenPaintRect;
 procedure ParsePenFillRect;
 procedure ParsePenFrameEllipse;
+procedure ParsePenPaintEllipse;
 procedure ParsePenFillEllipse;
 procedure ParsePenClear;
 

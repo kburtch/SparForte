@@ -216,7 +216,7 @@ begin
   else
      importKind := null_unbounded_string;
      discardUnusedIdentifier( token );
-     err( "only 'shell' or 'cgi' convention supported" );
+     err( "only 'shell', 'local_memcache', 'memcache' convention supported" );
   end if;
 end ParseImportKind;
 
@@ -608,6 +608,7 @@ begin
                     err( "unable to find variable " &
                          to_string( identifiers( var_id ).name ) &
                          " in the local memcache" );
+                    identifiers( var_id ).import := false;
                  end if;
               exception when others =>
                  err( "exception raised" );
@@ -623,6 +624,10 @@ begin
                     err( "unable to find variable " &
                          to_string( identifiers( var_id ).name ) &
                          " in the memcache" );
+                    identifiers( var_id ).import := false;
+                    -- just for pragma import, mark as not imported if there
+                    -- was an error (otherwise on the command prompt the
+                    -- user will not be able to re-import)
                  end if;
               exception when others =>
                  err( "exception raised" );
@@ -631,10 +636,11 @@ begin
               identifiers( var_id ).method := http_cgi;
               for i in 1..cgi.key_count( to_string( identifiers( var_id ).name ) ) loop
                   newValue := newValue & to_unbounded_string( cgi.value(
-                      to_string( identifiers( var_id ).value ), 1, true ) );
+                      to_string( identifiers( var_id ).name ), 1, true ) );
                end loop;
            elsif not processingTemplate and importType = "cgi" then
                err( "import type cgi must be used in a template" );
+               identifiers( var_id ).import := false;
            else
               identifiers( var_id ).method := shell;
               declare
@@ -673,6 +679,7 @@ begin
                  identifiers( var_id ).value := newValue;
               else
                  err( "internal error: unexpected import translation type" );
+                 identifiers( var_id ).import := false;
               end if;
            else
               -- otherwise, just copy new value
@@ -862,15 +869,13 @@ begin
                  err( "exception raised" );
               end;
            elsif processingTemplate and importType = "cgi" then
-              if inEnvironment( var_id ) then
-                 identifiers( var_id ).import := true;
-                 identifiers( var_id ).method := http_cgi;
-                 identifiers( var_id ).value := null_unbounded_string;
-                 for i in 1..cgi.key_count( to_string( identifiers( var_id ).name ) ) loop
-                     newValue := identifiers( var_id ).value &
-                        to_unbounded_string( cgi.value( to_string( identifiers( var_id ).value ), 1, false) );
-                  end loop;
-              end if;
+              identifiers( var_id ).import := true;
+              identifiers( var_id ).method := http_cgi;
+              identifiers( var_id ).value := null_unbounded_string;
+              for i in 1..cgi.key_count( to_string( identifiers( var_id ).name ) ) loop
+                  newValue := identifiers( var_id ).value &
+                     to_unbounded_string( cgi.value( to_string( identifiers( var_id ).name ), 1, false) );
+               end loop;
            elsif not processingTemplate and importType = "cgi" then
                err( "import type cgi must be used in a template" );
            else

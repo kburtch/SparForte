@@ -1481,7 +1481,7 @@ end frameEllipse;
 --
 --end fillEllipse;
 
-procedure fillEllipse( theCanvas : aCanvas; r : ARect ) is
+procedure paintEllipse( theCanvas : aCanvas; r : ARect ) is
   svga_x1 : SDL_HCoordinate;
   svga_y1 : SDL_VCoordinate;
   svga_x2 : SDL_HCoordinate;
@@ -1562,9 +1562,9 @@ begin
      SDL_UpdateRect( theCanvas.surface, svga_x1, svga_y1, Uint32( svga_x2 - svga_x1 ) + 1, Uint32( svga_y2 - svga_y1 ) + 1 );
   end if;
 
-end fillEllipse;
+end paintEllipse;
 
-procedure fillEllipse( canvas_id : aCanvasID; r : ARect ) is
+procedure paintEllipse( canvas_id : aCanvasID; r : ARect ) is
   theCanvas : aCanvas;
   canvasIndex : canvasList.aListIndex := 0;
 begin
@@ -1574,9 +1574,137 @@ begin
      put_line( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
-     fillEllipse( theCanvas, r );
+     paintEllipse( theCanvas, r );
+  end if;
+end paintEllipse;
+
+
+procedure fillEllipse( theCanvas : aCanvas; theRect : ARect; r, g, b : ARGBComponent ) is
+  svga_x1 : SDL_HCoordinate;
+  svga_y1 : SDL_VCoordinate;
+  svga_x2 : SDL_HCoordinate;
+  svga_y2 : SDL_VCoordinate;
+  pixel   : SDL_Generic_Pixel;
+begin
+
+  svgaEffectiveRectangle( theCanvas, theRect, svga_x1, svga_y1, svga_x2, svga_y2 );
+  if svga_x1 + svga_x2 = 0 then
+     return;
+  end if;
+
+  -- mix the colour to fill with
+ 
+  SDL_MapRGB( pixel,
+              theCanvas.surface_ptr.format,
+              SDL_RGB_Component( 255.0 * r / 100.0 ),
+              SDL_RGB_Component( 255.0 * g / 100.0 ),
+              SDL_RGB_Component( 255.0 * b / 100.0 ) );
+
+  case theCanvas.pen.brush is
+
+  when stretch => -- not complete
+     if theCanvas.pen.revealCount = 0 then
+        if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
+           put_line( standard_error, "unable to lock SDL surface" );
+        end if;
+     end if;
+     SDL_EXT_Fill_Ellipse( theCanvas.surface, svga_x1, svga_y1,
+         svga_x2, svga_y2, pixel, theCanvas.pen.mode );
+     if theCanvas.pen.revealCount = 0 then
+        SDL_UnlockSurface( theCanvas.surface  );
+     end if;
+
+  when tile =>
+     if theCanvas.pen.revealCount = 0 then
+        if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
+           put_line( standard_error, "unable to lock SDL surface" );
+        end if;
+     end if;
+     SDL_EXT_Fill_Ellipse_Pattern( theCanvas.surface, svga_x1, svga_y1,
+         svga_x2, svga_y2, 0, 0, theCanvas.pen.pattern, theCanvas.pen.mode );
+     if theCanvas.pen.revealCount = 0 then
+        SDL_UnlockSurface( theCanvas.surface  );
+     end if;
+
+  when stamp =>
+     if theCanvas.pen.revealCount = 0 then
+        if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
+           put_line( standard_error, "unable to lock SDL surface" );
+        end if;
+     end if;
+     SDL_EXT_Fill_Ellipse_Pattern( theCanvas.Surface, svga_x1,
+         svga_y1, svga_x2, svga_y2, svga_x1, svga_y1, theCanvas.pen.pattern, theCanvas.pen.mode );
+     if theCanvas.pen.revealCount = 0 then
+        SDL_UnlockSurface( theCanvas.surface  );
+     end if;
+
+  when smear => -- not done
+     if theCanvas.pen.revealCount = 0 then
+        if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
+           put_line( standard_error, "unable to lock SDL surface" );
+        end if;
+     end if;
+     SDL_EXT_Fill_Ellipse_Pattern( theCanvas.surface, svga_x1,
+         svga_y1, svga_x2, svga_y2, 0, 0, theCanvas.pen.pattern,
+         theCanvas.pen.mode );
+     if theCanvas.pen.revealCount = 0 then
+        SDL_UnlockSurface( theCanvas.surface  );
+     end if;
+
+  when others => -- including pencil
+     if theCanvas.pen.revealCount = 0 then
+        if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
+           put_line( standard_error, "unable to lock SDL surface" );
+        end if;
+     end if;
+     SDL_EXT_Fill_Ellipse( theCanvas.surface, svga_x1, svga_y1,
+         svga_x2, svga_y2, pixel, theCanvas.pen.mode );
+     if theCanvas.pen.revealCount = 0 then
+        SDL_UnlockSurface( theCanvas.surface  );
+     end if;
+
+  end case;
+
+  if theCanvas.pen.revealCount = 0 then
+     SDL_UpdateRect( theCanvas.surface, svga_x1, svga_y1, Uint32( svga_x2 - svga_x1 ) + 1, Uint32( svga_y2 - svga_y1 ) + 1 );
+  end if;
+
+end fillEllipse;
+
+procedure fillEllipse( canvas_id : aCanvasID; theRect : ARect; r, g, b : ARGBComponent ) is
+  theCanvas : aCanvas;
+  canvasIndex : canvasList.aListIndex := 0;
+begin
+  theCanvas.id := canvas_id;
+  canvasList.Find( canvas, theCanvas, 1, canvasIndex );
+  if canvasIndex = 0 then
+     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+  else
+     canvasList.Find( canvas, canvasIndex, theCanvas );
+     fillEllipse( theCanvas, theRect, r, g, b );
   end if;
 end fillEllipse;
+
+procedure fillEllipse( theCanvas : aCanvas; theRect : ARect; c : AColourName ) is
+begin
+  fillEllipse( theCanvas, theRect, ColourNames(c).red, ColourNames(c).green, ColourNames(c).blue );
+end fillEllipse;
+
+procedure fillEllipse( canvas_id : aCanvasID; theRect : ARect; c : AColourName ) is
+  theCanvas : aCanvas;
+  canvasIndex : canvasList.aListIndex := 0;
+begin
+  theCanvas.id := canvas_id;
+  canvasList.Find( canvas, theCanvas, 1, canvasIndex );
+  if canvasIndex = 0 then
+     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+  else
+     canvasList.Find( canvas, canvasIndex, theCanvas );
+     fillEllipse( theCanvas, theRect, ColourNames(c).red, ColourNames(c).green, ColourNames(c).blue );
+  end if;
+end fillEllipse;
+
+
 
 
 -----------------------------------------------------------------------------

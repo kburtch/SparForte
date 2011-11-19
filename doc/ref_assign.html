@@ -48,8 +48,43 @@
 Unlike some languages, assignment is not an operator: it cannot be used
 in an expression.</p>
 
-<p>Some types are "limited".  This means they cannot be assigned using
+        <center>
+        <div class="code">
+                <p class="code">=&gt; x := 5 * ( 7 + 2 );<br>
+=&gt; s := "hello " &amp; "there!";</p>
+        </div>
+        </center>
+
+<h3>Assignments and Limited Types</h3>
+
+<p>Some built-in types are "limited".  This means they cannot be assigned using
 the assignment statement.</p>
+
+<h3>Boolean True Shortcut</h3>
+
+<p>As a special exception, stating a boolean's name implies that the
+boolean is assigned true.  This only applies to boolean or subtypes
+of boolean.  The shortcut only assigns true (not false).  It can
+only be used with scalar variables (not arrays or records)</p>
+
+        <center>
+        <div class="code">
+                <p class="code">done : boolean := <b>false</b>;<br>
+<b>loop</b><br>
+&nbsp;&nbsp;-- ...do something<br>
+&nbsp;&nbsp;<b>if</b> end_of_file( f ) <b>then</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;done; -- same as done := true<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>exit</b>;<br>
+&nbsp;&nbsp;<b>end</b> <b>if</b>;<br>
+<b>end</b> <b>loop</b>;<br>
+<b>if</b> done <b>then</b><br>
+&nbsp;&nbsp;-- ...do something<br>
+<b>end</b> <b>if</b>;</p>
+        </div>
+        </center>
+
+
+<p>Under <b>pragma ada_95</b>, the boolean true shortcut is not allowed.</p>
 
 <h3>Primitive Operators</h3>
 
@@ -114,18 +149,6 @@ cases.</p>
 
 <p><b>Ada</b>: SparForte has looser restrictions on parantheses unless
 pragma ada_95 is used.</p>
-
-<h3>Assignment Statements</h3>
-
-<p>Assignment (:=) is a statement, not an operator, and cannot be used
-in expressions.</p>
-
-        <center>
-        <div class="code">
-                <p class="code">=&gt; x := 5 * ( 7 + 2 );<br>
-=&gt; s := "hello " &amp; "there!";</p>
-        </div>
-        </center>
 
 <br>
 &nbsp;

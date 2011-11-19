@@ -1,0 +1,5 @@
+pragma ada_95;
+
+bool_true_shortcut : boolean := false;
+bool_true_shortcut; -- should fail
+

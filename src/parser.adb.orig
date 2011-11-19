@@ -7059,6 +7059,8 @@ begin
      ParsePenFillRect;
   elsif token = pen_frame_ellipse_t then           -- Pen.Fill_Ellipse
      ParsePenFrameEllipse;
+  elsif token = pen_paint_ellipse_t then           -- Pen.Paint_Ellipse
+     ParsePenPaintEllipse;
   elsif token = pen_fill_ellipse_t then            -- Pen.Fill_Ellipse
      ParsePenFillEllipse;
   elsif token = pen_clear_t then                   -- Pen.Clear
@@ -7248,6 +7250,16 @@ begin
            resumeScanning( cmdStart );
            ParseAssignment;
            itself_type := new_t;
+
+        -- Boolean true shortcut (boolean assertions)
+        -- new_t check because a command will produce an otherClass with no type
+        elsif identifiers( startToken ).class = otherClass and then identifiers( startToken ).kind /= new_t and then getBaseType( identifiers( startToken ).kind ) = boolean_t and then not identifiers( startToken ).deleted then
+           if onlyAda95 then
+              err( "use " & optional_bold( ":= true " ) & " with " & optional_bold( "pragma ada_95" ) );
+           end if;
+           identifiers( startToken ).value := to_unbounded_string( "1" );
+           --if Token = symbol_t and to_string( identifiers( token ).value ) = ";" then
+           --end if;
         else
 
            -- assume it's a shell command and run it

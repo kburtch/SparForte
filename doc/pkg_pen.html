@@ -82,25 +82,24 @@ has several properties:</p>
 <ul>
 <li><b>Off</b> - the pen moves but no drawing takes place</li>
 <li><b>Copy</b> - the ink overwrites the existing pixels on the canvas. This
-is the normal pen mode.</li>
+is the normal pen mode. (default)</li>
 <li><b>Invert</b> - the ink is exclusive-or'd with the pixels.  Where the
 ink is 0%, the canvas is unchanged.  Where the ink is 100%, the canvas pixels
 are transformed to the opposite colour.  This is useful for simple hilighting
-that doesn't lose information on the canvas.</p>
-
+that doesn't lose information on the canvas.</li>
 <li><b>Add</b> - adds the canvas pixels to the ink pixels</li>
 <li><b>Subtract</b> - removes the canvas pixels from the ink pixels</li>
 <li><b>Average</b> - blends the canvas and ink pixels, taking the average value</li>
-<li><b>Fade</b> - brighten or darken the canvas pixels</li>
-<li><b>Min</b> - where the ink is not 0, choose the darker pixel between the ink and the canvas.  If the ink is 0, leave the canvas unchanged.</li>
+<li><b>Fade</b> - brighten or darken the canvas pixels (unfinished)</li>
+<li><b>Min</b> - where the ink is not 0, choose the darker pixel between the ink and the canvas.  If the ink is 0, leave the canvas unchanged. (unfinished)</li>
 
-<li><b>Max</b> - where the ink is not 0, choose the brighter pixel between the ink and the canvas.  If the ink is 0, leave the canvas unchanged.</li>
+<li><b>Max</b> - where the ink is not 0, choose the brighter pixel between the ink and the canvas.  If the ink is 0, leave the canvas unchanged. (unfinished)</li>
 </ul>
 
 <p>The brush describes the pattern the pen will draw with:</p>
 
 <ul>
-<li><b>Pencil</b> - drawing by single pixels of a solid colour ink</li>
+<li><b>Pencil</b> - drawing by single pixels of a solid colour ink (default)</li>
 <li><b>Smear</b> - (Not complete)</li>
 
 <li><b>Stamp</b> - draw with a pattern aligned to the shape</li>
@@ -110,7 +109,19 @@ that doesn't lose information on the canvas.</p>
 
 <p>Not all pen modes are available on all kinds of canvas.</p>
 
-<p>Colors are made of percentages of red, green and blue.  pen.pen_color_name
+<table cellspacing="3" cellpadding="3" width="100%" border="1">
+<tr>
+<td><img src="pictures/pen_tile_example.png" width="124" height="133" alt="pen_brush.tile"><br>pen_brush.tile</td>
+</tr><tr>
+<td><img src="pictures/pen_tile_copy_example.png" width="124" height="133" alt="pen_mode.copy"><br>pen_mode.copy</td>
+<td><img src="pictures/pen_tile_invert_example.png" width="124" height="133" alt="pen_mode.invert"><br>pen_mode.invert</td>
+<td><img src="pictures/pen_tile_add_example.png" width="124" height="133" alt="pen_mode.invert"><br>pen_mode.add</td>
+<td><img src="pictures/pen_tile_average_example.png" width="124" height="133" alt="pen_mode.invert"><br>pen_mode.average</td>
+<td><img src="pictures/pen_tile_subtract_example.png" width="124" height="133" alt="pen_mode.invert"><br>pen_mode.subtract</td>
+</tr>
+</table>
+
+<p>Colors are made of percentages of red, green and blue.  pen.color_name
 is an enumerated type with the standard X windows color names.</p>
 
 <pre>
@@ -268,7 +279,7 @@ is the equivalent of paint_rect/fill_rect on the entire canvas,
 or the built-in clear command for a terminal session.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">pen.clear( my_canvas, pen.pen_color_name.turquoise );</span></p>
+<td><span class="code">pen.clear( my_canvas, pen_color_name.turquoise );</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -307,7 +318,7 @@ or the built-in clear command for a terminal session.</p></td>
 </tr><tr>
 <td><span>cn</span></td>
 <td><span>in</span></td>
-<td><span>pen.pen_color_name</span></td>
+<td><span>pen_color_name</span></td>
 <td><span>required</span></td>
 <td><span>the name of the colour to clear with</span></td>
 </tr>
@@ -400,61 +411,24 @@ components more than 100.0 or less than 0.0.</p></td>
 </tr>
 </table>
 
-<h3>pen.fill_ellipse( c, r )</h3>
+<h3>pen.fill_ellipse( c, rt, r, g, b )
+<br>pen.fill_ellipse( c, rt, cn )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Fill ellipse bounded by rectangle r in canvas c using the current pen.
-If wait_to_reveal is used, the results will not appear until revealed.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">pen.fill_ellipse( canvas_id, pie_graph_rect );</span></p>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>c</span></td>
-<td><span>in</span></td>
-<td><span>pen.canvas_id</span></td>
-<td><span>required</span></td>
-<td><span>the drawing area canvas</span></td>
-</tr><tr>
-<td><span>r</span></td>
-<td><span>in</span></td>
-<td><span>pen.rect</span></td>
-<td><span>required</span></td>
-<td><span>the rectangle surrounding ellipse to fill</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><span class="code">-</span></p>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>pen.frame_ellipse</p>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr>
-</table>
-
-<h3>pen.fill_rect( c, rt, r, g, b )
-<br>pen.fill_rect( c, rt, cn )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Fill rectangle rt in canvas c using the specified RGB color
-or color name.  If wait_to_reveal is used, the results will not appear
+<td><p>Fill ellipse bounded by rectangle r in canvas c using the specified RGB
+color or color name.  If wait_to_reveal is used, the results will not appear
 until revealed.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">pen.fill_rect( canvas_id, background_rect, pen.pen_color_name.yellow );</span></p>
+<td><p><span class="code">
+=&gt; pen.new_window_canvas( 100, 100, 32, c )<br>
+=&gt; (Assuming c is a new pen.canvas_id variable)<br>
+=&gt; pen.set_rect( r, 10, 10, 90, 90 );<br>
+=&gt; (Assuming r is a new pen.rect variable)<br>
+=&gt; pen.fill_ellipse( c, r, pen_color_name.yellow )<br>
+<img src="pictures/pen_fill_ellipse.png" width="104" height="133" alt="[Ellipse screehshot]">
+</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -499,7 +473,89 @@ until revealed.</p></td>
 </tr><tr>
 <td><span>cn</span></td>
 <td><span>in</span></td>
-<td><span>pen.pen_color_name</span></td>
+<td><span>pen.color_name</span></td>
+<td><span>required</span></td>
+<td><span>the name of the color</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>pen.frame_rect<br>pen.paint_rect<br>pen.clear</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Known Bugs</p></td>
+<td><p>An ellipse in a (0,0,100,100) rectangle throws an exception due to a rounding error.</p>
+</tr>
+</table>
+
+<h3>pen.fill_rect( c, rt, r, g, b )
+<br>pen.fill_rect( c, rt, cn )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Fill rectangle rt in canvas c using the specified RGB color
+or color name.  If wait_to_reveal is used, the results will not appear
+until revealed.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><p><span class="code">
+=&gt; pen.new_window_canvas( 100, 100, 32, c )<br>
+=&gt; (Assuming c is a new pen.canvas_id variable)<br>
+=&gt; pen.set_rect( r, 10, 10, 90, 90 );<br>
+=&gt; (Assuming r is a new pen.rect variable)<br>
+=&gt; pen.fill_rect( c, r, 0, 100, 100 )<br>
+<img src="pictures/pen_fill_rect.png" width="104" height="133" alt="[Ellipse screehshot]">
+</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>pen.canvas_id</span></td>
+<td><span>required</span></td>
+<td><span>the drawing area canvas</span></td>
+</tr><tr>
+<td><span>rt</span></td>
+<td><span>in</span></td>
+<td><span>pen.rect</span></td>
+<td><span>required</span></td>
+<td><span>the rectangle to fill</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of red in the color</span></td>
+</tr><tr>
+<td><span>g</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of green in the color</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>pen.rgbcomponent</span></td>
+<td><span>required</span></td>
+<td><span>percentage of blue in the color</span></td>
+</tr><tr>
+<td colspan="5"><p>OR</p></td>
+</tr><tr>
+<td><span>cn</span></td>
+<td><span>in</span></td>
+<td><span>pen.color_name</span></td>
 <td><span>required</span></td>
 <td><span>the name of the color</span></td>
 </tr>
@@ -525,7 +581,7 @@ the current pen.  If wait_to_reveal is used, the results will not appear until
 revealed.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">pen.fill_ellipse( canvas_id, pie_graph_rect );</span></p>
+<td><span class="code">pen.frame_ellipse( canvas_id, pie_graph_rect );</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -554,10 +610,13 @@ revealed.</p></td>
 <td><span class="code">-</span></p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>pen.fill_ellipse</p>
+<td><p>pen.fill_ellipse<br>pen.paint_ellipse</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Bugs</p></td>
+<td><span class="code">An ellipse in a (0,0,100,100) rectangle throws an exception due to a rounding error.</span></p>
 </tr>
 </table>
 
@@ -1672,6 +1731,53 @@ unchanged.
 </table></center>
 &nbsp;<br>
 
+<h3>pen.paint_ellipse( c, r )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Fill ellipse bounded by rectangle r in canvas c using the current pen.
+If wait_to_reveal is used, the results will not appear until revealed.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">pen.paint_ellipse( canvas_id, pie_graph_rect );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>pen.canvas_id</span></td>
+<td><span>required</span></td>
+<td><span>the drawing area canvas</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>in</span></td>
+<td><span>pen.rect</span></td>
+<td><span>required</span></td>
+<td><span>the rectangle surrounding ellipse to fill</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>pen.frame_ellipse<br>pen.fill_ellipse</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Known Bugs</p></td>
+<td><p>An ellipse in a (0,0,100,100) rectangle throws an exception due to a rounding error.</p>
+</tr>
+</table>
+
 <p>
 <hr><b>pen.paint_rect( c, r )</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
@@ -1916,7 +2022,7 @@ if the image cannot be saved.
 
 <td>in</td>
 
-<td>pen.pen_color_name</td>
+<td>pen.color_name</td>
 
 <td>required</td>
 

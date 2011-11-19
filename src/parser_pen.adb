@@ -1234,13 +1234,13 @@ begin
   end if;
 end ParsePenFrameEllipse;
 
-procedure ParsePenFillEllipse is
-  -- Syntax: pen.fill_ellipse( canvas_id, r );
-  -- Source: Pen.FillEllipse
+procedure ParsePenPaintEllipse is
+  -- Syntax: pen.paint_ellipse( canvas_id, r );
+  -- Source: Pen.PaintEllipse
   canvas_id : identifier;
   rect_id   : identifier;
 begin
-  expect( pen_fill_ellipse_t );
+  expect( pen_paint_ellipse_t );
   expect( symbol_t, "(" );
   ParseIdentifier( canvas_id );
   if baseTypesOk( identifiers( canvas_id ).kind, pen_canvas_id_t ) then
@@ -1256,11 +1256,79 @@ begin
        pen_rect : aRect;
      begin
        bushRect2penRect( pen_rect, rect_id );
-       fillEllipse( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+       paintEllipse( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
           pen_rect );
      exception when others =>
         err( "exception raised" );
      end;
+  end if;
+end ParsePenPaintEllipse;
+
+procedure ParsePenFillEllipse is
+  -- Syntax: pen.fill_ellipse( canvas_id, r );
+  -- Source: Pen.FillEllipse
+  canvas_id : identifier;
+  rect_id   : identifier;
+  rexpr_val : unbounded_string;
+  rexpr_type: identifier;
+  gexpr_val : unbounded_string;
+  gexpr_type: identifier;
+  bexpr_val : unbounded_string;
+  bexpr_type: identifier;
+  colorNameVersion : boolean := false;
+begin
+  expect( pen_fill_ellipse_t );
+  expect( symbol_t, "(" );
+  ParseIdentifier( canvas_id );
+  if baseTypesOk( identifiers( canvas_id ).kind, pen_canvas_id_t ) then
+     expect( symbol_t, "," );
+     ParseIdentifier( rect_id );
+     if baseTypesOk( identifiers( rect_id ).kind, pen_rect_t ) then
+        expect( symbol_t, "," );
+        ParseExpression( rexpr_val, rexpr_type );
+        if getBaseType( rexpr_type ) = pen_pen_color_name_t then
+           expect( symbol_t, ")" );
+           colorNameVersion := true;
+        elsif baseTypesOk( rexpr_type, pen_rgbcomponent_t ) then
+           expect( symbol_t, "," );
+           ParseExpression( gexpr_val, gexpr_type );
+           if baseTypesOk( rexpr_type, pen_rgbcomponent_t ) then
+              expect( symbol_t, "," );
+              ParseExpression( bexpr_val, bexpr_type );
+              if baseTypesOk( rexpr_type, pen_rgbcomponent_t ) then
+                 expect( symbol_t, ")" );
+              end if;
+           end if;
+        end if;
+     end if;
+  end if;
+
+  if isExecutingCommand then
+     if colorNameVersion then
+        declare
+          pen_rect : aRect;
+        begin
+          bushRect2penRect( pen_rect, rect_id );
+          fillEllipse( aCanvasID( to_numeric( canvas_id ) ),
+            pen_rect,
+            aColourName'val( integer( to_numeric( rexpr_val ) ) ) );
+        exception when others =>
+          err( "exception raised" );
+	end;
+     else
+        declare
+          pen_rect : aRect;
+        begin
+          bushRect2penRect( pen_rect, rect_id );
+          fillEllipse( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+             pen_rect,
+             aRGBComponent( to_numeric( rexpr_val ) ),
+             aRGBComponent( to_numeric( gexpr_val ) ),
+             aRGBComponent( to_numeric( bexpr_val ) ) );
+        exception when others =>
+          err( "exception raised" );
+        end;
+     end if;
   end if;
 end ParsePenFillEllipse;
 
@@ -1745,6 +1813,7 @@ begin
   declareProcedure( pen_paint_rect_t, "pen.paint_rect" );
   declareProcedure( pen_fill_rect_t, "pen.fill_rect" );
   declareProcedure( pen_frame_ellipse_t, "pen.frame_ellipse" );
+  declareProcedure( pen_paint_ellipse_t, "pen.paint_ellipse" );
   declareProcedure( pen_fill_ellipse_t, "pen.fill_ellipse" );
 
   declareProcedure( pen_clear_t, "pen.clear" );

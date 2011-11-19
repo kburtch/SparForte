@@ -254,6 +254,17 @@ pragma assert( inenum not in enum2..enum3 );
 inenum := enum3;
 pragma assert( inenum not in enum1..enum2 );
 
+-- boolean true shortcuts
+
+bool_true_shortcut : boolean := false;
+bool_true_shortcut;
+pragma assert( bool_true_shortcut );
+
+subtype shortcut_bool is boolean;
+bool_true_shortcut2 : shortcut_bool := false;
+bool_true_shortcut2;
+pragma assert( bool_true_shortcut2 );
+
 c := ASCII.NUL;
 c := ASCII.SOH;
 c := ASCII.STX;

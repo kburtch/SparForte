@@ -1005,13 +1005,25 @@ procedure frameEllipse( theCanvas : aCanvas; r : ARect );
 procedure frameEllipse( canvas_id : aCanvasID; r : ARect );
 
 
+---> PAINT ELLIPSE
+--
+-- Fill in an ellipse with the current pen.
+-----------------------------------------------------------------------------
+
+procedure paintEllipse( theCanvas : aCanvas; r : ARect );
+procedure paintEllipse( canvas_id : aCanvasID; r : ARect );
+
+
 ---> FILL ELLIPSE
 --
 -- Fill in an ellipse with the current pen.
 -----------------------------------------------------------------------------
 
-procedure fillEllipse( theCanvas : aCanvas; r : ARect );
-procedure fillEllipse( canvas_id : aCanvasID; r : ARect );
+procedure fillEllipse( theCanvas : aCanvas; theRect : ARect; r, g, b : ARGBComponent ) ;
+procedure fillEllipse( canvas_id : aCanvasID; theRect : ARect; r, g, b : ARGBComponent );
+
+procedure fillEllipse( theCanvas : aCanvas; theRect : ARect; c : AColourName );
+procedure fillEllipse( canvas_id : aCanvasID; theRect : ARect; c : AColourName );
 
 
 -----------------------------------------------------------------------------

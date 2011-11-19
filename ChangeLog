@@ -58,7 +58,7 @@ files / separate procuedures and functions.
 
 24. New: JSON subprograms: strings.to_json
 
-25. Fix: New spar.vim syntax file for download for the VIM vi editor.
+25. Fix: New updated spar.vim syntax file for download for the VIM vi editor.
 
 26. New: pragma import_json.
 
@@ -75,4 +75,16 @@ warning) now permitted at a breakout prompt.
 31. New: configure option "--without-sound".  Backported from Bush 2.0.
 
 32. New: gnat.crc32 package.  Backported from Bush 2.0.
+
+33. New: boolean true shortcut.  Simply stating a boolean variable asserts
+that it is true.  Not allowed under pragma ada_95.
+
+34. Fix: pragma import no longer marks a variable as imported if the import
+fails (thus no longer preventing the user to try again at the command prompt).
+
+35. Fix: pragma import cgi works again (searching for correct variable name).
+
+36. Fix: pragma unchecked_import cgi works again (searching for correct variable name, not incorrectly checking for variable in the environment).
+
+37. Change: new paint_ellipse, fill_ellipse now matches fill_rect parameters.
 

@@ -1449,6 +1449,7 @@ begin
      New_Line;
      Put_Line( "  frame_ellipse( id, r )    frame_rect( id, r )      fill_ellipse( id, r )    ");
      Put_Line( "  paint_rect( id, r )       fill_rect(id,rct,r,g,b)  fill_rect(id,r,cn)       ");
+     Put_Line( "  paint_ellipse( id, r )                                                      ");
      Put_Line( "  line_to( id, x, y )       line( id, dx, dy )       hline( id, x1, x2, y )   ");
      Put_Line( "  vline( id, x, y1, y2 )    move_to( id, x, y )      move( id, dx, dy )       ");
      Put_Line( "  clear                     clear( r, g, b)          clear( cn )              ");
