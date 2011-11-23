@@ -144,6 +144,19 @@ begin
   end if;
 end GetCluster;
 
+procedure checkMemcacheRestriction is
+begin
+  if restriction_no_memcache then
+     err( "not allowed with " & bold( "pragma restriction( no_memcache )" ) );
+  end if;
+end checkMemcacheRestriction;
+
+procedure checkRestrictedShell is
+begin
+  if rshOpt then
+     err( "not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
+end checkRestrictedShell;
 
 ----------------------------------------------------------------------------
 -- PARSE THE MEMCACHE PACKAGE
@@ -158,13 +171,14 @@ procedure ParseMemcacheIsValidMemcacheKey( result : out unbounded_string ) is
 begin
   expect( memcache_is_valid_memcache_key_t );
   ParseSingleStringParameter( expr_val, expr_type );
-  begin
-    if isExecutingCommand then
+  if isExecutingCommand then
+     begin
+       checkMemcacheRestriction;
        result := to_bush_boolean( isValidMemcacheKey( expr_val ) );
-    end if;
-  exception when others =>
-    err( "exception raised" );
-  end;
+     exception when others =>
+       err( "exception raised" );
+     end;
+  end if;
 end ParseMemcacheIsValidMemcacheKey;
 
 procedure ParseMemcacheNewCluster( result : out unbounded_string ) is
@@ -173,12 +187,11 @@ procedure ParseMemcacheNewCluster( result : out unbounded_string ) is
   cluster_entry : aMemcacheClusterEntry;
   cluster_id_value : aMemcacheClusterID;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( memcache_new_cluster_t );
   if isExecutingCommand then
      begin
+       checkMemcacheRestriction;
         cluster_id_value := memcacheClusterIdTop;
         memcacheClusterIdTop := memcacheClusterIdTop + 1;
         cluster_entry.id := cluster_id_value;
@@ -200,9 +213,7 @@ procedure ParseMemcacheRegisterServer is
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( memcache_register_server_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
@@ -213,6 +224,7 @@ begin
         port : natural := natural( to_numeric( expr_val2 ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            RegisterServer( cluster_entry.cluster, expr_val, port );
@@ -230,9 +242,7 @@ procedure ParseMemcacheClearServers is
   cluster_entry : aMemcacheClusterEntry;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( memcache_clear_servers_t );
   ParseSingleInOutParameter( cluster_id, memcache_cluster_t  );
   if isExecutingCommand then
@@ -240,6 +250,7 @@ begin
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            ClearServers( cluster_entry.cluster );
@@ -259,9 +270,7 @@ procedure ParseMemcacheSetClusterName is
   expr_type : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( memcache_set_cluster_name_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseLastStringParameter( expr_val, expr_type, string_t );
@@ -270,6 +279,7 @@ begin
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            SetClusterName( cluster_entry.cluster, expr_val );
@@ -291,9 +301,7 @@ procedure ParseMemcacheSetClusterType is
   cluster_id : identifier;
   mct : aMemcacheClusterType;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( memcache_set_cluster_type_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseLastEnumParameter( expr_val, expr_type, memcache_cluster_type_t );
@@ -309,6 +317,7 @@ begin
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            SetClusterType( cluster_entry.cluster, mct );
@@ -330,9 +339,7 @@ procedure ParseMemcacheSet is
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( memcache_set_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
@@ -342,6 +349,7 @@ begin
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Set( cluster_entry.cluster, expr_val, expr_val2 );
@@ -365,9 +373,7 @@ procedure ParseMemcacheAdd is
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( memcache_add_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
@@ -377,6 +383,7 @@ begin
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Add( cluster_entry.cluster, expr_val, expr_val2 );
@@ -400,9 +407,7 @@ procedure ParseMemcacheReplace is
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( memcache_replace_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
@@ -412,6 +417,7 @@ begin
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Replace( cluster_entry.cluster, expr_val, expr_val2 );
@@ -433,9 +439,7 @@ procedure ParseMemcacheAppend is
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( memcache_append_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
@@ -445,6 +449,7 @@ begin
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Append( cluster_entry.cluster,expr_val, expr_val2 );
@@ -466,9 +471,7 @@ procedure ParseMemcachePrepend is
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( memcache_prepend_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
@@ -478,6 +481,7 @@ begin
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Prepend( cluster_entry.cluster, expr_val, expr_val2 );
@@ -497,9 +501,7 @@ procedure ParseMemcacheGet( result : out unbounded_string ) is
   expr_type : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( memcache_get_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseLastStringParameter( expr_val, expr_type );
@@ -508,6 +510,7 @@ begin
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Get( cluster_entry.cluster, expr_val, result );
@@ -529,9 +532,7 @@ procedure ParseMemcacheDelete is
   expr_type : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( memcache_delete_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseLastStringParameter( expr_val, expr_type );
@@ -540,6 +541,7 @@ begin
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Delete( cluster_entry.cluster, expr_val );
@@ -559,9 +561,7 @@ procedure ParseMemcacheStats( result : out unbounded_string ) is
   cluster_entry : aMemcacheClusterEntry;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( memcache_stats_t );
   ParseSingleInOutParameter( cluster_id, memcache_cluster_t  );
   if isExecutingCommand then
@@ -569,6 +569,7 @@ begin
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Stats( cluster_entry.cluster, result );
@@ -586,9 +587,7 @@ procedure ParseMemcacheVersion( result : out unbounded_string ) is
   cluster_entry : aMemcacheClusterEntry;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( memcache_version_t );
   ParseSingleInOutParameter( cluster_id, memcache_cluster_t  );
   if isExecutingCommand then
@@ -596,6 +595,7 @@ begin
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            pegasock.memcache.Version( cluster_entry.cluster, result );
@@ -615,9 +615,7 @@ procedure ParseMemcacheFlush is
   cluster_entry : aMemcacheClusterEntry;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( memcache_flush_t );
   ParseSingleInOutParameter( cluster_id, memcache_cluster_t  );
   if isExecutingCommand then
@@ -625,6 +623,7 @@ begin
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
+        checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Flush( cluster_entry.cluster );
@@ -648,12 +647,11 @@ procedure ParseHighreadNewCluster( result : out unbounded_string ) is
   cluster_entry : aMemcacheDualClusterEntry;
   cluster_id_value : aMemcacheDualClusterID;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( highread_new_cluster_t );
   if isExecutingCommand then
      begin
+       checkMemcacheRestriction;
         cluster_id_value := memcacheDualClusterIdTop;
         memcacheDualClusterIdTop := memcacheDualClusterIdTop + 1;
         cluster_entry.id := cluster_id_value;
@@ -675,9 +673,7 @@ procedure ParseHighreadRegisterAlphaServer is
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( highread_register_alpha_server_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
@@ -688,6 +684,7 @@ begin
         port : natural := natural( to_numeric( expr_val2 ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            RegisterAlphaServer( cluster_entry.cluster, expr_val, port );
@@ -709,9 +706,7 @@ procedure ParseHighreadRegisterBetaServer is
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( highread_register_beta_server_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
@@ -722,6 +717,7 @@ begin
         port : natural := natural( to_numeric( expr_val2 ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            RegisterBetaServer( cluster_entry.cluster, expr_val, port );
@@ -739,9 +735,7 @@ procedure ParseHighreadClearServers is
   cluster_entry : aMemcacheDualClusterEntry;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( highread_clear_servers_t );
   ParseSingleInOutParameter( cluster_id, highread_cluster_t  );
   if isExecutingCommand then
@@ -749,6 +743,7 @@ begin
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            ClearServers( cluster_entry.cluster );
@@ -768,9 +763,7 @@ procedure ParseHighreadSetClusterName is
   expr_type : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( highread_set_cluster_name_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseLastStringParameter( expr_val, expr_type, string_t );
@@ -779,6 +772,7 @@ begin
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            SetClusterName( cluster_entry.cluster, expr_val );
@@ -800,9 +794,7 @@ procedure ParseHighreadSetClusterType is
   cluster_id : identifier;
   mct : aMemcacheClusterType;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( highread_set_cluster_type_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseLastEnumParameter( expr_val, expr_type, memcache_cluster_type_t );
@@ -818,6 +810,7 @@ begin
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            SetClusterType( cluster_entry.cluster, mct );
@@ -839,9 +832,7 @@ procedure ParseHighreadSet is
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( highread_set_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
@@ -851,6 +842,7 @@ begin
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Set( cluster_entry.cluster, expr_val, expr_val2 );
@@ -874,9 +866,7 @@ procedure ParseHighreadAdd is
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( highread_add_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
@@ -886,6 +876,7 @@ begin
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Add( cluster_entry.cluster, expr_val, expr_val2 );
@@ -909,9 +900,7 @@ procedure ParseHighreadReplace is
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( highread_replace_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
@@ -921,6 +910,7 @@ begin
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Replace( cluster_entry.cluster, expr_val, expr_val2 );
@@ -942,9 +932,7 @@ procedure ParseHighreadAppend is
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( highread_append_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
@@ -954,6 +942,7 @@ begin
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Append( cluster_entry.cluster,expr_val, expr_val2 );
@@ -975,9 +964,7 @@ procedure ParseHighreadPrepend is
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( highread_prepend_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
@@ -987,6 +974,7 @@ begin
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Prepend( cluster_entry.cluster, expr_val, expr_val2 );
@@ -1006,9 +994,7 @@ procedure ParseHighreadGet( result : out unbounded_string ) is
   expr_type : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( highread_get_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseLastStringParameter( expr_val, expr_type );
@@ -1017,6 +1003,7 @@ begin
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Get( cluster_entry.cluster, expr_val, result );
@@ -1038,9 +1025,7 @@ procedure ParseHighreadDelete is
   expr_type : identifier;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( highread_delete_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseLastStringParameter( expr_val, expr_type );
@@ -1049,6 +1034,7 @@ begin
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Delete( cluster_entry.cluster, expr_val );
@@ -1068,9 +1054,7 @@ procedure ParseHighreadStats( result : out unbounded_string ) is
   cluster_entry : aMemcacheDualClusterEntry;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( highread_stats_t );
   ParseSingleInOutParameter( cluster_id, highread_cluster_t  );
   if isExecutingCommand then
@@ -1078,6 +1062,7 @@ begin
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Stats( cluster_entry.cluster, result );
@@ -1095,9 +1080,7 @@ procedure ParseHighreadVersion( result : out unbounded_string ) is
   cluster_entry : aMemcacheDualClusterEntry;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( highread_version_t );
   ParseSingleInOutParameter( cluster_id, highread_cluster_t  );
   if isExecutingCommand then
@@ -1105,6 +1088,7 @@ begin
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            pegasock.memcache.highread.Version( cluster_entry.cluster, result );
@@ -1124,9 +1108,7 @@ procedure ParseHighreadFlush is
   cluster_entry : aMemcacheDualClusterEntry;
   cluster_id : identifier;
 begin
-  if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
-  end if;
+  checkRestrictedShell;
   expect( highread_flush_t );
   ParseSingleInOutParameter( cluster_id, highread_cluster_t  );
   if isExecutingCommand then
@@ -1134,6 +1116,7 @@ begin
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
+       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Flush( cluster_entry.cluster );

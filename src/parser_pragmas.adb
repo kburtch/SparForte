@@ -75,8 +75,10 @@ type aPragmaKind is ( ada_95, asserting, annotate, debug, debug_on,
      inspection, inspect_var,
      license, noCommandHash, peek, promptChange, register_memcache_server,
      restriction, restriction_annotations, restriction_auto,
-     restriction_external, restriction_mysql, restriction_postgresql,
-     restriction_todos, template, unchecked_import, unchecked_import_json,
+     restriction_external, restriction_memcache, restriction_mysql,
+     restriction_postgresql, restriction_todos, template, test,
+     test_result,
+     unchecked_import, unchecked_import_json,
      uninspect_var, unrestricted_template, volatile );
 
 --  PARSE PRAGMA KIND
@@ -131,6 +133,10 @@ begin
      err( "pragma restriction not restrictions" );
   elsif name = "template" then
      pragmaKind := template;
+  elsif name = "test" then
+     pragmaKind :=  test;
+  elsif name = "test_result" then
+     pragmaKind :=  test_result;
   elsif name = "unchecked_import" then
      pragmaKind := unchecked_import;
   elsif name = "uninspect" then
@@ -202,12 +208,18 @@ begin
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
   elsif name = "local_memcache" then
+     if restriction_no_memcache then
+        err( "not allowed with " & bold( "pragma restriction( no_memcache )" ) );
+     end if;
      importKind := name_unbounded;
      discardUnusedIdentifier( token );
      getNextToken;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
   elsif name = "memcache" then
+     if restriction_no_memcache then
+        err( "not allowed with " & bold( "pragma restriction( no_memcache )" ) );
+     end if;
      importKind := name_unbounded;
      discardUnusedIdentifier( token );
      getNextToken;
@@ -385,7 +397,7 @@ begin
   -- Parse the pragma parameters (if any)
 
   if pragmaKind /= ada_95 and pragmaKind /= inspection and pragmaKind /=
-     noCommandHash and pragmaKind /= peek then
+     noCommandHash and pragmaKind /= peek and pragmaKind /= gcc_errors then
      if pragmaKind = debug and (token /= symbol_t or identifiers( token ).value /= "(") then
         pragmaKind := debug_on;
      else
@@ -446,6 +458,10 @@ begin
         discardUnusedIdentifier( token );
         getNextToken;
         pragmaKind := restriction_external;
+     elsif identifiers( token ).name = "no_memcache" then
+        discardUnusedIdentifier( token );
+        getNextToken;
+        pragmaKind := restriction_memcache;
      elsif identifiers( token ).name = "no_mysql_database" then
         discardUnusedIdentifier( token );
         getNextToken;
@@ -478,6 +494,25 @@ begin
         end if;
      end if;
      gccOpt := true;
+  when test =>                               -- pragma test
+     expr_val := identifiers( token ).value;
+     expect( backlit_t );
+  when test_result =>                        -- pragma test_result
+     declare
+       save_syntax : boolean;
+     begin
+        -- if we're not testing, we have to evaluate the expression but we
+        -- don't want to execute it because there may be variables without
+        -- values throwing exceptions when tests don't run.
+        if not testOpt then
+           save_syntax := syntax_check;
+           syntax_check := true;
+           ParseExpression( expr_val, var_id );
+           syntax_check := save_syntax;
+        else
+           ParseExpression( expr_val, var_id );
+        end if;
+     end;
   when uninspect_var =>                      -- pragma uninspect
      ParseIdentifier( var_id );
   when volatile =>                           -- pragma volatile
@@ -487,7 +522,8 @@ begin
   end case;
 
   if pragmaKind /= ada_95 and pragmaKind /= inspection and pragmaKind /=
-     noCommandHash and pragmaKind /= debug_on and pragmaKind /= peek then
+     noCommandHash and pragmaKind /= debug_on and pragmaKind /= peek and
+     pragmaKind /= gcc_errors then
      expect( symbol_t, ")" );
   end if;
 
@@ -498,7 +534,7 @@ begin
      when ada_95 =>
         onlyAda95 := true;
      when asserting =>
-        if debugOpt then
+        if debugOpt or testOpt then
            if not syntax_check then   -- has no meaning during syntax check
               if baseTypesOk( boolean_t, var_id ) then
                  if expr_val = "0" then
@@ -733,6 +769,8 @@ begin
         restriction_annotations_not_optional := true;
      when restriction_external =>
         restriction_no_external_commands := true;
+     when restriction_memcache =>
+        restriction_no_memcache := true;
      when restriction_mysql =>
         restriction_no_mysql_database := true;
      when restriction_postgresql =>
@@ -801,6 +839,38 @@ begin
            cgi.put_cgi_header( "Content-type: text/xml" );
         elsif templateType = wmlTemplate then
             cgi.put_cgi_header( "Content-type: text/vnd.wap.wml" );
+        end if;
+     when test =>
+        if testOpt then
+           if not syntax_check then
+              declare
+                 savershOpt : commandLineOption := rshOpt;
+              begin
+                 --rshOpt := true;            -- force restricted shell mode
+                 CompileRunAndCaptureOutput( expr_val, results );
+                 --rshOpt := savershOpt;
+                 put( results );
+              end;
+           end if;
+        end if;
+     when test_result =>
+        if testOpt then
+           if not syntax_check then   -- has no meaning during syntax check
+              if baseTypesOk( boolean_t, var_id ) then
+                 if expr_val = "0" then
+                    put( standard_error, scriptFilePath );
+                    put( standard_error, ":" );
+                    put( standard_error, getLineNo'img );
+                    put( standard_error, ": " );
+                    if gccOpt then
+                       put_line( standard_error, "test failed" );
+                    else
+                       put_line( standard_error, to_string( getCommandLine ) );
+                       put_line( standard_error, "^ test failed" );
+                    end if;
+                 end if;
+              end if;
+           end if;
         end if;
      when unchecked_import | unchecked_import_json =>
         -- Check for a reasonable identifier type
@@ -947,3 +1017,4 @@ begin
 end ParsePragma;
 
 end parser_pragmas;
+

@@ -86,5 +86,12 @@ fails (thus no longer preventing the user to try again at the command prompt).
 
 36. Fix: pragma unchecked_import cgi works again (searching for correct variable name, not incorrectly checking for variable in the environment).
 
-37. Change: new paint_ellipse, fill_ellipse now matches fill_rect parameters.
+37. Change: new pen.paint_ellipse procedure, pen.fill_ellipse now matches pen.fill_rect parameters.
+
+38. New: --test / -t option to enable test mode and pragma test for unit
+testing.  pragma test().  pragma test_result().
+
+39. New: pragma restriction( no_memcache )
+
+40. Fix: pragma gcc_errors no longer requires an unnecessary expression.
 

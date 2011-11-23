@@ -59,7 +59,7 @@ begin
   if Argument_Count = 1 then
      if Argument(1) = "-h" or Argument( 1 ) = "--help" then
         Put_Line( "SparForte (Business Shell) usage" );
-        Put_Line( "spar [-bcdeghilrvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--restricted][--trace][--] [script [param1 ...] ]" );
+        Put_Line( "spar [-bcdeghilrtvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--restricted][--test][--trace][--] [script [param1 ...] ]" );
         Put_Line( "  --break or -b      - enable breakout debugging prompt" );
         Put_Line( "  --check or -c      - syntax check the script but do not run" );
         Put_Line( "  --debug or -d      - enable pragma assert and pragma debug" );
@@ -71,6 +71,7 @@ begin
         Put_Line( "                       (may be repeated)" );
         Put_Line( "  --login or -l      - simulate a login shell" );
         Put_Line( "  --restricted or -r - restricted shell mode" );
+        Put_Line( "  --test or -t       - enable pragma assert and pragma test" );
         Put_Line( "  --trace or -x      - show script lines as they run" );
         Put_Line( "  --verbose or -v    - show shell activity" );
         Put_Line( "  --version or -V    - show version" );
@@ -110,6 +111,8 @@ begin
             debugOpt := true;
          elsif Argument(i) = "--exec" then
             execOpt := true;
+         elsif Argument(i) = "--gcc-errors" then
+            gccOpt := true;
          elsif Argument(i) = "--help" then
             Put_Line( standard_error, Command_Name & ": --help should appear by itself" );
             Set_Exit_Status( 192 );
@@ -120,18 +123,16 @@ begin
             isLoginShell := true;
          elsif Argument(i) = "--restricted" then
             rshOpt := true;
-         --elsif Argument(i) = "--script-license" then
-         --   scriptLicenseOpt := true;
+         elsif Argument(i) = "--test" then
+            testOpt := true;
+         elsif Argument(i) = "--trace" then
+            traceOpt := true;
          elsif Argument(i) = "--verbose" then
             verboseOpt := true;
          elsif Argument(i) = "--version" then
             Put_Line( standard_error, Command_Name & ": --version should appear by itself" );
             Set_Exit_Status( 192 );
             return;
-         elsif Argument(i) = "--trace" then
-            traceOpt := true;
-         elsif Argument(i) = "--gcc-errors" then
-            gccOpt := true;
          elsif Argument(i) = "--" then
             optionOffset := optionOffset + 1;
             exit;
@@ -185,6 +186,8 @@ begin
                       gccOpt := true;
                    elsif Args(letter) = 'r' then
                       rshOpt := true;
+                   elsif Args(letter) = 't' then
+                      testOpt := true;
                    elsif Args(letter) = 'v' then
                       verboseOpt := true;
                    elsif Argument(i) = "-V" then

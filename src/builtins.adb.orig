@@ -1203,7 +1203,7 @@ begin
      Put_Line( "  " & bold( "pragma" ) & " " &
        "annotate( [type,]""text"" ) - embed a comment for help command" );
      Put_Line( "  " & bold( "pragma" ) & " " &
-       "assert( condition ) - with --debug, terminate program on condition" );
+       "assert( condition ) - with --debug/--test, terminate program on condition fail" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "debug( `commands` ) - with --debug, execute debug commands" );
      Put_Line( "  " & bold( "pragma" ) & " " &
@@ -1237,6 +1237,9 @@ begin
        "restriction( no_external_commands ) - " &
          "disable operating system commands" );
      Put_Line( "  " & bold( "pragma" ) & " " &
+       "restriction( no_memcache ) - " &
+         "disable connections to memcache" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
        "restriction( no_mysql_database ) - " &
          "disable connections to mysql" );
      Put_Line( "  " & bold( "pragma" ) & " " &
@@ -1244,6 +1247,10 @@ begin
          "disable connections to postgresql" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "template( css|html|js|json|text|wml|xml [, path] ) - script is acting as a template processor" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
+       "test( condition ) - with --test, execute test commands" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
+       "test_result( condition ) - with --test, display warning on condition failure" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "unchecked_import( shell | cgi | local_memcache | memcache, var ) - import without checking for existence" );
      Put_Line( "  " & bold( "pragma" ) & " " &

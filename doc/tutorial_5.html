@@ -347,6 +347,54 @@ find out more about using the debugger in another tutorial.</p>
 <a href="tutorial_9.html">Debugging Tutorial</a>
 for more info</p>
 
+<h3>Automated Testing</h3>
+
+<p>Similar to the debugging mode, testing
+mode runs any <b>pragma assert</b>'s found in your
+script.  It also runs any instructions found in <b>pragma test</b>.  These
+tests instructions can be used to set up, tear down or run unit tests.
+Check the results of your tests with <b>pragma test_result</b>.
+Without the --test option, pragma test and pragma test_assert has no effect.
+pragma assert may still have an effect if in debugging mode.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">&nbsp;<b>procedure</b> test_example <b>is</b><br>
+<br>
+&nbsp;&nbsp;<b>function</b> two_times( i : integer ) <b>return</b> integer <b>is</b><br>
+&nbsp;&nbsp;<b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b> 2 * i;<br>
+&nbsp;&nbsp;<b>end</b> two_times;<br>
+<br>
+&nbsp;&nbsp;result : integer;<br>
+&nbsp;<b>begin</b><br>
+&nbsp;&nbsp;<b>null</b>;<br>
+<br>
+&nbsp;&nbsp;<b>pragma</b> test( `result := two_times( 2 );` );<br>
+&nbsp;&nbsp;<b>pragma</b> test_result( result = 4 );<br>
+<br>
+&nbsp;<b>end</b> test_example;<br>&nbsp;<br>
+        </p>
+        <div class="code_caption">
+        <b>Example</b>: One Way To Use Pragma Test and Test Result
+        </div>
+        </div>
+        </center>
+
+<p>If a script is started with the <b>--test</b> (or <b>-t</b>) option,
+SparForte runs the script in testing mode.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">=&gt; spar --test test_example<br>
+test_example.sp: 14:   pragma test_result( result = 4 );<br>
+^ test failed</p>
+        </div>
+        </center>
+
+<p>It may not be practical to put all tests in the main script using
+pragmas.  This is only a simple example.</p>
+
 <h3>Standards Compliance and Portability</h3>
 
 <p>SparForte scripts can be copied or moved to other tools such as GCC (for binary

@@ -136,6 +136,7 @@ restriction_annotations_not_optional : boolean := false; -- pragma restriction
 restriction_no_annotate_todos    : boolean := false; -- pragma restriction
 restriction_no_auto_declarations : boolean := false; -- pragma restriction
 restriction_no_external_commands : boolean := false; -- pragma restriction
+restriction_no_memcache          : boolean := false; -- pragma restriction
 restriction_no_mysql_database    : boolean := false; -- pragma restriction
 restriction_no_postgresql_database: boolean := false; -- pragma restriction
 no_command_hash                  : boolean := false; -- pragma restriction
@@ -169,6 +170,7 @@ gccOpt       : commandLineOption := false;           -- true if -g
 importOpt    : commandLineOption := false;           -- true if -i
 rshOpt       : commandLineOption := false;           -- true if -r
 verboseOpt   : commandLineOption := false;           -- true if -v
+testOpt      : commandLineOption := false;           -- true if -t
 traceOpt     : commandLineOption := false;           -- true if -x
 
 --optionOffset : natural := 0;     -- character offset to script parameters

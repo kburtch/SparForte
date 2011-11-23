@@ -219,6 +219,20 @@ and functions.  Commands can have the I/O redirected.  Functions can
 be used in expressions.  Procedures are stand-alone.  put_line and
 related are procedures so they can't be used in a command pipeline.</p>
 
+<h4>I declared a variable inside of a pragma debug but it wasn't declared.
+Why not?</h4>
+
+<p>The commands in the backquotes aren't evaluated until the script runs.
+When the script syntax is checked, the variable declaration hasn't
+executed yet so the variable doesn't exist.</p>
+
+<h4>I used "with separate" inside of a pragma debug but it nothing seemed
+to happen.  Why not?</h4>
+
+<p>The commands in the backquotes are a small script.  When the commands
+run, the "with separate" subscript is loaded into the running script...the
+small script in the backquotes not the main script.</p>
+
 <h4>How do I convert strings to numbers?</h4>
 
 <p>There are built-in functions to do this.  <tt>numerics.value</tt> converts
@@ -349,8 +363,9 @@ will run a shell command or script to start the tests.  As long as you can
 create a start script and a set of test programs, you can use CI with
 SparForte.</p>
 
-<p>A very minimal test would be to use SparForte's syntax check feature to
-check for syntax errors one time each night.</p>
+<p>SparForte includes a test mode that can run unit tests and report on
+the success of the tests.  The tests can be embedded in the source
+code.</p>
 
 <p>You can get a rough idea of test coverage by running SparForte with
 the trace feature turned on.  This displays the lines the language reads,
