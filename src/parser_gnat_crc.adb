@@ -44,10 +44,10 @@ package body parser_gnat_crc is
 
 procedure StartupGnatCRC is
 begin
-  declareIdent( gnat_crc32_crc32_t, "crc32", uni_numeric_t, typeClass );
-  declareProcedure( gnat_crc32_initialize_t, "initialize" );
-  declareProcedure( gnat_crc32_update_t, "update" );
-  declareFunction( gnat_crc32_get_value_t, "get_value" );
+  declareIdent( gnat_crc32_crc32_t, "gnat.crc32.crc32", uni_numeric_t, typeClass );
+  declareProcedure( gnat_crc32_initialize_t, "gnat.crc32.initialize" );
+  declareProcedure( gnat_crc32_update_t, "gnat.crc32.update" );
+  declareFunction( gnat_crc32_get_value_t, "gnat.crc32.get_value" );
 end StartupGnatCRC;
 
 procedure ShutdownGnatCRC is
@@ -96,7 +96,8 @@ begin
   if baseTypesOk( identifiers( var_id ).kind, gnat_crc32_crc32_t ) then
      expect( symbol_t, "," );
      ParseExpression( expr_val, expr_type );
-     if uniTypesOk( identifiers( expr_type ).kind, uni_string_t ) then
+     --if uniTypesOk( identifiers( expr_type ).kind, uni_string_t ) then
+     if uniTypesOk( expr_type, uni_string_t ) then
         expect( symbol_t, ")" );
      end if;
   end if;
