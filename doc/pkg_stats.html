@@ -6,6 +6,9 @@
         <META NAME="description" CONTENT="SparForte language documentation">
 	<title>SparForte - Packages - Stats</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+	<link rel="index" href="packages.html" />
+	<link rel="prev" href="pkg_sound.html" />
+	<link rel="next" href="pkg_strings.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -55,237 +58,269 @@ including calculating averages, standard deviations and more.</p>
         </div>
         </center>
 
-<p>
-<hr><b>r := stats.average( a )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<h3>r := stats.average( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Calculate the average (mean) value of the array.
-<br>Example: r := stats.average( numbers_collected );
-
-<br>Ada Equivalent: N/A
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>result</td>
-
-<td>element type</td>
-
-<td>required</td>
-
-<td>the array to average</td>
-
+<td width="15%">&nbsp;</td>
+<td><p>Calculate the average (mean) value of the array.</p></td>
 </tr><tr>
-<td>a</td>
-
-<td>in out</td>
-
-<td>numeric array type</td>
-
-<td>required</td>
-
-<td>the array to evaluate</td>
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := stats.max( a )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Find the maximum (largest) value of the array.
-<br>Example: r := stats.max( numbers_collected );
-<br>Ada Equivalent: N/A
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-
-<td>r</td>
-
-<td>result</td>
-
-<td>element type</td>
-
-<td>required</td>
-
-<td>the maximum value</td>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">r := stats.average( numbers_collected );</span></p>
 </tr><tr>
-<td>a</td>
-
-<td>in out</td>
-
-<td>numeric array type</td>
-
-<td>required</td>
-
-<td>the array to search</td>
-</tr>
-
-</table>
-</td>
-</tr>
-
-</table></center>
-
-<p>
-<hr><b>r := stats.min( a )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>
-<br>Find the minimum (smallest) value of the array.
-<br>Example: r := stats.min( numbers_collected );
-<br>Ada Equivalent: N/A
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>result</td>
-
-<td>element type</td>
-
-<td>required</td>
-
-<td>the minimum value</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td>a</td>
-
-<td>in out</td>
-
-<td>numeric array type</td>
-
-<td>required</td>
-
-<td>the array to search</td>
+<td><span>r</span></td>
+<td><span>result</span></td>
+<td><span>element type</span></td>
+<td><span>required</span></td>
+<td><span>the array to average</span></td>
 </tr>
-
-</table>
-</td>
+<tr>
+<td><span>a</span></td>
+<td><span>in out</span></td>
+<td><span>numeric array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to evaluate</span></td>
 </tr>
-</table></center>
-
-<p>
-
-<hr><b>r := stats.standard_deviation( a )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Calculate the standard deviation of the array elements.
-<br>Example: r := stats.standard_deviation( numbers_collected );
-<br>Ada Equivalent: N/A
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>result</td>
-
-<td>element type</td>
-
-<td>required</td>
-
-<td>the standard deviation</td>
+</table></td>
 </tr><tr>
-<td>a</td>
-
-<td>in out</td>
-
-<td>numeric array type</td>
-
-<td>required</td>
-
-<td>the array to evaluate</td>
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := stats.sum( a )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-
-<tr>
-<td>
-<br>Calculate the total value of the array by adding all elements.
-<br>Example: r := stats.sum( numbers_collected );
-<br>Ada Equivalent: N/A
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>result</td>
-
-<td>element type</td>
-
-<td>required</td>
-
-<td>the total value</td>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
 </tr><tr>
-<td>a</td>
-
-<td>in out</td>
-
-<td>numeric array type</td>
-
-<td>required</td>
-
-<td>the array to sum</td>
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := stats.variance( a )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Calculate the variance of the array elements.
-
-<br>Example: r := stats.variance( numbers_collected );
-<br>Ada Equivalent: N/A
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>result</td>
-
-<td>element type</td>
-
-<td>required</td>
-
-<td>the variance</td>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
 </tr><tr>
-<td>a</td>
-
-<td>in out</td>
-
-<td>numeric array type</td>
-
-<td>required</td>
-
-<td>the array to evaluate</td>
-
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
-
 </table>
-</td>
-</tr>
-</table></center>
 
-&nbsp;<br>
+<h3>r := stats.max( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Find the maximum (largest) value of the array.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">r := stats.max( numbers_collected );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>result</span></td>
+<td><span>element type</span></td>
+<td><span>required</span></td>
+<td><span>the maximum value</span></td>
+</tr>
+<tr>
+<td><span>a</span></td>
+<td><span>in out</span></td>
+<td><span>numeric array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to search</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>stats.min</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>PHP: max</p></td>
+</tr>
+</table>
+
+<h3>r := stats.min( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Find the minimum (smallest) value of the array.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">r := stats.min( numbers_collected );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>result</span></td>
+<td><span>element type</span></td>
+<td><span>required</span></td>
+<td><span>the minimum value</span></td>
+</tr>
+<tr>
+<td><span>a</span></td>
+<td><span>in out</span></td>
+<td><span>numeric array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to search</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>stats.max</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>PHP: min</p></td>
+</tr>
+</table>
+
+<h3>r := stats.standard_deviation( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Calculate the standard deviation of the array elements.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">r := stats.standard_deviation( numbers_collected );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>result</span></td>
+<td><span>element type</span></td>
+<td><span>required</span></td>
+<td><span>the standard deviation</span></td>
+</tr>
+<tr>
+<td><span>a</span></td>
+<td><span>in out</span></td>
+<td><span>numeric array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to evaluate</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>PHP: stats_standard_deviation</p></td>
+</tr>
+</table>
+
+<h3>r := stats.sum( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Calculate the total value of the array by adding all elements.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">r := stats.sum( numbers_collected );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>result</span></td>
+<td><span>element type</span></td>
+<td><span>required</span></td>
+<td><span>the total value</span></td>
+</tr>
+<tr>
+<td><span>a</span></td>
+<td><span>in out</span></td>
+<td><span>numeric array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to sum</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>PHP: array_sum</p></td>
+</tr>
+</table>
+
+<h3>r := stats.variance( a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Calculate the variance of the array elements.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">r := stats.variance( numbers_collected );</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>result</span></td>
+<td><span>element type</span></td>
+<td><span>required</span></td>
+<td><span>the variance</span></td>
+</tr>
+<tr>
+<td><span>a</span></td>
+<td><span>in out</span></td>
+<td><span>numeric array type</span></td>
+<td><span>required</span></td>
+<td><span>the array to evaluate</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>PHP: stats_variance</p></td>
+</tr>
+</table>
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>

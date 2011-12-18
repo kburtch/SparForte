@@ -6,6 +6,9 @@
         <META NAME="description" CONTENT="SparForte language documentation">
 	<title>SparForte - Packages - Calendar</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+	<link rel="index" href="packages.php" />
+	<link rel="prev" href="pkg_arrays.html" />
+	<link rel="next" href="pkg_cgi.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -43,6 +46,21 @@
 determining the current date and time, determining the year, performing date
 arithmetic and more.</p>
 <p><u>GCC Ada equivalent</u>: Ada.Calendar</p>
+
+        <center>
+        <div class="code">
+<pre>
+  <a href="#calendar.clock">t := clock</a>               <a href="#calendar.year">y := year( t )</a>           <a href="#calendar.month">m := month( t )</a>
+  <a href="#calendar.day">d := day( t )</a>            <a href="#calendar.seconds">s := seconds( t )</a>        <a href="#calendar.split">split( t, y, m, d, s )</a>
+  <a href="#calendar.time_of">t := time_of( y,m,d,s )</a>  <a href="#calendar.day_of_week">i := day_of_week( t )</a>    <a href="#calendar.to_time">t := to_time( j )</a>
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the calendar package
+        </div>
+        </div>
+        </center>
+
 <p>The calendar package defines 4 special types:</p>
 <ul>
 <li>
@@ -68,363 +86,422 @@ calendar.time value.  "calendar.clock - 1.0" subtracts 1 second from the
 current time.  "calendar.clock + 2.5" adds 2.5 seconds to the current time.
 <p>Comparing times: time values can be compared with &gt;, &gt;=, <, &lt;=, =,
 /=, in, and not in.
-<p>
+</p>
 
         <center>
         <div class="code">
-<pre>
-  t := clock               y := year( t )           m := month( t )
-  d := day( t )            s := seconds( t )        split( t, y, m, d, s )
-  t := time_of( y,m,d,s )  i := day_of_week( t )    t := to_time( j )
-</pre>
+=&gt; current_time : calendar.time := calendar.clock<br>
+=&gt; ? calendar.year( current_time )<br>
+&nbsp;2011<br>
+=&gt; ? calendar.month( current_time )<br>
+&nbsp;11<br>
+=&gt; ? calendar.month( current_time ) in 1..6<br>
+false<br>
+=&gt; ? calendar.month( current_time ) &gt; 6<br>
+true<br>
+=&gt; one_minute_from_now : calendar.time := calendar.clock + 60<br>
+&nbsp;<br>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the calendar package</span>
+        <b>Example</b>: Using the calendar package
         </div>
         </div>
         </center>
 
-<hr><b>t := calendar.clock</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="calendar.clock"></a><h3>t := calendar.clock</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Return the current time.
-<br>Example: current_time := clock;
-<br>Ada Equivalent: Ada.Calendar.Clock
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Return the current time (that is, the calendar date and clock time, or the
+timestamp for this moment in time) as a calendar.time value.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">current_time := clock;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>t</td>
-
-<td>return value</td>
-
-<td>calendar.time</td>
-
-<td>required</td>
-
-<td>the current time</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>return value</span></td>
+<td><span>calendar.time</span></td>
+<td><span>required</span></td>
+<td><span>the current time</span></td>
 </tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>y := calendar.year( t )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Return the year of the given time.
-<br>Example: the_year := calendar.year( t );
-<br>Ada Equivalent: Ada.Calendar.Year
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>y</td>
-
-<td>return value</td>
-
-<td>calendar.year_number</td>
-
-<td>required</td>
-
-<td>the year value for the time (1901..2099)</td>
-</tr>
-
-<tr>
-<td>t</td>
-
-<td>in</td>
-
-<td>calendar.time</td>
-
-<td>required</td>
-
-<td>the time</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>m := calendar.month( t )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the year of the given time.
-<br>Example: the_month := calendar.month( t );
-
-<br>Ada Equivalent: Ada.Calendar.Month
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>m</td>
-
-<td>return value</td>
-
-<td>calendar.month_number</td>
-
-<td>required</td>
-
-<td>the month value for the time (1..12)</td>
-
-</tr>
-
-<tr>
-<td>t</td>
-
-<td>in</td>
-
-<td>calendar.time</td>
-
-<td>required</td>
-
-<td>the time</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>d := calendar.day( t )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the day of the given time.
-<br>Example: the_year := calendar.day( t );
-<br>Ada Equivalent: Ada.Calendar.Day
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>d</td>
-
-<td>return value</td>
-
-<td>calendar.day_number</td>
-
-<td>required</td>
-
-<td>the day value for the time (1..31)</td>
-</tr>
-
-<tr>
-<td>t</td>
-
-<td>in</td>
-
-<td>calendar.time</td>
-
-<td>required</td>
-
-<td>the time</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Calendar.Clock<br />PHP: time</p></td>
 </tr>
 </table>
 
-</td>
+<a name="calendar.day"></a><h3>d := calendar.day( t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the day of the given time as a number between 1 and 31.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">the_year := calendar.day( current_time );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>d</span></td>
+<td><span>return value</span></td>
+<td><span>calendar.day_number</span></td>
+<td><span>required</span></td>
+<td><span>the day value</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>y := calendar.seconds( t )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Return the seconds of the given time.
-<br>Example: the_seconds := calendar.seconds( t );
-<br>Ada Equivalent: Ada.Calendar.Seconds
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>y</td>
-
-<td>return value</td>
-
-<td>calendar.day_duration</td>
-
-<td>required</td>
-
-<td>the seconds of the day (floating point value)</td>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>calendar.time</span></td>
+<td><span>required</span></td>
+<td><span>the time</span></td>
 </tr>
-
-<tr>
-<td>t</td>
-
-<td>in</td>
-
-<td>calendar.time</td>
-
-<td>required</td>
-
-<td>the time</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Calendar.Day<br />PHP: date</p></td>
 </tr>
 </table>
-</td>
+
+<a name="calendar.day_of_week"></a><h3>d := calendar.day_of_week( t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the day of the week of the given time as a number of days since
+Sunday, an integer between 0 and 6.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">the_dow := calendar.day_of_week( current_time );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>d</span></td>
+<td><span>return value</span></td>
+<td><span>integer</span></td>
+<td><span>required</span></td>
+<td><span>the day value</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>calendar.split( t, y, m, d, s )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Return the year, month, day and seconds value for the given time.
-<br>Example: calendar.split( t, year, month, day, secs );
-<br>Ada Equivalent: Ada.Calendar.Split
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>t</td>
-
-<td>in</td>
-
-<td>calendar.time</td>
-
-<td>required</td>
-
-<td>the time</td>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>calendar.time</span></td>
+<td><span>required</span></td>
+<td><span>the time</span></td>
 </tr>
-
-<tr>
-<td>y</td>
-
-<td>out</td>
-
-<td>calendar.year_number</td>
-
-<td>required</td>
-
-<td>the year value for the time (1901..2099)</td>
-</tr>
-
-<tr>
-<td>m</td>
-
-<td>out</td>
-
-<td>calendar.month_number</td>
-
-<td>required</td>
-
-<td>the month value for the time (1..12)</td>
-</tr>
-
-<tr>
-<td>d</td>
-
-<td>out</td>
-
-<td>calendar.day_number</td>
-
-<td>required</td>
-
-<td>the day value for the time (1..31)</td>
-</tr>
-
-<tr>
-<td>s</td>
-
-<td>out</td>
-
-<td>calendar.day_duration</td>
-
-<td>required</td>
-
-<td>the seconds of the day (floating point value)</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>PHP: date</p></td>
 </tr>
 </table>
-</td>
+
+<a name="calendar.month"></a><h3>m := calendar.month( t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the month of the given time between 1 and 12.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">the_month := calendar.month( current_time );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>return value</span></td>
+<td><span>calendar.month_number</span></td>
+<td><span>required</span></td>
+<td><span>the month value</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>t := calendar.time_of( y, m, d, s )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Create a time from year, month, day and seconds values.
-<br>Example: the_time := calendar.time_of( 2002, 3, 15, 125.6 );
-<br>Ada Equivalent: Ada.Calendar.Time_Of
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>t</td>
-
-<td>return value</td>
-
-<td>calendar.time</td>
-
-<td>required</td>
-
-<td>the time</td>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>calendar.time</span></td>
+<td><span>required</span></td>
+<td><span>the time</span></td>
 </tr>
-
-<tr>
-<td>y</td>
-
-<td>in</td>
-
-<td>calendar.year_number</td>
-
-<td>required</td>
-
-<td>the year value for the time (1901..2099)</td>
-</tr>
-
-<tr>
-<td>m</td>
-
-<td>in</td>
-
-<td>calendar.month_number</td>
-
-<td>required</td>
-
-<td>the month value for the time (1..12)</td>
-</tr>
-
-<tr>
-<td>d</td>
-
-<td>in</td>
-
-<td>calendar.day_number</td>
-
-<td>required</td>
-
-<td>the day value for the time (1..31)</td>
-</tr>
-
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>calendar.day_duration</td>
-
-<td>required</td>
-
-<td>the seconds of the day (floating point value)</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Calendar.Month<br />PHP: date</p></td>
 </tr>
 </table>
-</td>
+
+<a name="calendar.seconds"></a><h3>y := calendar.seconds( t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the seconds into the day of the given time as a floating point
+number between 0.0 and 86,400.0.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">the_seconds := calendar.seconds( current_time );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>y</span></td>
+<td><span>return value</span></td>
+<td><span>calendar.day_duration</span></td>
+<td><span>required</span></td>
+<td><span>the seconds of the day</span></td>
 </tr>
-</table></center>
+<tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>calendar.time</span></td>
+<td><span>required</span></td>
+<td><span>the time</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Calendar.Seconds<br />PHP: date</p></td>
+</tr>
+</table>
 
-<pre>=&gt; current_time : calendar.time := calendar.clock
-=&gt; ? calendar.year( current_time )
+<a name="calendar.split"></a><h3>calendar.split( t, y, m, d, s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the year, month, day and seconds value for the given time.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">calendar.split( current_time, year, month, day, secs );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>calendar.time</span></td>
+<td><span>required</span></td>
+<td><span>the time</span></td>
+</tr>
+<tr>
+<td><span>y</span></td>
+<td><span>out</span></td>
+<td><span>calendar.year_number</span></td>
+<td><span>required</span></td>
+<td><span>the year value (1901..2099)</span></td>
+</tr>
+<tr>
+<td><span>m</span></td>
+<td><span>out</span></td>
+<td><span>calendar.month_number</span></td>
+<td><span>required</span></td>
+<td><span>the month value (1..12)</span></td>
+</tr>
+<tr>
+<td><span>d</span></td>
+<td><span>out</span></td>
+<td><span>calendar.day_number</span></td>
+<td><span>required</span></td>
+<td><span>the day value (1..31)</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>out</span></td>
+<td><span>calendar.day_duration</span></td>
+<td><span>required</span></td>
+<td><span>the seconds of the day (float)</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>calendar.time_of</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Calendar.Split<br />PHP: date</p></td>
+</tr>
+</table>
 
-&nbsp;2002
-=&gt; calendar.seconds( current_time )
-&nbsp;8.19477557630540E+04
-=&gt; return</pre>
-&nbsp;<br>
+<a name="calendar.time_of"></a><h3>t := calendar.time_of( y, m, d, s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Create a time from year, month, day and seconds values.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">the_time := calendar.time_of( 2002, 3, 15, 125.6 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>return value</span></td>
+<td><span>calendar.time</span></td>
+<td><span>required</span></td>
+<td><span>the time</span></td>
+</tr>
+<tr>
+<td><span>y</span></td>
+<td><span>in</span></td>
+<td><span>calendar.year_number</span></td>
+<td><span>required</span></td>
+<td><span>the year value (1901..2099)</span></td>
+</tr>
+<tr>
+<td><span>m</span></td>
+<td><span>in</span></td>
+<td><span>calendar.month_number</span></td>
+<td><span>required</span></td>
+<td><span>the month value (1..12)</span></td>
+</tr>
+<tr>
+<td><span>d</span></td>
+<td><span>in</span></td>
+<td><span>calendar.day_number</span></td>
+<td><span>required</span></td>
+<td><span>the day value (1..31)</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>calendar.day_duration</span></td>
+<td><span>required</span></td>
+<td><span>the seconds of the day (float)</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>calendar.split</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Calendar.Time_Of<br />PHP: mktime</p></td>
+</tr>
+</table>
+
+<a name="calendar.to_time"></a><h3>t := calendar.to_time( j )</h3>
+<p>Incomplete function for julian dates.</p>
+
+<a name="calendar.year"></a><h3>y := calendar.year( t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the year value of the given time as a number between 1901
+and 2099.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">the_year := calendar.year( current_time );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>y</span></td>
+<td><span>return value</span></td>
+<td><span>calendar.year_number</span></td>
+<td><span>required</span></td>
+<td><span>the year value</span></td>
+</tr>
+<tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>calendar.time</span></td>
+<td><span>required</span></td>
+<td><span>the time</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Calendar.Year<br />PHP: date</p></td>
+</tr>
+</table>
+
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
@@ -453,8 +530,6 @@ current time.  "calendar.clock + 2.5" adds 2.5 seconds to the current time.
                                 <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

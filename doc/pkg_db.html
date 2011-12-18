@@ -6,6 +6,9 @@
         <META NAME="description" CONTENT="SparForte language documentation">
 	<title>SparForte - Packages - Db (PostgreSQL)</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+	<link rel="index" href="packages.html" />
+	<link rel="prev" href="pkg_cmdline.html" />
+	<link rel="next" href="pkg_dirops.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -38,9 +41,43 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-<h2><a NAME="4.16"></a>DB (PostgreSQL) Package</font></h3>
-<p>The database package is based on Warren Gay's APQ Postgres
+<h2><a NAME="4.16"></a>DB (PostgreSQL) Package</h2>
+<p>The database package is based on Warren Gay's APQ 2.1 Postgres
 binding.  For full details on these routines, consult the APQ documentation.</p>
+
+        <center>
+        <div class="code">
+<pre>
+  <a href="#db.connect">db.connect( d [, u, w ][, h][, p] )</a>
+  <a href="#db.append">append( s [,a] )</a>            <a href="#db.prepare">prepare( s [, a] )</a>
+  <a href="#db.append_line">append_line( s )</a>            <a href="#db.append_quoted">append_quoted( s )</a>
+  <a href="#db.execute">execute</a>                     <a href="#db.execute_checked">execute_checked( [ s ] )</a>
+  <a href="#db.disconnect">disconnect</a>                  <a href="#db.is_connected">b := is_connected</a>
+  <a href="#db.reset">reset</a>                       <a href="#db.error_message">s := error_message</a>
+  <a href="#db.notice_message">s := notice_message</a>         <a href="#db.in_abort_state">s := in_abort_state</a>
+  <a href="#db.options">s := options</a>                <a href="#db.set_rollback_on_finalize">set_rollback_on_finalize( b )</a>
+  <a href="#db.open_db_trace">open_db_trace( f [,m] )</a>     <a href="#db.will_rollback_on_finalize">b := will_rollback_on_finalize</a>
+  <a href="#db.close_db_trace">close_db_trace</a>              <a href="#db.set_trace">set_trace( b )</a>
+  <a href="#db.is_trace">b := is_trace</a>               <a href="#db.clear">clear</a>
+  <a href="#db.raise_exceptions">raise_exceptions( [ b ] )</a>   <a href="#db.report_errors">report_errors( b )</a>
+  <a href="#db.begin_work">begin_work</a>                  <a href="#db.rollback_work">rollback_work</a>
+  <a href="#db.commit_work">commit_work</a>                 <a href="#db.rewind">rewind</a>
+  <a href="#db.fetch[">fetch [ (i) ]</a>               <a href="#db.end_of_query">b := end_of_query</a>
+  <a href="#db.tuple">t := tuple</a>                  <a href="#db.tuples">n := tuples</a>
+  <a href="#db.columns">n := columns</a>                <a href="#db.column_name">s := column_name( c )</a>
+  <a href="#db.column_index">i := column_index( s )</a>      <a href="#db.is_null">b := is_null( c )</a>
+  <a href="#db.value">s := value( c )</a>             <a href="#db.engine_of">d := engine_of</a>
+  <a href="#db.show">show</a>                        <a href="#db.list">list</a>
+  <a href="#db.schema">schema( t )</a>                 <a href="#db.users">users</a>
+  <a href="#db.databases">databases</a>
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the db package
+        </div>
+        </div>
+        </center>
+
 <p>There is an enumerated type that controls the verbosity of tracing:
 
         <center>
@@ -83,1264 +120,1477 @@ binding.  For full details on these routines, consult the APQ documentation.</p>
         </center>
 <br>&nbsp;
 
-        <center>
-        <div class="code">
-<pre>
-  connect( dbname [,user ,pswd [,host [,port] ] ] )
-  append( stmt [,after] )     prepare( stmt [,after] )
-  append_line( stmt )         append_quoted( stmt )
-  execute                     execute_checked( msg )
-  disconnect                  is_connected
-  reset                       s := error_message
-  s := notice_message         b := in_abort_state
-  s := options                set_rollback_on_finalize( b )
-  open_db_trace( f [,m] )     b := will_rollback_on_finalize
-  close_db_trace              set_trace( b )
-  b := is_trace               clear
-  raise_exceptions( [b] )     report_errors( [b] )
-  begin_work                  rollback_work
-  commit_work                 rewind
-  fetch[(r)]                  b := end_of_query
-  n := tuple( t )             n := tuples
-  n := columns                s := column_name( c )
-  i := column_index( s )      b := is_null( c )
-  s := value( c )             d := engine_of 
-  show                        list
-  schema( t )                 users
-  databases                        
-</pre>
-        &nbsp;<br>
-        <div class="code_caption">
-        <b>Help Command</b>: Contents of the db package</span>
-        </div>
-        </div>
-        </center>
-
-<p>
-<hr><b>db.append( s [, a] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.append"></a><h3>db.append( s [, a] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Append text to an SQL query s after a (?)
-<br>Example: db.append( " where customer_no &gt; 5" );
-<br>Ada Equivalent: APQ.Append
-<br>Parameters:
-
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Append text s to the SQL query.  The text is on the same line.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.append( s, " where customer_no &gt; 5" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>SQL query</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>SQL query text</span></td>
 </tr>
 <tr>
-<td>a</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>empty string</td>
-
-<td>after (not quite sure)</td>
-
+<td><span>a</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>empty string</span></td>
+<td><span>additional text to place after the text</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown when out of memory.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Append</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>db.append_line( s )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.append_line"></a><h3>db.append_line( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Start a new line and append line to SQL query s
-<br>Example: db.append_line( "where customer_no &gt; 5" );
-
-<br>Ada Equivalent: APQ.Append_Line
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Append text s to the SQL query and start a new line.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.append_line( s, "where customer_no &gt; 5" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>SQL query text</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>SQL query text</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Append_Line<br>PHP: pg_put_line</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>db.append_quoted( s )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.append_quoted"></a><h3>db.append_quoted( s, [a] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Append text to SQL query s and surrounded text with single quotes.
-<br>Example: db.append_quoted( "customer_name" );
-<br>Ada Equivalent: APQ.Append_Quoted
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Append text s to SQL query while surrounding s with single quotes.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.append_quoted( "customer_name" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>SQL query text</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>SQL query text</span></td>
 </tr>
-
 <tr>
-<td>a</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>""</td>
-
-<td>after what query text</td>
-
+<td><span>a</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>empty string</span></td>
+<td><span>additional text to place after the text</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Append_Quoted</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>db.begin_work</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.begin_work"></a><h3>db.begin_work</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Start a database transaction, marking the position of a possible rollback.
-<br>Example: db.begin_work;
-<br>Ada Equivalent: APQ.Begin_Work
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Start a database transaction, marking the position of a possible rollback.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.begin_work;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
-</table>
-</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>in_abort_state exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.commit_work<br>db.rollback_work</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Begin_Work</p></td>
 </tr>
-</table></center>
-<p>in_abort_state exception may be raised
+</table>
 
-<p>
-<hr><b>db.clear</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.clear"></a><h3>db.clear</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Erase the current query.
-
-<br>Example: db.clear;
-<br>Ada Equivalent: APQ.Clear
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Erase the text of the current query.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.clear;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Clear</p></td>
 </tr>
-
 </table>
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
 
-<p>
-<hr><b>db.close_db_trace</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.close_db_trace"></a><h3>db.close_db_trace</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Stop tracing the database activity and close the trace file.
-<br>Example: db.close_db_trace;
-<br>Ada Equivalent: APQ.Close_DB_Trace
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Stop tracing the database activity and close the trace file.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.close_db_trace;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
-
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.is_trace<br>db.open_db_trace<br>db.set_trace</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Close_DB_Trace</p><br>PHP: pg_untrace</td>
 </tr>
-
-</table>
-</td>
-</tr>
-
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
-
-<p>
-<hr><b>i := db.column_index( s )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the position of a query result column.  This is the position
-in the query, not the database table.
-<br>Example: third_column_position := db.column_index( "first name" );
-<br>Ada Equivalent: APQ.Column_Name
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>the column heading</td>
-
-</tr>
-<tr>
-<td>i</td>
-
-<td>return value</td>
-
-<td>column_index_type</td>
-
-<td>the column position in the query</td>
-
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-<p>no_column exception may be raised
-
-<p>
-<hr><b>s := db.column_name( c )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-
-<tr>
-<td>
-<br>Return the name of a query result column.  The number is the position
-in the query, not the database table.
-<br>Example: third_column_heading := db.column_name( 3 );
-<br>Ada Equivalent: APQ.Column_Name
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>column_index_type</td>
-
-<td>the column position in the query results</td>
-
-</tr>
-<tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>the column heading</td>
-
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-<p>no_column exception may be raised
-
-<p>
-<hr><b>n := db.columns</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the number of columns (fields) from the last query.
-<br>Example: number_of_columns := db.columns;
-<br>Ada Equivalent: APQ.Columns
-<br>Parameters:
-
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>n</td>
-
-<td>return value</td>
-
-<td>natural</td>
-
-<td>the number of columns</td>
-
-</tr>
-
 </table>
 
-</td>
+<a name="db.column_index"></a><h3>i := db.column_index( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the position of a query result column.  This is the position in the query, not the database table.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">third_column_position := db.column_index( "first name" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the column heading</span></td>
 </tr>
-</table></center>
-<p>no_result exception may be raised
+<tr>
+<td><span>i</span></td>
+<td><span>return value</span></td>
+<td><span>column_index_type</span></td>
+<td><span>required</span></td>
+<td><span>the column position in the query</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_column exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.column_name</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Column_Index<br>PHP: pg_field_num</p></td>
+</tr>
+</table>
 
-<p>
-<hr><b>db.commit_work</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.column_name"></a><h3>s := db.column_name( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Complete a database transaction.
-<br>Example: db.commit_work;
-<br>Ada Equivalent: APQ.Commit_Work
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Return the name of a query result column.  The number is the position in the query, not the database table.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">third_column_heading := db.column_name( 3 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>column_index_type</span></td>
+<td><span>required</span></td>
+<td><span>the column position in the query results</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the column heading</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_column exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Column_Name<br>PHP: pg_field_name</p></td>
+</tr>
+</table>
+
+<a name="db.columns"></a><h3>n := db.columns</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of columns (fields) from the last query.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">number_of_columns := db.columns;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of columns</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_result exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Columns<br>PHP: pg_num_fields</p></td>
+</tr>
+</table>
+
+<a name="db.commit_work"></a><h3>db.commit_work</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Complete a database transaction.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.commit_work;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
-
-</table>
-</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>in_abort_state exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.begin_work<br>db.rollback_work</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Commit_Work</p></td>
 </tr>
-</table></center>
-<p>in_abort_state exception may be raised
-
-<p>
-<hr><b>db.connect( d [, u, p ][, h][, p] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Connect to database d using username u, path p, hostname h and port p.
-If no hostname or port are specified, connection is made by a UNIX socket
-instead of a network socket.
-<br>Example: db.connect( "ken" );
-<br>Ada Equivalent: combines several APQ functions
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-
-<td>d</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the database name</td>
-</tr>
-
-<tr>
-
-<td>u</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>your username</td>
-
-<td>the username to connect with</td>
-</tr>
-
-<tr>
-
-<td>p</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>default password</td>
-
-<td>username's password</td>
-</tr>
-
-<tr>
-
-<td>h</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>UNIX Socket</td>
-
-<td>hostname for network socket</td>
-</tr>
-
-<tr>
-
-<td>p</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>default port</td>
-
-<td>network socket port</td>
-</tr>
-
 </table>
 
-</td>
+<a name="db.connect"></a><h3>db.connect( d [, u, w ][, h][, p] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Connect to database d using username u, password w, hostname h and port p. If no hostname or port are specified, connection is made by a UNIX socket instead of a network socket.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.connect( "ken" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>d</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the database name</span></td>
 </tr>
-</table></center>
-<p>If a connection cannot be made, an error will occur.
+<tr>
+<td><span>u</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>your username</span></td>
+<td><span>the username to connect with</span></td>
+</tr>
+<tr>
+<td><span>w</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>default password</span></td>
+<td><span>username's password</span></td>
+</tr>
+<tr>
+<td><span>h</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>UNIX Socket</span></td>
+<td><span>hostname for network socket</span></td>
+</tr>
+<tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>default port</span></td>
+<td><span>network socket port</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection cannot be made, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.disconnect</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: combines several APQ functions<br>PHP: pg_connect / pg_pconnect</p></td>
+</tr>
+</table>
 
-<p>
-<hr><b>db.databases</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.databases"></a><h3>db.databases</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Show a list of the databases available with the current connection.  This
-is the equivalent of PostgreSQL "\l".
-<br>Example: db.databases;
-<br>Ada Equivalent: none (AdaScript extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Show a list of the databases available with the current connection.  This
+is the equivalent of PostgreSQL "\l".</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.databases;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
-
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.list<br>db.schema<br>db.users</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
 
-<p>
-<hr><b>db.disconnect</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.disconnect"></a><h3>db.disconnect</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Close a connection created by connect.
-<br>Example: db.disconnect;
-<br>Ada Equivalent: APQ.Disconnect;
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Close a connection created by connect.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.disconnect;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.connect</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Disconnect<br>PHP: pg_close</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
 
-<p>
-<hr><b>b := db.end_of_query</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.end_of_query"></a><h3>b := db.end_of_query</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>True if there are no more result (tuple) rows.
-<br>Example: b := db.end_of_query;
-
-<br>Ada Equivalent: APQ.End_Of_Query
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>True if there are no more result (tuple) rows.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">while not db.end_of_query loop ...</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>true if no more rows</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if no more rows</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.End_Of_Query</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>b := db.engine_of</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.engine_of"></a><h3>b := db.engine_of</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Return the identity of the database engine
-<br>Example: b := db.engine_of;
-<br>Ada Equivalent: APQ.Engine_Of
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
+<td width="15%">&nbsp;</td>
+<td><p>Return the identity of the database engine</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := db.engine_of;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>db.database_type</td>
-
-<td>db.engine_postgresql, etc.</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>db.database_type</span></td>
+<td><span>required</span></td>
+<td><span>db.engine_postgresql, etc.</span></td>
+<td><span></span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Engine_Of</p></td>
+</tr>
 </table>
-</td>
 
-</tr>
-</table></center>
-
-<p>
-<hr><b>s := db.error_message</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.error_message"></a><h3>s := db.error_message</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Last error message returned by database server.
-<br>Example: err := db.error_message;
-<br>Ada Equivalent: APQ.Error_Message;
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Last error message returned by database server.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">err := db.error_message;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>last server message</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>last server message</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.notice_message</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Error_Message<br>PHP: pg_last_error / pg_last_notice</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>db.execute</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.execute"></a><h3>db.execute</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Run a prepared database query.
-<br>Example: db.execute;
-<br>Ada Equivalent: APQ.Execute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Run a prepared database query.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.execute;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.show<br>db.execute_checked</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Execute<br>PHP: pg_execute</p></td>
 </tr>
-
 </table>
 
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
-
-<p>
-<hr><b>db.execute_checked( [ s ] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.execute_checked"></a><h3>db.execute_checked( [ s ] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>not sure the difference with execute.
-<br>Example: db.execute_checked( "message" );
-<br>Ada Equivalent: APQ.Execute_Checked
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Execute the query.  If an error occurs, display the message s on
+standard error and raise an exception.  If an error occurs and there is
+no error message s, display the query on standard error and raise an
+exception.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.execute_checked( "message" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>empty string</td>
-
-<td>a message</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>empty string</span></td>
+<td><span>a message</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if an error occurs.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.show<br>db.execute</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Execute_Checked</p></td>
+</tr>
 </table>
-</td>
 
-</tr>
-</table></center>
-
-<p>
-<hr><b>db.fetch [ (i) ]</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.fetch["></a><h3>db.fetch [ (i) ]</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Fetch the next query result tuple row, or a specific result row.
-<br>Example: db.fetch;
-<br>Ada Equivalent: APQ.Fetch
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Fetch the next query result tuple row, or a specific result row.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.fetch;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>i</td>
-
-<td>in</td>
-
-<td>tuple_index_type</td>
-
-<td>optional</td>
-
-<td>a specific result row</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>in</span></td>
+<td><span>tuple_index_type</span></td>
+<td><span>next row</span></td>
+<td><span>a specific result row</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_result or no_tuple exceptions may be raised.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Fetch<br>PHP: pg_fetch_array</p></td>
+</tr>
 </table>
-</td>
 
-</tr>
-</table></center>
-<p>no_result or no_tuple exceptions may be raised.
-
-<p>
-<hr><b>s := db.in_abort_state</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.in_abort_state"></a><h3>s := db.in_abort_state</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>True if in abort state.
-<br>Example: b := db.in_abort_state;
-<br>Ada Equivalent: APQ.In_Abort_State;
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>True if in abort state. If there is no connection, return false.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := db.in_abort_state;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>true if in abort state</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if in abort state</span></td>
+<td><span></span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, a not connected exception will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.In_Abort_State</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, a not connected exception will occur.
 
-
-<p>
-<hr><b>b := db.is_connected</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.is_connected"></a><h3>b := db.is_connected</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>True if Bush is connected to a database.
-<br>Example: b := db.is_connected;
-<br>Ada Equivalent: APQ.Is_Connected;
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>True if a connection is open to a database.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := db.is_connected;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>true if connected</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if connected</span></td>
+<td><span></span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Is_Connected<br>PHP: pg_connection_status</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
 
-<p>
-<hr><b>b := db.is_null( c )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.is_null"></a><h3>b := db.is_null( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>True if column in the fetch result is undefined.
-<br>Example: b := db.is_null;
-<br>Ada Equivalent: APQ.Is_Null
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>True if column in the fetch result is undefined.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := db.is_null;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>db.column_index_type</td>
-
-<td>the field to check</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>db.column_index_type</span></td>
+<td><span>required</span></td>
+<td><span>the field to check</span></td>
 </tr>
 <tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>true if null</td>
-
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if null</span></td>
+<td><span></span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_column and no_result exceptions may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Is_Null<br>PHP: pg_field_is_null</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-<p>no_column and no_result exceptions may be raised
 
-<p>
-<hr><b>b := db.is_trace</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.is_trace"></a><h3>b := db.is_trace</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>True if set_trace was true (that is, if debug tracing is enabled).
-<br>Example: b := db.is_trace;
-<br>Ada Equivalent: APQ.Is_Trace
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>True if set_trace was true (that is, if debug tracing is enabled).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := db.is_trace;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>tracing is enabled</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>tracing is enabled</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.close_db_trace<br>db.open_db_trace<br>db.set_trace</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Is_Trace</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>db.list</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.list"></a><h3>db.list</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Show a list of the tables available in the current database.  This is the
-equivalent of PostgreSQL's "\dt".
-<br>Example: db.list;
-<br>Ada Equivalent: none (AdaScript extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-
+<td width="15%">&nbsp;</td>
+<td><p>Show a list of the tables available in the current database.  This is the
+equivalent of PostgreSQL's "\dt".</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.list;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.databases<br>db.schema<br>db.users</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
 
-<p>
-<hr><b>s := db.notice_message</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.notice_message"></a><h3>s := db.notice_message</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Last notice message returned by database server.
-<br>Example: err := db.notice_message;
-<br>Ada Equivalent: APQ.Notice_Message;
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Last notice message returned by database server.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">err := db.notice_message;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>last server message</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>last server message</span></td>
+<td><span></span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.error_message</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Notice_Message<br>PHP: pg_last_notice</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>db.open_db_trace( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.open_db_trace"></a><h3>db.open_db_trace( f [,m] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Begin tracing the database activity, storing the results at pathname f.
-<br>Example: db.open_db_trace( "./trace.out" );
-<br>Ada Equivalent: APQ.Open_DB_Trace
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Begin tracing the database activity, storing the results at pathname f.  m is an optional trace mode type</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.open_db_trace( "./trace.out" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-
-<td>f</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>trace file pathname</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>trace file pathname</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in</span></td>
+<td><span>db.trace_mode_type</span></td>
+<td><span>db.trace_apq</span></td>
+<td><span>trace type</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.<br>
+not_connected, file already open, file not found exceptions may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.close_db_trace<br>db.is_trace<br>db.set_trace</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Open_DB_Trace<br>PHP: pg_trace</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
-<p>not_connected, file already open, file not found exceptions may be raised
 
-<p>
-<hr><b>s := db.options</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.options"></a><h3>s := db.options</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Return database options.
-<br>Example: b := db.options;
-<br>Ada Equivalent: APQ.Options
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
+<td width="15%">&nbsp;</td>
+<td><p>Return database options.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := db.options;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>database options</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>database options</span></td>
+<td><span></span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Options<br>PHP: pg_options</p></td>
+</tr>
 </table>
-</td>
 
-</tr>
-</table></center>
-
-<p>
-<hr><b>db.prepare( s [, a] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.prepare"></a><h3>db.prepare( s [, a] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Prepare a SQL statement to execute.  If a is included, insert the
-next statement after the statement named a.
-<br>Example: db.prepare( "select * from customers" );
-<br>Ada Equivalent: APQ.Prepare
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Prepare a SQL statement to execute.  If a is included, insert the next statement after the statement named a.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.prepare( "select * from customers" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>SQL statement</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>SQL statement</span></td>
 </tr>
-
 <tr>
-<td>a</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>after all others</td>
-
-<td>insert SQL statement after statement a</td>
+<td><span>a</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>after all others</span></td>
+<td><span>insert SQL statement after statement a</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection cannot be made, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Prepare<br>PHP: pg_prepare</p></td>
+</tr>
 </table>
-</td>
-</tr>
 
-</table></center>
-<p>If a connection cannot be made, an error will occur.
-
-<p>
-<hr><b>db.raise_exceptions( [ b ] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.raise_exceptions"></a><h3>db.raise_exceptions( [ b ] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>True to raise exceptions on query.
-<br>Example: db.raise_exceptions( false );
-<br>Ada Equivalent: APQ.Raise_Exceptions
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>True to raise exceptions on query errors.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.raise_exceptions( false );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>boolean</td>
-
-<td>true</td>
-
-<td>whether or not exceptions will occur</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>true</span></td>
+<td><span>whether or not exceptions will occur</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Raise_Exceptions</p></td>
+</tr>
 </table>
-</td>
-</tr>
 
-</table></center>
-
-<p>
-<hr><b>db.report_errors( b )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.report_errors"></a><h3>db.report_errors( b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>True to report errors on query.
-<br>Example: db.report_errors( false );
-<br>Ada Equivalent: APQ.Report_Errors
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>True to report errors on query.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.report_errors( false );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>boolean</td>
-
-<td>true</td>
-
-<td>whether or not errors will be reported</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>true</span></td>
+<td><span>whether or not errors will be reported</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Report_Errors</p></td>
+</tr>
 </table>
-</td>
-</tr>
 
-</table></center>
-
-<p>
-<hr><b>db.reset</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.reset"></a><h3>db.reset</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>APQ reset command (not quite sure...).  Reset the database connection.
-<br>Example: db.reset;
-<br>Ada Equivalent: APQ.Reset;
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Reset the database connection.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.reset;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Reset<br>PHP: pg_connection_reset</p></td>
 </tr>
-
 </table>
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
 
-<p>
-<hr><b>db.rewind</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.rewind"></a><h3>db.rewind</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Return to the start of a query's results.
-<br>Example: db.rewind;
-<br>Ada Equivalent: APQ.Rewind
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-
+<td width="15%">&nbsp;</td>
+<td><p>Return to the start of a query's results.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.rewind;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
-</table>
-</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Rewind<br>PHP: pg_result_seek</p></td>
 </tr>
-</table></center>
+</table>
 
-<p>
-<hr><b>db.rollback_work</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.rollback_work"></a><h3>db.rollback_work</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Rollback a database transaction, undoing all work since begin_work.
-<br>Example: db.rollback_work;
-<br>Ada Equivalent: APQ.Rollback_Work
-<br>Parameters:
-
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Rollback a database transaction, undoing all work since begin_work.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.rollback_work;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.begin_work<br>db.commit_work</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Rollback_Work</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-<p>in_abort_state exception may be raised
 
-<p>
-<hr><b>db.schema( t )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.schema"></a><h3>db.schema( t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Show information about the columns available in a table.  This is the
-equivalent of PostgreSQL's "\d table".
-<br>Example: db.schema( "table" );
-
-<br>Ada Equivalent: none (AdaScript extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Show information about the columns available in a table.  This is the equivalent of PostgreSQL's "\d table".</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.schema( "table" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>t</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>name of the table</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>name of the table</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.databases<br>db.list<br>db.users</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>db.set_rollback_on_finalize( b )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.set_rollback_on_finalize"></a><h3>db.set_rollback_on_finalize( b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Determine if a rollback will be issued when the script ends and the
-database connection is still open (true) or no rollback (false).  Default
-is true.
-<br>Example: db.set_rollback_on_finalize( false );
-<br>Ada Equivalent: APQ.Set_Rollback_On_Finalize
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Determine if a rollback will be issued when the script ends and the database connection is still open (true) or no rollback (false).  Default is true.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.set_rollback_on_finalize( false );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>boolean</td>
-
-<td>true</td>
-
-<td>whether or not rollback will occur</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>true</span></td>
+<td><span>whether or not rollback will occur</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.will_rollback_on_finalize</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Set_Rollback_On_Finalize</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>db.set_trace( b )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.set_trace"></a><h3>db.set_trace( b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Determine if debug tracing is enabled.
-<br>Example: db.set_trace( false );
-<br>Ada Equivalent: APQ.Set_Trace
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Enable or disable query tracing.  The trace file will remain open.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.set_trace( false );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>boolean</td>
-
-<td>true</td>
-
-<td>whether or not tracing will occur</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>true</span></td>
+<td><span>whether or not tracing will occur</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.close_db_trace<br>db.is_trace<br>db.open_db_trace</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Set_Trace<br>PHP: pg_trace / pg_untrace</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>db.show</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.show"></a><h3>db.show</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Run the prepared query and show the results in a table on standard output.
-This is often used to show the results of a SQL SELECT statement.
-<br>Example: db.show;
-<br>Ada Equivalent: none (AdaScript extension)
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Run the prepared query and show the results in a table on standard output.
+This is often used to show the results of a SQL SELECT statement.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.show;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.execute<br>db.execute_checked</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
 
-<p>
-<hr><b>t := db.tuple</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.tuple"></a><h3>t := db.tuple</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-
-<br>Return the result row (tuple) number from the last fetch.
-<br>Example: row_number := db.tuple;
-<br>Ada Equivalent: APQ.Tuple
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Return the result row (tuple) number from the last fetch.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">row_number := db.tuple;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>t</td>
-
-<td>return value</td>
-
-<td>db.tuple_index_type</td>
-
-<td>the current row number</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>return value</span></td>
+<td><span>db.tuple_index_type</span></td>
+<td><span>required</span></td>
+<td><span>the current row number</span></td>
+<td><span></span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_tuple exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Tuple</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-<p>no_tuple exception may be raised
 
-<p>
-<hr><b>n := db.tuples</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.tuples"></a><h3>n := db.tuples</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Return the number of rows (tuples) from the last query.
-<br>Example: row_number := db.tuples;
-<br>Ada Equivalent: APQ.Tuples
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of rows (tuples) from the last query.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">row_number := db.tuples;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>t</td>
-
-<td>return value</td>
-
-<td>db.tuple_count_type</td>
-
-<td>the number of rows</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>return value</span></td>
+<td><span>db.tuple_count_type</span></td>
+<td><span>required</span></td>
+<td><span>the number of rows</span></td>
+<td><span></span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_result exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Tuples<br>PHP: pg_num_rows</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-<p>no_result exception may be raised
 
-<p>
-<hr><b>db.users</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.users"></a><h3>db.users</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Show a list of database users.  This is similar to PostgreSQL's "\du".  The
-columns in the list depend on the database engine.
-<br>Example: db.users;
-<br>Ada Equivalent: none (AdaScript extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-
+<td width="15%">&nbsp;</td>
+<td><p>Show a list of database users.  This is similar to PostgreSQL's "\du".  The
+columns in the list depend on the database engine.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">db.users;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>db.execute<br>db.execute_checked</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
 
-<p>
-<hr><b>s := db.value( c )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.value"></a><h3>s := db.value( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Return the column value as a string.
-<br>Example: first_name := db.value( 3 );
-<br>Ada Equivalent: APQ.Value
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Return the column value as a string.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">first_name := db.value( 3 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>db.column_index_type</td>
-
-<td>the field to return</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>db.column_index_type</span></td>
+<td><span>required</span></td>
+<td><span>the field position to return</span></td>
 </tr>
 <tr>
-
-<td>s</td>
-
-<td>return value</td>
-
-<td>universal_typeless</td>
-
-<td>the value of the field</td>
-
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>universal_typeless</span></td>
+<td><span>required</span></td>
+<td><span>the value of the field</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_column, no_result, null_value and no_tuple exceptions may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Value</p></td>
+</tr>
 </table>
-</td>
-</tr>
 
-</table></center>
-<p>no_column, no_result, null_value and no_tuple exceptions may be raised
-&nbsp;<br>
-
-<p>
-<hr><b>b := db.will_rollback_on_finalize</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="db.will_rollback_on_finalize"></a><h3>b := db.will_rollback_on_finalize</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>True if set_rollback_on_finalize was true (that is, that when the script
-finishes, a rollback will be issued if the connection is still open).
-<br>Example: b := db.will_rollback_on_finalize;
-<br>Ada Equivalent: APQ.Will_Rollback_On_Finalize
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>True if set_rollback_on_finalize was true (that is, that when the script finishes, a rollback will be issued if the connection is still open).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := db.will_rollback_on_finalize;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>rollback will be issued on finalize</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>rollback will be issued on finalize</span></td>
+<td><span></span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Will_Rollback_On_Finalize</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 &nbsp;<br>
 
 			</td>
@@ -1370,8 +1620,6 @@ finishes, a rollback will be issued if the connection is still open).
                                 <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

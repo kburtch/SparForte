@@ -4,8 +4,11 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <META NAME="description" CONTENT="SparForte language documentation">
-	<title>SparForte - Packages - Arrays</title>
+	<title>SparForte - Packages - Enums</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+	<link rel="index" href="packages.html" />
+	<link rel="prev" href="pkg_dirops.html" />
+	<link rel="next" href="pkg_files.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -48,175 +51,191 @@ enumerated values or values.</p>
         <center>
         <div class="code">
 <pre>
-  enums.first(t)            enums.last(t)            enums.pred(e2)      
-  enums.succ(e2)
+  <a href="#enums.first">e := first( t )</a>            <a href="#enums.last">e := last( t )</a>            <a href="#enums.pred">e := pred( e2 )</a>      
+  <a href="#enums.succ">e := succ( e2 )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the enums package</span>
+        <b>Help Command</b>: Contents of the enums package
         </div>
         </div>
         </center>
 
-<p>
-<hr><b>e := enums.first( t )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="enums.first"></a><h3>e := enums.first( t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Return the first (lowest) item of the enumerated type.
-<br>Example: e := enums.first( boolean ); -- returns false
-<br>Ada Equivalent: 'first attribute
-<br>See Also: enums.last
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Return the first (lowest) item of the enumerated type.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">e := enums.first( boolean ); -- returns false</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>t</td>
-
-<td>in</td>
-
-<td>enumerated type</td>
-
-<td>required</td>
-
-<td>the enumerated type</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>enumerated type</span></td>
+<td><span>required</span></td>
+<td><span>the enumerated type</span></td>
 </tr>
-
 <tr>
-<td>e</td>
-
-<td>return value</td>
-
-<td>enumerated item</td>
-
-<td>required</td>
-
-<td>the enumerated type's first item</td>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span>enumerated item</span></td>
+<td><span>required</span></td>
+<td><span>the enumerated type's first item</span></td>
 </tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>e := enums.last( t )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-
-<tr>
-<td>
-<br>Return the last (highest) item of the enumerated type.
-<br>Example: e := enums.last( boolean ); -- returns true
-<br>Ada Equivalent: 'last attribute
-<br>See Also: enums.first
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>t</td>
-
-<td>in</td>
-
-<td>enumerated type</td>
-
-<td>required</td>
-
-<td>the enumerated type</td>
-</tr>
-
-<tr>
-<td>e</td>
-
-<td>return value</td>
-
-<td>enumerated item</td>
-
-<td>required</td>
-
-<td>the enumerated type's last item</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'first attribute</p></td>
 </tr>
 </table>
-</td>
+
+<a name="enums.last"></a><h3>e := enums.last( t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the last (highest) item of the enumerated type.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">e := enums.last( boolean ); -- returns true</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>enumerated type</span></td>
+<td><span>required</span></td>
+<td><span>the enumerated type</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>e := enums.pred( e2 )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-
 <tr>
-<td>
-<br>Return the previous (lower ordinal) item of the enumerated type.
-<br>Example: e := enums.pred( true ); -- returns false
-<br>Ada Equivalent: 'pred attribute
-<br>See Also: enums.pred
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e2</td>
-
-<td>in</td>
-
-<td>enumerated item</td>
-
-<td>required</td>
-
-<td>the enumerated item</td>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span>enumerated item</span></td>
+<td><span>required</span></td>
+<td><span>the enumerated type's last item</span></td>
 </tr>
-
-<tr>
-<td>e</td>
-
-<td>return value</td>
-
-<td>enumerated item</td>
-
-<td>required</td>
-
-<td>the enumerated item predecessor to e2</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'last attribute</p></td>
 </tr>
 </table>
-</td>
+
+<a name="enums.pred"></a><h3>e := enums.pred( e2 )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the previous (lower ordinal) item of the enumerated type.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">e := enums.pred( true ); -- returns false</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e2</span></td>
+<td><span>in</span></td>
+<td><span>enumerated item</span></td>
+<td><span>required</span></td>
+<td><span>the enumerated item</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>e := enums.succ( e2 )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-
 <tr>
-<td>
-<br>Return the successor (higher ordinal) item of the enumerated type.
-<br>Example: e := enums.succ( false ); -- returns true
-<br>Ada Equivalent: 'succ attribute
-<br>See Also: enums.succ
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e2</td>
-
-<td>in</td>
-
-<td>enumerated item</td>
-
-<td>required</td>
-
-<td>the enumerated item</td>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span>enumerated item</span></td>
+<td><span>required</span></td>
+<td><span>the enumerated item predecessor to e2</span></td>
 </tr>
-
-<tr>
-<td>e</td>
-
-<td>return value</td>
-
-<td>enumerated item</td>
-
-<td>required</td>
-
-<td>the enumerated item succssor to e2</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'pred attribute</p></td>
 </tr>
 </table>
-</td>
+
+<a name="enums.succ"></a><h3>e := enums.succ( e2 )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the successor (higher ordinal) item of the enumerated type.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">e := enums.succ( false ); -- returns true</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e2</span></td>
+<td><span>in</span></td>
+<td><span>enumerated item</span></td>
+<td><span>required</span></td>
+<td><span>the enumerated item</span></td>
 </tr>
-</table></center>
+<tr>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span>enumerated item</span></td>
+<td><span>required</span></td>
+<td><span>the enumerated item succssor to e2</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'succ attribute</p></td>
+</tr>
+</table>
 
 &nbsp;<br>
 
@@ -247,8 +266,6 @@ enumerated values or values.</p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

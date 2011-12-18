@@ -6,6 +6,9 @@
         <META NAME="description" CONTENT="SparForte language documentation">
 	<title>SparForte - Packages - Lock_Files</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+	<link rel="index" href="packages.html" />
+	<link rel="prev" href="pkg_gnat_crc32.html" />
+	<link rel="next" href="pkg_memcache.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -26,7 +29,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="pkg_files.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_mysql.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_gnat_crc32.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_memcache.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -49,125 +52,117 @@ be locked, an error is reported.</p>
         <center>
         <div class="code">
 <pre>
-  lock_files.lock_file( dir, file [,wait [,retries] )
-  lock_files.lock_file( file [,wait [,retries] )
-  lock_files.unlock_file( dir, file )
-  lock_files.unlock_file( file )
+  <a href="#lock_files.lock_file">lock_file( [dir,] file, [, wait [, retries] ] )</a>
+  <a href="#lock_files.unlock_file">lock_files.unlock_file( [dir,] file )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the lock_files package</span>
+        <b>Help Command</b>: Contents of the lock_files package
         </div>
         </div>
         </center>
 
-<p>
-<hr><b>lock_files.lock_file( [dir,] file, [, wait [, retries] ] )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="lock_files.lock_file"></a><h3>lock_files.lock_file( [dir,] file, [, wait [, retries] ] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>create a lock file named <i>file</i> in optional directory <i>dir</i>.&nbsp;
-Retry up to
-<i>retries</i> (natural) times, waiting for <i>wait</i> (duration)
-seconds between retries. Default for wait/retries in 1.0 second and almost
-forever.
-
-<br>Example: lock_files.lock_file( "test_lock.lck" );
-<br>Ada Equivalent: GNAT.Lock_Files.Lock_File
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Create a lock file named <i>file</i> in directory <i>dir</i>. Retry up to <i>retries</i> (natural) times, waiting for <i>wait</i> (duration) seconds between retries. Default for wait/retries in 1.0 second and almost forever.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">lock_files.lock_file( "test_lock.lck" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>dir</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>"."</td>
-
-<td>the directory to place the lock file in</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>dir</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>"."</span></td>
+<td><span>the directory to place the lock file in</span></td>
 </tr>
-
 <tr>
-<td>file</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the name of the lock file</td>
+<td><span>file</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the name of the lock file</span></td>
 </tr>
-
 <tr>
-<td>wait</td>
-
-<td>in</td>
-
-<td>duration</td>
-
-<td>1.0</td>
-
-<td>the number of seconds to wait between retries</td>
+<td><span>wait</span></td>
+<td><span>in</span></td>
+<td><span>duration</span></td>
+<td><span>1.0</span></td>
+<td><span>the number of seconds to wait between retries</span></td>
 </tr>
-
 <tr>
-<td>retries</td>
-
-<td>in</td>
-
-<td>natural</td>
-
-<td>largest natural</td>
-
-<td>the maximum number of retries</td>
+<td><span>retries</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>largest natural</span></td>
+<td><span>the maximum number of retries</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If the file cannot be locked, SparForte reports an error.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>lock_files.unlock_file</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.Lock_Files.Lock_File</p></td>
 </tr>
 </table>
-</td>
+
+<a name="lock_files.unlock_file"></a><h3>lock_files.unlock_file( [dir,] file )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Delete the lock file named <i>file</i> in directory <i>dir</i>.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">lock_files.unlock_file( "test_lock.lck" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>dir</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>"."</span></td>
+<td><span>the directory the lock file is in</span></td>
 </tr>
-</table></center>
-
-<p>If the file cannot be locked, SparForte reports an error.
-<p>
-<hr><b>lock_files.unlock_file( [dir,] file )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>delete the lock file name <i>file</i> in optional directory <i>dir</i>.
-
-<br>Example: lock_files.unlock_file( "test_lock.lck" );
-<br>Ada Equivalent: GNAT.Lock_Files.Unlock_File
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>dir</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>"."</td>
-
-<td>the directory the lock file is in</td>
+<td><span>file</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the name of the lock file</span></td>
 </tr>
-
-<tr>
-<td>file</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the name of the lock file</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>lock_files.lock_file</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.Lock_Files.Unlock_File</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
 
 &nbsp;<br>
 
@@ -198,8 +193,6 @@ forever.
                                 <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

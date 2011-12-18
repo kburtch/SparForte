@@ -6,6 +6,10 @@
         <META NAME="description" CONTENT="SparForte language documentation">
 	<title>SparForte - Packages - Arrays</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+	<link rel="index" href="packages.html" />
+	<link rel="prev" href="ref_errors.html" />
+	<link rel="next" href="pkg_calendar.html" />
+
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -49,22 +53,22 @@ sorting the array or moving the items in the array.</p>
         <center>
         <div class="code">
 <pre>
-  first( a )               last( a )                length( a )
-  bubble_sort( a )         bubble_sort_descending( a )
-  heap_sort( a )           heap_sort_descending( a )
-  shuffle( a )             flip( a )
-  shift_left( a )          shift_right( a )
-  rotate_left( a )         rotate_right( a )
-  to_array( s, a )         to_json( s, a )
+  <a href="#arrays.first">first( a )</a>               <a href="#arrays.last">last( a )</a>                <a href="#arrays.length">length( a )</a>
+  <a href="#arrays.bubble_sort">bubble_sort( a )</a>         <a href="#arrays.bubble_sort_descending">bubble_sort_descending( a )</a>
+  <a href="#arrays.heap_sort">heap_sort( a )</a>           <a href="#arrays.heap_sort_descending">heap_sort_descending( a )</a>
+  <a href="#arrays.shuffle">shuffle( a )</a>             <a href="#arrays.flip">flip( a )</a>
+  <a href="#arrays.shift_left">shift_left( a )</a>          <a href="#arrays.shift_right">shift_right( a )</a>
+  <a href="#arrays.rotate_left">rotate_left( a )</a>         <a href="#arrays.rotate_right">rotate_right( a )</a>
+  <a href="#arrays.to_array">to_array( s, a )</a>         <a href="#arrays.to_json">to_json( s, a )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the arrays package</span>
+        <b>Help Command</b>: Contents of the arrays package
         </div>
         </div>
         </center>
 
-<h3>arrays.bubble_sort( a )</h3>
+<a name="arrays.bubble_sort"></a><h3>arrays.bubble_sort( a )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -72,10 +76,10 @@ sorting the array or moving the items in the array.</p>
 depending on the element type.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">arrays.bubble_sort( sales_array );</span></p>
+<td><span class="code">arrays.bubble_sort( sales_array );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -92,7 +96,7 @@ depending on the element type.</p>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><span class="code">-</span></p>
+<td><span class="code">-</span></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>arrays.bubble_sort_descending<br>arrays.heap_sort<br>arrays.heap_sort_descending</p>
@@ -102,7 +106,7 @@ depending on the element type.</p>
 </tr>
 </table>
 
-<h3>arrays.bubble_sort_descending( a )</h3>
+<a name="arrays.bubble_sort_descending"></a><h3>arrays.bubble_sort_descending( a )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -110,10 +114,10 @@ depending on the element type.</p>
 strings or numbers depending on the element type.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">arrays.bubble_sort_descending( sales_array );</span></p>
+<td><span class="code">arrays.bubble_sort_descending( sales_array );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -130,7 +134,7 @@ strings or numbers depending on the element type.</p>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><span class="code">-</span></p>
+<td><span class="code">-</span></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>arrays.bubble_sort<br>arrays.heap_sort<br>arrays.heap_sort_descending</p>
@@ -140,17 +144,17 @@ strings or numbers depending on the element type.</p>
 </tr>
 </table>
 
-<h3>i := arrays.first( a )</h3>
+<a name="arrays.first"></a><h3>i := arrays.first( a )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Return the first (lowest) index of the array.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">i := arrays.first( sales_array );</span></p>
+<td><span class="code">i := arrays.first( sales_array );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -173,7 +177,7 @@ strings or numbers depending on the element type.</p>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><span class="code">-</span></p>
+<td><span class="code">-</span></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>arrays.last</p>
@@ -183,7 +187,7 @@ strings or numbers depending on the element type.</p>
 </tr>
 </table>
 
-<h3>arrays.heap_sort( a )</h3>
+<a name="arrays.heap_sort"></a><h3>arrays.heap_sort( a )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -191,10 +195,10 @@ strings or numbers depending on the element type.</p>
 strings or numbers depending on the element type.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">arrays.heap_sort( sales_array );</span></p>
+<td><span class="code">arrays.heap_sort( sales_array );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -211,7 +215,7 @@ strings or numbers depending on the element type.</p>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><span class="code">-</span></p>
+<td><span class="code">-</span></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>arrays.bubble_sort<br>arrays.bubble_sort_descending<br>arrays.heap_sort_descending</p>
@@ -221,7 +225,7 @@ strings or numbers depending on the element type.</p>
 </tr>
 </table>
 
-<h3>arrays.heap_sort_descending( a )</h3>
+<a name="arrays.heap_sort_descending"></a><h3>arrays.heap_sort_descending( a )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -229,10 +233,10 @@ strings or numbers depending on the element type.</p>
 strings or numbers depending on the element type.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">arrays.heap_sort_descending( sales_array );</span></p>
+<td><span class="code">arrays.heap_sort_descending( sales_array );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -249,7 +253,7 @@ strings or numbers depending on the element type.</p>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><span class="code">-</span></p>
+<td><span class="code">-</span></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>arrays.bubble_sort<br>arrays.bubble_sort_descending<br>arrays.heap_sort</p>
@@ -259,17 +263,17 @@ strings or numbers depending on the element type.</p>
 </tr>
 </table>
 
-<h3>i := arrays.last( a )</h3>
+<a name="arrays.last"></a><h3>i := arrays.last( a )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Return the last (highest) index of the array.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">i := arrays.last( sales_array );</span></p>
+<td><span class="code">i := arrays.last( sales_array );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -292,7 +296,7 @@ strings or numbers depending on the element type.</p>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><span class="code">-</span></p>
+<td><span class="code">-</span></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>arrays.first</p>
@@ -302,17 +306,17 @@ strings or numbers depending on the element type.</p>
 </tr>
 </table>
 
-<h3>n := arrays.length( a )</h3>
+<a name="arrays.length"></a><h3>n := arrays.length( a )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Return the number of elements in the array (last index - first index + 1).</p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">n := arrays.length( sales_array );</span></p>
+<td><span class="code">n := arrays.length( sales_array );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -335,7 +339,7 @@ strings or numbers depending on the element type.</p>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><span class="code">-</span></p>
+<td><span class="code">-</span></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>strings.length</p>
@@ -345,7 +349,7 @@ strings or numbers depending on the element type.</p>
 </tr>
 </table>
 
-<h3>arrays.flip( a )</h3>
+<a name="arrays.flip"></a><h3>arrays.flip( a )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -355,10 +359,10 @@ version 1.1, this was arrays.reverse but was renamed to avoid a conflict with th
 reserved word "reverse".)</p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">arrays.flip( backwards_array );</span></p>
+<td><span class="code">arrays.flip( backwards_array );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -375,7 +379,7 @@ reserved word "reverse".)</p>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><span class="code">-</span></p>
+<td><span class="code">-</span></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p>
@@ -385,7 +389,7 @@ reserved word "reverse".)</p>
 </tr>
 </table>
 
-<h3>arrays.rotate_left( a )</h3>
+<a name="arrays.rotate_left"></a><h3>arrays.rotate_left( a )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -393,10 +397,10 @@ reserved word "reverse".)</p>
 the first element to the last position.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">arrays.rotate_left( work_queue );</span></p>
+<td><span class="code">arrays.rotate_left( work_queue );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -413,7 +417,7 @@ the first element to the last position.</p>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><span class="code">-</span></p>
+<td><span class="code">-</span></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>arrays.rotate_right<br>arrays.shift_left<br>arrays.shift_right</p>
@@ -423,7 +427,7 @@ the first element to the last position.</p>
 </tr>
 </table>
 
-<h3>arrays.rotate_right( a )</h3>
+<a name="arrays.rotate_right"></a><h3>arrays.rotate_right( a )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -431,10 +435,10 @@ the first element to the last position.</p>
 the last element to the first position.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">arrays.rotate_right( work_queue );</span></p>
+<td><span class="code">arrays.rotate_right( work_queue );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -451,7 +455,7 @@ the last element to the first position.</p>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><span class="code">-</span></p>
+<td><span class="code">-</span></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>arrays.rotate_left<br>arrays.shift_left<br>arrays.shift_right</p>
@@ -461,7 +465,7 @@ the last element to the first position.</p>
 </tr>
 </table>
 
-<h3>arrays.shift_left( a )</h3>
+<a name="arrays.shift_left"></a><h3>arrays.shift_left( a )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -469,10 +473,10 @@ the last element to the first position.</p>
 overwriting the first element.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">arrays.shift_left( work_stack );</span></p>
+<td><span class="code">arrays.shift_left( work_stack );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -489,7 +493,7 @@ overwriting the first element.</p>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><span class="code">-</span></p>
+<td><span class="code">-</span></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>arrays.rotate_left<br>arrays.rotate_right<br>arrays.shift_right</p>
@@ -499,7 +503,7 @@ overwriting the first element.</p>
 </tr>
 </table>
 
-<h3>arrays.shift_right( a )</h3>
+<a name="arrays.shift_right"></a><h3>arrays.shift_right( a )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -507,10 +511,10 @@ overwriting the first element.</p>
 overwriting the last element.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">arrays.shift_right( work_stack );</span></p>
+<td><span class="code">arrays.shift_right( work_stack );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -527,7 +531,7 @@ overwriting the last element.</p>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><span class="code">-</span></p>
+<td><span class="code">-</span></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>arrays.rotate_left<br>arrays.rotate_right<br>arrays.shift_left</p>
@@ -537,17 +541,17 @@ overwriting the last element.</p>
 </tr>
 </table>
 
-<h3>arrays.shuffle( a )</h3>
+<a name="arrays.shuffle"></a><h3>arrays.shuffle( a )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Randomize the elements of the array with a Fisher-Yates shuffle.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">arrays.shuffle( playing_card_array );</span></p>
+<td><span class="code">arrays.shuffle( playing_card_array );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -564,7 +568,7 @@ overwriting the last element.</p>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><span class="code">-</span></p>
+<td><span class="code">-</span></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>arrays.bubble_sort_descending<br>arrays.heap_sort<br>arrays.heap_sort_descending</p>
@@ -574,7 +578,7 @@ overwriting the last element.</p>
 </tr>
 </table>
 
-<h3>arrays.to_array( a, s )</h3>
+<a name="arrays.to_array"></a><h3>arrays.to_array( a, s )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -582,10 +586,10 @@ overwriting the last element.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">s := "[32]";<br>
-arrays.to_array( a, s ); -- a(1) is 32</span></p>
+arrays.to_array( a, s ); -- a(1) is 32</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -620,7 +624,7 @@ arrays.to_array( a, s ); -- a(1) is 32</span></p>
 </table>
 
 
-<h3>arrays.to_json( s, a )</h3>
+<a name="arrays.to_json"></a><h3>arrays.to_json( s, a )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -628,10 +632,10 @@ arrays.to_array( a, s ); -- a(1) is 32</span></p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">a : array(1..1) of string := "apple";<br>
-arrays.to_json( s, a ); -- s is ["apple]"</span></p>
+arrays.to_json( s, a ); -- s is ["apple]"</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -695,8 +699,6 @@ arrays.to_json( s, a ); -- s is ["apple]"</span></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

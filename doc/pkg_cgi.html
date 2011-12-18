@@ -6,6 +6,9 @@
         <META NAME="description" CONTENT="SparForte language documentation">
 	<title>SparForte - Packages - Cgi</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+	<link rel="index" href="packages.html" />
+	<link rel="prev" href="pkg_calendar.html" />
+	<link rel="next" href="pkg_cmdline.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -38,12 +41,37 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-<h2><a NAME="4.11"></a>Cgi Package</h3>
+<h3><a NAME="4.11"></a>Cgi Package</h3>
 <p>The SparForte CGI package is based on and uses David A. Wheeler's AdaCGI package.
 It provides form processing, string encoding, and cookie operations.</p>
+
+        <center>
+        <div class="code">
+<pre>
+  <a href="#cgi.parsing_errors">parsing_errors</a>             <a href="#cgi.input_received">input_received</a>             <a href="#cgi.is_index">is_index</a>
+  <a href="#cgi.cgi_method">cgi_method</a>                 <a href="#cgi.value">value( k, i, b )</a>           <a href="#cgi.key_exists">key_exists( k, i )</a>
+  <a href="#cgi.key_count">key_count( k )</a>             <a href="#cgi.argument_count">argument_count</a>             <a href="#cgi.key">key( p )</a>
+  <a href="#cgi.key_value_exists">key_value_exists( k, v )</a>   <a href="#cgi.put_cgi_header">put_cgi_header( s )</a>        <a href="#cgi.put_html_head">put_html_head( t, m )</a>
+  <a href="#cgi.put_html_heading">put_html_heading( s, p )</a>   <a href="#cgi.put_html_tail">put_html_tail</a>              <a href="#cgi.put_error_message">put_error_message( s )</a>
+  <a href="#cgi.my_url">my_url</a>                     <a href="#cgi.put_variables">put_variables</a>              <a href="#cgi.line_count">line_count</a>
+  <a href="#cgi.line_count_of_value">line_count_of_value</a>        <a href="#cgi.line">line( v )</a>                  <a href="#cgi.value_of_line">value_of_line( k, p )</a>
+  <a href="#cgi.url_decode">url_decode</a>                 <a href="#cgi.url_encode">url_encode( s )</a>            <a href="#cgi.html_encode">html_encode( s )</a>
+  <a href="#cgi.set_cookie">set_cookie( k,v,e,p,d,s )</a>  <a href="#cgi.cookie_value">cookie_value( p )</a>          <a href="#cgi.cookie_count">cookie_count</a>
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the cgi package
+        </div>
+        </div>
+        </center>
+
 <p>Using the CGI package, programmers can write scripts that run when invoked
-by web servers using the Common Gateway Interface (CGI). Bush's large feature
+by web servers using the Common Gateway Interface (CGI). SparForte's large feature
 set and strong error checking make it ideal for writing web server applications.</p>
+
+<p>cgi.get_environment is not implemented: it is already available through
+the command_line package.</p>
+
 <p>The examples directory contains a script called minimal_cgi, a CGI script
 that displays form variables.</p>
 
@@ -51,7 +79,7 @@ that displays form variables.</p>
         <div class="code">
                 <p class="code">
 <b>procedure</b> minimal_cgi <b>is</b><br>
-&nbsp; -- Demonstrate Bush's CGI interface<br>
+&nbsp; -- Demonstrate SparForte's CGI interface<br>
 &nbsp; -- based on AdaCGI's minimal.adb example<br>
 &nbsp;<br>
 &nbsp; -- To run this script directly (without a HTTP server), set the<br>
@@ -76,7 +104,7 @@ that displays form variables.</p>
 <b>end</b> minimal_cgi;<br>&nbsp;<br>
                 </p>
         <div class="code_caption">
-                <b>Example</b>: A CGI Package Example</span>
+                <b>Example</b>: A CGI Package Example
         </div>
         </div>
         </center>
@@ -99,7 +127,7 @@ content_type: text/html<br>
 &lt;html&gt;&lt;head&gt;&lt;title&gt;Minimal Form Demonstration&lt;/title&gt;<br>
 &lt;/head&gt;&lt;body&gt;<br>
 &lt;form method="POST"&gt;What's your name?&lt;input name="username"&gt;&lt;input type="submit"&gt;&lt;/form&gt;<br>
-&lt;/body7gt;&lt;/html&gt;<br>
+&lt;/body&gt;&lt;/html&gt;<br>
 &nbsp;<br>
 =&gt; QUERY_STRING : string := "x=a&amp;y=b"<br>
 =&gt; spar examples/minimal_cgi.sp<br>
@@ -116,7 +144,7 @@ content_type: text/html<br>
 &lt;/body&gt;&lt;/html&gt;<br>&nbsp;<br>
                 </p>
         <div class="code_caption">
-                <b>Example</b>: Running a CGI Script from the Command Line</span>
+                <b>Example</b>: Running a CGI Script from the Command Line
         </div>
         </div>
         </center>
@@ -133,1133 +161,1218 @@ type:</p>
 <p>To use cgi_method_type or its elements, prefix the items with "cgi." as
 you would with any other package declaration.</p>
 
-        <center>
-        <div class="code">
-<pre>
-  parsing_errors             input_received             is_index
-  cgi_method                 value( k, i, b )           key_exists( k, i )
-  key_count( k )             argument_count             key( p )
-  key_value_exists( k, v )   put_cgi_header( s )        put_html_head( t, m )
-  put_html_heading( s, p )   put_html_tail              put_error_message( s )
-  my_url                     get_environment( v )       line_count
-  line_count_of_value        line( v )                  value_of_line( k, p )
-  url_decode                 url_encode( s )            html_encode( s )
-  set_cookie( k,v,e,p,d,s )  cookie_value( p )          cookie_count
-  put_variables
-</pre>
-        &nbsp;<br>
-        <div class="code_caption">
-        <b>Help Command</b>: Contents of the cgi package</span>
-        </div>
-        </div>
-        </center>
-
-<p>
-<hr><b>b := cgi.parsing_errors</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="cgi.argument_count"></a><h3>n := cgi.argument_count</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>True if there were errors parsing.
-<br>Example: if cgi.parsing_errors then ...
-<br>Ada Equivalent: CGI.Parsing_Errors
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Return the total number of variables, including duplicates with the
+same name.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">-</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>required</td>
-
-<td>true if there were parsing errors</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of variables</span></td>
 </tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>b := cgi.input_received</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>True if there were CGI variables passed to the script.
-<br>Example: if cgi.input_received then ...
-<br>Ada Equivalent: CGI.Input_Received
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>required</td>
-
-<td>true if there was input received</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>b := cgi.is_index</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>True if an "IsIndex" request was made.
-<br>Example: if cgi.is_index ...
-
-<br>Ada Equivalent: CGI.Is_Index
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>required</td>
-
-<td>true if a "IsIndex" request was made</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>m := cgi.cgi_method</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Identify the CGI standard that was used to communicate with the web
-server.
-<br>Example: if cgi.cgi_method = cgi.get then ...
-<br>Ada Equivalent: CGI.CGI_Method
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>m</td>
-
-<td>return value</td>
-
-<td>cgi.cgi_method_type</td>
-
-<td>required</td>
-
-<td>the method (cgi.get, cgi.post or cgi.unknown)</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Argument_Count</p></td>
 </tr>
 </table>
 
-</td>
+<a name="cgi.cgi_method"></a><h3>m := cgi.cgi_method</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Identify the CGI standard that was used to communicate with the
+script (cgi.get, cgi.post or cgi.unknown).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">-</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>return value</span></td>
+<td><span>cgi.cgi_method_type</span></td>
+<td><span>required</span></td>
+<td><span>the method</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>s := cgi.value( v, i, b )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the value of a CGI variable (a form field).
-<br>Example: username := cgi.value( "username" );
-<br>Ada Equivalent: CGI.Value
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the value of the variable</td>
-</tr>
-
-<tr>
-<td>v</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the name of the variable</td>
-</tr>
-
-<tr>
-<td>i</td>
-
-<td>in</td>
-
-<td>positive</td>
-
-<td>1</td>
-
-<td>which variable (1 = first match, 2 = second match, etc.)</td>
-</tr>
-
-<tr>
-<td>r</td>
-
-<td>in</td>
-
-<td>boolean</td>
-
-<td>false</td>
-
-<td>if true, an exception will be raised if the variable is missing, otherwise
-an empty string is returned</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>b := cgi.key_exists( v )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return true if a CGI variable (a form field) exists.
-<br>Example: if cgi.key_exists( "credit_card_expiry_date" ) then ...
-<br>Ada Equivalent: CGI.Key_Exists
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>required</td>
-
-<td>true if the variable exists</td>
-</tr>
-
-<tr>
-<td>v</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the variable to check</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>n := cgi.key_count( v )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the number of times the variable name (or name of a form field)
-occurs.
-<br>Example: for k in 1..cgi.key_count( "phone_number" ) loop ...
-<br>Ada Equivalent: CGI.Key_Count
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>n</td>
-
-<td>return value</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the number of occurrences</td>
-</tr>
-
-<tr>
-<td>v</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the variable to check</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>n := cgi.argument_count</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Return the total number of variables, including duplicates with the
-same name. occurs.
-<br>Example: for k in 1..cgi.argument_count loop ...
-<br>Ada Equivalent: CGI.Argument_Count
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>n</td>
-
-<td>return value</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the number of variables</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>s := cgi.key( p )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the name of pth CGI variable.
-<br>Example: first_variable := cgi.key( 1 );
-
-<br>Ada Equivalent: CGI.Key
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the CGI variable name</td>
-
-</tr>
-
-<tr>
-<td>p</td>
-
-<td>in</td>
-
-<td>positive</td>
-
-<td>required</td>
-
-<td>the variable position (1..cgi.argument_count). A bad value will raise
-an exception.</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>n := cgi.key_value( p )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the value of the pth CGI variable.
-<br>Example: first_value := cgi.key_value( 1 );
-<br>Ada Equivalent: CGI.Value (NOTE: a different name)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the variable value</td>
-</tr>
-
-<tr>
-<td>p</td>
-
-<td>in</td>
-
-<td>positive</td>
-
-<td>required</td>
-
-<td>the position of the variable (1..cgi.argument_count)</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Cgi_Method</p></td>
 </tr>
 </table>
 
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>b := cgi.key_value_exists( v, s )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="cgi.cookie_count"></a><h3>n := cgi.cookie_count</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>True if a CGI variable v has value s.
-<br>Example: if cgi.key_value_exists( "country", "US" ) then ...
-<br>Ada Equivalent: CGI.Key_Value_Exists
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>required</td>
-
-<td>true if the variable has the value</td>
-</tr>
-
-<tr>
-<td>v</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the CGI variable</td>
-</tr>
-
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the value to test for</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>cgi.put_cgi_header( h )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Write the CGI header to current_output, including two carriage returns.
-This header determines the form of the program's reply (by default, an
-HTML document).  A typical program would first call this function which tells
-the calling HTTP server what kind of information will be returned. Usually
-the CGI header is a reply saying "I will reply a generated HTML document",
-so that is the default of Put_CGI_Header, but you could reply something else
-(for example, a Location: header to automatically redirect someone to a
-different URL.
-<br>Example: cgi.put_cgi_header;
-<br>Ada Equivalent: cgi.put_cgi_header
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>h</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>Content-type: text/html</td>
-
-<td>the CGI header to use</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>cgi.put_html_head( t, m )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Write a simple HTML header to current_output, including a title and
-optional mailto link to the page author.
-<br>Example: cgi.put_html_head( "Search results", "itdept@yourorg.com"
-)
-<br>Ada Equivalent: CGI.Put_HTML_Head
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>t</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the page title</td>
-</tr>
-
-<tr>
-<td>m</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>no mailto</td>
-
-<td>the email address of the author</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>cgi.put_html_heading( s, l )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Write a simple HTML &lt;h1> to &lt;h6> heading.
-<br>Example: cgi.put_html_heading( "OmniCorp Sales Statistics", 1 )
-<br>Ada Equivalent: CGI.Value (NOTE: a different name)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the heading text</td>
-</tr>
-
-<tr>
-<td>l</td>
-
-<td>in</td>
-
-<td>positive</td>
-
-<td>required</td>
-
-<td>the heading level (1..6)</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>cgi.put_html_tail</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Complete an HTML document by writing " to current_output.
-<br>Example: cgi.put_html_tail;
-<br>Ada Equivalent: CGI.Put_HTML_Tail;
-<br>Parameters:
-<br>none</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>cgi.put_error_message( s )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Write a short HTML document containing an error message. Use cgi.put_cgi_header
-first.
-
-<br>Example: cgi.put_error_message( "the disk is full" )
-<br>Ada Equivalent: CGI.Put_Error_Message
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the error message</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>cgi.put_variables</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Display the CGI variables in HTML format. Use for debugging.
-<br>Example: cgi.put_variables;
-<br>Ada Equivalent: CGI.Put_Variables;
-
-<br>Parameters:
-<br>none</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>s := cgi.my_url</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the URL of the script.
-<br>Example: script_url := cgi.my_url;
-<br>Ada Equivalent: CGI.My_URL
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the URL of the script</td>
-</tr>
-</table>
-
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>n := cgi.line_count( s )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Count the number of lines is value s, 0 if an empty string.
-<br>Example: if cgi.line_count( address ) > 4 then ...
-<br>Ada Equivalent: CGI.Line_Count
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>n</td>
-
-<td>return value</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the number of lines (0 if null string)</td>
-</tr>
-
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the string to test</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>n := cgi.line_count_of_value( v )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Count the number of lines in the value of variable v, 0 if an empty
-string.
-<br>Example: if cgi.line_count_of_value( address ) > 4 then ...
-<br>Ada Equivalent: CGI.Line_Count_Of_Value
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>n</td>
-
-<td>return value</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the number of lines (0 if null string)</td>
-</tr>
-
-<tr>
-<td>v</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the CGI variable to test</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>l := cgi.line( s, p )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the pth line of string s.
-<br>Example: second_line := cgi.line( address, 2 );
-<br>Ada Equivalent: CGI.Line
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>l</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the line</td>
-</tr>
-
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the CGI variable value to get the line from</td>
-</tr>
-
-<tr>
-<td>p</td>
-
-<td>in</td>
-
-<td>positive</td>
-
-<td>required</td>
-
-<td>the line number (1..cgi.line_count). A bad value raises an exception.</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>l := cgi.value_of_line( v, p )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Return the pth line of the value of CGI variable v.
-<br>Example: second_line := cgi.line( "address", 2 );
-<br>Ada Equivalent: CGI.Value_Of_Line
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>l</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the line</td>
-</tr>
-
-<tr>
-<td>v</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the CGI variable to get the line from</td>
-</tr>
-
-<tr>
-<td>p</td>
-
-<td>in</td>
-
-<td>positive</td>
-
-<td>required</td>
-
-<td>the line number (1..cgi.line_count). A bad value raises an exception.</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>s := cgi.url_decode( u, b )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Decode HTML-encoded %HH hexadecimal characters into their corresponding
-ASCII characters. If b is true, translate plus signs to spaces.
-<br>Example: s := cgi.url_decode( encoded_url );
-
-<br>Ada Equivalent: CGI.URL_Decode
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the decoded string</td>
-
-</tr>
-
-<tr>
-<td>u</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the URL-encoded string</td>
-
-</tr>
-
-<tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>boolean</td>
-
-<td>true</td>
-
-<td>translate plus signs to spaces if true</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>u := cgi.url_encode( s, b )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Encode the string using %HH hexadecimal characters. If b is true, translate
-plus signs to spaces.
-<br>Example: encoded_url := cgi.url_encode( s );
-<br>Ada Equivalent: CGI.URL_Decode
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>u</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the URL-encoded string</td>
-</tr>
-
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the string to encode</td>
-</tr>
-
-<tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>boolean</td>
-
-<td>true</td>
-
-<td>translate plus signs to spaces if true</td>
-</tr>
-</table>
-
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>h := cgi.html_encode( s )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Encode the string escaping illegal HTML characters. For example, '&gt;'
-becomes &gt;).
-<br>Example: safe_html := cgi.html_encode( "This is &lt;illegal&gt; HTML!"
-);
-
-<br>Ada Equivalent: CGI.HTML_Encode
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>h</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the HTML-encoded string</td>
-
-</tr>
-
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the string to encode</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>cgi.set_cookie( v, s, x, p, d, b )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Set a cookie's properties. Call this before Put_CGI_Header.
-<br>Example: cgi.set_cookie( "last_visit", "none" );
-<br>Ada Equivalent: CGI.Set_Cookie
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>v</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the cookie name</td>
-</tr>
-
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the cookie value</td>
-</tr>
-
-<tr>
-<td>x</td>
-
-<td>in</td>
-
-<td>string</td>
-
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of cookies.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">for i in 1..cgi.cookie_count loop ...</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
-
-<td>the expiry date</td>
-</tr>
-
-<tr>
-<td>p</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>PATH_INFO value</td>
-
-<td>the cookie path</td>
-</tr>
-
-<tr>
-<td>d</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>SERVER_NAME value</td>
-
-<td>the domain value</td>
-</tr>
-
-<tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>boolean</td>
-
-<td>false</td>
-
-<td>true if secure</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>cgi.cookie_value<br>cgi.set_cookie</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Cookie_Count</p></td>
 </tr>
 </table>
 
-</td>
+<a name="cgi.cookie_value"></a><h3>s := cgi.cookie_value( c [, p] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Get the value of p-th instance of cookie c.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">cookie := cgi.cookie_value( "date_visited" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the cookie value</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>s := cgi.cookie_value( c [, p] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Get the value of pth instance of cookie c.
-<br>Example: cookie := cgi.cookie_value( "date_visited" );
-<br>Ada Equivalent: CGI.Cookie_Value
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the cookie value</td>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the cookie name</span></td>
 </tr>
-
 <tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the cookie name</td>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>1</span></td>
+<td><span>the instance of the cookie name</span></td>
 </tr>
-
-<tr>
-<td>p</td>
-
-<td>in</td>
-
-<td>positive</td>
-
-<td>1</td>
-
-<td>the instance of the cookie name</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>cgi.set_cookie<br>cgi.cookie_count</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Cookie_Value</p></td>
 </tr>
 </table>
-</td>
+
+<a name="cgi.html_encode"></a><h3>h := cgi.html_encode( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Encode the string escaping illegal HTML characters. For example, '&gt;'
+becomes '&amp;gt;').</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">safe_html := cgi.html_encode( "This is &lt;illegal&gt; HTML!"</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>h</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the HTML-encoded string</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>n := cgi.cookie_count( c [, p] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Return the number of cookies.
-<br>Example: for i in 1..cgi.cookie_count loop ...
-<br>Ada Equivalent: CGI.Cookie_Count
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the number of cookies</td>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the string to encode</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.HTML_Encode</p></td>
 </tr>
 </table>
-</td>
+
+<a name="cgi.input_received"></a><h3>b := cgi.input_received</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if there HTTP GET or POST data was received by the script.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">if cgi.input_received then ...</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if there was input received</span></td>
 </tr>
-</table></center>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Input_Received</p></td>
+</tr>
+</table>
 
-<p>cgi.get_environment is not implemented: it is already available through
-the command_line package.</p>
+<a name="cgi.is_index"></a><h3>b := cgi.is_index</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if an "IsIndex" request was made (a request with HTTP GET or
+POST data without variable assignments).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">if cgi.is_index ...</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if a "IsIndex" request was made</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Is_Index</p></td>
+</tr>
+</table>
 
+<a name="cgi.key"></a><h3>s := cgi.key( p )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the name of p-th HTTP GET or POST variable.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">first_variable := cgi.key( 1 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the CGI variable name</span></td>
+</tr>
+<tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the variable position (1..cgi.argument_count).</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if there is no variable at position p.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Key</p></td>
+</tr>
+</table>
+
+<a name="cgi.key_count"></a><h3>n := cgi.key_count( k )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of times the variable name (or name of a form field)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">-</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of occurrences</span></td>
+</tr>
+<tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the variable to check</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Cgi.Key_Count</p></td>
+</tr>
+</table>
+
+<a name="cgi.key_exists"></a><h3>b := cgi.key_exists( k, i )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return true if a HTTP GET or POST variable (a form field) exists
+with the the given name.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">if cgi.key_exists( "credit_card_expiry_date", 1 ) then ...</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if the variable exists</span></td>
+</tr>
+<tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the variable to check</span></td>
+</tr>
+<tr>
+<td><span>i</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>which variable</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Key_Exists</p></td>
+</tr>
+</table>
+
+<a name="cgi.key_value"></a><h3>n := cgi.key_value( p )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the value of the p-th HTTP GET or POST variable.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">first_value := cgi.key_value( 1 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the variable value</span></td>
+</tr>
+<tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the position of the variable (1..cgi.argument_count)</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if there is no variable at position p.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Value (NOTE: a different name)</p></td>
+</tr>
+</table>
+
+<a name="cgi.key_value_exists"></a><h3>b := cgi.key_value_exists( v, s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if an HTTP GET or POST variable v has a value of s.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">if cgi.key_value_exists( "country", "US" ) then ...</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if the variable has the value</span></td>
+</tr>
+<tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the CGI variable</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the value to test for</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Key_Value_Exists</p></td>
+</tr>
+</table>
+
+<a name="cgi.my_url"></a><h3>s := cgi.my_url</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the URL of the script.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">script_url := cgi.my_url;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the URL of the script</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.My_URL</p></td>
+</tr>
+</table>
+
+<a name="cgi.line"></a><h3>l := cgi.line( s, p )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the p-th line of string s.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">second_line := cgi.line( address, 2 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the line</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the GET/POST variable value to get the line from</span></td>
+</tr>
+<tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the line number (1..cgi.line_count).</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>A bad line number raises an exception.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Line</p></td>
+</tr>
+</table>
+
+<a name="cgi.line_count"></a><h3>n := cgi.line_count( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Count the number of lines is value s, 0 if an empty string.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">if cgi.line_count( address ) &gt; 4 then ...</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of lines (0 if null string)</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the string to test</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Line_Count</p></td>
+</tr>
+</table>
+
+<a name="cgi.line_count_of_value"></a><h3>n := cgi.line_count_of_value( v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Count the number of lines in the value of variable v, 0 if an empty</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">-</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of lines (0 if null string)</span></td>
+</tr>
+<tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the CGI variable to test</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Line_Count_Of_Value</p></td>
+</tr>
+</table>
+
+<a name="cgi.parsing_errors"></a><h3>b := cgi.parsing_errors</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if there were errors parsing the data sent with HTTP GET or POST.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">if cgi.parsing_errors then ...</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if there were parsing errors</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Parsing_Errors</p></td>
+</tr>
+</table>
+
+<a name="cgi.put_cgi_header"></a><h3>cgi.put_cgi_header( h )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Write the CGI header to current_output, including two carriage returns.  This header determines the form of the program's reply (by default, an HTML document).  A typical program would first call this function which tells the calling HTTP server what kind of information will be returned. Usually the CGI header is a reply saying "I will reply a generated HTML document", so that is the default of Put_CGI_Header, but you could reply something else (for example, a Location: header to automatically redirect someone to a different URL.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">cgi.put_cgi_header;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>h</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>Content-type: text/html</span></td>
+<td><span>the CGI header to use</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: cgi.put_cgi_header</p></td>
+</tr>
+</table>
+
+<a name="cgi.put_error_message"></a><h3>cgi.put_error_message( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Write a short HTML document containing an error message. Use cgi.put_cgi_header</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">-</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the error message</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Put_Error_Message</p></td>
+</tr>
+</table>
+
+<a name="cgi.put_html_head"></a><h3>cgi.put_html_head( t, m )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Write a simple HTML header to current_output, including a title and
+optional mailto link to the page author.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">-</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the page title</span></td>
+</tr>
+<tr>
+<td><span>m</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>no mailto</span></td>
+<td><span>the email address of the author</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Put_HTML_Head</p></td>
+</tr>
+</table>
+
+<a name="cgi.put_html_heading"></a><h3>cgi.put_html_heading( s, l )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Write a simple HTML &lt;h1&gt; to &lt;h6&gt; heading.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">cgi.put_html_heading( "OmniCorp Sales Statistics", 1 )</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the heading text</span></td>
+</tr>
+<tr>
+<td><span>l</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the heading level (1..6)</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Put_Html_Heading</p></td>
+</tr>
+</table>
+
+<a name="cgi.put_html_tail"></a><h3>cgi.put_html_tail</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Complete an HTML document by writing "&lt;/body&gt;&lt;/html&gt;" to current_output.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">cgi.put_html_tail</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Put_HTML_Tail</p></td>
+</tr>
+</table>
+
+<a name="cgi.put_variables"></a><h3>cgi.put_variables</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Display the HTTP GET or POST variables in HTML format. Use for debugging.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">cgi.put_variables</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Put_Variables</p></td>
+</tr>
+</table>
+
+<a name="cgi.set_cookie"></a><h3>cgi.set_cookie( v, s, x, p, d, b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Set a cookie's properties. Call this before Put_CGI_Header.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">cgi.set_cookie( "last_visit", "none" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the cookie name</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the cookie value</span></td>
+</tr>
+<tr>
+<td><span>x</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>none</span></td>
+<td><span>the expiry date</span></td>
+</tr>
+<tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>PATH_INFO value</span></td>
+<td><span>the cookie path</span></td>
+</tr>
+<tr>
+<td><span>d</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>SERVER_NAME value</span></td>
+<td><span>the domain value</span></td>
+</tr>
+<tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>false</span></td>
+<td><span>true if secure</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>cgi.cookie_count<br>cgi.cookie_value</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Set_Cookie</p></td>
+</tr>
+</table>
+
+<a name="cgi.url_decode"></a><h3>s := cgi.url_decode( u, b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Decode HTML-encoded %HH hexadecimal characters into their corresponding</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">-</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the decoded string</span></td>
+</tr>
+<tr>
+<td><span>u</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the URL-encoded string</span></td>
+</tr>
+<tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>true</span></td>
+<td><span>translate plus signs to spaces if true</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>ada.url_encode</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.URL_Decode</p></td>
+</tr>
+</table>
+
+<a name="cgi.url_encode"></a><h3>u := cgi.url_encode( s, b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Encode the string using %HH hexadecimal characters. If b is true, translate plus signs to spaces.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">encoded_url := cgi.url_encode( s );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>u</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the URL-encoded string</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the string to encode</span></td>
+</tr>
+<tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>true</span></td>
+<td><span>translate plus signs to spaces if true</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>cgi.decode</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.URL_Encode</p></td>
+</tr>
+</table>
+
+<a name="cgi.value"></a><h3>s := cgi.value( v, i, b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the value of an HTTP GET or POST variable (a form field).
+If there are multiple variables with the same name, i will return the
+ith value (starting from one).  An exception will be raised when there
+is no variable if b is true.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">username := cgi.value( "username" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the value of the variable</span></td>
+</tr>
+<tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the name of the variable</span></td>
+</tr>
+<tr>
+<td><span>i</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>1</span></td>
+<td><span>which variable (1 = first)</span></td>
+</tr>
+<tr>
+<td><span>r</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>false</span></td>
+<td><span>raise an exception if missing variable</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If b is true, an exception is raised if there is no variable.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Value</p></td>
+</tr>
+</table>
+
+<a name="cgi.value_of_line"></a><h3>l := cgi.value_of_line( v, p )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the p-th line of the value of CGI variable v.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">second_line := cgi.line( "address", 2 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the line</span></td>
+</tr>
+<tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the CGI variable to get the line from</span></td>
+</tr>
+<tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the line number (1..cgi.line_count).</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>A bad line number raises an exception.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: CGI.Value_Of_Line</p></td>
+</tr>
+</table>
 &nbsp;<br>
 
 			</td>
@@ -1289,8 +1402,6 @@ the command_line package.</p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

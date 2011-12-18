@@ -4,8 +4,11 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <META NAME="description" CONTENT="SparForte language documentation">
-	<title>SparForte - Packages - Memcache</title>
+	<title>SparForte - Packages - Memcache High Read</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+	<link rel="index" href="packages.html" />
+	<link rel="prev" href="pkg_memcache.html" />
+	<link rel="next" href="pkg_mysql.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -26,7 +29,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="packages.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_calendar.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_memcache.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_mysql.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -39,6 +42,31 @@
 			<td align="left" valign="top">
 	<!-- Content Area -->
 <h2><a NAME="4.14"></a>Memcache.Highread Package</h2>
+
+<p>A package for storing data in memcached with optional redundancy, optimized for
+more reads than writes.</p>
+
+<p><u>GCC Ada Equivalent</u>: N/A<br>
+<u>See Also</u>: memcache</p>
+
+        <center>
+        <div class="code">
+<pre>
+  <a href="#memcache.highread.add">add( cl, k, v )</a>            <a href="#memcache.highread.register_alpha_server">register_alpha_server( cl, h, p )</a>
+  <a href="#memcache.highread.append">append( cl, k, v )</a>         <a href="#memcache.highread.register_beta_server">register_beta_server( cl, h, p )</a>
+  <a href="#memcache.highread.clear_servers">clear_servers( cl )</a>        <a href="#memcache.highread.replace">replace( cl, k, v )</a>
+  <a href="#memcache.highread.delete">delete( cl, k )</a>            <a href="#memcache.highread.set">set( cl, k, v )</a>
+  <a href="#memcache.highread.flush">flush( cl )</a>                <a href="#memcache.highread.set_cluster_name">set_cluster_name( cl, s )</a>
+  <a href="#memcache.highread.get">v := get( cl, k )</a>          <a href="#memcache.highread.set_cluster_type">set_cluster_type( cl, e )</a>
+  <a href="#memcache.highread.new_cluster">cl := new_cluster</a>          <a href="#memcache.highread.stats">s := stats( cl )</a>
+  <a href="#memcache.highread.prepend">prepend( cl, k, v )</a>        <a href="#memcache.highread.version">s := version( cl )</a>
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the memcache.highread package</span>
+        </div>
+        </div>
+        </center>
 
 <p>Memcached (or the Memcache Daemon) is a general-purpose networked memory
 caching system that was originally developed by Danga Interactive for
@@ -106,28 +134,7 @@ failure.</p>
 shell will disable the memcache.highread package.</p>
 
 
-<p><u>GCC Ada Equivalent</u>: N/A<br>
-
-        <center>
-        <div class="code">
-<pre>
-  add( cl, k, v )             register_alpha_server( cl, h, p )
-  append( cl, k, v )          register_beta_server( cl, h, p )
-  clear_servers( cl )         replace( cl, k, v )
-  delete( cl, k )             set( cl, k, v )
-  flush( cl )                 set_cluster_name( cl, s )
-  v := get( cl, k )           set_cluster_type( cl, e )
-  cl := new_cluster           s := stats( cl )
-  prepend( cl, k, v )         s := version( cl )
-</pre>
-        &nbsp;<br>
-        <div class="code_caption">
-        <b>Help Command</b>: Contents of the memcache.highread package</span>
-        </div>
-        </div>
-        </center>
-
-<h3>memcache.highread.add( cl, k, v )</h3>
+<a name="memcache.highread.add"></a><h3>memcache.highread.add( cl, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -138,7 +145,7 @@ Otherwise, an error is displayed but execution continues.</p></td>
 <td><span class="code">memcache.highread.add( mc_cluster, "company_name", "PegaSoft"  );</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -180,7 +187,7 @@ Otherwise, an error is displayed but execution continues.</p></td>
 </tr>
 </table>
 
-<h3>memcache.highread.append( cl, k, v )</h3>
+<a name="memcache.highread.append"></a><h3>memcache.highread.append( cl, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -191,7 +198,7 @@ memcache cluster cl.</p></td>
 <td><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.highread.append( mc_cluster, "company_name", " Inc.";<br>-- company_name is "PegaSoft Inc." </span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -233,7 +240,7 @@ memcache cluster cl.</p></td>
 </tr>
 </table>
 
-<h3>memcache.highread.clear_servers( cl )</h3>
+<a name="memcache.highread.clear_servers"></a><h3>memcache.highread.clear_servers( cl )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -244,7 +251,7 @@ flushed from memcached.</p></td>
 <td><span class="code">memcache.highread.clear_servers( cl ); -- there are now no servers in the cluster</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -274,7 +281,7 @@ flushed from memcached.</p></td>
 </tr>
 </table>
 
-<h3>memcache.highread.delete( cl, k )</h3>
+<a name="memcache.highread.delete"></a><h3>memcache.highread.delete( cl, k )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -284,7 +291,7 @@ flushed from memcached.</p></td>
 <td><span class="code">memcache.highread.delete( mc_cluster, "company_name", "PegaSoft"  );<br>-- company_name no longer exists</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -320,7 +327,7 @@ flushed from memcached.</p></td>
 </tr>
 </table>
 
-<h3>memcache.highread.flush( cl )</h3>
+<a name="memcache.highread.flush"></a><h3>memcache.highread.flush( cl )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -331,7 +338,7 @@ marked invalid and are gradually replaced as new items are stored.</p></td>
 <td><span class="code">memcache.highread.flush( mc_cluster );-- all keys are destroyed</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -361,7 +368,7 @@ marked invalid and are gradually replaced as new items are stored.</p></td>
 </tr>
 </table>
 
-<h3>v := memcache.highread.get( cl, k )</h3>
+<a name="memcache.highread.get"></a><h3>v := memcache.highread.get( cl, k )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -374,7 +381,7 @@ with the key in order to distribute load.</p></td>
 <td><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br>? memcache.highread.get( mc_cluster, "company_name" );<br>-- displays "PegaSoft" </span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -413,7 +420,7 @@ with the key in order to distribute load.</p></td>
 </tr>
 </table>
 
-<h3>cl := memcache.highread.new_cluster</h3>
+<a name="memcache.highread.new_cluster"></a><h3>cl := memcache.highread.new_cluster</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -424,7 +431,7 @@ servers and manage connections.</p></td>
 <td><span class="code">mc_cluster := memcache.highread.new_cluster;</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -459,7 +466,7 @@ the script execution end.</p>
 </tr>
 </table>
 
-<h3>memcache.highread.prepend( cl, k, v )</h3>
+<a name="memcache.highread.prepend"></a><h3>memcache.highread.prepend( cl, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -470,7 +477,7 @@ memcache cluster cl.</p></td>
 <td><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.highread.prepend( mc_cluster, "company_name", "This is " );<br>-- company_name is "This is PegaSoft" </span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -512,7 +519,7 @@ memcache cluster cl.</p></td>
 </tr>
 </table>
 
-<h3>memcache.highread.register_alpha_server( cl, h, p )</h3>
+<a name="memcache.highread.register_alpha_server"></a><h3>memcache.highread.register_alpha_server( cl, h, p )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -526,7 +533,7 @@ register the same server twice.</p></td>
 <td><span class="code">memcache.highread.register_alpha_server( mc_cluster, "memcached1.somecompany.com", 11211 );</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -568,7 +575,7 @@ register the same server twice.</p></td>
 </tr>
 </table>
 
-<h3>memcache.highread.register_beta_server( cl, h, p )</h3>
+<a name="memcache.highread.register_beta_server"></a><h3>memcache.highread.register_beta_server( cl, h, p )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -582,7 +589,7 @@ register the same server twice.</p></td>
 <td><span class="code">memcache.highread.register_beta_server( mc_cluster, "memcached2.somecompany.com", 11211 );</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -624,7 +631,7 @@ register the same server twice.</p></td>
 </tr>
 </table>
 
-<h3>memcache.highread.replace( cl, k, v )</h3>
+<a name="memcache.highread.replace"></a><h3>memcache.highread.replace( cl, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -636,7 +643,7 @@ execution continues.</p></td>
 <td><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.highread.replace( mc_cluster, "company_name", "MegaCorp";<br>-- company_name is "MegaCorp"</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -678,7 +685,7 @@ execution continues.</p></td>
 </tr>
 </table>
 
-<h3>memcache.highread.set( cl, k, v )</h3>
+<a name="memcache.highread.set"></a><h3>memcache.highread.set( cl, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -689,7 +696,7 @@ the key already has a value, it will be overwritten.</p></td>
 <td><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br>-- company_name is "PegaSoft" </span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -731,7 +738,7 @@ the key already has a value, it will be overwritten.</p></td>
 </tr>
 </table>
 
-<h3>memcache.highread.set_cluster_name( cl, s )</h3>
+<a name="memcache.highread.set_cluster_name"></a><h3>memcache.highread.set_cluster_name( cl, s )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -742,7 +749,7 @@ some error messages.</p></td>
 <td><span class="code">memcache.highread.set_cluster_name( mc_cluster, "main cluster" );</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -778,7 +785,7 @@ some error messages.</p></td>
 </tr>
 </table>
 
-<h3>memcache.highread.set_cluster_type( cl, t )</h3>
+<a name="memcache.highread.set_cluster_type"></a><h3>memcache.highread.set_cluster_type( cl, t )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -789,7 +796,7 @@ memcache.memcache_cluster_type.normal.</p></td>
 <td><span class="code">memcache.highread.set_cluster_type( mc_cluster, memcache.memcache_cluster_type.normal );</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -825,7 +832,7 @@ memcache.memcache_cluster_type.normal.</p></td>
 </tr>
 </table>
 
-<h3>s := memcache.highread.stats( cl )</h3>
+<a name="memcache.highread.stats"></a><h3>s := memcache.highread.stats( cl )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -837,7 +844,7 @@ For the meaning of the stats, consult the memcached documentation.</p></td>
 <td><span class="code">? memcache.highread.stats( mc_cluster );-- display all stats</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -873,7 +880,7 @@ For the meaning of the stats, consult the memcached documentation.</p></td>
 </tr>
 </table>
 
-<h3>s := memcache.highread.version( cl )</h3>
+<a name="memcache.highread.version"><h3>s := memcache.highread.version( cl )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -885,7 +892,7 @@ the same version on all servers.)</p></td>
 <td><span class="code">? memcache.highread.version( mc_cluster ); -- displays the version e.g. 1.4.5</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" order="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -950,8 +957,6 @@ the same version on all servers.)</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

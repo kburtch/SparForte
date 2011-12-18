@@ -6,6 +6,9 @@
         <META NAME="description" CONTENT="SparForte language documentation">
 	<title>SparForte - Packages - MySQL</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+	<link rel="index" href="packages.html" />
+	<link rel="prev" href="pkg_memcache_highread.html" />
+	<link rel="next" href="pkg_numerics.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -26,7 +29,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="pkg_lock_files.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_numerics.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_memcache_highread.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_numerics.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -39,8 +42,42 @@
 			<td align="left" valign="top">
 	<!-- Content Area -->
 <h2><a NAME="4.19"></a>MySQL Database Package</h2>
-<p>The database package is based on Warren Gay's APQ MySQL binding.  For full
+<p>The database package is based on Warren Gay's APQ 2.1 MySQL binding.  For full
 details on these routines, consult the APQ documentation.</p>
+
+        <center>
+        <div class="code">
+<pre>
+  <a href="#mysql.connect">connect( d [, u, w ][, h][, p] )</a>
+  <a href="#mysql.append">append( s [, a] )</a>           <a href="#mysql.prepare">prepare( s [, a] )</a>
+  <a href="#mysql.append_line">append_line( s )</a>            <a href="#mysql.append_quoted">append_quoted( s )</a>
+  <a href="#mysql.execute">execute</a>                     <a href="#mysql.execute_checked">execute_checked( [ s ] )</a>
+  <a href="#mysql.disconnect">disconnect</a>                  <a href="#mysql.is_connected">is_connected</a>
+  <a href="#mysql.reset">reset</a>                       <a href="#mysql.error_message">s := error_message</a>
+  <a href="#mysql.databases">databases</a>                   <a href="#mysql.in_abort_state">b := in_abort_state</a>
+  <a href="#mysql.options">s := options</a>                <a href="#mysql.set_rollback_on_finalize">set_rollback_on_finalize( b )</a>
+  <a href="#mysql.open_db_trace">open_db_trace( f [,m] )</a>     <a href="#mysql.will_rollback_on_finalize">b := will_rollback_on_finalize</a>
+  <a href="#mysql.close_db_trace">close_db_trace</a>              <a href="#mysql.set_trace">set_trace( b )</a>
+  <a href="#mysql.is_trace">b := is_trace</a>               <a href="#mysql.clear">clear</a>
+  <a href="#mysql.raise_exceptions">raise_exceptions( [ b ] )</a>   <a href="#mysql.report_errors">report_errors( b )</a>
+  <a href="#mysql.begin_work">begin_work</a>                  <a href="#mysql.rollback_work">rollback_work</a>
+  <a href="#mysql.commit_work">commit_work</a>                 <a href="#mysql.rewind">rewind</a>
+  <a href="#mysql.fetch[">fetch [ (i) ]</a>               <a href="#mysql.end_of_query">b := end_of_query</a>
+  <a href="#mysql.tuple">n := tuple( t )</a>             <a href="#mysql.tuples">n := tuples</a>
+  <a href="#mysql.columns">n := columns</a>                <a href="#mysql.column_name">s := column_name( c )</a>
+  <a href="#mysql.column_index">i := column_index( s )</a>      <a href="#mysql.is_null">b := is_null( c )</a>
+  <a href="#mysql.value">s := value( c )</a>             <a href="#mysql.engine_of">b := engine_of</a> 
+  <a href="#mysql.show">show</a>                        <a href="#mysql.list">list</a>
+  <a href="#mysql.schema">schema( t )</a>                 <a href="#mysql.users">users</a>
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the mysql package</span>
+        </div>
+        </div>
+        </center>
+
+
 <p>There is an enumerated type in the db package that controls the verbosity of tracing:
         <center>
         <div class="code">
@@ -85,1236 +122,1445 @@ details on these routines, consult the APQ documentation.</p>
 
 <br>&nbsp;
 
-        <center>
-        <div class="code">
-<pre>
-  connect( dbname [,user ,pswd [,host [,port] ] ] )
-  append( stmt [,after] )     prepare( stmt [,after] )
-  append_line( stmt )         append_quoted( stmt )
-  execute                     execute_checked( msg )
-  disconnect                  is_connected
-  reset                       s := error_message
-                              b := in_abort_state
-  s := options                set_rollback_on_finalize( b )
-  open_db_trace( f [,m] )     b := will_rollback_on_finalize
-  close_db_trace              set_trace( b )
-  b := is_trace               clear
-  raise_exceptions( [b] )     report_errors( [b] )
-  begin_work                  rollback_work
-  commit_work                 rewind
-  fetch[(r)]                  b := end_of_query
-  n := tuple( t )             n := tuples
-  n := columns                s := column_name( c )
-  i := column_index( s )      b := is_null( c )
-  s := value( c )             d := engine_of 
-  show                        list
-  schema( t )                 users
-  databases
-</pre>
-        &nbsp;<br>
-        <div class="code_caption">
-        <b>Help Command</b>: Contents of the mysql package</span>
-        </div>
-        </div>
-        </center>
-
-<p>
-<hr><b>mysql.append( s [, a] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="mysql.append"></a><h3>mysql.append( s [, a] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Append text to an SQL query s after a (?)
-<br>Example: mysql.append( " where customer_no &gt; 5" );
-<br>Ada Equivalent: APQ.Append
-<br>Parameters:
-
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Append text s to the SQL query. The text is on the same line.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.append( s, " where customer_no &gt; 5" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>SQL query</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>SQL query text</span></td>
 </tr>
 <tr>
-<td>a</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>empty string</td>
-
-<td>after (not quite sure)</td>
-
+<td><span>a</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>empty string</span></td>
+<td><span>additional text to place after the text</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown when out of memory.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Append</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>mysql.append_line( s )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="mysql.append_line"></a><h3>mysql.append_line( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Start a new line and append line to SQL query s
-<br>Example: mysql.append_line( "where customer_no &gt; 5" );
-
-<br>Ada Equivalent: APQ.Append_Line
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Append text s to the SQL query and start a new line.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.append_line( s, "where customer_no &gt; 5" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>SQL query text</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>SQL query text</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Append_Line</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>mysql.append_quoted( s )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="mysql.append_quoted"></a><h3>mysql.append_quoted( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Append text to SQL query s and surrounded text with single quotes.
-<br>Example: mysql.append_quoted( "customer_name" );
-<br>Ada Equivalent: APQ.Append_Quoted
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Append text s to SQL query while surrounding s with single quotes.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.append_quoted( "customer_name" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>SQL query text</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>SQL query text</span></td>
 </tr>
-
 <tr>
-<td>a</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>""</td>
-
-<td>after what query text</td>
-
+<td><span>a</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>empty string</span></td>
+<td><span>additional text to place after the text</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Append_Quoted</p></td>
+</tr>
 </table>
-</td>
+
+<a name="mysql.begin_work"></a><h3>mysql.begin_work</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Start a database transaction, marking the position of a possible rollback.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.begin_work;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><span>none</span></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>in_abort_state exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mysql.commit_work<br>mysql.rollback_work</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Begin_Work</p></td>
 </tr>
-</table></center>
+</table>
 
-<p>
-<hr><b>mysql.begin_work</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="mysql.clear"></a><h3>mysql.clear</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Start a database transaction, marking the position of a possible rollback.
-<br>Example: mysql.begin_work;
-<br>Ada Equivalent: APQ.Begin_Work
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Erase the text of the current query.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.clear;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
-</table>
-</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Clear</p></td>
 </tr>
-</table></center>
-<p>in_abort_state exception may be raised
+</table>
 
-<p>
-<hr><b>mysql.clear</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="mysql.close_db_trace"></a><h3>mysql.close_db_trace</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Erase the current query.
-
-<br>Example: mysql.clear;
-<br>Ada Equivalent: APQ.Clear
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Stop tracing the database activity and close the trace file.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.close_db_trace;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mysql.is_trace<br>mysql.open_db_trace<br>mysql.set_trace</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Clear</p></td>
 </tr>
-
 </table>
-</td>
+
+<a name="mysql.column_index"></a><h3>i := mysql.column_index( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the position of a query result column.  This is the position in the query, not the database table.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">third_column_position := mysql.column_index( "first name" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the column heading</span></td>
 </tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
-
-<p>
-<hr><b>mysql.close_db_trace</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Stop tracing the database activity and close the trace file.
-<br>Example: mysql.close_db_trace;
-<br>Ada Equivalent: APQ.Close_DB_Trace
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td><span>i</span></td>
+<td><span>return value</span></td>
+<td><span>column_index_type</span></td>
+<td><span>required</span></td>
+<td><span>the column position in the query</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_column exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mysql.column_name</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Column_Index</p></td>
+</tr>
+</table>
+
+<a name="mysql.column_name"></a><h3>s := mysql.column_name( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the name of a query result column.  The number is the position in the query, not the database table.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">third_column_heading := mysql.column_name( 3 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>column_index_type</span></td>
+<td><span>required</span></td>
+<td><span>the column position in the query results</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the column heading</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_column exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Column_Name<br>PHP: mysql_field_name</p></td>
+</tr>
+</table>
+
+<a name="mysql.columns"></a><h3>n := mysql.columns</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of columns (fields) from the last query.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">number_of_columns := mysql.columns;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of columns</span></td>
+<td><span></span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_result exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Columns</p></td>
+</tr>
+</table>
+
+<a name="mysql.commit_work"></a><h3>mysql.commit_work</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Complete a database transaction.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.commit_work;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><span>none</span></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>in_abort_state exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mysql.begin_work<br>mysql.rollback_work</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Commit_Work</p></td>
+</tr>
+</table>
+
+<a name="mysql.connect"></a><h3>mysql.connect( d [, u, w ][, h][, p] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Connect to database d using username u, password w, hostname h and port p. If no hostname or port are specified, connection is made by a UNIX socket instead of a network socket.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.connect( "db", "user", "password" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>d</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the database name</span></td>
+</tr>
+<tr>
+<td><span>u</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>your username</span></td>
+<td><span>the username to connect with</span></td>
+</tr>
+<tr>
+<td><span>w</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>default password</span></td>
+<td><span>username's password</span></td>
+</tr>
+<tr>
+<td><span>h</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>UNIX Socket</span></td>
+<td><span>hostname for network socket</span></td>
+</tr>
+<tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>default port</span></td>
+<td><span>network socket port</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection cannot be made, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: combines several APQ functions</p></td>
+</tr>
+</table>
+
+<a name="mysql.databases"></a><h3>mysql.databases</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Show a list of the databases available with the current connection.  This
+is the equivalent of MySQL "show databases".</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.databases;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
-
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mysql.list<br>mysql.schema<br>mysql.users</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
-
-</table>
-</td>
-</tr>
-
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
-
-<p>
-<hr><b>i := mysql.column_index( s )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the position of a query result column.  This is the position
-in the query, not the database table.
-<br>Example: third_column_position := mysql.column_index( "first name" );
-<br>Ada Equivalent: APQ.Column_Name
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>the column heading</td>
-
-</tr>
-<tr>
-<td>i</td>
-
-<td>return value</td>
-
-<td>column_index_type</td>
-
-<td>the column position in the query</td>
-
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-<p>no_column exception may be raised
-
-<p>
-<hr><b>s := mysql.column_name( c )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-
-<tr>
-<td>
-<br>Return the name of a query result column.  The number is the position
-in the query, not the database table.
-<br>Example: third_column_heading := mysql.column_name( 3 );
-<br>Ada Equivalent: APQ.Column_Name
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>column_index_type</td>
-
-<td>the column position in the query results</td>
-
-</tr>
-<tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>the column heading</td>
-
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-<p>no_column exception may be raised
-
-<p>
-<hr><b>n := mysql.columns</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the number of columns (fields) from the last query.
-<br>Example: number_of_columns := mysql.columns;
-<br>Ada Equivalent: APQ.Columns
-<br>Parameters:
-
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>n</td>
-
-<td>return value</td>
-
-<td>natural</td>
-
-<td>the number of columns</td>
-
-</tr>
-
 </table>
 
-</td>
-</tr>
-</table></center>
-<p>no_result exception may be raised
+<a name="mysql.disconnect"></a><h3>mysql.disconnect</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
 
-<p>
-<hr><b>mysql.commit_work</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Complete a database transaction.
-<br>Example: mysql.commit_work;
-<br>Ada Equivalent: APQ.Commit_Work
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
+<td><p>Close a connection created by connect.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.disconnect;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
-
-</table>
-</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mysql.connect</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Disconnect<br>PHP: mysql_close</p></td>
 </tr>
-</table></center>
-<p>in_abort_state exception may be raised
-
-<p>
-<hr><b>mysql.connect( d [, u, p ][, h][, p] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Connect to database d using username u, path p, hostname h and port p.
-If no hostname or port are specified, connection is made by a UNIX socket
-instead of a network socket.
-<br>Example: mysql.connect( "db", "user", "password" );
-<br>Ada Equivalent: combines several APQ functions
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-
-<td>d</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the database name</td>
-</tr>
-
-<tr>
-
-<td>u</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>your username</td>
-
-<td>the username to connect with</td>
-</tr>
-
-<tr>
-
-<td>p</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>default password</td>
-
-<td>username's password</td>
-</tr>
-
-<tr>
-
-<td>h</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>UNIX Socket</td>
-
-<td>hostname for network socket</td>
-</tr>
-
-<tr>
-
-<td>p</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>default port</td>
-
-<td>network socket port</td>
-</tr>
-
 </table>
 
-</td>
-</tr>
-</table></center>
-<p>If a connection cannot be made, an error will occur.
+<a name="mysql.end_of_query"></a><h3>b := mysql.end_of_query</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if there are no more result (tuple) rows.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">while not mysql.end_of_query loop ...</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
 
-<p>
-<hr><b>mysql.databases</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if no more rows</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.End_Of_Query</p></td>
+</tr>
+</table>
+
+<a name="mysql.engine_of"></a><h3>b := mysql.engine_of</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Show a list of the databases available with the current connection.  This
-is the equivalent of MySQL "show databases".
-<br>Example: mysql.databases;
-<br>Ada Equivalent: none (AdaScript extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Return the identity of the database engine</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := mysql.engine_of;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>db.database_type</span></td>
+<td><span>db.engine_mysql, etc.</span></td>
+<td><span></span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Engine_Of</p></td>
+</tr>
+</table>
+
+<a name="mysql.error_message"></a><h3>s := mysql.error_message</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Last error message returned by database server.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">err := mysql.error_message;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>last server message</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Error_Message;<br>PHP: mysql_error</p></td>
+</tr>
+</table>
+
+<a name="mysql.execute"></a><h3>mysql.execute</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Run a prepared database query.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.execute;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
-
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mysql.show<br>mysql.execute_checked</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Execute<br>PHP: pg_execute</p></td>
 </tr>
 </table>
-</td>
+
+<a name="mysql.execute_checked"></a><h3>mysql.execute_checked( [ s ] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Execute the query.  If an error occurs, display the message s on
+standard error and raise an exception.  If an error occurs and there is
+no error message s, display the query on standard error and raise an
+exception.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.execute_checked( "message" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>empty string</span></td>
+<td><span>a message</span></td>
 </tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if an error occurs.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mysql.show<br>mysql.execute</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Execute_Checked</p></td>
+</tr>
+</table>
 
-<p>
-<hr><b>mysql.disconnect</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="mysql.fetch["></a><h3>mysql.fetch [ (i) ]</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Close a connection created by connect.
-<br>Example: mysql.disconnect;
-<br>Ada Equivalent: APQ.Disconnect;
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Fetch the next query result tuple row, or a specific result row.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.fetch;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>in</span></td>
+<td><span>tuple_index_type</span></td>
+<td><span>next row</span></td>
+<td><span>a specific result row</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_result or no_tuple exceptions may be raised.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Fetch<br>PHP: mysql_fetch_array</p></td>
+</tr>
+</table>
 
+<a name="mysql.in_abort_state"></a><h3>s := mysql.in_abort_state</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if in abort state. If there is no connection, return false.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := mysql.in_abort_state;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if in abort state</span></td>
+<td><span></span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, a not connected exception will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.In_Abort_State</p></td>
+</tr>
+</table>
+
+<a name="mysql.is_connected"></a><h3>b := mysql.is_connected</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if a connection is open to a database.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := mysql.is_connected;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if connected</span></td>
+<td><span></span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Is_Connected</p></td>
+</tr>
+</table>
+
+<a name="mysql.is_null"></a><h3>b := mysql.is_null( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if column in the fetch result is undefined.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := mysql.is_null;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>mysql.column_index_type</span></td>
+<td><span>required</span></td>
+<td><span>the field to check</span></td>
+</tr>
+<tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if null</span></td>
+<td><span></span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_column and no_result exceptions may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Is_Null</p></td>
+</tr>
+</table>
+
+<a name="mysql.is_trace"></a><h3>b := mysql.is_trace</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if set_trace was true (that is, if debug tracing is enabled).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := mysql.is_trace;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>tracing is enabled</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mysql.close_db_trace<br>mysql.open_db_trace<br>mysql.set_trace</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Is_Trace</p></td>
+</tr>
+</table>
+
+<a name="mysql.list"></a><h3>mysql.list</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Show a list of the tables available in the current database.  This is the
+equivalent of MySQL's "show tables".</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.list;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mysql.databases<br>mysql.schema<br>mysql.users</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
 
-<p>
-<hr><b>b := mysql.end_of_query</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="mysql.open_db_trace"></a><h3>mysql.open_db_trace( f [,m] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>True if there are no more result (tuple) rows.
-<br>Example: b := mysql.end_of_query;
-
-<br>Ada Equivalent: APQ.End_Of_Query
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Begin tracing the database activity, storing the results at pathname f.  m is an optional trace mode type</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.open_db_trace( "./trace.out" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>true if no more rows</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>trace file pathname</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in</span></td>
+<td><span>mysql.trace_mode_type</span></td>
+<td><span>mysql.trace_apq</span></td>
+<td><span>trace type</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.<br>
+not_connected, file already open, file not found exceptions may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mysql.close_db_trace<br>mysql.is_trace<br>mysql.set_trace</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Open_DB_Trace</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>b := mysql.engine_of</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="mysql.options"></a><h3>s := mysql.options</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Return the identity of the database engine
-<br>Example: b := mysql.engine_of;
-<br>Ada Equivalent: APQ.Engine_Of
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Return database options.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := mysql.options;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>db.database_type</td>
-
-<td>db.engine_mysql, etc.</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>database options</span></td>
+<td><span></span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Options</p></td>
+</tr>
 </table>
-</td>
 
-</tr>
-</table></center>
-
-<p>
-<hr><b>s := mysql.error_message</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="mysql.prepare"></a><h3>mysql.prepare( s [, a] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Last error message returned by database server.
-<br>Example: err := mysql.error_message;
-<br>Ada Equivalent: APQ.Error_Message;
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Prepare a SQL statement to execute.  If a is included, insert the next statement after the statement named a.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.prepare( "select * from customers" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>last server message</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>SQL statement</span></td>
 </tr>
-
+<tr>
+<td><span>a</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>after all others</span></td>
+<td><span>insert SQL statement after statement a</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection cannot be made, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Prepare</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>mysql.execute</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="mysql.raise_exceptions"></a><h3>mysql.raise_exceptions( [ b ] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Run a prepared database query.
-<br>Example: mysql.execute;
-<br>Ada Equivalent: APQ.Execute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>True to raise exceptions on query errors.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.raise_exceptions( false );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>true</span></td>
+<td><span>whether or not exceptions will occur</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Raise_Exceptions</p></td>
+</tr>
+</table>
+
+<a name="mysql.report_errors"></a><h3>mysql.report_errors( b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True to report errors on query.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.report_errors( false );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>true</span></td>
+<td><span>whether or not errors will be reported</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Report_Errors</p></td>
+</tr>
+</table>
+
+<a name="mysql.reset"></a><h3>mysql.reset</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Reset the database connection.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.reset;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Reset</p></td>
 </tr>
-
 </table>
 
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
-
-<p>
-<hr><b>mysql.execute_checked( [ s ] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="mysql.rewind"></a><h3>mysql.rewind</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>not sure the difference with execute.
-<br>Example: mysql.execute_checked( "message" );
-<br>Ada Equivalent: APQ.Execute_Checked
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>empty string</td>
-
-<td>a message</td>
-
-</tr>
-
-</table>
-</td>
-
-</tr>
-</table></center>
-
-<p>
-<hr><b>mysql.fetch [ (i) ]</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Fetch the next query result tuple row, or a specific result row.
-<br>Example: mysql.fetch;
-<br>Ada Equivalent: APQ.Fetch
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>i</td>
-
-<td>in</td>
-
-<td>tuple_index_type</td>
-
-<td>optional</td>
-
-<td>a specific result row</td>
-
-</tr>
-
-</table>
-</td>
-
-</tr>
-</table></center>
-<p>no_result or no_tuple exceptions may be raised.
-
-<p>
-<hr><b>s := mysql.in_abort_state</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>True if in abort state.
-<br>Example: b := mysql.in_abort_state;
-<br>Ada Equivalent: APQ.In_Abort_State;
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>true if in abort state</td>
-
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, a not connected exception will occur.
-
-
-<p>
-<hr><b>b := mysql.is_connected</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>True if Bush is connected to a database.
-<br>Example: b := mysql.is_connected;
-<br>Ada Equivalent: APQ.Is_Connected;
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>true if connected</td>
-
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
-
-<p>
-<hr><b>b := mysql.is_null( c )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>True if column in the fetch result is undefined.
-<br>Example: b := mysql.is_null;
-<br>Ada Equivalent: APQ.Is_Null
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>mysql.column_index_type</td>
-
-<td>the field to check</td>
-
-</tr>
-<tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>true if null</td>
-
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-<p>no_column and no_result exceptions may be raised
-
-<p>
-<hr><b>b := mysql.is_trace</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>True if set_trace was true (that is, if debug tracing is enabled).
-<br>Example: b := mysql.is_trace;
-<br>Ada Equivalent: APQ.Is_Trace
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>tracing is enabled</td>
-
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>mysql.list</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Show a list of the tables available in the current database.  This is the
-equivalent of MySQL's "show tables".
-<br>Example: mysql.list;
-<br>Ada Equivalent: none (AdaScript extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-
+<td width="15%">&nbsp;</td>
+<td><p>Return to the start of a query's results.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.rewind;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Rewind</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
 
-<p>
-<hr><b>mysql.open_db_trace( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="mysql.rollback_work"></a><h3>mysql.rollback_work</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Begin tracing the database activity, storing the results at pathname f.
-<br>Example: mysql.open_db_trace( "./trace.out" );
-<br>Ada Equivalent: APQ.Open_DB_Trace
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>trace file pathname</td>
-
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
-<p>not_connected, file already open, file not found exceptions may be raised
-
-<p>
-<hr><b>s := mysql.options</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return database options.
-<br>Example: b := mysql.options;
-
-<br>Ada Equivalent: APQ.Options
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>database options</td>
-
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>mysql.prepare( s [, a] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Prepare a SQL statement to execute.  If a is included, insert the
-next statement after the statement named a.
-<br>Example: mysql.prepare( "select * from customers" );
-<br>Ada Equivalent: APQ.Prepare
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>SQL statement</td>
-</tr>
-
-<tr>
-<td>a</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>after all others</td>
-
-<td>insert SQL statement after statement a</td>
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-<p>If a connection cannot be made, an error will occur.
-
-<p>
-<hr><b>mysql.raise_exceptions( [ b ] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>True to raise exceptions on query.
-<br>Example: mysql.raise_exceptions( false );
-<br>Ada Equivalent: APQ.Raise_Exceptions
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-
-<td>b</td>
-
-<td>in</td>
-
-<td>boolean</td>
-
-<td>true</td>
-
-<td>whether or not exceptions will occur</td>
-
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>mysql.report_errors( b )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>True to report errors on query.
-<br>Example: mysql.report_errors( false );
-<br>Ada Equivalent: APQ.Report_Errors
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-
-<td>b</td>
-
-<td>in</td>
-
-<td>boolean</td>
-
-<td>true</td>
-
-<td>whether or not errors will be reported</td>
-
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>mysql.reset</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>APQ reset command (not quite sure...).  Reset the database connection.
-<br>Example: mysql.reset;
-<br>Ada Equivalent: APQ.Reset;
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-
+<td width="15%">&nbsp;</td>
+<td><p>Rollback a database transaction, undoing all work since begin_work.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.rollback_work;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mysql.begin_work<br>mysql.commit_work</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Rollback_Work</p></td>
 </tr>
 </table>
-</td>
+
+<a name="mysql.schema"></a><h3>mysql.schema( t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Show information about the columns available in a table.  This is the equivalent of MySQL's "show create table" or "desc".</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.schema( "table" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>name of the table</span></td>
 </tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mysql.databases<br>mysql.list<br>mysql.users</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
 
-<p>
-<hr><b>mysql.rewind</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="mysql.set_rollback_on_finalize"></a><h3>mysql.set_rollback_on_finalize( b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Return to the start of a query's results.
-<br>Example: mysql.rewind;
-<br>Ada Equivalent: APQ.Rewind
+<td width="15%">&nbsp;</td>
+<td><p>Determine if a rollback will be issued when the script ends and the database connection is still open (true) or no rollback (false).  Default is true.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.set_rollback_on_finalize( false );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>true</span></td>
+<td><span>whether or not rollback will occur</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Set_Rollback_On_Finalize</p></td>
+</tr>
+</table>
 
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<a name="mysql.set_trace"></a><h3>mysql.set_trace( b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
+<td width="15%">&nbsp;</td>
+<td><p>Enable or disable query tracing.  The trace file will remain open.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.set_trace( false );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>true</span></td>
+<td><span>whether or not tracing will occur</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mysql.close_db_trace<br>mysql.is_trace<br>mysql.open_db_trace</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Set_Trace</p></td>
+</tr>
+</table>
+
+<a name="mysql.show"></a><h3>mysql.show</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Run the prepared query and show the results in a table on standard output.
+This is often used to show the results of a SQL SELECT statement.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.show;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
-</table>
-</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mysql.execute<br>mysql.execute_checked</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
-</table></center>
+</table>
 
-<p>
-<hr><b>mysql.rollback_work</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="mysql.tuple"></a><h3>t := mysql.tuple</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Rollback a database transaction, undoing all work since begin_work.
+<td width="15%">&nbsp;</td>
+<td><p>Return the result row (tuple) number from the last fetch.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">row_number := mysql.tuple;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>return value</span></td>
+<td><span>mysql.tuple_index_type</span></td>
+<td><span>required</span></td>
+<td><span>the current row number</span></td>
+<td><span></span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_tuple exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Tuple</p></td>
+</tr>
+</table>
 
-<br>Example: mysql.rollback_work;
-<br>Ada Equivalent: APQ.Rollback_Work
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<a name="mysql.tuples"></a><h3>n := mysql.tuples</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of rows (tuples) from the last query.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">row_number := mysql.tuples;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>return value</span></td>
+<td><span>mysql.tuple_count_type</span></td>
+<td><span>required</span></td>
+<td><span>the number of rows</span></td>
+<td><span></span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_result exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Tuples</p></td>
+</tr>
+</table>
+
+<a name="mysql.users"></a><h3>mysql.users</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Show a list of database users.  This is similar to MySQL's "show grants".  The
+columns in the list depend on the database engine.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mysql.users;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
 <td>none</td>
-</table>
-</td>
-</tr>
-</table></center>
-<p>in_abort_state exception may be raised
-
-<p>
-<hr><b>mysql.schema( t )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Show information about the columns in a table.  This is the equivalent of
-MySQL's "show columns".
-<br>Example: mysql.schema( "table" );
-<br>Ada Equivalent: none (AdaScript extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>t</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>name of the table</td>
-
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>mysql.set_rollback_on_finalize( b )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-
-<br>Determine if a rollback will be issued when the script ends and the
-database connection is still open (true) or no rollback (false).  Default
-is true.
-<br>Example: mysql.set_rollback_on_finalize( false );
-<br>Ada Equivalent: APQ.Set_Rollback_On_Finalize
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>boolean</td>
-
-<td>true</td>
-
-<td>whether or not rollback will occur</td>
-
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>mysql.set_trace( b )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-
-<br>Determine if debug tracing is enabled.
-<br>Example: mysql.set_trace( false );
-<br>Ada Equivalent: APQ.Set_Trace
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>boolean</td>
-
-<td>true</td>
-
-<td>whether or not tracing will occur</td>
-
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>mysql.show</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-
-<br>Run the prepared query and show the results in a table on standard output.
-This is often used to show the results of a SQL SELECT statement.
-<br>Example: mysql.show;
-<br>Ada Equivalent: none (AdaScript extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mysql.execute<br>mysql.execute_checked</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
-</td>
+
+<a name="mysql.value"></a><h3>s := mysql.value( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the column value as a string.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">first_name := mysql.value( 3 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>mysql.column_index_type</span></td>
+<td><span>required</span></td>
+<td><span>the field position to return</span></td>
 </tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
-
-<p>
-<hr><b>t := mysql.tuple</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Return the result row (tuple) number from the last fetch.
-<br>Example: row_number := mysql.tuple;
-<br>Ada Equivalent: APQ.Tuple
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>t</td>
-
-<td>return value</td>
-
-<td>mysql.tuple_index_type</td>
-
-<td>the current row number</td>
-
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>universal_typeless</span></td>
+<td><span>required</span></td>
+<td><span>the value of the field</span></td>
 </tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-<p>no_tuple exception may be raised
-
-<p>
-<hr><b>n := mysql.tuples</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-
-<br>Return the number of rows (tuples) from the last query.
-<br>Example: row_number := mysql.tuples;
-<br>Ada Equivalent: APQ.Tuples
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>t</td>
-
-<td>return value</td>
-
-<td>mysql.tuple_count_type</td>
-
-<td>the number of rows</td>
-
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-<p>no_result exception may be raised
-
-<p>
-<hr><b>mysql.users</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Show a list of database users.  This is similar to MySQL's "show grants".
-The columns in the list depend on the database engine.
-<br>Example: mysql.users;
-<br>Ada Equivalent: none (AdaScript extension)
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>none</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_column, no_result, null_value and no_tuple exceptions may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Value</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
-<p>If a connection doesn't exist, an error will occur.
 
-<p>
-<hr><b>s := mysql.value( c )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="mysql.will_rollback_on_finalize"></a><h3>b := mysql.will_rollback_on_finalize</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-
-<br>Return the column value as a string.
-<br>Example: first_name := mysql.value( 3 );
-<br>Ada Equivalent: APQ.Value
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>True if set_rollback_on_finalize was true (that is, that when the script finishes, a rollback will be issued if the connection is still open).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := mysql.will_rollback_on_finalize;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>mysql.column_index_type</td>
-
-<td>the field to return</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>rollback will be issued on finalize</span></td>
+<td><span></span></td>
 </tr>
-<tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>universal_typeless</td>
-
-<td>the value of the field</td>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Will_Rollback_On_Finalize</p></td>
 </tr>
-
 </table>
-</td>
-</tr>
-</table></center>
-<p>no_column, no_result, null_value and no_tuple exceptions may be raised
-&nbsp;<br>
-
-<p>
-<hr><b>b := mysql.will_rollback_on_finalize</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>True if set_rollback_on_finalize was true (that is, that when the script
-finishes, a rollback will be issued if the connection is still open).
-<br>Example: b := mysql.will_rollback_on_finalize;
-<br>Ada Equivalent: APQ.Will_Rollback_On_Finalize
-<br>Parameters:
-
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>rollback will be issued on finalize</td>
-
-</tr>
-
-</table>
-
-</td>
-</tr>
-</table></center>
 
 &nbsp;<br>
 

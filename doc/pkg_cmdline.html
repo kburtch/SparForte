@@ -6,6 +6,9 @@
         <META NAME="description" CONTENT="SparForte language documentation">
 	<title>SparForte - Packages - Command_Line</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+	<link rel="index" href="packages.html" />
+	<link rel="prev" href="pkg_cgi.html" />
+	<link rel="next" href="pkg_db.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -47,218 +50,257 @@ line option switches. command_line contains following routines:</p>
         <center>
         <div class="code">
 <pre>
-  argument( i ) - return argument i
-  argument_count - number of arguments
-  command_name - name used to execute the script
-  environment.environment_count - number of variables in the O/S environment 
-  environment.environment_value - return environment value i
-  set_exit_status( i ) - change script exit status code
+  <a href="#command_line.argument">s := argument( p )</a> - return argument p
+  <a href="#command_line.argument_count">n := argument_count</a> - number of arguments
+  <a href="#command_line.command_name">s := command_name</a> - number of  environment vars
+  <a href="#command_line.environment.environment_count">n := environment.environment_count</a> - number of variables in the O/S environment 
+  <a href="#command_line.environment.environment_value">s := environment.environment_value( p )</a> - return environment value p
+  <a href="#command_line.set_exit_status">set_exit_status( n )</a> - change script exit status code
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the command_line package</span>
+        <b>Help Command</b>: Contents of the command_line package
         </div>
         </div>
         </center>
 
-<p>
-<hr><b>n := command_line.argument_count</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="command_line.argument"></a><h3>s := command_line.argument( p )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-
-<br>return the number of script arguments (the same as $#). Exclude SparForte
-option switches.
-<br>Example: if command_line.argument_count &gt; 0 then ...
-<br>Ada Equivalent: Ada.Command_Line.Argument_Count
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Return a command line argument (the same as $n where n is a number).  The arguments do not include option switches processed by SparForte.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">put_line( "First argument is " &amp; command_line.argument( 1 ) );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>n</td>
-
-<td>return value</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the argument count</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the argument number</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the value of the argument</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>A bad argument number will raise an exception.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Command_Line.Argument<br>PHP: argv</p></td>
 </tr>
 </table>
-</td>
+
+<a name="command_line.argument_count"></a><h3>n := command_line.argument_count</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of script arguments (the same as $#). Excludes command line option switches processed by SParForte.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">if command_line.argument_count &gt; 0 then ...</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the argument count</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>s := command_line.argument( p )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-
-<br>return a command line argument (the same as $n where n is a number).
-The arguments do not include option swithes interpreted by SparForte.
-<br>Example: put_line( "First argument is " &amp; command_line.argument(
-1 ) );
-<br>Ada Equivalent: Ada.Command_Line.Argument
-<br>PHP Equivalent: argv
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>p</td>
-
-<td>in</td>
-
-<td>positive</td>
-
-<td>required</td>
-
-<td>the argument number</td>
-</tr>
-
-<tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the value of the argument</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Command_Line.Argument_Count</p></td>
 </tr>
 </table>
-</td>
+
+<a name="command_line.command_name"></a><h3>s := command_line.command_name</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the path of the script or SparForte interpreter used to run the script (the same as $0).  For example, in "/bin/spar myscript.sp" this will be
+"/bin/spar".  Or "/usr/local/myscript.sp foo" this will be "/usr/local/myscript.sp".</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">put_line( command_line.command_name &amp; " is this script");</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the name of the script or SparForte interpreter</span></td>
 </tr>
-</table></center>
-
-<p>A bad argument number will raise an exception.
-<p>
-<hr><b>s := command_line.command_name</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-
-<tr>
-<td>
-<br>return the the name of the script or SparForte interpreter (the same as
-$0)
-<br>Example: put_line( command_line.command_name &amp; " is this script"
-);
-<br>Ada Equivalent: Ada.Command_Line.Command_Name
-<br>PHP Equivalent: argv[0]
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the name of the script or SparForte interpreter</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Command_Line.Command_Name<br>PHP: argv[0]</p></td>
 </tr>
 </table>
-</td>
+
+<a name="command_line.environment.environment_count"></a><h3>n := command_line.environment.environment_count</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of variables in the operating system environment.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">for i in 1..command_line.environment.environment_count loop <br>-- loop through all environment variables</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the argument count</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>n := command_line.environment.environment_count</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>return the number of variables in the operating system environment.
-<br>Example: for i in 1..command_line.environment.environment_count loop
-...
-<br>Ada Equivalent: Ada.Command_Line.Environment.Environment_Count
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>n</td>
-
-<td>return value</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the argument count</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Command_Line.Environment.Environment_Count<br>PHP: argc</p></td>
 </tr>
 </table>
-</td>
+
+<a name="command_line.environment.environment_value"></a><h3>s := command_line.environment.environment_value( p )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return an operating system environment value in the form of "VAR=value".</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">put_line( "First value is " &amp; command_line.environment.environment_value( 1 ) );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the variable number</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>s := command_line.environment.environment_value( p )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-
-<td>
-<br>return an operating system environment value in the form of "VAR=value".
-<br>Example: put_line( "First value is " &amp; command_line.environment.environment_value(
-1 ) );
-<br>Ada Equivalent: Ada.Command_Line.Environment.Environment_Value
-<br>PHP Equivalent: $_ENV
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>p</td>
-
-<td>in</td>
-
-<td>positive</td>
-
-<td>required</td>
-
-<td>the argument number</td>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the value of the variable</span></td>
 </tr>
-
-<tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the value of the argument</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>A bad environment value number will raise an exception.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Command_Line.Environment.Environment_Value<br>PHP: $_ENV / getenv</p></td>
 </tr>
 </table>
-</td>
+
+<a name="command_line.set_exit_status"></a><h3>command_line.set_exit_status( n )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Set the status code to be returned by the script to the calling program.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">command_line.set_exit_status( 0 ); -- all is well</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>in</span></td>
+<td><span>short_short_integer</span></td>
+<td><span>required</span></td>
+<td><span>the status code to return (0 for no error)</span></td>
 </tr>
-</table></center>
-
-<p>A bad environment value number will raise an exception.
-<p>
-<hr><b>command_line.set_exit_status( n )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-
-<tr>
-<td>
-<br>set the status code to be returned by the script to the calling program.
-(To read the exit status, use os.status.)
-<br>Example: command_line.set_exit_status( 0 ); -- all is well
-<br>Ada Equivalent: Ada.Command_Line.Set_Exit_Status
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>i</td>
-
-<td>in</td>
-
-<td>short_short_integer</td>
-
-<td>required</td>
-
-<td>the status code to return (0 for no error)</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if the value is out of range</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>os.status</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Command_Line.Set_Exit_Status</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
+
 &nbsp;<br>
 
 			</td>
@@ -288,8 +330,6 @@ $0)
                                 <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

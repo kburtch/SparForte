@@ -6,6 +6,9 @@
         <META NAME="description" CONTENT="SparForte language documentation">
 	<title>SparForte - Packages - Memcache</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+	<link rel="index" href="packages.html" />
+	<link rel="prev" href="pkg_lock_files.html" />
+	<link rel="next" href="pkg_memcache_highread.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -26,7 +29,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="packages.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_calendar.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_lock_files.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_memcache_highread.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -39,6 +42,30 @@
 			<td align="left" valign="top">
 	<!-- Content Area -->
 <h2><a NAME="4.14"></a>Memcache Package</h2>
+
+<p>A package for storing data in memcached with optional redundancy.</p>
+
+<p><u>GCC Ada Equivalent</u>: N/A<br>
+<u>See Also:</u>: memcache.highread</p>
+
+        <center>
+        <div class="code">
+<pre>
+  <a href="#memcache.add">add( cl, k, v )</a>              <a href="#memcache.prepend">prepend( cl, k, v )</a>
+  <a href="#memcache.append">append( cl, k, v )</a>           <a href="#memcache.register_server">register_server( cl, h, p )</a>
+  <a href="#memcache.clear_servers">clear_servers( cl )</a>          <a href="#memcache.replace">replace( cl, k, v )</a>
+  <a href="#memcache.delete">delete( cl, k )</a>              <a href="#memcache.set">set( cl, k, v )</a>
+  <a href="#memcache.flush">flush( cl )</a>                  <a href="#memcache.set_cluster_name">set_cluster_name( cl, s )</a>
+  <a href="#memcache.is_valid_memcache_key">is_valid_memcache_key( k )</a>   <a href="#memcache.set_cluster_type">set_cluster_type( cl, e )</a>
+  <a href="#memcache.get">v := get( cl, k )</a>            <a href="#memcache.stats">s := stats( cl )</a>
+  <a href="#memcache.new_cluster">cl := new_cluster</a>            <a href="#memcache.version">s := version( cl )</a>
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the memcache package
+        </div>
+        </div>
+        </center>
 
 <p>Memcached (or the Memcache Daemon) is a general-purpose networked memory
 caching system that was originally developed by Danga Interactive for
@@ -76,7 +103,7 @@ cane<br>
 =&gt;<br>&nbsp;<br>
                 </p>
         <div class="code_caption">
-                <b>Example</b>: Setting key "candy" to value "cane" and retrieving it again</span>
+                <b>Example</b>: Setting key "candy" to value "cane" and retrieving it again
         </div>
         </div>
         </center>
@@ -98,29 +125,7 @@ failure.</p>
 <p>Because memcached has no security features, running in a restricted
 shell will disable the memcache package.</p>
 
-
-<p><u>GCC Ada Equivalent</u>: N/A<br>
-
-        <center>
-        <div class="code">
-<pre>
-  add( cl, k, v )             prepend( cl, k, v )
-  append( cl, k, v )          register_server( cl, h, p )
-  clear_servers( cl )         replace( cl, k, v )
-  delete( cl, k )             set( cl, k, v )
-  flush( cl )                 set_cluster_name( cl, s )
-  is_valid_memcache_key( k )  set_cluster_type( cl, e )
-  v := get( cl, k )           s := stats( cl )
-  cl := new_cluster           s := version( cl )
-</pre>
-        &nbsp;<br>
-        <div class="code_caption">
-        <b>Help Command</b>: Contents of the memcache package</span>
-        </div>
-        </div>
-        </center>
-
-<h3>memcache.add( cl, k, v )</h3>
+<a name="memcache.add"></a><h3>memcache.add( cl, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -128,10 +133,10 @@ shell will disable the memcache package.</p>
 Otherwise, an error is displayed but execution continues.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.add( mc_cluster, "company_name", "PegaSoft"  );</span></p>
+<td><span class="code">memcache.add( mc_cluster, "company_name", "PegaSoft"  );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -173,7 +178,7 @@ Otherwise, an error is displayed but execution continues.</p></td>
 </tr>
 </table>
 
-<h3>memcache.append( cl, k, v )</h3>
+<a name="memcache.append"></a><h3>memcache.append( cl, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -181,10 +186,10 @@ Otherwise, an error is displayed but execution continues.</p></td>
 memcache cluster cl.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.append( mc_cluster, "company_name", " Inc.";<br>-- company_name is "PegaSoft Inc." </span></p>
+<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.append( mc_cluster, "company_name", " Inc.";<br>-- company_name is "PegaSoft Inc." </span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -226,7 +231,7 @@ memcache cluster cl.</p></td>
 </tr>
 </table>
 
-<h3>memcache.clear_servers( cl )</h3>
+<a name="memcache.clear_servers"></a><h3>memcache.clear_servers( cl )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -234,10 +239,10 @@ memcache cluster cl.</p></td>
 flushed from memcached.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.clear_servers( cl ); -- there are now no servers in the cluster</span></p>
+<td><span class="code">memcache.clear_servers( cl ); -- there are now no servers in the cluster</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -267,17 +272,17 @@ flushed from memcached.</p></td>
 </tr>
 </table>
 
-<h3>memcache.delete( cl, k )</h3>
+<a name="memcache.delete"></a><h3>memcache.delete( cl, k )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Remove key k from memcache cluster cl, discarding the key's value.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.delete( mc_cluster, "company_name", "PegaSoft"  );<br>-- company_name no longer exists</span></p>
+<td><span class="code">memcache.delete( mc_cluster, "company_name", "PegaSoft"  );<br>-- company_name no longer exists</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -313,7 +318,7 @@ flushed from memcached.</p></td>
 </tr>
 </table>
 
-<h3>memcache.flush( cl )</h3>
+<a name="memcache.flush"></a><h3>memcache.flush( cl )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -321,10 +326,10 @@ flushed from memcached.</p></td>
 marked invalid and are gradually replaced as new items are stored.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.flush( mc_cluster );-- all keys are destroyed</span></p>
+<td><span class="code">memcache.flush( mc_cluster );-- all keys are destroyed</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -354,7 +359,7 @@ marked invalid and are gradually replaced as new items are stored.</p></td>
 </tr>
 </table>
 
-<h3>memcache.is_valid_memcache_key( k )</h3>
+<a name="memcache.is_valid_memcache_key"></a><h3>memcache.is_valid_memcache_key( k )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -362,10 +367,10 @@ marked invalid and are gradually replaced as new items are stored.</p></td>
 between 1 and 250 characters and not contain spaces or control characters.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">b := memcache.is_valid_memcache_key( "foo bar" );-- b is false</span></p>
+<td><span class="code">b := memcache.is_valid_memcache_key( "foo bar" );-- b is false</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -392,7 +397,7 @@ between 1 and 250 characters and not contain spaces or control characters.</p></
 </tr>
 </table>
 
-<h3>v := memcache.get( cl, k )</h3>
+<a name="memcache.get"></a><h3>v := memcache.get( cl, k )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -402,10 +407,10 @@ are two or more servers in the cluster, get will alternate between the servers
 with the key in order to distribute load.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>? memcache.get( mc_cluster, "company_name" );<br>-- displays "PegaSoft" </span></p>
+<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>? memcache.get( mc_cluster, "company_name" );<br>-- displays "PegaSoft" </span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -444,7 +449,7 @@ with the key in order to distribute load.</p></td>
 </tr>
 </table>
 
-<h3>cl := memcache.new_cluster</h3>
+<a name="memcache.new_cluster"></a><h3>cl := memcache.new_cluster</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -452,10 +457,10 @@ with the key in order to distribute load.</p></td>
 servers and manage connections.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">mc_cluster := memcache.new_cluster;</span></p>
+<td><span class="code">mc_cluster := memcache.new_cluster;</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -490,7 +495,7 @@ the script execution end.</p>
 </tr>
 </table>
 
-<h3>memcache.prepend( cl, k, v )</h3>
+<a name="memcache.prepend"></a><h3>memcache.prepend( cl, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -498,10 +503,10 @@ the script execution end.</p>
 memcache cluster cl.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.prepend( mc_cluster, "company_name", "This is " );<br>-- company_name is "This is PegaSoft" </span></p>
+<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.prepend( mc_cluster, "company_name", "This is " );<br>-- company_name is "This is PegaSoft" </span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -543,7 +548,7 @@ memcache cluster cl.</p></td>
 </tr>
 </table>
 
-<h3>memcache.register_server( cl, h, p )</h3>
+<a name="memcache.register_server"></a><h3>memcache.register_server( cl, h, p )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -554,10 +559,10 @@ opened: network connections are opened when data is read or written.  Do not
 register the same server twice.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.register_server( mc_cluster, "memcached1.somecompany.com", 11211 );</span></p>
+<td><span class="code">memcache.register_server( mc_cluster, "memcached1.somecompany.com", 11211 );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -599,7 +604,7 @@ register the same server twice.</p></td>
 </tr>
 </table>
 
-<h3>memcache.replace( cl, k, v )</h3>
+<a name="memcache.replace"></a><h3>memcache.replace( cl, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -608,10 +613,10 @@ a value already exists.  If the key doesn't exist, a warning is displayed but
 execution continues.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.replace( mc_cluster, "company_name", "MegaCorp";<br>-- company_name is "MegaCorp"</span></p>
+<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.replace( mc_cluster, "company_name", "MegaCorp";<br>-- company_name is "MegaCorp"</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -653,7 +658,7 @@ execution continues.</p></td>
 </tr>
 </table>
 
-<h3>memcache.set( cl, k, v )</h3>
+<a name="memcache.set"></a><h3>memcache.set( cl, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -661,10 +666,10 @@ execution continues.</p></td>
 the key already has a value, it will be overwritten.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>-- company_name is "PegaSoft" </span></p>
+<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>-- company_name is "PegaSoft" </span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -706,7 +711,7 @@ the key already has a value, it will be overwritten.</p></td>
 </tr>
 </table>
 
-<h3>memcache.set_cluster_name( cl, s )</h3>
+<a name="memcache.set_cluster_name"></a><h3>memcache.set_cluster_name( cl, s )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -714,10 +719,10 @@ the key already has a value, it will be overwritten.</p></td>
 some error messages.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.set_cluster_name( mc_cluster, "main cluster" );</span></p>
+<td><span class="code">memcache.set_cluster_name( mc_cluster, "main cluster" );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -753,7 +758,7 @@ some error messages.</p></td>
 </tr>
 </table>
 
-<h3>memcache.set_cluster_type( cl, t )</h3>
+<a name="memcache.set_cluster_type"></a><h3>memcache.set_cluster_type( cl, t )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -761,10 +766,10 @@ some error messages.</p></td>
 memcache.memcache_cluster_type.normal.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.set_cluster_type( mc_cluster, memcache.memcache_cluster_type.normal );</span></p>
+<td><span class="code">memcache.set_cluster_type( mc_cluster, memcache.memcache_cluster_type.normal );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -800,7 +805,7 @@ memcache.memcache_cluster_type.normal.</p></td>
 </tr>
 </table>
 
-<h3>s := memcache.stats( cl )</h3>
+<a name="memcache.stats"></a><h3>s := memcache.stats( cl )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -809,10 +814,10 @@ first item in the row is the server number.  For the meaning of the stats,
 consult the memcached documentation.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">? memcache.stats( mc_cluster );-- display all stats</span></p>
+<td><span class="code">? memcache.stats( mc_cluster );-- display all stats</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -848,7 +853,7 @@ consult the memcached documentation.</p></td>
 </tr>
 </table>
 
-<h3>s := memcache.version( cl )</h3>
+<a name="memcache.version"></a><h3>s := memcache.version( cl )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -857,10 +862,10 @@ of memcached that is running on the server.  (It would be advisable to run
 the same version on all servers.)</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">? memcache.version( mc_cluster ); -- displays the version e.g. 1.4.5</span></p>
+<td><span class="code">? memcache.version( mc_cluster ); -- displays the version e.g. 1.4.5</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -925,8 +930,6 @@ the same version on all servers.)</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>
