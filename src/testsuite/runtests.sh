@@ -23,6 +23,16 @@ setup() {
   chmod 755 cdtest
 
   export FOOBAR="foobar"
+  export FOOBAR_INT="98"
+  export FOOBAR_STRING="\"foobar\""
+  export FOOBAR_INT_ARRAY="[32]"
+  export FOOBAR_RECORD="{\"s\":\"foo\"}"
+
+  export FOOBAR_UNCHECKED="foobar"
+  export FOOBAR_INT_UNCHECKED="98"
+  export FOOBAR_STRING_UNCHECKED="\"foobar\""
+  export FOOBAR_INT_ARRAY_UNCHECKED="[32]"
+  export FOOBAR_RECORD_UNCHECKED="{\"s\":\"foo\"}"
 }
 
 #  TEAR DOWN

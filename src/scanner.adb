@@ -60,7 +60,8 @@ with system,
     parser_tio,
     parser_pen,
     parser_dirops,
-    parser_memcache;
+    parser_memcache,
+    parser_gnat_crc;
 use ada.text_io,
     ada.integer_text_io,
     ada.command_line,
@@ -95,7 +96,8 @@ use ada.text_io,
     parser_tio,
     parser_pen,
     parser_dirops,
-    parser_memcache;
+    parser_memcache,
+    parser_gnat_crc;
 
 pragma Optimize( time );
 
@@ -805,8 +807,8 @@ end topOfBlock;
 
 procedure GetFullParentUnitName( fullUnitName : out unbounded_string ) is
 -- return the full (dotted) name of the parent subprogram (e.g. proc )
-
 begin
+  fullUnitName := to_unbounded_string( "unknown" ); -- done to suppress warning that parameter isn't used
   put_line( standard_error, "GetFullParentUnitName : not yet written" );
 end GetFullParentUnitName;
 
@@ -892,6 +894,7 @@ end dumpSymbolTable;
 procedure shutdownScanner is
 begin
 
+  ShutdownGnatCrc;
   ShutdownMemcache;
   ShutdownDirOps;
   ShutdownPen;
@@ -1543,6 +1546,7 @@ begin
   StartupUnits;
   StartupDirOps;
   StartupMemcache;
+  StartupGnatCrc;
 
   declareProcedure( sound_play_t, "sound.play" );
   declareProcedure( sound_playcd_t, "sound.playcd" );
@@ -1819,21 +1823,24 @@ procedure refreshVolatile( id : identifier ) is
   key : unbounded_string;                                     -- "var="
   ev  : unbounded_string;                                     -- an env var
   refreshed : boolean := false;
+  importedStringValue : unbounded_string;
 begin
   if identifiers( id ).method = local_memcache then
      Get( localMemcacheCluster,
           identifiers( id ).name,
-          identifiers( id ).value );
+          importedStringValue );
+          --identifiers( id ).value );
   elsif identifiers( id ).method = memcache then
      Get( distributedMemcacheCluster,
           identifiers( id ).name,
-          identifiers( id ).value );
+          importedStringValue );
   else
      key := identifiers( id ).name & "=";                        -- look for this
      for i in 1..Environment_Count loop                          -- all env vars
          ev := to_unbounded_string( Environment_Value( i ) );    -- get next one
          if Head( ev, length( key ) ) = key then                 -- match?
-            identifiers( id ).value :=                           -- get value
+            importedStringValue :=                               -- get value
+            --identifiers( id ).value :=                           -- get value
                 Tail( ev, length( ev ) - length( key ) );        -- and assign
             refreshed := true;
             exit;                                                -- we're done
@@ -1844,7 +1851,7 @@ begin
         for i in 1..environmentList.Length( initialEnvironment ) loop
             environmentList.Find( initialEnvironment, i, ev );
             if Head( ev, length( key ) ) = key then                 -- match?
-               identifiers( id ).value :=                           -- get value
+               importedStringValue :=                               -- get value
                    Tail( ev, length( ev ) - length( key ) );        -- and assign
                refreshed := true;
                exit;                                                -- we're done
@@ -1856,6 +1863,22 @@ begin
              to_string( identifiers( id ).name ) &
              " in O/S enviroment" );
      end if;
+  end if;
+  -- apply mapping, if any.  assume these are all set correctly
+  if identifiers( id ).mapping = json then                       -- json
+     if getUniType( identifiers( id ).kind ) = uni_string_t then -- string
+        DoStringFromJson( identifiers( id ).value, importedStringValue );
+     elsif identifiers( id ).list then                           -- array
+        DoJsonToArray( id, importedStringValue );
+     elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_record_t then -- record
+        DoJsonToRecord( id, importedStringValue );
+     elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then -- number
+        identifiers( id ).value := importedStringValue;
+     --else
+     --   err( "internal error: unexpected import translation type" );
+     end if;
+  else                                                           -- no mapping
+     identifiers( id ).value := importedStringValue;
   end if;
 end refreshVolatile;
 
@@ -2208,6 +2231,1227 @@ begin
   -- baseTypesOK
   return baseTypesOK( givenType, desiredType );               -- fall back
 end intTypesOk;
+
+---> CAST TO TYPE
+--
+-- If a value is an integer type (i.e. positive, natural or integer),
+-- round the value.  Otherwise do not round the value.  Return the
+-- result as a string value.
+-----------------------------------------------------------------------------
+
+function castToType( val : long_float; kind : identifier ) return unbounded_string is
+  baseType : identifier;
+  roundedVal : long_long_integer;
+  str : unbounded_string;
+begin
+  -- what kind is it 
+  baseType := getBaseType( kind );
+  --put_identifier( baseType ); -- DEBUG
+  -- If it's an integer type, just round it
+  if baseType = short_short_integer_t or
+     baseType = short_integer_t or
+     baseType = integer_t or
+     baseType = long_integer_t or
+     baseType = long_long_integer_t then
+     roundedVal := long_long_integer( val );
+     str := to_unbounded_string( long_long_integer'image( roundedVal ) );
+  -- If it's a natural type, round it and check for negative
+  elsif baseType = natural_t then
+     roundedVal := long_long_integer( val );
+     if roundedVal < 0 then
+        err( "natural value is less than zero" );
+     end if;
+     str := to_unbounded_string( long_long_integer'image( roundedVal ) );
+  -- If it's a positive type, round it and check for negative or zero
+  elsif baseType = positive_t then
+     roundedVal := long_long_integer( val );
+     if roundedVal <= 0 then
+        err( "positive value is less than zero" );
+     end if;
+     str := to_unbounded_string( long_long_integer'image( roundedVal ) );
+  -- If it's anything else, including universals, don't do anything
+  -- except convert to a string
+  else
+     -- return unchanged
+     str := to_unbounded_string( val'img );
+  end if;
+  return str;
+end castToType;
+
+function castToType( val : unbounded_string; kind : identifier ) return unbounded_string is
+  baseType : identifier;
+  roundedVal : long_long_integer;
+  str : unbounded_string;
+begin
+  -- what kind is it 
+  baseType := getBaseType( kind );
+  --put_identifier( baseType ); -- DEBUG
+  -- If it's an integer type, just round it
+  if baseType = short_short_integer_t or
+     baseType = short_integer_t or
+     baseType = integer_t or
+     baseType = long_integer_t or
+     baseType = long_long_integer_t then
+     begin
+       roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
+     exception when others =>
+       err( "exception raised" );
+     end;
+     str := to_unbounded_string( long_long_integer'image( roundedVal ) );
+  -- If it's a natural type, round it and check for negative
+  elsif baseType = natural_t then
+     begin
+       roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
+     exception when others =>
+       err( "exception raised" );
+     end;
+     if roundedVal < 0 then
+        err( "natural value is less than zero" );
+     end if;
+     begin
+       str := to_unbounded_string( long_long_integer'image( roundedVal ) );
+     exception when others =>
+       err( "exception raised" );
+     end;
+  -- If it's a positive type, round it and check for negative or zero
+  elsif baseType = positive_t then
+     begin
+       roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
+     exception when others =>
+       err( "exception raised" );
+     end;
+     if roundedVal <= 0 then
+        err( "positive value is less than zero" );
+     end if;
+     str := to_unbounded_string( long_long_integer'image( roundedVal ) );
+  -- If it's anything else, including universals, don't do anything
+  -- except convert to a string
+  elsif baseType = character_t then
+     if length( val ) /= 1 then
+        err( "character value must be one character long" );
+     end if;
+     str := val;
+  else
+     -- return unchanged
+     str := val;
+  end if;
+  return str;
+end castToType;
+
+-- this was originally in world but moved here because deleting now has a lot of
+-- side effects that must be performed.
+
+function deleteIdent( id : identifier ) return boolean is
+-- Delete a keyword / identifier from the symbol table
+   tempStr : unbounded_string;
+begin
+  if id >= identifiers_top then                                 -- id > top?
+     return false;                                              -- delete fail
+  elsif identifiers( id ).deleted then                          -- flagged?
+     return false;                                              -- delete fail
+  elsif id = identifiers_top-1 then                             -- last id?
+     --kind := identifiers( id ).kind;
+     -- if we're using json, then we're not actually exporting the
+     -- array value but the json string representing the array
+     -- don't delete array types, just array vars.
+     if identifiers( id ).list and identifiers( id ).class = otherClass then
+        -- Note: You can't discard the array type: others may be using it.
+        -- Destroying an array will also shift the other array id numbers
+        -- since they are in a linked list!
+        clearArray( arrayID( to_numeric( identifiers( id ).value ) ) );
+     elsif identifiers( id ).export and identifiers( id ).method = local_memcache then
+         -- if memcache, export before deleting
+         begin
+            Set( localMemcacheCluster,
+                 identifiers( id ).name,
+                 identifiers( id ).value );
+         exception when others => null;
+         end;
+     elsif identifiers( id ).export and identifiers( id ).method = memcache then
+         -- if memcache, export before deleting
+         begin
+            Set( distributedMemcacheCluster,
+                 identifiers( id ).name,
+                 identifiers( id ).value );
+         exception when others => null;
+         end;
+     end if;
+     identifiers_top := identifiers_top - 1;                    -- pull stack
+     return true;                                               -- delete ok
+  end if;                                                       -- else
+  if identifiers( id ).list and identifiers( id ).class = otherClass then
+     clearArray( arrayID( to_numeric( identifiers( id ).value ) ) );
+  elsif identifiers( id ).export then
+     tempStr := identifiers( id ).value;
+     if identifiers( id ).method = local_memcache or identifiers( id ).method = memcache then
+        if identifiers( id ).mapping = json then
+           if getUniType( identifiers( id ).kind ) = uni_string_t then
+              tempStr := DoStringToJson( tempStr );
+           elsif identifiers( id ).list then
+              DoArrayToJSON( tempStr, id );
+           elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_record_t then
+              DoRecordToJSON( tempStr, id );
+           elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then
+               null; -- for numbers, JSON is as-is
+           else
+               err( "json export not yet written for this type" );
+           end if;
+        end if;
+        if identifiers( id ).method = local_memcache then
+           begin
+              Set( localMemcacheCluster,
+                   identifiers( id ).name,
+                   tempStr );
+           exception when others => null;
+           end;
+        elsif identifiers( id ).method = memcache then
+           begin
+              Set( distributedMemcacheCluster,
+                   identifiers( id ).name,
+                   tempStr );
+           exception when others => null;
+           end;
+        end if;
+     end if;
+  end if;
+
+  identifiers( id ).deleted := true;                            -- flag it
+  -- When a variable with the same name is encountered, it will be
+  -- reinitialized with a Kind of new but these will remain unchanged.
+  -- Reset these to defaults to avoid confusing Bush...
+  identifiers( id ).import := false;                            -- clear these
+  identifiers( id ).export := false; 
+  identifiers( id ).method := none; 
+  identifiers( id ).mapping := none; 
+  identifiers( id ).list   := false; 
+  identifiers( id ).field_of  := eof_t; 
+  identifiers( id ).volatile := false; 
+  identifiers( id ).limit  := false; 
+  identifiers( id ).inspect := false;
+  identifiers( id ).class  := otherClass;
+  return true;                                                  -- delete ok
+end deleteIdent;
+
+-----------------------------------------------------------------------------
+-- JSON
+--
+-- This was originally in parser_aux but was moved here to make it more
+-- accessible to the language.  I couldn't break it out into its own file
+-- due to its dependencies.
+-----------------------------------------------------------------------------
+
+
+---> IS JSON WHITESPACE
+--
+-- True if character is a JSON whitespace character.
+-----------------------------------------------------------------------------
+
+function isJSONWhitespace( ch : character ) return boolean is
+begin
+  return ch = ' ' or ch = ASCII.CR or ch = ASCII.LF or ch = ASCII.HT;
+end isJSONWhitespace;
+pragma inline( isJSONWhitespace );
+
+
+---> SKIP JSON WHITESPACE
+--
+-- Move the start index ahread until it is a position in the string that has
+-- a non-whitespace character.
+-- --------------------------------------------------------------------------
+
+procedure SkipJSONWhitespace( jsonString : unbounded_string; start : in out positive ) is
+  stringEnd : natural := length( jsonString );
+  ch        : character;
+begin
+   while start <= stringEnd loop
+     ch := element( jsonString, start );
+     exit when not isJSONWhitespace( ch );
+     start := start + 1;
+   end loop;
+end SkipJSONWhitespace;
+
+
+---> JSON EXPECT
+--
+-- Expect a character.  Report an error if it's not there.
+-----------------------------------------------------------------------------
+
+procedure JSONexpect(jsonString : unbounded_string; start : in out positive;
+  expectedChar : character ) is
+  ch : character;
+begin
+  SkipJSONWhitespace( jsonString, start );
+  if start <= length( jsonString ) then
+     ch := element( jsonString, start );
+     if ch = expectedChar then
+         start := start + 1;
+     else
+         err( expectedChar & " expected in JSON string at" & start'img );
+     end if;
+  else
+     err( expectedChar & " expected in JSON string at" & start'img );
+  end if;
+end JSONexpect;
+
+
+--->  PARSER JSON ITEM
+--
+-- Parse a JSON item and return the text.  Start at the character start
+-- and if the item has nested elements, recurse and include them in
+-- the result.  Does not decode the JSON string.  Nesting is not used, just
+-- for debugging.
+-----------------------------------------------------------------------------
+
+procedure ParseJSONItem( jsonString : unbounded_string;
+  result : in out unbounded_string;
+  start  : in out positive;
+  nesting : positive ) is
+
+  ch          : character;
+  j           : positive;
+  inBackslash : boolean := false;
+  item        : unbounded_string;
+  stringEnd   : natural := length( jsonString );
+begin
+  -- Beyond end of string?  Just abort.
+  if start > stringEnd then
+     return;
+  end if;
+
+  -- Skip any white space
+  j := start;
+  skipJSONWhitespace( jsonString, j );
+  if j > stringEnd then
+     return;
+  end if;
+  ch := element( jsonString, j );
+  item := item & ch;
+  j := j + 1;
+
+  -- We have characters to build into a string
+--put_line( "Parsing on character " & ch & " nesting" & nesting'img ); -- DEBUG
+
+  -- Deterime what we're doing by examining the first character
+  -- Aggregate type will recurse
+
+  if ch = '"' then
+     loop
+        exit when j > stringEnd-1;
+        ch := element( jsonString, j );
+        if not inBackslash and ch = '"' then
+           item := item & ch;
+           j := j + 1;
+           exit;
+        end if;
+        if ch = '\' then
+           inBackslash := not inBackslash;
+        end if;
+        item := item & ch;
+        j := j + 1;
+     end loop;
+
+  -- JSON object: read the label and recurse.  repeat for all items
+  elsif ch = '{' then
+     skipJSONWhitespace( jsonString, j );
+     while j <= stringEnd loop
+        ch := element( jsonString, j );
+        if ch = '}' then
+           item := item & ch;
+           j := j + 1;
+           exit;
+        end if;
+        -- really should be string-only here
+        ParseJSONItem( jsonString, item, j, nesting+1 );
+        JSONexpect( jsonString, j, ':' );
+        item := item & ":";
+        ParseJSONItem( jsonString, item, j, nesting+1 );
+        if j <= stringEnd then
+           ch := element( jsonString, j );
+           if ch = ',' then
+              item := item & ',';
+              j := j + 1;
+           end if;
+       end if;
+     end loop;
+
+  -- JSON array: repeat for all items
+  elsif ch = '[' then
+     skipJSONWhitespace( jsonString, j );
+     while j <= stringEnd loop
+        ch := element( jsonString, j );
+        if ch = ']' then
+           item := item & ch;
+           j := j + 1;
+           exit;
+        end if;
+        ParseJSONItem( jsonString, item, j, nesting+1 );
+        if j <= stringEnd then
+           ch := element( jsonString, j );
+           if ch = ',' then
+              item := item & ',';
+              j := j + 1;
+           end if;
+        end if;
+     end loop;
+
+  -- JSON number/boolean/other: exit on white space or terminating character
+  else
+     while j <= stringEnd loop
+        ch := element( jsonString, j );
+        if not inBackslash and (ch = ',' or ch = ']' or ch = '"' or ch = '}'
+          or isJSONWhitespace(  ch ) ) then
+           exit;
+        end if;
+        if ch = '\' then
+           inBackslash := not inBackslash;
+        end if;
+        item := item & ch;
+        j := j + 1;
+     end loop;
+   end if;
+
+   start := j;
+   result := result & item;
+
+end ParseJSONItem;
+
+-- The wrapper that normally gets called.
+
+procedure ParseJSONItem( jsonString : unbounded_string;
+                         item : in out unbounded_string;
+                         start : in out positive ) is
+begin
+  item := null_unbounded_string;
+  ParseJSONItem( jsonString, item, start, 1 );
+end ParseJSONItem;
+
+
+---> DO STRING FROM JSON
+--
+-- Convert a JSON string and return the string  This is placed here so it
+-- can be reused elsewhere in the language as required.  Params are not
+-- checked.
+--
+-----------------------------------------------------------------------------
+
+procedure DoStringFromJson( result : out unbounded_string; expr_val : unbounded_string ) is
+  ch : character;
+  i  : integer;
+begin
+  result := null_unbounded_string;
+  i := 2;
+  -- note : could be rewritten to discard quotes and do json unescaped
+  loop
+     exit when i > length(expr_val)-1;
+     if element( expr_val, i ) = '\' then
+        i := i + 1;
+        ch := element( expr_val, i );
+        -- Note : \u not implemented
+        if ch = '"' then
+           result := result & '"';
+        elsif ch = '\' then
+           result := result & '\';
+        elsif ch = '/' then
+           result := result & '/';
+        elsif ch =  'b' then
+           result := result & ASCII.BS;
+        elsif ch = 'f' then
+           result := result & ASCII.FF;
+        elsif ch = 'n' then
+           result := result & ASCII.LF;
+        elsif ch = 'r' then
+           result := result & ASCII.CR;
+        elsif ch = 't' then
+           result := result & ASCII.HT;
+        end if;
+     else
+        result := result & element( expr_val, i );
+     end if;
+     i := i + 1;
+  end loop;
+end DoStringFromJson;
+
+
+---> DO ARRAY TO JSON
+--
+-- Convert an array to a JSON string.  This is placed here so it
+-- can be reused elsewhere in the language as required.  Params are not
+-- checked.
+-----------------------------------------------------------------------------
+-- TODO: target_ref should be an unbounded_string
+
+procedure DoArrayToJson( result : out unbounded_string; source_var_id : identifier ) is
+  source_first  : long_integer;
+  source_last   : long_integer;
+  source_len    : long_integer;
+  item          : unbounded_string;
+  encoded_item  : unbounded_string;
+  sourceArrayId : arrayID;
+  kind          : identifier;
+  elementKind   : identifier;
+  data          : unbounded_string;
+begin
+  -- look up the array information
+
+     sourceArrayId := arrayID( to_numeric( identifiers( source_var_id ).value ) );
+     source_first := firstBound( sourceArrayID );
+     source_last  := lastBound( sourceArrayID );
+     source_len   := source_last - source_first + 1;
+     kind := getUniType( identifiers( source_var_id ).kind );
+     elementKind := getBaseType( identifiers( identifiers( source_var_id ).kind ).kind );
+
+     -- In JSON, enumerateds (or, at least, booleans) are by the name,
+     -- not the value.
+     if elementKind = boolean_t then
+        declare
+           enum_val : integer;
+        begin
+           result := to_unbounded_string( "[" );
+           for arrayElementPos in source_first..source_last loop
+               data := arrayElement( sourceArrayId, arrayElementPos );
+               enum_val := integer( to_numeric( data ) );
+               if enum_val = 0 then
+                  item := to_unbounded_string( "false" );
+               elsif enum_val = 1 then
+                  item := to_unbounded_string( "true" );
+               else
+                  err( "internal error: unexpect boolean position" & enum_val'img );
+               end if;
+               if arrayElementPos /= source_last then
+                  result := result & item & to_unbounded_string( "," );
+               end if;
+           end loop;
+           result := result & item & to_unbounded_string( "]" );
+        end;
+
+     elsif kind = uni_string_t then
+        result := to_unbounded_string( "[" );
+        for arrayElementPos in source_first..source_last loop
+           --data := arrayElement( sourceArrayId, arrayElementPos+offsetArrayBeingSorted );
+           data := arrayElement( sourceArrayId, arrayElementPos );
+           if elementKind = json_string_t then
+              -- if it's a JSON string, just copy the data
+              result := result & data;
+           else
+              item := to_unbounded_string( """" );
+              item := item & toJSONEscaped( data );
+              --for i in 1..length( data ) loop
+              --    ch := element( data, i );
+              --    if ch = '"' then
+              --       item := item & "\""";
+              --    elsif ch = '\' then
+              --       item := item & "\\";
+              --    elsif ch = '/' then
+              --       item := item & "\/";
+              --    elsif ch = ASCII.BS then
+              --       item := item & "\b";
+              --    elsif ch = ASCII.FF then
+              --       item := item & "\f";
+              --    elsif ch = ASCII.LF then
+              --       item := item & "\n";
+              --    elsif ch = ASCII.CR then
+              --       item := item & "\r";
+              --    elsif ch = ASCII.HT then
+              --       item := item & "\t";
+              --    else
+              --       item := item & ch;
+              --    end if;
+              --end loop;
+              item := item & '"';
+           end if;
+           if arrayElementPos /= source_last then
+              result := result & item & to_unbounded_string( "," );
+           end if;
+        end loop;
+        result := result & item & to_unbounded_string( "]" );
+     elsif kind = uni_numeric_t or kind = root_enumerated_t then
+
+        result := to_unbounded_string( "[" );
+        for arrayElementPos in source_first..source_last loop
+           --data := arrayElement( sourceArrayId, arrayElementPos+offsetArrayBeingSorted );
+           data := arrayElement( sourceArrayId, arrayElementPos );
+           if element( data, 1 ) = ' ' then
+              delete( data, 1, 1 );
+           end if;
+           if arrayElementPos /= source_last then
+              result := result & data & to_unbounded_string( "," );
+           end if;
+        end loop;
+        result := result & data & to_unbounded_string( "]" );
+     else
+        -- this should not happen
+        err( "unsupported array type" );
+     end if;
+end DoArrayToJson;
+
+
+---> DO JSON TO ARRAY
+--
+-- Convert a JSON string and store in an array.  This is placed here so it
+-- can be reused elsewhere in the language as required.  Params are not
+-- checked.
+-----------------------------------------------------------------------------
+
+procedure DoJsonToArray( target_var_id : identifier; source_val : unbounded_string ) is
+  target_first  : long_integer;
+  target_last   : long_integer;
+  target_len    : long_integer;
+  sourceLen     : long_integer;
+  item          : unbounded_string;
+  decoded_item  : unbounded_string;
+  targetArrayId : arrayID;
+  arrayElement  : long_integer;
+  kind          : identifier;
+  elementKind   : identifier;
+  ch            : character;
+  inBackslash   : boolean;
+  inQuotes      : boolean;
+begin
+  -- look up the array information
+     targetArrayId := arrayID( to_numeric( identifiers( target_var_id ).value ) );
+     target_first := firstBound( targetArrayID );
+     target_last  := lastBound( targetArrayID );
+     target_len   := target_last - target_first + 1;
+     kind := getUniType( identifiers( target_var_id ).kind );
+     elementKind := getBaseType( identifiers( identifiers( target_var_id ).kind ).kind );
+
+     -- Count the number of items in the JSON string, handling escaping as
+     -- required.  Source len will be the number of items.
+
+     sourceLen := 0;
+
+     declare
+       i : integer := 1;
+       discard : unbounded_string;
+     begin
+       while i <= length( source_val ) loop
+         ch := element( source_val, i );
+         exit when ch = '[';
+         i := i + 1;
+       end loop;
+
+       if i <= length( source_val ) then
+          i := i + 1; -- skip [
+          loop
+            ParseJSONItem( source_val, discard, i );
+            if i > length( source_val ) then
+               exit;
+            else
+               sourceLen := sourceLen + 1;
+               SkipJSONWhitespace( source_val, i );
+               if i <= length( source_val ) then
+                  ch := element( source_val, i );
+                  if ch = ',' then
+                     i := i + 1;
+                  elsif ch = ']' then
+                     exit;
+                  end if;
+               else
+                  err( "JSON parse error on character" & i'img );
+                  exit;
+               end if;
+            end if;
+          end loop;
+       else
+          err( "JSON parse error on character" & i'img );
+       end if;
+     end;
+
+     --sourceLen := 0;
+     inBackslash := false;
+     inQuotes := false;
+
+     --if length( source_val ) > 2 then -- length zero for []
+     --   for i in 2..length( source_val )-1 loop
+     --       ch := element( source_val, i );
+     --       if inBackslash then
+     --          inBackslash := false;
+     --       else
+     --          if ch = '\' then
+     --             inBackslash := true;
+     --          else
+     --             if not inBackslash and ch = '"' then
+     --                inQuotes := not inQuotes;
+     --             elsif not inQuotes and ch = ',' then
+     --                sourceLen := sourceLen + 1;
+     --             end if;
+     --          end if;
+     --       end if;
+     --   end loop;
+     --   sourceLen := sourceLen + 1;
+    --end if;
+
+    -- Check to see if the length matches that of the array we are assigning
+    -- to.  Null array is a special case.
+     if sourceLen = 0 and target_len = 0 then
+        null;
+     elsif sourceLen /= target_len then
+       err( "array has" &
+            target_len'img &
+            " item(s) but JSON string has" &
+            sourceLen'img );
+     elsif kind = root_enumerated_t then
+
+        -- In JSON, booleans are stored by the name,
+        -- Other enums will be by ordinal position (more or less).
+
+        if elementKind = boolean_t then
+           -- for a boolean array, we will have to convert true or false
+           -- as well as raise an error on illegal values
+           arrayElement := target_first;
+           for i in 2..length( source_val ) loop
+               ch := element( source_val, i );
+               if ch = ',' or ch = ']' then
+                  if item = "false" then
+                     assignElement( targetArrayId, arrayElement, to_unbounded_string( "0" ) );
+                     arrayElement := arrayElement + 1;
+                     item := null_unbounded_string;
+                  elsif item = "true" then
+                     assignElement( targetArrayId, arrayElement, to_unbounded_string( "1" ) );
+                     arrayElement := arrayElement + 1;
+                     item := null_unbounded_string;
+                  else
+                     err( optional_bold( to_string( item ) ) & " is neither JSON true nor false" );
+                  end if;
+               else
+                  item := item & ch;
+               end if;
+           end loop;
+        else
+           -- for non-boolean array of enumerated types, use the ordinal
+           -- position and treat it as an array of integers
+
+           -- i don't actually record the maximum value for an enumerated type
+           -- the only way to tell is to search the symbol table for a match.
+           -- the enum item closest to the top of the symbol table should be
+           -- the greatest ordinal position.
+
+           declare
+             maxEnum : integer;
+             enumVal : integer;
+           begin
+              for i in reverse keywords_top..identifiers_top-1  loop
+                  if identifiers( i ).kind = elementKind then
+                     if identifiers( i ).class = constClass then
+                        if identifiers( i ).class = constClass then
+                           maxEnum := integer( to_numeric( identifiers( i ).value ) );
+                           exit;
+                        end if;
+                     end if;
+                  end if;
+              end loop;
+
+              -- Assign the positions to the array, checking for out-of-range
+              -- positions.
+              arrayElement := target_first;
+              for i in 2..length( source_val ) loop
+                  ch := element( source_val, i );
+                  if ch = ',' or ch = ']' then
+                     enumVal := integer'value( ' ' & to_string( item ) );
+                     if enumVal < 0 or enumVal > maxEnum then
+                        err( "enumerated position " &
+                             optional_bold( to_string( item ) ) &
+                             " is out of range for " &
+                             optional_bold( to_string( identifiers( elementKind ).name ) ) );
+                     else
+                        assignElement( targetArrayId, arrayElement, ' ' & item );
+                        arrayElement := arrayElement + 1;
+                        item := null_unbounded_string;
+                     end if;
+                  else
+                     item := item & ch;
+                  end if;
+              end loop;
+             end;
+           end if;
+
+     elsif kind = uni_string_t then
+
+        -- some kind of string items
+
+        arrayElement := target_first;
+        -- for i in 2..length( source_val ) loop
+        declare
+          i : integer := 2;
+        begin
+
+          skipJSONWhitespace( source_val, i );
+          while i <= length( source_val ) loop
+            ch := element( source_val, i );
+
+            if elementKind = json_string_t then
+            -- if it's JSON string, read the string as-is and assign it to the
+            -- array.
+               ParseJSONItem( source_val, item, i ); 
+               if i <= length( source_val ) then
+                   skipJSONWhitespace( source_val, i );
+                   ch := element( source_val, i );
+                   if ch = ',' or ch = ']' then
+                      i := i + 1;
+                   else
+                      err( "JSON parse error on character" & i'img );
+                   end if;
+               end if;
+
+               assignElement( targetArrayId, arrayElement, item );
+               arrayElement := arrayElement + 1;
+               item := null_unbounded_string;
+            else
+               if i <= length( source_val ) then
+                  ch := element( source_val, i );
+                  if ch /= '"' then
+                     err( "JSON string value expected" );
+                  end if;
+               end if;
+
+               ParseJSONItem( source_val, item, i ); 
+
+               decoded_item := null_unbounded_string;
+               for j in 2..length( item )-1 loop
+                   ch := element( item, j );
+                   if inBackslash then
+                      if ch = '"' then
+                         decoded_item := decoded_item & '"';
+                      elsif ch = '\' then
+                         decoded_item := decoded_item & '\';
+                      elsif ch = '/' then
+                         decoded_item := decoded_item & '/';
+                      elsif ch =  'b' then
+                         decoded_item := decoded_item & ASCII.BS;
+                      elsif ch = 'f' then
+                         decoded_item := decoded_item & ASCII.FF;
+                      elsif ch = 'n' then
+                         decoded_item := decoded_item & ASCII.LF;
+                      elsif ch = 'r' then
+                         decoded_item := decoded_item & ASCII.CR;
+                      elsif ch = 't' then
+                         decoded_item := decoded_item & ASCII.HT;
+                      end if;
+                      inBackslash := false;
+                   elsif ch = '\' then
+                      inBackslash := true;
+                   else
+                      decoded_item := decoded_item & ch;
+                   end if;
+               end loop;
+
+               if i <= length( source_val ) then
+                   skipJSONWhitespace( source_val, i );
+                   ch := element( source_val, i );
+                   if ch = ',' or ch = ']' then
+                      i := i + 1;
+                   else
+                      err( "JSON parse error on character" & i'img );
+                   end if;
+               end if;
+
+               assignElement( targetArrayId, arrayElement, decoded_item );
+               arrayElement := arrayElement + 1;
+               item := null_unbounded_string;
+               --else
+               --   item := item & ch;
+               --end if;
+            end if; -- if not json_string
+          end loop;
+        end;
+
+     elsif kind = uni_numeric_t then
+
+        arrayElement := target_first;
+        declare
+          i : integer := 1;
+        begin
+          skipJSONWhitespace( source_val, i );
+          if i <= length( source_val ) then
+             JSONexpect( source_val, i, '[' );
+             while i <= length( source_val ) loop
+               skipJSONWhitespace( source_val, i );
+               item := null_unbounded_string;
+               ParseJSONItem( source_val, item, i ); 
+               assignElement( targetArrayId, arrayElement, item );
+               arrayElement := arrayElement + 1;
+               skipJSONWhitespace( source_val, i );
+               if i <= length( source_val ) then
+                   ch := element( source_val, i );
+                   if ch = ',' or ch = ']' then
+                      i := i + 1;
+                   else
+                      err( "JSON parse error on character" & i'img );
+                   end if;
+               else
+                   err( "JSON parse error on character" & i'img );
+                   exit;
+               end if;
+             end loop;
+          else
+             err( "JSON parse error on character" & i'img );
+          end if;
+        end;
+
+--        -- some kind of numeric items
+--        arrayElement := target_first;
+--        for i in 2..length( source_val ) loop
+--            ch := element( source_val, i );
+--            if ch = ',' or ch = ']' then
+--               -- if first character is a quote, it's a string value not number
+--               ch := element( item, 1 );
+--               if ch = '"' then
+--                  err( "JSON number value expected" );
+--               end if;
+--               assignElement( targetArrayId, arrayElement, item );
+--               arrayElement := arrayElement + 1;
+--               item := null_unbounded_string;
+--            else
+--               item := item & ch;
+--            end if;
+--        end loop;
+
+     else
+        -- this should not happen
+        err( "unsupported array type" );
+     end if;
+end DoJsonToArray;
+
+
+---> DO RECORD TO JSON
+--
+-- Convert a record to a JSON string.  This is placed here so it
+-- can be reused elsewhere in the language as required.  Params are not
+-- checked.
+-----------------------------------------------------------------------------
+
+procedure DoRecordToJson( result : out unbounded_string; source_var_id : identifier ) is
+   firstField    : boolean := true;
+   fieldName   : unbounded_string;
+   jsonFieldName   : unbounded_string;
+   dotPos      : natural;
+   field_t     : identifier;
+   uniFieldType : identifier;
+   item        : unbounded_string;
+begin
+     result := to_unbounded_string( "{" );
+     for i in 1..integer'value( to_string( identifiers( identifiers( source_var_id ).kind ).value ) ) loop
+         for j in 1..identifiers_top-1 loop
+             if identifiers( j ).field_of = identifiers( source_var_id ).kind then
+                if integer'value( to_string( identifiers( j ).value )) = i then
+                      fieldName := identifiers( j ).name;
+                      dotPos := length( fieldName );
+                      while dotPos > 1 loop
+                         exit when element( fieldName, dotPos ) = '.';
+                         dotPos := dotPos - 1;
+                      end loop;
+                      jsonFieldName := delete( fieldName, 1, dotPos );
+                      fieldName := identifiers( source_var_id ).name & "." & jsonFieldName;
+                      findIdent( fieldName, field_t );
+                      if field_t = eof_t then
+                         err( "unable to find record field " &
+                            optional_bold( to_string( fieldName ) ) );
+                      else
+                         if firstField then
+                            firstField := false;
+                         else
+                            result := result & ',';
+                         end if;
+                         result := result & '"' & jsonFieldName & '"' & ":";
+                         -- json encode primitive types
+                         uniFieldType := getUniType( identifiers( field_t ).kind );
+                         if getBaseType( identifiers( field_t ).kind ) = boolean_t then
+                            if integer( to_numeric( identifiers( field_t ).value ) ) = 0 then
+                               result := result & "false";
+                            else
+                               result := result & "true";
+                            end if;
+                         elsif uniFieldType = uni_numeric_t then
+-- trim?
+                            result := result & identifiers( field_t ).value;
+                         elsif uniFieldType = root_enumerated_t then
+                            result := result & identifiers( field_t ).value;
+                         elsif getBaseType( identifiers( field_t ).kind ) = json_string_t then
+                            -- if it's a JSON string, just copy the data
+                            result := result & identifiers( field_t ).value;
+                         else
+                            item := to_unbounded_string( """" );
+                            item := item & ToJSONEscaped( identifiers( field_t ).value );
+                            item := item & '"';
+                            result := result & item;
+                         end if;
+                      end if;
+                end if;
+             end if;
+         end loop;
+     end loop;
+     result := result & "}";
+end DoRecordToJson;
+
+
+---> DO JSON TO RECORD
+--
+-- Convert a JSON string and store in a record.  This is placed here so it
+-- can be reused elsewhere in the language as required.  Params are not
+-- checked.
+-----------------------------------------------------------------------------
+
+procedure DoJsonToRecord( target_var_id : identifier; sourceVal : unbounded_string ) is
+  jsonString    : unbounded_string;
+  firstField    : boolean := true;
+  k             : natural;
+  item          : unbounded_string;
+  decodedItem  : unbounded_string;
+  decodedItemName  : unbounded_string;
+  decodedItemValue  : unbounded_string;
+  elementKind   : identifier;
+  ch            : character;
+  sourceLen     : long_integer;
+  found         : boolean;
+  searchName    : unbounded_string;
+  jsonStringType : boolean;
+begin
+
+     k := 2; -- skip leading { in JSON
+     item := sourceVal;
+
+     -- basic JSon validation.  Important to verify it isn't an array.
+     if length( item ) > 0 then
+        if element( item, 1 ) = '[' then
+           err( "JSON object expected but found array" );
+        elsif element( item, 1 ) /= '{' then
+           err( "JSON object expected but found string " & optional_bold( to_string( toEscaped( item ) ) ) );
+        elsif element( item, length( item ) ) /= '}' then
+           err( "expected trailing }" );
+        end if;
+     end if;
+
+     sourceLen := 0;
+     declare
+       i : integer := 1;
+       discard : unbounded_string;
+       stringEnd : natural := length( sourceVal );
+     begin
+       JSONexpect( sourceVal, i, '{' );
+       if i <= length( sourceVal ) then
+          loop
+            ParseJSONItem( sourceVal, discard, i );
+            JSONexpect( sourceVal, i, ':' );
+            ParseJSONItem( sourceVal, discard, i );
+            if i <= stringEnd then
+               ch := element( sourceVal, i );
+               sourceLen := sourceLen + 1;
+               SkipJSONWhitespace( sourceVal, i );
+               if i > length( sourceVal ) then
+                  exit;
+               else
+                  ch := element( sourceVal, i );
+                  if ch = ',' then
+                     i := i + 1;
+                  elsif ch = '}' then
+                     exit;
+                  end if;
+               end if;
+            else
+               err( "JSON parse error on character" & i'img );
+               exit;
+            end if;
+          end loop;
+        else
+          err( "JSON parse error on character" & i'img );
+       end if;
+     end;
+--put_line( "new length = " & sourceLen'img ); -- DEBUG
+-- If this works, delete the old one below
+--
+     -- Count the number of items in the JSON string
+     --sourceLen := 0;
+     --
+     --if length( item ) > 2 then -- length zero for {}
+     --   for i in 2..length( item )-1 loop
+     --       ch := element( item, i );
+     --       if inBackslash then
+     --          inBackslash := false;
+     --       else
+     --          if ch = '\' then
+     --             inBackslash := true;
+     --          else
+     --             if not inBackslash and ch = '"' then
+     --                inQuotes := not inQuotes;
+     --             elsif not inQuotes and ch = ',' then
+     --                sourceLen := sourceLen + 1;
+     --             end if;
+     --          end if;
+     --       end if;
+     --   end loop;
+     --   sourceLen := sourceLen + 1;
+    --end if;
+
+    -- The number of items in the JSON string should equal the size of the
+    -- record.
+    if sourceLen = long_integer'value( to_string( identifiers( identifiers( target_var_id ).kind ).value ) ) then
+
+       -- for each of the items in the JSON string
+
+       declare
+          i : integer := 1;
+       begin 
+          JSONexpect( sourceVal, i, '{' );
+          while i <= length( sourceVal ) loop
+
+          -- there should be a label and a string
+
+          ParseJSONItem( sourceVal, decodedItemName, i );
+          JSONexpect( sourceVal, i, ':' );
+          ParseJSONItem( sourceVal, decodedItemValue, i );
+
+          -- removed the quotes from around the label
+
+          if length( decodedItemName ) > 0 then
+             decodedItemName := ToJSONUnescaped( decodedItemName );
+          end if;
+          if length( decodedItemName ) > 0 then
+             delete( decodedItemName, 1, 1 );
+          end if;
+          if length( decodedItemName ) > 0 then
+             delete( decodedItemName, length( decodedItemName ), length( decodedItemName ) );
+          end if;
+
+          -- if the value starts with a quote, it's a string type in JSON
+
+          jsonStringType := false;
+          if element( decodedItemValue, 1 ) = '"' then
+             jsonStringType := true;
+          end if;
+
+          -- we have a label and a value.  the record field is stored in the
+          -- symbol table as rec.field.  Prepend the record name and search
+          -- the symbol table for the record field.  When found, cast the
+          -- value and assign it.  Otherwise, if the field is not found, it
+          -- is an error.
+          found := false;
+          searchName := identifiers( target_var_id ).name & "." & decodedItemName;
+          for j in reverse 1..identifiers_top-1 loop
+              if identifiers( j ).name = searchName then
+                 found := true;
+                 if not error_found then
+                    -- for booleans, it's true or false, not value
+                    elementKind := getBaseType( identifiers( j ).kind );
+                    if elementKind = boolean_t then
+                       if decodedItemValue = "true" then
+                          identifiers( j ).value := to_unbounded_string( "1" );
+                       elsif decodedItemValue = "false" then
+                          identifiers( j ).value :=  to_unbounded_string( "0" );
+                       else
+                          err( optional_bold( to_string( toEscaped( decodedItemName ) ) ) & " has a value of " & optional_bold( to_string( toEscaped( decodedItemValue ) ) ) & " but expected JSON true or false" );
+                       end if;
+
+-- range check the valuse for enumerateds
+                    elsif getUniType( elementKind ) = root_enumerated_t then
+
+                      -- Enumerateds
+                      -- i don't actually record the maximum value for an enumerated type
+                      -- the only way to tell is to search the symbol table for a match.
+                      -- Enums are numbers shouldn't need to have special characters decoded.
+
+                      declare
+                        maxEnum : integer;
+                        enumVal : integer;
+                      begin
+                        for i in reverse keywords_top..identifiers_top-1  loop
+                            if identifiers( i ).kind = elementKind then
+                               if identifiers( i ).class = constClass then
+                                  if identifiers( i ).class = constClass then
+                                     maxEnum := integer( to_numeric( identifiers( i ).value ) );
+                                     exit;
+                                  end if;
+                               end if;
+                            end if;
+                        end loop;
+                        enumVal := integer'value( ' ' & to_string( decodedItemValue ) );
+                        if enumVal < 0 or enumVal > maxEnum then
+                           err( "enumerated position " &
+                                optional_bold( to_string( toEscaped( decodedItemValue ) ) ) &
+                                " is out of range for " &
+                                optional_bold( to_string( identifiers( elementKind ).name ) ) );
+                        end if;
+                        identifiers( j ).value := decodedItemValue;
+                      end;
+
+                    elsif getUniType( elementKind ) = uni_string_t then
+
+                      -- Strings
+                      -- JSON string is raw json...could be anything.  Otherwise, the string
+                      -- needs to be un-escaped.
+                      if elementKind /= json_string_t then
+                         if not jsonStringType then
+                            err( "JSON string value expected for " & optional_bold( to_string( searchName ) ) );
+                         end if;
+                         -- strip of quotes and un-escape any characters.
+                         if length( decodedItemValue ) > 0 then
+                            delete( decodedItemValue, 1, 1 );
+                         end if;
+                         if length( decodedItemValue ) > 0 then
+                            delete( decodedItemValue, length( decodedItemValue ), length( decodedItemValue ) );
+                         end if;
+                         if length( decodedItemValue ) > 0 then
+                            decodedItemValue := ToJSONUnescaped( decodedItemValue );
+                         end if;
+                      end if;
+                      identifiers( j ).value := castToType( decodedItemValue,
+                         identifiers( j ).kind );
+                    else
+                      -- Numbers
+                      -- Numbers shouldn't need to have special characters decoded.
+                      if jsonStringType then
+                         err( "JSON number value expected for " & optional_bold( to_string( searchName ) ) );
+                      end if;
+                      identifiers( j ).value := castToType( decodedItemValue,
+                         identifiers( j ).kind );
+                    end if;
+                 end if;
+                 exit; -- the searchName may occur more than once.  stop when found first match
+
+              end if;
+          end loop; -- j
+          if not found then
+             err( to_string( toEscaped( searchName ) ) & " not declared" );
+          end if;
+
+          if i <= length( sourceVal ) then
+             ch := element( sourceVal, i );
+             if ch = ',' then
+                i := i + 1;
+             elsif ch = '}' then
+                exit;
+             end if;
+          end if;
+       end loop; -- i
+       end;
+    else
+       err( "record has" &
+            to_string( identifiers( identifiers( target_var_id ).kind ).value ) &
+            " field(s) but JSON string has" &
+            sourceLen'img );
+    end if;
+end DoJsonToRecord;
+
+
+---> DO STRING TO JSON
+--
+-- Convert a string to JSON and return the string  This is placed here so it
+-- can be reused elsewhere in the language as required.  Params are not
+-- checked.
+-----------------------------------------------------------------------------
+
+function DoStringToJson( val : unbounded_string ) return unbounded_string is
+  result : unbounded_string;
+begin
+  result := to_unbounded_string( """" );
+  result := result & ToJSONEscaped( val );
+  result := result & '"';
+  return result;
+end DoStringToJson;
+
+
+---> DO NUMBER TO JSON
+--
+-- Does not exist because numbers are as is.
 
 
 -----------------------------------------------------------------------------
@@ -5184,7 +6428,7 @@ end replaceScript;
 --
 -----------------------------------------------------------------------------
 
-procedure loadIncludeFile( includeName : unbounded_string; fileLocation : in out SourceFilesList.aListIndex; includeText : out unbounded_string ) is
+procedure loadIncludeFile( includeName : unbounded_string; fileLocation : out SourceFilesList.aListIndex; includeText : out unbounded_string ) is
   sfr, temp_sfr : aSourceFile;
   workingPaths : unbounded_string;
   includeFileOpened : boolean;

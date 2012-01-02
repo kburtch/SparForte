@@ -24,11 +24,13 @@
 with bush_os,
      string_util,
      world,
+     scanner,
      parser,
      parser_aux;
 use  bush_os,
      string_util,
      world,
+     scanner,
      parser,
      parser_aux;
 with ada.text_io; use ada.text_io;
@@ -45,7 +47,7 @@ procedure ParseRecordsToJson is
   -- Source: N/A
   target_ref    : reference;
   source_var_id : identifier;
-
+  jsonString    : unbounded_string;
 begin
   expect( records_to_json_t );
   expect( symbol_t, "(" );
@@ -57,21 +59,22 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     DoRecordToJson( target_ref, source_var_id );
+     DoRecordToJson( jsonString, source_var_id );
+     assignParameter( target_ref, jsonString );
   end if;
 end ParseRecordsToJson;
 
 procedure ParseRecordsToRecord is
   -- Syntax: str := records.to_record( rec, str );
   -- Source: N/A
-  target_ref    : reference;
+  target_var_id : identifier;
   sourceVal     : unbounded_string;
   sourceType    : identifier;
 begin
   expect( records_to_record_t );
   expect( symbol_t, "(" );
-  ParseInOutParameter( target_ref );
-  if identifiers( getBaseType( identifiers( target_ref.id ).kind ) ).kind /= root_record_t then
+  ParseIdentifier( target_var_id );  --ParseInOutParameter( target_ref );
+  if identifiers( getBaseType( identifiers( target_var_id ).kind ) ).kind /= root_record_t then
      err( "Record type expected" );
   end if;
   expect( symbol_t, "," );
@@ -80,7 +83,7 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     DoJsonToRecord( target_ref, sourceVal );
+     DoJsonToRecord( target_var_id, sourceVal );
   end if;
 end ParseRecordsToRecord;
 

@@ -809,16 +809,23 @@ procedure ParseStringsToString( result : in out unbounded_string ) is
   -- Source: Ada.Strings.Unbounded.To_String
   expr_val   : unbounded_string;
   expr_type  : identifier;
+  baseType   : identifier;
 begin
   expect( to_string_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
-  if baseTypesOk( expr_type, unbounded_string_t ) then
-     expect( symbol_t, ")" );
+  baseType := getBaseType( expr_type );
+  if baseType /= unbounded_string_t and baseType /= json_string_t then
+     err( "unbounded_string or json_string expected" );
   end if;
+  expect( symbol_t, ")" );
   begin
     if isExecutingCommand then
-       result := expr_val;
+       if baseType /= unbounded_string_t then
+          result := expr_val;
+       else
+          DoStringFromJson( result, expr_val );
+       end if;
     end if;
   exception when others =>
     err( "exception raised" );
@@ -1442,32 +1449,12 @@ begin
   ParseSingleUniStringExpression( expr_val, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( """" );
-       result := result & ToJSONEscaped( expr_val );
-       result := result & '"';
+       result := DoStringToJSON( expr_val  );
     end if;
   exception when others =>
     err( "exception raised" );
   end;
 end ParseStringsToJSON;
-
-procedure ParseStringsFromJSON( result : in out unbounded_string) is
-  -- Syntax: strings.from_json( x );
-  -- Source: N/A
-  expr_val   : unbounded_string;
-  expr_type  : identifier;
-begin
-  expect( strings_from_json_t );
-  ParseSingleStringParameter( expr_val, expr_type, json_string_t );
-  begin
-    if isExecutingCommand then
-       DoStringFromJson( result, expr_val );
-    end if;
-  exception when others =>
-    err( "exception raised" );
-  end;
-end ParseStringsFromJSON;
-
 
 procedure StartupStrings is
 begin
@@ -1558,7 +1545,6 @@ begin
   declareFunction( is_typo_of_t, "strings.is_typo_of" );
   declareProcedure( set_unbounded_string_t, "strings.set_unbounded_string" );
   declareFunction( unbounded_slice_t, "strings.unbounded_slice" );
-  declareFunction( strings_from_json_t, "strings.from_json" );
   declareFunction( strings_to_json_t, "strings.to_json" );
 end StartupStrings;
 

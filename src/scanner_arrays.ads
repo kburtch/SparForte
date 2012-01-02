@@ -25,12 +25,10 @@ with gen_list,
      unchecked_deallocation,
      ada.strings.unbounded,
      ada.finalization,
-     world,
-     scanner;
+     world;
 use  ada.strings.unbounded,
      ada.finalization,
-     world,
-     scanner;
+     world;
 
 package scanner_arrays is
 

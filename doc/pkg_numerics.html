@@ -44,6 +44,46 @@
 <h2><a NAME="4.7"></a>Numerics Package</h3>
 <p>The SparForte built-in numerics package provides math subprograms to manipulate
 numeric values.</p>
+
+        <center>
+        <div class="code">
+<pre>
+  e                    log2_e                  log10_e             ln10
+  ln2                  pi                      pi_by_2             pi_by_4
+  pi_under_1           pi_under_2              sqrt_pi_under_2     sqrt_2
+  sqrt_2_under_1
+
+  <a href="#abs">f := abs( e )</a>               <a href="#numerics.ceiling">f := ceiling( e )</a>              <a href="#numerics.copy_sign">f := copy_sign( x, y )</a>
+  <a href="#numerics.even">f := even( i )</a>              <a href="#numerics.exp">f := exp( x )</a>                  <a href="#numerics.exponent">f := exponent( e )</a>
+  <a href="#numerics.floor">f := floor( e )</a>             <a href="#numerics.fraction">f := fraction( e )</a>             <a href="#numerics.leading_part">f := leading_part( x, y )</a>
+  <a href="#numerics.log">f := log( e [,b] )</a>          <a href="#numerics.machine">f := machine( e )</a>              <a href="#numerics.max">f := max( x, y )</a>
+  <a href="#numerics.md5">r := md5( s )</a>               <a href="#numerics.min">f := min( x, y )</a>               <a href="#numerics.odd">f := odd( x )</a>
+  <a href="#numerics.pos">p := pos( c )</a>               <a href="#numerics.random">f := random</a>                    <a href="#numerics.remainder">f := remainder( x, y )</a>
+  <a href="#numerics.rnd">r := rnd( p )</a>               <a href="#numerics.rotate_left">i := rotate_left( e, b )</a>       <a href="#numerics.rotate_right">i := rotate_right( e, b )</a>
+  <a href="#numerics.rounding">f := rounding( e )</a>          <a href="#numerics.scaling">f := scaling( x, y )</a>           <a href="#numerics.serial">f := serial</a>     
+  <a href="#numerics.sqrt">f := sqrt( e )</a>              <a href="#numerics.sturges">f := sturges( l, h, t )</a>        <a href="#numerics.shift_left">i := shift_left( e, b )</a>
+  <a href="#numerics.shift_right">i := shift_right( e, b )</a>    <a href="#numerics.shift_right_arithmetic">i := shift_right_arithmetic( x, b )</a> <a href="#numerics.truncation">f := truncation( e )</a>
+  <a href="#numerics.unbiased_rounding">f := unbiased_rounding( e )</a> <a href="#numerics.value">f := value( s )</a>
+
+  <a href="#numerics.arccos">f := arccos( x [,cycle] )</a>    <a href="#numerics.arccosh">f := arccosh( e )</a>         <a href="#numerics.arccot">f := arccot( x, y [,cycle] )</a>
+  <a href="#numerics.arccoth">f := arccoth( e )</a>            <a href="#numerics.arcsin">f := arcsin( e [,cycle] )</a> <a href="#numerics.arcsinh">f := arcsinh( e )</a>
+  <a href="#numerics.arctan">f := arctan( x, y [,cycle] )</a> <a href="#numerics.arctanh">f := arctanh( e )</a>         <a href="#numerics.cos">f := cos( e [,cycle] )</a>
+  <a href="#numerics.cosh">f := cosh( e )</a>               <a href="#numerics.cot">f := cot( e [,cycle] )</a>    <a href="#numerics.coth">f := coth( e )</a>
+  <a href="#numerics.sin">f := sin( e [,cycle] )</a>       <a href="#numerics.sinh">f := sinh( e )</a>            <a href="#numerics.tan">f := tan( e [,cycle] )</a>
+  <a href="#numerics.tanh">f := tanh( e )</a>
+
+  re( complex )                im( complex )             modulus( complex )
+  set_re( complex, r )         set_im( complex, i )      argument( complex )
+
+  abs( x ) is not "numerics.abs( x )" because it's not in the numerics package
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the numerics package</span>
+        </div>
+        </div>
+        </center>
+
 <p>Functions with a universal_numeric parameter accept any kind of
 number (such as float, integer, etc.).
 The bit shifting operations which require a natural for the number of bits
@@ -92,451 +132,437 @@ packages and type attributes
 <b>numerics.sqrt_2_under_1</b> - 1 / sqrt(2)</li>
 </ul>
 
-<p><br>Absolute value (abs) is not technically a part of the numerics package
-but is documented here.
+<p>The Ada complex number functions are not fully implemented.</p>
 
-        <center>
-        <div class="code">
-<pre>
-  e                    log2_e                  log10_e             ln10
-  ln2                  pi                      pi_by_2             pi_by_4
-  pi_under_1                                   pi_under_2
-  sqrt_pi_under_2                              sqrt_2
-  sqrt_2_under_1
+<p>Absolute value (abs) is not technically a part of the numerics package
+(it's a language construct) but is documented here.</p>
 
-  sqrt( x )            log( x [,base] )         exp( x )           random
-  shift_left( x, b )   rotate_left( x, b )      shift_right_arithmeric( x, b )
-  shift_right( x, b )  rotate_right( x, b )     floor( x )         ceiling( x )
-  rounding( x )        truncation( x )          unbiased_rounding( x )         
-  remainder( x, y )    copy_sign( x, y )        leading_part( x, y )           
-  exponent( x )        fraction( x )            max( m, n )         min( m, n )
-  machine( x )         scaling( x, y )          value( s )          pos( c )   
-  sturges( l, h, t )   md5( s )                 rnd( n )            serial     
-  odd( i )             even( i )                                               
-
-  sin( x [,cycle] )    arcsin( x [,cycle] )     sinh( x )          arcsinh( x )
-  cos( x [,cycle] )    arccos( x [,cycle] )     cosh( x )          arccosh( x )
-  tan( x [,cycle] )    arctan( x, y [,cycle] )  tanh( x )          arctanh( x )
-  cot( x [,cycle] )    arccot( x, y [,cycle] )  coth( x )          arccoth( x )
-
-  re( complex )        im( complex )            modulus( complex )            
-  set_re( complex, r ) set_im( complex, i )     argument( complex )           
-
-  abs( x ) is not "numerics.abs( x )" because it's not in the numerics package
-</pre>
-        &nbsp;<br>
-        <div class="code_caption">
-        <b>Help Command</b>: Contents of the numerics package</span>
-        </div>
-        </div>
-        </center>
-
-<p>
-<hr><b>f := abs( e )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="abs"></a><h3>f := abs( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>return the absolute value of e
-<br>Example: f := abs( e );
-<br>Ada Equivalent: built-in abs function
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>return the absolute value of e</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := abs( e );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to to take the absolute value of</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the absolute value of</span></td>
 </tr>
-
 <tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
 </tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.arcsin( e [,cycle] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>trig arcsin function
-<br>Example: f := arcsin( e );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.arcsin
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to to take the arcsin of</td>
-</tr>
-
-<tr>
-<td>cycle</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>numerics.pi*2</td>
-
-<td>the trig period (eg. 360 for degrees), default is radians</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>floating point</td>
-
-<td>required</td>
-
-<td>the result</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.arcsinh( e )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>trig arcsinh function
-<br>Example: f := arcsinh( e );
-
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.arcsinh
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to to take the arcsinh value of</td>
-
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.arctan( x, y [,cycle] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>trig arctan function
-<br>Example: f := numerics.arctan( x, y );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.arctan (In Ada, the
-second parameter is optional.)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>x,y</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expressions to to take the arctan of</td>
-</tr>
-
-<tr>
-<td>cycle</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>numerics.pi*2</td>
-
-<td>the trig period (eg. 360 for degrees), default is radians</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>floating point</td>
-
-<td>required</td>
-
-<td>the result</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: built-in abs function<br>PHP: abs</p></td>
 </tr>
 </table>
 
-</td>
+<a name="numerics.arccos"></a><h3>f := numerics.arccos( e [,cycle] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig inverse consine function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.arccos( e );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expressions to take the arccos of</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.arctanh( e )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>trig arctanh function
-<br>Example: f := arctanh( e );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.arctanh
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to to take the arctanh of</td>
+<td><span>cycle</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>numerics.pi*2</span></td>
+<td><span>the trig period (eg. 360 for degrees), default is radians</span></td>
 </tr>
-
 <tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>floating point</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>an argument_error if the absolute value of e exceeds 1</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.arccos<br>PHP: acos</p></td>
 </tr>
 </table>
-</td>
+
+<a name="numerics.arccosh"></a><h3>f := numerics.arccosh( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig inverse hyperbolic cosine function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := arccosh( e );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the arccosh of</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.arccos( e [,cycle] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>trig arccos function
-<br>Example: f := numerics.arccos( e );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.arccos
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expressions to to take the arccos of</td>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
 </tr>
-
-<tr>
-<td>cycle</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>numerics.pi*2</td>
-
-<td>the trig period (eg. 360 for degrees), default is radians</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>floating point</td>
-
-<td>required</td>
-
-<td>the result</td>
-</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>an argument_error when e is less than 1</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.arccosh<br>PHP: acosh</p></td>
 </tr>
 </table>
+
+<a name="numerics.arccot"></a><h3>f := numerics.arccot( x, y [,cycle] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig inverse cotangent function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.arccot( x, y );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>x,y</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expressions to take the arccot of</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.arccosh( e )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>trig arccosh function
-<br>Example: f := arccosh( e );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.arccosh
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to to take the arccosh of</td>
+<td><span>cycle</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>numerics.pi*2</span></td>
+<td><span>the trig period (eg. 360 for degrees), default is radians</span></td>
 </tr>
-
 <tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>floating point</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>an argument_error when x and y are both zero</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.arccot (In Ada, the y parameter is optional.)</p></td>
 </tr>
 </table>
-</td>
+
+<a name="numerics.arccoth"></a><h3>f := numerics.arccoth( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig inverse hyperbolic cotangent function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := arccoth( e );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the arccoth of</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>numerics.arccot( x, y [,cycle] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-
-<td>
-<br>trig arccot function
-<br>Example: f := numerics.arccot( x, y );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.arccot (In Ada,
-the second parameter is optional.)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>x,y</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expressions to to take the arccot of</td>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
 </tr>
-
-<tr>
-<td>cycle</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>numerics.pi*2</td>
-
-<td>the trig period (eg. 360 for degrees), default is radians</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>floating point</td>
-
-<td>required</td>
-
-<td>the result</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>an argument_error when the absolute value of e is less than 1<br>a constraint_error when the absolute value of e is 1</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.arccoth</p></td>
 </tr>
 </table>
-</td>
+
+<a name="numerics.arcsin"></a><h3>f := numerics.arcsin( e [,cycle] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig inverse sine function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := arcsin( e );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the arcsin of</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.arccoth( e )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>trig arccoth function
-<br>Example: f := arccoth( e );
-
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.arccoth
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to to take the arccoth of</td>
-
+<td><span>cycle</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>numerics.pi*2</span></td>
+<td><span>the trig period (eg. 360 for degrees), default is radians</span></td>
 </tr>
-
 <tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
-
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>floating point</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.arcsin<br>PHP: asin</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
-&nbsp;<br>
 
-<h3>f := numerics.ceiling( e )</h3>
+<a name="numerics.arcsinh"></a><h3>f := numerics.arcsinh( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig inverse hyperbolic sine function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := arcsinh( e );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the arcsinh value of</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>an argument_error if the absolute value of e exceeds 1</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.arcsinh<br>PHP: asinh</p></td>
+</tr>
+</table>
+
+<a name="numerics.arctan"></a><h3>f := numerics.arctan( x, y [,cycle] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig inverse tangent function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.arctan( x, y );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>x,y</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the arctan of</span></td>
+</tr>
+<tr>
+<td><span>cycle</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>numerics.pi*2</span></td>
+<td><span>the trig period (eg. 360 for degrees), default is radians</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>floating point</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>an argument_error when x and y are both zero</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.arctan (In Ada, the y parameter is optional.)<br>PHP: atan</p></td>
+</tr>
+</table>
+
+<a name="numerics.arctanh"></a><h3>f := numerics.arctanh( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig inverse hyperbolic tangent function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := arctanh( e );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the arctanh of</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>an argument_error if the absolute value of e exceeds 1<br>
+a constraint_error when the absolute value of e is 1</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.arctanh<br>PHP: atanh</p></td>
+</tr>
+</table>
+
+<a name="numerics.ceiling"></a><h3>f := numerics.ceiling( e )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -581,356 +607,384 @@ f2 := numerics.ceiling( -5.5 ); -- returns 5</span></p>
 <td><p>Ada: 'ceiling attribute<br>PHP: ceil<br>Java: java.lang.Math.ceil</p></td>
 </tr>
 </table>
-&nbsp;<br>
 
-<p>
-<hr><b>f := numerics.copy_sign( x, y )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="numerics.copy_sign"></a><h3>f := numerics.copy_sign( x, y )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>return float x with sign of float y
-<br>Example: f := numerics.copy_sign( 5.5, -1.0 ); -- returns -5.5
-<br>Ada Equivalent: 'copy_sign attribute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>return float x with sign of float y</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.copy_sign( 5.5, -1.0 ); -- returns -5.5</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>x</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to take the absolute value of</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>x</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the absolute value of</span></td>
 </tr>
-
 <tr>
-<td>y</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to take the sign of</td>
+<td><span>y</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the sign of</span></td>
 </tr>
-
 <tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
 </tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.cos( e [,cycle] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>trig cosine function
-<br>Example: f := numerics.cos( numerics.pi );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.cos
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expressions to to take the cosine of</td>
-</tr>
-
-<tr>
-<td>cycle</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>numerics.pi*2</td>
-
-<td>the trig period (eg. 360 for degrees), default is radians</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>floating point</td>
-
-<td>required</td>
-
-<td>the result</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f :=numerics.cosh( x )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>trig cosh functionExample: f := cosh( e );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.cosh
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to to take the cosh of</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.cot( e [,cycle] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-
-<br>trig cotangent function
-<br>Example: f := numerics.cot( numerics.pi );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.cos
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expressions to to take the cotangent of</td>
-</tr>
-
-<tr>
-<td>cycle</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>numerics.pi*2</td>
-
-<td>the trig period (eg. 360 for degrees), default is radians</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>floating point</td>
-
-<td>required</td>
-
-<td>the result</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.coth( e )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>trig coth function
-<br>Example: f := coth( numerics.pi );
-
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.coth
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to to take the coth of</td>
-
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.even( x )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>even function
-<br>Example: f := numerics.even( 2 ); -- true
-<br>Ada Equivalent: N/A ( x mod 2 = 0 )
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>x</td>
-
-<td>in</td>
-
-<td>integer</td>
-
-<td>required</td>
-
-<td>the value to test</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>required</td>
-
-<td>true if integer is even</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'copy_sign attribute</p></td>
 </tr>
 </table>
 
-</td>
+<a name="numerics.cos"></a><h3>f := numerics.cos( e [,cycle] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig cosine function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.cos( numerics.pi );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the cosine of</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.exp( x )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>exp function
-<br>Example: f := exp( 1.0 );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.exp
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the power to raise epsilon to</td>
+<td><span>cycle</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>numerics.pi*2</span></td>
+<td><span>the trig period (eg. 360 for degrees), default is radians</span></td>
 </tr>
-
 <tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>floating point</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.cos<br>PHP: cos</p></td>
 </tr>
 </table>
-</td>
+
+<a name="numerics.cosh"></a><h3>f :=numerics.cosh( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig hyperbolic cosine function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := cosh( e );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the cosh of</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.exponent( x )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Ada's exponent attribute
-<br>Example: f := numerics.exponent( 10.0 ); -- returns 4
-<br>Ada Equivalent: 'exponent attribute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression</td>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
 </tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.cosh<br>PHP: cosh</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
-&nbsp;<br>
 
-<h3>f := numerics.floor( x )</h3>
+<a name="numerics.cot"></a><h3>f := numerics.cot( e [,cycle] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig cotangent function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.cot( numerics.pi );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the cotangent of</span></td>
+</tr>
+<tr>
+<td><span>cycle</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>numerics.pi*2</span></td>
+<td><span>the trig period (eg. 360 for degrees), default is radians</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>floating point</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>a constraint_error when e is zero</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.cot</p></td>
+</tr>
+</table>
+
+<a name="numerics.coth"></a><h3>f := numerics.coth( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig hyperbolic cotangent function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := coth( numerics.pi );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the coth of</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>a constraint_error when e is zero<br>a constraint_error when e is zero or a multiple of the half cycle</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.coth</p></td>
+</tr>
+</table>
+
+<a name="numerics.even"></a><h3>f := numerics.even( i )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>true if integer i is an even number</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.even( 2 ); -- true</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>in</span></td>
+<td><span>integer</span></td>
+<td><span>required</span></td>
+<td><span>the value to test</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if integer is even</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: x mod 2 = 0</p></td>
+</tr>
+</table>
+
+<a name="numerics.exp"></a><h3>f := numerics.exp( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>returns e raised to the power of x where e is epsilon, the base of the
+natural system of logarithms</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := exp( 1.0 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the power to raise epsilon to</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.exp</p></td>
+</tr>
+</table>
+
+<a name="numerics.exponent"></a><h3>f := numerics.exponent( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Ada's normalized exponent attribute.  It is used to break up a floating
+point number into its exponent and fraction parts by giving the gross magnitude
+of e.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.exponent( 10.0 ); -- returns 4</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.fraction</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'exponent attribute</p></td>
+</tr>
+</table>
+
+<a name="numerics.floor"></a><h3>f := numerics.floor( e )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -952,7 +1006,7 @@ f2 := numerics.floor( -5.5 ); -- returns 6</span></p>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>x</span></td>
+<td><span>e</span></td>
 <td><span>in</span></td>
 <td><span>universal_numeric</span></td>
 <td><span>required</span></td>
@@ -978,615 +1032,649 @@ f2 := numerics.floor( -5.5 ); -- returns 6</span></p>
 </table>
 &nbsp;<br>
 
-
-<p>
-<hr><b>f := numerics.fraction( x )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="numerics.fraction"></a><h3>f := numerics.fraction( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-
-<td>
-<br>Ada's fraction attribute.  The
-function yields the value X*T'Machine_Radix**(-k), where k is the
-normalized exponent of X.
-<br>Example: f := numerics.fraction( 10.0 ); -- returns 0.625
-<br>Ada Equivalent: 'fraction attribute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Ada's fraction attribute.  The function yields the value X*T'Machine_Radix**(-k), where k is the normalized exponent of X.  It is used to break up a floating
+point number into its exponent and fraction parts.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.fraction( 10.0 ); -- returns 0.625</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression</span></td>
 </tr>
-
 <tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
 </tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.leading_part( x, y )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Ada's leading part attribute.
-Let v be the value T'Machine_Radix**(k-Radix_Digits), where k is the
-normalized exponent of X. The function yields the value
-Floor(X/v)*v, when X is nonnegative and Radix_Digits is positive; 
-Ceiling(X/v)*v, when X is negative and Radix_Digits is positive. 
-Constraint_Error is raised when Radix_Digits is zero or negative. A zero
-result, which can only occur when X is zero, has the sign of X. 
-<br>Example: f := numerics.leading_part( x, y );
-
-<br>Ada Equivalent: 'leading_part attribute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>x,y</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expressions</td>
-
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.log( e [,base] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>log function
-<br>Example: f := numerics.log( e );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.log
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expressions to take the log of</td>
-</tr>
-
-<tr>
-<td>base</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>10 (I think)</td>
-
-<td>the base of the log</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.exponent</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'fraction attribute</p></td>
 </tr>
 </table>
 
-</td>
+<a name="numerics.leading_part"></a><h3>f := numerics.leading_part( x, y )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Ada's leading part attribute. Let v be the value T'Machine_Radix**(k-Radix_Digits), where k is the normalized exponent of X. The function yields the value Floor(X/v)*v, when X is nonnegative and Radix_Digits is positive; Ceiling(X/v)*v, when X is negative and Radix_Digits is positive. Constraint_Error is raised when Radix_Digits is zero or negative. A zero result, which can only occur when X is zero, has the sign of X.  This is used for high precision mathematics.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.leading_part( x, y );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>x,y</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expressions</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.machine( x )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Ada's machine attribute.
-If X is a machine number of the type T, the function yields X; otherwise, it
-yields the value obtained by rounding or truncating X to either one of the
-adjacent machine numbers of the type T. Constraint_Error is raised if rounding
-or truncating X to the precision of the machine numbers results in a value
-outside the base range of S. A zero result has the sign of X when
-a machine has signed zeros.
-<br>Example: f := numerics.machine( 10.0 ); -- returns 10.0
-<br>Ada Equivalent: 'machine attribute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression</td>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
 </tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.max( x, y )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>return the larger of x and y
-<br>Example: f := numerics.max( 1.0, 2.0 );
-<br>Ada Equivalent: 'max attribute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>x,y</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expressions to be compared</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := numerics.md5( s )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>return the message digest 5 fingerprint of string s
-<br>Example: sig := numerics.md5( "Checksum for this message" );
-<br>Ada Equivalent: none, uses MD5 package (www.AdaPower.com)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the string to generate an MD5 checksum for</td>
-</tr>
-
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the MD5 checksum</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.min( x, y )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>return the smaller of x and y
-<br>Example: f := numerics.max( 1.0, 2.0 );
-<br>Ada Equivalent: 'min attribute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>x,y</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expressions to be compared</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.odd( x )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>odd function
-<br>Example: f := numerics.odd( 1 ); -- true
-
-<br>Ada Equivalent: N/A ( x mod 2 = 1 )
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>x</td>
-
-<td>in</td>
-
-<td>integer</td>
-
-<td>required</td>
-
-<td>the value to test</td>
-
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>required</td>
-
-<td>true if integer is odd</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>p := numerics.pos( c )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>return the ASCII value (position) of character c
-<br>Example: p := numerics.pos( 'a' ); -- returns 97
-<br>Ada Equivalent: 'pos attribute
-<br>Restrictions: pos of enumerated types not supported
-<br>Parameters:
-
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>character</td>
-
-<td>required</td>
-
-<td>the expression to take the position of</td>
-</tr>
-
-<tr>
-<td>p</td>
-
-<td>return value</td>
-
-<td>positive</td>
-
-<td>required</td>
-
-<td>the position</td>
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.random</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>generate a random floating-point number between zero and one
-<br>Example: i := integer( numerics.truncation( numerics.random * 10 )+1
-) ); -- returns 1 to 10&nbsp;
-<br>Ada Equivalent: Ada.Numerics.Float_Random.Random
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>float</td>
-
-<td>required</td>
-
-<td>the random number</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'leading_part attribute</p></td>
 </tr>
 </table>
 
-</td>
+<a name="numerics.log"></a><h3>f := numerics.log( e [,b] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>logarithm, return a number is the exponent e by which another fixed value, the base b, has to be raised to produce that number.  Without base b, the
+natural logarithm is returned.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.log( e );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expressions to take the log of</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>r := numerics.rnd( p )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>generate a random positive number between 1 and p
-<br>Example: r := numerics.rnd( 10 ); -- 1 to 10
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>p</td>
-
-<td>in</td>
-
-<td>positive</td>
-
-<td>required</td>
-
-<td>the maximum positive number to return</td>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>epsilon (I think)</span></td>
+<td><span>the base of the log</span></td>
 </tr>
-
 <tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>positive</td>
-
-<td>required</td>
-
-<td>the random number</td>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>an argument_error is raised if the base is negative, 0, 1 or if e is negative<br>
+a constraint_error is raised if e is zero</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.log<br>PHP: log</p></td>
 </tr>
 </table>
-</td>
+
+<a name="numerics.machine"></a><h3>f := numerics.machine( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Ada's machine attribute. If e is a machine number of the type T, the function yields e; otherwise, it yields the value obtained by rounding or truncating e to either one of the adjacent machine numbers of the type T.  A zero result has the sign of e when a machine has signed zeros.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.machine( 10.0 ); -- returns 10.0</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>i := numerics.rotate_left( e, b )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>rotate expression e up to 64 bits left by natural b bits
-<br>Example: p := numerics.rotate_left( 16, 2 );
-<br>Ada Equivalent: Interfaces.Rotate_Left
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to rotate</td>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
 </tr>
-
-<tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the number of bits to rotate</td>
-</tr>
-
-<tr>
-<td>p</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>Constraint_Error is raised if rounding or truncating e to the precision of the machine numbers results in a value outside the base range of S.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'machine attribute</p></td>
 </tr>
 </table>
-</td>
+
+<a name="numerics.max"></a><h3>f := numerics.max( x, y )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>return the larger of x and y</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.max( 1.0, 2.0 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>x,y</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expressions to be compared</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>i := numerics.rotate_right( e, b )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>rotate expression e up to 64 bits right by natural b bits
-<br>Example: f := numerics.rotate_right( 16, 2 );
-<br>Ada Equivalent: Interfaces.Rotate_Right
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to rotate</td>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
 </tr>
-
-<tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the number of bits to rotate</td>
-</tr>
-
-<tr>
-<td>p</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.min</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'max attribute<br>PHP: max</p></td>
 </tr>
 </table>
-</td>
+
+<a name="numerics.md5"></a><h3>r := numerics.md5( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>return the message digest 5 fingerprint of string s</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">sig := numerics.md5( "Checksum for this message" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the string to generate an MD5 checksum for</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.remainder( x, y )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-
-<td>
-<br>remainder of a floating point divide of x by y.  According to the Ada
-Reference Manual: For nonzero Y, let v be the value X-n*Y, where n is the
-integer nearest to the exact value of X/Y; if |n-X/Y|=1/2, then n is chosen to
-be even. If v is a machine number of the type T, the function yields v;
-otherwise, it yields zero. Constraint_Error is raised if Y is zero. A zero
-result has the sign of X when a machine has signed zeros.
-<br>Example: f := numerics.remainder( 16.5, 2.0 );
-<br>Ada Equivalent: 'remainder attribute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>x</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to divide</td>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the MD5 checksum</span></td>
 </tr>
-
-<tr>
-<td>y</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the amount to divide by</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>PHP: md5</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Uses MD5 package from www.AdaPower.com</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
-&nbsp;<br>
 
-<h3>f := numerics.rounding( e )</h3>
+<a name="numerics.min"></a><h3>f := numerics.min( x, y )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>return the smaller of x and y</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.max( 1.0, 2.0 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>x,y</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expressions to be compared</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.max</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'min attribute<br>PHP: min</p></td>
+</tr>
+</table>
+
+<a name="numerics.odd"></a><h3>f := numerics.odd( x )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>odd function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.odd( 1 ); -- true</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>x</span></td>
+<td><span>in</span></td>
+<td><span>integer</span></td>
+<td><span>required</span></td>
+<td><span>the value to test</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if integer is odd</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A ( x mod 2 = 1 )</p></td>
+</tr>
+</table>
+
+<a name="numerics.pos"></a><h3>p := numerics.pos( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>return the ASCII value (ordinal position) of character c</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">p := numerics.pos( 'a' ); -- returns 97<br>p := numerics.pos( ASCII.Quotation ); -- returns 34</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the position of</span></td>
+</tr>
+<tr>
+<td><span>p</span></td>
+<td><span>return value</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the position</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>an exception is raised if c is a string with a length of 0 or more than 1</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'pos attribute<br>PHP: ord</p></td>
+</tr>
+</table>
+
+<a name="numerics.random"></a><h3>f := numerics.random</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>generate a random floating-point number between zero and one</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">i := integer( numerics.truncation( numerics.random * 10 )+1; -- returns 1 to 10</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>float</span></td>
+<td><span>required</span></td>
+<td><span>the random number</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.rnd</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada Equivalent: Ada.Numerics.Float_Random.Random</p></td>
+</tr>
+</table>
+
+<a name="numerics.rnd"></a><h3>r := numerics.rnd( p )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>generate a random positive number between 1 and p</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">r := numerics.rnd( 10 ); -- 1 to 10</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the maximum positive number to return</span></td>
+</tr>
+<tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the random number</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.random</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>PHP: rand / mt_rand</p></td>
+</tr>
+</table>
+
+<a name="numerics.rotate_left"></a><h3>i := numerics.rotate_left( e, b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>rotate expression e up to 64 bits left by natural b bits,
+each step multiplying by two.  The highest bits are appended to the bottom.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">p := numerics.rotate_left( 16, 2 ); -- returns 64</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to rotate</span></td>
+</tr>
+<tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of bits to rotate</span></td>
+</tr>
+<tr>
+<td><span>p</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.rotate_right<br>numerics.shift_left<br>numerics.shift_right<br>numeric.shift_right_arthmetic</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Interfaces.Rotate_Left</p></td>
+</tr>
+</table>
+
+<a name="numerics.rotate_right"></a><h3>i := numerics.rotate_right( e, b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>rotate expression e up to 64 bits right by natural b bits,
+each step dividing by two.  The lowest bits are appended to the top.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.rotate_right( 16, 2 ); -- returns 4</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to rotate</span></td>
+</tr>
+<tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of bits to rotate</span></td>
+</tr>
+<tr>
+<td><span>p</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.rotate_left<br>numerics.shift_left<br>numerics.shift_right<br>numeric.shift_right_arthmetic</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Interfaces.Rotate_Right</p></td>
+</tr>
+</table>
+
+<a name="numerics.remainder"></a><h3>f := numerics.remainder( x, y )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>remainder of a floating point divide of x by y.  According to the Ada Reference Manual: For nonzero Y, let v be the value X-n*Y, where n is the integer nearest to the exact value of X/Y; if |n-X/Y|=1/2, then n is chosen to be even. If v is a machine number of the type T, the function yields v; otherwise, it yields zero. Constraint_Error is raised if Y is zero. A zero result has the sign of X when a machine has signed zeros.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.remainder( 16.5, 2.0 ); -- return 0.5</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>x</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to divide</span></td>
+</tr>
+<tr>
+<td><span>y</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the amount to divide by</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'remainder attribute</p></td>
+</tr>
+</table>
+
+<a name="numerics.rounding"></a><h3>f := numerics.rounding( e )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -1630,537 +1718,553 @@ will round to 7.</p></td>
 <td><p>Ada: 'rounding attribute<br>PHP: round<br>Java: java.lang.Math.round</p></td>
 </tr>
 </table>
-&nbsp;<br>
 
-<p>
-<hr><b>f := numerics.scaling( x, y )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="numerics.scaling"></a><h3>f := numerics.scaling( x, y )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>multiply floating point number by 2 to the power of integer y.
-Let v be the value X*T'Machine_Radix**Adjustment. If v is a machine number of the type T, or if |v|&gt;=T'Model_Small, 
-The function yields v; otherwise, it yields either one of the machine numbers of the type T adjacent to v. Constraint_Error is optionally raised if v is outside the base range of S. A zero result has the sign of X when a machine has signed zeros.
-<br>Example: f := numerics.scaling( 5.5, 3 );
-<br>Ada Equivalent: 'scaling attribute
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>multiply floating point number by 2 to the power of integer y. Let v be the value X*T'Machine_Radix**Adjustment. If v is a machine number of the type T, or if |v|&gt;=T'Model_Small, The function yields v; otherwise, it yields either one of the machine numbers of the type T adjacent to v.  A zero result has the sign of X when a machine has signed zeros.  This is used for high precision mathamatics.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.scaling( 5.5, 3 ); -- returns 44</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>x</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to round</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>x</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression</span></td>
 </tr>
-
 <tr>
-<td>y</td>
-
-<td>in</td>
-
-<td>integer</td>
-
-<td>required</td>
-
-<td>the power to scale by</td>
+<td><span>y</span></td>
+<td><span>in</span></td>
+<td><span>integer</span></td>
+<td><span>required</span></td>
+<td><span>the power to scale by</span></td>
 </tr>
-
 <tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
 </tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.serial</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>return a natural integer, unique to this session.  That is, the first
-invocation returns zero, the second returns one and so forth.  The number
-returns to zero when it exceeds System.Max_Integer.
-<br>Example: f := numerics.serial;
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the serial number result</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>i := numerics.shift_left( e, b )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>shift expression e up to 64 bits left by natural b bits
-<br>Example: f := numerics.shift_left( 16, 2 );
-<br>Ada Equivalent: Interfaces.Shift_Left
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to shift</td>
-</tr>
-
-<tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the number of bits to shift</td>
-</tr>
-
-<tr>
-<td>i</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>i := numerics.shift_right( e, b )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>shift expression e up to 64 bits right by natural b bits
-<br>Example: f := numerics.shift_right( 16, 2 );
-<br>Ada Equivalent: Interfaces.Shift_Right
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to shift</td>
-</tr>
-
-<tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the number of bits to shift</td>
-</tr>
-
-<tr>
-<td>i</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>i := numerics.shift_right_arithmetic( e, b )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>shift expression e up to 64 bits right by natural b bits, preserving
-sign
-<br>Example: f := numerics.shift_right_arithmetic( 16, 2 );
-
-<br>Ada Equivalent: Interfaces.Shift_Right_Arithmetic
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to shift</td>
-
-</tr>
-
-<tr>
-<td>b</td>
-
-<td>in</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the number of bits to shift</td>
-
-</tr>
-
-<tr>
-<td>i</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.sin( e [,cycle] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>trig sine function
-<br>Example: f := numerics.sin( numerics.pi );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.sin
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expressions to to take the sine of</td>
-</tr>
-
-<tr>
-<td>cycle</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>numerics.pi*2</td>
-
-<td>the trig period (eg. 360 for degrees), default is radians</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>floating point</td>
-
-<td>required</td>
-
-<td>the result</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>Constraint_Error may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'scaling attribute</p></td>
 </tr>
 </table>
 
-</td>
+<a name="numerics.serial"></a><h3>f := numerics.serial</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>return a natural integer, unique to this session.  That is, the first invocation returns zero, the second returns one and so forth.  The number returns to zero when it exceeds System.Max_Integer.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.serial;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the serial number result</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.sinh( e )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>trig sinh function
-<br>Example: f := numerics.sinh( numerics.pi );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.sinh
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expressions to to take the sinh of</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>floating point</td>
-
-<td>required</td>
-
-<td>the result</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
-</td>
+
+<a name="numerics.shift_left"></a><h3>i := numerics.shift_left( e, b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>shift expression e up to 64 bits left by natural b bits,
+each step multiplying by two.  The highest bits are discarded.  The sign
+bit will be overwritten.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.shift_left( 16, 2 ); -- returns 64</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to shift</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.sqrt( e )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>square root of e
-<br>Example: f := numerics.sqrt( 9.0 );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.sqrt
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expressions to to take the square root of</td>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of bits to shift</span></td>
 </tr>
-
 <tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>floating point</td>
-
-<td>required</td>
-
-<td>the result</td>
+<td><span>i</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.rotate_left<br>numerics.rotate_right<br>numerics.shift_right<br>numeric.shift_right_arthmetic</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Interfaces.Shift_Left<br>PHP: &lt;&lt;</p></td>
 </tr>
 </table>
-</td>
+
+<a name="numerics.shift_right"></a><h3>i := numerics.shift_right( e, b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>shift expression e up to 64 bits right by natural b bits,
+each step dividing by two.  The lowest bits are discarded.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.shift_right( 16, 2 ); -- returns 4</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to shift</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.sturges( l, h, t );</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Sturge's method: compute a grouping size for data with a low value
-of l, high value of h, and a sum total of t.  This is used for setting
-the scale of graphs.
-<br>Example: f := numerics.sturges( 18, 64, 421 );
-<br>Ada Equivalent: none (AdaScript extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>l</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the lowest value</td>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of bits to shift</span></td>
 </tr>
-
 <tr>
-<td>h</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the highest value</td>
+<td><span>i</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
 </tr>
-
-<tr>
-<td>t</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the sum total</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.rotate_left<br>numerics.rotate_right<br>numerics.shift_left<br>numeric.shift_right_arthmetic</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Interfaces.Shift_Right<br>PHP: &gt;&gt;</p></td>
 </tr>
 </table>
-</td>
+
+<a name="numerics.shift_right_arithmetic"></a><h3>i := numerics.shift_right_arithmetic( e, b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>shift expression e up to 64 bits right by natural b bits, preserving sign</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.shift_right_arithmetic( 16, 2 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to shift</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>f := numerics.tan( e [,cycle] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-
-<td>
-<br>trig tangent function
-<br>Example: f := numerics.tan( numerics.pi );
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.tan
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expressions to to take the tangent of</td>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of bits to shift</span></td>
 </tr>
-
 <tr>
-<td>cycle</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>numerics.pi*2</td>
-
-<td>the trig period (eg. 360 for degrees), default is radians</td>
+<td><span>i</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
 </tr>
-
-<tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>floating point</td>
-
-<td>required</td>
-
-<td>the result</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.rotate_left<br>numerics.rotate_right<br>numerics.shift_left<br>numeric.shift_right</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Interfaces.Shift_Right_Arithmetic</p></td>
 </tr>
 </table>
-</td>
+
+<a name="numerics.sin"></a><h3>f := numerics.sin( e [,cycle] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig sine function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.sin( numerics.pi );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the sine of</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>f :=numerics.tanh( e )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>trig tanh function
-<br>Example: f := tanh( e );
-
-<br>Ada Equivalent: Ada.Numerics.Generic_Elementary_Functions.tanh
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the expression to to take the tanh of</td>
-
+<td><span>cycle</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>numerics.pi*2</span></td>
+<td><span>the trig period (eg. 360 for degrees), default is radians</span></td>
 </tr>
-
 <tr>
-<td>f</td>
-
-<td>return value</td>
-
-<td>universal_numeric</td>
-
-<td>required</td>
-
-<td>the result</td>
-
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>floating point</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.sin<br>PHP: sin</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<h3>f := numerics.truncation( e )</h3>
+<a name="numerics.sinh"></a><h3>f := numerics.sinh( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig hyperbolic sine function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.sinh( numerics.pi );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the sinh of</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>floating point</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.sinh<br>PHP: sinh</p></td>
+</tr>
+</table>
+
+<a name="numerics.sqrt"></a><h3>f := numerics.sqrt( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>square root of e</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.sqrt( 9.0 ); -- returns 3.0</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the square root of</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>floating point</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>an exception may be thrown if e is negative</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.sqrt<br>PHP: sqrt</p></td>
+</tr>
+</table>
+
+<a name="numerics.sturges"></a><h3>f := numerics.sturges( l, h, t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Sturge's method: compute a grouping size for data with a low value of l, high value of h, and a sum total of t.  This is used for setting the scale of graphs.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.sturges( 18, 64, 421 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the lowest value</span></td>
+</tr>
+<tr>
+<td><span>h</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the highest value</span></td>
+</tr>
+<tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the sum total</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This should probably be moved to the stats package.</p></td>
+</tr>
+</table>
+
+<a name="numerics.tan"></a><h3>f := numerics.tan( e [,cycle] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig tangent function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.tan( numerics.pi );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the tangent of</span></td>
+</tr>
+<tr>
+<td><span>cycle</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>numerics.pi*2</span></td>
+<td><span>the trig period (eg. 360 for degrees), default is radians</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>floating point</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>a constraint_error when e is an odd multiple of the quarter cycle</p></p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.tan<br>PHP: tan</p></td>
+</tr>
+</table>
+
+<a name="numerics.tanh"></a><h3>f := numerics.tanh( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig hyperbolic tangent function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := tanh( e );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expression to take the tanh of</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.tanh<br>PHP: tanh</p></td>
+</tr>
+</table>
+
+<a name="numerics.truncation"></a><h3>f := numerics.truncation( e )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Convert a float value to an integer by truncating the decimal part.
-This is different from floor.  The function yields the value Ceiling(X) when
-X is negative, and Floor(X) otherwise. A zero result has the sign of X when
+This is different from floor.  The function yields the value ceiling(e) when
+e is negative, and floor(e) otherwise. A zero result has the sign of e when
 a machine has signed zeros.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
@@ -2202,7 +2306,7 @@ f2 := numerics.truncation( -5.5 ); -- returns -5</span></p>
 </table>
 &nbsp;<br>
 
-<h3>f := numerics.unbiased_rounding( e )</h3>
+<a name="numerics.unbiased_rounding"></a><h3>f := numerics.unbiased_rounding( e )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -2211,7 +2315,7 @@ if exactly between two integers. That is, 5.5 will round up to 6 and 6.5
 will round down to 6.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">f := numerics.value( " 32.5" ) * numerics.value( "-1.2" );</span></p>
+<td><span class="code">f := numerics.unbiased_rouding( 7.5 ); -- returns 8</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -2248,7 +2352,7 @@ will round down to 6.</p></td>
 </table>
 &nbsp;<br>
 
-<h3>f := numerics.value( s )</h3>
+<a name="numerics.value"></a><h3>f := numerics.value( s )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -2286,7 +2390,7 @@ string is trimmed first.  This function only parses numbers.</p></td>
 cannot be converted.</span></p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>strings.image</p>
+<td><p>strings.image<br>numerics.pos</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: 'value attribute<br>PHP: floatval, etc.<br>Java: parseFloat, etc.</p></td>

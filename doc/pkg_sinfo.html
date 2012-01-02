@@ -50,12 +50,12 @@ that identify the file and the line number where a problem was encountered.</p>
         <center>
         <div class="code">
 <pre>
-  enclosing_entity - name of script (if a procedure block)
-  file - file name without a path
-  line - current line number
-  script_size - size of compiled script (bytes)
-  source_location - file and line number
-  symbol_table_size - number of variables
+  <a href="#source_info.enclosing_entity">s := enclosing_entity</a> - name of script (if a procedure block)
+  <a href="#source_info.file">s := file</a> - file name without a path
+  <a href="#source_info.line">p := line</a> - current line number
+  <a href="#source_info.script_size">n := script_size</a> - size of compiled script (bytes)
+  <a href="#source_info.source_location">s := source_location</a> - file and line number
+  <a href="#source_info.symbol_table_size">n := symbol_table_size</a> - number of identifiers
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -64,173 +64,228 @@ that identify the file and the line number where a problem was encountered.</p>
         </div>
         </center>
 
-<p>
-<hr><b>s := source_info.enclosing_entity</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="source_info.enclosing_entity"></a><h3>s := source_info.enclosing_entity</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Return the name of the script as identified in a procedure block (if
-any)
-<br>Example: put_line( source_info.enclosing_entity );
-<br>Ada Equivalent: GNAT.Source_Info.Enclosing_Entity
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Return the name of the script as identified in a procedure block (if any)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">put_line( source_info.enclosing_entity );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the script name</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the script name</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.Source_Info.Enclosing_Entity</p></td>
 </tr>
 </table>
-</td></tr>
-</table></center>
 
-<p>
-<hr><b>s := source_info.file</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="source_info.file"></a><h3>s := source_info.file</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Return the name name of the script file, no path information. It is
-the basename for the script.
-<br>Example: put_line( source_info.file );
-<br>Ada Equivalent: GNAT.Source_Info.File
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Return the name name of the script file, no path information. It is the basename for the script.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">put_line( source_info.file );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the script file name</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the script file name</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.Source_Info.File<br>PHP: __FILE__</p></td>
 </tr>
 </table>
-</td>
+
+<a name="source_info.line"></a><h3>p := source_info.line</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the line number of the line being currently being executed.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">put_line( source_info.line );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>p</span></td>
+<td><span>return value</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the current line number</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>p := source_info.line</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Return the line number of the line being currently being executed.
-<br>Example: put_line( source_info.line );
-<br>Ada Equivalent: GNAT.Source_Info.Line
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>p</td>
-
-<td>return value</td>
-
-<td>positive</td>
-
-<td>required</td>
-
-<td>the current line number</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.Source_Info.Line<br>PHP: __LINE__</p></td>
 </tr>
 </table>
-</td>
+
+<a name="source_info.script_size"></a><h3>n := source_info.script_size</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the size of the compiled script</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">put_line( source_info.script_size );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of bytes</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>n := source_info.script_size</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the size of the compiled script
-<br>Example: put_line( source_info.script_size );
-
-<br>Restrictions: not allowed with pragma Ada_95
-<br>Ada Equivalent: none (AdaScript extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>n</td>
-
-<td>return value</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the number of bytes</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
-</td>
+
+<a name="source_info.source_location"></a><h3>s := source_info.source_location</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the filename and current line number separated by a colon,
+useful for error messages.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">put_line( source_info.source_location );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the source location</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>s := source_info.source_location</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the filename and current line number separated by a colon
-<br>Example: put_line( source_info.source_location );
-<br>Ada Equivalent: GNAT.Source_Info.Source_Location
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the source location</td>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.Source_Info.Source_Location<br>PHP: __FILE__ , __LINE__</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>n := source_info.symbol_table_size</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="source_info.symbol_table_size"></a><h3>n := source_info.symbol_table_size</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Return the number of symbols (variables, etc.) defined
-<br>Example: put_line( source_info.symbol_table_size );
-<br>Restrictions: not allowed with pragma Ada_95
-<br>Ada Equivalent: none (AdaScript extension)
-<br>Parameters:
-
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of identifiers (variables, functions, etc.) defined</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">put_line( source_info.symbol_table_size );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>n</td>
-
-<td>return value</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the number of symbols</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of symbols</span></td>
 </tr>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
 </table>
-</td>
-</tr>
-</table></center>
-
-&nbsp;<br>
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>

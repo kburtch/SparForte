@@ -123,7 +123,8 @@ failure.</p>
 <p>Some functionality (such as cas) is not implemented.</p>
 
 <p>Because memcached has no security features, running in a restricted
-shell will disable the memcache package.</p>
+shell will disable the memcache package.  The package can also be
+disabled with pragma restriction.</p>
 
 <a name="memcache.add"></a><h3>memcache.add( cl, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
@@ -168,7 +169,7 @@ Otherwise, an error is displayed but execution continues.</p></td>
 <td><p>An exception is thrown if no servers are defined in the cluster</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.set<br>memcache.replace</p>
@@ -221,7 +222,7 @@ memcache cluster cl.</p></td>
 <td><p>An exception is thrown if no servers are defined in the cluster</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.prepend</p>
@@ -262,7 +263,7 @@ flushed from memcached.</p></td>
 <td><p>-</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p></td>
+<td><p>Not allowed in a restricted shell or with no_memcache restriction</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.register_server</p></td>
@@ -308,7 +309,7 @@ flushed from memcached.</p></td>
 <td><p>An exception is thrown if no servers are defined in the cluster</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.flush</p>
@@ -349,7 +350,7 @@ marked invalid and are gradually replaced as new items are stored.</p></td>
 <td><p>An exception is thrown if no servers are defined in the cluster</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.delete</p>
@@ -480,7 +481,7 @@ servers and manage connections.</p></td>
 <td><p>An exception is thrown if no servers are defined in the cluster</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">Implementation Notes</p></td>
 <td><p>Because the memcache_cluster record is private, SparForte allocates
@@ -538,7 +539,7 @@ memcache cluster cl.</p></td>
 <td><p>An exception is thrown if no servers are defined in the cluster</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.append</p>
@@ -594,7 +595,7 @@ register the same server twice.</p></td>
 <td><p>An exception is raised if a server is registered twice.</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.clear_servers</p>
@@ -648,7 +649,7 @@ execution continues.</p></td>
 <td><p>An exception is thrown if no servers are defined in the cluster</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.add<br>memcache.set</p>
@@ -701,7 +702,7 @@ the key already has a value, it will be overwritten.</p></td>
 <td><p>An exception is thrown if no servers are defined in the cluster</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.add<br>memcache.replace</p>
@@ -748,7 +749,7 @@ some error messages.</p></td>
 <td><p>An exception is thrown if no servers are defined in the cluster</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p>
@@ -795,7 +796,7 @@ memcache.memcache_cluster_type.normal.</p></td>
 <td><p>An exception is thrown if no servers are defined in the cluster</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p>
@@ -843,7 +844,7 @@ consult the memcached documentation.</p></td>
 <td><p>An exception is thrown if no servers are defined in the cluster</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.version</p>
@@ -891,7 +892,7 @@ the same version on all servers.)</p></td>
 <td><p>An exception is thrown if no servers are defined in the cluster</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.stats</p>

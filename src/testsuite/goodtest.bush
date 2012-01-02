@@ -908,6 +908,59 @@ foo_dummy_variable_123: string := "foo_123";
 pragma unchecked_import( shell, foo_dummy_variable_123 );
 pragma assert( foo_dummy_variable_123 = "foo_123" );
 
+-- json pragmas
+
+FOOBAR_INT : integer;
+pragma import_json( shell, FOOBAR_INT );
+pragma assert( FOOBAR_INT = 98 );
+FOOBAR_STRING : string;
+pragma import_json( shell, FOOBAR_STRING );
+pragma export_json( shell, FOOBAR_STRING );
+pragma volatile( FOOBAR_STRING );
+pragma assert( FOOBAR_STRING = "foobar" );
+type FIA_TYPE is array(1..1) of integer;
+FOOBAR_INT_ARRAY : FIA_TYPE;
+pragma import_json( shell, FOOBAR_INT_ARRAY );
+pragma assert( FOOBAR_INT_ARRAY(1) = 32 );
+type FR_TYPE is record
+  s : string;
+end record;
+FOOBAR_RECORD : FR_TYPE;
+pragma import_json( shell, FOOBAR_RECORD );
+pragma assert( FOOBAR_RECORD.s = "foo" );
+
+FOOBAR_INT_UNCHECKED : integer;
+pragma unchecked_import_json( shell, FOOBAR_INT_UNCHECKED );
+pragma assert( FOOBAR_INT_UNCHECKED = 98 );
+FOOBAR_STRING_UNCHECKED : string;
+pragma unchecked_import_json( shell, FOOBAR_STRING_UNCHECKED );
+pragma assert( FOOBAR_STRING_UNCHECKED = "foobar" );
+type FIAU_TYPE is array(1..1) of integer;
+FOOBAR_INT_ARRAY_UNCHECKED : FIAU_TYPE;
+pragma unchecked_import_json( shell, FOOBAR_INT_ARRAY_UNCHECKED );
+pragma assert( FOOBAR_INT_ARRAY_UNCHECKED(1) = 32 );
+type FRU_TYPE is record
+  s : string;
+end record;
+FOOBAR_RECORD_UNCHECKED : FRU_TYPE;
+pragma unchecked_import_json( shell, FOOBAR_RECORD_UNCHECKED );
+pragma assert( FOOBAR_RECORD_UNCHECKED.s = "foo" );
+-- unchecked imports on non-existent variables, no error and leave old values
+FOOBAR_INT_UNCHECKED_NOEXIST : integer := 97;
+pragma unchecked_import_json( shell, FOOBAR_INT_UNCHECKED_NOEXIST );
+pragma assert( FOOBAR_INT_UNCHECKED_NOEXIST = 97 );
+FOOBAR_STRING_UNCHECKED_NOEXIST : string := "undefined";
+pragma unchecked_import_json( shell, FOOBAR_STRING_UNCHECKED_NOEXIST );
+pragma assert( FOOBAR_STRING_UNCHECKED_NOEXIST = "undefined" );
+FOOBAR_INT_ARRAY_UNCHECKED_NOEXIST : FIAU_TYPE;
+FOOBAR_INT_ARRAY_UNCHECKED_NOEXIST(1) := 21;
+pragma unchecked_import_json( shell, FOOBAR_INT_ARRAY_UNCHECKED_NOEXIST );
+pragma assert( FOOBAR_INT_ARRAY_UNCHECKED_NOEXIST(1) = 21 );
+FOOBAR_RECORD_UNCHECKED_NOEXIST : FRU_TYPE;
+FOOBAR_RECORD_UNCHECKED_NOEXIST.s := "undefined again";
+pragma unchecked_import_json( shell, FOOBAR_RECORD_UNCHECKED_NOEXIST );
+pragma assert( FOOBAR_RECORD_UNCHECKED_NOEXIST.s = "undefined again" );
+
 -- enums package
 
 pragma assert( enums.first( boolean ) = false );

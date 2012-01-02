@@ -110,25 +110,4 @@ procedure parseProcedureCallSemicolon;
 procedure parseFunctionCallSemicolon;
 -- more informative than expect( .. ";" );
 
-procedure DoStringFromJson( result : out unbounded_string; expr_val : unbounded_string );
--- Convert a JSON string and return the string
-
-procedure DoArrayToJson( target_ref : reference; source_var_id : identifier );
--- Convert an array to a JSON string.
-
-procedure DoJsonToArray( target_var_id : identifier; source_val : unbounded_string );
--- Convert a JSON string and store in an array.
-
-procedure DoRecordToJson( target_ref : reference; source_var_id : identifier );
--- Convert a record to a JSON string.
-
-procedure DoJsonToRecord( target_ref : reference; sourceVal : unbounded_string );
--- Convert a JSON string and store in a record.
-
-function castToType( val : long_float; kind : identifier ) return unbounded_string;
-function castToType( val : unbounded_string; kind : identifier ) return unbounded_string;
--- If a value is an integer type (i.e. positive, natural or integer),
--- round the value.  Otherwise do not round the value.  Return the
--- result as a string value.
-
 end parser_aux;

@@ -90,7 +90,9 @@ and
 numeric types.&nbsp; Variables declared as universal_typeless change
 their
 type between universal_string and universal_numeric depending how they
-are used.&nbsp; If AdaScript cannot decide in a particular context, the
+are used.&nbsp; If an enumerated value is assigned to a univeral_typeless
+variable, it becomes a number with the ordinal value of the enumerated
+item.  If AdaScript cannot decide in a particular context, the
 variable type defaults to universal_string.&nbsp; Typeless variables
 correspond
 to variables in Bourne shells and are provided for as a command line

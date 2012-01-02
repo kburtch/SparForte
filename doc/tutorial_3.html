@@ -246,6 +246,22 @@ commit the changes using <span style="font-weight: bold;">db.commit_work</span>.
 <a href="packages.html">the Packages section</a>
  for a full description.</p>
 
+<h3>Securing Your Database</h3>
+
+<p>Security is one of the biggest challenges, especially for web sites.</p>
+
+<p>SparForte's strong typing can help ensure that your website is protected.
+For example, create new string types called "unvalidated_string" and
+"validated_string".</p>
+
+<p>Then create your own versions of the database procedures like "append" that
+build a query string.  In your version, require a validated_string parameter.
+Now SparForte's type system can check that only validated strings are used in
+database queries.</p>
+
+<p>There is an example of how to do this with HTML content in the
+<a href="tutorial_6.html">Basic Templates</a> tutorial.</p>
+
 <h3>Study Questions</h3>
 <ol>
 <li>Can you run a query for two different databases engines at the same time?</li>
@@ -261,6 +277,7 @@ commit the changes using <span style="font-weight: bold;">db.commit_work</span>.
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_3.html">&nbsp;<b>Command Prompt Tutorial 3: Working with Databases</b></a></p>
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_4.html">&nbsp;Script Tutorial 1: Basic Commands Scripts</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_5.html">&nbsp;Script Tutorial 2: Intermediate Program Scripts</a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_14.html">&nbsp;Script Tutorial 3: Data Types</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_6.html">&nbsp;Template Tutorial 1: Basic Templates</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_7.html">&nbsp;Template Tutorial 2: Intermediate Templates</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_8.html">&nbsp;GCC Tutorial: Compiling SparForte Scripts</a></p>

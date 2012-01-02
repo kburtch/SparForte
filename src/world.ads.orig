@@ -42,8 +42,8 @@ package world is
 -- Global Variables / Flags
 ------------------------------------------------------------------------------
 
-version   : constant string := "1.2";
-copyright : constant string :=  " Copyright (c)2001-2011 Free Software Foundation";
+version   : constant string := "1.3";
+copyright : constant string :=  " Copyright (c)2001-2012 Free Software Foundation";
 
 random_generator : ada.numerics.float_random.generator;
 
@@ -273,6 +273,15 @@ reserved_top    : identifier := identifier'last;
 
 symbol_table_overflow : exception;
 
+------------------------------------------------------------------------------
+-- Block Table
+--
+-- The block table is defined in scanner.ads but the declarations are here
+-- because the block number is sometimes stored (for example, in arrays)
+-- so we need the block id's to have larger scope.
+------------------------------------------------------------------------------
+type block is new integer range 1..32; -- The block nesting level
+block_table_overflow : exception;      -- Too many blocks
 
 ------------------------------------------------------------------------------
 -- Predefined Identifiers (Global)
@@ -508,8 +517,9 @@ procedure declareFunction( id : out identifier; s : string );
 procedure declareProcedure( id : out identifier; s : string );
 -- Initialize a built-in procedure identifier in the symbol table
 
-function deleteIdent( id : identifier ) return boolean;
+--function deleteIdent( id : identifier ) return boolean;
 -- delete an identifier, true if successful
+-- moved to scanner because this has become a complex operation
 
 procedure declareIdent( id : out identifier; name : unbounded_string;
   kind : identifier; class : anIdentifierClass := otherClass );

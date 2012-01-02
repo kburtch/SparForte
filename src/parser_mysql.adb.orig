@@ -677,7 +677,7 @@ begin
 end ParseMySQLRaiseExceptions;
 
 procedure ParseMySQLReportErrors is
-  -- Syntax: mysql.report_errors( [ b ] );
+  -- Syntax: mysql.report_errors( b );
   -- Source: APQ.Report_Errors
   reportExpr : unbounded_string;
   reportType : identifier;

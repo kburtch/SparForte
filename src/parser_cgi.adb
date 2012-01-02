@@ -271,7 +271,7 @@ procedure ParsePut_CGI_Header is
 -- This header determines what the program's reply type is.
 -- Default is to return a generated HTML document.
 -- Warning: Make calls to Set_Cookie before calling this procedure!
-  expr_val  : unbounded_string := to_unbounded_string( "content_type: text/html" );
+  expr_val  : unbounded_string := to_unbounded_string( "Content-Type: text/html" );
   expr_type : identifier;
 begin
   expect( cgi_put_cgi_header_t );

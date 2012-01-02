@@ -28,6 +28,7 @@ with gnat.bubble_sort_a,
      string_util,
      user_io,
      world,
+     scanner,
      scanner_arrays,
      parser,
      parser_aux;
@@ -35,6 +36,7 @@ use  bush_os,
      string_util,
      user_io,
      world,
+     scanner,
      scanner_arrays,
      parser,
      parser_aux;
@@ -568,7 +570,6 @@ procedure ParseArraysToArray is
   --target_base_id: identifier;
   source_val    : unbounded_string;
   source_type   : identifier;
-
 begin
   expect( arrays_to_array_t );
   expect( symbol_t, "(" );
@@ -588,6 +589,8 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
+     -- DoJsonToArray actually populates the array, so you don't use assign parameter
+     -- assignParameter( target_var_id, jsonString );
      DoJsonToArray( target_var_id, source_val );
   end if;
 end ParseArraysToArray;
@@ -598,6 +601,7 @@ procedure ParseArraysToJSON is
   -- Source: N/A
   source_var_id : identifier;
   target_ref    : reference;
+  jsonString    : unbounded_string;
 begin
   expect( arrays_to_json_t );
   expect( symbol_t, "(" );
@@ -616,7 +620,8 @@ begin
   expect( symbol_t, ")" );
 
   if isExecutingCommand then
-     DoArrayToJson( target_ref, source_var_id );
+     DoArrayToJson( jsonString, source_var_id );
+     assignParameter( target_ref, jsonString );
   end if;
 end ParseArraysToJSON;
 

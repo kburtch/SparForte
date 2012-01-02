@@ -49,9 +49,9 @@ as the superuser to access the sound devices on your computer.</p>
         <center>
         <div class="code">
 <pre>
-  play( "path" [,pri] ) - play a sound at an optional priority
-  playcd [( "path" )]   - play an audio cd in optional cd device path
-  stopcd                - stop an audio cd
+  <a href="#sound.play">play( f [, p] )</a>
+  <a href="#sound.playcd">playcd [( f )]</a>
+  <a href="#sound.stopcd">stopcd</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -60,85 +60,109 @@ as the superuser to access the sound devices on your computer.</p>
         </div>
         </center>
 
-<p>
-<hr><b>sound.play( f [, p] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="sound.play"></a><h3>sound.play( f [, p] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Play a WAV or AU sound file through /dev/dsp.  If priority is given, use
-real-time scheduling to sechedule the playback priority.
-<br>Example: sound.play( "waterfall.wav" );
-
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Play a WAV or AU sound file through /dev/dsp.  If priority is given, use real-time scheduling to sechedule the playback priority.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">sound.play( "waterfall.wav" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>universal_string</td>
-
-<td>required</td>
-
-<td>the sound file to play</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the sound file to play</span></td>
 </tr>
-
 <tr>
-<td>p</td>
-
-<td>in</td>
-
-<td>integer</td>
-
-<td>highest integer</td>
-
-<td>real-time priority</td>
-
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>integer</span></td>
+<td><span>highest integer</span></td>
+<td><span>real-time priority</span></td>
 </tr>
-</table>
-</table></center>
-
-<p>
-<hr><b>sound.playcd [( f )]</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Play an audio CD in /dev/cdrom (or an alternative CD device
-if specified).
-<br>Example: sound.playcd;
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>universal_string</td>
-
-<td>/dev/cdrom</td>
-
-<td>the name of the CD device</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
-</td></tr>
-</table></center>
 
-<p>
-<hr><b>sound.stopcd</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="sound.playcd"></a><h3>sound.playcd [( f )]</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Stop the current audio CD.
-<br>Example: sound.stopcd;
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters: none
-</td></tr>
-</table></center>
+<td width="15%">&nbsp;</td>
+<td><p>Play an audio CD in /dev/cdrom (or an alternative CD device if specified).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">sound.playcd;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>/dev/cdrom</span></td>
+<td><span>the name of the CD device</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>sound.stopcd</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
 
-&nbsp;<br>
+<a name="sound.stopcd"></a><h3>sound.stopcd [( f )]</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Stop playing the current audio CD.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">sound.stopcd;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td>none</td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>sound.playcd</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>

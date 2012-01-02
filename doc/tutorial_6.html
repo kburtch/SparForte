@@ -26,7 +26,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="tutorial_5.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="tutorial_7.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="tutorial_14.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="tutorial_7.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -183,6 +183,77 @@ able to run commands with the authority of the web server.</p>
 the web server error log. If a page doesn't display properly, check the
 error log for possible problems.</p>
 
+<h3>Securing Your Web Site</h3>
+
+<p>Security is one of the biggest challenges for a website.  You should never work
+with data that comes from outside of your website unless it has been sanitized
+and validated, nor should you display any data on the web page or put any data
+in a URL that is not escaped for special characters.</p>
+
+<p>If you fail to protect your program, you will be vulnerable to Internet
+attacks such as <b>injections</b> (when strings variables are copied into SQL queries
+or OS commands) or <b>cross-site scripts</b> (where strings of HTML or JavaScript are
+pasted back into a web page to take over a user session or deface a web site).</p>
+
+<p>If possible, try to run a script in restricted shell mode.  This will
+prevent most exploits.  However, if a restricted shell is too restrictive,
+remember to do the following things:</p>
+
+<ul>
+<li>Use <b>cgi.url_encode</b> for all URL's being returned.</li>
+<li>Use <b>cgi.html_encode</b> for all string values that will used to build web content.</li>
+<li>Use the strings validation functions like <b>strings.is_alphanumeric</b> on all strings.</li>
+<li>Sanitize input values with <b>strings.fix</b> or <b>strings.trim</b> where appropriate.</li>
+<li>Convert or cast input values from strings to their appropriate type using functions like <b>numerics.value</b>.</li>
+</ul>
+
+<p>SparForte's strong typing is very good at keeping data separate that should
+remain separate.  It can help protect your site from putting unencoded
+data on a web site.  For example, create new string types like "unescaped_string"
+and "escaped_string".</p>
+
+<p>The create your own version of the html_encode and url_encode functions that
+have an unescaped_string parameter and returns a escaped_string.
+Create your own version of put or put_line that use escaped_string
+parameters.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">
+<b>type</b> unescaped_string <b>is</b> <b>new</b> string;<br>
+<b>type</b> escaped_string <b>is</b> <b>new</b> string;<br>
+<br>
+<b>function</b> html_encode( s : unescaped_string ) <b>return</b> escaped_string <b>is</b><br>
+<b>begin</b><br>
+&nbsp;&nbsp;<b>return</b> cgi.html_encode( s );<br>
+<b>end</b> html_encode;<br>
+<br>
+<b>function</b> url_encode( s : unescaped_string ) <b>return</b> escaped_string <b>is</b><br>
+<b>begin</b><br>
+&nbsp;&nbsp;<b>return</b> cgi.url_encode( s );<br>
+<b>end</b> url_encode;<br>
+<br>
+<b>procedure</b> put_html( s : escaped_string ) <b>is</b><br>
+<b>begin</b><br>
+&nbsp;&nbsp;put( s );<br>
+<b>end</b> put_html;<br>
+<br>
+<b>procedure</b> put_line_html( s : escaped_string ) <b>is</b><br>
+<b>begin</b><br>
+&nbsp;&nbsp;put_line( s );<br>
+<b>end</b> put_line_html;<br>&nbsp;<br>
+        </p>
+        <div class="code_caption">
+        <b>Example</b>: Using Strong Typing to Ensure Web Page Content is Encoded</span>
+        </div>
+        </div>
+        </center>
+
+<p>Now SparForte's type system can check that only encoded strings
+are used when outputting web page content.  You could, of course,
+use different types for HTML and URL strings as well to prevent
+them from being mixed.</p>
+
 <h3>Study Questions</h3>
 <ol>
 <li>Why is it important to check input submitted to a web application,
@@ -198,6 +269,7 @@ especially one that can run shell shell commands and database queries?</li>
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_3.html">&nbsp;Command Prompt Tutorial 3: Working with Databases</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_4.html">&nbsp;Script Tutorial 1: Basic Commands Scripts</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_5.html">&nbsp;Script Tutorial 2: Intermediate Program Scripts</a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_14.html">&nbsp;Script Tutorial 3: Data Types</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_6.html">&nbsp;<b>Template Tutorial 1: Basic Templates</b></a></p>
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_7.html">&nbsp;Template Tutorial 2: Intermediate Templates</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="tutorial_8.html">&nbsp;GCC Tutorial: Compiling SparForte Scripts</a></p>

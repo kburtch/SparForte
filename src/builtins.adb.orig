@@ -876,7 +876,6 @@ begin
      Put_Line( "  t := clock               y := year( t )           m := month( t )" );
      Put_Line( "  d := day( t )            s := seconds( t )        split( t, y, m, d, s )" );
      Put_Line( "  t := time_of( y,m,d,s )  i := day_of_week( t )    t := to_time( j )" );
-     Put_Line( "  j := to_julian( t ) - not complete                                 " );
      discardUnusedIdentifier( token );
   elsif helpTopic = "case" then
      Put_Line( "case - test multiple cases" );
@@ -895,11 +894,10 @@ begin
      Put_Line( "  key_count( k )             argument_count             key( p )" );
      Put_Line( "  key_value_exists( k, v )   put_cgi_header( s )        put_html_head( t, m )" );
      Put_Line( "  put_html_heading( s, p )   put_html_tail              put_error_message( s )" );
-     Put_Line( "  my_url                     get_environment( v )       line_count" );
+     Put_Line( "  my_url                     put_variables              line_count" );
      Put_Line( "  line_count_of_value        line( v )                  value_of_line( k, p )" );
      Put_Line( "  url_decode                 url_encode( s )            html_encode( s )" );
      Put_Line( "  set_cookie( k,v,e,p,d,s )  cookie_value( p )          cookie_count" );
-     Put_Line( "  put_variables" );
      discardUnusedIdentifier( token );
   elsif helpTopic = "clear" then
      Put_Line( "clear - reset tty device and clear the screen" );
@@ -912,12 +910,12 @@ begin
   elsif helpTopic = "command_line" then
      Put_Line( "command_line (package) - count and read script arguments" );
      New_Line;
-     Put_Line( "  argument( i ) - return argument i" );
-     Put_Line( "  argument_count - number of arguments" );
-     Put_Line( "  command_name - name used to execute the script");
-     Put_Line( "  environment.environment_count - number of variables in the O/S environment " );
-     Put_Line( "  environment.environment_value - return environment value i" );
-     Put_Line( "  set_exit_status( i ) - change script exit status code");
+     Put_Line( "  s := argument( p ) - return argument p" );
+     Put_Line( "  n := argument_count - number of arguments" );
+     Put_Line( "  s := command_name - name used to execute the script");
+     Put_Line( "  n := environment.environment_count - number of environment vars" );
+     Put_Line( "  s := environment.environment_value( p ) - return environment value p" );
+     Put_Line( "  command_line.set_exit_status( n ) - change script exit status code - change script exit status code");
      New_Line;
      Put_Line( "Bourne Shell shortcuts:" );
      Put_Line( "  $# - number of arguments" );
@@ -931,28 +929,28 @@ begin
   elsif helpTopic = "db" then
      Put_Line( "db (package) - APQ PostgreSQL database package interface" );
      New_Line;
-     Put_Line( "  connect( dbname [,user ,pswd [,host [,port] ] ] )");
-     Put_Line( "  append( stmt [,after] )     prepare( stmt [,after] )" );
-     Put_Line( "  append_line( stmt )         append_quoted( stmt )");
-     Put_Line( "  execute                     execute_checked( msg )");
-     Put_Line( "  disconnect                  is_connected" );
+     Put_Line( "  db.connect( d [, u, w ][, h][, p] )" );
+     Put_Line( "  append( s [,a] )            prepare( s [, a] )" );
+     Put_Line( "  append_line( s )            append_quoted( s )" );
+     Put_Line( "  execute                     execute_checked( [ s ] )" );
+     Put_Line( "  disconnect                  b := is_connected" );
      Put_Line( "  reset                       s := error_message" );
-     Put_Line( "  s := notice_message         b := in_abort_state" );
+     Put_Line( "  s := notice_message         s := in_abort_state" );
      Put_Line( "  s := options                set_rollback_on_finalize( b )" );
      Put_Line( "  open_db_trace( f [,m] )     b := will_rollback_on_finalize" );
      Put_Line( "  close_db_trace              set_trace( b )" );
      Put_Line( "  b := is_trace               clear" );
-     Put_Line( "  raise_exceptions( [b] )     report_errors( [b] )" );
+     Put_Line( "  raise_exceptions( [ b ] )   report_errors( b )" );
      Put_Line( "  begin_work                  rollback_work" );
      Put_Line( "  commit_work                 rewind" );
-     Put_Line( "  fetch[(r)]                  b := end_of_query" );
-     Put_Line( "  n := tuple( t )             n := tuples" );
+     Put_Line( "  fetch [ (i) ]               b := end_of_query" );
+     Put_Line( "  t := tuple                  n := tuples" );
      Put_Line( "  n := columns                s := column_name( c )" );
      Put_Line( "  i := column_index( s )      b := is_null( c )" );
-     Put_Line( "  s := value( c )             d := engine_of " );
+     Put_Line( "  s := value( c )             d := engine_of" );
      Put_Line( "  show                        list" );
      Put_Line( "  schema( t )                 users" );
-     Put_Line( "  databases                        " );
+     Put_Line( "  databases" );
   elsif helpTopic = "declare" then
      Put_Line( "declare - begin a new block" );
      Put_Line( "  [" & bold( "declare") & " declarations] " &
@@ -966,10 +964,10 @@ begin
   elsif helpTopic = "directory_operations" then
      Put_Line( "directory_operations - directory operations package functions" );
      New_Line;
-     Put_Line( "  dir_separator             change_dir( p )          remove_dir( p [, r])");
-     Put_Line( "  get_current_dir           dir_name( p )            base_name( p [, s])");
-     Put_Line( "  file_extension( p )       file_name( p )           format_pathname(p [,s])");
-     Put_Line( "  expand_path( p [,s] )                                                    ");
+     Put_Line( "  c := dir_separator             change_dir( p )               remove_dir( p [, r] )" );
+     Put_Line( "  p := get_current_dir           s := dir_name( p )            s := base_name( p [, f] )" );
+     Put_Line( "  s := file_extension( p )       s := file_name( p )           s := format_pathname( p [,t] )" );
+     Put_Line( "  s := expand_path( p [,t] )     make_dir( p )" );
   elsif helpTopic = "end_of_file" then
      Put_Line( "end_of_file - true if an in_file file has no more data" );
      Put_Line( "  end_of_file( file )" );
@@ -993,12 +991,12 @@ begin
   elsif helpTopic = "files" then
      Put_Line( "files - files package functions" );
      New_Line;
-     Put_Line( "  exists( p )               is_absolute_path( p )    is_regular_file( p )");
-     Put_Line( "  is_directory( p )         is_writable_file( p )    is_executable_file( p )");
-     Put_Line( "  is_readable_file( p )     is_waiting_file( p )     file_length( p )");
-     Put_Line( "  basename( p )             dirname( p )             last_modified( p )");
-     Put_Line( "  last_changed( p )         last_accessed( p )       is_writable( p )  ");
-     Put_Line( "  is_readable( p )          is_executable( p )                         ");
+     Put_Line( "  b := basename( p )           b := dirname( p )         b := exists( p )" );
+     Put_Line( "  b := is_absolute_path( p )   b := is_directory( p )    b := is_executable( p )" );
+     Put_Line( "  b := is_executable_file( p ) b := is_regular_file( p ) b := is_readable( p )" );
+     Put_Line( "  b := is_readable_file( p )   b := is_waiting_file( p ) b := is_writable( p )  " );
+     Put_Line( "  b := is_writable_file( p )   t := last_accessed( p )   t := last_changed( p )" );
+     Put_Line( "  t := last_modified( p )      l := size( p )" );
   elsif helpTopic = "for" then
      Put_Line( "for - for loop" );
      Put_Line( "  " & bold( "for" ) & " var " &
@@ -1110,28 +1108,27 @@ begin
   elsif helpTopic = "mysql" then
      Put_Line( "mysql (package) - APQ MySQL database package interface" );
      New_Line;
-     Put_Line( "  connect( dbname [,user ,pswd [,host [,port] ] ] )");
-     Put_Line( "  append( stmt [,after] )     prepare( stmt [,after] )" );
-     Put_Line( "  append_line( stmt )         append_quoted( stmt )");
-     Put_Line( "  execute                     execute_checked( msg )");
+     Put_Line( "  connect( d [, u, w ][, h][, p] )" );
+     Put_Line( "  append( s [, a] )           prepare( s [, a] )" );
+     Put_Line( "  append_line( s )            append_quoted( s )" );
+     Put_Line( "  execute                     execute_checked( [ s ] )" );
      Put_Line( "  disconnect                  is_connected" );
      Put_Line( "  reset                       s := error_message" );
-     Put_Line( "                              b := in_abort_state" );
+     Put_Line( "  databases                   b := in_abort_state" );
      Put_Line( "  s := options                set_rollback_on_finalize( b )" );
      Put_Line( "  open_db_trace( f [,m] )     b := will_rollback_on_finalize" );
      Put_Line( "  close_db_trace              set_trace( b )" );
      Put_Line( "  b := is_trace               clear" );
-     Put_Line( "  raise_exceptions( [b] )     report_errors( [b] )" );
+     Put_Line( "  raise_exceptions( [ b ] )   report_errors( b )" );
      Put_Line( "  begin_work                  rollback_work" );
      Put_Line( "  commit_work                 rewind" );
-     Put_Line( "  fetch[(r)]                  b := end_of_query" );
+     Put_Line( "  fetch [ (i) ]               b := end_of_query" );
      Put_Line( "  n := tuple( t )             n := tuples" );
      Put_Line( "  n := columns                s := column_name( c )" );
      Put_Line( "  i := column_index( s )      b := is_null( c )" );
-     Put_Line( "  s := value( c )             d := engine_of " );
+     Put_Line( "  s := value( c )             b := engine_of " );
      Put_Line( "  show                        list" );
      Put_Line( "  schema( t )                 users" );
-     Put_Line( "  databases                        " );
   elsif helpTopic = "declare" then
      Put_Line( "declare - begin a new block" );
      Put_Line( "  [" & bold( "declare") & " declarations] " &
@@ -1170,9 +1167,10 @@ begin
   elsif helpTopic = "null" then
      Put_Line( "null - do nothing" );
   elsif helpTopic = "os" then
-     Put_Line( "os - BUSH operating system binding" );
-     Put_Line( "  system( string ) -- run shell command with C system()" );
-     Put_Line( "  i := status;     -- status of last command" );
+     Put_Line( "os - SparForte operating system binding" );
+     Put_Line( "  i := status" );
+     Put_Line( "  s := strerror( i )" );
+     Put_Line( "  system( s )" );
      New_Line;
      Put_Line( "Bourne Shell shortcuts:" );
      Put_Line( "  $? - status of last command" );
@@ -1211,9 +1209,13 @@ begin
      Put_Line( "  " & bold( "pragma" ) & " " &
        "export( shell | local_memcache | memcache , var ) - export a variable" );
      Put_Line( "  " & bold( "pragma" ) & " " &
+       "export_json( shell | local_memcache | memcache , var )" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
        "gcc_errors - same as --gcc-errors" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "import( shell | cgi | local_memcache | memcache, var ) - import a variable" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
+       "pragma import_json( shell | cgi | local_memcache | memcache, var )" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "inspect( var ) - perform 'env var' on --break breakout" );
      Put_Line( "  " & bold( "pragma" ) & " " &
@@ -1303,19 +1305,19 @@ begin
   elsif helpTopic = "source_info" then
      Put_Line( "source_info (package) - information on the current script" );
      New_Line;
-     Put_Line( "  enclosing_entity - name of script (if a procedure block)" );
-     Put_Line( "  file - file name without a path" );
-     Put_Line( "  line - current line number" );
-     Put_Line( "  script_size - size of compiled script (bytes)" );
-     Put_Line( "  source_location - file and line number" );
-     Put_Line( "  symbol_table_size - number of variables" );
+     Put_Line( "  s := enclosing_entity - name of script (if a procedure block)" );
+     Put_Line( "  s := file - file name without a path" );
+     Put_Line( "  p := line - current line number" );
+     Put_Line( "  n := script_size - size of compiled script (bytes)" );
+     Put_Line( "  s := source_location - file and line number" );
+     Put_Line( "  n := symbol_table_size - number of identifiers" );
      New_Line;
      discardUnusedIdentifier( token );
   elsif helpTopic = "stats" then
      Put_Line( "stats - stats package functions" );
      New_Line;
-     Put_Line( "  average( a )             max( a )                 min( a )");
-     Put_Line( "  standard_deviation( a )  sum( a )                 variance( a )" );
+     Put_Line("  r := average( a )             r := max( a )              r := min( a )" );
+     Put_Line("  r := standard_deviation( a )  r := sum( a )              r := variance( a )" );
      discardUnusedIdentifier( token );
   elsif helpTopic = "subtype" then
      Put_Line( "subtype - create an alias for a type" );
@@ -1423,29 +1425,32 @@ begin
      New_Line;
      Put_Line( "  e                    log2_e                  log10_e             ln10" );
      Put_Line( "  ln2                  pi                      pi_by_2             pi_by_4" );
-     Put_Line( "  pi_under_1                                   pi_under_2" );
-     Put_Line( "  sqrt_pi_under_2                              sqrt_2" );
+     Put_Line( "  pi_under_1           pi_under_2              sqrt_pi_under_2     sqrt_2" );
      Put_Line( "  sqrt_2_under_1" );
      New_Line;
-     Put_Line( "  sqrt( x )            log( x [,base] )         exp( x )           random" );
-     Put_Line( "  shift_left( x, b )   rotate_left( x, b )      shift_right_arithmeric( x, b )" );
-     Put_Line( "  shift_right( x, b )  rotate_right( x, b )     floor( x )         ceiling( x )" );
-     Put_Line( "  rounding( x )        truncation( x )          unbiased_rounding( x )         " );
-     Put_Line( "  remainder( x, y )    copy_sign( x, y )        leading_part( x, y )           " );
-     Put_Line( "  exponent( x )        fraction( x )            max( m, n )         min( m, n )" );
-     Put_Line( "  machine( x )         scaling( x, y )          value( s )          pos( c )   " );
-     Put_Line( "  sturges( l, h, t )   md5( s )                 rnd( n )            serial     " );
-     Put_Line( "  odd( i )             even( i )                                               " );
+     Put_Line( "  f := abs( e )               f := ceiling( e )              f := copy_sign( x, y )" );
+     Put_Line( "  f := even( i )              f := exp( x )                  f := exponent( e )" );
+     Put_Line( "  f := floor( e )             f := fraction( e )             f := leading_part( x, y )           " );
+     Put_Line( "  f := log( e [,b] )          f := machine( e )              f := max( x, y )" );
+     Put_Line( "  r := md5( s )               f := min( x, y )               f := odd( x )" );
+     Put_Line( "  p := pos( c )               f := random                    f := remainder( x, y )" );
+     Put_Line( "  r := rnd( p )               i := rotate_left( e, b )       i := rotate_right( e, b )" );
+     Put_Line( "  f := rounding( e )          f := scaling( x, y )           f := serial     " );
+     Put_Line( "  f := sqrt( e )              f := sturges( l, h, t )        i := shift_left( e, b )" );
+     Put_Line( "  i := shift_right( e, b )    i := shift_right_arithmetic( x, b ) f := truncation( e )" );
+     Put_Line( "  f := unbiased_rounding( e ) f := value( s )" );
      New_Line;
-     Put_Line( "  sin( x [,cycle] )    arcsin( x [,cycle] )     sinh( x )          arcsinh( x )" );
-     Put_Line( "  cos( x [,cycle] )    arccos( x [,cycle] )     cosh( x )          arccosh( x )" );
-     Put_Line( "  tan( x [,cycle] )    arctan( x, y [,cycle] )  tanh( x )          arctanh( x )" );
-     Put_Line( "  cot( x [,cycle] )    arccot( x, y [,cycle] )  coth( x )          arccoth( x )" );
+     Put_Line( "  f := arccos( x [,cycle] )    f := arccosh( e )         f := arccot( x, y [,cycle] )" );
+     Put_Line( "  f := arccoth( e )            f := arcsin( e [,cycle] ) f := arcsinh( e )" );
+     Put_Line( "  f := arctan( x, y [,cycle] ) f := arctanh( e )         f := cos( e [,cycle] )" );
+     Put_Line( "  f := cosh( e )               f := cot( e [,cycle] )    f := coth( e )" );
+     Put_Line( "  f := sin( e [,cycle] )       f := sinh( e )            f := tan( e [,cycle] )" );
+     Put_Line( "  f := tanh( e )" );
      New_Line;
-     Put_Line( "  re( complex )        im( complex )            modulus( complex )            " );
-     Put_Line( "  set_re( complex, r ) set_im( complex, i )     argument( complex )           " );
+     Put_Line( "  re( complex )                im( complex )             modulus( complex )" );
+     Put_Line( "  set_re( complex, r )         set_im( complex, i )      argument( complex )" );
      New_Line;
-     Put_Line( "  abs( x ) is not ""numerics.abs( x )"" because it's not in the numerics package" );
+     Put_Line( "  abs( x ) is not 'numerics.abs( x )' because it's not in the numerics package" );
      discardUnusedIdentifier( token );
   elsif helpTopic = "pen" then
      Put_Line( "pen - pen package subprograms" );

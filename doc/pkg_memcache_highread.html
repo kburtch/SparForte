@@ -131,8 +131,8 @@ failure.</p>
 <p>Some functionality (such as cas) is not implemented.</p>
 
 <p>Because memcached has no security features, running in a restricted
-shell will disable the memcache.highread package.</p>
-
+shell will disable the memcache.highread package.  It can also be
+disabled with pragma restriction.</p>
 
 <a name="memcache.highread.add"></a><h3>memcache.highread.add( cl, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
@@ -177,7 +177,7 @@ Otherwise, an error is displayed but execution continues.</p></td>
 <td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with the no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.highread.set<br>memcache.highread.replace</p>
@@ -230,7 +230,7 @@ memcache cluster cl.</p></td>
 <td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with the no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.highread.prepend</p>
@@ -271,7 +271,7 @@ flushed from memcached.</p></td>
 <td><p>-</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with the no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.highread.register_alpha_server<br>memcache.highread.register_beta_server</p></td>
@@ -317,7 +317,7 @@ flushed from memcached.</p></td>
 <td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with the no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.highread.flush</p>
@@ -358,7 +358,7 @@ marked invalid and are gradually replaced as new items are stored.</p></td>
 <td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with the no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.highread.delete</p>
@@ -451,7 +451,7 @@ servers and manage connections.</p></td>
 <td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with the no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">Implementation Notes</p></td>
 <td><p>Because the memcache_cluster record is private, SparForte allocates
@@ -509,7 +509,7 @@ memcache cluster cl.</p></td>
 <td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with the no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.highspeed.append</p>
@@ -565,7 +565,7 @@ register the same server twice.</p></td>
 <td><p>An exception is raised if a server is registered twice.</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with the no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.highread.clear_servers</p>
@@ -621,7 +621,7 @@ register the same server twice.</p></td>
 <td><p>An exception is raised if a server is registered twice.</p>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with the no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.highread.clear_servers</p>
@@ -675,7 +675,7 @@ execution continues.</p></td>
 <td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with the no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.highread.add<br>memcache.highread.set</p>
@@ -728,7 +728,7 @@ the key already has a value, it will be overwritten.</p></td>
 <td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with the no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.highread.add<br>memcache.highread.replace</p>
@@ -775,7 +775,7 @@ some error messages.</p></td>
 <td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with the no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p>
@@ -822,7 +822,7 @@ memcache.memcache_cluster_type.normal.</p></td>
 <td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with the no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p>
@@ -870,7 +870,7 @@ For the meaning of the stats, consult the memcached documentation.</p></td>
 <td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with the no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.highread.version</p>
@@ -918,7 +918,7 @@ the same version on all servers.)</p></td>
 <td><p>An exception is thrown if no servers are defined in either cluster within the dual cluster</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed in a restricted shell</p>
+<td><p>Not allowed in a restricted shell or with the no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>memcache.highread.stats</p>

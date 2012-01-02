@@ -47,6 +47,33 @@ and character values. (The character positions are numbered from 1.)</p>
 
 <p><u>GCC Ada equivalent</u>: Ada.Strings.Unbounded, GNAT.Regexp, GNAT.Regpat
 
+        <center>
+        <div class="code">
+<pre>
+  <a href="#strings.element">c := element( s, p )</a>           slice( s, l, h )         index( s, p [, d] )
+  index_non_blank( s [,d] ) <a href="#strings.count">n := count( s, p )</a>       replace_slice( s, l, h, b )
+  insert( s, b, n )         overwrite( s, p, n )     <a href="#strings.delete">r := delete( s, l, h )</a>
+  trim( s , e )             head( s, c [, p] )       tail( s, c [, p] )
+  length( s )               match( e, s )            <a href="#strings.glob">b := glob( e, s )</a> 
+  image( s )                val( n )                 <a href="#strings.field">r := field( s, c [, d] )</a>
+  mktemp( p )               lookup( s, t, d )        replace( s,f, t [,d] )
+  <a href="#strings.csv_field">r := csv_field( s, c [, d] )</a>    is_typo_of( s1, s2 )     <a href="#strings.csv_replace">r := csv_replace( s, f, t, [, d] )</a>
+  to_lower( s )             to_upper( s )            to_proper( s )
+  to_basic( s )             to_escaped( s )          split( s,l,r,n)
+  is_slashed_date( s )      is_control( s )          is_graphic( s ) 
+  is_letter( s )            is_lower( s )            is_upper( s ) 
+  is_basic( s )             is_digit( s )            is_hexadecimal_digit( s )
+  is_alphanumeric( s )      is_special( s )          is_fixed( s ) 
+  unbounded_slice( s, l, h ) set_unbounded_string( s, u ) 
+  <a href="#strings.from_json">r := from_json( s )</a>
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the strings package</span>
+        </div>
+        </div>
+        </center>
+
 <p>Ada implements three different kinds of strings: standard "fixed" strings,
 bounded strings and unbounded strings. They are implemented in different
 packages and are incompatible with one another. The standard strings are
@@ -71,553 +98,414 @@ and to_string functions should be used.
 <li><b>strings.trim_end</b> - trim_end.left, trim_end.right or trim_end.both</li>
 </ul>
 
-        <center>
-        <div class="code">
-<pre>
-  element( s, i )           slice( s, l, h )         index( s, p [, d] )
-  index_non_blank( s [,d] ) count( s, p )            replace_slice( s, l, h, b )
-  insert( s, b, n )         overwrite( s, p, n )     delete( s, l, h )
-  trim( s , e )             head( s, c [, p] )       tail( s, c [, p] )
-  length( s )               match( e, s )            glob( e, s ) 
-  image( s )                val( n )                 field( s, c [, d] ) 
-  mktemp( p )               lookup( s, t, d )        replace( s,f, t [,d] )
-  csv_field( s, c [,d] )    is_typo_of( s1, s2 )     csv_replace( s,f,t [,d] )
-  to_lower( s )             to_upper( s )            to_proper( s )
-  to_basic( s )             to_escaped( s )          split( s,l,r,n)
-  is_slashed_date( s )      is_control( s )          is_graphic( s ) 
-  is_letter( s )            is_lower( s )            is_upper( s ) 
-  is_basic( s )             is_digit( s )            is_hexadecimal_digit( s )
-  is_alphanumeric( s )      is_special( s )          is_fixed( s ) 
-  unbounded_slice( s, l, h ) set_unbounded_string( s, u ) 
-</pre>
-        &nbsp;<br>
-        <div class="code_caption">
-        <b>Help Command</b>: Contents of the strings package</span>
-        </div>
-        </div>
-        </center>
-
-<p>
-<hr><b>n := strings.count( s, p )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="strings.count"></a><h3>n := strings.count( s, p )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>return the occurrences in string s of substring p
-<br>Example: n := strings.count( "baby", "b" ); -- returns 2
-
-<br>Ada Equivalent: Ada.Strings.Unbounded.Count
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>return the occurrences in string s of substring p</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">n := strings.count( "baby", "b" ); -- returns 2</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>universal_string</td>
-
-<td>required</td>
-
-<td>the string to check</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string to check</span></td>
 </tr>
-
 <tr>
-<td>p</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the substring to search for</td>
-
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the substring to search for</span></td>
 </tr>
-
 <tr>
-<td>n</td>
-
-<td>return value</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the number of occurrences (0 if none)</td>
-
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of occurrences (0 if none)</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Strings.Unbounded.Count<br>PHP: substr_count</p></td>
 </tr>
 </table>
-</td>
+
+<a name="strings.csv_field"></a><h3>r := strings.csv_field( s, c [, d] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>return the natural cth substring of s delimited by character d (typically a comma).  Double quotes will escape the delimiter.  For use with Comma Separated Value files.  A bad position returns an empty string (like the Linux/UNIX cut command).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := strings.csv_field( "a/b/c", 2, '/' ); -- returns "b"</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string to search</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>r := strings.csv_field( s, c [, d] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>return the natural cth substring of s delimited by character d (typically
-a comma).  Double quotes will escape the delimiter.  For use with Comma
-Separated Value files.
-<br>Example: s := strings.csv_field( "a/b/c", 2, '/' ); -- returns "b"
-<br>Ada Equivalent: none (AdaScript extension)
-<br>See Also: strings.field, strings.index, strings.lookup
-<br>Parameters:
-
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>universal_string</td>
-
-<td>required</td>
-
-<td>the string to search</td>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the field position (1 for first field)</span></td>
 </tr>
-
 <tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the field position (1 for first field)</td>
+<td><span>d</span></td>
+<td><span>in</span></td>
+<td><span>character</span></td>
+<td><span>','</span></td>
+<td><span>the character delimiter</span></td>
 </tr>
-
 <tr>
-<td>d</td>
-
-<td>in</td>
-
-<td>character</td>
-
-<td>','</td>
-
-<td>the character delimiter</td>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the field</span></td>
 </tr>
-
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the field</td>
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>A bad position returns an empty string (like the Linux/UNIX cut command).
-<p>
-
-<p>
-<hr><b>r := strings.csv_replace( s, f, t, [, d] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>replace the natural fth substring of s delimited by character d (typically
-a comma) with string t.  Double quotes will escape the delimiter.  For use
-with Comma Separated Value files (or ASCII.TAB for tab separated value file).
-<br>Example: strings.csv_replace( "a/b/c", 2, "x", '/' ); -- now "a/x/c"
-<br>Ada Equivalent: none (AdaScript extension)
-
-<br>See Also: strings.csv_replace, strings.replace_slice
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>in out</td>
-
-<td>universal_string</td>
-
-<td>required</td>
-
-<td>the string to search</td>
-
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the field position (1 for first field)</td>
-
-</tr>
-
-<tr>
-<td>t</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the new field value</td>
-
-</tr>
-
-<tr>
-<td>d</td>
-
-<td>in</td>
-
-<td>character</td>
-
-<td>','</td>
-
-<td>the character delimiter</td>
-
-</tr>
-
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the field</td>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>strings.field<br>strings.index<br>strings.lookup</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>PHP: str_getcsv</p></td>
 </tr>
 </table>
-</td>
+
+<a name="strings.csv_replace"></a><h3>r := strings.csv_replace( s, f, t, [, d] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>replace the natural fth substring of s delimited by character d (typically a comma) with string t.  Double quotes will escape the delimiter.  For use with Comma Separated Value files (or ASCII.TAB for tab separated value file).  A bad position returns an empty string (like the Linux/UNIX cut command).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">strings.csv_replace( "a/b/c", 2, "x", '/' ); -- now "a/x/c"</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in out</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string to search</span></td>
 </tr>
-</table></center>
-
-<p>A bad position returns an empty string (like the Linux/UNIX cut command).
-<p>
-
-<hr><b>r := strings.delete( s, l, h )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>return a string with character positions positive l to natural h deleted
-<br>Example: r := strings.delete( "bowl", 4, 4 ); -- returns "bow"
-<br>Ada Equivalent: Ada.Strings.Unbounded.Delete
-
-<br>See Also: strings.head, strings.slice, strings.tail
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>universal_string</td>
-
-<td>required</td>
-
-<td>the string to change</td>
-
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the field position (1 for first field)</span></td>
 </tr>
-
 <tr>
-<td>l</td>
-
-<td>in</td>
-
-<td>positive</td>
-
-<td>required</td>
-
-<td>low position to delete (1 is the start of the string).</td>
-
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the new field value</span></td>
 </tr>
-
 <tr>
-<td>h</td>
-
-<td>in</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the high position to delete.</td>
-
+<td><span>d</span></td>
+<td><span>in</span></td>
+<td><span>character</span></td>
+<td><span>','</span></td>
+<td><span>the character delimiter</span></td>
 </tr>
-
 <tr>
-<td>n</td>
-
-<td>return value</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the string with the positions removed</td>
-
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the field</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>strings.csv_field<br>strings.replace_slice</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>PHP: str_putcsv</p></td>
 </tr>
 </table>
-</td>
+
+<a name="strings.delete"></a><h3>r := strings.delete( s, l, h )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>return a string with character positions positive l to natural h deleted</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">r := strings.delete( "bowl", 4, 4 ); -- returns "bow"</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string to change</span></td>
 </tr>
-</table></center>
-
-<p>A bad position raises an exception.
-<p>
-<hr><b>c := strings.element( s, p )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>return the character located at positive position p
-<br>Example: c := strings.element( "baby", 2 ); -- returns 'a'
-<br>Ada Equivalent: Ada.Strings.Unbounded.Element
-<br>See Also: strings.delete, strings.head, strings.slice, strings.tail
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>universal_string</td>
-
-<td>required</td>
-
-<td>the string to search</td>
-
+<td><span>l</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>low position to delete (1 is the start of the string).</span></td>
 </tr>
-
 <tr>
-<td>p</td>
-
-<td>in</td>
-
-<td>positive</td>
-
-<td>required</td>
-
-<td>the string position (1 is the first character).</td>
-
+<td><span>h</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the high position to delete.</span></td>
 </tr>
-
 <tr>
-<td>c</td>
-
-<td>return value</td>
-
-<td>character</td>
-
-<td>required</td>
-
-<td>the character</td>
-
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the string with the positions removed</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>A bad position raises an exception.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>strings.head<br>strings.slice<br>strings.tail</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada.Strings.Unbounded.Delete</p></td>
 </tr>
 </table>
-</td>
+
+<a name="strings.element"></a><h3>c := strings.element( s, p )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>return the character located at positive position p</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">c := strings.element( "baby", 2 ); -- returns 'a'</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string to search</span></td>
 </tr>
-</table></center>
-
-<p>A bad position raises an exception.
-<p>
-<hr><b>r := strings.field( s, c [, d] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>return the natural cth substring of s delimited by character d.  This is
-similar to PERL split.
-<br>Example: s := strings.field( "a/b/c", 2, '/' ); -- returns "b"
-<br>Ada Equivalent: none (AdaScript extension)
-<br>See Also: strings.csv_field, strings.index, strings.lookup
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>universal_string</td>
-
-<td>required</td>
-
-<td>the string to search</td>
-
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the string position (1 is the first character).</span></td>
 </tr>
-
 <tr>
-<td>c</td>
-
-<td>in</td>
-
-<td>natural</td>
-
-<td>required</td>
-
-<td>the field position (1 for first field)</td>
-
+<td><span>c</span></td>
+<td><span>return value</span></td>
+<td><span>character</span></td>
+<td><span>required</span></td>
+<td><span>the character</span></td>
 </tr>
-
-<tr>
-<td>d</td>
-
-<td>in</td>
-
-<td>character</td>
-
-<td>ASCII.CR</td>
-
-<td>the character delimiter</td>
-
-</tr>
-
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the field</td>
-
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>A bad position raises an exception.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>strings.delete<br>strings.head<br>strings.slice<br>strings.tail</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Strings.Unbounded.Element</p></td>
 </tr>
 </table>
-</td>
+
+<a name="strings.field"></a><h3>r := strings.field( s, c [, d] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>return the natural cth substring of s delimited by character d.  A bad position returns an empty string (like the Linux/UNIX cut command).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := strings.field( "a/b/c", 2, '/' ); -- returns "b"</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string to search</span></td>
 </tr>
-</table></center>
-
-<p>A bad position returns an empty string (like the Linux/UNIX cut command).
-
-<p>
-<hr><b>r := strings.from_json( s )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-
-<td>
-<br>convert JSON encoding of a string into the original string.  Encoding
-arbitrary control
-characters with \u is not yet supported, though carriage returns, line feeds,
-etc. are supported.
-<br>Example: r :=  strings.from_json( ASCII.Quotation &amp; "foobar\ntest" &amp; ASCII.Quotation ); -- returns a string with foobar, a line feed, and test 
-<br>Ada Equivalent: none (AdaScript extension)
-<br>See Also: arrays.from_json
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the JSON expression to decode</td>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the field position (1 for first field)</span></td>
 </tr>
-
 <tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the decoded string</td>
+<td><span>d</span></td>
+<td><span>in</span></td>
+<td><span>character</span></td>
+<td><span>ASCII.CR</span></td>
+<td><span>the character delimiter</span></td>
+</tr>
+<tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the field</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>A bad position returns an empty string (like the Linux/UNIX cut command).</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>strings.csv_field<br>strings.index<br>strings.lookup</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Perl: split<br>PHP: explode</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
 
-<p>
-<hr><b>b := strings.glob( e, s )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="strings.glob"></a><h3>b := strings.glob( e, s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>return true if string globbing expression e
-<br>Example: b := strings.glob( "app*", "apple" ); -- returns true
-<br>Ada Equivalent: GNAT.RegPat.Match (Note: Match not Glob)
-<br>See Also: strings.index, strings.match
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>in</td>
-
-<td>universal_string</td>
-
-<td>required</td>
-
-<td>the string to search</td>
-
-</tr>
-
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the globbing pattern to use</td>
-
-</tr>
-
-<tr>
-<td>b</td>
-
-<td>return value</td>
-
-<td>boolean</td>
-
-<td>required</td>
-
-<td>true if the pattern matched</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>Glob characters include:
+<td width="15%">&nbsp;</td>
+<td><p>return true if string globbing expression e. Globbing characters include:</p>
 <ul>
 <li>
 <b>*</b> - zero or more characters</li>
-
 <li>
 <b>?</b> - a single character</li>
-
 <li>
 <b>[...]</b> - a set of characters</li>
-
 <li>
 <b>[^...]</b> - any not in set of characters</li>
-
 <li>
 <b>[c1...c2]</b> - a range of characters between c1 and c2</li>
-
 </ul>
+</td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := strings.glob( "app*", "apple" ); -- returns true</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string to search</span></td>
+</tr>
+<tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the globbing pattern to use</span></td>
+</tr>
+<tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if the pattern matched</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>strings.index<br>strings.match</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.RegPat.Match</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>This should rightly be strings.match but the name conflicts with the
+other strings.match.  Glob also is a more descriptive name.</p></td>
+</tr>
+</table>
 
 <hr><b>r := strings.head( s, c [, p] )</b>
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
@@ -2354,8 +2242,11 @@ etc. are supported.
 <center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
 <td>
-<br>convert unbounded string s to string s
-<br>Example: s := strings.to_string( some_unbounded_string );
+<br>convert unbounded string s to string s. If u is a json_string, convert JSON encoding of a string into the original string.  Encoding arbitrary control characters with \u is not yet supported, though carriage returns, line feeds, etc. are supported.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<br>Example: s := strings.to_string( some_unbounded_string ); r :=  strings.from_json( ASCII.Quotation &amp; "foobar\ntest" &amp; ASCII.Quotation ); -- returns a string with foobar, a line feed, and test
+</tr><tr>
 <br>Ada Equivalent: Ada.Strings.Unbounded.To_String
 <br>Parameters:
 <table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
@@ -2386,6 +2277,46 @@ etc. are supported.
 </td>
 </tr>
 </table></center>
+
+<table>
+<td><p>convert JSON encoding of a string into the original string.  Encoding arbitrary control characters with \u is not yet supported, though carriage returns, line feeds, etc. are supported.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">r :=  strings.from_json( ASCII.Quotation &amp; "foobar\ntest" &amp; ASCII.Quotation ); -- returns a string with foobar, a line feed, and test</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the JSON expression to decode</span></td>
+</tr>
+<tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the decoded string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>Bad JSON data can throw exceptions</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>arrays.to_array<br>records.to_record</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>PHP: json_encode</p></td>
+</table>
 
 <p>
 <hr><b>u := strings.to_unbounded_string( s )</b>

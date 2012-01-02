@@ -72,8 +72,8 @@ package body parser_pragmas is
 
 type aPragmaKind is ( ada_95, asserting, annotate, debug, debug_on,
      depreciated, export, export_json, gcc_errors, import, import_json,
-     inspection, inspect_var,
-     license, noCommandHash, peek, promptChange, register_memcache_server,
+     inspection, inspect_var, license, noCommandHash, peek, promptChange,
+     register_memcache_server,
      restriction, restriction_annotations, restriction_auto,
      restriction_external, restriction_memcache, restriction_mysql,
      restriction_postgresql, restriction_todos, template, test,
@@ -139,6 +139,8 @@ begin
      pragmaKind :=  test_result;
   elsif name = "unchecked_import" then
      pragmaKind := unchecked_import;
+  elsif name = "unchecked_import_json" then
+     pragmaKind := unchecked_import_json;
   elsif name = "uninspect" then
      pragmaKind := uninspect_var;
   elsif name = "unrestricted_template" then
@@ -384,7 +386,6 @@ procedure ParsePragma is
   var_id      : identifier;
   exportType  : unbounded_string;
   importType  : unbounded_string;
-  ref         : reference;
   newValue    : unbounded_string;
 begin
   expect( pragma_t );
@@ -422,7 +423,8 @@ begin
      expect( strlit_t );
   when export | export_json =>                  -- pragma export/json
      ParseExportKind( var_id, exportType );
-  when import | unchecked_import | import_json => -- pragma unchecked/import/json
+  when import | unchecked_import | import_json | unchecked_import_json =>
+     -- pragma unchecked/import/json
      ParseImportKind( var_id, importType );
   when gcc_errors =>                         -- pragma gcc_errors
      null;
@@ -659,7 +661,7 @@ begin
                  if length( newValue ) = 0 then
                     err( "unable to find variable " &
                          to_string( identifiers( var_id ).name ) &
-                         " in the memcache" );
+                         " in memcached" );
                     identifiers( var_id ).import := false;
                     -- just for pragma import, mark as not imported if there
                     -- was an error (otherwise on the command prompt the
@@ -668,29 +670,46 @@ begin
               exception when others =>
                  err( "exception raised" );
               end;
-           elsif processingTemplate and importType = "cgi" then
+           --elsif processingTemplate and importType = "cgi" then
+           elsif importType = "cgi" then
               identifiers( var_id ).method := http_cgi;
-              for i in 1..cgi.key_count( to_string( identifiers( var_id ).name ) ) loop
-                  newValue := newValue & to_unbounded_string( cgi.value(
-                      to_string( identifiers( var_id ).name ), 1, true ) );
-               end loop;
-           elsif not processingTemplate and importType = "cgi" then
-               err( "import type cgi must be used in a template" );
-               identifiers( var_id ).import := false;
-           else
-              identifiers( var_id ).method := shell;
               declare
-                -- this worked when we had a string.  now this could be an
-                -- array and refreshing the var id will blow away the array
-                -- value!  This is a kludge: replace refreshVolatile with
-                -- something non-destructive for arrays, or make it smarter.
-                tmp : unbounded_string := identifiers( var_id ).value;
-              begin 
-                refreshVolatile( var_id );
-                newValue := identifiers( var_id ).value;
-                identifiers( var_id ).value := tmp;
+                 found : boolean := false;
+              begin
+                 for i in 1..cgi.key_count( to_string( identifiers( var_id ).name ) ) loop
+                     newValue := newValue & to_unbounded_string( cgi.value(
+                         to_string( identifiers( var_id ).name ), 1, true ) );
+                     found := true;
+                  end loop;
+                  if found then
+              -- apply mapping, if any.  assume these are all set correctly
+                     if identifiers( var_id ).mapping = json then                       -- json
+                        if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
+                           DoStringFromJson( identifiers( var_id ).value, newValue );
+                        elsif identifiers( var_id ).list then                           -- array
+                           DoJsonToArray( var_id, newValue );
+                        elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
+                           DoJsonToRecord( var_id, newValue );
+                        elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
+                           identifiers( var_id ).value := newValue;
+                        else
+                           err( "internal error: unexpected import translation type" );
+                        end if;
+                     else                                                           -- no mapping
+                        identifiers( var_id ).value := newValue;
+                     end if;
+                  else
+                    err( "unable to find variable " &
+                         to_string( identifiers( var_id ).name ) &
+                         " in the cgi variables" );
+                  end if;
               end;
-           end if;
+           --elsif not processingTemplate and importType = "cgi" then
+           --    err( "import type cgi must be used in a template" );
+           --    identifiers( var_id ).import := false;
+           else
+--               identifiers( var_id ).method := shell;
+                refreshVolatile( var_id );
            -- show a trace of what's imported.  If JSON, show JSON as it
            -- could be multiple values
            if trace then
@@ -699,27 +718,6 @@ begin
                   to_string( ToEscaped( newValue ) ) &
                   """" );
            end if;
-           -- Apply the translation mapping.
-           -- if it's JSON, translate from JSON.  The translation routine
-           -- depends on the variable type.
-           if pragmaKind = import_json then
-              if getUniType( identifiers( var_id ).kind ) = uni_string_t then
-                 DoStringFromJson( identifiers( var_id ).value, newValue );
-              elsif identifiers( var_id ).list then
-                 DoJsonToArray( var_id, newValue );
-              elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then
-                 ref.id := var_id;
-                 ref.kind := identifiers( var_id ).kind;
-                 DoJsonToRecord( ref, newValue );
-              elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then
-                 identifiers( var_id ).value := newValue;
-              else
-                 err( "internal error: unexpected import translation type" );
-                 identifiers( var_id ).import := false;
-              end if;
-           else
-              -- otherwise, just copy new value
-              identifiers( var_id ).value := newValue;
            end if;
         end if;
      when inspection =>
@@ -874,7 +872,7 @@ begin
         end if;
      when unchecked_import | unchecked_import_json =>
         -- Check for a reasonable identifier type
-        if pragmaKind = import_json then
+        if pragmaKind = unchecked_import_json then
            identifiers( var_id ).mapping := json;
            if identifiers( var_id ).class = userProcClass then
               err( "procedures cannot be imported" );
@@ -938,31 +936,44 @@ begin
               exception when others =>
                  err( "exception raised" );
               end;
-           elsif processingTemplate and importType = "cgi" then
+           --elsif processingTemplate and importType = "cgi" then
+           elsif importType = "cgi" then
               identifiers( var_id ).import := true;
               identifiers( var_id ).method := http_cgi;
-              identifiers( var_id ).value := null_unbounded_string;
-              for i in 1..cgi.key_count( to_string( identifiers( var_id ).name ) ) loop
-                  newValue := identifiers( var_id ).value &
-                     to_unbounded_string( cgi.value( to_string( identifiers( var_id ).name ), 1, false) );
-               end loop;
-           elsif not processingTemplate and importType = "cgi" then
-               err( "import type cgi must be used in a template" );
+              declare
+                 found : boolean := false;
+              begin
+                 for i in 1..cgi.key_count( to_string( identifiers( var_id ).name ) ) loop
+                     newValue := newValue & to_unbounded_string( cgi.value(
+                         to_string( identifiers( var_id ).name ), 1, true ) );
+                     found := true;
+                  end loop;
+                  if found then
+              -- apply mapping, if any.  assume these are all set correctly
+                     if identifiers( var_id ).mapping = json then                       -- json
+                        if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
+                           DoStringFromJson( identifiers( var_id ).value, newValue );
+                        elsif identifiers( var_id ).list then                           -- array
+                           DoJsonToArray( var_id, newValue );
+                        elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
+                           DoJsonToRecord( var_id, newValue );
+                        elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
+                           identifiers( var_id ).value := newValue;
+                        else
+                           err( "internal error: unexpected import translation type" );
+                        end if;
+                     else                                                           -- no mapping
+                        identifiers( var_id ).value := newValue;
+                     end if;
+                  end if;
+              end;
+           --elsif not processingTemplate and importType = "cgi" then
+           --    err( "import type cgi must be used in a template" );
            else
               if inEnvironment( var_id ) then
                  identifiers( var_id ).import := true;
                  identifiers( var_id ).method := shell;
-                 declare
-                   -- this worked when we had a string.  now this could be an
-                   -- array and refreshing the var id will blow away the array
-                   -- value!  This is a kludge: replace refreshVolatile with
-                   -- something non-destructive for arrays, or make it smarter.
-                   tmp : unbounded_string := identifiers( var_id ).value;
-                 begin 
                    refreshVolatile( var_id );
-                   newValue := identifiers( var_id ).value;
-                   identifiers( var_id ).value := tmp;
-                 end;
               end if;
            end if;
            -- show a trace of what's imported.  If JSON, show JSON as it
@@ -972,32 +983,6 @@ begin
                   to_string( identifiers( var_id ).name ) & " := """ &
                   to_string( ToEscaped( newValue ) ) &
                   """" );
-           end if;
-           -- Apply the translation mapping.
-           -- if it's JSON, translate from JSON.  The translation routine depends
-           -- on the variable type.  import is only true if a value was found.
-           if pragmaKind = import_json then
-              if identifiers( var_id ).import then
-                 if getUniType( identifiers( var_id ).kind ) = uni_string_t then
-                    DoStringFromJson( identifiers( var_id ).value, newValue );
-                 elsif identifiers( var_id ).list then
-                    DoJsonToArray( var_id, newValue );
-                 elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then
-                    ref.id := var_id;
-                    ref.kind := identifiers( var_id ).kind;
-                    DoJsonToRecord( ref, newValue );
-                 elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then
-                    identifiers( var_id ).value := newValue;
-                 else
-                    err( "internal error: unexpected import translation type" );
-                 end if;
-              end if;
-           else
-              -- otherwise, if a value was found, just copy new value.  import
-              -- is only true if a value was found.
-              if identifiers( var_id ).import then
-                 identifiers( var_id ).value := newValue;
-              end if;
            end if;
            -- whether imported or not, set it to true because it may be used
            -- later with volatile to try to find a value.
@@ -1017,4 +1002,3 @@ begin
 end ParsePragma;
 
 end parser_pragmas;
-

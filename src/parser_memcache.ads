@@ -27,7 +27,7 @@ use ada.strings.unbounded, world;
 package parser_memcache is
 
 ------------------------------------------------------------------------------
--- Numerics package identifiers
+-- Memcache package identifiers
 ------------------------------------------------------------------------------
 
 memcache_cluster_t               : identifier;

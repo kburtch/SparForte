@@ -56,8 +56,10 @@ environment.</p>
   <b>pragma</b> debug( `commands` )
   <b>pragma</b> depreciated/deprecated( "newscript" )
   <b>pragma</b> export( shell | local_memcache | memcache , var )
+  <b>pragma</b> export_json( shell | local_memcache | memcache , var )
   <b>pragma</b> gcc_errors
   <b>pragma</b> import( shell | cgi | local_memcache | memcache, var )
+  <b>pragma</b> import_json( shell | cgi | local_memcache | memcache, var )
   <b>pragma</b> inspect( var )
   <b>pragma</b> inspection_peek
   <b>pragma</b> inspection_point
@@ -239,8 +241,11 @@ command on a script.  Type type of annotation field can be:
 interacts with other software.</p>
 
 <ul>
-  <li> <b>pragma export( shell | local_memcache | memcache, var )</b> - export a string variable
-to the O/S environment. The first parameter must be "shell".</li>
+  <li> <b>pragma export( shell | local_memcache | memcache, var )</b> -
+export a string variable to the O/S environment or memcached.</li>
+  <li> <b>pragma export_json( shell | local_memcache | memcache, var )</b> -
+export a string, numeric, enumerated item,  array or record variable
+as a JSON string to the O/S environment or memcached.</li>
   <li> <b>pragma import( shell | cgi | local_memcache | memcache, var )</b> -
 import a variable.  For shell, from the O/S environment.  For cgi
 and if pragma template/unrestricted_template was used previously,
@@ -249,6 +254,9 @@ get the value of the variable from a memcached server running on
 locahost port 11211.  Put the value in the SparForte variable.
 If the environment variable doesn't exist, then
 the SparForte will report an error (see unchecked_import).</li>
+  <li> <b>pragma import_json( shell | cgi | local_memcache | memcache, var )</b> -
+import a JSON string, converting it to a string, numeric, enumerated item,
+array or record variable.</li>
   <li><span style="font-weight: bold;">pragma no_command_hash</span> -
 Bush normally remembers the location of a command once it has found
 it.&nbsp; This pragma forces Bush to search for the location of the
@@ -273,7 +281,10 @@ and if pragma template/unrestricted_template was used previously,
 a HTTP CGI variable from the O/S environment.  For local_memcache,
 get the value of the variable from a memcached server running on
 locahost port 11211.  Put the value in the SparForte variable.
-If the environment variable doesn't exist, then
+If the import variable doesn't exist, then
+the SparForte variable is unchanged.</li>
+  <li> <b>pragma unchecked_import_json( shell | cgi | local_memcache | memcache, var )</b> - the same as import_json execpt that there is no existence check.
+If the import variable doesn't exist, then
 the SparForte variable is unchanged.</li>
   <li> <b>pragma unrestricted_template( css|html|js|json|text|wml|xml [, template] )</b> -
 SparForte will act like a template processor (like PHP). This pragma is

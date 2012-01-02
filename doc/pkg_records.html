@@ -51,7 +51,7 @@ record variables or types.</p>
         <center>
         <div class="code">
 <pre>
-  <a href="#records.to_record">to_record( s, r )</a>         <a href="#records.to_json">to_json( s, r )</a>
+  <a href="#records.to_json">to_json( s, r )</a>       <a href="#records.to_record">to_record( s, r )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -59,6 +59,53 @@ record variables or types.</p>
         </div>
         </div>
         </center>
+
+<a name="records.to_json"></a><h3>records.to_json( s, a )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Encode the record contents as a JSON string.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">type rt is record s : string; end record;<br>
+r : rt;<br>
+r.s := "foo";<br>
+records.to_json( j, r ); -- j is {"s":"foo"}</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>out</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the JSON expression</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>in</span></td>
+<td><span>a record type</span></td>
+<td><span>required</span></td>
+<td><span>the record to get values from</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>For more details and exceptions, see the Reference Manual section
+<a href="ref_types.html">JSON and SparForte Types</a>.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>arrays.to_array<br>arrays.to_json<br>records.to_record<br>strings.to_string<br>strings.to_json</p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A<br>PHP: json_encode</p></td>
+</tr>
+</table>
 
 <a name="records.to_record"></a><h3>records.to_record( r, s )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
@@ -102,57 +149,10 @@ records.to_record( r, s ); -- r.s is "foo"</span></p>
 <a href="ref_types.html">JSON and SparForte Types</a>.</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>arrays.to_array<br>arrays.to_json<br>records.to_json<br>strings.from_json<br>strings.to_json</p>
+<td><p>arrays.to_array<br>arrays.to_json<br>records.to_json<br>strings.to_string<br>strings.to_json</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: N/A<br>PHP: json_decode</p></td>
-</tr>
-</table>
-
-<a name="records.to_json"></a><h3>records.to_json( s, a )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Encode the record contents as a JSON string.</p>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">type rt is record s : string; end record;<br>
-r : rt;<br>
-r.s := "foo";<br>
-records.to_json( j, r ); -- j is {"s":"foo"}</span></p>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>s</span></td>
-<td><span>out</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the JSON expression</span></td>
-</tr><tr>
-<td><span>r</span></td>
-<td><span>in</span></td>
-<td><span>a record type</span></td>
-<td><span>required</span></td>
-<td><span>the record to get values from</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>For more details and exceptions, see the Reference Manual section
-<a href="ref_types.html">JSON and SparForte Types</a>.</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>arrays.to_array<br>arrays.to_json<br>records.to_record<br>strings.from_json<br>strings.to_json</p>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: N/A<br>PHP: json_encode</p></td>
 </tr>
 </table>
 

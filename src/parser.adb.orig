@@ -46,6 +46,7 @@ with system,
     builtins,
     jobs,
     signal_flags,
+    scanner,
     parser_pragmas,
     parser_tio,
     parser_strings,
@@ -90,6 +91,7 @@ use ada.text_io,
     builtins,
     jobs,
     signal_flags,
+    scanner,
     parser_pragmas,
     parser_tio,
     parser_strings,
@@ -1015,9 +1017,6 @@ begin
      elsif token = strings_to_json_t then                 -- strings.to_json function
         ParseStringsToJSON( f );
         kind := json_string_t;
-     elsif token = strings_from_json_t then               -- strings.from_json function
-        ParseStringsFromJSON( f );
-        kind := string_t;
      elsif token = random_t then                          -- random function
         ParseNumericsRandom( f );
         kind := float_t;
@@ -5343,7 +5342,21 @@ procedure ParseShellCommand is
               -- a regular export means exporting the variable's value.  If
               -- it's a json export, then we have to convert the value to
               -- a json string (especially if it is a complex type)
-              tempStr := identifiers( id ).name & "=" & identifiers( id ).value;
+              tempStr := identifiers( id ).value;
+              if identifiers( id ).mapping = json then
+                 if getUniType( identifiers( id ).kind ) = uni_string_t then
+                    tempStr := DoStringToJson( tempStr );
+                 elsif identifiers( id ).list then
+                    DoArrayToJSON( tempStr, id );
+                 elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_record_t then
+                    DoRecordToJSON( tempStr, id );
+                 elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then
+                    null; -- for numbers, JSON is as-is
+                 else
+                    err( "json export not yet written for this type" );
+                 end if;
+              end if;
+              tempStr := identifiers( id ).name & "=" & tempStr;
               if trace then
                  put_trace( "exporting '" & to_string( tempStr ) & "'" );
               end if;

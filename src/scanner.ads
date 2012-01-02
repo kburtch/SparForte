@@ -28,10 +28,12 @@ with system,
   ada.unchecked_deallocation,
   ada.strings.unbounded,
   script_io,
-  world;
+  world,
+  scanner_arrays;
 use ada.strings.unbounded,
   script_io,
-  world;
+  world,
+  scanner_arrays;
 
 package scanner is
 
@@ -208,9 +210,6 @@ procedure restoreScript( scriptState : in out aScriptState );
 ------------------------------------------------------------------------------
 
 type blockDeclaration is private;      -- Ident Scope: eg. for a for loop
-type block is new integer range 1..32; -- The block nesting level
-block_table_overflow : exception;      -- Too many blocks
-
 blocks_top : block := block'first;     -- scope stack next position
 
 procedure pushBlock( newScope : boolean := false;
@@ -268,6 +267,43 @@ function baseTypesOk( leftType, rightType : identifier ) return boolean;
 
 function intTypesOk( givenType, desiredType : identifier ) return boolean;
 -- check that one integer type is logically compatible with another
+
+-- Type Casting
+-----------------------------------------------------------------------------
+
+
+function castToType( val : long_float; kind : identifier ) return unbounded_string;
+function castToType( val : unbounded_string; kind : identifier ) return unbounded_string;
+-- If a value is an integer type (i.e. positive, natural or integer),
+-- round the value.  Otherwise do not round the value.  Return the
+-- result as a string value.
+
+function deleteIdent( id : identifier ) return boolean;
+-- delete an identifier, true if successful
+
+-----------------------------------------------------------------------------
+-- JSON
+-----------------------------------------------------------------------------
+
+procedure DoStringFromJson( result : out unbounded_string; expr_val : unbounded_string );
+-- Convert a JSON string and return the string
+
+procedure DoArrayToJson( result : out unbounded_string; source_var_id : identifier );
+-- Convert an array to a JSON string.
+
+procedure DoJsonToArray( target_var_id : identifier; source_val : unbounded_string );
+-- Convert a JSON string and store in an array.
+
+procedure DoRecordToJson( result : out unbounded_string; source_var_id : identifier );
+-- Convert a record to a JSON string.
+
+procedure DoJsonToRecord( target_var_id : identifier; sourceVal : unbounded_string );
+-- Convert a JSON string and store in a record.
+
+-----------------------------------------------------------------------------
+
+function DoStringToJson( val : unbounded_string ) return unbounded_string;
+-- Convert a string to JSON and return the string.
 
 ------------------------------------------------------------------------------
 -- Scanning Tokens            
@@ -378,6 +414,7 @@ procedure replaceScriptWithFragment( bytecode : unbounded_string );
 
 procedure insertInclude( includeName : unbounded_string );
 -- insert an include file or separate subunit into the byte code after the current position.
+
 
 ------------------------------------------------------------------------------
 PRIVATE

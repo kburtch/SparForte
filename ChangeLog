@@ -95,3 +95,15 @@ testing.  pragma test().  pragma test_result().
 
 40. Fix: pragma gcc_errors no longer requires an unnecessary expression.
 
+41. New: pragma export_json.
+
+42. Fix: package documentation cleanup and help command updated accordingly.
+
+43. New: pragma unchecked_import_json.
+
+44. New: cgi.put_cgi_header default header "content-type" spelling mistake
+corrected.
+
+45. Fix: pragma import/unchecked_import( cgi ) handles missing variables
+correctly.
+

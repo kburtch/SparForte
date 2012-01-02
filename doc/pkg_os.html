@@ -47,8 +47,9 @@
         <center>
         <div class="code">
 <pre>
-  system( string ) -- run shell command with C system()
-  i := status;     -- status of last command
+  <a href="#os.status">i := status</a>
+  <a href="#os.strerror">s := strerror( i )</a>
+  <a href="#os.system">system( s )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -57,84 +58,127 @@
         </div>
         </center>
 
-<p>
-<hr><b>i := os.status</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="os.status"></a><h3>i := os.status</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Return the the least operating system exit status.  (To set the exit status,
-use command_line.set_exit_status.)
-<br>Example: if os.status /= 0 then put_line( standard_error, "error!" ); end if;
-<br>Ada Equivalent: none (AdaScript extension)
-<br>Parameters:
-</td></tr>
-</table></center>
-
-<p>
-<hr><b>s := os.strerror( i )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the operating system string error message for error number i.
-
-<br>Example: put_line( os.strerror( 15 ) );
-<br>Ada Equivalent: none (AdaScript extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>s</td>
-
-<td>result</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the error message (e.g. "Operation Not Permitted")</td>
-
+<td width="15%">&nbsp;</td>
+<td><p>Return the the least operating system exit status.</p></td>
 </tr><tr>
-<td>i</td>
-
-<td>in</td>
-
-<td>integer</td>
-
-<td>required</td>
-
-<td>the O/S error number (e.g. 1 )</td>
-
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">if os.status /= 0 then put_line( standard_error, "error!" ); end if;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>return value</span></td>
+<td><span>integer</span></td>
+<td><span>required</span></td>
+<td><span>the O/S error number</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>command_line.set_exit_status</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
-</table></center>
 
-<p>
-<hr><b>os.system( s )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="os.strerror"></a><h3>s := os.strerror( i )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Run an operating system command in the default shell.  This is the same as
-the C system() function.  Use os.status to determine the exit status.
-<br>Example: os.system( "ls" );
-<br>Ada Equivalent: none (AdaScript extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Return the operating system string error message for error number i.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">put_line( os.strerror( 15 ) );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-
-<td>s</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the sound shell command to execute</td>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the error message (e.g. "Operation Not Permitted")</span></td>
+</tr>
+<tr>
+<td><span>i</span></td>
+<td><span>in</span></td>
+<td><span>integer</span></td>
+<td><span>required</span></td>
+<td><span>the O/S error number (e.g. 1 )</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
-</table></center>
 
-&nbsp;<br>
+<a name="os.system"></a><h3>os.system( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Run an operating system command in the default shell.  This is the same as
+the C system() function.  Use os.status to determine the exit status.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">os.system( "ls" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>shell command string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>an exception will be raised in a restricted shell</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>PHP: system</p></td>
+</tr>
+</table>
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>

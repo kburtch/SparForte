@@ -1,0 +1,291 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Tutorials - Script Tutorial 3: Data Types</title>
+        <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+</head>
+<body bgcolor="#FFFFFF"><a name="top"></a>
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html"><b>Tutorials</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html">Packages</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="tutorial_5.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="tutorial_6.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+				<!-- Content Area -->
+
+<h2><a name="2.2"></a>Script Tutorial 3: Data Types</h2>
+
+<p>If you used other scripting languages, you may find SparForte's
+type system confusing.  In most languages, a type is a primitive
+representation of data, like an integer or float.  Any new types
+must be built up from object classes.</p>
+
+<p>The type system is used for much more than describing the physical
+representation of data.  It can be used to construct abstractions that
+represent values from the real world and describe how they relate to
+each other.  In this way, you work at a "higher level", working with
+concepts and not thinking as much about the physical characteristics
+of a date type.  Using the type system correctly is important for
+effectively writing quality software.</p>
+
+<h3>Every Value Must Have a Type</h3>
+
+<p>As you saw in the earlier tutorials, every value has a data type.  Every
+variable or subprogram parameter must be declared with its type.  This means
+that SparForte is a language with <b>static typing</b> (although it has some
+dynamic typing features which will be described below).  At the
+command prompt, you can assign values to new variable names and SparForte will
+automatically declare variables and give them the same data type as
+the expression.  The type can be changed with the typeset command, or
+even deleted with the unset command.  These features only work on the command
+prompt.</p>
+
+<p>In a script, you will have to declare all variables yourself and give
+them appropriate data types.  You can't change the type of a variable
+nor can you destroy a variable.  When a script runs, SparForte performs
+type checking before any commands execute, catching type errors early.</p>
+
+<p>SparForte is also a <b>strongly-type</b> language, which means that there are
+restrictions for how different types of data can be mixed.  Most strong typing
+languages will not allow strings to be mixed with numbers in an expression
+(they are treated as incompatible).  However, SparForte uses more strong
+checking than this, and even structurally equivalent data values may be
+designated as incompatible in some circumstances.</p>
+
+<h3>Creating New Types</h3>
+
+<p>New data types can be created using two different statements.  The
+<b>type</b> statement creates a new type derived from an existing type.
+The <b>subtype</b> statement creates a renaming of an existing type.
+Using type and subtype, you can create a hierarchy or tree of types
+without using object classes.</p>
+
+<p>With a new type (created with the type statement), the new type and
+the parent type are structurally equivalent.  You can create any number
+of new types derived from the parent type but each new type is incompatible
+with its sibling or its parent types.  Although they are all structurally
+the same, the are logically incompatible.</p>
+
+<p>For example, you can create two new float-based types to represent
+weight and distance.</p>
+
+        <center>
+        <div class="code">
+                <p class="code"><b>type</b> distance_km <b>is</b> <b>new</b> float;<br>
+<b>type</b> weight_kg <b>is</b> <b>new</b> float;<br>
+        </div>
+        </center>
+
+<p>Both distance_km and weight_kg are both types of floats and have the
+same properties as floats.  Any function parameter that expects a float
+will also accept these new types.  But they are incompatible with each
+other: a distance_km value cannot be assigned to a weight_kg, and a
+weight_kg function parameter will not accept a distance_km value.  Nor
+can you use either of these new types with float function parameter.</p>
+
+<p>They can be used in situations such as:</p>
+
+<ul>
+<li>database id numbers</li>
+<li>different units of measurement</li>
+<li>different characteristics</li>
+<li>validated and unvalidated web application data</li>
+<li>encoded and unencoded data</li>
+</ul>
+
+<p>The type system is static, which means the types are usually checked
+before the script is run.  If there are type incompatibilities, they will
+be discovered before anything executes.</p>
+
+<h3>Creating Subtypes</h3>
+
+<p>The <b>subtype</b> statement works much the same way as the type statement
+except that a subtype acts like a renaming of the existing type.  The
+new type and the parent type are structurally equivalent.  You can
+create any number of new types derived from the parent type and each
+new type is compatible with its sibling type.  They can all be used
+interchangeably.</p>
+
+<p>For example, you can create a shorthand name for a type with a long
+name for an integer-based type like this.</p>
+
+        <center>
+        <div class="code">
+                <p class="code"><b>type</b> customer_id <b>is</b> <b>new</b> integer;<br>
+<b>subtype</b> cid <b>is</b> customer_id;<br>
+        </div>
+        </center>
+
+<p>cid is an integer type that is a renaming of customer_id and can be
+used any place that customer_id is used.  A customer_id value can be
+assigned cid variable, or the other way around.</p>
+
+<h3>Type Casting</h3>
+
+<p>Any two structurally equivalent types can be explicitly treated the
+same by using a type name as a function.  This is called <b>type casting</b>.
+Use type casting to override type incompatibilities.</p>
+
+<p>For example, suppose you have two types, one for HTML encoded strings
+and one for unencoded strings.</p>
+
+        <center>
+        <div class="code">
+                <p class="code"><b>type</b> html_encoded_string <b>is</b> <b>new</b> string;<br>
+<b>type</b> html_unencoded_string <b>is</b> <b>new</b> string;<br>
+...<br>
+title : constant html_unencoded_string := "My Page Title";<br>
+web_page : html_encoded_string;<br>
+        </div>
+        </center>
+
+<p>If you know that the title variable contains data that doesn't need
+to be HTML encoded, you can add it to the web_page by converting
+it to an html_encoded_string value using type casting.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">web_page := web_page &amp; html_encoded_string( title );<br>
+        </div>
+        </center>
+
+<p>In SparForte, the positive and natural types are treated specially.
+These are subranges of the integer type.  Positive values are always
+compatible with natural values, and natural values are always
+compatible with integer values.  But natural values cannot be assigned
+to a positive, for example, because the range of possible values for a
+natural is larger than that of the positive type.</p>
+
+<h3>When to Use Types and Subtypes</h3>
+
+<p>There are different opinions for how to use the type system.</p>
+
+<p>Some developers believe that the primitive, predefined types
+should only be used to create new types and, in your program, your
+variables and parameters should only use types that you have
+created.</p>
+
+<p>Some developers are concerned that too many types can be
+cumbersome, requiring extra type casting, converting one type to
+another.  For example, if you have a lot of different integer
+types and you want to use them in an expression, you may have to
+typecast them all to integer and then typecast the result back
+to the final type, which makes the expression hard to read.</p>
+
+<p>It is important that you use new types where they make the
+most sense.  If a customer id and a supplier id will never be
+combined in an expression, then it makes good sense to define them
+as incompatible types.</p>
+
+<h3>Predefined Types</h3>
+
+<p>There are many predefined types.  More types are declared in
+the built-in packages.  These are described in detail in the
+Reference section on <a href="ref_types.html">types</a>.  The following
+type tree shows most of the predefined types and how they are
+related to one another.</p>
+
+<p><img src="pictures/sparforte_type_tree.gif" alt="[SparForte Type Tree]"></p>
+
+<h3>Universal Types</h3>
+
+<p>As mentioned in the other tutorials, SparForte also has universal
+types.  These are the most primitive types and are the base types of
+most of the other predefined types.  A universal type is special in
+that it is automatically compatible with any type of the same
+structure.  These are intended for short, simple scripts or working
+on the command line when you don't want to take advantage of
+SparForte's typing system.</p>
+
+<p>There are three universal types.</p>
+
+<ul>
+<li><b>universal_typeless</b> is the root type of string and numeric types.
+It will be treated as a string or number depending on context.  If
+the context is ambiguous, it will be treated as a string.</li>
+<li><b>universal_string</b> is the root type of all strings and characters.
+It automatically matches any string or character type.</li>
+<li><b>universal_numeric</b> is the root type of all number types.  It
+automatically matches any integer, float or other number type.</li>
+</ul>
+
+<p>Because these types are root types, if you create a new type
+using type or subtype, the new type will not have the special
+properties of the universal type.  This shouldn't be much of an
+obstacle, since you use the universal types to avoid the type
+system.</p>
+
+<p>These types are similar to <b>weak typing</b>: an universal_typeless
+variable is always contains a universal_typeless value, but the value
+is interpreted as a string or integer depending on the expression or
+context, implicitly type casting the value.  This is different from
+<b>dynamic typing</b>, where the type of a variable is unknown until the
+program runs.</p>
+
+<p>There is a trade-off when using universal types.  They can be
+more convenient when creating a quick prototype or a short script,
+but you also lose the safety, readability and easy scaling advantages
+of explicit types and compile-time error checking.  Like any data type,
+be cautious and chose the approprite type for your task.</p>
+
+<h3>Types, Subtypes and Aggregate Types</h3>
+
+<p>Another use for the type system is to construct aggregate types
+such as arrays or records.</p>
+
+<p>Once you define a new aggregate type, you can create derived types
+using the type and subtype statements just like any other type.</p>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_1.html">&nbsp;Command Prompt Tutorial 1: SparForte as a Calculator</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_2.html">&nbsp;Command Prompt Tutorial 2: Basic Shell Commands</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_3.html">&nbsp;Command Prompt Tutorial 3: Working with Databases</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_4.html">&nbsp;Script Tutorial 1: Basic Commands Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_5.html">&nbsp;Script Tutorial 2: Intermediate Program Scripts</a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_14.html"><b>&nbsp;Script Tutorial 3: Data Types</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_6.html">&nbsp;Template Tutorial 1: Basic Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_7.html">&nbsp;Template Tutorial 2: Intermediate Templates</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_8.html">&nbsp;GCC Tutorial: Compiling SparForte Scripts</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_9.html">&nbsp;Debugging Tutorial - Using the SparForte Debugger</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_10.html">&nbsp;Creating a Profile Script</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_11.html">&nbsp;Calling SparForte from C: A Tutorial</a></p>
+				<p class="rmt"><a class="rightmenutext" href="tutorial_13.html">&nbsp;SparForte For PHP Developers</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="tutorial_12.html">&nbsp;SparForte Best Practices</a></p>
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" width="24" height="27" border="0" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>
