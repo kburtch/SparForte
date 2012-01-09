@@ -1,0 +1,15 @@
+# This should fail
+
+procedure badtest is
+
+procedure FOOBAR is
+begin
+  null;
+end FOOBAR;
+
+pragma unchecked_import( shell, FOOBAR ); -- foobar exists but should not import functions
+
+begin
+null;
+end badtest;
+

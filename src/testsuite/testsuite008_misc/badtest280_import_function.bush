@@ -1,0 +1,15 @@
+# This should fail
+
+procedure badtest is
+
+function FOOBAR return boolean is
+begin
+  return false;
+end FOOBAR;
+
+pragma import( shell, FOOBAR ); -- foobar exists but should not import functions
+
+begin
+null;
+end badtest;
+

@@ -821,10 +821,10 @@ begin
   expect( symbol_t, ")" );
   begin
     if isExecutingCommand then
-       if baseType /= unbounded_string_t then
+       if baseType = unbounded_string_t then
           result := expr_val;
        else
-          DoStringFromJson( result, expr_val );
+          DoJsonToString( result, expr_val );
        end if;
     end if;
   exception when others =>

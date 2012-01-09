@@ -1,0 +1,5 @@
+# This should fail
+
+FOOBAR : array(1..1) of integer;
+pragma unchecked_import( shell, FOOBAR ); -- foobar exists but should not import arrays
+

@@ -1,0 +1,5 @@
+# This should fail
+
+FOOBAR : boolean;
+pragma unchecked_import( shell, FOOBAR ); -- foobar exists but should not import booleans
+

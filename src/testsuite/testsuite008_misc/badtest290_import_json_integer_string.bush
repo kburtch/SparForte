@@ -1,0 +1,7 @@
+# This should fail
+
+FOOBAR : integer:= 0;
+pragma export_json( shell, FOOBAR );
+
+../../spar import_json_integer_string.bush ; -- should fail when executed
+

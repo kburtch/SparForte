@@ -285,7 +285,7 @@ function deleteIdent( id : identifier ) return boolean;
 -- JSON
 -----------------------------------------------------------------------------
 
-procedure DoStringFromJson( result : out unbounded_string; expr_val : unbounded_string );
+procedure DoJsonToString( result : out unbounded_string; expr_val : unbounded_string );
 -- Convert a JSON string and return the string
 
 procedure DoArrayToJson( result : out unbounded_string; source_var_id : identifier );
@@ -299,6 +299,9 @@ procedure DoRecordToJson( result : out unbounded_string; source_var_id : identif
 
 procedure DoJsonToRecord( target_var_id : identifier; sourceVal : unbounded_string );
 -- Convert a JSON string and store in a record.
+
+procedure DoJsonToNumber( jsonString : unbounded_string; expr_val : out unbounded_string );
+-- convert a Json string to a numeric value
 
 -----------------------------------------------------------------------------
 

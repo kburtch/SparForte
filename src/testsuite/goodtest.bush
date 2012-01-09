@@ -1435,21 +1435,21 @@ begin
   js := strings.to_json( "h" & ASCII.HT );
   pragma assert( js = ASCII.Quotation & "h\t" & ASCII.Quotation );
   --
-  s := strings.from_json( ASCII.Quotation & "a\" & ASCII.Quotation & ASCII.Quotation );
+  s := strings.to_string( json_string( ASCII.Quotation & "a\" & ASCII.Quotation & ASCII.Quotation ) );
   pragma assert( s = "a" & ASCII.Quotation );
-  s := strings.from_json( ASCII.Quotation & "b\\" & ASCII.Quotation );
+  s := strings.to_string( json_string( ASCII.Quotation & "b\\" & ASCII.Quotation ) );
   pragma assert( s = "b\" );
-  s := strings.from_json( ASCII.Quotation & "c\/" & ASCII.Quotation );
+  s := strings.to_string( json_string( ASCII.Quotation & "c\/" & ASCII.Quotation ) );
   pragma assert( s = "c/" );
-  s := strings.from_json( ASCII.Quotation & "d\b" & ASCII.Quotation );
+  s := strings.to_string( json_string( ASCII.Quotation & "d\b" & ASCII.Quotation ) );
   pragma assert( s = "d" & ASCII.BS );
-  s := strings.from_json( ASCII.Quotation & "e\f" & ASCII.Quotation );
+  s := strings.to_string( json_string( ASCII.Quotation & "e\f" & ASCII.Quotation ) );
   pragma assert( s = "e" & ASCII.FF );
-  s := strings.from_json( ASCII.Quotation & "f\n" & ASCII.Quotation );
+  s := strings.to_string( json_string( ASCII.Quotation & "f\n" & ASCII.Quotation ) );
   pragma assert( s = "f" & ASCII.LF );
-  s := strings.from_json( ASCII.Quotation & "g\r" & ASCII.Quotation );
+  s := strings.to_string( json_string( ASCII.Quotation & "g\r" & ASCII.Quotation ) );
   pragma assert( s = "g" & ASCII.CR );
-  s := strings.from_json( ASCII.Quotation & "h\t" & ASCII.Quotation );
+  s := strings.to_string( json_string( ASCII.Quotation & "h\t" & ASCII.Quotation ) );
   pragma assert( s = "h" & ASCII.HT );
 
   js := "[" & ASCII.Quotation & "this" & ASCII.Quotation & "]";

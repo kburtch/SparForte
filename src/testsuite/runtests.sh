@@ -204,8 +204,20 @@ ls -d testsuite* | (while read DIR ; do
       else
          bad_test "$FILE"
       fi
+      RESULT=$?
+      if [ $RESULT -ne 0 ] ; then
+         exit $RESULT
+      fi
    done )
+   RESULT=$?
+   if [ $RESULT -ne 0 ] ; then
+      exit $RESULT
+   fi
 done )
+RESULT=$?
+if [ $RESULT -ne 0 ] ; then
+   exit $RESULT
+fi
 
 # Switch tests
 

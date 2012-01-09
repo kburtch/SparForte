@@ -1,0 +1,15 @@
+# This should fail
+
+type r is record
+  i : integer;
+  j : integer;
+end record;
+
+FOOBAR : r;
+FOOBAR.i := 1;
+FOOBAR.j := 2;
+pragma export_json( shell, FOOBAR );
+
+-- reusing this script
+../../spar import_json_string_integer.bush ; -- should fail when executed
+

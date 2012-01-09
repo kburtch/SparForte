@@ -1,0 +1,8 @@
+# This should fail
+
+FOOBAR : array( 1..2 ) of integer := (1,2);
+pragma export_json( shell, FOOBAR );
+
+-- reusing this but expecting string
+../../spar import_json_integer_string.bush ; -- should fail when executed
+

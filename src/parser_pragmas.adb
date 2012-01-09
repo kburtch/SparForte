@@ -583,7 +583,9 @@ begin
            elsif identifiers( var_id ).class = userFuncClass then
               err( "functions cannot be exported" );
            elsif identifiers( var_id ).list then
-              err( "arrays cannot be exported without JSON" );
+              err( "arrays cannot be exported without export_json or arrays.to_json" );
+           elsif identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then
+              err( "records cannot be exported without export_json or records.to_json" );
            elsif identifiers( var_id ).export then
               err( "variable is already exported" );
            elsif not uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
@@ -625,7 +627,9 @@ begin
            elsif identifiers( var_id ).class = userFuncClass then
               err( "functions cannot be imported" );
            elsif identifiers( var_id ).list then
-              err( "arrays cannot be imported without JSON" );
+              err( "arrays cannot be imported without import_json or arrays.to_json" );
+           elsif identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then
+              err( "records cannot be imported without import_json or records.to_json" );
            elsif identifiers( var_id ).import then
               err( "variable is already imported" );
            elsif not uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
@@ -685,13 +689,16 @@ begin
               -- apply mapping, if any.  assume these are all set correctly
                      if identifiers( var_id ).mapping = json then                       -- json
                         if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
-                           DoStringFromJson( identifiers( var_id ).value, newValue );
+                           DoJsonToString( identifiers( var_id ).value, newValue );
                         elsif identifiers( var_id ).list then                           -- array
                            DoJsonToArray( var_id, newValue );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
                            DoJsonToRecord( var_id, newValue );
                         elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
-                           identifiers( var_id ).value := newValue;
+                           DoJsonToNumber( newValue, identifiers( var_id ).value );
+                        elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_enumerated_t then -- enum
+                           DoJsonToNumber( newValue, identifiers( var_id ).value );
+                           -- identifiers( var_id ).value := newValue;
                         else
                            err( "internal error: unexpected import translation type" );
                         end if;
@@ -888,7 +895,9 @@ begin
            elsif identifiers( var_id ).class = userFuncClass then
               err( "functions cannot be imported" );
            elsif identifiers( var_id ).list then
-              err( "arrays cannot be imported without JSON" );
+              err( "arrays cannot be imported without import_json or arrays.to_json" );
+           elsif identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then
+              err( "records cannot be imported without import_json or records.to_json" );
            elsif identifiers( var_id ).import then
               err( "variable is already imported" );
            elsif not uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
@@ -952,13 +961,15 @@ begin
               -- apply mapping, if any.  assume these are all set correctly
                      if identifiers( var_id ).mapping = json then                       -- json
                         if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
-                           DoStringFromJson( identifiers( var_id ).value, newValue );
+                           DoJsonToString( identifiers( var_id ).value, newValue );
                         elsif identifiers( var_id ).list then                           -- array
                            DoJsonToArray( var_id, newValue );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
                            DoJsonToRecord( var_id, newValue );
                         elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
-                           identifiers( var_id ).value := newValue;
+                           DoJsonToNumber( newValue, identifiers( var_id ).value );
+                        elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_enumerated_t then -- enum
+                           DoJsonToNumber( newValue, identifiers(var_id ).value );
                         else
                            err( "internal error: unexpected import translation type" );
                         end if;

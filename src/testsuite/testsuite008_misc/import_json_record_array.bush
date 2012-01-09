@@ -1,0 +1,5 @@
+# This should fail
+
+FOOBAR : array( 1..2 ) of integer;
+pragma import_json( shell, FOOBAR ); -- foobar exists but is actually a record
+

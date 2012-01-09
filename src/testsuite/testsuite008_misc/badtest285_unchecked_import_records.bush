@@ -1,0 +1,9 @@
+# This should fail
+
+type f is record
+  s : string;
+end record;
+
+FOOBAR : f;
+pragma unchecked_import( shell, FOOBAR ); -- foobar exists but should not import records
+

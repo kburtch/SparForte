@@ -1867,13 +1867,16 @@ begin
   -- apply mapping, if any.  assume these are all set correctly
   if identifiers( id ).mapping = json then                       -- json
      if getUniType( identifiers( id ).kind ) = uni_string_t then -- string
-        DoStringFromJson( identifiers( id ).value, importedStringValue );
+        DoJsonToString( identifiers( id ).value, importedStringValue );
      elsif identifiers( id ).list then                           -- array
         DoJsonToArray( id, importedStringValue );
      elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_record_t then -- record
         DoJsonToRecord( id, importedStringValue );
      elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then -- number
-        identifiers( id ).value := importedStringValue;
+        DoJsonToNumber( importedStringValue, identifiers( id ).value );
+        --identifiers( id ).value := importedStringValue;
+     elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_enumerated_t then -- enum
+        DoJsonToNumber( importedStringValue, identifiers( id ).value );
      --else
      --   err( "internal error: unexpected import translation type" );
      end if;
@@ -2626,7 +2629,7 @@ begin
 end ParseJSONItem;
 
 
----> DO STRING FROM JSON
+---> DO JSON TO STRING
 --
 -- Convert a JSON string and return the string  This is placed here so it
 -- can be reused elsewhere in the language as required.  Params are not
@@ -2634,12 +2637,24 @@ end ParseJSONItem;
 --
 -----------------------------------------------------------------------------
 
-procedure DoStringFromJson( result : out unbounded_string; expr_val : unbounded_string ) is
+procedure DoJsonToString( result : out unbounded_string; expr_val : unbounded_string ) is
   ch : character;
   i  : integer;
+  ok : boolean := false;
 begin
   result := null_unbounded_string;
-  i := 2;
+  i := 1;
+  SkipJSONWhitespace( expr_val, i );
+  if i < length( expr_val ) then
+     if element( expr_val, i ) = '"' then
+        ok := true;
+     end if;
+  end if;
+  if not ok then
+     err( optional_bold( "JSON string value" ) & " expected in string """ & to_string( toEscaped( expr_val ) ) & """" );
+     return;
+  end if;
+  i := i + 1;
   -- note : could be rewritten to discard quotes and do json unescaped
   loop
      exit when i > length(expr_val)-1;
@@ -2669,7 +2684,7 @@ begin
      end if;
      i := i + 1;
   end loop;
-end DoStringFromJson;
+end DoJsonToString;
 
 
 ---> DO ARRAY TO JSON
@@ -2815,6 +2830,24 @@ begin
      kind := getUniType( identifiers( target_var_id ).kind );
      elementKind := getBaseType( identifiers( identifiers( target_var_id ).kind ).kind );
 
+     -- basic JSon validation.  Important to verify it isn't a record.
+     declare
+       i : integer := 1;
+       ch: character;
+     begin
+       skipJSONWhitespace( source_val, i );
+       if length( source_val ) > 0 then
+          ch := element( source_val, i );
+          if ch = '{' then
+            err( "JSON array expected but found object" );
+          elsif ch /= '[' then
+             err( optional_bold( "JSON array expected" ) & " but found string """ & to_string( toEscaped( source_val ) ) & '"' );
+          elsif element( source_val, length( source_val ) ) /= ']' then
+             err( "expected trailing ]" );
+          end if;
+       end if;
+     end;
+
      -- Count the number of items in the JSON string, handling escaping as
      -- required.  Source len will be the number of items.
 
@@ -2823,10 +2856,13 @@ begin
      declare
        i : integer := 1;
        discard : unbounded_string;
+       ok : boolean := false;
      begin
        while i <= length( source_val ) loop
          ch := element( source_val, i );
-         exit when ch = '[';
+         if ch = '[' then
+             exit;
+         end if;
          i := i + 1;
        end loop;
 
@@ -3060,6 +3096,8 @@ begin
         arrayElement := target_first;
         declare
           i : integer := 1;
+          ok : boolean := false;
+          ch : character;
         begin
           skipJSONWhitespace( source_val, i );
           if i <= length( source_val ) then
@@ -3068,6 +3106,23 @@ begin
                skipJSONWhitespace( source_val, i );
                item := null_unbounded_string;
                ParseJSONItem( source_val, item, i ); 
+               -- assume that it's OK if it starts with a numeric character
+               -- TODO: better validation based on actual type
+               ch := element( item, 1 );
+               if ch /= '-' and ch /= ' ' and ch /= '+' then
+                  item := ' ' & item;
+               end if;
+               -- try to see if it is a valid long float
+               declare
+                  lf : long_float;
+               begin
+                  lf := to_numeric( item );
+                  ok := true;
+               exception when others => null;
+               end;
+               if not ok then
+                  err( optional_bold( "JSON number value" ) & " expected in string """ & to_string( toEscaped( item ) ) & """" );
+               end if;
                assignElement( targetArrayId, arrayElement, item );
                arrayElement := arrayElement + 1;
                skipJSONWhitespace( source_val, i );
@@ -3211,15 +3266,22 @@ begin
      item := sourceVal;
 
      -- basic JSon validation.  Important to verify it isn't an array.
-     if length( item ) > 0 then
-        if element( item, 1 ) = '[' then
-           err( "JSON object expected but found array" );
-        elsif element( item, 1 ) /= '{' then
-           err( "JSON object expected but found string " & optional_bold( to_string( toEscaped( item ) ) ) );
-        elsif element( item, length( item ) ) /= '}' then
-           err( "expected trailing }" );
-        end if;
-     end if;
+     declare
+       i : integer := 1;
+       ch: character;
+     begin
+       skipJSONWhitespace( item, i );
+       if length( item ) > 0 then
+          ch := element( item, i );
+          if ch = '[' then
+            err( "JSON object expected but found array" );
+          elsif ch /= '{' then
+             err( optional_bold( "JSON object expected" ) & " but found string """ & to_string( toEscaped( item ) ) & '"' );
+          elsif element( item, length( item ) ) /= '}' then
+             err( "expected trailing }" );
+          end if;
+       end if;
+     end;
 
      sourceLen := 0;
      declare
@@ -3380,7 +3442,7 @@ begin
                       -- needs to be un-escaped.
                       if elementKind /= json_string_t then
                          if not jsonStringType then
-                            err( "JSON string value expected for " & optional_bold( to_string( searchName ) ) );
+                            err( optional_bold( "JSON string value" ) & " expected for " & to_string( ToEscaped( searchName ) ) );
                          end if;
                          -- strip of quotes and un-escape any characters.
                          if length( decodedItemValue ) > 0 then
@@ -3399,7 +3461,7 @@ begin
                       -- Numbers
                       -- Numbers shouldn't need to have special characters decoded.
                       if jsonStringType then
-                         err( "JSON number value expected for " & optional_bold( to_string( searchName ) ) );
+                         err( optional_bold( "JSON number value" ) & " expected in """ & to_string( toescaped( searchName ) ) & """" );
                       end if;
                       identifiers( j ).value := castToType( decodedItemValue,
                          identifiers( j ).kind );
@@ -3451,7 +3513,45 @@ end DoStringToJson;
 
 ---> DO NUMBER TO JSON
 --
--- Does not exist because numbers are as is.
+-- Numbers are "as is" but we still need to check for a valid JSON string.
+-----------------------------------------------------------------------------
+
+procedure DoJsonToNumber( jsonString : unbounded_string; expr_val : out unbounded_string ) is
+  i  : positive := 1;
+  ch : character;
+  ok : boolean := false;
+  tempStr : unbounded_string;
+begin
+  expr_val := null_unbounded_string;
+  SkipJSONWhitespace(jsonString, i );
+  if i <= length( jsonString ) then
+     -- assume that it's OK if it starts with a numeric character
+     -- we don't know the exact numeric type here, not without the identifier
+     -- being assigned to
+     ch := element( jsonString, i );
+     if ch = '+' or ch = '=' or ( ch >= '0' and ch <= '9' ) then
+        ch := element( jsonString, 1 );
+        if ch /= '-' and ch /= ' ' and ch /= '+' then
+           tempStr := ' ' & jsonString;
+        else
+           tempStr := jsonString;
+        end if;
+        -- try to see if it is a valid long float
+        declare
+          lf : long_float;
+        begin
+          lf := to_numeric( tempStr );
+          ok := true;
+        exception when others => null;
+        end;
+     end if;
+  end if;
+  if ok then
+     expr_val := jsonString;
+  else
+     err( optional_bold( "JSON number value" ) & " expected in string """ & to_string( toEscaped( jsonString ) ) & """" );
+  end if;
+end DoJsonToNumber;
 
 
 -----------------------------------------------------------------------------

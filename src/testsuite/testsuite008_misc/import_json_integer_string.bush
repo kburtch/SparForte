@@ -1,0 +1,5 @@
+# This should fail
+
+FOOBAR : string;
+pragma import_json( shell, FOOBAR ); -- foobar exists but is actually an integer
+

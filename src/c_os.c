@@ -165,12 +165,10 @@ int C_file_length( char * path ) {
 
 void C_file_modify_time( char * path, int *year, int *month, int *day, int *sec ) {
   struct stat info;
-  time_t result = -1;
   struct tm *timestruct;
 
   *year = -1;
   if ( stat( path, &info ) == 0 ) {
-     result = info.st_mtime;
      timestruct = localtime( &info.st_mtime );
      *year = timestruct->tm_year+1900;
      *month = timestruct->tm_mon+1;
@@ -187,12 +185,10 @@ void C_file_modify_time( char * path, int *year, int *month, int *day, int *sec 
 
 void C_file_change_time( char * path, int *year, int *month, int *day, int *sec ) {
   struct stat info;
-  time_t result = -1;
   struct tm *timestruct;
 
   *year = -1;
   if ( stat( path, &info ) == 0 ) {
-     result = info.st_mtime;
      timestruct = localtime( &info.st_ctime );
      *year = timestruct->tm_year+1900;
      *month = timestruct->tm_mon+1;
@@ -209,12 +205,10 @@ void C_file_change_time( char * path, int *year, int *month, int *day, int *sec 
 
 void C_file_access_time( char * path, int *year, int *month, int *day, int *sec ) {
   struct stat info;
-  time_t result = -1;
   struct tm *timestruct;
 
   *year = -1;
   if ( stat( path, &info ) == 0 ) {
-     result = info.st_mtime;
      timestruct = localtime( &info.st_atime );
      *year = timestruct->tm_year+1900;
      *month = timestruct->tm_mon+1;

@@ -1,0 +1,7 @@
+# This should fail
+
+FOOBAR : string := "some string";
+pragma export_json( shell, FOOBAR );
+
+../../spar import_json_string_enum.bush ; -- should fail when executed
+
