@@ -48,22 +48,29 @@ numeric values.</p>
         <center>
         <div class="code">
 <pre>
+<b>Constants</b>
+
   e                    log2_e                  log10_e             ln10
   ln2                  pi                      pi_by_2             pi_by_4
   pi_under_1           pi_under_2              sqrt_pi_under_2     sqrt_2
   sqrt_2_under_1
 
-  <a href="#abs">f := abs( e )</a>               <a href="#numerics.ceiling">f := ceiling( e )</a>              <a href="#numerics.copy_sign">f := copy_sign( x, y )</a>
-  <a href="#numerics.even">f := even( i )</a>              <a href="#numerics.exp">f := exp( x )</a>                  <a href="#numerics.exponent">f := exponent( e )</a>
-  <a href="#numerics.floor">f := floor( e )</a>             <a href="#numerics.fraction">f := fraction( e )</a>             <a href="#numerics.leading_part">f := leading_part( x, y )</a>
-  <a href="#numerics.log">f := log( e [,b] )</a>          <a href="#numerics.machine">f := machine( e )</a>              <a href="#numerics.max">f := max( x, y )</a>
-  <a href="#numerics.md5">r := md5( s )</a>               <a href="#numerics.min">f := min( x, y )</a>               <a href="#numerics.odd">f := odd( x )</a>
-  <a href="#numerics.pos">p := pos( c )</a>               <a href="#numerics.random">f := random</a>                    <a href="#numerics.remainder">f := remainder( x, y )</a>
-  <a href="#numerics.rnd">r := rnd( p )</a>               <a href="#numerics.rotate_left">i := rotate_left( e, b )</a>       <a href="#numerics.rotate_right">i := rotate_right( e, b )</a>
-  <a href="#numerics.rounding">f := rounding( e )</a>          <a href="#numerics.scaling">f := scaling( x, y )</a>           <a href="#numerics.serial">f := serial</a>     
-  <a href="#numerics.sqrt">f := sqrt( e )</a>              <a href="#numerics.sturges">f := sturges( l, h, t )</a>        <a href="#numerics.shift_left">i := shift_left( e, b )</a>
-  <a href="#numerics.shift_right">i := shift_right( e, b )</a>    <a href="#numerics.shift_right_arithmetic">i := shift_right_arithmetic( x, b )</a> <a href="#numerics.truncation">f := truncation( e )</a>
-  <a href="#numerics.unbiased_rounding">f := unbiased_rounding( e )</a> <a href="#numerics.value">f := value( s )</a>
+<b>General</b>
+
+  <a href="#abs">f := abs( e )</a>               <a href="#numerics.ceiling">f := ceiling( e )</a>            <a href="#numerics.copy_sign">f := copy_sign( x, y )</a>
+  <a href="#numerics.even">f := even( i )</a>              <a href="#numerics.exp">f := exp( x )</a>                <a href="#numerics.exponent">f := exponent( e )</a>
+  <a href="#numerics.floor">f := floor( e )</a>             <a href="#numerics.fnv_hash_of">f := fnv_hash_of( s, l )</a>     <a href="#numerics.fraction">f := fraction( e )</a>
+  <a href="#numerics.hash_of">f := hash_of( s, l )</a>        <a href="#numerics.leading_part">f := leading_part( x, y )</a>    <a href="#numerics.log">f := log( e [,b] )</a>
+  <a href="#numerics.machine">f := machine( e )</a>           <a href="#numerics.max">f := max( x, y )</a>             <a href="#numerics.md5">r := md5( s )</a>
+  <a href="#numerics.min">f := min( x, y )</a>            <a href="#numerics.odd">f := odd( x )</a>                <a href="#numerics.murmur_hash_of">f := murmur_hash_of( s, l )</a>
+  <a href="#numerics.pos">p := pos( c )</a>               <a href="#numerics.random">f := random</a>                  <a href="#numerics.remainder">f := remainder( x, y )</a>
+  <a href="#numerics.rnd">r := rnd( p )</a>               <a href="#numerics.rotate_left">i := rotate_left( e, b )</a>     <a href="#numerics.rotate_right">i := rotate_right( e, b )</a>
+  <a href="#numerics.rounding">f := rounding( e )</a>          <a href="#numerics.scaling">f := scaling( x, y )</a>         <a href="#numerics.sdbm_hash_of">f := sdbm_hash_of( s, l )</a>
+  <a href="#numerics.serial">f := serial</a>                 <a href="#numerics.shift_left">i := shift_left( e, b )</a>      <a href="#numerics.shift_right">i := shift_right( e, b )</a>
+  <a href="#numerics.shift_right_arithmetic">i := shift_right_arithmetic( x, b )</a> <a href="#numerics.sqrt">f := sqrt( e )</a>       <a href="#numerics.sturges">f := sturges( l, h, t )</a>
+  <a href="#numerics.truncation">f := truncation( e )</a>        <a href="#numerics.unbiased_rounding">f := unbiased_rounding( e )</a>  <a href="#numerics.value">f := value( s )</a>
+
+<b>Trig</b>
 
   <a href="#numerics.arccos">f := arccos( x [,cycle] )</a>    <a href="#numerics.arccosh">f := arccosh( e )</a>         <a href="#numerics.arccot">f := arccot( x, y [,cycle] )</a>
   <a href="#numerics.arccoth">f := arccoth( e )</a>            <a href="#numerics.arcsin">f := arcsin( e [,cycle] )</a> <a href="#numerics.arcsinh">f := arcsinh( e )</a>
@@ -72,10 +79,12 @@ numeric values.</p>
   <a href="#numerics.sin">f := sin( e [,cycle] )</a>       <a href="#numerics.sinh">f := sinh( e )</a>            <a href="#numerics.tan">f := tan( e [,cycle] )</a>
   <a href="#numerics.tanh">f := tanh( e )</a>
 
+<b>Complex</b>
+
   re( complex )                im( complex )             modulus( complex )
   set_re( complex, r )         set_im( complex, i )      argument( complex )
 
-  abs( x ) is not "numerics.abs( x )" because it's not in the numerics package
+abs( x ) is not "numerics.abs( x )" because it's not in the numerics package
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -1030,7 +1039,56 @@ f2 := numerics.floor( -5.5 ); -- returns 6</span></p>
 <td><p>Ada: 'floor attribute<br>PHP: floor<br>Java: java.lang.Math.floor</p></td>
 </tr>
 </table>
-&nbsp;<br>
+
+<a name="numerics.fnv_hash_of"></a><h3>f := numerics.fnv_hash_of( s, l )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Calculate a 32-bit number from string s that can be used with hash tables using a Fowler-Null-Vo / FNV-1a hash (used by DNS's).  The return value is will be between 1 and the limit l.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.fnv_hash_of( "apple", 10  ); -- returns 1 to 10</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string expression</span></td>
+</tr>
+<tr>
+<td><span>l</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the maximum value to return</span></td>
+</tr>
+<td>f</td>
+<td>return value</td>
+<td>natural</td>
+<td>required</td>
+<td>the hash value</td>
+</tr>
+</table>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.hash_of<br>numerics.murmur_hash_of<br>sdbm_hash_of</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
 
 <a name="numerics.fraction"></a><h3>f := numerics.fraction( e )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
@@ -1074,6 +1132,56 @@ point number into its exponent and fraction parts.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: 'fraction attribute</p></td>
+</tr>
+</table>
+
+<a name="numerics.hash_of"></a><h3>f := numerics.hash_of( s, l )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Calculate a 32-bit number from string s that can be used with hash tables using a common standard Bernstein / Knuth / djb2 hash.  The return value is will be between 1 and the limit l.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.hash_of( "apple", 10  ); -- returns 1 to 10</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string expression</span></td>
+</tr>
+<tr>
+<td><span>l</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the maximum value to return</span></td>
+</tr>
+<td>f</td>
+<td>return value</td>
+<td>natural</td>
+<td>required</td>
+<td>the hash value</td>
+</tr>
+</table>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.fnv_hash_of<br>numerics.murmur_hash_of<br>sdbm_hash_of</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
@@ -1347,6 +1455,107 @@ a constraint_error is raised if e is zero</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: 'min attribute<br>PHP: min</p></td>
+</tr>
+</table>
+
+<a name="numerics.modulus"></a><h3>f := numerics.modulus( e [,cycle] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>trig inverse consine function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.arccos( e );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>required</span></td>
+<td><span>the expressions to take the arccos of</span></td>
+</tr>
+<tr>
+<td><span>cycle</span></td>
+<td><span>in</span></td>
+<td><span>universal_numeric</span></td>
+<td><span>numerics.pi*2</span></td>
+<td><span>the trig period (eg. 360 for degrees), default is radians</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>return value</span></td>
+<td><span>floating point</span></td>
+<td><span>required</span></td>
+<td><span>the result</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>an argument_error if the absolute value of e exceeds 1</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Numerics.Generic_Elementary_Functions.arccos<br>PHP: acos</p></td>
+</tr>
+</table>
+
+<a name="numerics.murmur_hash_of"></a><h3>f := numerics.murmur_hash_of( s, l )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Calculate a 32-bit number from string s that can be used with hash tables using a Murmur hash (used by memcached).  The return value is will be between 1 and the limit l.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.murmur_hash_of( "apple", 10  ); -- returns 1 to 10</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string expression</span></td>
+</tr>
+<tr>
+<td><span>l</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the maximum value to return</span></td>
+</tr>
+<td>f</td>
+<td>return value</td>
+<td>natural</td>
+<td>required</td>
+<td>the hash value</td>
+</tr>
+</table>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.fnv_hash_of<br>numerics.hash_of<br>sdbm_hash_of</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
@@ -1767,6 +1976,56 @@ will round to 7.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: 'scaling attribute</p></td>
+</tr>
+</table>
+
+<a name="numerics.sdbm_hash_of"></a><h3>f := numerics.sdbm_hash_of( s, l )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Calculate a 32-bit number from string s that can be used with hash tables using a Sleepycat / sdbm hash.  The return value is will be between 1 and the limit l.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">f := numerics.sdbm_hash_of( "apple", 10  ); -- returns 1 to 10</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string expression</span></td>
+</tr>
+<tr>
+<td><span>l</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the maximum value to return</span></td>
+</tr>
+<td>f</td>
+<td>return value</td>
+<td>natural</td>
+<td>required</td>
+<td>the hash value</td>
+</tr>
+</table>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>numerics.fnv_hash_of<br>numerics.hash_of<br>murmur_hash_of</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 

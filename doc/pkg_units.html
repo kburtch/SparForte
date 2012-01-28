@@ -46,32 +46,24 @@
         <center>
         <div class="code">
 <pre>
-  inches2mm(e) - inches to millimeters   mm2inches(e) - millimeters to inches 
-  feet2cm(e)   - feet to centimeters     cm2inches(e) - centimeters to inches 
-  yards2m(e)   - yards to meters         m2yards(e)   - meters to yards       
-  miles2km(e)  - miles to kilometers     km2miles(e)  - kilometers to miles   
-  ly2pc(e)     - lightyears to parsecs   pc2ly(e)     - parsecs to lightyears 
-  sqin2sqcm(e) - sq. inches to sq. cm    sqcm2sqin(e) - sq. cm to sq. inches 
-  sqft2sqm(e)  - sq. feet to sq. meters  sqm2sqft(e)  - sq. m to sq. feet    
-  sqyd2sqm(e)  - sq. yards to sq. meters sqm2sqyd(e)  - sq. m to sq. yards   
-  acres2hectares( e ) - acres to h.      hectares2acres(e) - h. to acres     
-                                         sqkm2sqmiles(e)  - sq. km to sq. miles  
-  oz2grams(e)  - ounces to grams         grams2oz(e)  - grams to ounces      
-  usdryoz2l(e) - US dry oz to liters     l2usdryoz(e) - liters to US dry oz  
-  usliqoz2l(e) - US liquid oz to liters  l2usliqoz(e) - liters to US liq oz  
-  troz2g(e)    - Troy ounces to grams    g2troz(e)    - grams to Troy ounces 
-  lb2kg(e)     - pounds to kilograms     kg2lb(e)     - kilograms to pounds  
-  tons2tonnes(e) - tons to tonnes        tonnes2tons(e) - tons to tonnes     
-  floz2ml(e)   - fl. oz. to millilitres  ml2floz(e)   - millilitres to fl oz 
-  usfloz2ml(e) - US fl. oz. to ml        ml2usfloz(e) - ml to US fl oz 
-  usfloz2floz(e) - US to imperial fl oz  flozususfloz(e) - imp to US fl oz 
-  pints2l(e)   - pints to litres         l2quarts(e)  - litres to quarts     
-  gal2l(e)     - gallons to litres       l2gal(e)     - litres to gallons    
-  cucm2floz(e) - cubic cm to imp fl oz   floz2cucm(e) - imp fl oz to cubic cm
-  cucm2usfloz(e) - cubic cm to US fl oz  usfloz2cucm(e) - US fl oz to cubic cm
-  f2c(e)       - Fahrenheit to Celsius   c2f(e)       - Celsius to Fahrenheit
-  k2c(e)       - Kelvin to Celsius       c2k(e)       - Celsius to Kelvin    
-  bytes2mb(e)  - bytes to megabytes      mb2bytes(e)  - megabytes to bytes   
+  <a href="#units.acres2hectares">r := acres2hectares( f )</a> <a href="#units.bytes2mb">r := bytes2mb( f )</a>     <a href="#units.c2f">r := c2f( f )</a>
+  <a href="#units.c2k">r := c2k( f )</a>            <a href="#units.cm2inches">r := cm2inches( f )</a>    <a href="#units.cucm2floz">r := cucm2floz( f )</a>
+  <a href="#units.cucm2usfloz">r := cucm2usfloz( f )</a>    <a href="#units.f2c">r := f2c( f )</a>          <a href="#units.feet2cm">r := feet2cm( f )</a>
+  <a href="#units.floz2usfloz">r := floz2usfloz( f )</a>    <a href="#units.floz2cucm">r := floz2cucm( f )</a>    <a href="#units.floz2ml">r := floz2ml( f )</a>
+  <a href="#units.g2troz">r := g2troz( f )</a>         <a href="#units.gal2l">r := gal2l( f )</a>        <a href="#units.grams2oz">r := grams2oz( f )</a>
+  <a href="#units.hectares2acres">r := hectares2acres( f )</a> <a href="#units.inches2mm">r := inches2mm( f )</a>    <a href="#units.k2c">r := k2c( f )</a>
+  <a href="#units.kg2lb">r := kg2lb( f )</a>          <a href="#units.km2miles">r := km2miles( f )</a>     <a href="#units.l2gal">r := l2gal( f )</a>
+  <a href="#units.l2quarts">r := l2quarts( f )</a>       <a href="#units.l2usdryoz">r := l2usdryoz( f )</a>    <a href="#units.l2usliqoz">r := l2usliqoz( f )</a>
+  <a href="#units.lb2kg">r := lb2kg( f )</a>          <a href="#units.ly2pc">r := ly2pc( f )</a>        <a href="#units.m2yards">r := m2yards( f )</a>
+  <a href="#units.mb2bytes">r := mb2bytes( f )</a>       <a href="#units.miles2km">r := miles2km( f )</a>     <a href="#units.ml2floz">r := ml2floz( f )</a>
+  <a href="#units.ml2usfloz">r := ml2usfloz( f )</a>      <a href="#units.mm2inches">r := mm2inches( f )</a>    <a href="#units.pc2ly">r := pc2ly( f )</a>
+  <a href="#units.pints2l">r := pints2l( f )</a>        <a href="#units.oz2grams">r := oz2grams( f )</a>     <a href="#units.sqcm2sqin">r := sqcm2sqin( f )</a>
+  <a href="#units.sqft2sqm">r := sqft2sqm( f )</a>       <a href="#units.sqin2sqcm">r := sqin2sqcm( f )</a>    <a href="#units.sqkm2sqmiles">r := sqkm2sqmiles( f )</a>
+  <a href="#units.sqm2sqft">r := sqm2sqft( f )</a>       <a href="#units.sqm2sqyd">r := sqm2sqyd( f )</a>     <a href="#units.sqmiles2sqkm">r := sqmiles2sqkm( f )</a>
+  <a href="#units.sqyd2sqm">r := sqyd2sqm( f )</a>       <a href="#units.tonnes2tons">r := tonnes2tons( f )</a>  <a href="#units.tons2tonnes">r := tons2tonnes( f )</a>
+  <a href="#units.troz2g">r := troz2g( f )</a>         <a href="#units.usdryoz2l">r := usdryoz2l( f )</a>    <a href="#units.usliqoz2l">r := usliqoz2l( f )</a>
+  <a href="#units.usfloz2cucm">r := usfloz2cucm( f )</a>    <a href="#units.usfloz2floz">r := usfloz2floz( f )</a>  <a href="#units.usfloz2ml">r := usfloz2ml( f )</a>
+  <a href="#units.yards2m">r := yards2m( f )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -80,1807 +72,2293 @@
         </div>
         </center>
 
-<p>
-<hr><b>r := units.inches2mm( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
+<a name="units.acres2hectares"></a><h3>r := units.acres2hectares( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>
-<br>Converts inches to millimeters.
-<br>Example: ml := units.inches2mm( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
+<td width="15%">&nbsp;</td>
+<td><p>Converts acres to metric hectares.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">h := units.acres2hectares( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of millimeters</td>
-
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of hectares</span></td>
 </tr>
-
 <tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of inches</td>
-
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of acres</span></td>
 </tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.mm2inches( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts millimeters to inches.
-<br>Example: in := units.mm2inches( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of inches</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of millimeters</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.hectares2acres</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
-</td>
+<a name="units.bytes2mb"></a><h3>r := units.bytes2mb( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts bytes to megabytes.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">kelvin := units.bytes2mb( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the amount in megabytes</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>r := units.feet2cm( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Converts feet to centimeters.
-<br>Example: cm := units.feet2cm( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of centimeters</td>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the amount in bytes</span></td>
 </tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of feet</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.cm2feet( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts centimeters to feet.
-<br>Example: ft := units.cm2feet( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of feet</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of centimeters</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.yards2m( f )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts yards to meters.
-<br>Example: m := units.yards2m( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of meters</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of yards</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.m2yards( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Converts meters to yards.
-<br>Example: yd := units.m2yards( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of yards</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of meters</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.miles2km( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts miles to kilometers.
-<br>Example: km := units.miles2km( 5.5 );
-
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of kilometers</td>
-
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of miles</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.km2miles( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts kilometers to miles.
-<br>Example: mi := units.km2miles( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of miles</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of kilometers</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.mb2bytes</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
-</td>
+<a name="units.c2f"></a><h3>r := units.c2f( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts Celcius temperatures to Fahrenheit.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">fahren := units.c2f( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the degrees in Fahrenheit</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>r := units.ly2pc( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Converts lightyears to parsecs.
-<br>Example: pc := units.ly2pc( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of parsecs</td>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the degrees in Celcius</span></td>
 </tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of lightyears</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.pc2ly( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts parsecs to lightyears.
-<br>Example: ly := units.pc2ly( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of lightyears</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of parsecs</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.sqin2sqcm( f )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts square inches to square centimeters.
-<br>Example: cm2 := units.sqin2sqcm( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of square centimeters</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of square inches</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.sqcm2sqin( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Converts square centimeters to square inches.
-<br>Example: in2 := units.sqcm2sqin( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of square inches</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of square centimeters</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.sqft2sqm( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts square feet to square meters.
-<br>Example: m2 := units.sqft2sqm( 5.5 );
-
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of square meters</td>
-
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of square feet</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.sqm2sqft( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts square meters to square feet.
-<br>Example: ft2 := units.sqm2sqft( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of square feet</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of square meters</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.f2c</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
-</td>
+<a name="units.c2k"></a><h3>r := units.c2k( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts Celcius temperatures to Kelvin.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">kelvin := units.c2k( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the degrees in Kelvin</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>r := units.sqyd2sqm( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Converts square yards to square meters.
-<br>Example: m2 := units.sqyd2sqm( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of square meters</td>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the degrees in Celcius</span></td>
 </tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of square yards</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.sqm2sqyd( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts square meters to square yards.
-<br>Example: yd2 := units.sqm2sqyd( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of square yards</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of square meters</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.acres2hectares( f )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts acres to metric hectares.
-<br>Example: h := units.acres2hectares( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of hectares</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of acres</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.hectares2acres( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Converts metric hectares to acres.
-<br>Example: ac := units.hectares2acres( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of acres</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of hectares</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.sqkm2sqmiles( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts square kilometers to square miles.
-<br>Example: mi2 := units.sqkm2sqmiles( 5.5 );
-
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of square miles</td>
-
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of square kilometers</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.sqmiles2sqkm( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts square miles to square kilometers.
-<br>Example: km2 := units.sqmiles2sqkm( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of square kilometers</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of square miles</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.k2c</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
-</td>
+<a name="units.cm2inches"></a><h3>r := units.cm2inches( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts centimeters to feet.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">ft := units.cm2inches( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of feet</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>r := units.oz2grams( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Converts imperial (British) ounces to grams.
-<br>Example: g := units.oz2grams( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of grams</td>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of centimeters</span></td>
 </tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of imperial ounces</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.grams2oz( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts grams to imperial (British) ounces.
-<br>Example: oz := units.grams2oz( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of imperial ounces</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of grams</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.lb2kg( f )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts pounds (weight) to kilograms.
-<br>Example: kg := units.lb2kg( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of kilograms</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of pounds</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.kg2lb( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Converts kilograms to pounds (weight).
-<br>Example: lb := units.kg2lb( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of pounds</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of kilograms</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.tons2tonnes( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts tons to metric tonnes.
-<br>Example: mt := units.ton2tonnes( 5.5 );
-
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of tonnes</td>
-
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of tons</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.tonnes2tons( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts metric tonnes to tons.
-<br>Example: t := units.tonnes2tons( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of tons</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of tonnes</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.feet2cm</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
-</td>
+<a name="units.cucm2floz"></a><h3>r := units.cucm2floz( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts metric cubic centimeters to imperial (British) fluid ounces.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">floz := units.cucm2floz( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of imperial fluid ounces</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>r := units.floz2ml( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Converts imperial (British) fluid ounces to milliliters.
-<br>Example: ml := units.floz2ml( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of milliliters</td>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of cubic centimeters</span></td>
 </tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of imperial fluid ounces</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.ml2floz( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts milliliters to imperial (British) fluid ounces.
-<br>Example: floz := units.ml2floz( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of imperial fluid ounces</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of milliliters</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.usfloz2ml( f )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts U.S. fluid ounces to milliliters.
-<br>Example: ml := units.usfloz2ml( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of milliliters</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of U.S. fluid ounces</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.ml2usfloz( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Converts milliliters to U.S. fluid ounces.
-<br>Example: floz := units.ml2usfloz( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of U.S. fluid ounces</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of milliliters</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.usfloz2floz( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts U.S. fluid ounces to imperial (British) fluid ounces.
-<br>Example: floz := units.usfloz2floz( 5.5 );
-
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of imperial fluid ounces</td>
-
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of U.S. fluid ounces</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.floz2usfloz( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts imperial (British) fluid ounces to U.S. fluid ounces.
-<br>Example: usfloz := units.floz2usfloz( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of U.S. fluid ounces</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of imperial fluid ounces</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.floz2cucm</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
-</td>
+<a name="units.cucm2usfloz"></a><h3>r := units.cucm2usfloz( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts metric cubic centimeters to U.S. fluid ounces.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">floz := units.cucm2usfloz( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of U.S. fluid ounces</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>r := units.pints2l( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Converts imperial (British) pints to metric liters.
-<br>Example: liters := units.pints2l( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of liters</td>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of cubic centimeters</span></td>
 </tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of imperial pints</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.l2quarts( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts metric liters to imperial (British) quarts.
-<br>Example: quarts := units.l2quarts( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of imperial quarts</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of liters</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.gal2l( f )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts imperial (British) gallons to metric liters.
-<br>Example: liters := units.gal2l( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of liters</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of imperial gallons</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.l2gal( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Converts metric liters to imperial (British) gallons.
-<br>Example: gals := units.l2gal( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of imperial gallons</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of liters</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.cucm2floz( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts metric cubic centimeters to imperial (British) fluid ounces.
-<br>Example: floz := units.cucm2floz( 5.5 );
-
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of imperial fluid ounces</td>
-
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of cubic centimeters</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.oz2cucm( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts imperial (British) fluid ounces to cubic centimeters.
-<br>Example: cm3 := units.floz2cucm( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of cubic centimeters</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of imperial fluid ounces</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.usfloz2cucm</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
-</td>
+<a name="units.f2c"></a><h3>r := units.f2c( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts Fahrenheit temperatures to Celsius.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">celcius := units.f2c( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the degrees in Celcius</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>r := units.cucm2usfloz( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Converts metric cubic centimeters to U.S. fluid ounces.
-<br>Example: floz := units.cucm2usfloz( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of U.S. fluid ounces</td>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the degrees in Fahrenheit</span></td>
 </tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of cubic centimeters</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.usfloz2cucm( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts U.S. fluid ounces to cubic centimeters.
-<br>Example: cm3 := units.usfloz2cucm( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of cubic centimeters</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the number of U.S. fluid ounces</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.f2c( f )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts Fahrenheit temperatures to Celsius.
-<br>Example: celcius := units.f2c( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the degrees in Celcius</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the degrees in Fahrenheit</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.c2f( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Converts Celcius temperatures to Fahrenheit.
-<br>Example: fahren := units.c2f( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the degrees in Fahrenheit</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the degrees in Celcius</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.k2c( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts Kelvin temperatures to Celsius.
-<br>Example: celcius := units.k2c( 5.5 );
-
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the degrees in Celcius</td>
-
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the degrees in Kelvin</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>r := units.c2k( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Converts Celcius temperatures to Kelvin.
-<br>Example: kelvin := units.c2k( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the degrees in Kelvin</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the degrees in Celcius</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.c2f</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
-</td>
+<a name="units.feet2cm"></a><h3>r := units.feet2cm( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts feet to centimeters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">cm := units.feet2cm( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of centimeters</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>r := units.bytes2mb( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Converts bytes to megabytes.
-<br>Example: kelvin := units.bytes2mb( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the amount in megabytes</td>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of feet</span></td>
 </tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the amount in bytes</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.cm2inches</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
-</td>
+
+<a name="units.floz2cucm"></a><h3>r := units.floz2cucm( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts imperial (British) fluid ounces to cubic centimeters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">cm3 := units.floz2cucm( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of cubic centimeters</span></td>
 </tr>
-</table></center>
-
-<p>
-<hr><b>r := units.mb2bytes( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
 <tr>
-<td>
-<br>Converts megabytes to bytes.
-<br>Example: bytes := units.mb2bytes( 5.5 );
-<br>Ada Equivalent: none (SparForte extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>r</td>
-
-<td>return value</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the amount in bytes</td>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of imperial fluid ounces</span></td>
 </tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>long float</td>
-
-<td>required</td>
-
-<td>the amount in megabytes</td>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.cucm2floz</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
-</td>
+
+<a name="units.floz2usfloz"></a><h3>r := units.floz2usfloz( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts imperial (British) fluid ounces to U.S. fluid ounces.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">usfloz := units.floz2usfloz( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of U.S. fluid ounces</span></td>
 </tr>
-</table></center>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of imperial fluid ounces</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.usfloz2floz</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.floz2ml"></a><h3>r := units.floz2ml( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts imperial (British) fluid ounces to milliliters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">ml := units.floz2ml( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of milliliters</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of imperial fluid ounces</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.ml2floz</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.g2troz"></a><h3>r := units.g2troz( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts grams to troy ounces.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">troz := units.g2troz( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of troy ounces</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of grams</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.troz2g</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.gal2l"></a><h3>r := units.gal2l( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts imperial (British) gallons to metric liters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">liters := units.gal2l( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of liters</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of imperial gallons</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.l2gal</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.grams2oz"></a><h3>r := units.grams2oz( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts grams to imperial (British) ounces.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">oz := units.grams2oz( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of imperial ounces</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of grams</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.oz2grams</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.hectares2acres"></a><h3>r := units.hectares2acres( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts metric hectares to acres.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">ac := units.hectares2acres( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of acres</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of hectares</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.acres2hectares</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.inches2mm"></a><h3>r := units.inches2mm( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts inches to millimeters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mm := units.inches2mm( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of millimeters</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of inches</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.mm2inches</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.kg2lb"></a><h3>r := units.kg2lb( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts kilograms to pounds (weight).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">lb := units.kg2lb( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of pounds</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of kilograms</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.lb2kg</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.k2c"></a><h3>r := units.k2c( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts Kelvin temperatures to Celsius.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">celcius := units.k2c( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the degrees in Celcius</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the degrees in Kelvin</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.c2k</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.km2miles"></a><h3>r := units.km2miles( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts kilometers to miles.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mi := units.km2miles( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of miles</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of kilometers</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.miles2km</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.l2quarts"></a><h3>r := units.l2quarts( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts metric liters to imperial (British) quarts.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">quarts := units.l2quarts( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of imperial quarts</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of liters</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.pints2l</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.l2usdryoz"></a><h3>r := units.l2usdryoz( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts metric liters to U.S. dry ounces.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">oz := units.l2usdryoz( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of U.S. dry ounces</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of liters</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.usdryoz2l</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.l2usliqoz"></a><h3>r := units.l2usliqoz( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts metric liters to U.S. liquid ounces.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">oz := units.l2usliqoz( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of U.S. liquid ounces</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of liters</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.usliqoz2l</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.lb2kg"></a><h3>r := units.lb2kg( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts pounds (weight) to kilograms.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">kg := units.lb2kg( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of kilograms</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of pounds</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.kg2lb</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.l2gal"></a><h3>r := units.l2gal( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts metric liters to imperial (British) gallons.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">gals := units.l2gal( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of imperial gallons</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of liters</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.gal2l</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.ly2pc"></a><h3>r := units.ly2pc( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts lightyears to parsecs.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">pc := units.ly2pc( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of parsecs</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of lightyears</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.pc2ly</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.m2yards"></a><h3>r := units.m2yards( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts meters to yards.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">yd := units.m2yards( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of yards</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of meters</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.yards2m</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.mb2bytes"></a><h3>r := units.mb2bytes( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts megabytes to bytes.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">bytes := units.mb2bytes( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the amount in bytes</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the amount in megabytes</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.bytes2mb</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.miles2km"></a><h3>r := units.miles2km( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts miles to kilometers.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">km := units.miles2km( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of kilometers</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of miles</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.km2miles</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.ml2floz"></a><h3>r := units.ml2floz( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts milliliters to imperial (British) fluid ounces.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">floz := units.ml2floz( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of imperial fluid ounces</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of milliliters</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.floz2ml</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.ml2usfloz"></a><h3>r := units.ml2usfloz( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts milliliters to U.S. fluid ounces.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">floz := units.ml2usfloz( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of U.S. fluid ounces</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of milliliters</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.usfloz2ml</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.mm2inches"></a><h3>r := units.mm2inches( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts millimeters to inches.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">in := units.mm2inches( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of inches</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of millimeters</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.inches2mm</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.oz2grams"></a><h3>r := units.oz2grams( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts imperial (British) ounces to grams.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">g := units.oz2grams( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of grams</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of imperial ounces</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.grams2oz</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.pc2ly"></a><h3>r := units.pc2ly( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts parsecs to lightyears.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">ly := units.pc2ly( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of lightyears</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of parsecs</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.ly2pc</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.pints2l"></a><h3>r := units.pints2l( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts imperial (British) pints to metric liters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">liters := units.pints2l( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of liters</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of imperial pints</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.l2quarts</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.sqcm2sqin"></a><h3>r := units.sqcm2sqin( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts square centimeters to square inches.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">in2 := units.sqcm2sqin( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of square inches</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of square centimeters</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.sqin2sqcm</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.sqft2sqm"></a><h3>r := units.sqft2sqm( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts square feet to square meters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">m2 := units.sqft2sqm( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of square meters</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of square feet</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.sqm2sqft</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.sqin2sqcm"></a><h3>r := units.sqin2sqcm( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts square inches to square centimeters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">cm2 := units.sqin2sqcm( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of square centimeters</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of square inches</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.sqcm2sqin</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.sqkm2sqmiles"></a><h3>r := units.sqkm2sqmiles( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts square kilometers to square miles.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mi2 := units.sqkm2sqmiles( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of square miles</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of square kilometers</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.sqm2sqft"></a><h3>r := units.sqm2sqft( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts square meters to square feet.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">ft2 := units.sqm2sqft( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of square feet</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of square meters</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.sqft2sqm</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.sqm2sqyd"></a><h3>r := units.sqm2sqyd( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts square meters to square yards.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">yd2 := units.sqm2sqyd( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of square yards</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of square meters</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.sqyd2sqm</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.sqmiles2sqkm"></a><h3>r := units.sqmiles2sqkm( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts square miles to square kilometers.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">km2 := units.sqmiles2sqkm( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of square kilometers</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of square miles</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.sqyd2sqm"></a><h3>r := units.sqyd2sqm( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts square yards to square meters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">m2 := units.sqyd2sqm( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of square meters</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of square yards</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>unit.sqm2sqyd</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.tonnes2tons"></a><h3>r := units.tonnes2tons( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts metric tonnes to tons.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">t := units.tonnes2tons( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of tons</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of tonnes</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.tons2tonnes</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.tons2tonnes"></a><h3>r := units.tons2tonnes( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts tons to metric tonnes.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">mt := units.ton2tonnes( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of tonnes</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of tons</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.tonnes2tons</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.troz2g"></a><h3>r := units.troz2g( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts troy ounces to grams.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">g := units.troz2g( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of grams</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of troy ounces</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.g2troz</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.usdryoz2l"></a><h3>r := units.usdryoz2l( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts U.S. dry ounces to liters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">cm3 := units.usdryoz2l( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of liters</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of U.S. dry ounces</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.l2usdryoz</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.usliqoz2l"></a><h3>r := units.usliqoz2l( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts U.S. liquid ounces to metric liters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">cm3 := units.usliqoz2l( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of liters</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of U.S. liquid ounces</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.l2usliqoz</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.usfloz2cucm"></a><h3>r := units.usfloz2cucm( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts U.S. fluid ounces to cubic centimeters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">cm3 := units.usfloz2cucm( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of cubic centimeters</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of U.S. fluid ounces</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.cucm2usfloz</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.usfloz2floz"></a><h3>r := units.usfloz2floz( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts U.S. fluid ounces to imperial (British) fluid ounces.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">floz := units.usfloz2floz( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of imperial fluid ounces</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of U.S. fluid ounces</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.flozususfloz</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.usfloz2ml"></a><h3>r := units.usfloz2ml( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts U.S. fluid ounces to milliliters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">ml := units.usfloz2ml( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of milliliters</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of U.S. fluid ounces</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.ml2usfloz</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="units.yards2m"></a><h3>r := units.yards2m( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Converts yards to meters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">m := units.yards2m( 5.5 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of meters</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>long float</span></td>
+<td><span>required</span></td>
+<td><span>the number of yards</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>units.m2yards</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
 
 &nbsp;<br>
 

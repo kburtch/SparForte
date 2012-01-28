@@ -43,820 +43,39 @@
 	<!-- Content Area -->
 <h2><a NAME="4.2"></a>Console Input/Output (Text_IO)</h2>
 <p>The Text_IO package handles reading and writing to the console (or UNIX
-tty device) and text files. (More on text files will be said in the next
-section.)  With the&nbsp; SparForte Text_IO package routines, "Text_IO" doesn't
-have to be prefixed to the routine name.</p>
-<p>&nbsp;
-<hr><b>put_line( [f,] e )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-
-<br>Write expression e with an appended line feed (new line) character
-<br>Example: put_line( 3*2 );
-<br>Ada Equivalent: Ada.Text_IO.Put_Line, Ada.Strings.Unbounded.Text_IO.Put_Line,
-etc.
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>file_type</td>
-
-<td>standard_output</td>
-
-<td>file to direct output to</td>
-</tr>
-
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>not limited</td>
-
-<td>required</td>
-
-<td>the expressions to write</td>
-</tr>
-</table>
-
-<p>put_line can take any type of parameter except limited types. This includes
-enumerated types. Output can be redirected to standard error by using standard_error
-as the file. The default file is standard_output.
-<p><tt>=> put_line( standard_error, "an error occurred!" );</tt></td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>put( [f,] e [, p] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Write expression e with optional numeric formatting
-<br>Example: put( 3*2 );
-<br>Ada Equivalent: Ada.Text_IO.Put, Ada.Strings.Unbounded.Text_IO.Put,
-Ada.Text_IO.Editing
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>file_type</td>
-
-<td>standard_output</td>
-
-<td>the file to direct output to</td>
-</tr>
-
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>not limited</td>
-
-<td>required</td>
-
-<td>the expression to write</td>
-</tr>
-
-<tr>
-<td>p</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>none</td>
-
-<td>format picture to write with</td>
-</tr>
-</table>
-
-<p>put can take any type of parameter except limited types. This includes
-enumerated types. Output can be redirected to standard error by using standard_error
-as the file. The default file is standard_output.</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>new_line [(f)]</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-
-<br>write a line feed (new line)
-<br>Example: new_line;
-<br>Ada Equivalent: Ada.Text_IO.New_Line
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>file_type</td>
-
-<td>standard_output</td>
-
-<td>file to redirect output to</td>
-</tr>
-</table>
-
-<p>Output can be redirected to standard error by using standard_error as
-the file. The default file is standard_output.</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>s := get_line [( f )]</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-
-<br>read a string until the end of line is encountered. The default file
-is standard_input.
-<br>Example: s := get_line;
-<br>Ada Equivalent: Ada.Text_IO.Get_Line, Ada.Strings.Unbounded.Text_IO
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>file_type</td>
-
-<td>standard_input</td>
-
-<td>the file to read input from</td>
-</tr>
-
-<tr>
-<td>s</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the string that was read</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>get( [f,] c )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>read the first character from a line on standard input and return it
-as c
-<br>Example: get( ch );
-
-<br>Ada Equivalent: Ada.Text_IO.Get_Line, Ada.Strings.Unbounded.Text_IO
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>file_type</td>
-
-<td>standard_input</td>
-
-<td>the file to read input from</td>
-
-</tr>
-
-<tr>
-<td>c</td>
-
-<td>out</td>
-
-<td>character</td>
-
-<td>required</td>
-
-<td>the character read</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>? e</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>put_line expression e to standard output.  If appropriate, removes
-the decimal part of the expression (i.e. 41.0 will be displayed as 41)
-so as more human-friendly.
-<br>Restrictions: disabled with pragma ada_95
-<br>Example: ? 3*2;
-<br>Ada Equivalent: none (AdaScript extension taken from BASIC language)
-<br>Parameters:
-
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>e</td>
-
-<td>in</td>
-
-<td>not limited</td>
-
-<td>required</td>
-
-<td>the expression to write</td>
-</tr>
-
-</table>
-
-<p>The <b>question mark command</b> "?" is a short-form for put_line to
-standard output. It is intended as a command line convenience.  This is
-roughly equivalent to PHP's "=" in a short open tag, a shortcut for "echo".</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>c := inkey</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Read a character from standard input. Don't write the character.
-
-<br>Restrictions: disabled with pragma ada_95
-<br>Example: ch := inkey;
-<br>Ada Equivalent: none (AdaScript extension)
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>c</td>
-
-<td>return value</td>
-
-<td>character</td>
-
-<td>required</td>
-
-<td>the key that was pressed</td>
-</tr>
-</table>
-
-<p>get is provided for compatibility for Ada 95 but get is not very convenient.
-inkey is a more useful function for reading a keypress.</td>
-</tr>
-</table></center>
-
-<hr>
-<p>The file_type constants standard_input, standard_output and standard_error
-can be used to redirect I/O to standard input, output or error respectively.
-<p>Ada's get_immediate is not implemented.
-<br>&nbsp;
-
-<h2><a NAME="4.3"></a>Text File I/O (Text_IO)</h2>
-
-BASH opens files on the basis of file numbers or "file descriptors". In
-AdaScript, files are declared using a file_type variable.
-<p>AdaScript's I/O system implements a subsection of the Ada Text_IO library.
-<p>The Text_IO package has a predefined enumerated type, file_mode, which
-determines if a file should be read (in_file), written (out_file) or should
-append to an existing file (append_file).
-<p>
-<hr><b>open( f, m, p )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Open existing file f as pathname p in file mode m.
-<br>Example: open( data, in_mode, "/home/ken/data.txt" );
-<br>Restrictions: out_mode not allowed in restricted shells
-<br>Ada Equivalent: Ada.Text_IO.Open
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>out</td>
-
-<td>file_type</td>
-
-<td>required</td>
-
-<td>file variable representing the open file</td>
-</tr>
-
-<tr>
-<td>m</td>
-
-<td>in</td>
-
-<td>file_mode</td>
-
-<td>required</td>
-
-<td>open the file for reading, writing or appending</td>
-</tr>
-
-<tr>
-<td>p</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the pathname of the file to open</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>create( f [, m] [, n] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Create a new file or open an existing file for writing. Also, create
-temp files.
-<br>Example: create( temp_file );
-<br>Restrictions: out_mode not allowed in restricted shells
-<br>Ada Equivalent: Ada.Text_IO.Create
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>out</td>
-
-<td>file_type</td>
-
-<td>required</td>
-
-<td>file variable representing the open file</td>
-</tr>
-
-<tr>
-<td>m</td>
-
-<td>in</td>
-
-<td>file_mode</td>
-
-<td>out_file</td>
-
-<td>open the file writing or appending</td>
-</tr>
-
-<tr>
-<td>n</td>
-
-<td>in</td>
-
-<td>string</td>
-
-<td><i>a temp file</i></td>
-
-<td>the pathname of the file to create. If none is given, a temp file will
-be created.</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>reset( f [, m] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Reopen open file f in optional new file mode m
-<br>Example: reset( temp_file, in_mode );
-<br>Restrictions: out_mode not allowed in restricted shells
-<br>Ada Equivalent: Ada.Text_IO.Reset
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>in out</td>
-
-<td>file_type</td>
-
-<td>required</td>
-
-<td>file variable representing the file to reopen</td>
-</tr>
-
-<tr>
-<td>m</td>
-
-<td>in</td>
-
-<td>file_mode</td>
-
-<td><i>current mode</i></td>
-
-<td>the new mode for the file. The default is to leave the mode unchanged.</td>
-
-<td></td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>is_open( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return true if file f is open
-<br>Example: if is_open( data ) then ...
-<br>Ada Equivalent: Ada.Text_IO.Is_Open
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>file_type</td>
-
-<td>required</td>
-
-<td>file variable representing the file to test</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>end_of_file( f )</b>
-
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return true if all data has been read from in_mode file f
-<br>Example: if end_of_file( data ) then ...
-<br>Ada Equivalent: Ada.Text_IO.End_Of_File
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>file_type</td>
-
-<td>required</td>
-
-<td>file variable representing the file to test</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>end_of_line( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-
-<td>
-<br>Return true if at the end of line for file f
-<br>Example: if end_of_line( data ) then ...
-<br>Ada Equivalent: Ada.Text_IO.End_Of_Line
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>file_type</td>
-
-<td>required</td>
-
-<td>file variable representing the file to test</td>
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>close( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Close and save the open file f
-<br>Example: close( data );
-
-<br>Ada Equivalent: Ada.Text_IO.Close
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>in out</td>
-
-<td>file_type</td>
-
-<td>required</td>
-
-<td>file variable representing the file to close</td>
-
-</tr>
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>delete( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Close and delete the open file f
-<br>Example: delete( temp_file );
-<br>Restriction: not allowed in restricted shells
-<br>Ada Equivalent: Ada.Text_IO.Delete
-<br>Parameters:
-
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>in out</td>
-
-<td>file_type</td>
-
-<td>required</td>
-
-<td>file variable representing the file to delete</td>
-</tr>
-
-</table>
-</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>skip_line( [f] )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Read a line from standard input and discard it
-<br>Example: s := get_line;
-<br>Ada Equivalent: Ada.Text_IO.Skip_Line
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-
-<td>f</td>
-
-<td>in</td>
-
-<td>file_type</td>
-
-<td>standard_input</td>
-
-<td>the file to read input from</td>
-</tr>
-</table>
-</td>
-
-</tr>
-</table></center>
-
-<p>
-<hr><b>set_input( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Redirect standard_input to an open file
-<br>Example: set_input( data_file );
-<br>Ada Equivalent: Ada.Text_IO.Set_Input
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>file_type</td>
-
-<td>required</td>
-
-<td>the file to read input from</td>
-</tr>
-</table>
-
-<p>Use set_input( standard_input ) to return to standard input.</td>
-
-</tr>
-</table></center>
-
-<p>
-<hr><b>set_output( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Redirect standard_output to an open file
-<br>Example: set_output( data_file );
-<br>Ada Equivalent: Ada.Text_IO.Set_Output
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>file_type</td>
-
-<td>required</td>
-
-<td>the file to write output to</td>
-</tr>
-</table>
-
-<p>Use set_output( standard_output ) to return to standard output.</td>
-
-</tr>
-</table></center>
-
-<p>
-<hr><b>set_error( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Redirect standard_error to an open file
-<br>Example: set_error( data_file );
-<br>Ada Equivalent: Ada.Text_IO.Set_Error
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>file_type</td>
-
-<td>required</td>
-
-<td>the file to write error output to</td>
-</tr>
-</table>
-
-<p>Use set_error( standard_error ) to return to standard error.</td>
-
-</tr>
-</table></center>
-
-<p>
-<hr><b>i := line( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the number of lines read or written (with put_line, the number
-of lines explicitly put to that file)
-<br>Example: if line( f ) > 33 then ...
-<br>Ada Equivalent: Ada.Text_IO.Line
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-<td>i</td>
-
-<td>return value</td>
-
-<td>integer</td>
-
-<td>required</td>
-
-<td>the number of lines read or written</td>
-</tr>
-
-<tr>
-<td>f</td>
-
-<td>in</td>
-
-<td>file_type</td>
-
-<td>required</td>
-
-<td>file variable representing the file to test</td>
-</tr>
-</table>
-
-<p>This function will work with standard_input, standard_output and standard_error.
-However, it does not take into account lines read or written by operating
-system commands.</td>
-
-</tr>
-</table></center>
-
-<p>
-<hr><b>s := name( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the pathname of the open file.
-<br>Example: put_line( "error in file " &amp; name( f ) );
-<br>Ada Equivalent: Ada.Text_IO.Name
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-
-<td>s</td>
-
-<td>return value</td>
-
-<td>string</td>
-
-<td>required</td>
-
-<td>the pathname of the file</td>
-</tr>
-
-<tr>
-
-<td>f</td>
-
-<td>in</td>
-
-<td>file_type</td>
-
-<td>required</td>
-
-<td>file variable representing the file</td>
-</tr>
-</table>
-
-<p>This function will work with standard_input, standard_output and standard_error.
-However, it does not return a pathname since these files have no known
-pathnames.</td>
-</tr>
-</table></center>
-
-<p>
-<hr><b>m := mode( f )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>Return the mode of the open file
-<br>Example: if mode( f ) = in_file then ...
-<br>Ada Equivalent: Ada.Text_IO.Mode
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
-<tr>
-
-<td>m</td>
-
-<td>return value</td>
-
-<td>file_mode</td>
-
-<td>required</td>
-
-<td>the current mode of the file</td>
-</tr>
-
-<tr>
-
-<td>f</td>
-
-<td>in</td>
-
-<td>file_type</td>
-
-<td>required</td>
-
-<td>file variable representing the file</td>
-</tr>
-</table>
-</td>
-
-</tr>
-</table></center>
-
-<p>This function will work with standard_input, standard_output and standard_error.
-<p>The Text_IO package also defines three file aliases. These can be used
+tty device) and text files.  The package name "text_io" should be omitted
+when invoking these subroutines.</p>
+
+<p><u>GCC Ada Equivalent</u>: Ada.Text_IO<br>
+
+        <center>
+        <div class="code">
+<pre>
+  <a href="#question_mark">? e (question mark command)</a> <a href="#close">close( f )</a>          <a href="#create">create( f [, m] [, n] )</a>
+  <a href="#end_of_file">end_of_file( f )</a>            <a href="#end_of_line">end_of_line( f )</a>    <a href="#get">get( [f,] c )</a>
+  <a href="#get_line">s := get_line [( f )]</a>       <a href="#inkey">c := inkey</a>          <a href="#line">i := line( f )</a>
+  <a href="#name">s := name( f )</a>              <a href="#new_line">new_line [(f)]</a>      <a href="#open">open( f, m, p )</a>
+  <a href="#put">put( [f,] e [, p] )</a>         <a href="#put_line">put_line( [f,] e )</a>  <a href="#reset">reset( f [, m] )</a>
+  <a href="#set_error">set_error( f )</a>              <a href="#set_input">set_input( f )</a>      <a href="#set_output">set_output( f )</a>
+  <a href="#skip_line">skip_line( [f] )</a>
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the arrays package
+        </div>
+        </div>
+        </center>
+
+<p>Files are opened using <b>file_type</b> variables.</p>
+
+<p>The predefined enumerated type <b>file_mode</b> determines if a file will be
+read (<b>in_file</b>), written to (<b>out_file</b>) or appended to (<b>append_file</b>).  If a file is appended to, it should already exist.</p>
+
+<p>There are several predefined file_type constants: <b>standard_input</b>,
+<b>standard_output</b> and <b>standard_error</b> can be used to redirect I/O
+to your operating system's standard input, output or error respectively.</p>
+
+<p>There are also three file_type aliases. These can be used
 anywhere a file_type variable is expected.
 <ul>
 <li>
@@ -868,28 +87,972 @@ anywhere a file_type variable is expected.
 <li>
 <b>current_error</b> -- an alias for the current error file</li>
 </ul>
-The put, put_line, get, get_line and new_line commands are used to read
-and write files.
-<p><tt>=&gt; f : file_type</tt>
-<br><tt>=&gt; create( f, out_file, "data.out" )</tt>
-<br><tt>=&gt; put_line( f, "Added to file" )</tt>
 
-<br><tt>=&gt; ? name( f )</tt>
-<br><tt>data.out</tt>
-<br><tt>=&gt; ? mode( f )</tt>
-<br><tt>out_file</tt>
-<br><tt>=&gt; ? line( f )</tt>
-<br><tt>1</tt>
+<p>The current aliases can be redirected using set_output or related
+procedures.</p>
 
-<p>standard_input, standard_output and standard_error can be redirected
-with the appropriate command to an open file.
 <p><tt>=&gt; set_output( f )</tt>
 <p>From now on, all output going to standard output is written to the file_type
 variable f. The current_output function refers to the file being written
 to (in this case, f). Output redirected to f is not counted by the line
 function.
-<p>The file is closed with close.
-<p><tt>=&gt; close( f )</tt></p>
+
+<p>The put, put_line, get, get_line and new_line commands are used to read
+and write files.</p>
+
+        <center>
+        <div class="code">
+<pre>
+=&gt; f : file_type
+=&gt; create( f, out_file, "data.out" )
+=&gt; put_line( f, "Added to file" )
+=&gt; ? name( f )
+data.out
+=&gt; ? mode( f )
+out_file
+=&gt; ? line( f )
+1
+=&gt; close( f )
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Example</b>: Writing to a text file
+        </div>
+        </div>
+        </center>
+
+<p>Ada's get_immediate is not implemented.</p>
+
+<p>&nbsp;
+
+<a name="question_mark"></a><h3>? e (question mark command)</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Display expression e to current output.  If appropriate, removes the decimal part of the expression (i.e. 41.0 will be displayed as 41) so as more human-friendly.  If f is specified, writes to the file f instead of current_output.  The expression type can be a string type, a numeric type or an enumerated type.  Limited types are not allowed.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">? 3*2; -- displays 6</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>not limited</span></td>
+<td><span>required</span></td>
+<td><span>the expression to write</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed with pragma ada_95</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>put<br>put_line</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>BASIC: ?<br>PHP: = (in a short open tag)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Rationale</p></td>
+<td><p>Provided as a command prompt convenience.</p></td>
+</tr>
+</table>
+
+<a name="close"></a><h3>close( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Close and save the open file f</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">close( data );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>file_type</span></td>
+<td><span>required</span></td>
+<td><span>file variable representing the file to close</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If the file is not opened an exception will be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>delete<br>is_open</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Close<br>PHP: fclose</p></td>
+</tr>
+</table>
+
+<a name="create"></a><h3>create( f [, m] [, n] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Create a new file or open an existing file for writing. If no path is specified, create a new temporary file.  The mode cannot be in_file.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">create( temp_file );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>out</span></td>
+<td><span>file_type</span></td>
+<td><span>required</span></td>
+<td><span>file variable representing the open file</span></td>
+</tr>
+<tr>
+<td><span>m</span></td>
+<td><span>in</span></td>
+<td><span>file_mode</span></td>
+<td><span>out_file</span></td>
+<td><span>open the file writing or appending</span></td>
+</tr>
+<tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>random temp file</span></td>
+<td><span>the pathname of the file to create</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If the file cannot be opened an exception will be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>out_mode not allowed in a restricted shell</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>close<br>is_open<br>open<br>reset</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Create<br>PHP: tmpfile</p></td>
+</tr>
+</table>
+
+<a name="delete"></a><h3>delete( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Close and delete the open file f</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">delete( temp_file );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>file_type</span></td>
+<td><span>required</span></td>
+<td><span>file variable representing the file to delete</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If the file is not opened an exception will be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>close<br>is_open</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Delete<br>PHP: unlink</p></td>
+</tr>
+</table>
+
+<a name="end_of_file"></a><h3>end_of_file( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return true if all data has been read from in_mode file f</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">if end_of_file( data ) then ...</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>file_type</span></td>
+<td><span>required</span></td>
+<td><span>file variable representing the file to test</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception will be raised if the file is not open or has the wrong mode</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.End_Of_File<br>PHP: feof</p></td>
+</tr>
+</table>
+
+<a name="end_of_line"></a><h3>end_of_line( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return true if at the end of line for file f</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">if end_of_line( data ) then ...</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>file_type</span></td>
+<td><span>required</span></td>
+<td><span>file variable representing the file to test</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.End_Of_Line</p></td>
+</tr>
+</table>
+
+<a name="get"></a><h3>get( [f,] c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Read the first character from a line on standard input and return it as c.  End-of-line charcters are not returned.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">get( ch );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>file_type</span></td>
+<td><span>standard_input</span></td>
+<td><span>the file to read input from</span></td>
+</tr>
+<tr>
+<td><span>c</span></td>
+<td><span>out</span></td>
+<td><span>character</span></td>
+<td><span>required</span></td>
+<td><span>the character read</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>Reading past end of file will raise an exception</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>end_of_file<br>end_of_line<br>get_line<br>inkey<br>skip_line</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Get_Line, Ada.Strings.Unbounded.Text_IO.Get<br>PHP: fgetc</p></td>
+</tr>
+</table>
+
+<a name="get_line"></a><h3>s := get_line [( f )]</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Read a string until the end of line is encountered. If f is specified, read from file f instead of current_input.  End-of-line characters are not returned.  To read a numeric value, convert the string value to a numeric value with numerics.value and typecast it if necessary.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := get_line;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>file_type</span></td>
+<td><span>standard_input</span></td>
+<td><span>the file to read input from</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the string that was read</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>Reading past end of file will raise an exception</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><br>end_of_file<br>end_of_line<br>get<br>inkey<br>skip_line</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Get_Line / Ada.Strings.Unbounded.Text_IO.Get_Line<br>PHP: fgets</p></td>
+</tr>
+</table>
+
+<a name="inkey"></a><h3>c := inkey</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Read a character from current_input. It does not write the character back to current_output.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">ch := inkey;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>return value</span></td>
+<td><span>character</span></td>
+<td><span>required</span></td>
+<td><span>the key that was pressed</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>BASIC: inkey$</p></td>
+</tr><tr>
+<td><p class="pkg_label">Rationale</p></td>
+<td><p>get is provided for compatibility for Ada 95 but get is not very convenient. inkey is a more useful function for reading a keypress.</p></td>
+</tr>
+</table>
+
+<a name="is_open"></a><h3>is_open( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return true if file f is open</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">if is_open( data ) then ...</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>file_type</span></td>
+<td><span>required</span></td>
+<td><span>file variable representing the file to test</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Is_Open</p></td>
+</tr>
+</table>
+
+<a name="line"></a><h3>i := line( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of lines read or written to file f (with put_line, the number of lines explicitly put to that file).  This function will work with standard_input, standard_output and standard_error.  However, it does not take into account lines read or written by operating system commands.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">if line( f ) &gt; 33 then ...</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>return value</span></td>
+<td><span>integer</span></td>
+<td><span>required</span></td>
+<td><span>the number of lines read or written</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>file_type</span></td>
+<td><span>required</span></td>
+<td><span>file variable representing the file to test</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception will be raised if the file is not open</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>mode<br>name</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Line</p></td>
+</tr>
+</table>
+
+<a name="mode"></a><h3>m := mode( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the mode of the open file.  This function will work with standard_input, standard_output and standard_error.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">if mode( f ) = in_file then ...</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>return value</span></td>
+<td><span>file_mode</span></td>
+<td><span>required</span></td>
+<td><span>the current mode of the file</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>file_type</span></td>
+<td><span>required</span></td>
+<td><span>file variable representing the file</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception will be thrown if the file is not open</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>line<br>name</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Mode</p></td>
+</tr>
+</table>
+<a name="name"></a><h3>s := name( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the pathname of the open file.  This function will work with standard_input, standard_output and standard_error.  However, it does not return a pathname since these files have no known pathnames.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">put_line( "error in file " &amp; name( f ) );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the pathname of the file</span></td>
+</tr>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>file_type</span></td>
+<td><span>required</span></td>
+<td><span>file variable representing the file</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception will be raised if the file is not open</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>line<br>mode</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Name</p></td>
+</tr>
+</table>
+
+<a name="new_line"></a><h3>new_line [(f)]</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Write a line feed (new line).  If f is specified, writes to the file f instead
+of current_output.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">new_line;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>file_type</span></td>
+<td><span>standard_output</span></td>
+<td><span>file to redirect output to</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If the new line cannot be written an exception will be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>? (question mark command)<br>skip_line</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.New_Line<br>PHP: echo</p></td>
+</tr>
+</table>
+
+<a name="open"></a><h3>open( f, m, p )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Open existing file f as pathname p in file mode m.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">open( data, in_mode, "/home/ken/data.txt" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>out</span></td>
+<td><span>file_type</span></td>
+<td><span>required</span></td>
+<td><span>file variable representing the open file</span></td>
+</tr>
+<tr>
+<td><span>m</span></td>
+<td><span>in</span></td>
+<td><span>file_mode</span></td>
+<td><span>required</span></td>
+<td><span>open the file for reading, writing or appending</span></td>
+</tr>
+<tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the pathname of the file to open</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If the file cannot be opened an exception will be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>close<br>create<br>is_open<br>reset</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Open<br>PHP: fopen</p></td>
+</tr>
+</table>
+
+<a name="put"></a><h3>put( [f,] e [, p] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Write expression e with optional numeric formatting.  The
+expression type can be a string type, a numeric type or an enumerated type.
+Limited types are not allowed.  If f is specified, writes to the file f instead
+of current_output.  If picture string p is used, formats a numeric value
+according to the picture as described in
+<a href="ref_numberformat.html">Numeric Formatting with Put</a> in the
+reference section.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">put( 3*2 ); -- displays 6.0E+00<br>put( 3*2, "9999" ); -- displays 0006</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>file_type</span></td>
+<td><span>standard_output</span></td>
+<td><span>the file to direct output to</span></td>
+</tr>
+<tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>not limited</span></td>
+<td><span>required</span></td>
+<td><span>the expression to write</span></td>
+</tr>
+<tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>none</span></td>
+<td><span>format picture to write with</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If the value cannot be written an exception will be raised<br>If the value does not fit the picture an exception will be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>? (question mark command)<br>put_line</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Put / Ada.Strings.Unbounded.Text_IO.Put / Ada.Text_IO.Editing / etc.<br>PHP: printf / fprintf</p></td>
+</tr>
+</table>
+
+<a name="put_line"></a><h3>put_line( [f,] e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Write expression e with an appended line feed (new line) character.  The
+expression type can be a string type, a numeric type or an enumerated type.
+Limited types are not allowed.  If f is specified, writes to the file f instead
+of current_output.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">put_line( 3*2 );<br>put_line( true or false );<br>put_line( standard_error, "an error message" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>file_type</span></td>
+<td><span>standard_output</span></td>
+<td><span>file to direct output to</span></td>
+</tr>
+<tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>not limited</span></td>
+<td><span>required</span></td>
+<td><span>the expressions to write</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If the value cannot be written an exception will be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>? (question mark command)<br>put<br>new_line</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Put_Line / Ada.Strings.Unbounded.Text_IO.Put_Line / etc.<br>PHP: echo</p></td>
+</tr>
+</table>
+
+<a name="reset"></a><h3>reset( f [, m] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Reopen open file f in optional new file mode m</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">reset( temp_file, in_mode );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>file_type</span></td>
+<td><span>required</span></td>
+<td><span>file variable representing the file to reopen</span></td>
+</tr>
+<tr>
+<td><span>m</span></td>
+<td><span>in</span></td>
+<td><span>file_mode</span></td>
+<td><span>current mode</span></td>
+<td><span>the new mode for the file</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception will be raised if the file cannot be opened in the new mode</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>out_mode not allowed in a restricted shell</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>create<br>open</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Reset<br>PHP: rewind</p></td>
+</tr>
+</table>
+
+<a name="set_error"></a><h3>set_error( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Redirect the current error file (usually standard_error) to another open file f.  All future writes to current_error (put_line( current_error, ...), etc.) will use the new file.  The new file must be an out_mode file.  Use set_error( standard_error ) to return to standard error, or save the value of current_error and restore it later.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">set_error( log_file );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>file_type</span></td>
+<td><span>required</span></td>
+<td><span>the file to write error output to</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If the file is not open or if it is the wrong mode, an exception will be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>set_input<br>set_output</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Set_Error</p></td>
+</tr>
+</table>
+
+<a name="set_input"></a><h3>set_input( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Redirect the current input (usually standard_input) to another open file f.  All future reads (get, get_line, etc.) will use the new file.  The new file must be an in_mode file.  Use set_input( standard_input ) to return to standard input, or save the value of current_input and restore it later.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">set_input( data_file );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>file_type</span></td>
+<td><span>required</span></td>
+<td><span>the file to read input from</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If the file is not open or if it is the wrong mode, an exception will be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>set_error<br>set_output</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Set_Input</p></td>
+</tr>
+</table>
+
+<a name="set_output"></a><h3>set_output( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Redirect the current output (usually standard_output) to another open file f.  All future writes (put, put_line, etc.) will use the new file.  The new file must be an out_mode file.  Use set_output( standard_output ) to return to standard output, or save the value of current_output and restore it later.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">set_output( data_file );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>file_type</span></td>
+<td><span>required</span></td>
+<td><span>the file to write output to</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If the file is not open or if it is the wrong mode, an exception will be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>set_input<br>set_error</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Set_Output</p></td>
+</tr>
+</table>
+
+<a name="skip_line"></a><h3>skip_line( [f] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Read a line from standard input and discard it</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">skip_line;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>file_type</span></td>
+<td><span>standard_input</span></td>
+<td><span>the file to read input from</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If the new line cannot be read or it is the end of file, an exception will be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>get<br>get_line</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Skip_Line</p></td>
+</tr>
+</table>
 
 &nbsp;<br>
 
