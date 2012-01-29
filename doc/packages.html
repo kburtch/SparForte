@@ -160,36 +160,51 @@ languages like C/C++/Java.</li>
 <b>return value</b> - the type of value returned for functions.</li>
 </ul>
 <h3>An Example</h3>
-<hr><b>n := strings.length( s )</b>
-<center><table CELLSPACING=0 CELLPADDING=0 WIDTH="95%" NOSAVE >
-<tr>
-<td>
-<br>return the number of characters in the string
-<br>Example: n := strings.length( "bounce" ); -- retuns 6
-<br>Ada Equivalent: Ada.Strings.Unbounded.Length
-<br>Parameters:
-<table CELLSPACING=0 CELLPADDING=0 WIDTH="80%" NOSAVE >
 
+<h4>n := strings.length( s )</h4>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td>s</td>
-<td>in</td>
-<td>universal_string</td>
-<td>required</td>
-<td>the string to count</td>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of characters in the string.  Returns zero if the string is empty.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">n := strings.length( "bounce" ); -- retuns 6</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string to count</span></td>
 </tr>
-
 <tr>
-<td>n</td>
-<td>return value</td>
-
-<td>natural</td>
-<td>required</td>
-<td>the number of characters</td>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of characters</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Strings.Unbounded.Length<br>PHP: strlen</p></td>
 </tr>
 </table>
-</td>
-</tr>
-</table></center>
+
 <hr>
 
 <p>This example uses the description of the strings.length function.  Here is

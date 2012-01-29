@@ -1,11 +1,8 @@
 <HEAD><TITLE>whattime.sp</TITLE></HEAD>
 <BODY>
-<HR><DIV ALIGN="center"><H1> File : whattime.sp</H1></DIV><HR>
-<!-- IMG SRC="whattime.gif" -->
-<P>Show the time for different time zones</p>
+<HR><DIV ALIGN="center"><H1> File : whattime.sp </H1></DIV><HR>
 <PRE>
-
-#!/usr/local/bin/spar
+#!/usr/local/bin/bush
 
 <FONT COLOR=green><EM>-- What Time</EM></FONT>
 <FONT COLOR=green><EM>--</EM></FONT>
@@ -29,38 +26,38 @@
   default_TZ : <b>array</b>( 1..6 ) <b>of</b> string := (
       "Europe/Dublin", "Europe/Berlin", "US/Eastern", "US/Central",
       "US/Mountain", "US/Pacific" );
-  -- default time zones to display
+  <FONT COLOR=green><EM>-- default time zones to display</EM></FONT>
 
   TZ : string;
   <b>pragma</b> export( shell, TZ );
-  -- shell variable containing timezone, by convention, for date
+  <FONT COLOR=green><EM>-- shell variable containing timezone, by convention, for date</EM></FONT>
 
 <b>begin</b>
 
-<FONT COLOR=green><EM>  -- Usage</EM></FONT>
+  <FONT COLOR=green><EM>-- Usage</EM></FONT>
 
-  <b>if</b> $# > 1 <b>then</b>
+  <b>if</b> $# &gt; 1 <b>then</b>
      usage;
      <b>return</b>;
   <b>elsif</b> $# = 1 <b>then</b>
-     <b>if</b> $1 = "-h" <b>or</b> $1 = "--help" <b>then</b>
+     <b>if</b> $1 = "-h" <b>or</b> $1 = "<FONT COLOR=green><EM>--help" then</EM></FONT>
         usage;
         <b>return</b>;
      <b>end</b> <b>if</b>;
   <b>end</b> <b>if</b>;
 
-<FONT COLOR=green><EM>  -- If a timezone was given, use it</EM></FONT>
+  <FONT COLOR=green><EM>-- If a timezone was given, use it</EM></FONT>
 
   <b>if</b> $# = 1 <b>then</b>
     TZ := $1;
     date;
   <b>else</b>
 
-<FONT COLOR=green><EM>  -- Otherwise, show the time in the default time zones</EM></FONT>
+  <FONT COLOR=green><EM>-- Otherwise, show the time in the default time zones</EM></FONT>
 
     <b>for</b> i <b>in</b> arrays.first( default_TZ )..arrays.last( default_TZ ) <b>loop</b>
        TZ := default_TZ( i );
-       put( TZ ) @ ' ' * (20 - strings.length( TZ )) & ": " );
+       put( TZ ) @ ( ( (20 -strings.length( TZ ) ) * ' ' ) &amp; ": " );
        date;
     <b>end</b> <b>loop</b>;
   <b>end</b> <b>if</b>;
@@ -70,4 +67,5 @@
 <b>end</b> whattime;
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+
 </PRE></BODY></HTML>

@@ -1523,27 +1523,25 @@ begin
   declareFunction( source_info_symbol_table_size_t, "source_info.symbol_table_size" );
 
   -- startup built-in packages from other modules
+  --
 
-  StartupTextIO;
-  StartupPen;
-  StartupStats;
-  StartupNumerics;
-  StartupStrings;
-  StartupCommandLine;
-  StartupLockFiles;
-  StartupCGI;
-  StartupCalendar;
-  StartupUnits;
-  StartupFiles;
-  StartupRecords;
-  StartupEnums;
-  StartupArrays;
-  StartupMySQL;
-  StartupDB;
   StartupBushOS;
-
-  StartupCalendar;
+  StartupDB;
+  StartupMySQL;
+  StartupArrays;
+  StartupEnums;
+  StartupRecords;
+  StartupFiles;
   StartupUnits;
+  StartupCalendar;
+  StartupCGI;
+  StartupTextIO;
+  StartupLockFiles;
+  StartupCommandLine;
+  StartupStrings;
+  StartupNumerics;
+  StartupStats;
+  StartupPen;
   StartupDirOps;
   StartupMemcache;
   StartupGnatCrc;
@@ -1553,11 +1551,6 @@ begin
   declareProcedure( sound_stopcd_t, "sound.stopcd" );
   declareProcedure( sound_mute_t, "sound.mute" );
   declareProcedure( sound_unmute_t, "sound.unmute" );
-
-  -- StartupFiles;
-  -- StartupArrays;
-  -- StartupDB;
-  -- StartupBushOS;
 
   -- Declare all Environment Variables
   --

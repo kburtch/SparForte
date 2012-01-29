@@ -53,7 +53,7 @@ begin
 
     for i in arrays.first( default_TZ )..arrays.last( default_TZ ) loop
        TZ := default_TZ( i );
-       put( TZ ) @ ' ' * (20 -strings.length( TZ )) & ": " );
+       put( TZ ) @ ( ( (20 -strings.length( TZ ) ) * ' ' ) & ": " );
        date;
     end loop;
   end if;

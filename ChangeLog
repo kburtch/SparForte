@@ -23,8 +23,7 @@ CHANGES
 
 7. New: memcache.highread package.  add( cl, k, v ), prepend( cl, k, v ), append( cl, k, v ), register_alpha_server( cl, h, p ), register_beta_server( cl, h, p ), clear_servers( cl ), replace( cl, k, v ), delete( cl, k ), set( cl, k, v ), flush( cl ), set_cluster_name( cl, s ), set_cluster_type( cl, e ), v := get( cl, k ), s := stats( cl ), cl := new_cluster, s := version( cl )
 
-8. Change: -n / --no-check command option dropped.  It is incompatible with include
-files / separate procuedures and functions.
+8. Change: -n / --no-check command option dropped.  It is incompatible with include files / separate procuedures and functions.
 
 9. New: with include and separate declaration files have been backported into SparForte from the BUSH 2.0 code base.
 
@@ -106,4 +105,11 @@ corrected.
 
 45. Fix: pragma import/unchecked_import( cgi ) handles missing variables
 correctly.
+
+46. New: numerics.fnv_hash_of, numerics.hash_of, numerics.murmur_hash_of,
+numerics.sdbm_hash_of.  Backported from Bush 2.0.
+
+47. Fix: whattime.sp example now uses number * string in correct order.
+
+48. New: New examples: gray.sp
 

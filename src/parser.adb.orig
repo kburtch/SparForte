@@ -1173,6 +1173,18 @@ begin
      elsif token = numerics_argument_t then               -- complex argument
         ParseNumericsArgument( f );
         kind := long_float_t;
+     elsif token = hash_of_t then                         -- hash_of
+        ParseNumericsHashOf( f );
+        kind := natural_t;
+     elsif token = sdbm_hash_of_t then                    -- sdbm_hash_of
+        ParseNumericsSdbmHashOf( f );
+        kind := natural_t;
+     elsif token = fnv_hash_of_t then                     -- fnv_hash_of
+        ParseNumericsFnvHashOf( f );
+        kind := natural_t;
+     elsif token = murmur_hash_of_t then                  -- murmur_hash_of
+        ParseNumericsMurmurHashOf( f );
+        kind := natural_t;
      elsif token = source_info_symbol_table_size_t then   -- Symbol_Table_Sz
         getNextToken;
         if onlyAda95 then

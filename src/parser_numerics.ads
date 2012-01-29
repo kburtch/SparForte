@@ -97,6 +97,10 @@ numerics_set_re_t : identifier;
 numerics_set_im_t : identifier;
 numerics_argument_t : identifier;
 numerics_modulus_t : identifier;
+hash_of_t         : identifier;
+sdbm_hash_of_t    : identifier;
+fnv_hash_of_t     : identifier;
+murmur_hash_of_t  : identifier;
 
 ------------------------------------------------------------------------------
 -- HOUSEKEEPING
@@ -166,5 +170,10 @@ procedure ParseNumericsModulus( result : out unbounded_string );
 procedure ParseNumericsArgument( result : out unbounded_string );
 --procedure ParseNumericsComposeFromPolar( result : out unbounded_string );
 --procedure ParseNumericsConjugate( result : out unbounded_string );
+procedure ParseNumericsHashOf( result : in out unbounded_string);
+procedure ParseNumericsSdbmHashOf( result : in out unbounded_string);
+procedure ParseNumericsFnvHashOf( result : in out unbounded_string);
+procedure ParseNumericsMurmurHashOf( result : in out unbounded_string);
+
 
 end parser_numerics;

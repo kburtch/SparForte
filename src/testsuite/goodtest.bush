@@ -455,6 +455,14 @@ n  := numerics.serial;
 pragma assert( n = 0 );
 n  := numerics.serial;
 pragma assert( n = 1 );
+n := numerics.hash_of( "apple", 100);
+pragma assert( n = 94 );
+n := numerics.fnv_hash_of( "apple", 100);
+pragma assert( n = 29 );
+n := numerics.murmur_hash_of( "apple", 100);
+pragma assert( n = 96 );
+n := numerics.sdbm_hash_of( "apple", 100);
+pragma assert( n = 59 );
 
 -- match and glob functions
 

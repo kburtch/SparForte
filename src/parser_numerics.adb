@@ -50,6 +50,8 @@ use ada.numerics.long_elementary_functions,
 
 package body parser_numerics is
 
+type hash_integer is mod 2**32;
+
 serialNumber : long_float := 0.0;
 
 -----------------------------------------------------------------------------
@@ -1333,6 +1335,190 @@ end ParseNumericsArgument;
   --end;
 --end ParseNumericsConjugate;
 
+procedure ParseNumericsHashOf( result : in out unbounded_string) is
+  -- Syntax: numerics.hash_of( s, l )
+  expr1_val   : unbounded_string;
+  expr1_type  : identifier;
+  expr2_val   : unbounded_string;
+  expr2_type  : identifier;
+begin
+  expect( hash_of_t );
+  expect( symbol_t, "(" );
+  ParseExpression( expr1_val, expr1_type );
+  if baseTypesOk( expr1_type, string_t ) then
+     expect( symbol_t, "," );
+     ParseExpression( expr2_val, expr2_type );
+     if intTypesOk( expr2_type, natural_t ) then
+        expect( symbol_t, ")" );
+     end if;
+  end if;
+  declare
+    limit : hash_integer := hash_integer( to_numeric( expr2_val ) );
+    hash : hash_integer := 5381;
+  begin
+    if isExecutingCommand then
+       for i in 1..length(expr1_val) loop
+           hash := (hash*37 + hash) + character'pos(element(expr1_val,i));
+       end loop;
+       hash := (hash mod limit) + 1;
+       result := to_unbounded_string( long_float( hash ) );
+    end if;
+  exception when others =>
+    err( "exception raised" );
+  end;
+end ParseNumericsHashOf;
+
+procedure ParseNumericsSdbmHashOf( result : in out unbounded_string) is
+  -- Syntax: numerics.sdbm_hash_of( s, l )
+  expr1_val   : unbounded_string;
+  expr1_type  : identifier;
+  expr2_val   : unbounded_string;
+  expr2_type  : identifier;
+begin
+  expect( sdbm_hash_of_t );
+  expect( symbol_t, "(" );
+  ParseExpression( expr1_val, expr1_type );
+  if baseTypesOk( expr1_type, string_t ) then
+     expect( symbol_t, "," );
+     ParseExpression( expr2_val, expr2_type );
+     if intTypesOk( expr2_type, natural_t ) then
+        expect( symbol_t, ")" );
+     end if;
+  end if;
+  declare
+    limit : hash_integer := hash_integer( to_numeric( expr2_val ) );
+    hash : hash_integer := 0;
+  begin
+    if isExecutingCommand then
+       for i in 1..length(expr1_val) loop
+           hash := character'pos(element(expr1_val,i)) + (hash*64) + (hash*65536
+) - hash;
+       end loop;  
+       hash := (hash mod limit) + 1;
+       result := to_unbounded_string( long_float( hash ) );
+    end if;
+  exception when others =>
+    err( "exception raised" );
+  end;
+end ParseNumericsSdbmHashOf;
+
+procedure ParseNumericsFnvHashOf( result : in out unbounded_string) is
+  -- Syntax: numerics.fnv_hash_of( s, l )
+  expr1_val   : unbounded_string;
+  expr1_type  : identifier;
+  expr2_val   : unbounded_string;
+  expr2_type  : identifier;
+begin
+  expect( fnv_hash_of_t );
+  expect( symbol_t, "(" );
+  ParseExpression( expr1_val, expr1_type );
+  if baseTypesOk( expr1_type, string_t ) then
+     expect( symbol_t, "," );
+     ParseExpression( expr2_val, expr2_type );
+     if intTypesOk( expr2_type, natural_t ) then
+        expect( symbol_t, ")" );
+     end if;
+  end if;
+  declare
+    hash   : hash_integer := 16#811c9dc5#;
+    k      : hash_integer;
+    limit : hash_integer := hash_integer( to_numeric( expr2_val ) );
+  begin
+    if isExecutingCommand then
+       for data in 1..length(expr1_val)-3 loop
+           k := character'pos( element(expr1_val, data) ) +
+                character'pos( element(expr1_val, data+1) ) * 256 +     -- 8
+                character'pos( element(expr1_val, data+2) ) * 65536 +   -- 16
+                character'pos( element(expr1_val, data+3) ) * 16777216; -- 24
+            hash := hash xor k;
+            hash := hash * 16#01000193#;
+       end loop;
+       hash := (hash mod limit) + 1;
+       result := to_unbounded_string( long_float( hash ) );
+    end if;
+  exception when others =>
+    err( "exception raised" );
+  end;
+end ParseNumericsFnvHashOf;
+
+procedure ParseNumericsMurmurHashOf( result : in out unbounded_string) is
+  -- Syntax: numerics.murmur_hash_of( s, l )
+  expr1_val   : unbounded_string;
+  expr1_type  : identifier;
+  expr2_val   : unbounded_string;
+  expr2_type  : identifier;
+begin
+  expect( murmur_hash_of_t );
+  expect( symbol_t, "(" );
+  ParseExpression( expr1_val, expr1_type );
+  if baseTypesOk( expr1_type, string_t ) then
+     expect( symbol_t, "," );
+     ParseExpression( expr2_val, expr2_type );
+     if intTypesOk( expr2_type, natural_t ) then
+        expect( symbol_t, ")" );
+     end if;
+  end if;
+  declare
+    seed : constant hash_integer := 16#811c9dc5#;
+    m : constant hash_integer := 16#5bd1e995#;
+    r : constant hash_integer := 24;
+    hash : hash_integer;
+    data : integer := 1;
+    k    : hash_integer;
+    limit : hash_integer := hash_integer( to_numeric( expr2_val ) );
+    s    : string := to_string( expr1_val );
+    len  : integer := s'length;
+  begin
+    if isExecutingCommand then
+       -- this seed could be more elegnat - random seed here xor len
+       hash := hash_integer( s'length ) xor seed;
+       while len >= 4 loop
+          k := character'pos( s(data) ) +
+               character'pos( s(data+1) ) * 256 +      -- 8
+               character'pos( s(data+2) ) * 65536 +    -- 16
+               character'pos( s(data+3) ) * 16777216;  -- 24
+          k := k * m;
+          k := k xor (k / (2**integer(r)));
+          k := k * m;
+          hash := hash * m;
+          hash := hash xor k;
+
+          data := data + 4;
+          len := len - 4;
+       end loop;
+
+       -- Handle the last few bytes of the input array
+
+       case len is
+       when 3 => hash := hash xor ( character'pos( s(data+2) ) * 65536 );
+                 hash := hash xor ( character'pos( s(data+1) ) * 256 );
+                 hash := hash xor ( character'pos( s(data) ) );
+                 hash := hash * m;
+       when 2 => hash := hash xor ( character'pos( s(data+1) ) * 256 );
+                 hash := hash xor ( character'pos( s(data) ) );
+                 hash := hash * m;
+       when 1 => hash := hash xor ( character'pos( s(data) ) );
+                 hash := hash * m;
+       when others => null;
+       end case;
+
+       -- Do a few final mixes of the hash to ensure the last few
+       -- bytes are well-incorporated.
+
+       hash := hash xor ( hash / 8192 ); -- 13
+       hash := hash * m;
+       hash := hash xor ( hash / 32768 ); -- 15
+
+       hash := (hash mod limit) + 1;
+
+       result := to_unbounded_string( long_float( hash ) );
+
+    end if;
+  exception when others =>
+    err( "exception raised" );
+  end;
+end ParseNumericsMurmurHashOf;
+
 procedure StartupNumerics is
 begin
 
@@ -1391,6 +1577,10 @@ begin
   declareFunction( numerics_set_im_t, "numerics.set_im" );
   declareFunction( numerics_argument_t, "numerics.argument" );
   declareFunction( numerics_modulus_t, "numerics.modulus" );
+  declareFunction( hash_of_t, "numerics.hash_of" );
+  declareFunction( sdbm_hash_of_t, "numerics.sdbm_hash_of" );
+  declareFunction( fnv_hash_of_t, "numerics.fnv_hash_of" );
+  declareFunction( murmur_hash_of_t, "numerics.murmur_hash_of" );
 
   -- Numerics package constants
   -- There's are derived from the GNU standard C library math constants
