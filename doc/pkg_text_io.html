@@ -58,6 +58,9 @@ when invoking these subroutines.</p>
   <a href="#put">put( [f,] e [, p] )</a>         <a href="#put_line">put_line( [f,] e )</a>  <a href="#reset">reset( f [, m] )</a>
   <a href="#set_error">set_error( f )</a>              <a href="#set_input">set_input( f )</a>      <a href="#set_output">set_output( f )</a>
   <a href="#skip_line">skip_line( [f] )</a>
+delete( f )
+is_open( f )
+mode( f )
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -158,7 +161,7 @@ out_file
 <td><p>Not allowed with pragma ada_95</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>put<br>put_line</p></td>
+<td><p><a href="#put">put</a><br><a href="#put_line">put_line</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>BASIC: ?<br>PHP: = (in a short open tag)</p></td>
@@ -198,7 +201,7 @@ out_file
 <td><p>If the file is not opened an exception will be raised</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>delete<br>is_open</p></td>
+<td><p><a href="#delete">delete</a><br><a href="#is_open">is_open</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Close<br>PHP: fclose</p></td>
@@ -252,7 +255,7 @@ out_file
 <td><p>out_mode not allowed in a restricted shell</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>close<br>is_open<br>open<br>reset</p></td>
+<td><p><a href="#close">close</a><br><a href="#is_open">is_open</a><br><a href="#open">open</a><br><a href="#reset">reset</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Create<br>PHP: tmpfile</p></td>
@@ -289,7 +292,7 @@ out_file
 <td><p>If the file is not opened an exception will be raised</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>close<br>is_open</p></td>
+<td><p><a href="#close">close</a><br><a href="#is_open">is_open</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Delete<br>PHP: unlink</p></td>
@@ -407,7 +410,7 @@ out_file
 <td><p>Reading past end of file will raise an exception</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>end_of_file<br>end_of_line<br>get_line<br>inkey<br>skip_line</p></td>
+<td><p><a href="#end_of_file">end_of_file</a><br><a href="#end_of_line">end_of_line</a><br><a href="#get_line">get_line</a><br><a href="#inkey">inkey</a><br><a href="#skip_line">skip_line</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Get_Line, Ada.Strings.Unbounded.Text_IO.Get<br>PHP: fgetc</p></td>
@@ -451,7 +454,7 @@ out_file
 <td><p>Reading past end of file will raise an exception</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><br>end_of_file<br>end_of_line<br>get<br>inkey<br>skip_line</p></td>
+<td><p><br><a href="#end_of_file">end_of_file</a><br><a href="#end_of_line">end_of_line</a><br><a href="#get">get</a><br><a href="#inkey">inkey</a><br><a href="#skip_line">skip_line</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Get_Line / Ada.Strings.Unbounded.Text_IO.Get_Line<br>PHP: fgets</p></td>
@@ -572,7 +575,7 @@ out_file
 <td><p>An exception will be raised if the file is not open</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>mode<br>name</p></td>
+<td><p><a href="#mode">mode</a><br><a href="#name">name</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Line</p></td>
@@ -616,7 +619,7 @@ out_file
 <td><p>An exception will be thrown if the file is not open</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>line<br>name</p></td>
+<td><p><a href="#line">line</a><br><a href="#name">name</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Mode</p></td>
@@ -659,7 +662,7 @@ out_file
 <td><p>An exception will be raised if the file is not open</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>line<br>mode</p></td>
+<td><p><a href="#line">line</a><br><a href="#mode">mode</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Name</p></td>
@@ -697,7 +700,7 @@ of current_output.</p></td>
 <td><p>If the new line cannot be written an exception will be raised</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>? (question mark command)<br>skip_line</p></td>
+<td><p><a href="#question_mark">? (question mark command)</a><br><a href="#skip_line">skip_line</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.New_Line<br>PHP: echo</p></td>
@@ -748,7 +751,7 @@ of current_output.</p></td>
 <td><p>If the file cannot be opened an exception will be raised</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>close<br>create<br>is_open<br>reset</p></td>
+<td><p><a href="#close">close</a><br><a href="#create">create</a><br><a href="#is_open">is_open</a><br><a href="#reset">reset</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Open<br>PHP: fopen</p></td>
@@ -805,7 +808,7 @@ reference section.</p></td>
 <td><p>If the value cannot be written an exception will be raised<br>If the value does not fit the picture an exception will be raised</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>? (question mark command)<br>put_line</p></td>
+<td><p><a href="#question_mark">? (question mark command)</a><br><a href="#put_line">put_line</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Put / Ada.Strings.Unbounded.Text_IO.Put / Ada.Text_IO.Editing / etc.<br>PHP: printf / fprintf</p></td>
@@ -852,7 +855,7 @@ of current_output.</p></td>
 <td><p>If the value cannot be written an exception will be raised</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>? (question mark command)<br>put<br>new_line</p></td>
+<td><p><a href="#question_mark">? (question mark command)</a><br><a href="#put">put</a><br><a href="#new_line">new_line</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Put_Line / Ada.Strings.Unbounded.Text_IO.Put_Line / etc.<br>PHP: echo</p></td>
@@ -899,7 +902,7 @@ of current_output.</p></td>
 <td><p>out_mode not allowed in a restricted shell</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>create<br>open</p></td>
+<td><p><a href="#create">create</a><br><a href="#open">open</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Reset<br>PHP: rewind</p></td>
@@ -936,7 +939,7 @@ of current_output.</p></td>
 <td><p>If the file is not open or if it is the wrong mode, an exception will be raised</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>set_input<br>set_output</p></td>
+<td><p><a href="#set_input">set_input</a><br><a href="#set_output">set_output</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Set_Error</p></td>
@@ -973,7 +976,7 @@ of current_output.</p></td>
 <td><p>If the file is not open or if it is the wrong mode, an exception will be raised</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>set_error<br>set_output</p></td>
+<td><p><a href="#set_error">set_error</a><br><a href="#set_output">set_output</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Set_Input</p></td>
@@ -1010,7 +1013,7 @@ of current_output.</p></td>
 <td><p>If the file is not open or if it is the wrong mode, an exception will be raised</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>set_input<br>set_error</p></td>
+<td><p><a href="#set_input">set_input</a><br><a href="#set_error">set_error</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Set_Output</p></td>
@@ -1047,7 +1050,7 @@ of current_output.</p></td>
 <td><p>If the new line cannot be read or it is the end of file, an exception will be raised</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>get<br>get_line</p></td>
+<td><p><a href="#get">get</a><br><a href="#get_line">get_line</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Skip_Line</p></td>

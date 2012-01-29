@@ -172,7 +172,7 @@ Otherwise, an error is displayed but execution continues.</p></td>
 <td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.set<br>memcache.replace</p>
+<td><p><a href="#memcache.set">memcache.set</a><br><a href="#memcache.replace">memcache.replace</a></p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: PegaSock.Memcache.Add<br>PHP: memcached::add</p></td>
@@ -225,7 +225,7 @@ memcache cluster cl.</p></td>
 <td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.prepend</p>
+<td><p><a href="#memcache.prepend">memcache.prepend</a></p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: PegaSock.Memcache.Append<br>PHP: memcached::append</p></td>
@@ -266,7 +266,7 @@ flushed from memcached.</p></td>
 <td><p>Not allowed in a restricted shell or with no_memcache restriction</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.register_server</p></td>
+<td><p><a href="#memcache.register_server">memcache.register_server</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Pegasock.Memcache.Highread.Clear_Servers</p></td>
@@ -312,7 +312,7 @@ flushed from memcached.</p></td>
 <td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.flush</p>
+<td><p><a href="#memcache.flush">memcache.flush</a></p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: PegaSock.Memcache.Delete<br>PHP: memcached::delete</p></td>
@@ -353,7 +353,7 @@ marked invalid and are gradually replaced as new items are stored.</p></td>
 <td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.delete</p>
+<td><p><a href="#memcache.delete">memcache.delete</a></p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: PegaSock.Memcache.Flush<br>PHP: memcached::flush</p></td>
@@ -483,16 +483,16 @@ servers and manage connections.</p></td>
 <td><p class="pkg_label">Restrictions</p></td>
 <td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
-<td><p class="pkg_label">Implementation Notes</p></td>
-<td><p>Because the memcache_cluster record is private, SparForte allocates
-clusters internally using a linked list.  The records are not freed until
-the script execution end.</p>
-</tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: N/A<br>PHP: new memcached</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Because the memcache_cluster record is private, SparForte allocates
+clusters internally using a linked list.  The records are not freed until
+the script execution end.</p>
 </tr>
 </table>
 
@@ -504,7 +504,7 @@ the script execution end.</p>
 memcache cluster cl.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.prepend( mc_cluster, "company_name", "This is " );<br>-- company_name is "This is PegaSoft" </span></td>
+<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br><a href="#memcache.prepend">memcache.prepend</a>( mc_cluster, "company_name", "This is " );<br>-- company_name is "This is PegaSoft" </span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -542,7 +542,7 @@ memcache cluster cl.</p></td>
 <td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.append</p>
+<td><p><a href="#memcache.append">memcache.append</a></p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: PegaSock.Memcache.Prepend<br>PHP: memcached::prepend</p></td>
@@ -598,7 +598,7 @@ register the same server twice.</p></td>
 <td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.clear_servers</p>
+<td><p><a href="#memcache.clear_servers">memcache.clear_servers</a></p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: PegaSock.Memcache.RegisterServer<br>PHP: memcached::addServer</p></td>
@@ -614,7 +614,7 @@ a value already exists.  If the key doesn't exist, a warning is displayed but
 execution continues.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br>memcache.replace( mc_cluster, "company_name", "MegaCorp";<br>-- company_name is "MegaCorp"</span></td>
+<td><span class="code">memcache.set( mc_cluster, "company_name", "PegaSoft"  );<br><a href="#memcache.replace">memcache.replace</a>( mc_cluster, "company_name", "MegaCorp";<br>-- company_name is "MegaCorp"</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -652,7 +652,7 @@ execution continues.</p></td>
 <td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.add<br>memcache.set</p>
+<td><p><a href="#memcache.add">memcache.add</a><br><a href="#memcache.set">memcache.set</a></p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: PegaSock.Memcache.Replace<br>PHP: memcached::replace</p></td>
@@ -705,7 +705,7 @@ the key already has a value, it will be overwritten.</p></td>
 <td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.add<br>memcache.replace</p>
+<td><p><a href="#memcache.add">memcache.add</a><br><a href="#memcache.replace">memcache.replace</a></p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: PegaSock.Memcache.Set<br>PHP: memcached::set</p></td>
@@ -847,7 +847,7 @@ consult the memcached documentation.</p></td>
 <td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.version</p>
+<td><p><a href="#memcache.version">memcache.version</a></p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: PegaSock.Memcache.Stats<br>PHP: memcached::getStats</p></td>
@@ -895,7 +895,7 @@ the same version on all servers.)</p></td>
 <td><p>Not allowed in a restricted shell or with no_memcache restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>memcache.stats</p>
+<td><p><a href="#memcache.stats">memcache.stats</a></p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: PegaSock.Memcache.Version<br>PHP: memcached::getVersion</p></td>
