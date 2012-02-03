@@ -499,24 +499,28 @@ fi
 # Bytes are aligned differently between 32-bit and 64-bit SDL data structures.
 # Default to 64-bit else use 32-bit.
 echo -n "selecting SDL binding... "
-cd ../test
-(exec gcc sdlversion.c -lSDL > /dev/null 2>/dev/null )
-TMP=`./a.out`
-rm a.out
-cd ../src
-if [ "$TMP" = "32" ] ; then
-   cp bush_os-sdl-32bit.ads bush_os-sdl.ads
-   chmod u+w bush_os-sdl.ads
-   echo "32 bit"
-elif [ "$TMP" = "64" ] ; then
-   cp bush_os-sdl-64bit.ads bush_os-sdl.ads
-   chmod u+w bush_os-sdl.adb
-   echo "64 bit"
+if test -r bush_os-sdl.ads ; then
+   echo " (cached, make distclean to remove)";
 else
-   echo "unknown"
-   echo
-   echo "Unable to determine if 32-bit or 64-bit SDL is being used."
-   exit 192
+   cd ../test
+   (exec gcc sdlversion.c -lSDL > /dev/null 2>/dev/null )
+   TMP=`./a.out`
+   rm a.out
+   cd ../src
+   if [ "$TMP" = "32" ] ; then
+      cp bush_os-sdl-32bit.ads bush_os-sdl.ads
+      chmod u+w bush_os-sdl.ads
+      echo "32 bit"
+   elif [ "$TMP" = "64" ] ; then
+      cp bush_os-sdl-64bit.ads bush_os-sdl.ads
+      chmod u+w bush_os-sdl.ads
+      echo "64 bit"
+   else
+      echo "unknown"
+      echo
+      echo "Unable to determine if 32-bit or 64-bit SDL is being used."
+      exit 192
+   fi
 fi
 
 # Check for the libSDL_image (Simple DirectMedia Layer image loading) Library
