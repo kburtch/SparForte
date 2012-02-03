@@ -153,6 +153,7 @@ depreciatedMsg   : unbounded_string := null_unbounded_string; -- pragma dep.
 annotationsFound : boolean := false; -- pragma annotations_not_optional
 annotationTodoFound : boolean := false; -- pragma annotations_no_todo
 licenseSet       : boolean := false;
+softwareModelSet : boolean := false;
 
 ------------------------------------------------------------------------------
 -- Command Line Options
@@ -547,7 +548,7 @@ procedure updateFormalParameter( id : identifier; kind : identifier;
 procedure declareActualParameter( id : out identifier;
 proc_id : identifier; parameterNumber : integer;
 value : unbounded_string );
--- Declare an actual parameter (ie. param for proc.param).  
+-- Declare an actual parameter (ie. param for proc.param).
 
 procedure declareReturnResult( id : out identifier; func_id : identifier );
 -- Declare space for the function return result.
@@ -614,7 +615,7 @@ type aShellWordType is (
      itselfWord            -- unescaped @
 );
 -- To differentiate between ";" and ;, "|" and |, "&" and &, etc.
-                                                                                
+
 
 type aShellWord is record
      wordType : aShellWordType;                       -- shell token type
@@ -638,7 +639,7 @@ package environmentList is new gen_list( unbounded_string, ">", "=" );
 
 initialEnvironment : environmentList.List;
 
--- Find fieldNumber'th field of a record varable. 
+-- Find fieldNumber'th field of a record varable.
 
 procedure findField( recordVar : identifier; fieldNumber: natural;
   fieldVar : out identifier );

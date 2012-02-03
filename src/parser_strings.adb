@@ -89,26 +89,26 @@ begin
         expect( symbol_t, ")" );
         if isExecutingCommand then
            begin
-	     re := compile( to_string( pat_val ), glob => true,
-	        case_sensitive => true );
-	     b := match( to_string( expr_val ), re );
+             re := compile( to_string( pat_val ), glob => true,
+                   case_sensitive => true );
+             b := match( to_string( expr_val ), re );
            exception when expression_error =>
-	     err( "bad globbing expression '" & to_string( pat_val ) & "'" );
-	     b := false;
+             err( "bad globbing expression '" & to_string( pat_val ) & "'" );
+             b := false;
            when storage_error =>
-	     err( "formula too complex (storage_error exception)" );
-	     b := false;
+             err( "formula too complex (storage_error exception)" );
+             b := false;
            when others =>
-	     err( "exception raised in gnat.regexp.match" );
-	     b := false;
-	   end;
-	   if not error_found then
-	      if b then
-	         result := to_unbounded_string( "1" );
+             err( "exception raised in gnat.regexp.match" );
+             b := false;
+           end;
+           if not error_found then
+              if b then
+                 result := to_unbounded_string( "1" );
               else
-	         result := to_unbounded_string( "0" );
+                 result := to_unbounded_string( "0" );
               end if;
-	   end if;
+           end if;
         end if;
      end if;
   end if;
@@ -133,41 +133,41 @@ begin
      if uniTypesOk( expr_type, uni_string_t ) then
         expect( symbol_t, ")" );
         if isExecutingCommand then
-	   begin
-	     b := match( to_string( pat_val ), to_string( expr_val ) );
+           begin
+             b := match( to_string( pat_val ), to_string( expr_val ) );
            exception when expression_error =>
-	     err( "bad regular expression '" & to_string( pat_val ) & "'" );
-	     b := false;
+             err( "bad regular expression '" & to_string( pat_val ) & "'" );
+             b := false;
            when storage_error =>
-	     err( "formula too complex (storage_error exception)" );
-	     b := false;
+             err( "formula too complex (storage_error exception)" );
+             b := false;
            when program_error =>
-	     err( "program_error exception raised gnat.regpat.match" );
-	     b := false;
+             err( "program_error exception raised gnat.regpat.match" );
+             b := false;
            when others =>
-	     err( "exception raised in gnat.regpat.match" );
-	     b := false;
-	   end;
-	   if not error_found then
-	      if b then
-	         result := to_unbounded_string( "1" );
+             err( "exception raised in gnat.regpat.match" );
+             b := false;
+           end;
+           if not error_found then
+              if b then
+                 result := to_unbounded_string( "1" );
               else
-	         result := to_unbounded_string( "0" );
+                 result := to_unbounded_string( "0" );
               end if;
-	      if trace then
-	         if b then
-		   put_trace( "'" & to_string( pat_val ) &
-		   "' pattern matches string '" &
-		   to_string( expr_val ) &
-		   "'" );
+              if trace then
+                 if b then
+                    put_trace( "'" & to_string( pat_val ) &
+                               "' pattern matches string '" &
+                               to_string( expr_val ) &
+                               "'" );
                  else
-	           put_trace( "'" & to_string( pat_val ) &
-	  	   "' pattern does not match string '" &
-		   to_string( expr_val ) &
-		   "'" );
+                    put_trace( "'" & to_string( pat_val ) &
+                               "' pattern does not match string '" &
+                               to_string( expr_val ) &
+                               "'" );
                  end if;
               end if;
-	   end if;
+           end if;
         end if;
      end if;
   end if;
@@ -229,9 +229,9 @@ begin
      if isExecutingCommand then
         result := to_unbounded_string(
            Slice( str_val,
-	     positive( to_numeric( low_val ) ),
-	     natural( to_numeric( hi_val ) )
-	   ) );
+             positive( to_numeric( low_val ) ),
+             natural( to_numeric( hi_val ) )
+           ) );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -383,10 +383,10 @@ begin
   begin
      if isExecutingCommand then
         result := Replace_Slice( str_val,
-	   positive( to_numeric( low_val ) ),
-	   natural( to_numeric( hi_val ) ),
-	   to_string( by_val )
-	);
+           positive( to_numeric( low_val ) ),
+           natural( to_numeric( hi_val ) ),
+           to_string( by_val )
+        );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -420,9 +420,9 @@ begin
   begin
      if isExecutingCommand then
         result := Insert( str_val,
-	   positive( to_numeric( before_val ) ),
-	   to_string( new_val )
-	);
+           positive( to_numeric( before_val ) ),
+           to_string( new_val )
+        );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -456,9 +456,9 @@ begin
   begin
      if isExecutingCommand then
         result := Overwrite( str_val,
-	   positive( to_numeric( pos_val ) ),
-	   to_string( new_val )
-	);
+           positive( to_numeric( pos_val ) ),
+           to_string( new_val )
+        );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -492,9 +492,9 @@ begin
   begin
      if isExecutingCommand then
         result := Delete( str_val,
-	   positive( to_numeric( low_val ) ),
-	   natural( to_numeric( hi_val ) )
-	);
+           positive( to_numeric( low_val ) ),
+           natural( to_numeric( hi_val ) )
+        );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -1404,9 +1404,9 @@ begin
      if isExecutingCommand then
         result := to_unbounded_string(
            Slice( str_val,
-	     positive( to_numeric( low_val ) ),
-	     natural( to_numeric( hi_val ) )
-	   ) );
+             positive( to_numeric( low_val ) ),
+             natural( to_numeric( hi_val ) )
+           ) );
      end if;
   exception when others =>
      err( "exception raised" );

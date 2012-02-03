@@ -36,7 +36,7 @@ use ada.text_io,
    ada.command_line,
    bush_os,
    world,
-   scanner, 
+   scanner,
    user_io,
    parser,
    signal_flags;
@@ -48,14 +48,14 @@ procedure spar is
   libraryPathNext : boolean := false;
 begin
   startSignalFlags;
-  
+
   -- set scanner variable to reflect whether or not this is a login
   -- shell
 
   isLoginShell := Command_Name(1) = '-';
 
   -- collect command line options
-  
+
   if Argument_Count = 1 then
      if Argument(1) = "-h" or Argument( 1 ) = "--help" then
         Put_Line( "SparForte (Business Shell) usage" );

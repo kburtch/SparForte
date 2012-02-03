@@ -98,7 +98,7 @@ function tput( attr : termAttributes ) return unbounded_string is
 begin
 
   -- Redirect standard output to a temp file
-  
+
   mkstemp( tputResultsFD, tputResults );
   if tputResultsFD < 0 then
      put_line( standard_error, Gnat.Source_Info.Source_Location & ": Unable to make temp file" );
@@ -145,7 +145,7 @@ begin
   end if;
 
   -- Create the argument list for tput command
-  
+
   ap := new ArgumentList( 1..1 );
 
   if tput_style = "terminfo" then
@@ -187,7 +187,7 @@ begin
        put_line( standard_output, "Internal error: unknown tput_style" );
        ap( 1 ) := tcap_normal'access; -- prevent exception
   end if;
- 
+
   -- Export TERM variable
 
   findIdent( to_unbounded_string( "TERM" ), term_id );
@@ -199,10 +199,10 @@ begin
      if term_id /= eof_t then
         intResult := putenv( termString );
      end if;
- 
+
      -- Run tput and restore stdout when done
 
-     C_reset_errno; 
+     C_reset_errno;
      spawn( tput_path1, ap, status, noReturn => false );
      if C_errno > 0 then
         spawn( tput_path2, ap, status, noReturn => false );
@@ -247,9 +247,9 @@ begin
  -- if term_id /= eof_t then
  --    intResult := putenv( "TERM" & ASCII.NUL );
  -- end if;
-  
+
   -- Read results
- 
+
 <<retry11>> tputResultsFD := open( tputResults & ASCII.NUL, 0, 660 );
   if tputResultsFD < 0 then
      if C_errno = EINTR then
@@ -287,7 +287,7 @@ begin
        return ttyCode;
 end tput;
 
- 
+
 -- Attribute Procedures
 
 procedure updateTtyAttributes( thisTerm : unbounded_string ) is
@@ -371,7 +371,7 @@ begin
      if amountRead = 0 then                        -- nothing read?
         ch := ASCII.EOT;                           -- return a control-d
      end if;
-  else                                         
+  else
      -- read character here (non-canonical, set by termios
      -- MIN = 1  & TIME = 0).  Disable special chars separately
      -- strip high bit.  Normally, canonical + 0 min + 0 time
@@ -387,8 +387,7 @@ begin
      else
         ioctl_getattr( res, ttyFile, TCGETATTR, tio );
         if res /= 0 then
-           put( standard_error, Gnat.Source_Info.Source_Location & ": unable to load keyboard settings - " 
-);
+           put( standard_error, Gnat.Source_Info.Source_Location & ": unable to load keyboard settings - " );
            put_line( standard_error, "ioctl /dev/tty TCGETATTR failed" );
            raise CONSTRAINT_ERROR;                -- for lack of a better error
         else

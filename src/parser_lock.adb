@@ -30,7 +30,7 @@ with gnat.lock_files,
     parser,
     bush_os;
 use gnat.lock_files,
-    world, 
+    world,
     scanner,
     string_util,
     parser_aux,
@@ -101,7 +101,7 @@ begin
             duration( to_numeric( wait_val ) ),
             natural( to_numeric( retry_val ) )
           );
-       else 
+       else
           Lock_File( to_string( file_val ),
             duration( to_numeric( wait_val ) ),
             natural( to_numeric( retry_val ) )

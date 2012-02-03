@@ -77,7 +77,7 @@ nextScriptCommandOffset  : constant aByteCodePosition := 5;
 
 
 ------------------------------------------------------------------------------
--- Predefined identifiers    
+-- Predefined identifiers
 --
 -- keywords, predefined types, virtual machine instructions and other global
 -- identifiers are in the world package to make their values easily accessible
@@ -309,7 +309,7 @@ function DoStringToJson( val : unbounded_string ) return unbounded_string;
 -- Convert a string to JSON and return the string.
 
 ------------------------------------------------------------------------------
--- Scanning Tokens            
+-- Scanning Tokens
 --
 ------------------------------------------------------------------------------
 
@@ -333,7 +333,7 @@ pragma inline( expect );
 pragma inline( expectSemicolon );
 
 ------------------------------------------------------------------------------
--- Bourne Shell "Word" Processing    
+-- Bourne Shell "Word" Processing
 --
 ------------------------------------------------------------------------------
 
@@ -341,7 +341,7 @@ procedure skipWhiteSpace;
 -- advance to first non-white space token
 
 ------------------------------------------------------------------------------
--- Housekeeping               
+-- Housekeeping
 --
 ------------------------------------------------------------------------------
 
@@ -356,7 +356,7 @@ procedure shutdownScanner;
 
 
 ------------------------------------------------------------------------------
--- Other Subprograms          
+-- Other Subprograms
 --
 ------------------------------------------------------------------------------
 

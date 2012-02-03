@@ -132,11 +132,11 @@ begin
      exception when others =>
          err( "exception raised" );
      end;
-  end if;   
+  end if;
 end ParseValue;
 
 procedure ParseKey_Exists( result : out unbounded_string ) is
---function ParseKey_Exists(Key : in Unbounded_String; Index : in Positive := 1)
+--function ParseKey_Exists(Key : in Unbounded_String; Index : in Positive := 1
 --         return Boolean is
 -- Was a given key provided?
   expr_val  : unbounded_string;
@@ -159,7 +159,7 @@ begin
           cgi.key_exists( expr_val, positive'value( to_string( expr_val2 ) ) )
        );
 -- RESULT SHOULD BE NUMERIC BOOLEAN, NOT STRING.  UTIL FUNCTION FOR THIS?
-  end if;   
+  end if;
 end ParseKey_Exists;
 
 procedure ParseKey_Count( result : out unbounded_string ) is
@@ -282,7 +282,7 @@ begin
          null;
      end if;
      expect( symbol_t, ")" );
-  end if; 
+  end if;
   if isExecutingCommand then
      cgi.put_cgi_header( to_string( expr_val ) );
   end if;
@@ -541,8 +541,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-        result := cgi.URL_Decode( expr_val, bool_val = identifiers( true_t 
-).value );
+        result := cgi.URL_Decode( expr_val, bool_val = identifiers( true_t ).value );
      exception when others =>
         err( "exception raised" );
      end;
@@ -574,7 +573,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-        result := cgi.URL_Encode( expr_val, bool_val = identifiers( true_t 
+        result := cgi.URL_Encode( expr_val, bool_val = identifiers( true_t
 ).value );
      exception when others =>
         err( "exception raised" );
@@ -583,7 +582,7 @@ begin
 end ParseURL_Encode;
 
 procedure ParseHTML_Encode( result : out unbounded_string ) is
---function ParseHTML_Encode(Data : in Unbounded_String) return Unbounded_String 
+--function ParseHTML_Encode(Data : in Unbounded_String) return Unbounded_String
 -- is
 -- Given string, perform HTML encoding, so the text can be included
 -- in an HTML file.  This means '&' becomes '&amp;', '<' becomes '&lt;',
@@ -666,7 +665,7 @@ begin
            expect( symbol_t, "," );
            ParseExpression( domain_val, domain_type );
            if baseTypesOK( domain_type, string_t ) then
-           
+
            if token = symbol_t and identifiers( token ).value = "," then
               expect( symbol_t, "," );
               ParseExpression( secure_val, secure_type );

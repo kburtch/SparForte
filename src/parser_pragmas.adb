@@ -76,8 +76,8 @@ type aPragmaKind is ( ada_95, asserting, annotate, debug, debug_on,
      register_memcache_server,
      restriction, restriction_annotations, restriction_auto,
      restriction_external, restriction_memcache, restriction_mysql,
-     restriction_postgresql, restriction_todos, template, test,
-     test_result,
+     restriction_postgresql, restriction_todos, software_model,
+     template, test, test_result,
      unchecked_import, unchecked_import_json,
      uninspect_var, unrestricted_template, volatile );
 
@@ -131,6 +131,8 @@ begin
   elsif name = "restrictions" then
      discardUnusedIdentifier( token );
      err( "pragma restriction not restrictions" );
+  elsif name = "software_model" then
+     pragmaKind := software_model;
   elsif name = "template" then
      pragmaKind := template;
   elsif name = "test" then
@@ -175,7 +177,7 @@ begin
         name /= "modified" and
         name /= "param" and
         name /= "return" and
-        name /= "see also" and
+        name /= "see_also" and
         name /= "summary" and
         name /= "todo" and
         name /= "version" then
@@ -373,6 +375,70 @@ begin
 end ParseLicenseKind;
 
 
+--  PARSE SOFTWARE MODEL NAME
+--
+-----------------------------------------------------------------------------
+
+procedure ParseSoftwareModelName( expr_val : out unbounded_string ) is
+  name_unbounded : unbounded_string := identifiers( token ).name;
+  name : string := to_string( name_unbounded );
+begin
+  expr_val := null_unbounded_string;
+  if name = "application_desktop" then
+     expr_val := name_unbounded;
+  elsif name = "application_mobile" then
+     expr_val := name_unbounded;
+  elsif name = "application_realtime" then
+     expr_val := name_unbounded;
+  elsif name = "application_realtime_ravenscar" then
+     expr_val := name_unbounded;
+  elsif name = "daemon" then
+     expr_val := name_unbounded;
+  elsif name = "daemon_proxy" then
+     expr_val := name_unbounded;
+  elsif name = "http_framework" then
+     expr_val := name_unbounded;
+  elsif name = "http_service_external" then
+     expr_val := name_unbounded;
+  elsif name = "http_service_internal" then
+     expr_val := name_unbounded;
+  elsif name = "http_site_external" then
+     expr_val := name_unbounded;
+  elsif name = "http_site_internal" then
+     expr_val := name_unbounded;
+  elsif name = "http_proxy" then
+     expr_val := name_unbounded;
+  elsif name = "http_form" then
+     expr_val := name_unbounded;
+  elsif name = "package" then
+     expr_val := name_unbounded;
+  elsif name = "shell_batch" then
+     expr_val := name_unbounded;
+  elsif name = "shell_filter_script" then
+     expr_val := name_unbounded;
+  elsif name = "shell_report_script" then
+     expr_val := name_unbounded;
+  elsif name = "shell_script" then
+     expr_val := name_unbounded;
+  elsif name = "multimedia" then
+     expr_val := name_unbounded;
+  elsif name = "etl" then
+     expr_val := name_unbounded;
+  elsif name = "monitor" then
+     expr_val := name_unbounded;
+  elsif name = "driver" then
+     expr_val := name_unbounded;
+  end if;
+
+  if length( expr_val ) > 0 then
+     discardUnusedIdentifier( token );
+     getNextToken;
+  else
+     err( "unknown software model " & bold( to_string( expr_val ) ) );
+  end if;
+end ParseSoftwareModelName;
+
+
 --  PARSE PRAGMA
 --
 -- Syntax: pragma kind [params]
@@ -481,6 +547,8 @@ begin
      ParseIdentifier( var_id );
   when license =>                            -- pragma license
      ParseLicenseKind( expr_val );
+  when software_model =>                     -- pragma software_model
+     ParseSoftwareModelName( expr_val );
   when template | unrestricted_template =>   -- pragma (unrestricted) template
      if rshOpt then
         err( "templates are not allowed in a restricted shell" );
@@ -784,6 +852,22 @@ begin
         restriction_no_annotate_todos := true;
      when promptChange =>
         promptScript := expr_val;
+     when software_model =>
+        if softwareModelSet then
+           err( "software model already set" );
+        else
+          declare
+            id : identifier;
+          begin
+            findIdent( to_unbounded_string( "System.Script_Software_Model" ), id );
+            if id /= eof_t then
+               identifiers( id ).value := expr_val;
+               softwareModelSet := true;
+            end if;
+          exception when others =>
+            err( "exception raised" );
+          end;
+        end if;
      when template | unrestricted_template =>
         templateType := noTemplate;
         -- http://www.webmaster-toolkit.com/mime-types.shtml

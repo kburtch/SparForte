@@ -70,7 +70,7 @@ begin
       err( "out of memory" );
       id := 0;
       return;
-  end; 
+  end;
   id := arrayID( arrayList.length( bushArrays ) );
   for i in 1..last-first+1 loop
       stringList.Queue( arrayElements, Null_Unbounded_String );
@@ -109,7 +109,7 @@ begin
       err( "out of memory" );
       id := 0;
       return;
-  end; 
+  end;
   id := arrayID( arrayList.length( bushArrays ) );
   if trace then
      put_trace( to_string( name ) & " declared as array #" & id'img );

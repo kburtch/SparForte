@@ -204,7 +204,7 @@ begin
      end if;
   end if;
   expect( symbol_t, ")" );
-  if isExecutingCommand then  
+  if isExecutingCommand then
      result := to_bush_boolean( true );
      begin
        Clear( Q );
@@ -240,7 +240,7 @@ begin
      end if;
   end if;
   expect( symbol_t, ")" );
-  if isExecutingCommand then  
+  if isExecutingCommand then
      begin
        if hasAfter then
           Prepare( Q, to_string( sqlExpr ), to_string( afterExpr ) );
@@ -274,7 +274,7 @@ begin
      end if;
   end if;
   expect( symbol_t, ")" );
-  if isExecutingCommand then  
+  if isExecutingCommand then
      begin
        if hasAfter then
           Append( Q, to_string( sqlExpr ), to_string( afterExpr ) );
@@ -298,7 +298,7 @@ begin
   if baseTypesOK( string_t, sqlType ) then
      expect( symbol_t, ")" );
   end if;
-  if isExecutingCommand then  
+  if isExecutingCommand then
      begin
        Append_Line( Q, to_string( sqlExpr ) );
      exception when others =>
@@ -329,7 +329,7 @@ begin
      end if;
      expect( symbol_t, ")" );
   end if;
-  if isExecutingCommand then  
+  if isExecutingCommand then
      begin
        if hasAfter then
           Append_Quoted( Q, C, to_string( sqlExpr ), to_string( afterExpr ) );
@@ -430,7 +430,7 @@ begin
   expect( db_is_connected_t );
   if isExecutingCommand then
      begin
-       result := to_bush_boolean( is_connected( C ) ); 
+       result := to_bush_boolean( is_connected( C ) );
      exception when others =>
        result := to_bush_boolean( false );
      end;
@@ -1503,12 +1503,12 @@ begin
 
         -- No result? Then table was not found.
 
-	if end_of_query( Q ) then
-	   err( "Did not find any relation named " &
-	     optional_bold( to_string( exprVal ) ) );
-	   return;
-	end if;
-	
+        if end_of_query( Q ) then
+           err( "Did not find any relation named " &
+              optional_bold( to_string( exprVal ) ) );
+           return;
+        end if;
+
         -- Initially, the columns widths are the widths of the headings
 
         for i in 1..columns( Q ) loop

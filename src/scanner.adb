@@ -303,7 +303,7 @@ begin
 
      if ident.kind = keyword_t then
         if ident.class /= funcClass and ident.class /= procClass and ident.class /= userProcClass and ident.class /= userFuncClass and ident.class /= mainProgramClass then
-	   put( "keyword" );
+           put( "keyword" );
         end if;
      else
         if kind.name = "an anonymous array" then
@@ -394,17 +394,17 @@ begin
      -- Is it a reserved keyword?  then nothing else to report
 
      if id <= reserved_top-1 then
-	put_line( " ( AdaScript reserved word )" );
-	return;
+        put_line( " ( AdaScript reserved word )" );
+        return;
      end if;
 
      -- Enumerated?  this is prettier than "new type of root_enumerated"
      if ident.kind = root_enumerated_t then
-	put_line( " ( enumerated type )" );
-	return;
+        put_line( " ( enumerated type )" );
+        return;
      elsif ident.kind = variable_t then
-	put_line( " ( private type )" );
-	return;
+        put_line( " ( private type )" );
+        return;
      end if;
 
      -- Show the value of the variable
@@ -609,7 +609,7 @@ begin
               delete( lineStr, 1, 1 );
            end if;
         end if;
-        firstposStr := to_unbounded_string( firstpos'img ); 
+        firstposStr := to_unbounded_string( firstpos'img );
         if length( firstposStr ) > 0 then              -- here, too
            if element( firstposStr, 1 ) = ' ' then
               delete( firstposStr, 1, 1 );
@@ -739,7 +739,7 @@ begin
   if blocks_top = block'last then                               -- no room?
      raise block_table_overflow;                                -- raise err
   else
-     -- start new scope by recording current 
+     -- start new scope by recording current
      declare
         block : blockDeclaration renames blocks( blocks_top );  -- new block
      begin
@@ -1499,7 +1499,7 @@ begin
   declareStandardConstant( "System.Max_Nonbinary_Modulus", uni_numeric_t,
     long_long_float'image( long_long_float( system.max_nonbinary_modulus ) ) );
   declareStandardConstant( "System.Max_Base_Digits", uni_numeric_t, system.max_base_digits'img );
-  declareStandardConstant( "System.Max_Digits", uni_numeric_t, system.max_digits'img ); 
+  declareStandardConstant( "System.Max_Digits", uni_numeric_t, system.max_digits'img );
   declareStandardConstant( "System.Max_Mantissa", uni_numeric_t, system.max_mantissa'img );
   declareStandardConstant( "System.Fine_Delta", uni_numeric_t, system.fine_delta'img );
   declareStandardConstant( "System.Tick", uni_numeric_t, system.tick'img );
@@ -1512,6 +1512,7 @@ begin
   declareStandardConstant( "System.Login_Shell", boolean_t,  integer'image( boolean'pos(isLoginShell))(2) & "" );
   declareStandardConstant( "System.Restricted_Shell", boolean_t, integer'image( commandLineOption'pos(rshOpt))(2) & "" );
   declareStandardConstant( "System.Script_License", uni_string_t, "" );
+  declareStandardConstant( "System.Script_Software_Model", uni_string_t, "" );
 
 -- most of the source_info must be filled in later by the parser
 
@@ -2004,7 +2005,7 @@ function class_ok( id : identifier; class : anIdentifierClass ) return boolean i
 begin
   if identifiers( id ).class /= class then
      if id = eof_t then
-	err( "internal error: eof given to class_ok(1)" );
+        err( "internal error: eof given to class_ok(1)" );
      elsif id < reserved_top then
         err_previous( "a " & bold( "keyword" ) &
            " is not a " &
@@ -2012,8 +2013,8 @@ begin
      else
         err_previous( bold( to_string( identifiers( id ).name ) ) &
            " is a " &
-	   getClassName( identifiers( id ).class ) &
-	   ", not a " &
+           getClassName( identifiers( id ).class ) &
+           ", not a " &
            getClassName( class ) );
      end if;
      return false;
@@ -2028,7 +2029,7 @@ function class_ok( id : identifier; c1,c2 : anIdentifierClass ) return boolean i
 begin
   if identifiers( id ).class /= c1 and identifiers( id ).class /= c2 then
      if id = eof_t then
-	err( "internal error: eof given to class_ok(2)" );
+        err( "internal error: eof given to class_ok(2)" );
      elsif id < reserved_top then
         err_previous( "a " & bold( "keyword" ) &
            " is not a " &
@@ -2038,8 +2039,8 @@ begin
      else
         err_previous( bold( to_string( identifiers( id ).name ) ) &
            " is a " &
-	   getClassName( identifiers( id ).class ) &
-	   ", not a " &
+           getClassName( identifiers( id ).class ) &
+           ", not a " &
            getClassName( c1 ) &
            " or a " &
            getClassName( c2 ) );
@@ -2056,7 +2057,7 @@ function class_ok( id : identifier; c1,c2,c3 : anIdentifierClass ) return boolea
 begin
   if identifiers( id ).class /= c1 and identifiers( id ).class /= c2 and identifiers( id ).class /= c3 then
      if id = eof_t then
-	err( "internal error: eof given to class_ok(2)" );
+        err( "internal error: eof given to class_ok(2)" );
      elsif id < reserved_top then
         err_previous( "a " & bold( "keyword" ) &
            " is not a " &
@@ -2068,8 +2069,8 @@ begin
      else
         err_previous( bold( to_string( identifiers( id ).name ) ) &
            " is a " &
-	   getClassName( identifiers( id ).class ) &
-	   ", not a " &
+           getClassName( identifiers( id ).class ) &
+           ", not a " &
            getClassName( c1 ) &
            ", " &
            getClassName( c2 ) &
@@ -2120,7 +2121,7 @@ begin
            " is not an array" );
   elsif not identifiers( leftType ).list and identifiers( rightType ).list then
     msg := "type " & bold( to_string( identifiers( leftType ).name ) ) &
-           "is not an array but type " & to_unbounded_string( 
+           "is not an array but type " & to_unbounded_string(
            bold( to_string( identifiers( rightType ).name ) ) &
            " is an array" );
   elsif effectiveLeftType /= effectiveRightType then
@@ -2240,7 +2241,7 @@ function castToType( val : long_float; kind : identifier ) return unbounded_stri
   roundedVal : long_long_integer;
   str : unbounded_string;
 begin
-  -- what kind is it 
+  -- what kind is it
   baseType := getBaseType( kind );
   --put_identifier( baseType ); -- DEBUG
   -- If it's an integer type, just round it
@@ -2279,7 +2280,7 @@ function castToType( val : unbounded_string; kind : identifier ) return unbounde
   roundedVal : long_long_integer;
   str : unbounded_string;
 begin
-  -- what kind is it 
+  -- what kind is it
   baseType := getBaseType( kind );
   --put_identifier( baseType ); -- DEBUG
   -- If it's an integer type, just round it
@@ -2416,13 +2417,13 @@ begin
   -- reinitialized with a Kind of new but these will remain unchanged.
   -- Reset these to defaults to avoid confusing Bush...
   identifiers( id ).import := false;                            -- clear these
-  identifiers( id ).export := false; 
-  identifiers( id ).method := none; 
-  identifiers( id ).mapping := none; 
-  identifiers( id ).list   := false; 
-  identifiers( id ).field_of  := eof_t; 
-  identifiers( id ).volatile := false; 
-  identifiers( id ).limit  := false; 
+  identifiers( id ).export := false;
+  identifiers( id ).method := none;
+  identifiers( id ).mapping := none;
+  identifiers( id ).list   := false;
+  identifiers( id ).field_of  := eof_t;
+  identifiers( id ).volatile := false;
+  identifiers( id ).limit  := false;
   identifiers( id ).inspect := false;
   identifiers( id ).class  := otherClass;
   return true;                                                  -- delete ok
@@ -3011,7 +3012,7 @@ begin
             if elementKind = json_string_t then
             -- if it's JSON string, read the string as-is and assign it to the
             -- array.
-               ParseJSONItem( source_val, item, i ); 
+               ParseJSONItem( source_val, item, i );
                if i <= length( source_val ) then
                    skipJSONWhitespace( source_val, i );
                    ch := element( source_val, i );
@@ -3033,7 +3034,7 @@ begin
                   end if;
                end if;
 
-               ParseJSONItem( source_val, item, i ); 
+               ParseJSONItem( source_val, item, i );
 
                decoded_item := null_unbounded_string;
                for j in 2..length( item )-1 loop
@@ -3098,7 +3099,7 @@ begin
              while i <= length( source_val ) loop
                skipJSONWhitespace( source_val, i );
                item := null_unbounded_string;
-               ParseJSONItem( source_val, item, i ); 
+               ParseJSONItem( source_val, item, i );
                -- assume that it's OK if it starts with a numeric character
                -- TODO: better validation based on actual type
                ch := element( item, 1 );
@@ -3345,7 +3346,7 @@ begin
 
        declare
           i : integer := 1;
-       begin 
+       begin
           JSONexpect( sourceVal, i, '{' );
           while i <= length( sourceVal ) loop
 
@@ -3695,28 +3696,28 @@ begin
                if not is_escaping then
                   is_escaping := true;
                else                                 -- escaping itself?
-	          cmdline := cmdline & script( i ); -- add it
+                  cmdline := cmdline & script( i ); -- add it
                   is_escaping := false;             -- and no longer escape
                end if;
             else
                if not is_escaping then              -- not escaping?
-	          cmdline := cmdline & identifiers( character'pos( script(i) )-128 ).name;
-	          len := length( identifiers( character'pos( script(i) ) - 128 ).name );
+                  cmdline := cmdline & identifiers( character'pos( script(i) )-128 ).name;
+                  len := length( identifiers( character'pos( script(i) ) - 128 ).name );
                   if firstpos = lastpos and firstpos = i then -- tokenized keyword?
-	             token_lastpos := token_lastpos + len-1; -- adjust end position
+                     token_lastpos := token_lastpos + len-1; -- adjust end position
                   elsif lastpos > i then                     -- token shifted?
-	             token_lastpos := token_lastpos + len-1; -- adjust
+                     token_lastpos := token_lastpos + len-1; -- adjust
                      if firstpos > i then
-	                token_firstpos := token_firstpos + len-1;
+                     token_firstpos := token_firstpos + len-1;
                      end if;
                   end if;
                else
-	          cmdline := cmdline & script( i );
+                  cmdline := cmdline & script( i );
                   is_escaping := false;
                end if;
             end if;
          else                                             -- not a code?
-	    cmdline := cmdline & script( i );             -- just add
+            cmdline := cmdline & script( i );             -- just add
          end if;
      end loop;                                            -- for all codes
      token_firstpos := token_firstpos + indent;           -- adj token pos
@@ -3735,30 +3736,30 @@ begin
                if not is_escaping then
                   is_escaping := true;
                else                                       -- escaping itself?
-	          cmdline := cmdline & script( i );       -- add it
+                  cmdline := cmdline & script( i );       -- add it
                   is_escaping := false;                   -- and not escape
                end if;
             else
                if not is_escaping then                    -- not escaping?
-	          cmdline := cmdline &
+                  cmdline := cmdline &
                       identifiers( character'pos( script(i) )-128 ).name;
-	          len := length(
+                  len := length(
                       identifiers( character'pos( script(i) ) - 128 ).name );
                   if firstpos = lastpos and firstpos = i then -- token keyword?
-	             token_lastpos := token_lastpos + len-1;  -- adj end posn
+                     token_lastpos := token_lastpos + len-1;  -- adj end posn
                   elsif lastpos > i then                      -- token shifted?
-	             token_lastpos := token_lastpos + len-1;  -- adjust
+                     token_lastpos := token_lastpos + len-1;  -- adjust
                      if firstpos > i then
-	                token_firstpos := token_firstpos + len-1;
+                        token_firstpos := token_firstpos + len-1;
                      end if;
                   end if;
                else
-	          cmdline := cmdline & script( i );
+                  cmdline := cmdline & script( i );
                   is_escaping := false;
                end if;
             end if;
          else                                             -- other character?
-	    cmdline := cmdline & script( i );
+            cmdline := cmdline & script( i );
          end if;
      end loop;
   end if;
@@ -3823,7 +3824,7 @@ begin
    while ch = ASCII.NUL loop
       if trace then
          if syntax_check or (not exit_block and not error_found) then
-	    cmdpos := cmdpos + 2; -- first character of next command
+            cmdpos := cmdpos + 2; -- first character of next command
             put( standard_error, "=> " & '"' );
             getCommandLine( gnt_commandLine, token_firstpos, token_lastpos, lineno, fileno );
             put( standard_error, toEscaped( gnt_commandLine ) );
@@ -3835,7 +3836,7 @@ begin
             end if;
             put( standard_error, lineno'img );
             put_line( standard_error, "]" );
-	    cmdpos := cmdpos - 2;
+            cmdpos := cmdpos - 2;
          end if;
       end if;
       cmdpos := cmdpos+nextScriptCommandOffset; -- line header and indent marker
@@ -3988,13 +3989,13 @@ begin
             is_based_number := true;
          end if;
          lastpos := lastpos+1;
-	 ch := script( lastpos );
+         ch := script( lastpos );
          exit when ch = ASCII.NUL;
      end loop;
      lastpos := lastpos - 1;
      if script( lastpos ) = '.' then
-	err( "no digits after decimal" );
-	return;
+        err( "no digits after decimal" );
+        return;
      end if;
      if is_based_number then
         begin
@@ -4036,7 +4037,7 @@ begin
      end if;
      identifiers( charlit_t ).value := To_Unbounded_String(   -- extract string
        "" & script( lastpos ) );
-     lastpos := lastpos+1; 
+     lastpos := lastpos+1;
      cmdpos := lastpos+1;                                     -- skip last '
      token := charlit_t;                                      -- char literal
      return;
@@ -4072,7 +4073,7 @@ begin
           script( lastpos );
         lastpos := lastpos + 1;
      end loop;
-     -- lastpos := lastpos+1; 
+     -- lastpos := lastpos+1;
      cmdpos := lastpos+1;                                     -- skip last "
      token := strlit_t;                                       -- string literal
      return;
@@ -4094,7 +4095,7 @@ begin
             script( lastpos );
         lastpos := lastpos + 1;
      end loop;
-     -- lastpos := lastpos+1; 
+     -- lastpos := lastpos+1;
      cmdpos := lastpos+1;                                     -- skip last `
      token := backlit_t;                                      -- string literal
      return;
@@ -4106,26 +4107,26 @@ begin
      case ch is
      when '$' =>                                              -- $$ $# $?
           cmdpos := cmdpos + 1;                               -- $0..$9
-	  if script( cmdpos ) = '$' then
-	     cmdpos := cmdpos + 1;
-	  elsif script( cmdpos ) = '#' then
-	     cmdpos := cmdpos + 1;
-	  elsif script( cmdpos ) = '?' then
-	     cmdpos := cmdpos + 1;
-	  elsif script( cmdpos ) >= '0' and script( cmdpos ) <= '9' then
+          if script( cmdpos ) = '$' then
+             cmdpos := cmdpos + 1;
+          elsif script( cmdpos ) = '#' then
+             cmdpos := cmdpos + 1;
+          elsif script( cmdpos ) = '?' then
+             cmdpos := cmdpos + 1;
+          elsif script( cmdpos ) >= '0' and script( cmdpos ) <= '9' then
              cmdpos := cmdpos + 1;
           end if;
      when '#' =>                                              -- # comments
-	         cmdpos := cmdpos + 1;
-    	     while script( cmdpos ) /= ASCII.NUL loop
-	            cmdpos := cmdpos + 1;
+          cmdpos := cmdpos + 1;
+          while script( cmdpos ) /= ASCII.NUL loop
+                cmdpos := cmdpos + 1;
           end loop;
           goto redo;
      when '-' =>                                              -- - / -- comment
           cmdpos := cmdpos + 1;
           if script( cmdpos ) = '-' then
-	            while script( cmdpos ) /= ASCII.NUL loop
-	               cmdpos := cmdpos + 1;
+             while script( cmdpos ) /= ASCII.NUL loop
+                   cmdpos := cmdpos + 1;
              end loop;
              goto redo;
           end if;
@@ -4168,12 +4169,12 @@ begin
           err( "Leading underscores not allowed in identifiers" );
           return;
      when '!' =>                                              -- ! / != test
-	  if script( cmdpos+1 ) = '=' then
+          if script( cmdpos+1 ) = '=' then
              err( "/= expected" );
           end if;
           return;
      when others =>                                           -- return other
-	  cmdpos := cmdpos + 1;                               -- as a symbol
+          cmdpos := cmdpos + 1;                               -- as a symbol
      end case;
      lastpos := cmdpos-1;                                     -- end of token
      identifiers( symbol_t ).value := To_Unbounded_String(
@@ -4948,11 +4949,11 @@ begin
                exit;
             end if;
             decimalCount := decimalCount+1;
-	    if decimalCount > 1 then
+            if decimalCount > 1 then
                cmdpos := lastpos;  -- move cmdpos or infinite loop!
-	       err_tokenize( "too many decimal points in floating point literal",  to_string( command ) );
-	       return;
-	    end if;
+               err_tokenize( "too many decimal points in floating point literal",  to_string( command ) );
+               return;
+            end if;
          end if;
          if Element( command, lastpos ) = '#' then
             octathorneCount := octathorneCount + 1;
@@ -4970,7 +4971,7 @@ begin
            -- newstr := To_Unbounded_String( Slice( command, firstpos, lastpos ) );
            -- nr := lookupVMNR( ci, newStr );
            -- if nr /= aVMNRNumber( noRegister ) then
-	   --    ci.compressedScript := ci.compressedScript &
+           --    ci.compressedScript := ci.compressedScript &
            --        character'val( 128 + integer( load_nr_t ) ) &
            --        character'val( nr+1 );
 -- put_line( "Found number at register NR " & sr'img );
@@ -4982,7 +4983,7 @@ begin
           --        VMNR( nr ) := newstr;
 -- map is redundant if we're pre-loading all numeric literals
           --        ci.VMNRmap( nr ) := newstr;
-	  --        ci.compressedScript := ci.compressedScript &
+          --        ci.compressedScript := ci.compressedScript &
           --            character'val( 128 + integer( load_nr_t ) ) &
           --            character'val( nr+1 );
 -- put_line( "Number at new register NR " & nr'img );
@@ -5020,8 +5021,8 @@ begin
         end loop;
      end if;
      if lastpos > length( command ) then                    -- missing quote?
-	err_tokenize( "missing single quote", to_string( command ) );
-	return;
+        err_tokenize( "missing single quote", to_string( command ) );
+        return;
      else
         word := word & ''';                                 -- add ' to buffer
         lastpos := lastpos+1;                               -- skip last '
@@ -5046,15 +5047,15 @@ begin
         end loop;
      end if;
      if lastpos > length( command ) then
-	err_tokenize( "missing double quote", to_string( command ) );
-	return;
+        err_tokenize( "missing double quote", to_string( command ) );
+        return;
      else
       --   newstr := To_Unbounded_String( Slice( command, cmdpos, lastpos-1 ) );
       --   sr := lookupVMSR( ci, newStr );
       --   if sr /= aVMSRNumber( noRegister ) then
--- 	   ci.compressedScript := ci.compressedScript &
-     --           character'val( 128 + integer( load_sr_t ) ) &
-     --           character'val( sr+1 );
+      --      ci.compressedScript := ci.compressedScript &
+      --         character'val( 128 + integer( load_sr_t ) ) &
+      --         character'val( sr+1 );
 -- put_line( "Found string at register SR " & sr'img );
      --       cmdpos := lastpos+1; -- skip last "
      --       goto next;
@@ -5064,7 +5065,7 @@ begin
      --          VMSR( sr ) := newstr;
 -- map is redundant if we're pre-loading all string literals
      --          ci.VMSRmap( sr ) := newstr;
--- 	      ci.compressedScript := ci.compressedScript &
+     --          ci.compressedScript := ci.compressedScript &
      --              character'val( 128 + integer( load_sr_t ) ) &
      --              character'val( sr+1 );
 -- put_line( "String at new register SR " & sr'img );
@@ -5086,8 +5087,8 @@ begin
         end loop;
      end if;
      if natural( lastpos ) > length( command ) then
-	err_tokenize( "missing back quote", to_string( command ) );
-	return;
+        err_tokenize( "missing back quote", to_string( command ) );
+        return;
      else
         cmdpos := lastpos+1; -- skip last `
      end if;
@@ -5362,7 +5363,7 @@ begin
              lastpos := cmdpos - 1;
              exit;
           end if;
-       end if; -- escaped 
+       end if; -- escaped
 
        -- Got here? Character is good.  Backslashing?  Turn it off.
 
@@ -5556,7 +5557,7 @@ begin
           --   ci.context := startOfStatement;
           --   lastpos := cmdpos - 1;
           --   exit;
-       end if; -- escaped 
+       end if; -- escaped
 
        -- Got here? Character is good.  Backslashing?  Turn it off.
 
@@ -5807,8 +5808,8 @@ begin
         end loop;
      end if;
      if lastpos > length( command ) then
-	err_tokenize( "missing double quote", to_string( command ) );
-	return;
+        err_tokenize( "missing double quote", to_string( command ) );
+        return;
      else
         cmdpos := lastpos+1; -- skip last "
      end if;
@@ -5956,7 +5957,7 @@ begin
   nextByteCodeLine;
 
   -- SOURCE IDENTIFICATION
-  -- 
+  --
   -- Start of line has file number (8-bit) and line number (16-bit).  Each
   -- number is plus one to avoid ASCII 0 (reserved for end of lines).
 
@@ -5980,9 +5981,9 @@ begin
   -- one to avoid ASCII 0).  (Tab stops are treated as 8 spaces.)
 
   cmdpos := 1;
-  if Element( command, cmdpos ) = ' ' or Element( command, 
+  if Element( command, cmdpos ) = ' ' or Element( command,
     cmdpos ) = ASCII.HT then
-    while Element( command, cmdpos ) = ' ' or Element( 
+    while Element( command, cmdpos ) = ' ' or Element(
        command, cmdpos ) = ASCII.HT loop
        if Element( command, cmdpos ) = ASCII.HT then
           tabAdjust := tabAdjust + 8 - ((cmdpos+tabAdjust) mod 8);
@@ -6357,7 +6358,7 @@ begin
   if verboseOpt then
      put_line( standard_error, "=> (Line 1 ...)" );
   end if;
-     
+
   -- compile the script into byte code
   while not compileDone loop                                  -- for all lines
      if verboseOpt then
@@ -6593,7 +6594,7 @@ begin
               err( "cannot open include file" & optional_bold( to_string( includeName ) ) &
                  " - file may be locked" );
               return;
-            when NAME_ERROR => 
+            when NAME_ERROR =>
                 if traceOpt then
                    put_trace( to_string( "Cannot open " & libraryPrefix & includeName ) );
                 end if;
@@ -6672,7 +6673,7 @@ begin
      identifiers( source_info_script_size_t ).value := delete( to_unbounded_string( script.all'length'img), 1, 1 );
      resumeScanning( includeSemicolonPosition );
 
-  end if;     
+  end if;
 end insertInclude;
 
 end scanner;

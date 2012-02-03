@@ -327,7 +327,7 @@ begin
        if last_was_esc then             -- two escapes?
           ch := ASCII.HT;               -- cmdline completion
           last_was_esc := false;        -- cancel vi mode
-          vi_escape := false;           -- exit vi escape 
+          vi_escape := false;           -- exit vi escape
        else                             -- first escape?
           vi_escape := not vi_escape;   -- enter/exit vi escape mode
           if vi_escape then
@@ -352,9 +352,9 @@ begin
     elsif vi_escape then
        last_was_esc := false;
        if ch ='[' then                        -- same as control-n
-	         arrow_escape := true;
+          arrow_escape := true;
           vi_escape := false;                 -- cancel vi mode
-	         goto retry;
+          goto retry;
        elsif ch ='j' then                     -- same as control-n
           ch := ASCII.SO;
        elsif ch = 'k' then                    -- same as control-p
@@ -384,7 +384,7 @@ begin
     if ch /= ASCII.HT then
        justCompleted := false;
     end if;
-          
+
     -- EMACS MODE HANDLING
 
     case ch is
@@ -407,7 +407,7 @@ begin
              goto retry;
           end if;
           dir  := dirname( path );
-          file := basename( path ); 
+          file := basename( path );
           file := file & "*";
           if listFiles then
              completePathname( dir, file, path, list => true );
@@ -500,7 +500,7 @@ begin
       end if;
     when ASCII.DLE =>                         -- control-p
       if not keepHistory then
-       	 beep;             
+         beep;
       else
          old_pos := histpos;
          histpos := histpos - 1;

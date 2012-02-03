@@ -30,7 +30,7 @@ with gnat.lock_files,
     parser,
     bush_os;
 use gnat.lock_files,
-    world, 
+    world,
     scanner,
     string_util,
     parser_aux,

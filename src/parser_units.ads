@@ -207,7 +207,7 @@ procedure ParseUnitsUSFlOz2FlOz( result : out unbounded_string );
 
 procedure ParseUnitsPints2L( result : out unbounded_string );
   -- Syntax: units.pints2l( expr );
-  -- Conversion: pints * 0.568 
+  -- Conversion: pints * 0.568
 
 procedure ParseUnitsGal2L( result : out unbounded_string );
   -- Syntax: units.gal2l( expr );

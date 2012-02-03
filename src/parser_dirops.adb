@@ -30,7 +30,7 @@ with gnat.directory_operations,
     parser,
     bush_os;
 use gnat.directory_operations,
-    world, 
+    world,
     scanner,
     string_util,
     parser_aux,

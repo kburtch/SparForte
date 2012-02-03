@@ -242,7 +242,7 @@ begin
   -- variable.
   --  Since Standard_Input, Standard_Output and Standard_Error are (now)
   -- represented as true file variables, they need no special treatment.
-  
+
   if token = current_input_t then
      if isExecutingCommand then
         ref.id := identifier( to_numeric( identifiers(current_input_t).value ) );
@@ -294,7 +294,7 @@ begin
   -- variable.
   --  Since Standard_Input, Standard_Output and Standard_Error are (now)
   -- represented as true file variables, they need no special treatment.
-  
+
   if token = current_input_t then
      if isExecutingCommand then
         ref.id := identifier( to_numeric( identifiers(current_input_t).value ) );
@@ -346,7 +346,7 @@ begin
   -- variable.
   --  Since Standard_Input, Standard_Output and Standard_Error are (now)
   -- represented as true file variables, they need no special treatment.
-  
+
   if token = current_input_t then
      if isExecutingCommand then
         ref.id := identifier( to_numeric( identifiers(current_input_t).value ) );
@@ -388,9 +388,9 @@ procedure ParseClosedFile( r : out reference ) is
   ref : reference;
 begin
   ref.id := eof_t; -- assume failure
-  
+
   -- do not allow "current" or "standard" files to be closed.
-  
+
   if token = standard_output_t then
      err( "file already open" );
   elsif token = standard_error_t then

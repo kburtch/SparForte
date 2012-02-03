@@ -171,9 +171,9 @@ procedure ParseMemcacheIsValidMemcacheKey( result : out unbounded_string ) is
 begin
   expect( memcache_is_valid_memcache_key_t );
   ParseSingleStringParameter( expr_val, expr_type );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      begin
-       checkMemcacheRestriction;
        result := to_bush_boolean( isValidMemcacheKey( expr_val ) );
      exception when others =>
        err( "exception raised" );
@@ -189,9 +189,9 @@ procedure ParseMemcacheNewCluster( result : out unbounded_string ) is
 begin
   checkRestrictedShell;
   expect( memcache_new_cluster_t );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      begin
-       checkMemcacheRestriction;
         cluster_id_value := memcacheClusterIdTop;
         memcacheClusterIdTop := memcacheClusterIdTop + 1;
         cluster_entry.id := cluster_id_value;
@@ -218,13 +218,13 @@ begin
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
   ParseLastNumericParameter( expr_val2, expr_type2, natural_t );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         port : natural := natural( to_numeric( expr_val2 ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            RegisterServer( cluster_entry.cluster, expr_val, port );
@@ -245,12 +245,12 @@ begin
   checkRestrictedShell;
   expect( memcache_clear_servers_t );
   ParseSingleInOutParameter( cluster_id, memcache_cluster_t  );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            ClearServers( cluster_entry.cluster );
@@ -274,12 +274,12 @@ begin
   expect( memcache_set_cluster_name_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseLastStringParameter( expr_val, expr_type, string_t );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            SetClusterName( cluster_entry.cluster, expr_val );
@@ -305,6 +305,7 @@ begin
   expect( memcache_set_cluster_type_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseLastEnumParameter( expr_val, expr_type, memcache_cluster_type_t );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      begin
         mct := aMemcacheClusterType'val( natural( to_numeric( expr_val ) ) );
@@ -317,7 +318,6 @@ begin
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            SetClusterType( cluster_entry.cluster, mct );
@@ -344,12 +344,12 @@ begin
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
   ParseLastStringParameter( expr_val2, expr_type2 );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Set( cluster_entry.cluster, expr_val, expr_val2 );
@@ -378,12 +378,12 @@ begin
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
   ParseLastStringParameter( expr_val2, expr_type2 );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Add( cluster_entry.cluster, expr_val, expr_val2 );
@@ -412,12 +412,12 @@ begin
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
   ParseLastStringParameter( expr_val2, expr_type2 );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Replace( cluster_entry.cluster, expr_val, expr_val2 );
@@ -444,12 +444,12 @@ begin
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
   ParseLastStringParameter( expr_val2, expr_type2 );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Append( cluster_entry.cluster,expr_val, expr_val2 );
@@ -476,12 +476,12 @@ begin
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
   ParseLastStringParameter( expr_val2, expr_type2 );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Prepend( cluster_entry.cluster, expr_val, expr_val2 );
@@ -505,12 +505,12 @@ begin
   expect( memcache_get_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseLastStringParameter( expr_val, expr_type );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Get( cluster_entry.cluster, expr_val, result );
@@ -536,12 +536,12 @@ begin
   expect( memcache_delete_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
   ParseLastStringParameter( expr_val, expr_type );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Delete( cluster_entry.cluster, expr_val );
@@ -564,12 +564,12 @@ begin
   checkRestrictedShell;
   expect( memcache_stats_t );
   ParseSingleInOutParameter( cluster_id, memcache_cluster_t  );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Stats( cluster_entry.cluster, result );
@@ -590,12 +590,12 @@ begin
   checkRestrictedShell;
   expect( memcache_version_t );
   ParseSingleInOutParameter( cluster_id, memcache_cluster_t  );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            pegasock.memcache.Version( cluster_entry.cluster, result );
@@ -618,12 +618,12 @@ begin
   checkRestrictedShell;
   expect( memcache_flush_t );
   ParseSingleInOutParameter( cluster_id, memcache_cluster_t  );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-        checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Flush( cluster_entry.cluster );
@@ -649,9 +649,9 @@ procedure ParseHighreadNewCluster( result : out unbounded_string ) is
 begin
   checkRestrictedShell;
   expect( highread_new_cluster_t );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      begin
-       checkMemcacheRestriction;
         cluster_id_value := memcacheDualClusterIdTop;
         memcacheDualClusterIdTop := memcacheDualClusterIdTop + 1;
         cluster_entry.id := cluster_id_value;
@@ -678,13 +678,13 @@ begin
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
   ParseLastNumericParameter( expr_val2, expr_type2, natural_t );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         port : natural := natural( to_numeric( expr_val2 ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            RegisterAlphaServer( cluster_entry.cluster, expr_val, port );
@@ -711,13 +711,13 @@ begin
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
   ParseLastNumericParameter( expr_val2, expr_type2, natural_t );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         port : natural := natural( to_numeric( expr_val2 ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            RegisterBetaServer( cluster_entry.cluster, expr_val, port );
@@ -738,12 +738,12 @@ begin
   checkRestrictedShell;
   expect( highread_clear_servers_t );
   ParseSingleInOutParameter( cluster_id, highread_cluster_t  );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            ClearServers( cluster_entry.cluster );
@@ -767,12 +767,12 @@ begin
   expect( highread_set_cluster_name_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseLastStringParameter( expr_val, expr_type, string_t );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            SetClusterName( cluster_entry.cluster, expr_val );
@@ -798,6 +798,7 @@ begin
   expect( highread_set_cluster_type_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseLastEnumParameter( expr_val, expr_type, memcache_cluster_type_t );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      begin
         mct := aMemcacheClusterType'val( natural( to_numeric( expr_val ) ) );
@@ -810,7 +811,6 @@ begin
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            SetClusterType( cluster_entry.cluster, mct );
@@ -837,12 +837,12 @@ begin
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
   ParseLastStringParameter( expr_val2, expr_type2 );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Set( cluster_entry.cluster, expr_val, expr_val2 );
@@ -871,12 +871,12 @@ begin
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
   ParseLastStringParameter( expr_val2, expr_type2 );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Add( cluster_entry.cluster, expr_val, expr_val2 );
@@ -905,12 +905,12 @@ begin
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
   ParseLastStringParameter( expr_val2, expr_type2 );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Replace( cluster_entry.cluster, expr_val, expr_val2 );
@@ -937,12 +937,12 @@ begin
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
   ParseLastStringParameter( expr_val2, expr_type2 );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Append( cluster_entry.cluster,expr_val, expr_val2 );
@@ -969,12 +969,12 @@ begin
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseNextStringParameter( expr_val, expr_type );
   ParseLastStringParameter( expr_val2, expr_type2 );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Prepend( cluster_entry.cluster, expr_val, expr_val2 );
@@ -998,12 +998,12 @@ begin
   expect( highread_get_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseLastStringParameter( expr_val, expr_type );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Get( cluster_entry.cluster, expr_val, result );
@@ -1029,12 +1029,12 @@ begin
   expect( highread_delete_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
   ParseLastStringParameter( expr_val, expr_type );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Delete( cluster_entry.cluster, expr_val );
@@ -1057,12 +1057,12 @@ begin
   checkRestrictedShell;
   expect( highread_stats_t );
   ParseSingleInOutParameter( cluster_id, highread_cluster_t  );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Stats( cluster_entry.cluster, result );
@@ -1083,12 +1083,12 @@ begin
   checkRestrictedShell;
   expect( highread_version_t );
   ParseSingleInOutParameter( cluster_id, highread_cluster_t  );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            pegasock.memcache.highread.Version( cluster_entry.cluster, result );
@@ -1111,12 +1111,12 @@ begin
   checkRestrictedShell;
   expect( highread_flush_t );
   ParseSingleInOutParameter( cluster_id, highread_cluster_t  );
+  checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-       checkMemcacheRestriction;
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Flush( cluster_entry.cluster );

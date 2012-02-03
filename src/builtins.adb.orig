@@ -89,9 +89,9 @@ begin
   getcwd( buffer, buffer'length );
   if C_errno /= 0 then
      put_line( standard_error, "findPwd: error getting current working directory, errno "
-	& C_errno'img );
+       & C_errno'img );
      current_working_directory := null_unbounded_string;
-  end if; 
+  end if;
   current_working_directory := to_unbounded_string(
      buffer( 1..index( buffer, ASCII.NUL & "" ) - 1 ) ) ;
 end findPwd;
@@ -359,7 +359,7 @@ begin
   -- If the user has requested a maximum number of lines (historyMax),
   -- then calculate the first line (historyFirst) to be shown.  If all
   -- should be shown, turn on showHistory flag immediately.
-                                                                                
+
   if historyMax /= 0 then
      if historyNext - historyMax < 1 then
         historyFirst := historyArray'last - historyMax + historyNext;
@@ -368,19 +368,19 @@ begin
      end if;
   end if;
   showHistory := historyFirst = 0 or historyFirst = historyNext;
-                                                                                
+
   -- Determine the starting point in the history array.  The history
   -- array wraps around to the first element when it has been filled.
-                                                                                
+
   if historyNext = historyArray'last then
      i := 1;
   else
      i := historyNext + 1;
   end if;
-                                                                                
+
   -- Walk the history array and show the contents.  Wrap around when the
   -- end of array is reached.
-                                                                                
+
   loop
     if i = historyArray'last then
        i := 1;
@@ -496,7 +496,7 @@ begin
   elsif isExecutingCommand then
      put_line( old_pwd );
   end if;
-end pwd;                                                                                
+end pwd;
 
 -----------------------------------------------------------------------------
 --  SELECT (SQL COMMAND)
@@ -1223,6 +1223,8 @@ begin
      Put_Line( "  " & bold( "pragma" ) & " " &
        "inspection_point - break to command prompt if --break is used" );
      Put_Line( "  " & bold( "pragma" ) & " " &
+       "license( license_name [, extra] )" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
        "no_command_hash - do not store command pathnames in the hash table" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "prompt_script( `commands` ) - commands to draw command prompt" );
@@ -1247,6 +1249,8 @@ begin
      Put_Line( "  " & bold( "pragma" ) & " " &
        "restriction( no_postgresql_database ) - " &
          "disable connections to postgresql" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
+       "software_model( model_name )" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "template( css|html|js|json|text|wml|xml [, path] ) - script is acting as a template processor" );
      Put_Line( "  " & bold( "pragma" ) & " " &
@@ -1334,6 +1338,7 @@ begin
      Put_Line( "  System.Max_Base_Digits        System.Default_Bit_Order" );
      Put_Line( "  System.Max_Mantissa           System.Login_Shell" );
      Put_Line( "  System.Restricted_Shell       System.Script_License" );
+     Put_Line( "  System.Script_Software_Model" );
      discardUnusedIdentifier( token );
   elsif helpTopic = "trace" then
      Put_Line( "trace - show verbose debugging information" );
@@ -1737,7 +1742,7 @@ begin
                          discardUnusedIdentifier( token );
                          getNextToken;
                          expect( symbol_t, "," );
-                      elsif identifiers( token ).name = to_unbounded_string( "see also" ) then
+                      elsif identifiers( token ).name = to_unbounded_string( "see_also" ) then
                          if last_tag = "see also" then
                             info := null_unbounded_string;
                          elsif HTMLOutput then
@@ -1829,7 +1834,7 @@ begin
            if C_errno = EINTR then
               goto retryclose;
            end if;
-        end if; 
+        end if;
         restoreScript( scriptState );
      end;
      discardUnusedIdentifier( token );

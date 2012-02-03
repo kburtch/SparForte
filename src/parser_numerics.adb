@@ -88,7 +88,7 @@ begin
         result := to_unbounded_string( long_float( shift_left(
            unsigned_64( to_numeric( expr_val ) ),
            natural( to_numeric( amt_val ) )
-	) ) );
+        ) ) );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -111,7 +111,7 @@ begin
         result := to_unbounded_string( long_float( shift_right(
            unsigned_64( to_numeric( expr_val ) ),
            natural( to_numeric( amt_val ) )
-	) ) );
+        ) ) );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -134,7 +134,7 @@ begin
         result := to_unbounded_string( long_float( rotate_left(
            unsigned_64( to_numeric( expr_val ) ),
            natural( to_numeric( amt_val ) )
-	) ) );
+        ) ) );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -157,7 +157,7 @@ begin
         result := to_unbounded_string( long_float( rotate_right(
            unsigned_64( to_numeric( expr_val ) ),
            natural( to_numeric( amt_val ) )
-	) ) );
+        ) ) );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -180,7 +180,7 @@ begin
         result := to_unbounded_string( long_float( shift_right_arithmetic(
            unsigned_64( to_numeric( expr_val ) ),
            natural( to_numeric( amt_val ) )
-	) ) );
+        ) ) );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -225,7 +225,7 @@ begin
            result := to_unbounded_string( log( to_numeric( expr_val ) ) );
         else
            result := to_unbounded_string( log( to_numeric( expr_val ),
-	      to_numeric( base_val ) ) );
+             to_numeric( base_val ) ) );
         end if;
      end if;
   exception when others =>
@@ -271,7 +271,7 @@ begin
            result := to_unbounded_string( sin( to_numeric( expr_val ) ) );
         else
            result := to_unbounded_string( sin( to_numeric( expr_val ),
-	     to_numeric( cycle_val ) ) );
+             to_numeric( cycle_val ) ) );
         end if;
      end if;
   exception when others =>
@@ -300,7 +300,7 @@ begin
           result := to_unbounded_string( cos( to_numeric( expr_val ) ) );
        else
           result := to_unbounded_string( cos( to_numeric( expr_val ),
-	    to_numeric( cycle_val ) ) );
+            to_numeric( cycle_val ) ) );
        end if;
     end if;
   exception when others =>
@@ -330,7 +330,7 @@ begin
           result := to_unbounded_string( tan( to_numeric( expr_val ) ) );
        else
           result := to_unbounded_string( tan( to_numeric( expr_val ),
-	    to_numeric( cycle_val ) ) );
+            to_numeric( cycle_val ) ) );
        end if;
     end if;
   exception when others =>
@@ -359,7 +359,7 @@ begin
           result := to_unbounded_string( cot( to_numeric( expr_val ) ) );
        else
           result := to_unbounded_string( cot( to_numeric( expr_val ),
-	    to_numeric( cycle_val ) ) );
+            to_numeric( cycle_val ) ) );
        end if;
     end if;
   exception when others =>
@@ -388,7 +388,7 @@ begin
           result := to_unbounded_string( arcsin( to_numeric( expr_val ) ) );
        else
           result := to_unbounded_string( arcsin( to_numeric( expr_val ),
-	    to_numeric( cycle_val ) ) );
+            to_numeric( cycle_val ) ) );
        end if;
     end if;
   exception when others =>
@@ -417,7 +417,7 @@ begin
           result := to_unbounded_string( arccos( to_numeric( expr_val ) ) );
        else
           result := to_unbounded_string( arccos( to_numeric( expr_val ),
-	    to_numeric( cycle_val ) ) );
+            to_numeric( cycle_val ) ) );
        end if;
     end if;
   exception when others =>
@@ -448,10 +448,10 @@ begin
     if isExecutingCommand then
        if cycle_type = eof_t then
           result := to_unbounded_string( arctan( to_numeric( expr_val ),
-	    to_numeric( expr2_val )) );
+            to_numeric( expr2_val )) );
        else
           result := to_unbounded_string( arctan( to_numeric( expr_val ),
-	    to_numeric( expr2_val ), to_numeric( cycle_val ) ) );
+            to_numeric( expr2_val ), to_numeric( cycle_val ) ) );
        end if;
     end if;
   exception when others =>
@@ -482,10 +482,10 @@ begin
     if isExecutingCommand then
        if cycle_type = eof_t then
           result := to_unbounded_string( arccot( to_numeric( expr_val ),
-	    to_numeric( expr2_val )) );
+            to_numeric( expr2_val )) );
        else
           result := to_unbounded_string( arccot( to_numeric( expr_val ),
-	    to_numeric( expr2_val ), to_numeric( cycle_val ) ) );
+            to_numeric( expr2_val ), to_numeric( cycle_val ) ) );
        end if;
     end if;
   exception when others =>
@@ -728,7 +728,7 @@ begin
   begin
      if isExecutingCommand then
        result := to_unbounded_string( long_float'remainder( to_numeric( expr_val ),
-	  to_numeric( expr2_val ) ) );
+         to_numeric( expr2_val ) ) );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -783,7 +783,7 @@ begin
   begin
      if isExecutingCommand then
        result := to_unbounded_string( long_float'leading_part( to_numeric( expr_val ),
-	  integer( to_numeric( expr2_val ) ) ) );
+         integer( to_numeric( expr2_val ) ) ) );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -804,7 +804,7 @@ begin
   begin
      if isExecutingCommand then
        result := to_unbounded_string( long_float'copy_sign( to_numeric( expr_val ),
-	  to_numeric( expr2_val ) ) );
+         to_numeric( expr2_val ) ) );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -844,7 +844,7 @@ begin
         lo := to_numeric( lo_val );
         hi := to_numeric( hi_val );
         total := to_numeric( total_val );
-	result := to_unbounded_string( long_float'rounding( (hi-lo) / (1.0+log( total ) ) ) ); -- this is wrong
+        result := to_unbounded_string( long_float'rounding( (hi-lo) / (1.0+log( total ) ) ) ); -- this is wrong
      end if;
   exception when others =>
      err( "exception raised" );
@@ -865,7 +865,7 @@ begin
   begin
      if isExecutingCommand then
        result := to_unbounded_string( long_float'max( to_numeric( expr_val ),
-	  to_numeric( expr2_val ) ) );
+         to_numeric( expr2_val ) ) );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -886,7 +886,7 @@ begin
   begin
      if isExecutingCommand then
        result := to_unbounded_string( long_float'min( to_numeric( expr_val ),
-	  to_numeric( expr2_val ) ) );
+         to_numeric( expr2_val ) ) );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -924,7 +924,7 @@ begin
   begin
      if isExecutingCommand then
        result := to_unbounded_string( long_float'scaling( to_numeric( expr_val ),
-	  integer( to_numeric( expr2_val ) ) ) );
+         integer( to_numeric( expr2_val ) ) ) );
      end if;
   exception when others =>
      err( "exception raised" );
@@ -1393,7 +1393,7 @@ begin
        for i in 1..length(expr1_val) loop
            hash := character'pos(element(expr1_val,i)) + (hash*64) + (hash*65536
 ) - hash;
-       end loop;  
+       end loop;
        hash := (hash mod limit) + 1;
        result := to_unbounded_string( long_float( hash ) );
     end if;

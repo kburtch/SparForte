@@ -254,7 +254,8 @@ begin
     identifiers(id).field_of := proc_id;
     identifiers(id).inspect  := false;
     identifiers(id).deleted  := false;
-end updateFormalParameter;                                                                                
+end updateFormalParameter;
+
 procedure declareActualParameter( id : out identifier;
 proc_id : identifier; parameterNumber : integer;
 value : unbounded_string ) is
@@ -384,7 +385,7 @@ end To_Bush_Boolean;
 --
 -- TRUE if the identifier is a keyword.
 -----------------------------------------------------------------------------
-                                                                                
+
 function is_keyword( id : identifier ) return boolean is
 -- True if an AdaScript keyword.  Keywords are defined in the
 -- first part of the indentifier table.

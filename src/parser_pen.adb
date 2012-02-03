@@ -35,7 +35,7 @@ use pen,
     bush_os,
     bush_os.sdl,
     user_io,
-    world, 
+    world,
     scanner,
     string_util,
     scanner_arrays,
@@ -1186,7 +1186,7 @@ begin
             aColourName'val( integer( to_numeric( rexpr_val ) ) ) );
         exception when others =>
           err( "exception raised" );
-	end;
+        end;
      else
         declare
           pen_rect : aRect;
@@ -1314,7 +1314,7 @@ begin
             aColourName'val( integer( to_numeric( rexpr_val ) ) ) );
         exception when others =>
           err( "exception raised" );
-	end;
+        end;
      else
         declare
           pen_rect : aRect;
@@ -1380,14 +1380,14 @@ begin
           clear( aCanvasID( to_numeric( canvas_id ) ) );
         exception when others =>
           err( "exception raised" );
-	end;
+        end;
      elsif colorNameVersion then
         begin
           clear( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
             aColourName'val( integer( to_numeric( rexpr_val ) ) ) );
         exception when others =>
           err( "exception raised" );
-	end;
+        end;
      else
         begin
           clear( aCanvasID( to_numeric( canvas_id ) ),

@@ -157,7 +157,7 @@ begin
   ep := strerror( e );
   for i in ep.all'range loop
       if ep(i) = ASCII.NUL then
-	 lastchar := i-1;
+         lastchar := i-1;
          exit;
       end if;
   end loop;
@@ -256,7 +256,7 @@ end openSocket;
      --expect( symbol_t, ")" );
   --end if;
 --end ParseSingleUniStringExpression;
-                                                                               -- 
+--
 --procedure ParseSingleStringExpression( expr_val : out unbounded_string;
   --expr_type : out identifier ) is
 --begin
@@ -479,7 +479,7 @@ end processTemplate;
 ---------------------------------------------------------
 -- PARSER UTILITIES
 ---------------------------------------------------------
-                                                                                
+
 procedure DoQuit is
   -- Quit a script
 begin
@@ -490,7 +490,7 @@ begin
      put_trace( "Terminating" );
   end if;
 end DoQuit;
-                                                                                
+
 procedure DoReturn is
   -- Quit a user-defined subprogram
 begin
@@ -521,7 +521,7 @@ begin
         err( "procedure error output cannot be redirected like commands" );
      elsif identifiers( token ).value = "&" then
         err( "procedures cannot be run in the background like commands" );
-     else 
+     else
         expect( symbol_t, ";" );
      end if;
   else
@@ -548,7 +548,7 @@ begin
         err( "function error output cannot be redirected like commands" );
      elsif identifiers( token ).value = "&" then
         err( "functions cannot be run in the background like commands" );
-     else 
+     else
         expect( symbol_t, ";" );
      end if;
   else

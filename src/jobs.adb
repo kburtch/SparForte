@@ -105,7 +105,7 @@ begin
       end if;
       fullPath := cmdPath;
       if not C_is_executable_file( to_string( fullPath ) & ASCII.NUL ) then
-	 fullPath := null_unbounded_string;
+         fullPath := null_unbounded_string;
       end if;
    else
       findIdent( to_unbounded_string( "PATH" ), pathId );
@@ -279,7 +279,7 @@ begin
   when E2BIG   => err( "The O/S cannot handle that many arguments" );
   when ENOEXEC => err( "This file is not an executable program" );
   when EMLINK  => err( "The pathname is a circular symbolic link path" );
-  when ENFILE  => err( "The O/S cannot open any more files" );  
+  when ENFILE  => err( "The O/S cannot open any more files" );
   when EMFILE  => err( "You reached your limit of number of open files" );
   when EINVAL  => err( "The program file is corrupt" );
   when EISDIR  => err( "The script interpreter was a directory" );
@@ -350,7 +350,7 @@ begin
   else
 
    -- Got here?  Must be an external command
- 
+
    if restriction_no_external_commands then
       err( "typing mistake or external command (not allowed with " &
            optional_bold( "restriction( no_external_commands )" ) );
@@ -358,7 +358,7 @@ begin
    end if;
 
      C_reset_errno;                                             -- assume OK
-     spawn( fullPath, ap, status, noreturn => noReturn ); 
+     spawn( fullPath, ap, status, noreturn => noReturn );
      last_status := aStatusCode( C_WEXITSTATUS( status ) );
      -- should never return, but just in case...
      if C_errno > 0 then
@@ -425,18 +425,18 @@ begin
               cmd, paramToken, fullPath, ap, noReturn => true,
               success => success );
          else -- parent
-       	    newJob.pid := myPID;
-	           newJob.cmd := cmd;
-	           newJob.status := running;
-	           newJob.quiet := false;
-	           jobList.Insert( jobs, newJob );
+            newJob.pid := myPID;
+            newJob.cmd := cmd;
+            newJob.status := running;
+            newJob.quiet := false;
+            jobList.Insert( jobs, newJob );
             put_line( cmd & " (" & myPID'img & ") has started" );
             Success := true;
          end if;
       else
          spawnCommandOrRunBuiltin(
-           cmd, paramToken, fullPath, ap, noReturn => false,
-           success => success );
+            cmd, paramToken, fullPath, ap, noReturn => false,
+            success => success );
       end if;
    end if;
 end run;
@@ -529,26 +529,26 @@ begin
            end if;
 
             if trace then
-	       put_trace( to_string( fullPath ) &
-	         " output attached to input end of pipe fd" & 
-	         pipeStack( pipeStackTop )( intoPipe )'img );
+               put_trace( to_string( fullPath ) &
+                  " output attached to input end of pipe fd" &
+                  pipeStack( pipeStackTop )( intoPipe )'img );
             end if;
 
             spawnCommandOrRunBuiltin(
               cmd, paramToken, fullPath, ap, noReturn => true,
               success => success );
             -- should never return, but...bail out of shell child process
-	    error_found := true;             -- suppress errors
+            error_found := true;             -- suppress errors
          else                                -- parent process?
-	    newJob.pid := myPID;             -- record the job
-	    newJob.cmd := cmd;               -- in the job table
-	    newJob.status := running;
-	    newJob.quiet := true;
-	    jobList.Insert( jobs, newJob );
+            newJob.pid := myPID;             -- record the job
+            newJob.cmd := cmd;               -- in the job table
+            newJob.status := running;
+            newJob.quiet := true;
+            jobList.Insert( jobs, newJob );
             Success := true;
          end if;
       else
-	 err( "internal error: pipelines must be run in background" );
+         err( "internal error: pipelines must be run in background" );
       end if;
    end if;
 end run_inpipe;
@@ -594,9 +594,9 @@ begin
       err( "'" & to_string( cmd ) & "' command not found" );
    else
       if background then                    -- should never be
-	 err( "internal error: final pipeline command must be run in foreground" );
-	 Success := false;
-	 return;
+         err( "internal error: final pipeline command must be run in foreground" );
+         Success := false;
+         return;
       end if;
 
 <<retry1>>
@@ -622,16 +622,16 @@ begin
             goto retry3;
          end if;
          err( "unable to dup2 the pipe for " & to_string( cmd ) &
-	    "input: errno " & C_errno'img );
+           "input: errno " & C_errno'img );
          Success := false;
       else
          -- close all the pipe file descriptors.  We've copied the ones
          -- we need with dup2.
          closePipeline; -- or close-on-exec
          if trace then
-	    put_trace( to_string( fullPath ) &
-	       " input attached to output end of pipe fd" & 
-	       pipeStack( pipeStackTop )( outOfPipe )'img );
+            put_trace( to_string( fullPath ) &
+               " input attached to output end of pipe fd" &
+               pipeStack( pipeStackTop )( outOfPipe )'img );
          end if;
          spawnCommandOrRunBuiltin(
             cmd, paramToken, fullPath, ap, noReturn => false,
@@ -651,8 +651,8 @@ begin
             goto retry5;
          end if;
          err( "internal error: unable to restore old stdin: " &
-	    " unable to dup2(" & oldStdin'img & "," &
-	    stdin'img & "): errno " & C_errno'img );
+            " unable to dup2(" & oldStdin'img & "," &
+            stdin'img & "): errno " & C_errno'img );
       end if;
 <<retry6>>
       closeResult := close( oldStdin );        -- discard original stdin copy
@@ -742,7 +742,7 @@ begin
                   goto retrydupout;
                end if;
                err( "unable to dup2 the pipe for " & to_string( cmd ) &
-		  " input: errno " & C_errno'img );
+                  " input: errno " & C_errno'img );
                Success := false;
                return;
             end if;
@@ -760,38 +760,38 @@ begin
                   goto retrydupin;
                end if;
                err( "unable to dup2 the pipe for " & to_string( cmd ) &
-		  " output: errno " & C_errno'img );
+                 " output: errno " & C_errno'img );
                Success := false;
                return;
             end if;
-	    -- close all the pipe file descriptors.  We've copied the ones
-	    -- we need with dup2.
-	    closePipeline; -- or close-on-exec
+            -- close all the pipe file descriptors.  We've copied the ones
+            -- we need with dup2.
+            closePipeline; -- or close-on-exec
 
             if trace then
-	       put_trace( to_string( fullPath ) &
-	         " input attached to output end of pipe fd" &
-	         pipeStack( pipeStackTop-1 )( outOfPipe )'img );
-	       put_trace( to_string( fullPath ) &
-	         " output attached to input end of pipe fd" &
-	         pipeStack( pipeStackTop )( intoPipe )'img );
+               put_trace( to_string( fullPath ) &
+                 " input attached to output end of pipe fd" &
+                 pipeStack( pipeStackTop-1 )( outOfPipe )'img );
+               put_trace( to_string( fullPath ) &
+                 " output attached to input end of pipe fd" &
+                 pipeStack( pipeStackTop )( intoPipe )'img );
             end if;
 
             spawnCommandOrRunBuiltin(
                cmd, paramToken, fullPath, ap, noReturn => true,
                success => success );
             -- should never return, but...bail out of shell child process
-	    error_found := true;
+            error_found := true;
          else
-	    newJob.pid := myPID;
-	    newJob.cmd := cmd;
-	    newJob.status := running;
-	    newJob.quiet := true;
-	    jobList.Insert( jobs, newJob );
+            newJob.pid := myPID;
+            newJob.cmd := cmd;
+            newJob.status := running;
+            newJob.quiet := true;
+            jobList.Insert( jobs, newJob );
             Success := true;
          end if;
       else
-	 err( "internal error: pipelines must be run in background" );
+         err( "internal error: pipelines must be run in background" );
       end if;
    end if;
 end run_bothpipe;
@@ -830,11 +830,11 @@ begin
      wait( pid, status );
      exit when pid = -1 and C_errno /= EINTR;
      for i in 1..jobList.Length( jobs ) loop
-	 jobList.Find( jobs, i, oldJob );
-	 if oldJob.pid = pid then
-	    jobList.Clear( jobs, i );
-	    exit;
-	 end if;
+         jobList.Find( jobs, i, oldJob );
+         if oldJob.pid = pid then
+            jobList.Clear( jobs, i );
+            exit;
+         end if;
      end loop;
      if not oldJob.quiet then
         put_line( oldJob.cmd &" (" & pid'img & ") is finished" );
@@ -888,28 +888,28 @@ begin
       C_reset_errno;
       waitpid( result, job.pid, status, WNOHANG+WUNTRACED );
       if result = -1 and C_errno = EINTR then       -- interrupted syscall?
-	 goto retry;                              -- retry it
+         goto retry;                              -- retry it
       elsif result = -1 and C_errno /= ECHILD then  -- error if any error
-	 err( "waitpid: error #" & C_errno'img );   -- execpt ECHILD
+         err( "waitpid: error #" & C_errno'img );   -- execpt ECHILD
       elsif result = -1 then                      -- no such job? (ECHILD)
          jobList.Clear( jobs, i );                -- then it's done
-	 if not job.quiet then
+          if not job.quiet then
             put_line( job.cmd &" (" & job.pid'img & ") has finished" );
          end if;
       elsif result = 0 then                       -- unable to get status?
-	if job.status /= running then             -- show status on a change
-	   if not job.quiet then
+         if job.status /= running then            -- show status on a change
+            if not job.quiet then
               put_line( job.cmd &" (" & job.pid'img & ") is running" );
-           end if;
-        end if;
-        job.status := running;                    -- still running
+            end if;
+         end if;
+         job.status := running;                   -- still running
       elsif result /= 0 then                      -- able to get status?
-	if job.status /= stopped then             -- show status on a change
-	   if not job.quiet then
+         if job.status /= stopped then            -- show status on a change
+            if not job.quiet then
               put_line( job.cmd &" (" & job.pid'img & ") has stopped" );
-           end if;
-        end if;
-        job.status := stopped;                    -- probably stopped
+            end if;
+         end if;
+         job.status := stopped;                   -- probably stopped
       end if;
   end loop;
 end updateJobStatus;
@@ -927,11 +927,11 @@ begin
          put( oldJob.cmd &" (" & oldJob.pid'img & ") is " );
          case oldJob.status is
          when running =>
-	   put_line( "running" );
+           put_line( "running" );
          when stopped =>
-	   put_line( "stopped" );
+           put_line( "stopped" );
          when others =>
-	   put_line( "unknown status" );
+           put_line( "unknown status" );
          end case;
       end if;
   end loop;

@@ -477,11 +477,15 @@ procedure ParseOutParameter( ref : out reference; defaultType : identifier ) is
 begin
   if identifiers( token ).kind = new_t and not onlyAda95 and not restriction_no_auto_declarations and not error_found and (inputMode = interactive or inputMode = breakout) then
      ParseNewIdentifier( ref.id );
-     identifiers( ref.id ).kind := defaultType;
-     identifiers( ref.id ).class := otherClass;
-     put_trace( "Assuming " & to_string( identifiers( ref.id ).name ) &
-         " is a new " & to_string( identifiers( defaultType ).name ) &
-         " variable" );
+     if index( identifiers( ref.id ).name, "." ) /= 0 then
+        err( "Identifier not declared.  Cannot auto-declare a record field" );
+     else
+        identifiers( ref.id ).kind := defaultType;
+        identifiers( ref.id ).class := otherClass;
+        put_trace( "Assuming " & to_string( identifiers( ref.id ).name ) &
+            " is a new " & to_string( identifiers( defaultType ).name ) &
+            " variable" );
+     end if;
   else
      ParseIdentifier( ref.id );
   end if;
@@ -1912,8 +1916,8 @@ begin
            if uniTypesOk( castType, kind ) then
               kind := castType;
               if isExecutingCommand then
-	         --f := castToType( to_numeric( f ), kind );
-	         f := castToType( f, kind );
+                 --f := castToType( to_numeric( f ), kind );
+                 f := castToType( f, kind );
               end if;
            end if;
         elsif identifiers( getBaseType( t ) ).list then        -- array(index)?
@@ -2090,7 +2094,7 @@ begin
                      term := castToType(
                         to_numeric( term ) *
                         to_numeric( pterm2 ),
-		       term_type );
+                     term_type );
                   end if;
                  exception when program_error =>
                     err( "program_error exception raised" );
@@ -2105,7 +2109,7 @@ begin
                      term := castToType(
                         to_numeric( term ) /
                         to_numeric( pterm2 ),
-		       term_type );
+                     term_type );
                   end if;
                  exception when program_error =>
                     err( "program_error exception raised" );
@@ -2122,7 +2126,7 @@ begin
                         long_float(
                         long_long_integer( to_numeric( term ) ) mod
                         long_long_integer( to_numeric( pterm2 ) ) ),
-		       term_type );
+                     term_type );
                   end if;
                 exception when program_error =>
                    err( "program_error exception raised" );
@@ -2139,7 +2143,7 @@ begin
                         long_float(
                         long_long_integer( to_numeric( term ) ) rem
                         long_long_integer( to_numeric( pterm2 ) ) ),
-		       term_type );
+                     term_type );
                   end if;
                 exception when program_error =>
                    err( "program_error exception raised" );
@@ -2265,7 +2269,7 @@ begin
                      se := castToType(
                         to_numeric( se ) +
                         to_numeric( term2 ),
-		       expr_type );
+                     expr_type );
                   end if;
                 exception when program_error =>
                    err( "program_error exception raised" );
@@ -2280,7 +2284,7 @@ begin
                      se := castToType(
                         to_numeric( se ) -
                         to_numeric( term2 ),
-		       expr_type );
+                     expr_type );
                   end if;
                 exception when program_error =>
                    err( "program_error exception raised" );
@@ -3149,7 +3153,7 @@ begin
               lf : long_float;
            begin
               lf := to_numeric( expr_value );
-	      -- handle integer types
+              -- handle integer types
               expr_value := castToType( lf, type_token );
            exception when program_error =>
               err( "program_error exception raised" );
@@ -3408,7 +3412,7 @@ begin
   -- gracefully if an exit statement is encountered.  All of this
   -- makes handling this statement more complicated than you might
   -- think.
- 
+
   -- if expr then statements
 
   expect( if_t );                                          -- "if"
@@ -3928,7 +3932,7 @@ begin
          err( "typeset with array types not yet implemented" );
       else
          begin
-            identifiers( id ).value := castToType( 
+            identifiers( id ).value := castToType(
                identifiers( id ).value, typeid );
             identifiers( id ).kind := typeid;
          exception when others =>
@@ -3976,31 +3980,31 @@ procedure ParseShellWord( wordList : in out shellWordList.List; First : boolean 
 -- these should be global
 semicolon_string : constant unbounded_string := to_unbounded_string( ";" );
 --   semi-colon, as an unbounded string
-                                                                                
+
 verticalbar_string : constant unbounded_string := to_unbounded_string( "|" );
 --   vertical bar, as an unbounded string
-                                                                                
+
 ampersand_string : constant unbounded_string := to_unbounded_string( "&" );
 --   ampersand, as an unbounded string
-                                                                                
+
 redirectIn_string : constant unbounded_string := to_unbounded_string( "<" );
 --   less than, as an unbounded string
-                                                                                
+
 redirectOut_string : constant unbounded_string := to_unbounded_string( ">" );
 --   greater than, as an unbounded string
-                                                                                
+
 redirectAppend_string : constant unbounded_string := to_unbounded_string( ">>" );
 --   double greater than, as an unbounded string
-                                                                                
+
 redirectErrOut_string : constant unbounded_string := to_unbounded_string( "2>" );
 --   '2' + greater than, as an unbounded string
-                                                                                
+
 redirectErrAppend_string : constant unbounded_string := to_unbounded_string( "2>>" );
 --   '2' + double greater than, as an unbounded string
-                                                                                
+
 redirectErr2Out_string : constant unbounded_string := to_unbounded_string( "2>&1" );
 --   '2' + greater than + ampersand and '1', as an unbounded string
-                                                                                
+
 itself_string : constant unbounded_string := to_unbounded_string( "@" );
 --   itself, as an unbounded string
 
@@ -4101,14 +4105,14 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
   -- mark retroactively.
     if addExpansionSQuote then
         word := word & "'";
-	addExpansionSQuote := false;
+        addExpansionSQuote := false;
     end if;
     if addExpansionDQuote then
         word := word & ASCII.Quotation;
-	addExpansionDQuote := false;
+        addExpansionDQuote := false;
     end if;
   end dollarExpansion;
-  
+
   -- parseShellWord: pathnameExpansion
   --
   -- Perform shell pathname expansion by using the shell word as a glob
@@ -4116,7 +4120,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
   -- words created by the expansion.
   --
   -- Note: file name length is limited to 256 characters.
-    
+
   procedure pathnameExpansion( word, pattern : unbounded_string; list : in out shellWordList.List ) is
     globCriteria : regexp;
     currentDir   : Dir_Type;
@@ -4159,15 +4163,15 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
       exit when fileNameLen = 0;
       if Match( fileName(1..fileNameLen ) , globCriteria ) then
          if noDir then
-	    shellWordList.Queue( list, aShellWord'(
-	       normalWord,
-	       pattern,
-	       to_unbounded_string( fileName( 1..fileNameLen ) ) ) );
+            shellWordList.Queue( list, aShellWord'(
+               normalWord,
+               pattern,
+               to_unbounded_string( fileName( 1..fileNameLen ) ) ) );
          else
-	    shellWordList.Queue( list, aShellWord'(
-	       normalWord,
-	       pattern,
-	       to_unbounded_string( dirpath & directory_delimiter & fileName( 1..fileNameLen ) ) ) );
+            shellWordList.Queue( list, aShellWord'(
+               normalWord,
+               pattern,
+               to_unbounded_string( dirpath & directory_delimiter & fileName( 1..fileNameLen ) ) ) );
          end if;
          found := true;
       end if;
@@ -4177,7 +4181,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
        shellWordList.Queue( list, aShellWord'( normalWord, pattern, word ) );
     end if;
     if isOpen then
-       close( currentDir );    
+       close( currentDir );
     end if;
   exception when ERROR_IN_REGEXP =>
     -- The globbing expression may be bad.  For example,
@@ -4193,12 +4197,12 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
     -- Now, queue the shell word as the word just counts as-is.
     shellWordList.Queue( list, aShellWord'( normalWord, pattern, word ) );
     if isOpen then
-       close( currentDir );    
+       close( currentDir );
     end if;
   when DIRECTORY_ERROR =>
     err( "directory error on directory " & dirPath );
   end pathnameExpansion;
- 
+
 begin
 
   word := null_unbounded_string;
@@ -4211,7 +4215,7 @@ begin
 
   -- ignoreTerminatingWhitespace is a workaround and should be redone.  We
   -- need one word but expand the items in the word (for SQL).
-  
+
   if token = sql_word_t then
      shell_word := identifiers( token ).value;
      ignoreTerminatingWhitespace := true;                -- word contains space
@@ -4346,11 +4350,11 @@ begin
        end if;
        inDQuote := not inDQuote;                             -- toggle " flag
        if not stripQuoteMarks then                           -- SQL word?
-	  if inDollar then                                   -- in an exp?
-	     addExpansionDQuote := true;                     -- add after exp
+          if inDollar then                                   -- in an exp?
+             addExpansionDQuote := true;                     -- add after exp
           else                                               -- else
              word := word & """";                            -- add quote now
-	  end if;
+          end if;
        end if;
        escapeGlobs := inDQuote;                              -- inside? do esc
 
@@ -4364,11 +4368,11 @@ begin
        end if;
        inSQuote := not inSQuote;                             -- toggle ' flag
        if not stripQuoteMarks then                           -- SQL word?
-	  if inDollar then                                   -- in an exp?
-	     addExpansionSQuote := true;                     -- add after exp
-	  else                                               -- else
-	     word := word & "'";                             -- add quote now
-	  end if;
+          if inDollar then                                   -- in an exp?
+             addExpansionSQuote := true;                     -- add after exp
+          else                                               -- else
+             word := word & "'";                             -- add quote now
+          end if;
        end if;
        escapeGlobs := inSQuote;                              -- inside? do esc
 
@@ -4491,13 +4495,13 @@ begin
 
   -- These should never occur because of the tokenizing process, but
   -- to be safe there should be no open quotes.
-                                                                                
+
   if inSQuote then
      err( "Internal error: missing single quote mark" );
   elsif inDQuote then
      err( "Internal error: missing double quote mark" );
   end if;
- 
+
   -- process special characters
 
   for i in 1..length( word ) loop
@@ -4508,9 +4512,9 @@ begin
       end if;
 
   end loop;
- 
+
   -- Don't expand pathname during syntax check
- 
+
   if isExecutingCommand then
      pathnameExpansion( word, pattern, wordList );
 
@@ -4864,7 +4868,7 @@ begin
      end if;
 
      param_no := 1;
-     loop 
+     loop
          declareActualParameter(
             actual_param_t,
             proc_id,
@@ -5474,10 +5478,10 @@ procedure ParseShellCommand is
      for i in 1..len loop
          shellWordList.Find( list, long_integer( i ), theWord );
          ap( i ) := new string( 1..positive( length( theWord.word ) + 1 ) );
-	 ap( i ).all := to_string( theWord.word ) & ASCII.NUL;
+         ap( i ).all := to_string( theWord.word ) & ASCII.NUL;
      end loop;
-  end externalCommandParameters; 
-  
+  end externalCommandParameters;
+
   procedure checkRedirectFile is
     -- Check for a missing file for a redirection operator.  If a file
     -- was expected (according to the flags) but has not appeared, show
@@ -5494,16 +5498,16 @@ procedure ParseShellCommand is
 
   wordList   : shellWordList.List;
   shellWord  : aShellWord;
- 
+
   itselfNext : boolean := false;  -- true if a @ was encountered
- 
+
 begin
 
   -- ParseGeneralStatement just did a resumeScanning.  The token should
   -- still be set to the value of the first word.
 
    -- Loop for all commands in a pipeline.
-   
+
 <<next_in_pipeline>>
   -- Reset parsing variables related to a single command
 
@@ -5535,8 +5539,8 @@ begin
      markScanner( firstParam );                          -- save position
      while not error_found and token /= eof_t loop       -- count parameters
         ParseExpression( expr_val, expr_type );
-	shellWordList.Queue( wordList, aShellWord'( normalWord, expr_val, expr_val ) );
-	paramCnt := paramCnt + 1;
+        shellWordList.Queue( wordList, aShellWord'( normalWord, expr_val, expr_val ) );
+        paramCnt := paramCnt + 1;
         if Token = symbol_t and then identifiers( Token ).value = "," then
            getNextToken;
         else
@@ -5546,7 +5550,7 @@ begin
      expect( symbol_t, ")" );
      if token = symbol_t and identifiers( token ).value = "|" then
         pipe2Next := true;
-	getNextToken;
+        getNextToken;
      end if;
      if pipe2Next and onlyAda95 then
         err( "pipelines are not allowed with " & optional_bold( "pragma ada_95" ) );
@@ -5564,7 +5568,7 @@ begin
   else
 
     -- Bourne shell parameters
-    
+
      -- discardUnusedIdentifier( token );
     -- Shell-style parameters.  Read a series of "words", counting the params.
     -- Generate an argument list of the correct length and repeat "for real".
@@ -5922,7 +5926,7 @@ begin
   end if;
 
   -- End of Parameter Parsing
-  
+
   -- At this point, only the command parameters should remain the word list.
   -- The input/output redirection are in place.  Declare the parameters and
   -- execute the command.
@@ -6082,7 +6086,7 @@ end ParseShellCommand;
 -- uses this procedure directly is the prompt script because the byte code
 -- is saved.
 --
--- BUGS: SHOULD BE REWRITTEN TO USE PIPES INSTEAD OF TEMP FILE
+-- TODO: SHOULD BE REWRITTEN TO USE PIPES INSTEAD OF TEMP FILE
 -- based on interpretScript
 -----------------------------------------------------------------------------
 
@@ -6194,7 +6198,7 @@ begin
            end if;
         end if;
      end if;
-  -- elsif not syntax_check then                              -- 
+  -- elsif not syntax_check then                              --
   --    close( resultFile );
   end if;                                                  -- still executing
   restoreScript( scriptState );                            -- original script
@@ -6398,12 +6402,16 @@ begin
 
   if inputMode = interactive or inputMode = breakout then
      if identifiers( var_id ).kind = new_t and not onlyAda95 and not restriction_no_auto_declarations and not error_found then
-        var_kind := right_type;
-        identifiers( var_id ).kind := right_type;
-        identifiers( var_id ).class := otherClass;
-        put_trace( "Assuming " & to_string( identifiers( var_id ).name ) &
-           " is a new " & to_string( identifiers( right_type ).name ) &
-           " variable" );
+        if index( identifiers( var_id ).name, "." ) /= 0 then
+           err( "Identifier not declared.  Cannot auto-declare a record field" );
+        else
+           var_kind := right_type;
+           identifiers( var_id ).kind := right_type;
+           identifiers( var_id ).class := otherClass;
+           put_trace( "Assuming " & to_string( identifiers( var_id ).name ) &
+              " is a new " & to_string( identifiers( right_type ).name ) &
+              " variable" );
+        end if;
       end if;
   end if;
   if baseTypesOk( var_kind, right_type ) then
@@ -6416,7 +6424,7 @@ begin
         begin
            if isExecutingCommand then
               lf := to_numeric( expr_value );
-	      -- handle integer types
+              -- handle integer types
               expr_value := castToType( lf, var_kind );
            end if;
         exception when others =>
