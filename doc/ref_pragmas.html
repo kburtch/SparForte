@@ -73,6 +73,7 @@ environment.</p>
   <b>pragma</b> restriction( no_memcache )
   <b>pragma</b> restriction( no_mysql_database )
   <b>pragma</b> restriction( no_postgresql_database )
+  <b>pragma</b> software_model( model_name )
   <b>pragma</b> template( css|html|js|json|text|wml|xml [, path] )
   <b>pragma</b> test( `commands` )
   <b>pragma</b> test_result( condition )
@@ -127,7 +128,9 @@ license for the script.  license_name can be:<br>
 </ul>
 If extra exists, it is a string further describing the license (for example,
 commercial/"trial license" or commercial/"15 users".  The extra string
-can also be a URL to a complex license.<br>
+can also be a URL to a complex license.
+Only one license is permitted.  The name can be read from the
+System package.<br>
 <u>GCC Ada</u>: unrestricted, gpl and unrestricted are recognized by Ada.  It
 doesn't support the extra string.  It treats these as levels and will
 try to validate license compatibility where possible.</li>
@@ -157,8 +160,36 @@ other programs from using MySQL.</li>
   <li> <b>pragma restriction( no_postgresql_database )</b> - disable
 connections to a PostgreSQL database.  Doesn't prevent the psql client or
 other programs from using PostgreSQL.</li>
+  <li> <b>pragma software_model( model_name )</b> - declare the general
+software pattern or model best describing this script. model_name can
+be:<br>
+<ul>
+<li><b>application_desktop</b> - a mouse-and-windows application</li>
+<li><b>application_mobile</b> - application for a small device</li>
+<li><b>application_realtime</b> - an application with strict time constraints</li>
+<li><b>application_realtime_ravenscar</b> - an application with strict time constraints adhering to the Ravenscar model</li>
+<li><b>daemon</b> - a server that is not an HTTP server</li>
+<li><b>daemon_proxy</b> - a server proxy that is not an HTTP proxy</li>
+<li><b>http_framework</b> - a web development library</li>
+<li><b>http_service_external</b> - public facing web service</li>
+<li><b>http_service_internal</b> - private web service</li>
+<li><b>http_site_external</b> - public facing web site or page</li>
+<li><b>http_site_internal</b> - private/intranet web site or page</li>
+<li><b>http_proxy</b> - a web service to direct or cache requests</li>
+<li><b>http_form</b> - a web script to do data entry</li>
+<li><b>package</b> - a library</li>
+<li><b>shell_batch</b> - a script to control a process</li>
+<li><b>shell_filter_script</b> - a script that uses standard input and output to transform data</li>
+<li><b>shell_report_script</b> - a script generating text reports</li>
+<li><b>shell_script</b> - that is, a command script</li>
+<li><b>multimedia</b> - media players or games</li>
+<li><b>etl</b> - extract, transform, load.  that is, data conversion</li>
+<li><b>monitor</b> - a service that monitors activity</li>
+<li><b>driver</b> - a device driver</li>
 </ul>
-
+</ul>
+Only one software model is permitted.  The name can be read from the
+System package.<br>
 <h4>Debugging Pragmas</h4>
 
 <p>Interpreter directives used to investigate problems in the source
@@ -227,7 +258,7 @@ command on a script.  Type type of annotation field can be:
 <li><b>modified</b> - when the script was last modified</li>
 <li><b>param</b> - description of a parameter to the script</li>
 <li><b>return</b> - return value</li>
-<li><b>see also</b> - a reference to another document or script</li>
+<li><b>see_also</b> - a reference to another document or script</li>
 <li><b>summary</b> - a short description of what the script does</li>
 <li><b>todo</b> - unfinished work</li>
 <li><b>version</b> - the version of the script</li>

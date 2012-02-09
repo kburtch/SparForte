@@ -113,3 +113,19 @@ numerics.sdbm_hash_of.  Backported from Bush 2.0.
 
 48. New: New examples: gray.sp
 
+49. New: pragma software_model and System.Script_Software_Model - set and read
+the software model name in a running script
+
+50. Fix: pragma annotate( see also,... ) now pragma annotate( see_also,...)
+
+51. Fix: no longer auto-declare identifiers containing a period.
+
+52. Fix: semicolon( ';' ) as a command name produces a "statement expected"
+error instead of being treated as a legitimate command name.
+
+53. Fix: without-mysql/without-postgres - configure substitutes correct libraries im
+GNUmakefile.
+
+54. Change: cd displays "cannot access" rather than "no such path", bringing
+it in line with Bash but also more accurate error message.
+

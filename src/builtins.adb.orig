@@ -188,7 +188,7 @@ begin
         identifiers( pwd ).value := current_working_directory;
      end if;
   else
-     err( "No such path '" & to_string( path ) & "'" );
+     err( "cannot access '" & to_string( path ) & "'" );
   end if;
   if showPath then
      put_line( current_working_directory );

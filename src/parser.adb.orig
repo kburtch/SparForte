@@ -7250,6 +7250,8 @@ begin
      -- a script could be a single comment without a ;
   elsif Token = symbol_t and identifiers( token ).value = "@" then
      err( "@ must appear after a command or in an assignment expression" );
+  elsif Token = symbol_t and identifiers( token ).value = ";" then
+     err( "statement expected" );
   elsif not identifiers( Token ).deleted and identifiers( Token ).list then     -- array variable
      resumeScanning( cmdStart );           -- assume array assignment
      ParseAssignment;                      -- looks like a AdaScript command
@@ -7539,6 +7541,14 @@ begin
     -- fix spacing is not smart enough to remove double spaces inside a cmd.
     -- the cmd may have quotes and spaces may be significant
     fixSpacing( command, inside => false );             -- strip leading/trailing spaces
+    -- add an ending ; if one is missing.
+    --
+    -- in order to do this, we have to take into account a comment (if any).
+    -- however, we haven't tokenized the string yet so how do we tell if
+    -- a double-minus is quoted or not?  it's not possible to do it easily.
+    -- I could add a LF plus ; but then it will appear to be a missing
+    -- statement if a ; is actually there before a comment.
+    -- so we'll just check for an ending ; and add one if it is not there.
     if length( command ) > 0 then                       -- something there?
        if Element( command, length( command ) ) /= ';' then -- missing ending ;?
           command := command & ";";                     -- it's implicit so add it

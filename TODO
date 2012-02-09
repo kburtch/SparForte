@@ -56,6 +56,8 @@ ISSUES (AdaScript)
     - enumerateds should be upper-case, if this doesn't conflict with type-
       sensitivity
     - byte code changed to support more compressed reserved words
+    - vim syntax - $$ doesn't work
+    - unreachable code error doesn't indent token hilight properly
 
   * assignments
     - naturals and positives compatibility (intTypesOK) not handled at

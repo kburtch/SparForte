@@ -72,6 +72,7 @@ The following software packages are required for SparForte:
    - Debian/Linux - apt-get install package-name (visit packages.debian.org
      for a list of available packages)
    - FreeBSD - pkg_add package-name
+   - Pre-build versions of SDL_image are available from www.libsdl.org 
 
   The package name depends on your operating system.  For example:
 
