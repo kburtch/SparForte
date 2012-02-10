@@ -591,6 +591,24 @@ else
    HAS_POSTGRES=""
    echo "no"
 fi
+#if [ -n "$HAS_POSTGRES" ] ; then
+#   echo -n "checking for postgresql configuration (Linux)..."
+#   TMP=`/sbin/ldconfig -p 2>/dev/null | grep libxslt`
+#   if [ -z "$TMP" ] ; then
+#      echo "no"
+#      echo -n "checking for postgresql configuration (FreeBSD)..."
+#      TMP=`/sbin/ldconfig -r 2>/dev/null | grep libxslt`
+#      if [ -z "$TMP" ] ; then
+#         echo "no"
+#         echo "OpenSuSE (maybe other systems) link with libxslt unnecessarily"
+#         exit 192
+#      else
+#         echo "yes"
+#      fi
+#   else
+#      echo "yes"
+#   fi
+#fi
 echo -n "checking for mysql (mysql_config)..."
 if [ -z "$NO_MYSQL" ] ; then
    HAS_MYSQL=1
@@ -812,15 +830,19 @@ chmod 444 parser_mysql.adb
 # Create a new makefile by substituting optional libraries and configuration
 # options into the file with sed.
 
-if [ \( ! -z "$HAS_MYSQL" \) -a \( ! -z "$HAS_POSTGRES" \) ] ; then
-   APQMAKESUB='$(MAKE) -C apq-2.1\/'
-else
+if [ \( -z "$HAS_MYSQL" \) -a \( -z "$HAS_POSTGRES" \) ] ; then
    APQMAKESUB="@echo \"Disabled\""
+else
+   APQMAKESUB='$(MAKE) -C apq-2.1\/'
 fi
 if [ -z "$HAS_POSTGRES" ] ; then
    PGLIBSSUB=""
 else
    PGLIBSSUB="`pg_config --libdir` `pg_config --libs`"
+   # There is a known bug with pg_config in that it reports the compiling
+   # libraries for the PostgreSQL server, not libpg.  So it reports more
+   # libraries than we need.
+   PGLIBSSUB=`echo "$PGLIBSSUB" | sed 's/\ \-lxslt//g;s/\ \-lxml2//g;s/\ \-lkrb5//g;s/\ \-lgssapi_krb5//g;s/\ \-lcom_err//g;s/\ \-lcrypto//g;s/\ \-lcrypt//g'`
    PGLIBSSUB=`echo "-L""$PGLIBSSUB" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 fi
 if [ -z "$HAS_MYSQL" ] ; then
@@ -829,7 +851,10 @@ else
    MYSQLLIBSSUB="`mysql_config --libs`"
    MYSQLLIBSSUB=`echo "$MYSQLLIBSSUB" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 fi
-APQLIBSSUB='-L.\/apq-2.1\/ .\/apq-2.1\/c_mysql.o'
+APQLIBSSUB='-L.\/apq-2.1\/ '
+if [ -n "$HAS_MYSQL" ] ; then
+   APQLIBSSUB="$APQLIBSSUB"' .\/apq-2.1\/c_mysql.o'
+fi
 APQINCLSSUB='-I.\/apq-2.1\/ '
 if [ -z "$HAS_POSTGRES" ] ; then
    if [ -z "$HAS_MYSQL" ] ; then

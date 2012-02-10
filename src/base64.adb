@@ -118,25 +118,25 @@ package body Base64 is
     end loop;
   end Encode;
 
-   function Encode_Length(Length : Ada.Streams.Stream_Element_Offset) return 
-        Natural 
+   function Encode_Length(Length : Ada.Streams.Stream_Element_Offset) return
+        Natural
     is
         use type Ada.Streams.Stream_Element_Offset;
         Output_Quad_Count : constant Natural := (Natural(Length) + 2) / 3;
         Output_Byte_Count : constant Natural := 4 * Output_Quad_Count;
-        Result : constant Natural := Output_Byte_Count + 
+        Result : constant Natural := Output_Byte_Count +
                 2 * (Output_Byte_Count / 76);
      begin
         if Output_Byte_Count mod 76 = 0 then
             return Result - 2;
-        else 
+        else
             return Result;
         end if;
     end Encode_Length;
 
     procedure Decode_Length(Source        : in     String;
                             Source_Last   :    out Natural;
-                            Target_Length :    out 
+                            Target_Length :    out
                                   Ada.Streams.Stream_Element_Offset;
                             Complete      :    out Boolean) is
         Valid_Char_Count : Natural; -- range 0 .. Source'Length
@@ -150,11 +150,11 @@ package body Base64 is
         Cur_Index := Source'First;
         while Cur_Index <= Source'Last and then
             Source(Cur_Index) /= '=' and then
-            Source(Cur_Index) /= '-' 
+            Source(Cur_Index) /= '-'
         loop
-            -- Odd if condition, because we use the same value 
+            -- Odd if condition, because we use the same value
             -- for 'A' as we do for "Nope!"
-            if Source(Cur_Index) = 'A' or 
+            if Source(Cur_Index) = 'A' or
                     From_String(Source(Cur_Index)) /= 0 then
                 Valid_Char_Count := Valid_Char_Count + 1;
                 if Valid_Char_Count mod 4 = 0 then
@@ -188,10 +188,10 @@ package body Base64 is
     String_Buffer_Last : Natural range 0 .. Base64.Characters_Per_Line;
     use type Ada.Streams.Stream_Element_Offset;
   begin
-    while not Ada.Streams.Stream_Io.End_Of_File(From) loop 
+    while not Ada.Streams.Stream_Io.End_Of_File(From) loop
         Ada.Streams.Stream_Io.Read(From, Octet_Buffer, Octet_Buffer_Last);
           -- You never get short reads from Stream_Io.Read
-        Base64.Encode(Octet_Buffer(1..Octet_Buffer_Last), String_Buffer, 
+        Base64.Encode(Octet_Buffer(1..Octet_Buffer_Last), String_Buffer,
               String_Buffer_Last);
         Ada.Text_Io.Put_Line(To, String_Buffer(1..String_Buffer_Last));
     end loop;

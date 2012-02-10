@@ -51,11 +51,11 @@ begin
      end if;
      exit when amountRead /= 1 or ch = ASCII.LF;
      if ch = ASCII.CR then -- ignore carriage returns (not Mac friendly)
-	goto reread;
+        goto reread;
      end if;
      if bufpos > buffer'last then
         lineptr.all := lineptr.all & string( buffer );
-	bufpos := 1;
+        bufpos := 1;
      end if;
      buffer( bufpos ) := ch;
      bufpos := bufpos + 1;

@@ -511,7 +511,7 @@ begin
      exit when element( s, i ) = ' ';
      i := i-1;
   end loop;
-  if i > length( s ) then 
+  if i > length( s ) then
      left := s;
      right := null_unbounded_string;
      return;
@@ -540,16 +540,16 @@ begin
   end if;
   for i in 1..length( s ) loop
       if Element( s, i ) = delimiter then
-	 delimCnt := delimCnt + 1;
-	 if delimCnt = f then
-	    begin
-	      returnStr := to_unbounded_string( Slice( s, firstPos, i-1 ) );
+         delimCnt := delimCnt + 1;
+         if delimCnt = f then
+            begin
+              returnStr := to_unbounded_string( Slice( s, firstPos, i-1 ) );
             exception when others =>
-	      returnStr := null_unbounded_string;
+              returnStr := null_unbounded_string;
             end;
-	    return returnStr;
+            return returnStr;
          end if;
-	 firstPos := i+1;
+         firstPos := i+1;
       end if;
   end loop;
   if delimCnt+1 < f then
@@ -585,16 +585,16 @@ begin
   end if;
   for i in 1..length( s ) loop
       if Element( s, i ) = delimiter and not inQuotes then
-	 delimCnt := delimCnt + 1;
-	 if delimCnt = f then
-	    begin
-	      returnStr := stripQuotes( Slice( s, firstPos, i-1 ) );
+         delimCnt := delimCnt + 1;
+         if delimCnt = f then
+            begin
+              returnStr := stripQuotes( Slice( s, firstPos, i-1 ) );
             exception when others =>
-	      returnStr := null_unbounded_string;
+              returnStr := null_unbounded_string;
             end;
-	    return returnStr;
+            return returnStr;
          end if;
-	 firstPos := i+1;
+         firstPos := i+1;
       elsif Element( s, i ) = '"' then
          inQuotes := not inQuotes;
       end if;
@@ -619,12 +619,12 @@ begin
   end if;
   for i in 1..length( s ) loop
       if Element( s, i ) = delimiter then
-	 delimCnt := delimCnt + 1;
-	 if delimCnt = f then
-	    lastPos := i-1;
-	    exit;
-	 end if;
-	 firstPos := i+1;
+         delimCnt := delimCnt + 1;
+         if delimCnt = f then
+            lastPos := i-1;
+            exit;
+         end if;
+         firstPos := i+1;
       end if;
   end loop;
   if delimCnt+1 < f then
@@ -664,12 +664,12 @@ begin
   end if;
   for i in 1..length( s ) loop
       if Element( s, i ) = delimiter and not inQuotes then
-	 delimCnt := delimCnt + 1;
-	 if delimCnt = f then
-	    lastPos := i-1;
-	    exit;
-	 end if;
-	 firstPos := i+1;
+         delimCnt := delimCnt + 1;
+         if delimCnt = f then
+            lastPos := i-1;
+            exit;
+         end if;
+         firstPos := i+1;
       elsif Element( s, i ) = '"' then
          inQuotes := not inQuotes;
       end if;
@@ -763,8 +763,9 @@ function getDateString( ct : ada.calendar.time ) return unbounded_string is
       end if;
       return tempStr;
    end to2digits;
- 
-   timeStr : unbounded_string;                                                                            
+
+   timeStr : unbounded_string;
+
 begin
 
    -- break up the time value

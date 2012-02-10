@@ -36,7 +36,7 @@ package Base64 is
 
   function Encode_Length(Length : Ada.Streams.Stream_Element_Offset)
     return Natural;
-  -- This returns the Last that will be returned by the Encode 
+  -- This returns the Last that will be returned by the Encode
   -- procedure for a stream element array with 'Length = Length.
   -- It basically encapsulates the calculation described under Encode,
   -- except adjusted for a final line 76 characters long not having a CRLF.
@@ -50,7 +50,7 @@ package Base64 is
 
   Octets_Per_Line : constant := (Characters_Per_Line / 4) * 3;
   -- If you are encoding a large stream in chunks with multiple calls
-  -- to Encode, use this. This is the number of octets that will fit on 
+  -- to Encode, use this. This is the number of octets that will fit on
   -- one line. You do not want to encode (for example) 18 octets, then
   -- try to concatenate the encoding of the next 18 octets, because you will
   -- be left with padding (or worse) in between. If you encode this many
@@ -61,7 +61,7 @@ package Base64 is
 
   procedure Decode_Length(Source        : in     String;
                           Source_Last   :    out Natural;
-                          Target_Length :    out 
+                          Target_Length :    out
                                 Ada.Streams.Stream_Element_Offset;
                           Complete      :    out Boolean);
   -- This procedure is useful for decoding a large base64 stream.
@@ -70,7 +70,7 @@ package Base64 is
   -- you should pass to Decode. For example, if the Source is 9 characters
   -- long, you would only want to pass in 8 to be decoded, since you should
   -- pass in multiples of four characters to Decode. Also, this will not
-  -- set Source_Last such that there are any '=' characters in 
+  -- set Source_Last such that there are any '=' characters in
   -- Source(Source'First..Source_Last) that are followed by any non-'='
   -- characters. It will also stop at the first '-' character, for the
   -- convenience of MIME decoders. Obviously, Source_Last <= Source'Last.
@@ -84,11 +84,11 @@ package Base64 is
   -- an '=' or '-' sign, then Complete is True. Otherwise, it is False,
   -- indicating that there might be more decoding needed.
   --
-  -- Generally, to use this, assuming Source starts at 1: 
-  -- Read a chunk of base64 character data, 
-  -- pass it to Decode_Length, 
-  -- allocate a stream element array of Target_Length size, 
-  -- decode Source(1..Source_Last) into it, 
+  -- Generally, to use this, assuming Source starts at 1:
+  -- Read a chunk of base64 character data,
+  -- pass it to Decode_Length,
+  -- allocate a stream element array of Target_Length size,
+  -- decode Source(1..Source_Last) into it,
   -- and save the decoded octets.
   -- Then Remainder := Source'Last - Source_Last;
   --      Source(1..Remainder) := Source(Source_Last..Source'Last);
@@ -110,7 +110,7 @@ package Base64 is
   -- that start with a hyphen. This allows for convenient MIME decoding.
   -- Any line not starting with a hyphen will be read in full.
   -- Any line with 1400 characters or more with raise a Constraint_Error.
-  -- Non-terminal lines that don't have a multiple of four valid 
+  -- Non-terminal lines that don't have a multiple of four valid
   -- characters will likely decode improperly, possibly without detection.
   -- A more robust implementation would read From one character at a time
   -- and use Decode_Length.

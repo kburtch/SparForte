@@ -39,7 +39,7 @@ package body signal_flags is
        put_line( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGWINCH handler" );
     end if;
   end startSignalFlags;
-  
+
   procedure shutdownSignalFlags is
   begin
     null;

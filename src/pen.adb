@@ -914,7 +914,7 @@ begin
      if theCanvas.pen.revealCount = 0 then
         SDL_UnlockSurface( theCanvas.surface  );
      end if;
-     
+
   when smear => -- not done
        null;
 
@@ -963,17 +963,17 @@ begin
      if theCanvas.pen.revealCount = 0 then
         SDL_UnlockSurface( theCanvas.surface  );
      end if;
-        
+
   end case;
   if theCanvas.pen.revealCount = 0 then
      -- res := SDL_Flip( theCanvas.surface );
      SDL_UpdateRect(
         theCanvas.surface,
-	svgah( theCanvas, r.left ),
-	svgav( theCanvas, r.top ),
-	Uint32( svgah( theCanvas, r.right ) -
-	   svgah( theCanvas, r.left ) + 1 ),
-	Uint32( svgav( theCanvas, r.bottom ) -
+        svgah( theCanvas, r.left ),
+        svgav( theCanvas, r.top ),
+        Uint32( svgah( theCanvas, r.right ) -
+           svgah( theCanvas, r.left ) + 1 ),
+        Uint32( svgav( theCanvas, r.bottom ) -
            svgav( theCanvas, r.top ) + 1 ) );
   end if;
 end frameRect;
@@ -1021,7 +1021,7 @@ begin
   end if;
 
   -- mix the colour to fill with
- 
+
   SDL_MapRGB( pixel,
               theCanvas.surface_ptr.format,
               SDL_RGB_Component( 255.0 * r / 100.0 ),
@@ -1029,7 +1029,7 @@ begin
               SDL_RGB_Component( 255.0 * b / 100.0 ) );
 
   -- different fills with different brushes
- 
+
   case theCanvas.pen.brush is
 
   when stretch => -- not complete
@@ -1180,7 +1180,7 @@ begin
   end if;
 
   -- different fills with different brushes
- 
+
   case theCanvas.pen.brush is
 
   when stretch => -- not complete
@@ -1293,7 +1293,7 @@ begin
   end if;
 end paintRect;
 
- 
+
 ---> FRAMED RECT
 --
 -- Fill in a rectangle with an arbitrary color and draw a frame with another
@@ -1593,7 +1593,7 @@ begin
   end if;
 
   -- mix the colour to fill with
- 
+
   SDL_MapRGB( pixel,
               theCanvas.surface_ptr.format,
               SDL_RGB_Component( 255.0 * r / 100.0 ),
@@ -2333,7 +2333,7 @@ begin
      return;
   end if;
   -- scaledSurface := SDL_SetVideoMode( scaled_x2, scaled_y2, Interfaces.C.int( theCanvas.displayInfo.C_Res ), SDL_SWSURFACE );
-put_line( "A" );
+--put_line( "A" );
   SDL_EXT_Get_Pixel_Masks( Interfaces.C.int( sourceCanvas.displayInfo.C_Res ), Rmask, Gmask, Bmask, Amask );
   scaledSurface := SDL_CreateRGBSurface( SDL_SWSURFACE, Interfaces.C.int( scaled_x2 ), Interfaces.C.int( scaled_y2 ), Interfaces.C.int( sourceCanvas.displayInfo.C_Res ), Rmask, Gmask, Bmask, Amask );
   surface_ptr := SDL_Surface_Conv.To_Pointer( scaledSurface );
@@ -2343,48 +2343,48 @@ put_line( "A" );
   end if;
   NoVerticalChange  := (source_y2 = scaled_y2);
   NoHorizontalChange:= (source_x2 = scaled_x2);
-put_line( "B" ); -- DEBUG
+--put_line( "B" ); -- DEBUG
 
   -- Copy the pixels
 
   if NoVerticalChange then
-put_line( "C1" );
+--put_line( "C1" );
      for y in 0..scaled_y2 loop
          for x in 0..scaled_x2 loop
-             SDL_EXT_Plot( scaledSurface, x, y, 
+             SDL_EXT_Plot( scaledSurface, x, y,
                 SDL_EXT_Raw_Pixel( sourceCanvas.surface, scaledSurface,
                 x * (scaled_x2/source_x2), y ), copy );
          end loop;
       end loop;
   elsif NoHorizontalChange then
-put_line( "C2" );
+--put_line( "C2" );
      for y in 0..scaled_y2 loop
          for x in 0..scaled_x2 loop
-             SDL_EXT_Plot( scaledSurface, x, y, 
+             SDL_EXT_Plot( scaledSurface, x, y,
                 SDL_EXT_Raw_Pixel( sourceCanvas.surface, scaledSurface,
                 x, y * (scaled_y2/source_y2) ), copy );
          end loop;
       end loop;
   else
-put_line( "C3 - right" );
+--put_line( "C3 - right" );
      for y in 0..scaled_y2 loop
          for x in 0..scaled_x2 loop
-             -- SDL_EXT_Plot( scaledSurface, x, y, 
+             -- SDL_EXT_Plot( scaledSurface, x, y,
              --    SDL_EXT_Raw_Pixel( sourceCanvas.surface, scaledSurface,
              --    x * (scaled_x2/source_x2), y * (scaled_y2/source_y2) ), copy );
              SDL_EXT_Plot( scaledSurface, x, y, 10240, copy );
          end loop;
       end loop;
   end if;
-put_line( "D" );
+--put_line( "D" );
 
   -- Draw stretched image
 
   source_range := SDL_Rect'( 0, 0, w => Uint16( scaled_x2 ), h => Uint16( scaled_y2 ) );
   -- target_range := SDL_Rect'( svgah( targetCanvas, target_x ), svgav( targetCanvas, target_y ) + SDL_VCoordinate( Uint16( scaled_y2 ) ), 0, 0 );
   target_range := SDL_Rect'( svgah( targetCanvas, target_x ), svgav( targetCanvas, target_y ), 0, 0 );
-put_line( "pattern source range = " & scaled_x2'img & scaled_y2'img );
-put_line( "screen target range = " & target_range.x'img & target_range.y'img & SDL_HCoordinate'image( target_range.x + scaled_x2 ) & SDL_VCoordinate'image(target_range.y + scaled_y2 ) );
+--put_line( "pattern source range = " & scaled_x2'img & scaled_y2'img );
+--put_line( "screen target range = " & target_range.x'img & target_range.y'img & SDL_HCoordinate'image( target_range.x + scaled_x2 ) & SDL_VCoordinate'image(target_range.y + scaled_y2 ) );
 SDL_EXT_Frame_Rect( targetcanvas.surface, target_range.x, target_range.y, target_range.x + scaled_x2, target_range.y + scaled_y2, -1, copy );
   -- res := SDL_UpperBlit( scaledSurface, source_range, targetCanvas.surface, target_range );
   res := SDL_UpperBlit( scaledSurface, source_range, targetCanvas.surface, target_range );
@@ -2394,11 +2394,11 @@ SDL_EXT_Frame_Rect( targetcanvas.surface, target_range.x, target_range.y, target
   end if;
 
   -- free scaled surface here else memory leak
-put_line( "E" );
+--put_line( "E" );
 
   -- SDL free's surfaces so we have a problem....
   -- SDL_FreeSurface( scaledSurface );
-put_line( "F" );
+--put_line( "F" );
      if SDL_Flip( targetCanvas.surface ) /= SDL_OK then
         null;
      end if;

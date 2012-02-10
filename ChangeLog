@@ -129,3 +129,9 @@ GNUmakefile.
 54. Change: cd displays "cannot access" rather than "no such path", bringing
 it in line with Bash but also more accurate error message.
 
+55. Fix: pg_config is called in configure but it returns the libraries used to
+build the PostgreSQL server, not to use libpq.  Many unnecessary libraries are
+required.  A patch has been made to use sed to remove the extra libraries.
+More libraries might be removable.  Also backported some APQ GNUmakefile stuff
+from Bush 2.0.
+
