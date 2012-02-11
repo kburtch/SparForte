@@ -75,7 +75,7 @@ procedure spawn( fullPath : unbounded_string; ap : argumentListPtr;
 -- Run a command.  If noreturn is true, the program never returns from
 -- this call.  Otherwise, a new process is forked and the program waits
 -- for the command to finish.
-     path       : string := To_String( fullPath ) & ASCII.NUL; 
+     path       : string := To_String( fullPath ) & ASCII.NUL;
      myPID      : aPID;                                    -- fork process id
      waitResult : aPID;                                    -- wait result
      execResult : integer;                                 -- exec result

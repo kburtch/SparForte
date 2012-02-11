@@ -178,7 +178,7 @@ begin
   end if;
 end Insert;
 
-procedure Insert( TheList : in out List ; atIndex : AListIndex; 
+procedure Insert( TheList : in out List ; atIndex : AListIndex;
    data : AListElement ) is
 -- insert a record into the list at the index & update the count
   NewRec : AListRecordPtr;
