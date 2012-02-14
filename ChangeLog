@@ -135,3 +135,6 @@ required.  A patch has been made to use sed to remove the extra libraries.
 More libraries might be removable.  Also backported some APQ GNUmakefile stuff
 from Bush 2.0.
 
+56. Fix: tab completion works properly on directories '.', './', '..' and
+'../'.  Also used Dir_Separator in user_io.adb for better O/S independence.
+

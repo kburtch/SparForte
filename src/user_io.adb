@@ -163,34 +163,50 @@ procedure getLine( line : out unbounded_string; keepHistory : boolean
     --put( displayInfo.col'img );
   end redrawLine;
 
-  function slashifyPath( dir, path : unbounded_string ) return string is
-    -- Add a trailing character for a path.  If a directory, add a trailing /.
-    -- If a file, add a trailing space.  If both, add nothing.
-    f  : file_type;
-    ch : character := ASCII.NUL;
+---> IS DIRECTORY
+--
+-- A quick and simple function to check to see if string dir refers
+-- to a directory.
+-----------------------------------------------------------------------------
+
+function isDirectory( dir : unbounded_string ) return boolean is
+   f : dir_type;
+   result : boolean := true;
+begin
   begin
-    begin
-      Ada.Text_IO.Open( f, in_file, to_string( dir & "/" & path ) );
-      Ada.Text_IO.Close( f );
-      -- should do a stat()
-     declare
-       -- if a dir, add a '/'
-       f : dir_type;
-     begin
-       GNAT.Directory_Operations.Open( f, to_string( dir & "/" & path ) );
-       GNAT.Directory_Operations.Close( f );
-       -- should do a stat()
-       ch := '/';
-     exception when others =>
+  GNAT.Directory_Operations.Open( f, to_string( dir ) );
+  GNAT.Directory_Operations.Close( f );
+  -- TODO: should do a stat() probably more efficient
+  exception when others => result := false;
+  end;
+  return result;
+end isDirectory;
+
+---> SLASHIFY PATH
+--
+-- Add a trailing character for a path.  If a directory, add a trailing /.
+-- If a file, add a trailing space.  If both, add nothing.
+-----------------------------------------------------------------------------
+
+function slashifyPath( dir, path : unbounded_string ) return string is
+  f  : file_type;
+  ch : character := ASCII.NUL;
+begin
+  begin
+    Ada.Text_IO.Open( f, in_file, to_string( dir & Dir_Separator & path ) );
+    Ada.Text_IO.Close( f );
+    if isDirectory( dir & Dir_Separator & path ) then
+       ch := Dir_Separator;
+    else
        ch := ' ';
-     end;
-   exception when others => null;
-   end;
-   if ch /= ASCII.NUL then
-      return "" & ch;
-   end if;
-   return "";
- end slashifyPath;
+    end if;
+  exception when others => null;
+  end;
+  if ch /= ASCII.NUL then
+     return "" & ch;
+  end if;
+  return "";
+end slashifyPath;
 
  procedure completePathname( dir : unbounded_string;
     s : unbounded_string;
@@ -203,10 +219,10 @@ procedure getLine( line : out unbounded_string; keepHistory : boolean
     fileNameLen  : natural;
     noPWD        : boolean := false;
     bestCommon   : unbounded_string; -- longest common part
-    listCount : natural := 0;
-    isListing : boolean := list;
-    expandedDir : unbounded_string;
-    home_id : identifier;
+    listCount    : natural := 0;
+    isListing    : boolean := list;
+    expandedDir  : unbounded_string;
+    home_id      : identifier;
   begin
     -- Show a list of possible matches? Move down a line.
     if isListing then
@@ -214,13 +230,13 @@ procedure getLine( line : out unbounded_string; keepHistory : boolean
        put( term( cleop ) );
     end if;
     -- A tilde?  Then substitute in the home directory.
-    if length( dir ) > 0 and element( dir, 1) = '~' then
+    if length( dir ) > 0 and then element( dir, 1) = '~' then
        findIdent( to_unbounded_string( "HOME" ), home_id );
        expandedDir := identifiers( home_id ).value & slice( dir, 2, length(dir));
     else
        expandedDir := dir;
     end if;
- -- put_line( " " & expandedDir & ":" & s );
+--put_line( "EXPANDED DIR = '" & dir & "' => " & expandedDir & "'+'" & s & "'" ); -- DEBUG
     bestCommon   := null_unbounded_string;
     globCriteria := Compile( to_string( s ), Glob => true,
        Case_Sensitive => true );
@@ -406,9 +422,29 @@ begin
              beep;
              goto retry;
           end if;
+          -- as a special case, if the path is the name of a directory,
+          -- just add a slash and redraw the line (bash works this way)
+          -- I set justCompleted to false to be in line with bash's
+          -- behaviour. ('ls .' , you have to hit tab 3 times to get list)
+          if element( path, length( path ) ) /= Dir_Separator then
+             if isDirectory( path ) then
+                line := line & Dir_Separator;
+                justCompleted := false;
+                goto redraw;
+             end if;
+          end if;
+          -- for path x/y, dir = x and y = file
+          -- for path x/, dir = x and basename file = . (i.e. itself)
           dir  := dirname( path );
-          file := basename( path );
+          -- we don't want .* in this case, just * unless the user
+          -- specifically adds a /.
+          if element( path, length( path ) ) /= Dir_Separator then
+             file := basename( path );
+          else
+             file := null_unbounded_string;
+          end if;
           file := file & "*";
+--put_line( "BREAKDOWN = '" & path & "' => " & dir & "'+'" & file & "'" ); -- DEBUG
           if listFiles then
              completePathname( dir, file, path, list => true );
           else
@@ -418,32 +454,32 @@ begin
              if to_string( dir ) = "." then
                 line := slice( line, 1, lp ) & path;
              else
-                line := slice( line, 1, lp ) & dir & '/' & path;
+                line := slice( line, 1, lp ) & dir & Dir_Separator & path;
              end if;
              declare
                 -- if a file, add a ' '.
                 f : file_type;
              begin
-                Ada.Text_IO.Open( f, in_file, to_string( dir & "/" & path ) );
+                Ada.Text_IO.Open( f, in_file, to_string( dir & Dir_Separator & path ) );
                 Ada.Text_IO.Close( f );
                 -- should do a stat()
                 declare
                    -- if a dir, add a '/'
                    f : dir_type;
                 begin
-                   GNAT.Directory_Operations.Open( f, to_string( dir & "/" & path ) );
+                   GNAT.Directory_Operations.Open( f, to_string( dir & Dir_Separator & path ) );
                    GNAT.Directory_Operations.Close( f );
-                   -- should do a stat()
-                   line := line & "/";
+                   -- TODO: should do a stat()
+                   line := line & Dir_Separator;
                 exception when others =>
                    line := line & " ";
                 end;
              exception when others => null;
              end;
-             old_pos := pos;                     -- remember old position
-             pos := length( line ) + 1;          -- new position at end
-             redrawLine( old_pos, pos );
           end if;
+<<redraw>>old_pos := pos;                     -- remember old position
+          pos := length( line ) + 1;          -- new position at end
+          redrawLine( old_pos, pos );
        end;
     when ASCII.CR | ASCII.LF =>
        new_line;
