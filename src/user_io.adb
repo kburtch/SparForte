@@ -275,7 +275,7 @@ end slashifyPath;
             for i in 1..fileNameLen loop
                 exit when i > length( bestCommon );
                 if i = fileNameLen then
-                   bestCommon := head( bestCommon, i );
+                   bestCommon := head( bestCommon, i-1 );
                 elsif element( bestcommon, i ) /= fileName(i) then
                    if i = 1 then
                       bestCommon := null_unbounded_string;

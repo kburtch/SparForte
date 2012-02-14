@@ -138,3 +138,5 @@ from Bush 2.0.
 56. Fix: tab completion works properly on directories '.', './', '..' and
 '../'.  Also used Dir_Separator in user_io.adb for better O/S independence.
 
+57. Fix: tab completion works properly when the final character differs
+between 2 or more candidates.
