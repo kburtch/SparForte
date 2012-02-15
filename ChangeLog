@@ -140,3 +140,6 @@ from Bush 2.0.
 
 57. Fix: tab completion works properly when the final character differs
 between 2 or more candidates.
+
+58. Fix: broken shell redirections (e.g. 2>&1) now working again.
+

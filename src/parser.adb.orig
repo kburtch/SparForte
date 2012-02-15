@@ -4027,7 +4027,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
   shell_word  : unbounded_string;
 
   word        : unbounded_string;
-  wordLen     : integer := length( word );
+  wordLen     : integer;
   pattern     : unbounded_string;
   wordType    : aShellWordType;
 
@@ -4227,9 +4227,11 @@ begin
      ParseBasicShellWord( shell_word );
   end if;
 
+  wordLen := length( shell_word ); -- we refer a lot to the length
+
   -- Null string shell word?  Then nothing to do.
 
-  if length( shell_word ) = 0 then
+  if wordLen = 0 then
      word := null_unbounded_string;
      pattern := null_unbounded_string;
      wordType := normalWord;
