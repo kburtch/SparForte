@@ -40,32 +40,40 @@
 	<!-- Content Area -->
 <h2><a name="3.5"></a>Literals</h2>
 
-<p>Numbers (numeric literals) can contain a decimal
-point.&nbsp; An alternate base (hex, octal, etc.) can be specified by
-following
-the base with the value between '#'.&nbsp; Hexadecimal letter
-characters
-can be in upper or lower case.&nbsp; Scientific notation is not yet
-supported.</p>
+<p>Numbers (numeric literals) represent a numeric value.  They are
+in conventional base 10 (by default) can contain a decimal point.
+Numbers can also have an underscore (underline character) which
+does not affect the meaning: underscores may be used to break up
+a long number for readability.</p>
+
+<p>An alternate base (hex, octal, etc.) can be specified by
+following the base with the value between '#'.  The minimum base
+is 2 (binary) and the maximum base is 16 (hexadecimal). Hexadecimal
+letter characters can be in upper or lower case.</p>
+
+<p>Scientific notation (a power of 10 exponent) is not yet supported.</p>
 
 <pre>=&gt; ? 16#FFFF#<br> 65535<br></pre>
 
 <ul>
   <li><tt>5</tt> - the numeric value 5</li>
   <li><tt>5.0</tt> the numeric value 5.0</li>
+  <li><tt>10_000</tt> the numeric value 10,000</li>
   <li><tt>8#777#</tt> - the octal value 511</li>
   <li><tt>16#ff#</tt> - the hexadecimal value 255</li>
 </ul>
 
 <p>All numeric literals are of type univeral_numeric.</p>
 
-<p>Characters are enclosed in single quotes.  It must be only one character long.</p>
+<p>Characters are enclosed in single quotes.  It must be only one graphic
+character bracketed by two single quotes (also called apostrophes).</p>
 
 <ul>
   <li><tt>'a'</tt> - the character a</li>
 </ul>
 
-<p>Strings are enclosed in double quotes.</p>
+<p>Strings are enclosed in double quotes.  They are a sequence of zero or
+more graphic characters bracketed by two double quotes.</p>
 
 <ul>
   <li><tt>"hello" </tt>- the string hello</li>
@@ -74,7 +82,7 @@ supported.</p>
 <p>All string or character literals are of type universal_string.</p>
 
 <p><b>Ada</b>: In Ada, the
-number 5 is an integer and 5.0 is a float.  Here they are both
+number 5 is an integer and 5.0 is a real literal (float).  Here they are both
 universal_numeric.  In Ada, "hello" is a string and 'c' is a character.
 Both are universal_strings here.</p>
 
