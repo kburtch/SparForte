@@ -143,3 +143,5 @@ between 2 or more candidates.
 
 58. Fix: broken shell redirections (e.g. 2>&1) now working again.
 
+59. Fix: unknown pragmas no longer raise an uncaught exception.
+

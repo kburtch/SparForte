@@ -79,7 +79,7 @@ type aPragmaKind is ( ada_95, asserting, annotate, debug, debug_on,
      restriction_postgresql, restriction_todos, software_model,
      template, test, test_result,
      unchecked_import, unchecked_import_json,
-     uninspect_var, unrestricted_template, volatile );
+     uninspect_var, unrestricted_template, volatile, unknown_pragma );
 
 --  PARSE PRAGMA KIND
 --
@@ -88,7 +88,7 @@ type aPragmaKind is ( ada_95, asserting, annotate, debug, debug_on,
 
 function parsePragmaKind return aPragmaKind is
   name : string := to_string( identifiers( token ).name );
-  pragmaKind : aPragmaKind;
+  pragmaKind : aPragmaKind := unknown_pragma;
 begin
   if name = "ada_95" then
      pragmaKind := ada_95;
