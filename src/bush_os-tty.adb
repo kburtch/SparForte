@@ -259,7 +259,7 @@ begin
   else
      loop
         readchar( amountRead, tputResultsFD, ch, 1 );
-        if amountRead < 0 then
+        if amountRead < 0 or amountRead = 18446744073709551615 then -- error?
            if C_errno /= EINTR and C_errno /= EAGAIN then
               ttyCode := null_unbounded_string;
               exit;
@@ -365,10 +365,18 @@ procedure simpleGetKey( ch : out character ) is
   res        : integer;         -- results
   closeResult : int;
 begin
-  ch := ASCII.NUL;
+  ch := ASCII.NUL;                                 -- to debug start w/nul
   if isatty( stdin ) = 0 then                      -- not a tty?
+<<read_notty>> C_reset_errno;
      readchar( amountRead, stdin, ch, 1 );         -- read a character
      if amountRead = 0 then                        -- nothing read?
+        ch := ASCII.EOT;                           -- return a control-d
+-- KB: 2012/02/15: for an explaination of the kludge, see below
+     elsif amountRead < 0 or amountRead = 18446744073709551615 then -- error?
+        if bush_os.C_errno = EINTR and not wasSIGINT then
+            -- interrupted by signal (other than SIGINT)
+            goto read_notty;                       -- then try again
+        end if;                                    -- otherwise
         ch := ASCII.EOT;                           -- return a control-d
      end if;
   else
@@ -415,20 +423,25 @@ begin
               -- probably should raise an exception here
            else
               res := tcdrain( stdout );            -- flush pending output
+-- KB: 2012/02/15 - when debugging a weird error, I found out that amountRead is
+-- being returned as a large positive instead of a negative on an interrupted
+-- system call.  size_t is taken from Gnat interfaces.C and is otherwise correct.
+-- I don't know the cause but I'm kludging this to be < 0 or 18446744073709551615.
 <<retryread>> C_reset_errno;
               readchar( amountRead, stdin, ch, 1 );-- read a character
               if amountRead = 0 then               -- nothing read?
                  ch := ASCII.EOT;                  -- return a control-d
-              elsif amountRead < 0 then            -- error?
+              elsif amountRead < 0 or amountRead = 18446744073709551615 then -- error?
                  if bush_os.C_errno = EINTR and not wasSIGINT then
                     -- interrupted by signal (other than SIGINT)
                     goto retryread;                -- then try again
-                 end if;
+                 end if;                           -- otherwise
+                 ch := ASCII.EOT;                  -- return a control-d
               end if;
               ioctl_setattr( res, ttyFile, TCSETATTR, oldtio ); -- restore settings
            end if;
         end if;
-        <<retryclose>> closeResult := close( ttyfile );
+<<retryclose>> closeResult := close( ttyfile );
         if closeResult < 0 then
            if C_errno = EINTR then
               goto retryclose;

@@ -145,3 +145,9 @@ between 2 or more candidates.
 
 59. Fix: unknown pragmas no longer raise an uncaught exception.
 
+60. Fix: possibly a Linux GCC Ada bug, read syscall() returns a high positive
+number on an EINTR error instead of a negative number.  It may be a problem with
+GCC Ada's size_t definition.  I've kludged the EINTR checks to look for <0 or
+18446744073709551615 to ensure EINTR's are caught.  This was causing weird
+errors when the last command in a pipeline failed.
+

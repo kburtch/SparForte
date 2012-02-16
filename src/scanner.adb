@@ -5332,6 +5332,7 @@ begin
 
     if is_control( Element( command, cmdpos ) ) or Element( command, cmdpos ) > '~' then
        err_tokenize( "Unexpected character ASCII" & character'pos( Element( command, cmdpos ) )'img, to_string( command ) );
+       cmdPos := cmdPos + 1;
        return;
     end if;
 
@@ -5515,6 +5516,7 @@ begin
 
     if is_control( Element( command, cmdpos ) ) or Element( command, cmdpos ) > '~' then
        err_tokenize( "Unexpected character ASCII" & character'pos( Element( command, cmdpos ) )'img, to_string( command ) );
+       cmdPos := cmdPos + 1;
        return;
     end if;
 

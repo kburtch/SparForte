@@ -456,9 +456,9 @@ procedure run_inpipe( cmd : unbounded_string;
    success : out boolean;
    background : boolean := false;
    cache : boolean := true ) is
+
    fullpath : unbounded_string;
    che  : cmdHashEntry;
-
    myPID    : aPID;
    newJob   : aJob;
    result   : integer;
@@ -492,6 +492,7 @@ begin
    if length( fullPath ) = 0 and not che.builtin then
       cmdpos := cmdpos - 1;
       err( "'" & to_string( cmd ) & "' command not found" );
+      Success := false;
    else
       if background then
          myPID := fork;                      -- start a new process
@@ -592,10 +593,13 @@ begin
    if length( fullPath ) = 0 and not che.builtin then
       cmdpos := cmdpos - 1;
       err( "'" & to_string( cmd ) & "' command not found" );
+      Success := false;
+      closePipeline;
    else
       if background then                    -- should never be
          err( "internal error: final pipeline command must be run in foreground" );
          Success := false;
+         closePipeline;
          return;
       end if;
 
@@ -606,6 +610,8 @@ begin
             goto retry1;
          end if;
          err( "unable to save stdin: errno" & C_errno'img );
+         Success := false;
+         closePipeline;
          return;
       end if;
 <<retry2>>
@@ -624,6 +630,7 @@ begin
          err( "unable to dup2 the pipe for " & to_string( cmd ) &
            "input: errno " & C_errno'img );
          Success := false;
+         closePipeline;
       else
          -- close all the pipe file descriptors.  We've copied the ones
          -- we need with dup2.
@@ -721,6 +728,7 @@ begin
    if length( fullPath ) = 0 and not che.builtin then
       cmdpos := cmdpos - 1;
       err( "'" & to_string( cmd ) & "' command not found" );
+      Success := false;
    else
       if background then
          myPID := fork;

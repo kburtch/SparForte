@@ -46,7 +46,9 @@ begin
    bufpos := buffer'first;
    loop
 <<reread>> readchar( amountRead, scriptFile, ch, 1 );
-     if amountRead < 0 and (C_errno = EAGAIN or C_errno = EINTR) then
+ -- KB: 2012/02/15: see bush_os-tty for an explaination of this kludge
+     if (amountRead < 0 or amountRead = 18446744073709551615)
+         and (C_errno = EAGAIN or C_errno = EINTR) then
         goto reread;
      end if;
      exit when amountRead /= 1 or ch = ASCII.LF;
