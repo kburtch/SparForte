@@ -151,3 +151,6 @@ GCC Ada's size_t definition.  I've kludged the EINTR checks to look for <0 or
 18446744073709551615 to ensure EINTR's are caught.  This was causing weird
 errors when the last command in a pipeline failed.
 
+61. Fix: GCC Ada dir ops no longer return "." and ".." which broke globbing,
+changed to handle missing "." and "..".  Also fixed tab completion for same.
+

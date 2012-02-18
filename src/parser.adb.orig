@@ -4133,8 +4133,8 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
     noDir        : boolean;
     isOpen       : boolean := false;
   begin
-    -- put_line( "pathnameExpansion for original pattern """ & pattern & """" ); -- DEBUG
-    -- put_line( "pathnameExpansion for expanded word """ & word & """" ); -- DEBUG
+    --put_line( "pathnameExpansion for original pattern """ & pattern & """" ); -- DEBUG
+    --put_line( "pathnameExpansion for expanded word """ & word & """" ); -- DEBUG
     -- word is an empty string? it still counts: param is a null string
     if length( pattern ) = 0 or length( word ) = 0 then
        shellWordList.Queue( list, aShellWord'( normalWord, pattern, null_unbounded_string ) );
@@ -4155,13 +4155,19 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
        return;
     end if;
     -- Linux/UNIX: skip "." and ".." directory entries
-    read( currentDir, fileName, fileNameLen );
-    read( currentDir, fileName, fileNameLen );
+    --read( currentDir, fileName, fileNameLen );
+    --read( currentDir, fileName, fileNameLen );
     -- search the directory, adding files that match the glob pattern
     loop
       read( currentDir, fileName, fileNameLen );
+      -- KB: 12/02/18 - no longer returns "." and "..".  Commented out reads
+      -- but as a safety precaution check the filename here.
       exit when fileNameLen = 0;
-      if Match( fileName(1..fileNameLen ) , globCriteria ) then
+      if filename( 1..fileNameLen ) = "." then
+         null;
+      elsif filename( 1..fileNameLen ) = ".." then
+         null;
+      elsif Match( fileName(1..fileNameLen ) , globCriteria ) then
          if noDir then
             shellWordList.Queue( list, aShellWord'(
                normalWord,

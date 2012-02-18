@@ -250,12 +250,18 @@ end slashifyPath;
        result := null_unbounded_string;
        return;
     end if;
-    read( dir2test, fileName, fileNameLen ); -- skip "."
-    read( dir2test, fileName, fileNameLen ); -- skip ".."
+    -- KB: 12/02/18 - gcc dir ops changes, no longer returns "." but we'll
+    -- check below to be safe.
+    --read( dir2test, fileName, fileNameLen ); -- skip "."
+    --read( dir2test, fileName, fileNameLen ); -- skip ".."
     loop
       read( dir2test, fileName, fileNameLen );
       exit when fileNameLen = 0;
-      if Match( fileName(1..fileNameLen ) , globCriteria ) then
+      if fileName( 1..fileNameLen ) = "." then
+         null;
+      elsif fileName( 1..fileNameLen ) = ".." then
+         null;
+      elsif Match( fileName(1..fileNameLen ) , globCriteria ) then
          count := count + 1;
          if isListing then
             put_line( fileName(1..fileNameLen) & slashifyPath( dir, to_unbounded_string( fileName(1..fileNameLen) ) ) );
@@ -485,7 +491,7 @@ begin
        new_line;
        if length( line ) > 0 and keepHistory then -- don't save empty
           history( historyNext ).line := line;           -- lines
-          findIdent( to_unbounded_string( "PWD" ), pwd_id ); -- SLOW!
+          findIdent( to_unbounded_string( "PWD" ), pwd_id ); -- TODO: SLOW!
           if pwd_t /= eof_t then
              history( historyNext ).pwd:= identifiers( pwd_id ).value;
           end if;

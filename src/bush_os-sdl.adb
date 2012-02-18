@@ -45,7 +45,7 @@ begin
     exit when ch = ASCII.NUL;
     errorMessage := errorMessage & ch;
     i := i + 1;
-  end loop; 
+  end loop;
   return errorMessage;
 end get_sdl_error;
 
