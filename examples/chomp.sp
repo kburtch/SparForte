@@ -21,7 +21,7 @@ type text_types is ( unknown, dos, mac, unix, broken, binary, c, strip );
 -- conversions we can do
 
 target_type : text_types := unknown;
-verbose : boolean := true; -- was false
+verbose : boolean := false;
 
 -- Files
 
@@ -118,7 +118,7 @@ for i in 1..$#-2 loop
       end if;
       target_type := strip;
    elsif command_line.argument(i) = "-v" then
-      verbose := true;
+      verbose;
    else
       put( standard_error, source_info.file )
         @( standard_error, ":" )

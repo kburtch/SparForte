@@ -1,12 +1,12 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- A common interview test from Rosetta Code for testing basic programming
--- skills.
+pragma annotate( summary, "arraycat" );
+pragma annotate( description, "Show how to concatenate two arrays in your language." );
+pragma annotate( description, "From a Rosetta Code example" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
-pragma annotate( "arraycat" );
-pragma annotate( "" );
-pragma annotate( "Show how to concatenate two arrays in your language." );
-pragma annotate( "translated by Ken O. Burtch" );
+pragma restriction( no_external_commands );
 
 procedure arraycat is
   type arrayOf3 is array(1..3) of integer;
@@ -16,7 +16,7 @@ procedure arraycat is
   a3 : arrayOf6;
   p  : natural := arrays.first(a3);
 begin
-  -- In Business Shell 1, array support is limited.  & only works on strings
+  -- In SparForte 1, array support is limited.  & only works on strings
   -- and there's no indefinite ranges.  We have to do this the hard way.
   for i in arrays.first(a1)..arrays.last(a1) loop
       a3(p) := a1(i);
@@ -32,4 +32,7 @@ begin
   end loop;
   new_line;
 end arraycat;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

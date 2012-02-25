@@ -1,15 +1,11 @@
 #!/usr/local/bin/bush
 
--- Title
---
--- Ask the magic 8-ball
--- based on http://www.zazzybob.com/bin/8ball.html
--- Created by Ken O. Burtch
-
-pragma annotate( "8ball" );
-pragma annotate( "" );
-pragma annotate( "Ask the magic 8-ball" );
-pragma annotate( "usage: 8ball" );
+pragma annotate( summary, "8ball" );
+pragma annotate( description, "Ask the magic 8-ball" );
+pragma annotate( description, "usage: 8ball" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( see_also, "http://www.zazzybob.com/bin/8ball.html" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -70,5 +66,6 @@ begin
   command_line.set_exit_status( 0 );
 end eight_ball;
 
--- VIM editor formatting instructions -- vim: ft=bush
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

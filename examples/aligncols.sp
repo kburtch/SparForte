@@ -1,17 +1,16 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- A common interview test from Rosetta Code for testing basic programming
--- skills.
+pragma annotate( summary, "aligncols" );
+pragma annotate( description, "Given a text file of many lines, where fields within a line are delineated ");
+pragma annotate( description, "by a single 'dollar' character, write a program that aligns each column of" );
+pragma annotate( description, "fields by ensuring that words in each column are separated by at least one" );
+pragma annotate( description, "space. Further, allow for each word in a column to be either left justified," );
+pragma annotate( description, "right justified, or center justified within its column. " );
+pragma annotate( description, "A modified version of the Ada solution from Rosetta Code" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
-pragma annotate( "aligncols" );
-pragma annotate( "" );
-pragma annotate( "Given a text file of many lines, where fields within a line are delineated ");
-pragma annotate( "by a single 'dollar' character, write a program that aligns each column of" );
-pragma annotate( "fields by ensuring that words in each column are separated by at least one" );
-pragma annotate( "space. Further, allow for each word in a column to be either left justified," );
-pragma annotate( "right justified, or center justified within its column. " );
-pragma annotate( "A modified version of the Ada solution from Rosetta Code" );
-pragma annotate( "translated by Ken O. Burtch" );
+pragma restriction( no_external_commands );
 
 procedure aligncols is
    Text : constant string :=
@@ -66,8 +65,7 @@ begin
                   str := @ & (padding * ' ');
                 when Center =>
                   declare
-                     -- business shell 1: must trunc specifically
-                     left_padding : natural := numerics.truncation( padding/2 );
+                     left_padding : natural := padding/2;
                      right_padding : natural := padding - left_padding;
                   begin
                      str := (left_padding * ' ') & @ & (right_padding * ' ');
@@ -93,4 +91,8 @@ begin
    end loop;
    close( File );
 end aligncols;
+
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

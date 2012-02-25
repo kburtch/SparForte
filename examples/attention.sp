@@ -1,4 +1,4 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
 procedure attention is
 
@@ -49,13 +49,13 @@ begin
        if files.is_writable( devaudio ) then
           if strings.tail( sound_path, 3 ) = ".au" then
              cat "$sound_path" >> "$devaudio";
-             played := true;
+             played;
           end if;
        end if;
        -- dsp exists? try to play sound
        if not played and files.is_writable( devdsp ) then
           sound.play( sound_path );
-          played := true;
+          played;
        end if;
     else
        put_line( standard_error, source_info.source_location & ": sound file doesn't exist or isn't readable" );

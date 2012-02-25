@@ -24,7 +24,7 @@ procedure chomp2 is
    -- conversions we can do
 
    target_type : text_types := unknown;
-   verbose : boolean := true; -- was false
+   verbose : boolean := false;
 
 -- Files
 

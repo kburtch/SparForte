@@ -64,7 +64,9 @@ statements.</p>
 
 <h3>Declare Block</h3>
 
-<p>Declare blocks allow variables to be declared in the executable part
+<p>Declare blocks (also called block statements) contains a sequence of
+statements or commands that can include locally declared variables.
+Declare blocks are located in the executable part
 of a script.  Between <tt>declare</tt> and <tt>begin</tt>, declarations can be made.
 Between <tt>begin</tt> and <tt>end</tt> are executable statements.  The declarations
 are visible to these executable statements.</p>
@@ -89,11 +91,12 @@ variables by using begin...end without the declare section.<br>
 
 <h3>Procedure and Function Blocks</h3>
 
-<p>Repeatable blocks of instructions (like Perl sub or Python def) can
+<p>Repeatable blocks of a series of instructions (like Perl sub or Python def) can
 be created with the word <tt>procedure</tt> or <tt>function</tt>.&nbsp; A procedure is a
 set of instructions with a name.&nbsp; A function is a set of
-instructions with a name that returns a value so it can be used in an
-expression.&nbsp; Like a declare block, local variables can be declared
+instructions with a name that computes and returns a value and can be
+used in an expression.&nbsp; Like a declare block, local variables can
+be declared
 before the word <tt>begin</tt>.  Procedure and function subprograms
 must finish with <tt>end</tt> and the name of the subprogram: this is
 to clarify the structure of the program.</p>

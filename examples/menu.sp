@@ -43,7 +43,7 @@ while true loop
   else
      put_line( "Please type a number between 1 and 6" );
      new_line;
-     showMenu := true;
+     showMenu;
   end if;
 end loop;
 

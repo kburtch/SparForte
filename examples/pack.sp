@@ -37,7 +37,7 @@ elsif $1 = "-h" or $1 = "--help" then                         -- help request?
    usage;                                                     -- show usage
    return;                                                    -- and quit
 elsif $1 = "-v" or $1 = "--verbose" then                      -- verbose?
-   verbose := true;
+   verbose;
 end if;
 
   -- main block that does the work

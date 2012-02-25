@@ -149,7 +149,8 @@ By default, SparForte will install under /usr/local.
     --without-postgres (NO_POSTGRES variable): disable PostgreSQL database
             support
 
-    --without-sound (NO_SOUND variable): disable ADAVOX sound support
+    --without-sound (NO_SOUND variable): disable ADAVOX sound support.  THe
+            ADAVOX library is based on the obsolete OSS sound.
 
     Common Problems
 

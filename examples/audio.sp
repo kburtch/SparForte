@@ -48,13 +48,13 @@ begin
               if files.is_writable( devaudio ) then
                  if strings.tail( sound_file, 3 ) = ".au" then
                     cat "$sound_file" >> "$devaudio";
-                    played := true;
+                    played;
                  end if;
               end if;
               -- dsp exists? try to play sound with wavplay
               if not played and files.is_writable( devdsp ) then
                  sound.play( sound_file );
-                 played := true;
+                 played;
               end if;
            else
               put_line( standard_error, source_info.source_location & ": sound file doesn't exist or isn't readable" );

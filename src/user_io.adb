@@ -722,9 +722,10 @@ end displayVersionSplash;
 
 procedure displayCopyrightSplash is
   -- display copyright message.  This is located here because it
-  -- uses term attributes.
+  -- uses term attributes.  Suppress the message on a login shell
+  -- or if there is no tty.
 begin
-  if isatty( stdout ) = 1 then
+  if isatty( stdout ) = 1 and not isLoginShell then
      -- Put( "BUSH " );
      -- Put( version );
      -- Put_Line( " Copyright (c)2001-2011 Free Software Foundation");

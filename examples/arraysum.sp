@@ -1,11 +1,10 @@
 #!/usr/local/bin/bush
 
-pragma annotate( "arraysum" );
-pragma annotate( "" );
-pragma annotate( "Compute the sum and product of an array of integers." );
-pragma annotate( "" );
-pragma annotate( "http://rosettacode.org/wiki/Sum_and_product_of_an_array" );
-pragma annotate( "by Ken O. Burtch (based on Ada version)" );
+pragma annotate( summary, "arraysum" );
+pragma annotate( description, "Compute the sum and product of an array of integers." );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Sum_and_product_of_an_array" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -23,4 +22,7 @@ begin
      ? product;
   end;
 end arraysum;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

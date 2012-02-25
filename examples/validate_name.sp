@@ -116,7 +116,7 @@ begin
                 @( standard_error, ": name contains a repeated comma" );
             new_line;
          else
-            lastWasComma := true;
+            lastWasComma;
          end if;
       elsif ch = '-' then
          lastWasComma := false;
@@ -127,7 +127,7 @@ begin
                 @( standard_error, ": name contains a repeated dash" );
             new_line;
          else
-            lastWasMinus := true;
+            lastWasMinus;
          end if;
       elsif ch = "'" then
          lastWasComma := false;
@@ -138,7 +138,7 @@ begin
                 @( standard_error, ": name contains a repeated apostraphe" );
             new_line;
          else
-            lastWasApostrophe := true;
+            lastWasApostrophe;
          end if;
       elsif ch = "." then
          lastWasComma := false;
@@ -149,7 +149,7 @@ begin
                 @( standard_error, ": name contains a repeated period" );
             new_line;
          else
-            lastWasPeriod := true;
+            lastWasPeriod;
          end if;
       else
          lastWasComma := false;

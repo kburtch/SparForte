@@ -79,7 +79,7 @@ begin
        else
 	  responses := @ & s & delimiter;
 	  num_responses := @+1;
-	  terminate_response_list := true;
+	  terminate_response_list;
        end if;
        put( "." );
   end loop;

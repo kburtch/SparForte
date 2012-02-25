@@ -1,11 +1,9 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- Basic Directory Archive/Backup Script
-
-pragma annotate( "Archive" );
-pragma annotate( "" );
-pragma annotate( "A basic directory archive and backup script" );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "Archive" );
+pragma annotate( description, "A basic directory archive and backup script" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 procedure archive is
 
@@ -139,4 +137,6 @@ command_line.set_exit_status( 0 );
 
 end archive;
 
--- VIM editor formatting instructions -- vim: ft=bush
+-- VIM editor formatting instructions
+-- vim: ft=bush
+

@@ -2,15 +2,12 @@
 <BODY>
 <HR><DIV ALIGN="center"><H1> File : archive.sp</H1></DIV><HR>
 <PRE>
-
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- Basic Directory Archive/Backup Script</EM></FONT>
-
-<b>pragma</b> annotate( "Backup" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "A basic directory archive and backup script" );
-<b>pragma</b> annotate( "by Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "Archive" );
+<b>pragma</b> annotate( description, "A basic directory archive and backup script" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>procedure</b> archive <b>is</b>
 
@@ -36,26 +33,26 @@
   <FONT COLOR=green><EM>-- There should be two parameters.  Any other number of parameters, or</EM></FONT>
   <FONT COLOR=green><EM>-- -h or --help, should show script usage</EM></FONT>
 
-command_line.set_exit_status( 0 );                            -- status OK
+command_line.set_exit_status( 0 );                            <FONT COLOR=green><EM>-- status OK</EM></FONT>
 
-<b>if</b> $# /= 2 <b>then</b>                                               -- not 2 params?
-   usage;                                                     -- show usage
-   <b>return</b>;                                                    -- and quit
-<b>elsif</b> $1 = "-h" <b>or</b> $1 = "--help" <b>then</b>                         -- help request?
-   usage;                                                     -- show usage
-   <b>return</b>;                                                    -- and quit
+<b>if</b> $# /= 2 <b>then</b>                                               <FONT COLOR=green><EM>-- not 2 params?</EM></FONT>
+   usage;                                                     <FONT COLOR=green><EM>-- show usage</EM></FONT>
+   <b>return</b>;                                                    <FONT COLOR=green><EM>-- and quit</EM></FONT>
+<b>elsif</b> $1 = "-h" <b>or</b> $1 = "<FONT COLOR=green><EM>--help" then                         -- help request?</EM></FONT>
+   usage;                                                     <FONT COLOR=green><EM>-- show usage</EM></FONT>
+   <b>return</b>;                                                    <FONT COLOR=green><EM>-- and quit</EM></FONT>
 <b>end</b> <b>if</b>;
 
   <FONT COLOR=green><EM>-- main block that does the work</EM></FONT>
 
 <b>declare</b>
   source_directory  : <b>constant</b> string := directory_operations.format_pathname( $1 );
-  -- first param - convert path to operating system format
+  <FONT COLOR=green><EM>-- first param - convert path to operating system format</EM></FONT>
   archive_directory : <b>constant</b> string := directory_operations.format_pathname( $2 );
-  -- second param - convert to operating system format
-  file_name         : string;                                 -- file to bckup
-  target_name       : string;                                 -- backup name
-  backup_file_list  : string;                                 -- files to bckup
+  <FONT COLOR=green><EM>-- second param - convert to operating system format</EM></FONT>
+  file_name         : string;                                 <FONT COLOR=green><EM>-- file to bckup</EM></FONT>
+  target_name       : string;                                 <FONT COLOR=green><EM>-- backup name</EM></FONT>
+  backup_file_list  : string;                                 <FONT COLOR=green><EM>-- files to bckup</EM></FONT>
   i                 : natural;
 <b>begin</b>
 
@@ -100,7 +97,7 @@ command_line.set_exit_status( 0 );                            -- status OK
   <FONT COLOR=green><EM>-- Expire the archive directory</EM></FONT>
 
   <b>cd</b> "$archive_directory" ;
-  find . -type f -mtime +$expire_period_days -exec rm {} \; ;
+  find . -<b>type</b> f -mtime +$expire_period_days -exec rm {} \; ;
   <b>cd</b> - ;
 
   <FONT COLOR=green><EM>-- Move to the source directory.  Get a list of files to back up.  Each</EM></FONT>
@@ -124,7 +121,7 @@ command_line.set_exit_status( 0 );                            -- status OK
       file_name &amp; "-" &amp;
       strings.trim( strings.image( calendar.year( calendar.clock ) ), trim_end.left ) &amp; ":" &amp;
       strings.trim( strings.image( calendar.month( calendar.clock ) ), trim_end.left ) &amp; ":" &amp;
-      strings.trim( strings.image( calendar.day( calendar.clock ) ), trim_end.left ) & amp;
+      strings.trim( strings.image( calendar.day( calendar.clock ) ), trim_end.left ) &amp; 
       ".tgz";
 
     <FONT COLOR=green><EM>-- If the file is readable, back it up using the tar command</EM></FONT>
@@ -144,5 +141,7 @@ command_line.set_exit_status( 0 );
 
 <b>end</b> archive;
 
-<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=bush</EM></FONT>
+
 </PRE></BODY></HTML>
