@@ -1513,6 +1513,7 @@ begin
   declareStandardConstant( "System.Restricted_Shell", boolean_t, integer'image( commandLineOption'pos(rshOpt))(2) & "" );
   declareStandardConstant( "System.Script_License", uni_string_t, "" );
   declareStandardConstant( "System.Script_Software_Model", uni_string_t, "" );
+  declareStandardConstant( "System.System_Version", uni_string_t, world.version );
 
 -- most of the source_info must be filled in later by the parser
 

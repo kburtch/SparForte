@@ -154,3 +154,7 @@ errors when the last command in a pipeline failed.
 61. Fix: GCC Ada dir ops no longer return "." and ".." which broke globbing,
 changed to handle missing "." and "..".  Also fixed tab completion for same.
 
+62. Change: Suppress startup help message on a login shell.
+
+63. New: System.System_Version returns the SparForte version string.
+

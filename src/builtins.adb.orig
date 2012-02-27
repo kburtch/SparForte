@@ -1425,7 +1425,7 @@ begin
      Put_Line( "  System.Max_Base_Digits        System.Default_Bit_Order" );
      Put_Line( "  System.Max_Mantissa           System.Login_Shell" );
      Put_Line( "  System.Restricted_Shell       System.Script_License" );
-     Put_Line( "  System.Script_Software_Model" );
+     Put_Line( "  System.Script_Software_Model  System.System_Version" );
      discardUnusedIdentifier( token );
   elsif helpTopic = "trace" then
      Put_Line( "trace - show verbose debugging information" );

@@ -681,7 +681,7 @@ sleep 1
 # /dev/dsp
 
 echo
-echo -n "adavox library: checking for /dev/dsp... "
+echo -n "adavox library: checking for OSS /dev/dsp... "
 if [ -z "$NO_SOUND" ] ; then
    if test ! -z "$BASH" ; then
       test -a /dev/dsp
