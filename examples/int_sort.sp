@@ -1,13 +1,12 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "int_array" );
-pragma annotate( "" );
-pragma annotate( "Sort an array (or list) of integers in ascending" );
-pragma annotate( "numerical order. Use a sorting facility provided by" );
-pragma annotate( "the language/library if possible." );
-pragma annotate( "" );
-pragma annotate( "http://rosettacode.org/wiki/Sort_an_integer_array" );
-pragma annotate( "by Ken O. Burtch (based on Ada version)" );
+pragma annotate( summary, "int_sort" );
+pragma annotate( description, "Sort an array (or list) of integers in ascending" );
+pragma annotate( description, "numerical order. Use a sorting facility provided by" );
+pragma annotate( description, "the language/library if possible." );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Sort_an_integer_array" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -20,4 +19,7 @@ begin
     ? values(i);
   end loop;
 end int_sort;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

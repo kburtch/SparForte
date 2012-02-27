@@ -1,15 +1,17 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "Write a routine to perform a bitwise AND, OR, and XOR on" );
-pragma annotate( "two integers, a bitwise NOT on the first integer, a left" );
-pragma annotate( "shift, right shift, right arithmetic shift, left rotate," );
-pragma annotate( "and right rotate. All shifts and rotates should be done on" );
-pragma annotate( "the first integer with a shift/rotate amount of the second" );
-pragma annotate( "integer." );
-pragma annotate( "" );
-pragma annotate( "http://rosettacode.org/wiki/Bitwise_operations" );
-pragma annotate( "" );
-pragma annotate( "Translated by ken O. Burtch" );
+pragma annotate( summary, "bitarith" );
+pragma annotate( description, "Write a routine to perform a bitwise AND, OR, and XOR on" );
+pragma annotate( description, "two integers, a bitwise NOT on the first integer, a left" );
+pragma annotate( description, "shift, right shift, right arithmetic shift, left rotate," );
+pragma annotate( description, "and right rotate. All shifts and rotates should be done on" );
+pragma annotate( description, "the first integer with a shift/rotate amount of the second" );
+pragma annotate( description, "integer." );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Bitwise_operations" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
+
+pragma restriction( no_external_commands );
 
 procedure bitarith is
   A : natural := 255;
@@ -27,3 +29,7 @@ begin
   put( "A rotl B = " ) @ ( numerics.rotate_left( X, N ) ); new_line;
   put( "A rotr B = " ) @ ( numerics.rotate_right( X, N ) ); new_line;
 end bitarith;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
+

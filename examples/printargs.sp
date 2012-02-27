@@ -1,14 +1,14 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- A common interview test from Rosetta Code for testing basic programming
--- skills.
+pragma annotate( summary, "printargs" );
+pragma annotate( description, "Retrieve the list of command-line arguments given to the program." );
+pragma annotate( description, "Example command line: " );
+pragma annotate( description, "myprogram -c 'alpha beta' -h 'gamma'" );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Command-line_arguments" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
-pragma annotate( "printargs" );
-pragma annotate( "" );
-pragma annotate( "Retrieve the list of command-line arguments given to the program." );
-pragma annotate( "Example command line: " );
-pragma annotate( "myprogram -c 'alpha beta' -h 'gamma'" );
-pragma annotate( "translated by Ken O. Burtch" );
+pragma restriction( no_external_commands );
 
 procedure printargs is
 begin
@@ -19,4 +19,7 @@ begin
       new_line;
    end loop;
 end printargs;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

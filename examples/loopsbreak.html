@@ -25,17 +25,16 @@ $ spar loopsbreak
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "loopsbreak" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Show a loop which prints random numbers (each number newly" );
-<b>pragma</b> annotate( "generated each loop) from 0 to 19 (inclusive). If a number is" );
-<b>pragma</b> annotate( "10, stop the loop after printing it, and do not generate any" );
-<b>pragma</b> annotate( "further numbers. Otherwise, generate and print a second random" );
-<b>pragma</b> annotate( "number before restarting the loop. If the number 10 is never" );
-<b>pragma</b> annotate( "generated as the first number in a loop, loop forever. " );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "http://rosettacode.org/wiki/Loops/Break" );
-<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+<b>pragma</b> annotate( summary, "loopsbreak" );
+<b>pragma</b> annotate( description, "Show a loop which prints random numbers (each number newly" );
+<b>pragma</b> annotate( description, "generated each loop) from 0 to 19 (inclusive). If a number is" );
+<b>pragma</b> annotate( description, "10, stop the loop after printing it, and do not generate any" );
+<b>pragma</b> annotate( description, "further numbers. Otherwise, generate and print a second random" );
+<b>pragma</b> annotate( description, "number before restarting the loop. If the number 10 is never" );
+<b>pragma</b> annotate( description, "generated as the first number in a loop, loop forever. " );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Loops/Break" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -51,5 +50,8 @@ $ spar loopsbreak
     put_line( strings.image( b ) );
   <b>end</b> <b>loop</b>;
 <b>end</b> arraysloop;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

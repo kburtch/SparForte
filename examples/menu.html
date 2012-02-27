@@ -4,7 +4,13 @@
 <PRE>
 #!/usr/local/bin/spar
 
-trace false;
+<b>pragma</b> annotate( summary, "menu" );
+<b>pragma</b> annotate( description, "A simple menu without pragma ada_95" );
+<b>pragma</b> annotate( see_also, "menu2.html" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>trace</b> false;
 
 <b>declare</b>
   reply     : universal_typeless := 0; <FONT COLOR=green><EM>-- user's reply</EM></FONT>
@@ -17,12 +23,12 @@ trace false;
   <b>if</b> showMenu <b>then</b>
      put_line( "Main Menu" );
      new_line;
-     put_line( "1. ls" );
-     put_line( "2. ls -l" );
-     put_line( "3. change directory" );
-     put_line( "4. SparForte tracing on" );
-     put_line( "5. SparForte tracing off" );
-     put_line( "6. quit" );
+     put_line( "1. ls" )
+            @( "2. ls -l" )
+            @( "3. change directory" )
+            @( "4. SparForte tracing on" )
+            @( "5. SparForte tracing off" )
+            @( "6. quit" );
      new_line;
      put_line( "The current directory is " &amp; directory );
      new_line;
@@ -32,27 +38,30 @@ trace false;
   put( "==&gt; " );
   reply := get_line;
   <b>if</b> reply = 1 <b>then</b>
-     cd (directory) ; ls;
+     <b>cd</b> (directory) ; ls;
   <b>elsif</b> reply = 2 <b>then</b>
-     cd (directory) ; ls -l;
+     <b>cd</b> (directory) ; ls -l;
   <b>elsif</b> reply = 3 <b>then</b>
      put( "New directory?" );
      directory := get_line;
   <b>elsif</b> reply = 4 <b>then</b>
-     trace true;
+     <b>trace</b> true;
   <b>elsif</b> reply = 5 <b>then</b>
-     trace false;
+     <b>trace</b> false;
   <b>elsif</b> reply = 6 <b>then</b>
      <b>exit</b>;
   <b>else</b>
      put_line( "Please type a number between 1 and 6" );
      new_line;
-     showMenu := true;
+     showMenu;
   <b>end</b> <b>if</b>;
 <b>end</b> <b>loop</b>;
 
 put_line( "Bye!" );
 
 <b>end</b>; <FONT COLOR=green><EM>-- script</EM></FONT>
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

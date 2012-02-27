@@ -1,6 +1,14 @@
-#!/bin/bush
+#!/usr/local/bin/spar
+
+pragma annotate( summary, "menu2" );
+pragma annotate( description, "A simple menu with pragma ada_95 and no external commands" );
+pragma annotate( see_also, "menu.html" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma ada_95;
+pragma restriction( no_external_commands );
+
 trace( false );
 
 declare
@@ -36,9 +44,9 @@ while true loop
      put( "New directory?" );
      directory := get_line;
   elsif reply = 4 then
-     trace true;
+     trace( true );
   elsif reply = 5 then
-     trace false;
+     trace( false );
   elsif reply = 6 then
      exit;
   else
@@ -51,4 +59,7 @@ end loop;
 put_line( "Bye!" );
 
 end; -- script
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

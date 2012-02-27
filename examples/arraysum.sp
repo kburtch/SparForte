@@ -1,4 +1,4 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
 pragma annotate( summary, "arraysum" );
 pragma annotate( description, "Compute the sum and product of an array of integers." );

@@ -22,15 +22,15 @@ Argument 3 is 'd'
 <PRE>
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- A common interview test from Rosetta Code for testing basic programming</EM></FONT>
-<FONT COLOR=green><EM>-- skills.</EM></FONT>
+<b>pragma</b> annotate( summary, "printargs" );
+<b>pragma</b> annotate( description, "Retrieve the list of command-line arguments given to the program." );
+<b>pragma</b> annotate( description, "Example command line: " );
+<b>pragma</b> annotate( description, "myprogram -c 'alpha beta' -h 'gamma'" );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Command-line_arguments" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
-<b>pragma</b> annotate( "printargs" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Retrieve the list of command-line arguments given to the program." );
-<b>pragma</b> annotate( "Example command line: " );
-<b>pragma</b> annotate( "myprogram -c 'alpha beta' -h 'gamma'" );
-<b>pragma</b> annotate( "translated by Ken O. Burtch" );
+<b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> printargs <b>is</b>
 <b>begin</b>
@@ -41,5 +41,8 @@ Argument 3 is 'd'
       new_line;
    <b>end</b> <b>loop</b>;
 <b>end</b> printargs;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

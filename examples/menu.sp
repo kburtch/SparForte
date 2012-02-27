@@ -1,4 +1,10 @@
-#!/bin/bush
+#!/usr/local/bin/spar
+
+pragma annotate( summary, "menu" );
+pragma annotate( description, "A simple menu without pragma ada_95" );
+pragma annotate( see_also, "menu2.html" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 trace false;
 
@@ -13,12 +19,12 @@ while true loop
   if showMenu then
      put_line( "Main Menu" );
      new_line;
-     put_line( "1. ls" );
-     put_line( "2. ls -l" );
-     put_line( "3. change directory" );
-     put_line( "4. SparForte tracing on" );
-     put_line( "5. SparForte tracing off" );
-     put_line( "6. quit" );
+     put_line( "1. ls" )
+            @( "2. ls -l" )
+            @( "3. change directory" )
+            @( "4. SparForte tracing on" )
+            @( "5. SparForte tracing off" )
+            @( "6. quit" );
      new_line;
      put_line( "The current directory is " & directory );
      new_line;
@@ -50,4 +56,7 @@ end loop;
 put_line( "Bye!" );
 
 end; -- script
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

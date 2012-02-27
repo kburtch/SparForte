@@ -1,15 +1,15 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- A common interview test from Rosetta Code for testing basic programming
--- skills.
+pragma annotate( summary, "file_creation" );
+pragma annotate( description, "In this task, the job is to create a new empty file called 'output.txt' of" );
+pragma annotate( description, "size 0 bytes and an empty directory called 'docs'. This should be done" );
+pragma annotate( description, "twice: once "here", i.e. in the current working directory and once in the" );
+pragma annotate( description, "filesystem root. " );
+pragma annotate( see_also, "http://rosettacode.org/wiki/File_Creation" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
-pragma annotate( "file_creation" );
-pragma annotate( "" );
-pragma annotate( "In this task, the job is to create a new empty file called 'output.txt' of" );
-pragma annotate( "size 0 bytes and an empty directory called 'docs'. This should be done" );
-pragma annotate( "twice: once "here", i.e. in the current working directory and once in the" );
-pragma annotate( "filesystem root. " );
-pragma annotate( "translated by Ken O. Burtch" );
+pragma restriction( no_external_commands );
 
 procedure file_creation is
    file_handle : file_type;
@@ -24,4 +24,7 @@ begin
    -- directory_operations/create_directory is not implemented in Bush.
    mkdir "/docs";
 end file_creation;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

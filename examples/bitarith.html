@@ -27,16 +27,18 @@ A rotr B =  64
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "Write a routine to perform a bitwise AND, OR, and XOR on" );
-<b>pragma</b> annotate( "two integers, a bitwise NOT on the first integer, a left" );
-<b>pragma</b> annotate( "shift, right shift, right arithmetic shift, left rotate," );
-<b>pragma</b> annotate( "and right rotate. All shifts and rotates should be done on" );
-<b>pragma</b> annotate( "the first integer with a shift/rotate amount of the second" );
-<b>pragma</b> annotate( "integer." );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "http://rosettacode.org/wiki/Bitwise_operations" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Translated by ken O. Burtch" );
+<b>pragma</b> annotate( summary, "bitarith" );
+<b>pragma</b> annotate( description, "Write a routine to perform a bitwise AND, OR, and XOR on" );
+<b>pragma</b> annotate( description, "two integers, a bitwise NOT on the first integer, a left" );
+<b>pragma</b> annotate( description, "shift, right shift, right arithmetic shift, left rotate," );
+<b>pragma</b> annotate( description, "and right rotate. All shifts and rotates should be done on" );
+<b>pragma</b> annotate( description, "the first integer with a shift/rotate amount of the second" );
+<b>pragma</b> annotate( description, "integer." );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Bitwise_operations" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> bitarith <b>is</b>
   A : natural := 255;
@@ -54,4 +56,8 @@ A rotr B =  64
   put( "A rotl B = " ) @ ( numerics.rotate_left( X, N ) ); new_line;
   put( "A rotr B = " ) @ ( numerics.rotate_right( X, N ) ); new_line;
 <b>end</b> bitarith;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
 </PRE></BODY></HTML>

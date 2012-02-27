@@ -20,16 +20,15 @@ character a = character code 97
 <PRE>
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- From Rosetta Code</EM></FONT>
-
-<b>pragma</b> annotate( "charcode" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Given a character value in your language, print its code (could be" );
-<b>pragma</b> annotate( "ASCII code, Unicode code, or whatever your language uses). For example," );
-<b>pragma</b> annotate( "the character 'a' (lowercase letter A) has a code of 97 in ASCII (as" );
-<b>pragma</b> annotate( "well as Unicode, as ASCII forms the beginning of Unicode). Conversely," );
-<b>pragma</b> annotate( "given a code, print out the corresponding character. " );
-<b>pragma</b> annotate( "by Ken O. Burtch");
+<b>pragma</b> annotate( summary, "charcode" );
+<b>pragma</b> annotate( description, "Given a character value in your language, print its code (could be" );
+<b>pragma</b> annotate( description, "ASCII code, Unicode code, or whatever your language uses). For example," );
+<b>pragma</b> annotate( description, "the character 'a' (lowercase letter A) has a code of 97 in ASCII (as" );
+<b>pragma</b> annotate( description, "well as Unicode, as ASCII forms the beginning of Unicode). Conversely," );
+<b>pragma</b> annotate( description, "given a code, print out the corresponding character. " );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Character_codes" );
+<b>pragma</b> annotate( author, "Ken O. Burtch");
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -40,5 +39,8 @@ character a = character code 97
   put_line( "character code" &amp; strings.image( code ) &amp; " = character " &amp; strings.val( code ) );
   put_line( "character " &amp; char &amp; " = character code" &amp; strings.image( numerics.pos( char ) ) );
 <b>end</b> charcode;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

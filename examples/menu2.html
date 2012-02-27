@@ -4,8 +4,16 @@
 <PRE>
 #!/usr/local/bin/spar
 
+<b>pragma</b> annotate( summary, "menu2" );
+<b>pragma</b> annotate( description, "A simple menu with pragma ada_95 and no external commands" );
+<b>pragma</b> annotate( see_also, "menu.html" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
 <b>pragma</b> ada_95;
-trace false;
+<b>pragma</b> restriction( no_external_commands );
+
+<b>trace</b>( false );
 
 <b>declare</b>
   reply     : integer := 0;    <FONT COLOR=green><EM>-- user's reply</EM></FONT>
@@ -40,9 +48,9 @@ trace false;
      put( "New directory?" );
      directory := get_line;
   <b>elsif</b> reply = 4 <b>then</b>
-     trace true;
+     <b>trace</b>( true );
   <b>elsif</b> reply = 5 <b>then</b>
-     trace false;
+     <b>trace</b>( false );
   <b>elsif</b> reply = 6 <b>then</b>
      <b>exit</b>;
   <b>else</b>
@@ -55,5 +63,8 @@ trace false;
 put_line( "Bye!" );
 
 <b>end</b>; <FONT COLOR=green><EM>-- script</EM></FONT>
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

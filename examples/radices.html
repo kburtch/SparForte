@@ -22,17 +22,16 @@ $ spar radices
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "radices" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "This task requires parsing of such a string (which may" );
-<b>pragma</b> annotate( "be assumed to contain nothing else) using the" );
-<b>pragma</b> annotate( "language's built-in facilities if possible. Parsing of" );
-<b>pragma</b> annotate( "decimal strings is required, parsing of other formats" );
-<b>pragma</b> annotate( "is optional but should be shown (i.e., if the language" );
-<b>pragma</b> annotate( "can parse in base-19 then that should be illustrated)." );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "http://rosettacode.org/wiki/Non-decimal_radices/Input" );
-<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+<b>pragma</b> annotate( summary, "radices" );
+<b>pragma</b> annotate( description, "This task requires parsing of such a string (which may" );
+<b>pragma</b> annotate( description, "be assumed to contain nothing else) using the" );
+<b>pragma</b> annotate( description, "language's built-in facilities if possible. Parsing of" );
+<b>pragma</b> annotate( description, "decimal strings is required, parsing of other formats" );
+<b>pragma</b> annotate( description, "is optional but should be shown (i.e., if the language" );
+<b>pragma</b> annotate( description, "can parse in base-19 then that should be illustrated)." );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Non-decimal_radices/Input" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -43,5 +42,8 @@ $ spar radices
   ? numerics.value( "2#1010011010#" );
   ? numerics.value( "16#F.FF#E+2" );
 <b>end</b> radices;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

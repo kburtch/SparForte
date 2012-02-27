@@ -1,12 +1,11 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- From Rosetta Code - http://rosettacode.org/wiki/File_IO
-
-pragma annotate( "filecopy" );
-pragma annotate( "" );
-pragma annotate( "The job is to create a file called 'output.txt', and place in it" );
-pragma annotate( "the contents of the file 'input.txt'." );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "filecopy" );
+pragma annotate( description, "The job is to create a file called 'output.txt', and place in it" );
+pragma annotate( description, "the contents of the file 'input.txt'." );
+pragma annotate( see_also, "http://rosettacode.org/wiki/File_IO" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 procedure filecopy is
 
@@ -39,4 +38,8 @@ begin
   end;
 
 end filecopy;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
+
 
