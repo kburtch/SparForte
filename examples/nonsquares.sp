@@ -1,15 +1,14 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "nonsquares" );
-pragma annotate( "" );
-pragma annotate( "Show that the following remarkable formula gives the" );
-pragma annotate( "sequence of non-square natural numbers: n +" );
-pragma annotate( "floor(1/2 + sqrt(n)).  Print out the values for n in" );
-pragma annotate( "the range 1 to 22.  Show that no squares occur for n" );
-pragma annotate( "less than one million." );
-pragma annotate( "" );
-pragma annotate( "http://rosettacode.org/wiki/Sequence_of_non-squares" );
-pragma annotate( "by Ken O. Burtch (based on Ada version)" );
+pragma annotate( summary, "nonsquares" );
+pragma annotate( description, "Show that the following remarkable formula gives the" );
+pragma annotate( description, "sequence of non-square natural numbers: n +" );
+pragma annotate( description, "floor(1/2 + sqrt(n)).  Print out the values for n in" );
+pragma annotate( description, "the range 1 to 22.  Show that no squares occur for n" );
+pragma annotate( description, "less than one million." );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Sequence_of_non-squares" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -33,3 +32,7 @@ begin
       end if;
    end loop;
 end nonsquares;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
+

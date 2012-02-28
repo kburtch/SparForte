@@ -19,20 +19,19 @@ $ spar dotproduct
 <PRE>
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- From Rosetta Code http://rosettacode.org/wiki/Dot_product</EM></FONT>
-
-<b>pragma</b> annotate( "dotproduct" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Create a function/use an in-built function, to compute" );
-<b>pragma</b> annotate( "the dot product, also known as the scalar product of two" );
-<b>pragma</b> annotate( "vectors. If possible, make the vectors of arbitrary length." );
-<b>pragma</b> annotate( "As an example, compute the dot product of the vectors [1," );
-<b>pragma</b> annotate( " 3, -5] and [4, -2, -1]." );
-<b>pragma</b> annotate( "If implementing the dot product of two vectors directly," );
-<b>pragma</b> annotate( "each vector must be the same length; multiply" );
-<b>pragma</b> annotate( "corresponding terms from each vector then sum the results" );
-<b>pragma</b> annotate( "to produce the answer. " );
-<b>pragma</b> annotate( "translated by Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "dotproduct" );
+<b>pragma</b> annotate( description, "Create a function/use an in-built function, to compute" );
+<b>pragma</b> annotate( description, "the dot product, also known as the scalar product of two" );
+<b>pragma</b> annotate( description, "vectors. If possible, make the vectors of arbitrary length." );
+<b>pragma</b> annotate( description, "As an example, compute the dot product of the vectors [1," );
+<b>pragma</b> annotate( description, " 3, -5] and [4, -2, -1]." );
+<b>pragma</b> annotate( description, "If implementing the dot product of two vectors directly," );
+<b>pragma</b> annotate( description, "each vector must be the same length; multiply" );
+<b>pragma</b> annotate( description, "corresponding terms from each vector then sum the results" );
+<b>pragma</b> annotate( description, "to produce the answer. " );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Dot_product" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -58,5 +57,8 @@ $ spar dotproduct
   <b>end</b> <b>loop</b>;
   ? sum;
 <b>end</b> dotproduct;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

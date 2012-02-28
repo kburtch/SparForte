@@ -1,14 +1,13 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "perfect" );
-pragma annotate( "" );
-pragma annotate( "In mathematics, a perfect number is a positive integer" );
-pragma annotate( "that is the sum of its proper positive divisors, that is," );
-pragma annotate( "the sum of the positive divisors excluding the number" );
-pragma annotate( "itself." );
-pragma annotate( "" );
-pragma annotate( "http://en.wikipedia.org/wiki/Perfect_number" );
-pragma annotate( "by Ken O. Burtch (based on Ada version)" );
+pragma annotate( summary, "perfect" );
+pragma annotate( description, "In mathematics, a perfect number is a positive integer" );
+pragma annotate( description, "that is the sum of its proper positive divisors, that is," );
+pragma annotate( description, "the sum of the positive divisors excluding the number" );
+pragma annotate( description, "itself." );
+pragma annotate( see_also, "http://en.wikipedia.org/wiki/Perfect_number" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -44,4 +43,7 @@ begin
   new_line;
 
 end perfect;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

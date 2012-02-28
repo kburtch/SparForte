@@ -21,14 +21,13 @@ $ spar prime
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "prime" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Write a boolean function that tells whether a given" );
-<b>pragma</b> annotate( "integer is prime. Remember that 1 and all" );
-<b>pragma</b> annotate( "non-positive numbers are not prime. " );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "http://rosettacode.org/wiki/Primality_by_trial_division" );
-<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+<b>pragma</b> annotate( summary, "prime" );
+<b>pragma</b> annotate( description, "Write a boolean function that tells whether a given" );
+<b>pragma</b> annotate( description, "integer is prime. Remember that 1 and all" );
+<b>pragma</b> annotate( description, "non-positive numbers are not prime. " );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Primality_by_trial_division" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -72,5 +71,8 @@ $ spar prime
   put( number ) @ ( " : " ) @ ( result );
   new_line;
 <b>end</b> prime;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

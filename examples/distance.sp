@@ -1,11 +1,10 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- Calculate the distance between two points on the Earth's surface
+pragma annotate( summary, "Distance" );
+pragma annotate( description, "Calculate the distance between two points on the Earth's surface" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
-pragma annotate( "Distance" );
-pragma annotate( "" );
-pragma annotate( "Calculate the distance between two points on the Earth's surface" );
-pragma annotate( "by Ken O. Burtch" );
 pragma ada_95;
 pragma restriction( no_external_commands );
 
@@ -46,5 +45,6 @@ begin
 
 end distance;
 
--- VIM editor formatting instructions -- vim: ft=bush
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

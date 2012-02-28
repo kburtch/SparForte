@@ -1,11 +1,12 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- Basic integer min sort, the simplest and slowest kind of sort
+pragma annotate( summary, "minsort" );
+pragma annotate( description, "Basic integer min sort, the simplest and slowest kind of sort" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
-pragma annotate( "Min Sort" );
-pragma annotate( "" );
-pragma annotate( "A simple, slow sort of integers" );
-pragma annotate( "by Ken O. Burtch" );
+pragma ada_95;
+pragma restriction( no_external_commands );
 
 procedure minsort is
 
@@ -61,5 +62,6 @@ begin
 
 end minsort;
 
--- VIM editor formatting instructions -- vim: ft=bush
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

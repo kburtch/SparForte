@@ -1,17 +1,15 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- A simple linear regression script
+pragma annotate( summary, "linear reg" );
+pragma annotate( description, "Based on an Ada program by Dr. David G. Simpson, 2002" );
+pragma annotate( description, "This program performs a linear regression analysis for a set of data given" );
+pragma annotate( description, "as (x,y) pairs.  The output from the program is the slope and y-intercept" );
+pragma annotate( description, "of the least-squares best fit straight line through the data points." );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
-pragma annotate( "linear reg" );
-pragma annotate( "" );
-pragma annotate( "Based on an Ada program by Dr. David G. Simpson, 2002" );
-pragma annotate( "" );
-pragma annotate( "This program performs a linear regression analysis for a set of data given" );
-pragma annotate( "as (x,y) pairs.  The output from the program is the slope and y-intercept" );
-pragma annotate( "of the least-squares best fit straight line through the data points." );
------------------------------------------------------------------------------
-
-pragma ada_95;                     -- enforce ada_95 restrictions
+pragma ada_95;                                  -- enforce ada_95 restrictions
+pragma restriction( no_external_commands );
 
 procedure linear_reg is
 
@@ -83,4 +81,7 @@ begin
 
    command_line.set_exit_status( 0 );        -- success
 end linear_reg;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

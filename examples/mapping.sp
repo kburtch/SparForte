@@ -1,22 +1,21 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "mapping" );
-pragma annotate( "" );
-pragma annotate( "The task is to write a function/subroutine/... that takes" );
-pragma annotate( "two ranges and a real number, and returns the mapping of" );
-pragma annotate( "the real number from the first to the second range. Use" );
-pragma annotate( "this function to map values from the range [0, 10] to the" );
-pragma annotate( "range [-1, 0]." );
-pragma annotate( "" );
-pragma annotate( "http://rosettacode.org/wiki/Map_range" );
-pragma annotate( "by Ken O. Burtch (based on Ada version)" );
+pragma annotate( summary, "mapping" );
+pragma annotate( description, "The task is to write a function/subroutine/... that takes" );
+pragma annotate( description, "two ranges and a real number, and returns the mapping of" );
+pragma annotate( description, "the real number from the first to the second range. Use" );
+pragma annotate( description, "this function to map values from the range [0, 10] to the" );
+pragma annotate( description, "range [-1, 0]." );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Map_range" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
 procedure mapping is
    type first_range  is new float;
    type second_range is new float;
-   -- Bush doesn't implement ranges so we'll use constants
+   -- Spar doesn't implement ranges so we'll use constants
    first_range_first : constant first_range := 0.0;
    first_range_last : constant first_range := 10.0;
    second_range_first : constant second_range := -1.0;
@@ -52,4 +51,7 @@ begin
       test_value := @ + 1.0;
    end loop;
 end mapping;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

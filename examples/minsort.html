@@ -1,23 +1,44 @@
 <HEAD><TITLE>minsort.sp</TITLE></HEAD>
 <BODY>
 <HR><DIV ALIGN="center"><H1> File : minsort.sp</H1></DIV><HR>
-<IMG SRC="minsort.gif">
-<P>Basic integer min sort, the simplest and slowest kind of sort</P>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
 <PRE>
+$ spar minsort
+Data? (Enter nothing to sort): 5
+Data? (Enter nothing to sort): 1
+Data? (Enter nothing to sort): 99
+Data? (Enter nothing to sort): 3
+Data? (Enter nothing to sort): 
+ 1.00000000000000E+00
+ 3.00000000000000E+00
+ 5.00000000000000E+00
+ 9.90000000000000E+01
 
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- Basic integer min sort, the simplest and slowest kind of sort</EM></FONT>
+<b>pragma</b> annotate( summary, "minsort" );
+<b>pragma</b> annotate( description, "Basic integer min sort, the simplest and slowest kind of sort" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
-<b>pragma</b> annotate( "Min Sort" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "A simple, slow sort of integers" );
-<b>pragma</b> annotate( "by Ken O. Burtch" );
+<b>pragma</b> ada_95;
+<b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> minsort <b>is</b>
 
   <b>type</b> data_type <b>is</b> <b>new</b> integer;
-  <b>type</b> data_array is <b>array</b>( 1..100 ) <b>of</b> data_type;
+  <b>type</b> data_array <b>is</b> <b>array</b>( 1..100 ) <b>of</b> data_type;
 
   best_value : data_type;
   best       : integer;
@@ -49,7 +70,8 @@
     best_value := data(i);
     best := i;
     <b>for</b> j <b>in</b> i+1..data_cnt <b>loop</b>
-      <b>if</b> data(j) < best_value <b>then</b> best := j;
+      <b>if</b> data(j) &lt; best_value <b>then</b>
+         best := j;
          best_value := data(j);
       <b>end</b> <b>if</b>;
     <b>end</b> <b>loop</b>;
@@ -67,5 +89,7 @@
 
 <b>end</b> minsort;
 
-<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
 </PRE></BODY></HTML>

@@ -28,15 +28,13 @@ $ spar combinations
 <PRE>
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- From Rosetta Code: http://rosettacode.org/wiki/Combinations</EM></FONT>
-
-<b>pragma</b> annotate( "combinations" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Given non-negative integers m and n, generate all size m" );
-<b>pragma</b> annotate( "combinations of the integers from 0 to n-1 in sorted" );
-<b>pragma</b> annotate( " order (each combination is sorted and the entire table" );
-<b>pragma</b> annotate( "is sorted" );
-<b>pragma</b> annotate( "translated by Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "combinations" );
+<b>pragma</b> annotate( description, "Given non-negative integers m and n, generate all size m" );
+<b>pragma</b> annotate( description, "combinations of the integers from 0 to n-1 in sorted" );
+<b>pragma</b> annotate( description, "order (each combination is sorted and the entire table" );
+<b>pragma</b> annotate( description, "is sorted" );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Combinations" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -52,7 +50,7 @@ $ spar combinations
     c : string;
   <b>begin</b>
     <b>for</b> i <b>in</b> 1..number_of_items <b>loop</b>
-      c := @ &amp; strings.image( i-1 );
+      c := @ &amp; strings.image( natural( i-1 ) );
     <b>end</b> <b>loop</b>;
     <b>return</b> c;
   <b>end</b> get_first_combination;
@@ -78,7 +76,6 @@ $ spar combinations
   s : string;    <FONT COLOR=green><EM>-- a temp string for deleting leading space</EM></FONT>
 
 <b>begin</b>
-  <FONT COLOR=green><EM>--combination := first_combination;</EM></FONT>
   put_line( combination );
   <b>while</b> combination /= last_combination <b>loop</b>
 
@@ -90,7 +87,7 @@ $ spar combinations
         <b>if</b> item &lt; max_item_value-1 <b>then</b>
            item := @+1;
            s := strings.image( item );
-           s := strings.delete( s, 1, 1 );
+           s := strings.<b>delete</b>( s, 1, 1 );
            strings.replace( combination, i+1, s, ' ' );
            bad := false;
            <b>for</b> j <b>in</b> i+1..number_of_items <b>loop</b>
@@ -98,7 +95,7 @@ $ spar combinations
               <b>if</b> item &lt; max_item_value-1 <b>then</b>
                  item := @+1;
                  s := strings.image( item );
-                 s := strings.delete( s, 1, 1 );
+                 s := strings.<b>delete</b>( s, 1, 1 );
                  strings.replace( combination, j+1, s, ' ' );
               <b>else</b>
                  bad := true;
@@ -112,5 +109,8 @@ $ spar combinations
     <b>end</b> <b>if</b>;
   <b>end</b> <b>loop</b>;
 <b>end</b> combinations;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

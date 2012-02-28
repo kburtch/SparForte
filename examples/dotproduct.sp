@@ -1,19 +1,18 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- From Rosetta Code http://rosettacode.org/wiki/Dot_product
-
-pragma annotate( "dotproduct" );
-pragma annotate( "" );
-pragma annotate( "Create a function/use an in-built function, to compute" );
-pragma annotate( "the dot product, also known as the scalar product of two" );
-pragma annotate( "vectors. If possible, make the vectors of arbitrary length." );
-pragma annotate( "As an example, compute the dot product of the vectors [1," );
-pragma annotate( " 3, -5] and [4, -2, -1]." );
-pragma annotate( "If implementing the dot product of two vectors directly," );
-pragma annotate( "each vector must be the same length; multiply" );
-pragma annotate( "corresponding terms from each vector then sum the results" );
-pragma annotate( "to produce the answer. " );
-pragma annotate( "translated by Ken O. Burtch" );
+pragma annotate( summary, "dotproduct" );
+pragma annotate( description, "Create a function/use an in-built function, to compute" );
+pragma annotate( description, "the dot product, also known as the scalar product of two" );
+pragma annotate( description, "vectors. If possible, make the vectors of arbitrary length." );
+pragma annotate( description, "As an example, compute the dot product of the vectors [1," );
+pragma annotate( description, " 3, -5] and [4, -2, -1]." );
+pragma annotate( description, "If implementing the dot product of two vectors directly," );
+pragma annotate( description, "each vector must be the same length; multiply" );
+pragma annotate( description, "corresponding terms from each vector then sum the results" );
+pragma annotate( description, "to produce the answer. " );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Dot_product" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -39,4 +38,7 @@ begin
   end loop;
   ? sum;
 end dotproduct;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

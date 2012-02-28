@@ -22,22 +22,20 @@ $ spar monte
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "monte" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "A Monte Carlo Simulation is a way of approximating the" );
-<b>pragma</b> annotate( "value of a function where calculating the actual value is" );
-<b>pragma</b> annotate( "difficult or impossible. It uses random sampling to define" );
-<b>pragma</b> annotate( "constraints on the value and then makes a sort of 'best" );
-<b>pragma</b> annotate( " guess.'" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Write a function to run a simulation like this with a" );
-<b>pragma</b> annotate( "variable number of random points to select. Also, show the" );
-<b>pragma</b> annotate( "results of a few different sample sizes. For software" );
-<b>pragma</b> annotate( "where the number pi is not built-in, we give pi to a couple" );
-<b>pragma</b> annotate( "of digits: 3.141592653589793238462643383280 " );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "http://rosettacode.org/wiki/Monte_Carlo_methods" );
-<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+<b>pragma</b> annotate( summary, "monte" );
+<b>pragma</b> annotate( description, "A Monte Carlo Simulation is a way of approximating the" );
+<b>pragma</b> annotate( description, "value of a function where calculating the actual value is" );
+<b>pragma</b> annotate( description, "difficult or impossible. It uses random sampling to define" );
+<b>pragma</b> annotate( description, "constraints on the value and then makes a sort of 'best" );
+<b>pragma</b> annotate( description, "guess.'" );
+<b>pragma</b> annotate( description, "" );
+<b>pragma</b> annotate( description, "Write a function to run a simulation like this with a" );
+<b>pragma</b> annotate( description, "variable number of random points to select. Also, show the" );
+<b>pragma</b> annotate( description, "results of a few different sample sizes. For software" );
+<b>pragma</b> annotate( description, "where the number pi is not built-in, we give pi to a couple" );
+<b>pragma</b> annotate( description, "of digits: 3.141592653589793238462643383280 " );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Monte_Carlo_methods" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
 
 <b>procedure</b> monte <b>is</b>
 
@@ -60,5 +58,8 @@ $ spar monte
    @ "    100_000:" &amp; strings.image (pi (    100_000))
    @ "  1_000_000:" &amp; strings.image (pi (  1_000_000));
 <b>end</b> monte;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

@@ -29,23 +29,22 @@ $ spar mapping.sp
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "mapping" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "The task is to write a function/subroutine/... that takes" );
-<b>pragma</b> annotate( "two ranges and a real number, and returns the mapping of" );
-<b>pragma</b> annotate( "the real number from the first to the second range. Use" );
-<b>pragma</b> annotate( "this function to map values from the range [0, 10] to the" );
-<b>pragma</b> annotate( "range [-1, 0]." );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "http://rosettacode.org/wiki/Map_range" );
-<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+<b>pragma</b> annotate( summary, "mapping" );
+<b>pragma</b> annotate( description, "The task is to write a function/subroutine/... that takes" );
+<b>pragma</b> annotate( description, "two ranges and a real number, and returns the mapping of" );
+<b>pragma</b> annotate( description, "the real number from the first to the second range. Use" );
+<b>pragma</b> annotate( description, "this function to map values from the range [0, 10] to the" );
+<b>pragma</b> annotate( description, "range [-1, 0]." );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Map_range" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> mapping <b>is</b>
    <b>type</b> first_range  <b>is</b> <b>new</b> float;
    <b>type</b> second_range <b>is</b> <b>new</b> float;
-   <FONT COLOR=green><EM>-- Bush doesn't implement ranges so we'll use constants</EM></FONT>
+   <FONT COLOR=green><EM>-- Spar doesn't implement ranges so we'll use constants</EM></FONT>
    first_range_first : <b>constant</b> first_range := 0.0;
    first_range_last : <b>constant</b> first_range := 10.0;
    second_range_first : <b>constant</b> second_range := -1.0;
@@ -81,5 +80,8 @@ $ spar mapping.sp
       test_value := @ + 1.0;
    <b>end</b> <b>loop</b>;
 <b>end</b> mapping;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

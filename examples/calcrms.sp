@@ -1,7 +1,15 @@
--- Compute the Root mean square of the numbers 1..10.
--- The root mean square is also known by its initial RMS (or rms), and as the
--- quadratic mean.  The RMS is calculated as the mean of the squares of the
--- numbers, square-rooted
+#!/usr/local/bin/spar
+
+pragma annotate( summary, "calcrms" );
+pragma annotate( description, "Compute the Root mean square of the numbers 1..10." );
+pragma annotate( description, "The root mean square is also known by its initial RMS (or rms), and as the" );
+pragma annotate( description, "quadratic mean.  The RMS is calculated as the mean of the squares of the" );
+pragma annotate( description, "numbers, square-rooted" );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Averages/Root_mean_square" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
+
+pragma restriction( no_external_commands );
 
 procedure calcrms is
   type float_arr is array(1..10) of float;
@@ -15,4 +23,7 @@ begin
   rms := numerics.sqrt( sum / float(arrays.length(list)));
   ?  rms;
 end calcrms;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

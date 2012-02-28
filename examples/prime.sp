@@ -1,13 +1,12 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "prime" );
-pragma annotate( "" );
-pragma annotate( "Write a boolean function that tells whether a given" );
-pragma annotate( "integer is prime. Remember that 1 and all" );
-pragma annotate( "non-positive numbers are not prime. " );
-pragma annotate( "" );
-pragma annotate( "http://rosettacode.org/wiki/Primality_by_trial_division" );
-pragma annotate( "by Ken O. Burtch (based on Ada version)" );
+pragma annotate( summary, "prime" );
+pragma annotate( description, "Write a boolean function that tells whether a given" );
+pragma annotate( description, "integer is prime. Remember that 1 and all" );
+pragma annotate( description, "non-positive numbers are not prime. " );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Primality_by_trial_division" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -51,4 +50,7 @@ begin
   put( number ) @ ( " : " ) @ ( result );
   new_line;
 end prime;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

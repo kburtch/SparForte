@@ -47,24 +47,22 @@ Number   Binary     Gray Decoded
 </DIV>
 <HR>
 <PRE>
-
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "gray" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Gray code is a form of binary encoding where " );
-<b>pragma</b> annotate( "transitions between consecutive numbers differ by" );
-<b>pragma</b> annotate( "only one bit. Create functions to encode a number" );
-<b>pragma</b> annotate( "to and decode a number from Gray code. Display the" );
-<b>pragma</b> annotate( "normal binary representations, Gray code" );
-<b>pragma</b> annotate( "representations, and decoded Gray code values for all" );
-<b>pragma</b> annotate( "5-bit binary numbers (0-31 inclusive, leading 0's not" );
-<b>pragma</b> annotate( "necessary).  There are many possible Gray codes. The" );
-<b>pragma</b> annotate( "following encodes what is called 'binary reflected" );
-<b>pragma</b> annotate( "Gray code.'"  );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "http://rosettacode.org/wiki/Gray_code" );
-<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+<b>pragma</b> annotate( summary, "gray" );
+<b>pragma</b> annotate( description, "Gray code is a form of binary encoding where " );
+<b>pragma</b> annotate( description, "transitions between consecutive numbers differ by" );
+<b>pragma</b> annotate( description, "only one bit. Create functions to encode a number" );
+<b>pragma</b> annotate( description, "to and decode a number from Gray code. Display the" );
+<b>pragma</b> annotate( description, "normal binary representations, Gray code" );
+<b>pragma</b> annotate( description, "representations, and decoded Gray code values for all" );
+<b>pragma</b> annotate( description, "5-bit binary numbers (0-31 inclusive, leading 0's not" );
+<b>pragma</b> annotate( description, "necessary).  There are many possible Gray codes. The" );
+<b>pragma</b> annotate( description, "following encodes what is called 'binary reflected" );
+<b>pragma</b> annotate( description, "Gray code.'"  );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Gray_code" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -129,11 +127,14 @@ Number   Binary     Gray Decoded
       jbinstr := intToBin(j);
       <FONT COLOR=green><EM>-- for binary strings, right-justify</EM></FONT>
       put (i, "ZZZZZ9" ) @
-          (' ' &amp; strings.insert( ibinstr, 1, (8-strings.length(ibinstr)) * ' ' ) ) @
-          (' ' &amp; strings.insert( jbinstr, 1, (8-strings.length(jbinstr)) * ' ' ) ) @
+          (' ' &amp; strings.<b>insert</b>( ibinstr, 1, (8-strings.length(ibinstr)) * ' ' ) ) @
+          (' ' &amp; strings.<b>insert</b>( jbinstr, 1, (8-strings.length(jbinstr)) * ' ' ) ) @
           ( "  " ) @ (decode (j), "ZZZZZ9" );
       new_line;
    <b>end</b> <b>loop</b>;
 <b>end</b> gray;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

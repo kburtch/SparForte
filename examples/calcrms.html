@@ -19,15 +19,16 @@ $ spar calcrms
 <PRE>
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- From Rosetta Code</EM></FONT>
+<b>pragma</b> annotate( summary, "calcrms" );
+<b>pragma</b> annotate( description, "Compute the Root mean square of the numbers 1..10." );
+<b>pragma</b> annotate( description, "The root mean square is also known by its initial RMS (or rms), and as the" );
+<b>pragma</b> annotate( description, "quadratic mean.  The RMS is calculated as the mean of the squares of the" );
+<b>pragma</b> annotate( description, "numbers, square-rooted" );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Averages/Root_mean_square" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
-<b>pragma</b> annotate( "calcrms" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Compute the Root mean square of the numbers 1..10." );
-<b>pragma</b> annotate( "The root mean square is also known by its initial RMS (or rms), and as the" );
-<b>pragma</b> annotate( "quadratic mean.  The RMS is calculated as the mean of the squares of the" );
-<b>pragma</b> annotate( "numbers, square-rooted" );
-<b>pragma</b> annotate( "translated by Ken O. Burtch" );
+<b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> calcrms <b>is</b>
   <b>type</b> float_arr <b>is</b> <b>array</b>(1..10) <b>of</b> float;
@@ -41,5 +42,8 @@ $ spar calcrms
   rms := numerics.sqrt( sum / float(arrays.length(list)));
   ?  rms;
 <b>end</b> calcrms;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

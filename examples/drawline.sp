@@ -1,17 +1,16 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- Based on the Ada example at Rosetta Code
-
-pragma annotate( "DrawLine" );
-pragma annotate( "" );
-pragma annotate( "Draw a line given 2 points with the Bresenham's algorithm." );
-pragma annotate( "translated by Ken O. Burtch" );
+pragma annotate( summary, "DrawLine" );
+pragma annotate( description, "Draw a line given 2 points with the Bresenham's algorithm." );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
 procedure drawline is
 
--- Bush 1.x has only single-dimensional arrays but we can simulate a
+-- Spar 1.x has only single-dimensional arrays but we can simulate a
 -- two dimensional array that has been folded into a 1D array
 
 width  : constant positive := 20;
@@ -98,4 +97,7 @@ begin
   Line( 8, 1, 1,  8, 'X' );
   render;
 end drawline;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

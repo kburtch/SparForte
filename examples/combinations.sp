@@ -1,14 +1,12 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- From Rosetta Code: http://rosettacode.org/wiki/Combinations
-
-pragma annotate( "combinations" );
-pragma annotate( "" );
-pragma annotate( "Given non-negative integers m and n, generate all size m" );
-pragma annotate( "combinations of the integers from 0 to n-1 in sorted" );
-pragma annotate( " order (each combination is sorted and the entire table" );
-pragma annotate( "is sorted" );
-pragma annotate( "translated by Ken O. Burtch" );
+pragma annotate( summary, "combinations" );
+pragma annotate( description, "Given non-negative integers m and n, generate all size m" );
+pragma annotate( description, "combinations of the integers from 0 to n-1 in sorted" );
+pragma annotate( description, "order (each combination is sorted and the entire table" );
+pragma annotate( description, "is sorted" );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Combinations" );
+pragma annotate( author, "Ken O. Burtch" );
 
 pragma restriction( no_external_commands );
 
@@ -24,7 +22,7 @@ procedure combinations is
     c : string;
   begin
     for i in 1..number_of_items loop
-      c := @ & strings.image( i-1 );
+      c := @ & strings.image( natural( i-1 ) );
     end loop;
     return c;
   end get_first_combination;
@@ -50,7 +48,6 @@ procedure combinations is
   s : string;    -- a temp string for deleting leading space
 
 begin
-  --combination := first_combination;
   put_line( combination );
   while combination /= last_combination loop
 
@@ -84,4 +81,7 @@ begin
     end if;
   end loop;
 end combinations;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

@@ -19,16 +19,15 @@ $ spar nonsquares.sp
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "nonsquares" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Show that the following remarkable formula gives the" );
-<b>pragma</b> annotate( "sequence of non-square natural numbers: n +" );
-<b>pragma</b> annotate( "floor(1/2 + sqrt(n)).  Print out the values for n in" );
-<b>pragma</b> annotate( "the range 1 to 22.  Show that no squares occur for n" );
-<b>pragma</b> annotate( "less than one million." );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "http://rosettacode.org/wiki/Sequence_of_non-squares" );
-<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+<b>pragma</b> annotate( summary, "nonsquares" );
+<b>pragma</b> annotate( description, "Show that the following remarkable formula gives the" );
+<b>pragma</b> annotate( description, "sequence of non-square natural numbers: n +" );
+<b>pragma</b> annotate( description, "floor(1/2 + sqrt(n)).  Print out the values for n in" );
+<b>pragma</b> annotate( description, "the range 1 to 22.  Show that no squares occur for n" );
+<b>pragma</b> annotate( description, "less than one million." );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Sequence_of_non-squares" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -52,4 +51,8 @@ $ spar nonsquares.sp
       <b>end</b> <b>if</b>;
    <b>end</b> <b>loop</b>;
 <b>end</b> nonsquares;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
 </PRE></BODY></HTML>

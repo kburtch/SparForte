@@ -1,20 +1,19 @@
 #!/usr/local/bin/spar
 
-pragma annotate( "gray" );
-pragma annotate( "" );
-pragma annotate( "Gray code is a form of binary encoding where " );
-pragma annotate( "transitions between consecutive numbers differ by" );
-pragma annotate( "only one bit. Create functions to encode a number" );
-pragma annotate( "to and decode a number from Gray code. Display the" );
-pragma annotate( "normal binary representations, Gray code" );
-pragma annotate( "representations, and decoded Gray code values for all" );
-pragma annotate( "5-bit binary numbers (0-31 inclusive, leading 0's not" );
-pragma annotate( "necessary).  There are many possible Gray codes. The" );
-pragma annotate( "following encodes what is called 'binary reflected" );
-pragma annotate( "Gray code.'"  );
-pragma annotate( "" );
-pragma annotate( "http://rosettacode.org/wiki/Gray_code" );
-pragma annotate( "by Ken O. Burtch (based on Ada version)" );
+pragma annotate( summary, "gray" );
+pragma annotate( description, "Gray code is a form of binary encoding where " );
+pragma annotate( description, "transitions between consecutive numbers differ by" );
+pragma annotate( description, "only one bit. Create functions to encode a number" );
+pragma annotate( description, "to and decode a number from Gray code. Display the" );
+pragma annotate( description, "normal binary representations, Gray code" );
+pragma annotate( description, "representations, and decoded Gray code values for all" );
+pragma annotate( description, "5-bit binary numbers (0-31 inclusive, leading 0's not" );
+pragma annotate( description, "necessary).  There are many possible Gray codes. The" );
+pragma annotate( description, "following encodes what is called 'binary reflected" );
+pragma annotate( description, "Gray code.'"  );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Gray_code" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -85,4 +84,7 @@ begin
       new_line;
    end loop;
 end gray;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 
