@@ -158,3 +158,5 @@ changed to handle missing "." and "..".  Also fixed tab completion for same.
 
 63. New: System.System_Version returns the SparForte version string.
 
+64: Fix: fixed tilde expansions.
+
