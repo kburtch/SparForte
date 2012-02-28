@@ -4343,16 +4343,30 @@ begin
   -- characters, possibly creating multiple words from one original pattern.
   ---------------------------------------------------------------------------
 
+  temp_id := eof_t; -- for tilde expansion
+
   -- Expand any quotes quotes and handle shell variable substitutions
 
   for i in 1..length( shell_word ) loop
     ch := Element( shell_word, i );                          -- next character
 
+    -- tilde expansion must only occur in an unescaped word and not within a
+    -- dollar expansion.  The tilde expansion is only valid for the first
+    -- character in the word
+
+    if ch = '~' and i = 1 and not inSQuote and not inDQuote and not inBackslash then
+       if temp_id = eof_t then
+          findIdent( to_unbounded_string( "HOME" ), temp_id ); -- find HOME var
+       end if;
+       word := word & to_string( identifiers( temp_id ).value );  -- replace w/HOME
+       pattern := pattern & ch;  -- TODO: verify this should be ch
+
+
        -- Double Quote?  If not escaped by a backslash or single quote,
        -- we're in a new double quote escape.  If we were in a dollar expansion,
        -- perform the expansion.
 
-    if ch = '"' and not inSQuote and not inBackslash then    -- unescaped "?
+    elsif ch = '"' and not inSQuote and not inBackslash then    -- unescaped "?
        if inDollar then                                      -- was doing $?
           dollarExpansion;                                   -- complete it
        end if;

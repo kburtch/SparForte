@@ -2171,6 +2171,29 @@ s := `echo $0;`; -- command name
 s := `echo $1;`; -- first argument
 pragma assert( s = "a" );
 
+-- tilde expansion
+
+s  := `echo ~;`;
+s1 := `echo $HOME;`;
+pragma assert( s = s1 );
+
+s  := `echo /~;`;
+pragma assert( s = "/~" );
+
+s1 := "~";
+s  := `echo $s1;`;
+pragma assert( s = "~" );
+
+s  := `echo \~;`;
+pragma assert( s = "~" );
+
+s  := `echo '~';`;
+pragma assert( s = "~" );
+
+s  := `echo "~";`;
+pragma assert( s = "~" );
+
+
 -- advanced text_io
 
 create( ft, out_file, "./__testfile" );
@@ -2379,6 +2402,7 @@ s := `echo x y;`;
 pragma assert( s = "x y" );
 c := `echo x | sed 's/x/y/g';`;
 pragma assert( c = 'y' );
+
 
 if false then
    return;    -- should not terminate script
