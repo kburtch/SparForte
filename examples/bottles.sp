@@ -1,13 +1,11 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- A common interview test from Rosetta Code for testing basic programming
--- skills.
-
-pragma annotate( "bottles" );
-pragma annotate( "" );
-pragma annotate( "In this puzzle, write code to print out the entire '99 bottles of beer" );
-pragma annotate( "on the wall' song." );
-pragma annotate( "translated by Ken O. Burtch" );
+pragma annotate( summary, "bottles" );
+pragma annotate( description, "In this puzzle, write code to print out the entire '99 bottles of beer" );
+pragma annotate( description, "on the wall' song.  A common interview test from Rosetta Code for" );
+pragma annotate( description, "testing basic programming skills." );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -17,6 +15,10 @@ pragma restriction( no_external_commands );
        ? strings.image( X ) & " bottles of beer on the wall";
        ? strings.image( X ) & " bottles of beer";
        ? "Take one down, pass it around";
-       ? strings.image( X-1 ) & " bottles of beer on the wall" @ "";
+       ? strings.image( integer(X-1) ) & " bottles of beer on the wall" @ "";
     end loop;
  end Bottles;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
+

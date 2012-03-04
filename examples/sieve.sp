@@ -1,20 +1,19 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "sieve" );
-pragma annotate( "" );
-pragma annotate( "The Sieve of Eratosthenes is a simple algorithm that" );
-pragma annotate( "finds the prime numbers up to a given integer. Implement ");
-pragma annotate( "this algorithm, with the only allowed optimization that" );
-pragma annotate( "the outer loop can stop at the square root of the limit," );
-pragma annotate( "and the inner loop may start at the square of the prime" );
-pragma annotate( "just found. That means especially that you shouldn't" );
-pragma annotate( "optimize by using pre-computed wheels, i.e. don't assume" );
-pragma annotate( "you need only to cross out odd numbers (wheel based on" );
-pragma annotate( "2), numbers equal to 1 or 5 modulo 6 (wheel based on 2" );
-pragma annotate( "and 3), or similar wheels based on low primes." );
-pragma annotate( "" );
-pragma annotate( "http://rosettacode.org/wiki/Sieve_of_Eratosthenes" );
-pragma annotate( "by Ken O. Burtch (based on Ada version)" );
+pragma annotate( summary, "sieve" );
+pragma annotate( description, "The Sieve of Eratosthenes is a simple algorithm that" );
+pragma annotate( description, "finds the prime numbers up to a given integer. Implement ");
+pragma annotate( description, "this algorithm, with the only allowed optimization that" );
+pragma annotate( description, "the outer loop can stop at the square root of the limit," );
+pragma annotate( description, "and the inner loop may start at the square of the prime" );
+pragma annotate( description, "just found. That means especially that you shouldn't" );
+pragma annotate( description, "optimize by using pre-computed wheels, i.e. don't assume" );
+pragma annotate( description, "you need only to cross out odd numbers (wheel based on" );
+pragma annotate( description, "2), numbers equal to 1 or 5 modulo 6 (wheel based on 2" );
+pragma annotate( description, "and 3), or similar wheels based on low primes." );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Sieve_of_Eratosthenes" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -48,4 +47,7 @@ begin
      end if;
    end loop;
 end sieve;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

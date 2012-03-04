@@ -1,13 +1,13 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- Eliza
+pragma annotate( summary, "eliza" );
+pragma annotate( description, "The psychologist imitation program" );
+pragma annotate( description, "Original author: Joseph Weizenbaum" );
+pragma annotate( description, "Usage: eliza" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
-pragma annotate( "Eliza" );
-pragma annotate( "" );
-pragma annotate( "  The psychologist imitation program" );
-pragma annotate( "  Original author: Joseph Weizenbaum" );
-pragma annotate( "" );
-pragma annotate( "Usage: eliza" );
+pragma restriction( no_external_commands );
 
 procedure eliza is
 
@@ -339,4 +339,7 @@ end if;
 end loop;
 
 end eliza;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

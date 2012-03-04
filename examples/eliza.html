@@ -1,13 +1,47 @@
 <HEAD><TITLE>eliza.sp</TITLE></HEAD>
 <BODY>
 <HR><DIV ALIGN="center"><H1> File : eliza.sp </H1></DIV><HR>
-<IMG SRC="eliza.gif"><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar eliza
+Eliza
+
+Please wait...loading keywords/responses...
+.............................................................................
+.............................................................................
+.............................................................................
+.............................................................................
+................................
+HI!  I'M ELIZA.  LET'S TALK.  TYPE `BYE' TO END THIS SESSION.
+&gt;i love my lamp
+WHAT IS YOUR FAVORITE THING ABOUT YOUR LAMP 
+&gt;my lamp lights up my life
+HOW COME I CAN NEVER UNDERSTAND YOU FULLY?
+&gt;i love how my lamp grows
+WHY DO YOU LOVE HOW YOUR LAMP GROWS 
+&gt;
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
 <PRE>
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- Eliza</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- Original author: Joseph Weizenbaum</EM></FONT>
+<b>pragma</b> annotate( summary, "eliza" );
+<b>pragma</b> annotate( description, "The psychologist imitation program" );
+<b>pragma</b> annotate( description, "Original author: Joseph Weizenbaum" );
+<b>pragma</b> annotate( description, "Usage: eliza" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> eliza <b>is</b>
 
@@ -79,7 +113,7 @@ new_line;
        <b>else</b>
           responses := @ &amp; s &amp; delimiter;
           num_responses := @+1;
-          terminate_response_list := true;
+          terminate_response_list;
        <b>end</b> <b>if</b>;
        put( "." );
   <b>end</b> <b>loop</b>;
@@ -292,7 +326,7 @@ i := ' ' &amp; i &amp; ' ';
         <b>loop</b>
            c := strings.index( remains, "+" );
            <b>exit</b> <b>when</b> c = 0;
-           remains := strings.delete( remains, positive( c ), c );
+           remains := strings.<b>delete</b>( remains, positive( c ), c );
         <b>end</b> <b>loop</b>;
         <b>if</b> strings.tail( remains, 3 ) = " I " <b>then</b>
            remains := strings.slice( remains, 1,
@@ -339,5 +373,8 @@ i := ' ' &amp; i &amp; ' ';
 <b>end</b> <b>loop</b>;
 
 <b>end</b> eliza;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

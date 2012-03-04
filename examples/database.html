@@ -5,11 +5,12 @@
 <PRE>
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-------------------------------------------------------------------</EM></FONT>
-<FONT COLOR=green><EM>-- DATABASE demo</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- by Ken O. Burtch</EM></FONT>
-<FONT COLOR=green><EM>-------------------------------------------------------------------</EM></FONT>
+<b>pragma</b> annotate( summary, "database" );
+<b>pragma</b> annotate( description, "A simple database demo" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> database <b>is</b>
   database_name : <b>constant</b> string := "ken";
@@ -71,4 +72,8 @@
   db.rollback_work;
   db.disconnect;
 <b>end</b> database;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
 </PRE></BODY></HTML>

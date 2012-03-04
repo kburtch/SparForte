@@ -1,13 +1,12 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
 -- Basic Blackjack
--- by Ken O. Burtch.
 
-pragma annotate( "Basic Blackjack" );
-pragma annotate( "" );
-pragma annotate( "  A basic version of the Blackjack or 21 card game" );
-pragma annotate( "" );
-pragma annotate( "Usage: bjack" );
+pragma annotate( summary, "blackjack" );
+pragma annotate( description, "A basic version of the Blackjack or 21 card game" );
+pragma annotate( description, "Usage: bjack" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands ); -- O/S independent
 
@@ -70,22 +69,14 @@ begin
 
 loop
 
+  -- ante
+
   wallet := wallet - 10;
 
   -- Shuffle Deck
 
-  declare
-     swap_pos : aCard;
-     swap : aCard;
-  begin
-     for i in 1..52 loop
-        swap_pos := aCard( numerics.rnd( 52 ) );
-        swap := deck(i);
-        deck(i) := deck(swap_pos);
-        deck(swap_pos) := swap;
-     end loop;
-     next_card := 52;
-  end;
+  arrays.shuffle( deck );
+  next_card := 52;
 
   -- initial cards
 
@@ -271,4 +262,7 @@ loop
 end loop;
 
 end bjack;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

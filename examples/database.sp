@@ -1,10 +1,11 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--------------------------------------------------------------------
--- DATABASE demo
---
--- by Ken O. Burtch
--------------------------------------------------------------------
+pragma annotate( summary, "database" );
+pragma annotate( description, "A simple database demo" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
+
+pragma restriction( no_external_commands );
 
 procedure database is
   database_name : constant string := "ken";
@@ -66,3 +67,7 @@ begin
   db.rollback_work;
   db.disconnect;
 end database;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
+

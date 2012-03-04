@@ -17,20 +17,14 @@ It's almost a quarter to Nine at night
 <HR>
 <PRE>
 
-<FONT COLOR=green><EM>
-</EM></FONT>
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- neartime</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- Display the time in a "relaxed" format</EM></FONT>
-<FONT COLOR=green><EM>-- based on http://www.zazzybob.com/bin/neartime.html</EM></FONT>
-<FONT COLOR=green><EM>-- Created by Ken O. Burtch</EM></FONT>
-
-<b>pragma</b> annotate( "neartime" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Display the time in a 'relaxed' format" );
-<b>pragma</b> annotate( "usage: neartime" );
+<b>pragma</b> annotate( summary, "neartime" );
+<b>pragma</b> annotate( description, "Display the time in a 'relaxed' format" );
+<b>pragma</b> annotate( description, "usage: neartime" );
+<b>pragma</b> annotate( see_also, "http://www.zazzybob.com/bin/neartime.html" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -51,26 +45,26 @@ It's almost a quarter to Nine at night
   nearhour   : string;
   nearampm   : string;
 
-begin
+<b>begin</b>
 
-<FONT COLOR=green><EM>  -- Usage</EM></FONT>
+  <FONT COLOR=green><EM>-- Usage</EM></FONT>
 
   <b>if</b> $# /= 0 <b>then</b>
      usage;
      <b>return</b>;
   <b>end</b> <b>if</b>;
 
-<FONT COLOR=green><EM>  -- 12 Hour Time</EM></FONT>
+  <FONT COLOR=green><EM>-- 12 Hour Time</EM></FONT>
 
   <b>if</b> minute &gt;= 38 <b>then</b>
-    -- add an hour
+    <FONT COLOR=green><EM>-- add an hour</EM></FONT>
     hour := @ + 1;
     <b>if</b> hour &gt;=  24 <b>then</b>
       hour := 00;
     <b>end</b> <b>if</b>;
   <b>end</b> <b>if</b>;
 
-<FONT COLOR=green><EM>  -- Hour as English Text</EM></FONT>
+  <FONT COLOR=green><EM>-- Hour as English Text</EM></FONT>
 
   <b>case</b> hour <b>is</b>
   <b>when</b> 00|12|24 =&gt; nearhour := "Twelve" ;
@@ -89,7 +83,7 @@ begin
     put_line( standard_error, "unknown time" );
   <b>end</b> <b>case</b>;
 
-<FONT COLOR=green><EM>  -- Determine the time of day</EM></FONT>
+  <FONT COLOR=green><EM>-- Determine the time of day</EM></FONT>
 
   <b>if</b> hour &lt; 12 <b>then</b>
     nearampm := "in the morning";
@@ -101,7 +95,7 @@ begin
     nearampm := "at night";
   <b>end</b> <b>if</b>;
 
-<FONT COLOR=green><EM>  -- Approximate the minutes</EM></FONT>
+  <FONT COLOR=green><EM>-- Approximate the minutes</EM></FONT>
 
   <b>if</b> minute = 0 <b>then</b>
     nearbefore := "exactly ";
@@ -112,7 +106,7 @@ begin
   <b>elsif</b> minute &lt; 15 <b>then</b>
     nearbefore := "almost a quarter past ";
     nearafter := "";
-  <b> elsif</b> minute = 15 <b>then</b>
+  <b>elsif</b> minute = 15 <b>then</b>
     nearbefore := "a quarter past ";
     nearafter := "";
   <b>elsif</b> minute &lt; 23 <b>then</b>
@@ -138,7 +132,7 @@ begin
     nearafter := "o'clock ";
   <b>end</b> <b>if</b>;
 
-<FONT COLOR=green><EM>  -- Display the time</EM></FONT>
+  <FONT COLOR=green><EM>-- Display the time</EM></FONT>
 
   put_line( "It's " &amp; nearbefore &amp; nearhour &amp; ' ' &amp; nearafter &amp; nearampm );
 
@@ -146,5 +140,7 @@ begin
 
 <b>end</b> neartime;
 
-<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
 </PRE></BODY></HTML>

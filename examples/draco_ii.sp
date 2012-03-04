@@ -1,18 +1,14 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
 -- Draco II
 
-pragma annotate( "Draco II" );
-pragma annotate( "" );
-pragma annotate( "  Survive a hostile wilderness and slay monsters." );
-pragma annotate( "" );
-pragma annotate( "  Originally written in AppleSoft BASIC" );
-pragma annotate( "  by Ken O. Burtch circa 1980" );
-pragma annotate( "" );
-pragma annotate( "  Adapted to SparForte in April 2003" );
-pragma annotate( "  by Ken O. Burtch" );
-pragma annotate( "" );
-pragma annotate( "Usage: draco_ii" );
+pragma annotate( summary, "draco_ii" );
+pragma annotate( description, "Survive a hostile wilderness and slay monsters." );
+pragma annotate( description, "Originally written in AppleSoft BASIC" );
+pragma annotate( description, "by Ken O. Burtch circa 1980" );
+pragma annotate( description, "Adapted to SparForte in April 2003" );
+pragma annotate( description, "Usage: draco_ii" );
+pragma annotate( author, "Ken O. Burtch" );
 
 pragma ada_95;                               -- enforce Ada 95 rules and style
 
@@ -528,7 +524,7 @@ begin
                             put_line( "bags of brilliant perls." );
                             reward_bonus := 50;
                           when 4 =>
-                            put_line( "a gorgeous furs." );
+                            put_line( "gorgeous furs." );
                             reward_bonus := 40;
                           when 5 =>
                             put_line( "a beautiful ruby." );
@@ -1038,3 +1034,7 @@ begin
   end loop; -- game (level) loop
 
 end draco_ii;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
+

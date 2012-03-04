@@ -1,20 +1,60 @@
 <HEAD><TITLE>poetry.sp</TITLE></HEAD>
 <BODY>
 <HR><DIV ALIGN="center"><H1> File : poetry.sp </H1></DIV><HR>
-<IMG SRC="poetry.gif">
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar poetry.sp
+Creating word lists and counting items...
+
+Poetry Generator
+
+This script takes an outline of a story or a poem
+and inserts random words for numbers.
+
+Type in a story or poem.  End with a blank line.
+Mark words to substitute with a number:
+ 1 = noun ( 56)
+ 2 = verb ( 41)
+ 3 = adverb ( 10)
+ 4 = adjective ( 34)
+ 5 = preposition ( 15)
+ 6 = conjunction ( 5)
+
+roses are 4
+  violets are 4
+a 1 is 4
+  6 1s 2 5 the 3 4 1
+
+
+roses are pink
+  violets are pleasant
+a glare is glistening
+  thus eyes lapped out the hardly pleasant night
+
+Another poem? (y/n)
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
 <PRE>
 #!/usr/local/bin/spar
 <b>pragma</b> ada_95;
+<b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> poetry <b>is</b>
 
-  <FONT COLOR=green><EM>-- Ken's Business Shell Poetry Generator</EM></FONT>
-
-  <b>pragma</b> annotate( "SparForte Poetry Generator" );
-  <b>pragma</b> annotate( "" );
-  <b>pragma</b> annotate( "  created for PegaSoft Summer Programming Challenge" );
-  <b>pragma</b> annotate( "" );
-  <b>pragma</b> annotate( "Usage: poetry" );
+  <b>pragma</b> annotate( summary, "SparForte Poetry Generator" );
+  <b>pragma</b> annotate( description, "Keyword replacement poetry generator" );
+  <b>pragma</b> annotate( description, "created for PegaSoft Summer Programming Challenge" );
+  <b>pragma</b> annotate( description, "Usage: poetry" );
+  <b>pragma</b> license( unrestricted );
 
   nouns        : string;
   verbs        : string;
@@ -329,5 +369,8 @@ new_line;
 put_line( "Bye" );
 
 <b>end</b> poetry;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

@@ -20,20 +20,21 @@ WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "rle" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Given a string containing uppercase characters (A-Z)," );
-<b>pragma</b> annotate( "compress repeated 'runs' of the same character by" );
-<b>pragma</b> annotate( "storing the length of that run, and provide a function to" );
-<b>pragma</b> annotate( "reverse the compression. The output can be anything, as" );
-<b>pragma</b> annotate( "long as you can recreate the input with it." );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Example:" );
-<b>pragma</b> annotate( "Input: WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW" );
-<b>pragma</b> annotate( "Output: 12W1B12W3B24W1B14W" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "http://rosettacode.org/wiki/Run-length_encoding" );
-<b>pragma</b> annotate( "by Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "rle" );
+<b>pragma</b> annotate( description, "Given a string containing uppercase characters (A-Z)," );
+<b>pragma</b> annotate( description, "compress repeated 'runs' of the same character by" );
+<b>pragma</b> annotate( description, "storing the length of that run, and provide a function to" );
+<b>pragma</b> annotate( description, "reverse the compression. The output can be anything, as" );
+<b>pragma</b> annotate( description, "long as you can recreate the input with it." );
+<b>pragma</b> annotate( description, "" );
+<b>pragma</b> annotate( description, "Example:" );
+<b>pragma</b> annotate( description, "Input: WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW" );
+<b>pragma</b> annotate( description, "Output: 12W1B12W3B24W1B14W" );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Run-length_encoding" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> rle <b>is</b>
 
@@ -96,5 +97,8 @@ WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW
   ? to_rle( "WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW" );
   ? from_rle( "12W1B12W3B24W1B14W");
 <b>end</b> rle;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

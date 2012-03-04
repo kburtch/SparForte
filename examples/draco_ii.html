@@ -1,17 +1,53 @@
 <HEAD><TITLE>draco_ii.sp</TITLE></HEAD>
 <BODY>
 <HR><DIV ALIGN="center"><H1> File : draco_ii.sp </H1></DIV><HR>
-<IMG SRC="draco_ii.gif">
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+<b>Draco II</b>
+
+1) Evade            2) Strike with mace
+3) Search for water 4) Run like crazy
+5) Proceed          6) Surrender          R) Review stats
+The anti-fire ring magic is automatic.
+
+(Level 1) There are 4 miles to go.
+
+There is no danger to be seen.
+<b>You're in rough shape</b>
+From the turret of a dark castle you hear a terrified scream
+for help!  A strong hero is required!  What will you do?
+1) Check it out    2) Keep going
+
+You attack the castle, storming through the gates.
+You rescue the beautiful princess!!
+
+Her father awards you with gorgeous furs.
+BONUS:  40
+
+What will you do? *
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
 <PRE>
 #!/usr/local/bin/spar
 
 <FONT COLOR=green><EM>-- Draco II</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- Originally written in AppleSoft BASIC</EM></FONT>
-<FONT COLOR=green><EM>-- by Ken O. Burtch circa 1980</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- Adapted to SparForte in April 2003</EM></FONT>
-<FONT COLOR=green><EM>-- by Ken O. Burtch</EM></FONT>
+
+<b>pragma</b> annotate( summary, "draco_ii" );
+<b>pragma</b> annotate( description, "Survive a hostile wilderness and slay monsters." );
+<b>pragma</b> annotate( description, "Originally written in AppleSoft BASIC" );
+<b>pragma</b> annotate( description, "by Ken O. Burtch circa 1980" );
+<b>pragma</b> annotate( description, "Adapted to SparForte in April 2003" );
+<b>pragma</b> annotate( description, "Usage: draco_ii" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
 
 <b>pragma</b> ada_95;                               <FONT COLOR=green><EM>-- enforce Ada 95 rules and style</EM></FONT>
 
@@ -21,12 +57,8 @@
   <FONT COLOR=green><EM>--</EM></FONT>
   <FONT COLOR=green><EM>-- Linux/UNIX tput returns a string to control the terminal display</EM></FONT>
 
-  tty_inverse : <b>constant</b> string := `tput( "smso" );`;  <FONT COLOR=green><EM>-- inverse print</EM></FONT>
-  tty_normal  : <b>constant</b> string := `tput( "rmso" );`;  <FONT COLOR=green><EM>-- normal print</EM></FONT>
-
-  <b>pragma</b> restriction( no_external_commands );
-  <FONT COLOR=green><EM>-- tput was only O/S command we needed--no more past this point</EM></FONT>
-
+  tty_inverse : string; <FONT COLOR=green><EM>-- inverse print</EM></FONT>
+  tty_normal  : string; <FONT COLOR=green><EM>-- normal print</EM></FONT>
 
   <FONT COLOR=green><EM>-- General Player Info</EM></FONT>
 
@@ -296,7 +328,19 @@
 
   <FONT COLOR=green><EM>-- Initialize Draco II</EM></FONT>
 
-  clear;
+  <FONT COLOR=green><EM>-- Inverse printing.  First try terminfo (Linux), then termcap (FreeBSD).</EM></FONT>
+
+  tty_inverse := `tput( "smso" );`;
+  <b>if</b> tty_inverse = "" <b>then</b>
+     tty_inverse := `tput( "so" );`;
+  <b>end</b> <b>if</b>;
+  tty_normal := `tput( "rmso" );`;
+  <b>if</b> tty_normal = "" <b>then</b>
+     tty_normal := `tput( "se" );`;
+  <b>end</b> <b>if</b>;
+
+
+  <b>clear</b>;
   put_line( tty_inverse &amp; "Draco II" &amp; tty_normal );
   new_line;
   put_line( "Survive a hostile wilderness and slay monsters." );
@@ -319,7 +363,11 @@
   <b>end</b> <b>loop</b>;
 
   put( "Press any key to begin *" &amp; ASCII.BS );
-  ch := inkey;
+  <b>declare</b>
+    ch : character := inkey;
+  <b>begin</b>
+    <b>null</b>;
+  <b>end</b>;
 
   <FONT COLOR=green><EM>-- Game loop: loop for each level</EM></FONT>
 
@@ -352,7 +400,7 @@
 
     <FONT COLOR=green><EM>-- display menu</EM></FONT>
 
-    clear;
+    <b>clear</b>;
     put_line( tty_inverse &amp; "Draco II" &amp; tty_normal );
     new_line;
     put_line( "1) Evade            2) Strike with " &amp; weapon_name );
@@ -515,7 +563,7 @@
                             put_line( "bags of brilliant perls." );
                             reward_bonus := 50;
                           <b>when</b> 4 =&gt;
-                            put_line( "a gorgeous furs." );
+                            put_line( "gorgeous furs." );
                             reward_bonus := 40;
                           <b>when</b> 5 =&gt;
                             put_line( "a beautiful ruby." );
@@ -955,7 +1003,7 @@
         item_bonus  : natural := 0;
         level_bonus : natural := 0;
      <b>begin</b>
-        clear;
+        <b>clear</b>;
         put_line( tty_inverse &amp; "Draco II" &amp; tty_normal );
         new_line;
         put( "Congratulations!  You made it through level" );
@@ -991,8 +1039,11 @@
         put( score, "ZZZZZ9" );
         new_line;
         put( "Press any key *" &amp; ASCII.BS );
-        ch := inkey;
-        put_line( ch );
+        <b>declare</b>
+          ch : character := inkey;
+        <b>begin</b>
+          put_line( ch );
+        <b>end</b>;
      <b>end</b>;
   <b>elsif</b> status = dead <b>then</b>
 
@@ -1022,4 +1073,8 @@
   <b>end</b> <b>loop</b>; <FONT COLOR=green><EM>-- game (level) loop</EM></FONT>
 
 <b>end</b> draco_ii;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
 </PRE></BODY></HTML>

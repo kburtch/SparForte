@@ -1,19 +1,20 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "rle" );
-pragma annotate( "" );
-pragma annotate( "Given a string containing uppercase characters (A-Z)," );
-pragma annotate( "compress repeated 'runs' of the same character by" );
-pragma annotate( "storing the length of that run, and provide a function to" );
-pragma annotate( "reverse the compression. The output can be anything, as" );
-pragma annotate( "long as you can recreate the input with it." );
-pragma annotate( "" );
-pragma annotate( "Example:" );
-pragma annotate( "Input: WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW" );
-pragma annotate( "Output: 12W1B12W3B24W1B14W" );
-pragma annotate( "" );
-pragma annotate( "http://rosettacode.org/wiki/Run-length_encoding" );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "rle" );
+pragma annotate( description, "Given a string containing uppercase characters (A-Z)," );
+pragma annotate( description, "compress repeated 'runs' of the same character by" );
+pragma annotate( description, "storing the length of that run, and provide a function to" );
+pragma annotate( description, "reverse the compression. The output can be anything, as" );
+pragma annotate( description, "long as you can recreate the input with it." );
+pragma annotate( description, "" );
+pragma annotate( description, "Example:" );
+pragma annotate( description, "Input: WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW" );
+pragma annotate( description, "Output: 12W1B12W3B24W1B14W" );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Run-length_encoding" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
+
+pragma restriction( no_external_commands );
 
 procedure rle is
 
@@ -76,4 +77,7 @@ begin
   ? to_rle( "WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW" );
   ? from_rle( "12W1B12W3B24W1B14W");
 end rle;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

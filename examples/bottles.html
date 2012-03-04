@@ -22,14 +22,12 @@ Take one down, pass it around
 <PRE>
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- A common interview test from Rosetta Code for testing basic programming</EM></FONT>
-<FONT COLOR=green><EM>-- skills.</EM></FONT>
-
-<b>pragma</b> annotate( "bottles" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "In this puzzle, write code to print out the entire '99 bottles of beer" );
-<b>pragma</b> annotate( "on the wall' song." );
-<b>pragma</b> annotate( "translated by Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "bottles" );
+<b>pragma</b> annotate( description, "In this puzzle, write code to print out the entire '99 bottles of beer" );
+<b>pragma</b> annotate( description, "on the wall' song.  A common interview test from Rosetta Code for" );
+<b>pragma</b> annotate( description, "testing basic programming skills." );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -39,7 +37,11 @@ Take one down, pass it around
        ? strings.image( X ) &amp; " bottles of beer on the wall";
        ? strings.image( X ) &amp; " bottles of beer";
        ? "Take one down, pass it around";
-       ? strings.image( X-1 ) &amp; " bottles of beer on the wall" @ "";
+       ? strings.image( integer(X-1) ) &amp; " bottles of beer on the wall" @ "";
     <b>end</b> <b>loop</b>;
  <b>end</b> Bottles;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
 </PRE></BODY></HTML>

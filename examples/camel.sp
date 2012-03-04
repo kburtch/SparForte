@@ -1,17 +1,14 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- CAMEL
-
-pragma annotate( "Camel" );
-pragma annotate( "" );
-pragma annotate( "  Outrun pygmies across the GOBI Desert." );
-pragma annotate( "" );
-pragma annotate( "  Originally written in BASIC by David Ahl, Creative Computing" );
-pragma annotate( "  From his book 'BASIC COmputer Games'" );
-pragma annotate( "  At last check, Dave is at http://www.swapmeetdave.com" );
-pragma annotate( "  SparForte port by Ken O. Burtch, March 2003" );
-pragma annotate( "" );
-pragma annotate( "Usage: camel" );
+pragma annotate( summary, "camel" );
+pragma annotate( description, "Outrun pygmies across the GOBI Desert." );
+pragma annotate( description, "Originally written in BASIC by David Ahl, Creative Computing" );
+pragma annotate( description, "From his book 'BASIC COmputer Games'" );
+pragma annotate( description, "SparForte port by Ken O. Burtch, March 2003" );
+pragma annotate( description, "Usage: camel" );
+pragma annotate( see_also, "http://www.swapmeetdave.com" );
+pragma annotate( author, "Ken O. Burth" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -62,7 +59,8 @@ loop
     if reply /= '5' then -- didn't move on status
        thirst := @-1;
        if thirst = 1 then
-          put_line( "-------------------W A R N I N G------------GET A DRINK" );
+          put_line( "-------------------W A R N I N G------------" );
+          put_line( "GET A DRINK" );
        elsif thirst < 0 then
           put_line( "You ran out of water......sorry chum!!!" );
           status := dead;
@@ -241,4 +239,7 @@ loop
   end if;
 end loop;
 command_line.set_exit_status( 0 );
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

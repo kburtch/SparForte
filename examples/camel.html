@@ -1,18 +1,51 @@
 <HEAD><TITLE>camel.sp</TITLE></HEAD>
 <BODY>
 <HR><DIV ALIGN="center"><H1> File : camel.sp </H1></DIV><HR>
-<IMG SRC="camel.gif"><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+What is your command? 2
+Your camel likes this pace.
+The pygmies are  7 miles behind you.
+You have travelled  17 miles altogether.
+
+What is your command? 4
+Your camel thanks you !
+-------------------W A R N I N G------------
+GET A DRINK
+The pygmies are  12 miles behind you.
+You have travelled  17 miles altogether.
+
+What is your command? 1
+BETTER WATCH FOR AN OASES  !
+The pygmies have captured you.  Camel and people soup is their
+favorite dish !!!!!!
+You died in the desert.
+The local sheik now uses your skull for a change purse !!!!
+
+Want a new camel and a new game? 
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
 <PRE>
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- CAMEL</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- Originally written in BASIC by David Ahl, Creative Computing</EM></FONT>
-<FONT COLOR=green><EM>-- From his book 'BASIC COmputer Games'</EM></FONT>
-<FONT COLOR=green><EM>-- At last check, Dave is at http://www.swapmeetdave.com</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- SparForte port by Ken O. Burtch</EM></FONT>
-<FONT COLOR=green><EM>-- March 2003</EM></FONT>
+<b>pragma</b> annotate( summary, "camel" );
+<b>pragma</b> annotate( description, "Outrun pygmies across the GOBI Desert." );
+<b>pragma</b> annotate( description, "Originally written in BASIC by David Ahl, Creative Computing" );
+<b>pragma</b> annotate( description, "From his book 'BASIC COmputer Games'" );
+<b>pragma</b> annotate( description, "SparForte port by Ken O. Burtch, March 2003" );
+<b>pragma</b> annotate( description, "Usage: camel" );
+<b>pragma</b> annotate( see_also, "http://www.swapmeetdave.com" );
+<b>pragma</b> annotate( author, "Ken O. Burth" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -63,7 +96,8 @@ put_line("You are in the middle of the desert at an oasis." );
     <b>if</b> reply /= '5' <b>then</b> <FONT COLOR=green><EM>-- didn't move on status</EM></FONT>
        thirst := @-1;
        <b>if</b> thirst = 1 <b>then</b>
-          put_line( "-------------------W A R N I N G------------GET A DRINK" );
+          put_line( "<FONT COLOR=green><EM>-------------------W A R N I N G------------" );</EM></FONT>
+          put_line( "GET A DRINK" );
        <b>elsif</b> thirst &lt; 0 <b>then</b>
           put_line( "You ran out of water......sorry chum!!!" );
           status := dead;
@@ -196,14 +230,14 @@ put_line("You are in the middle of the desert at an oasis." );
          <b>if</b> scene <b>in</b> 1..50 <b>then</b>
             new_line;
             put_line( "WILD BERBERS HIDDEN IN THE SAND HAVE CAPTURED YOU." );
-            put_line( "Luckily the local sheik has agreed to their ransom" );
+            put_line( "Luckily the local sheik has agreed to their ransom<FONT COLOR=green><EM>----" );</EM></FONT>
             put_line( "demands.....but........watch for the pygmies!!!!!!" );
             status := captured;
          <b>elsif</b> scene <b>in</b> 51..240 <b>then</b> 
             thirst := 4;
             canteen := 6;
             new_line;
-            put_line( "You have arrived at an oases--------Your camel is filling " );
+            put_line( "You have arrived <b>at</b> an oases<FONT COLOR=green><EM>--------Your camel is filling " );</EM></FONT>
             put_line( "your canteen and eating figs." );
          <b>elsif</b> scene <b>in</b> 241..277 <b>then</b>
             dist := @+integer(numerics.rnd(19)-10);
@@ -235,12 +269,15 @@ put_line("You are in the middle of the desert at an oasis." );
      camel := 0;
      status := alive;
   <b>else</b>
-     put( "------------------" );
+     put( "<FONT COLOR=green><EM>------------------" );</EM></FONT>
      put( "     CHICKEN     " );
-     put_line( "------------------" );
+     put_line( "<FONT COLOR=green><EM>------------------" );</EM></FONT>
      <b>exit</b>;
   <b>end</b> <b>if</b>;
 <b>end</b> <b>loop</b>;
 command_line.set_exit_status( 0 );
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

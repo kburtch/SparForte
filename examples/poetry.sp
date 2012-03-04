@@ -1,15 +1,14 @@
 #!/usr/local/bin/spar
 pragma ada_95;
+pragma restriction( no_external_commands );
 
 procedure poetry is
 
-  -- Ken's Business Shell Poetry Generator
-
-  pragma annotate( "SparForte Poetry Generator" );
-  pragma annotate( "" );
-  pragma annotate( "  created for PegaSoft Summer Programming Challenge" );
-  pragma annotate( "" );
-  pragma annotate( "Usage: poetry" );
+  pragma annotate( summary, "SparForte Poetry Generator" );
+  pragma annotate( description, "Keyword replacement poetry generator" );
+  pragma annotate( description, "created for PegaSoft Summer Programming Challenge" );
+  pragma annotate( description, "Usage: poetry" );
+  pragma license( unrestricted );
 
   nouns        : string;
   verbs        : string;
@@ -324,4 +323,7 @@ end;
 put_line( "Bye" );
 
 end poetry;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

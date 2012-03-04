@@ -1,11 +1,13 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-procedure Roman is
+procedure roman_numerals is
 
-  pragma annotate( "Roman Numerals" );
-  pragma annotate( "" );
-  pragma annotate( "Roman numeral arithmetic adapted from an Ada to SparForte" );
-  pragma annotate( "adapted by Ken O. Burtch" );
+  pragma annotate( summary, "roman_numerals" );
+  pragma annotate( description, "Roman numeral arithmetic adapted from an Ada to SparForte" );
+  pragma annotate( description, "Based on an example from the Public Ada Library" );
+  pragma annotate( author, "Ken O. Burtch" );
+  pragma license( unrestricted );
+
   pragma ada_95;
   pragma restriction( no_external_commands );
 
@@ -109,8 +111,6 @@ procedure Roman is
       
      CurrentPosition := CurrentPosition + 1; -- Increment the counter Variable
 
-     --exit when CurrentPosition = (LEN + 1); -- Exit the loop after the last character is read
-      
     
     end loop; -- End the loop here  
     
@@ -170,13 +170,13 @@ procedure Roman is
                            UserInput2 : natural;
                            Choice     : integer ) return natural is
      Output : natural;
--- Write this procedure in the morning
--- what this essentially does is 
--- it takes in userinput1 and userinput2 and Choice as IN Variables
--- According to the user's specified choice we can then compute the possible
--- values and return Output
--- This value of output will the in turn be stored in a variable called 
--- FinalInteger
+     -- Wrote this procedure in the morning
+     -- what this essentially does is 
+     -- it takes in userinput1 and userinput2 and Choice as IN Variables
+     -- According to the user's specified choice we can then compute the possible
+     -- values and return Output
+     -- This value of output will the in turn be stored in a variable called 
+     -- FinalInteger
       
       -- declare variables here
       
@@ -322,7 +322,8 @@ begin -- Procedure Roman
 
   ConvertBack(FinalInteger);   
 
-end Roman; 
+end roman_numerals; 
 
--- VIM editor formatting instructions -- vim: ft=bush
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

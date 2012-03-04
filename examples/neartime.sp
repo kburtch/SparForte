@@ -1,15 +1,11 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- neartime
---
--- Display the time in a "relaxed" format
--- based on http://www.zazzybob.com/bin/neartime.html
--- Created by Ken O. Burtch
-
-pragma annotate( "neartime" );
-pragma annotate( "" );
-pragma annotate( "Display the time in a 'relaxed' format" );
-pragma annotate( "usage: neartime" );
+pragma annotate( summary, "neartime" );
+pragma annotate( description, "Display the time in a 'relaxed' format" );
+pragma annotate( description, "usage: neartime" );
+pragma annotate( see_also, "http://www.zazzybob.com/bin/neartime.html" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -125,5 +121,6 @@ begin
 
 end neartime;
 
--- VIM editor formatting instructions -- vim: ft=bush
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

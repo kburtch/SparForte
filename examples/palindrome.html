@@ -20,17 +20,16 @@ ablewasiereisawelba : true
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "palindrome" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Write at least one function/method (or whatever it is" );
-<b>pragma</b> annotate( "called in your preferred language) to check if a" );
-<b>pragma</b> annotate( "sequence of characters (or bytes) is a palindrome or" );
-<b>pragma</b> annotate( "not. The function must return a boolean value (or" );
-<b>pragma</b> annotate( "something that can be used as boolean value, like an" );
-<b>pragma</b> annotate( "integer)." );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "http://rosettacode.org/wiki/Palindrome_detection" );
-<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+<b>pragma</b> annotate( summary, "palindrome" );
+<b>pragma</b> annotate( description, "Write at least one function/method (or whatever it is" );
+<b>pragma</b> annotate( description, "called in your preferred language) to check if a" );
+<b>pragma</b> annotate( description, "sequence of characters (or bytes) is a palindrome or" );
+<b>pragma</b> annotate( description, "not. The function must return a boolean value (or" );
+<b>pragma</b> annotate( description, "something that can be used as boolean value, like an" );
+<b>pragma</b> annotate( description, "integer)." );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Palindrome_detection" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -59,5 +58,8 @@ ablewasiereisawelba : true
   put(  sentence ) @ ( " : " ) @ ( result );
   new_line;
 <b>end</b> palindrome;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

@@ -1,16 +1,15 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "palindrome" );
-pragma annotate( "" );
-pragma annotate( "Write at least one function/method (or whatever it is" );
-pragma annotate( "called in your preferred language) to check if a" );
-pragma annotate( "sequence of characters (or bytes) is a palindrome or" );
-pragma annotate( "not. The function must return a boolean value (or" );
-pragma annotate( "something that can be used as boolean value, like an" );
-pragma annotate( "integer)." );
-pragma annotate( "" );
-pragma annotate( "http://rosettacode.org/wiki/Palindrome_detection" );
-pragma annotate( "by Ken O. Burtch (based on Ada version)" );
+pragma annotate( summary, "palindrome" );
+pragma annotate( description, "Write at least one function/method (or whatever it is" );
+pragma annotate( description, "called in your preferred language) to check if a" );
+pragma annotate( description, "sequence of characters (or bytes) is a palindrome or" );
+pragma annotate( description, "not. The function must return a boolean value (or" );
+pragma annotate( description, "something that can be used as boolean value, like an" );
+pragma annotate( description, "integer)." );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Palindrome_detection" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -39,4 +38,7 @@ begin
   put(  sentence ) @ ( " : " ) @ ( result );
   new_line;
 end palindrome;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

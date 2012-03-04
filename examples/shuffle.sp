@@ -1,16 +1,15 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "shuffle" );
-pragma annotate( "" );
-pragma annotate( "Implement the Knuth shuffle (aka the" );
-pragma annotate( "Fisher-Yates-Durstenfeld shuffle)" );
-pragma annotate( "for an integer array (or, if possible, an array of any" );
-pragma annotate( "type). The Knuth shuffle is used to create a random" );
-pragma annotate( "permutation of an array." );
-pragma annotate( "http://rosettacode.org/wiki/Knuth_shuffle" );
-pragma annotate( "" );
-pragma annotate( "Note: Bush has a built-in arrays.shuffle() function." );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "shuffle" );
+pragma annotate( description, "Implement the Knuth shuffle (aka the" );
+pragma annotate( description, "Fisher-Yates-Durstenfeld shuffle)" );
+pragma annotate( description, "for an integer array (or, if possible, an array of any" );
+pragma annotate( description, "type). The Knuth shuffle is used to create a random" );
+pragma annotate( description, "permutation of an array." );
+pragma annotate( description, "Note: spar has a built-in arrays.shuffle() function that does this." );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Knuth_shuffle" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -37,4 +36,7 @@ begin
   end loop;
 
 end shuffle;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

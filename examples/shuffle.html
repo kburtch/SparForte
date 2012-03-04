@@ -26,17 +26,16 @@ book
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "shuffle" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Implement the Knuth shuffle (aka the" );
-<b>pragma</b> annotate( "Fisher-Yates-Durstenfeld shuffle)" );
-<b>pragma</b> annotate( "for an integer array (or, if possible, an array of any" );
-<b>pragma</b> annotate( "type). The Knuth shuffle is used to create a random" );
-<b>pragma</b> annotate( "permutation of an array." );
-<b>pragma</b> annotate( "http://rosettacode.org/wiki/Knuth_shuffle" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Note: Bush has a built-in arrays.shuffle() function." );
-<b>pragma</b> annotate( "by Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "shuffle" );
+<b>pragma</b> annotate( description, "Implement the Knuth shuffle (aka the" );
+<b>pragma</b> annotate( description, "Fisher-Yates-Durstenfeld shuffle)" );
+<b>pragma</b> annotate( description, "for an integer array (or, if possible, an array of any" );
+<b>pragma</b> annotate( description, "type). The Knuth shuffle is used to create a random" );
+<b>pragma</b> annotate( description, "permutation of an array." );
+<b>pragma</b> annotate( description, "Note: spar has a built-in arrays.shuffle() function that does this." );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Knuth_shuffle" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -63,5 +62,8 @@ book
   <b>end</b> <b>loop</b>;
 
 <b>end</b> shuffle;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>
