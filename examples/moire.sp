@@ -1,9 +1,9 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "moire" );
-pragma annotate( "" );
-pragma annotate( "Draw a moire pattern and erase it using inverse pen mode" );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "moire" );
+pragma annotate( description, "Draw a moire pattern and erase it using inverse pen mode" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -32,4 +32,7 @@ begin
   s := get_line;
 
 end moire;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

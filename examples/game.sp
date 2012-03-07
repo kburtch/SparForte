@@ -1,10 +1,11 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- game.bush
---
--- This is a number guessing game.
--- Demo program for the Bush shell
--- by Ken O. Burtch
+pragma annotate( summary, "game" );
+pragma annotate( description, "This is a number guessing game." );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
+
+pragma restriction( no_external_commands );
 
 procedure game is
   n1    : constant integer := integer( numerics.rnd( 4 ) );
@@ -71,4 +72,7 @@ begin
   put_line( "Thanks for playing." );
 
 end game;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

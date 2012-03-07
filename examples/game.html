@@ -1,15 +1,46 @@
 <HEAD><TITLE>game.sp</TITLE></HEAD>
 <BODY>
 <HR><DIV ALIGN="center"><H1> File : game.sp </H1></DIV><HR>
-<IMG SRC="game.gif"><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+Numbers Game
+
+I've chosen three numbers between 1 and 4
+Guess what they are!  You've got 10 tries.
+
+Guess # 1:
+  Number 1? (1-4) 1
+  Number 2? (1-4) 2
+  Number 3? (1-4) 4
+You've got 2 right.
+Guess # 2:
+  Number 1? (1-4) 1
+  Number 2? (1-4) 2
+  Number 3? (1-4) 3
+You've got 1 right.
+Guess # 3:
+  Number 1? (1-4)
+
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
 <PRE>
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- game.sp</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- This is a number guessing game.</EM></FONT>
-<FONT COLOR=green><EM>-- Demo program for the Bush shell</EM></FONT>
-<FONT COLOR=green><EM>-- by Ken O. Burtch</EM></FONT>
+<b>pragma</b> annotate( summary, "game" );
+<b>pragma</b> annotate( description, "This is a number guessing game." );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> game <b>is</b>
   n1    : <b>constant</b> integer := integer( numerics.rnd( 4 ) );
@@ -18,7 +49,7 @@
   reply : integer;
   match : integer;
 <b>begin</b>
-  clear;
+  <b>clear</b>;
   put_line( "Numbers Game" );
   new_line;
 
@@ -76,5 +107,8 @@
   put_line( "Thanks for playing." );
 
 <b>end</b> game;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

@@ -1,15 +1,15 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
 -- HUNT THE WUMPUS
 
-pragma annotate( "Hunt the Wumpus" );
-pragma annotate( "" );
-pragma annotate( "  Originally for the PDP-8." );
-pragma annotate( "  The Timeless cave-crawling classic based on GW-BASIC source" );
-pragma annotate( "  www.ifarchive.org.  Modified for SparForte by Ken O. Burtch." );
-pragma annotate( "" );
-pragma annotate( "Usage: wumpus" );
-pragma annotate( "For sound effects, run as superuser" );
+pragma annotate( summary, "wumpus" );
+pragma annotate( description, "Hunt the Wumpus" );
+pragma annotate( description, "Originally for the PDP-8." );
+pragma annotate( description, "The Timeless cave-crawling classic based on GW-BASIC source" );
+pragma annotate( description, "www.ifarchive.org.  Modified for SparForte by Ken O. Burtch." );
+pragma annotate( description, "For sound effects, run as superuser" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma ada_95;                       -- strict programming practices
 pragma restriction( no_external_commands ); -- O/S independent
@@ -394,4 +394,7 @@ loop
 end loop; -- main loop
 
 end wumpus;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

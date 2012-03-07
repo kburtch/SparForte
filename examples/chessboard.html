@@ -15,10 +15,10 @@
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "chessboard" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Draw a chessboard with graphics using the Business Shell" );
-<b>pragma</b> annotate( "by Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "chessboard" );
+<b>pragma</b> annotate( description, "Draw a chessboard with graphics using SparForte" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -39,7 +39,7 @@
       <b>for</b> x <b>in</b> 1..8 <b>loop</b>
           pen.frame_rect( c, r );
           <b>if</b> fill <b>then</b>
-             pen.fill_rect( c, r );
+             pen.paint_rect( c, r );
           <b>end</b> <b>if</b>;
           pen.offset_rect( r, 10, 0 );
           fill := <b>not</b> @;
@@ -50,5 +50,8 @@
   s := get_line;
 
 <b>end</b> chessboard;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

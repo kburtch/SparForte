@@ -1743,102 +1743,9 @@ begin
 end ParsePenPlot;
 
 procedure StartupPen is
+
+procedure declarePenColorNames1 is
 begin
-
-  declareIdent( pen_coordinate_t, "pen.coordinate", float_t, typeClass );
-
-  declareIdent( pen_rgbcomponent_t, "pen.rgbcomponent", float_t, typeClass );
-
-  declareIdent( pen_rect_t, "pen.rect", root_record_t, typeClass );
-
-  identifiers( pen_rect_t ).value := to_unbounded_string( "4" );
-  declareIdent( pen_rect_left_t, "pen.rect.left", pen_coordinate_t, subClass );
-  identifiers( pen_rect_left_t ).field_of := pen_rect_t;
-  identifiers( pen_rect_left_t ).value := to_unbounded_string( "1" );
-  declareIdent( pen_rect_top_t, "pen.a_rect.top", pen_coordinate_t, subClass );
-  identifiers( pen_rect_top_t ).field_of := pen_rect_t;
-  identifiers( pen_rect_top_t ).value := to_unbounded_string( "2" );
-  declareIdent( pen_rect_right_t, "pen.rect.right", pen_coordinate_t, subClass );
-  identifiers( pen_rect_right_t ).field_of := pen_rect_t;
-  identifiers( pen_rect_right_t ).value := to_unbounded_string( "3" );
-  declareIdent( pen_rect_bottom_t, "pen.rect.bottom", pen_coordinate_t, subClass );
-  identifiers( pen_rect_bottom_t ).field_of := pen_rect_t;
-  identifiers( pen_rect_bottom_t ).value := to_unbounded_string( "4" );
-
-  declareIdent( pen_canvas_id_t, "pen.canvas_id", long_integer_t, typeClass );
-
-  declareIdent( pen_pen_mode_t, "pen.pen_mode", root_enumerated_t, typeClass );
-  declareStandardConstant( pen_mode_invert_t, "pen_mode.invert", pen_pen_mode_t, "0" );
-  declareStandardConstant( pen_mode_add_t, "pen_mode.add", pen_pen_mode_t, "1" );
-  declareStandardConstant( pen_mode_subtract_t, "pen_mode.subtract", pen_pen_mode_t, "2" );
-  declareStandardConstant( pen_mode_average_t, "pen_mode.average", pen_pen_mode_t, "3" );
-  declareStandardConstant( pen_mode_copy_t, "pen_mode.copy", pen_pen_mode_t, "4" );
-  declareStandardConstant( pen_mode_off_t, "pen_mode.off", pen_pen_mode_t, "5" );
-
-  declareIdent( pen_pen_brush_t, "pen.pen_brush", root_enumerated_t, typeClass );
-  declareStandardConstant( pen_brush_undefined_t, "pen_brush.undefined", pen_pen_brush_t, "0" );
-  declareStandardConstant( pen_brush_pencil_t, "pen_brush.pencil", pen_pen_brush_t, "1" );
-  declareStandardConstant( pen_brush_stretch_t, "pen_brush.stretch", pen_pen_brush_t, "2" );
-  declareStandardConstant( pen_brush_tile_t, "pen_brush.tile", pen_pen_brush_t, "3" );
-  declareStandardConstant( pen_brush_stamp_t, "pen_brush.stamp", pen_pen_brush_t, "4" );
-  declareStandardConstant( pen_brush_smear_t, "pen_brush.smear", pen_pen_brush_t, "5" );
-
--- null rect needs to be declared
-
-  declareProcedure( pen_set_rect_t, "pen.set_rect" );
-  declareFunction( pen_is_empty_rect_t, "pen.is_empty_rect" );
-  declareProcedure( pen_offset_rect_t, "pen.offset_rect" );
-  declareProcedure( pen_inset_rect_t, "pen.inset_rect" );
-  declareProcedure( pen_intersect_rect_t, "pen.intersect_rect" );
-  declareProcedure( pen_inside_rect_t, "pen.inside_rect" );
-  declareProcedure( pen_in_rect_t, "pen.in_rect" );
-
-  declareProcedure( pen_set_pen_mode_t, "pen.set_pen_mode" );
-  declareProcedure( pen_set_pen_ink_t, "pen.set_pen_ink" );
-  declareProcedure( pen_set_pen_brush_t, "pen.set_pen_brush" );
-  declareProcedure( pen_set_pen_pattern_t, "pen.set_pen_pattern" );
-  declareFunction( pen_get_pen_mode_t, "pen.get_pen_mode" );
-  declareProcedure( pen_get_pen_ink_t, "pen.get_pen_ink" );
-  declareFunction( pen_get_pen_brush_t, "pen.get_pen_brush" );
---  declareFunction( pen_get_pen_pattern_t, "pen.get_pen_pattern" );
-
-  declareProcedure( pen_move_to_t, "pen.move_to" );
-  declareProcedure( pen_move_t, "pen.move" );
-  declareProcedure( pen_line_to_t, "pen.line_to" );
-  declareProcedure( pen_line_t, "pen.line" );
-  declareProcedure( pen_hline_t, "pen.hline" );
-  declareProcedure( pen_vline_t, "pen.vline" );
-
-  declareProcedure( pen_frame_rect_t, "pen.frame_rect" );
-  declareProcedure( pen_paint_rect_t, "pen.paint_rect" );
-  declareProcedure( pen_fill_rect_t, "pen.fill_rect" );
-  declareProcedure( pen_frame_ellipse_t, "pen.frame_ellipse" );
-  declareProcedure( pen_paint_ellipse_t, "pen.paint_ellipse" );
-  declareProcedure( pen_fill_ellipse_t, "pen.fill_ellipse" );
-
-  declareProcedure( pen_clear_t, "pen.clear" );
-
-  declareProcedure( pen_new_screen_canvas_t, "pen.new_screen_canvas" );
-  declareProcedure( pen_new_window_canvas_t, "pen.new_window_canvas" );
-  declareProcedure( pen_new_gl_window_canvas_t, "pen.new_gl_window_canvas" );
-  declareProcedure( pen_new_canvas_t, "pen.new_canvas" );
-  declareProcedure( pen_save_canvas_t, "pen.save_canvas" );
-  declareProcedure( pen_set_title_t, "pen.set_title" );
-  declareProcedure( pen_close_canvas_t, "pen.close_canvas" );
-
-  declareProcedure( pen_wait_to_reveal_t, "pen.wait_to_reveal" );
-  declareProcedure( pen_reveal_t, "pen.reveal" );
-  declareProcedure( pen_reveal_now_t, "pen.reveal_now" );
-
-  declareProcedure( pen_clip_rect_t, "pen.clip_rect" );
-
-  declareProcedure( pen_greyscale_t, "pen.greyscale" );
-  declareProcedure( pen_blend_t, "pen.blend" );
-  declareProcedure( pen_fade_t, "pen.fade" );
-
-  declareProcedure( pen_plot_t, "pen.plot" );
-
-declareIdent( pen_pen_color_name_t, "pen.color_name", root_enumerated_t, typeClass );
 declareStandardConstant( color_name_aliceblue_t, "pen_color_name.aliceblue", pen_pen_color_name_t, "0" );
 declareStandardConstant( color_name_antiquewhite_t, "pen_color_name.antiquewhite", pen_pen_color_name_t, "1" );
 declareStandardConstant( color_name_antiquewhite1_t, "pen_color_name.antiquewhite1", pen_pen_color_name_t, "2" );
@@ -1967,6 +1874,10 @@ declareStandardConstant( color_name_dodgerblue1_t, "pen_color_name.dodgerblue1",
 declareStandardConstant( color_name_dodgerblue2_t, "pen_color_name.dodgerblue2", pen_pen_color_name_t, "125" );
 declareStandardConstant( color_name_dodgerblue3_t, "pen_color_name.dodgerblue3", pen_pen_color_name_t, "126" );
 declareStandardConstant( color_name_dodgerblue4_t, "pen_color_name.dodgerblue4", pen_pen_color_name_t, "127" );
+end declarePenColorNames1;
+
+procedure declarePenColorNames2 is
+begin
 declareStandardConstant( color_name_firebrick_t, "pen_color_name.firebrick", pen_pen_color_name_t, "128" );
 declareStandardConstant( color_name_firebrick1_t, "pen_color_name.firebrick1", pen_pen_color_name_t, "129" );
 declareStandardConstant( color_name_firebrick2_t, "pen_color_name.firebrick2", pen_pen_color_name_t, "130" );
@@ -2013,6 +1924,10 @@ declareStandardConstant( color_name_ivory1_t, "pen_color_name.ivory1", pen_pen_c
 declareStandardConstant( color_name_ivory2_t, "pen_color_name.ivory2", pen_pen_color_name_t, "171" );
 declareStandardConstant( color_name_ivory3_t, "pen_color_name.ivory3", pen_pen_color_name_t, "172" );
 declareStandardConstant( color_name_ivory4_t, "pen_color_name.ivory4", pen_pen_color_name_t, "173" );
+end declarePenColorNames2;
+
+procedure declarePenColorNames3 is
+begin
 declareStandardConstant( color_name_khaki_t, "pen_color_name.khaki", pen_pen_color_name_t, "174" );
 declareStandardConstant( color_name_khaki1_t, "pen_color_name.khaki1", pen_pen_color_name_t, "175" );
 declareStandardConstant( color_name_khaki2_t, "pen_color_name.khaki2", pen_pen_color_name_t, "176" );
@@ -2141,6 +2056,10 @@ declareStandardConstant( color_name_orchid1_t, "pen_color_name.orchid1", pen_pen
 declareStandardConstant( color_name_orchid2_t, "pen_color_name.orchid2", pen_pen_color_name_t, "299" );
 declareStandardConstant( color_name_orchid3_t, "pen_color_name.orchid3", pen_pen_color_name_t, "300" );
 declareStandardConstant( color_name_orchid4_t, "pen_color_name.orchid4", pen_pen_color_name_t, "301" );
+end declarePenColorNames3;
+
+procedure declarePenColorNames4 is
+begin
 declareStandardConstant( color_name_palegoldenrod_t, "pen_color_name.palegoldenrod", pen_pen_color_name_t, "302" );
 declareStandardConstant( color_name_palegreen_t, "pen_color_name.palegreen", pen_pen_color_name_t, "303" );
 declareStandardConstant( color_name_palegreen1_t, "pen_color_name.palegreen1", pen_pen_color_name_t, "304" );
@@ -2267,6 +2186,10 @@ declareStandardConstant( color_name_turquoise1_t, "pen_color_name.turquoise1", p
 declareStandardConstant( color_name_turquoise2_t, "pen_color_name.turquoise2", pen_pen_color_name_t, "425" );
 declareStandardConstant( color_name_turquoise3_t, "pen_color_name.turquoise3", pen_pen_color_name_t, "426" );
 declareStandardConstant( color_name_turquoise4_t, "pen_color_name.turquoise4", pen_pen_color_name_t, "427" );
+end declarePenColorNames4;
+
+procedure declarePenColorNames5 is
+begin
 declareStandardConstant( color_name_violet_t, "pen_color_name.violet", pen_pen_color_name_t, "428" );
 declareStandardConstant( color_name_violetred_t, "pen_color_name.violetred", pen_pen_color_name_t, "429" );
 declareStandardConstant( color_name_violetred1_t, "pen_color_name.violetred1", pen_pen_color_name_t, "430" );
@@ -2286,6 +2209,114 @@ declareStandardConstant( color_name_yellow2_t, "pen_color_name.yellow2", pen_pen
 declareStandardConstant( color_name_yellow3_t, "pen_color_name.yellow3", pen_pen_color_name_t, "444" );
 declareStandardConstant( color_name_yellow4_t, "pen_color_name.yellow4", pen_pen_color_name_t, "445" );
 declareStandardConstant( color_name_yellowgreen_t, "pen_color_name.yellowgreen", pen_pen_color_name_t, "446" );
+end declarePenColorNames5;
+
+begin
+
+  declareIdent( pen_coordinate_t, "pen.coordinate", float_t, typeClass );
+
+  declareIdent( pen_rgbcomponent_t, "pen.rgbcomponent", float_t, typeClass );
+
+  declareIdent( pen_rect_t, "pen.rect", root_record_t, typeClass );
+
+  identifiers( pen_rect_t ).value := to_unbounded_string( "4" );
+  declareIdent( pen_rect_left_t, "pen.rect.left", pen_coordinate_t, subClass );
+  identifiers( pen_rect_left_t ).field_of := pen_rect_t;
+  identifiers( pen_rect_left_t ).value := to_unbounded_string( "1" );
+  declareIdent( pen_rect_top_t, "pen.a_rect.top", pen_coordinate_t, subClass );
+  identifiers( pen_rect_top_t ).field_of := pen_rect_t;
+  identifiers( pen_rect_top_t ).value := to_unbounded_string( "2" );
+  declareIdent( pen_rect_right_t, "pen.rect.right", pen_coordinate_t, subClass );
+  identifiers( pen_rect_right_t ).field_of := pen_rect_t;
+  identifiers( pen_rect_right_t ).value := to_unbounded_string( "3" );
+  declareIdent( pen_rect_bottom_t, "pen.rect.bottom", pen_coordinate_t, subClass );
+  identifiers( pen_rect_bottom_t ).field_of := pen_rect_t;
+  identifiers( pen_rect_bottom_t ).value := to_unbounded_string( "4" );
+
+  declareIdent( pen_canvas_id_t, "pen.canvas_id", long_integer_t, typeClass );
+
+  declareIdent( pen_pen_mode_t, "pen.pen_mode", root_enumerated_t, typeClass );
+  declareStandardConstant( pen_mode_invert_t, "pen_mode.invert", pen_pen_mode_t, "0" );
+  declareStandardConstant( pen_mode_add_t, "pen_mode.add", pen_pen_mode_t, "1" );
+  declareStandardConstant( pen_mode_subtract_t, "pen_mode.subtract", pen_pen_mode_t, "2" );
+  declareStandardConstant( pen_mode_average_t, "pen_mode.average", pen_pen_mode_t, "3" );
+  declareStandardConstant( pen_mode_copy_t, "pen_mode.copy", pen_pen_mode_t, "4" );
+  declareStandardConstant( pen_mode_off_t, "pen_mode.off", pen_pen_mode_t, "5" );
+
+  declareIdent( pen_pen_brush_t, "pen.pen_brush", root_enumerated_t, typeClass );
+  declareStandardConstant( pen_brush_undefined_t, "pen_brush.undefined", pen_pen_brush_t, "0" );
+  declareStandardConstant( pen_brush_pencil_t, "pen_brush.pencil", pen_pen_brush_t, "1" );
+  declareStandardConstant( pen_brush_stretch_t, "pen_brush.stretch", pen_pen_brush_t, "2" );
+  declareStandardConstant( pen_brush_tile_t, "pen_brush.tile", pen_pen_brush_t, "3" );
+  declareStandardConstant( pen_brush_stamp_t, "pen_brush.stamp", pen_pen_brush_t, "4" );
+  declareStandardConstant( pen_brush_smear_t, "pen_brush.smear", pen_pen_brush_t, "5" );
+
+-- null rect needs to be declared
+
+  declareProcedure( pen_set_rect_t, "pen.set_rect" );
+  declareFunction( pen_is_empty_rect_t, "pen.is_empty_rect" );
+  declareProcedure( pen_offset_rect_t, "pen.offset_rect" );
+  declareProcedure( pen_inset_rect_t, "pen.inset_rect" );
+  declareProcedure( pen_intersect_rect_t, "pen.intersect_rect" );
+  declareProcedure( pen_inside_rect_t, "pen.inside_rect" );
+  declareProcedure( pen_in_rect_t, "pen.in_rect" );
+
+  declareProcedure( pen_set_pen_mode_t, "pen.set_pen_mode" );
+  declareProcedure( pen_set_pen_ink_t, "pen.set_pen_ink" );
+  declareProcedure( pen_set_pen_brush_t, "pen.set_pen_brush" );
+  declareProcedure( pen_set_pen_pattern_t, "pen.set_pen_pattern" );
+  declareFunction( pen_get_pen_mode_t, "pen.get_pen_mode" );
+  declareProcedure( pen_get_pen_ink_t, "pen.get_pen_ink" );
+  declareFunction( pen_get_pen_brush_t, "pen.get_pen_brush" );
+--  declareFunction( pen_get_pen_pattern_t, "pen.get_pen_pattern" );
+
+  declareProcedure( pen_move_to_t, "pen.move_to" );
+  declareProcedure( pen_move_t, "pen.move" );
+  declareProcedure( pen_line_to_t, "pen.line_to" );
+  declareProcedure( pen_line_t, "pen.line" );
+  declareProcedure( pen_hline_t, "pen.hline" );
+  declareProcedure( pen_vline_t, "pen.vline" );
+
+  declareProcedure( pen_frame_rect_t, "pen.frame_rect" );
+  declareProcedure( pen_paint_rect_t, "pen.paint_rect" );
+  declareProcedure( pen_fill_rect_t, "pen.fill_rect" );
+  declareProcedure( pen_frame_ellipse_t, "pen.frame_ellipse" );
+  declareProcedure( pen_paint_ellipse_t, "pen.paint_ellipse" );
+  declareProcedure( pen_fill_ellipse_t, "pen.fill_ellipse" );
+
+  declareProcedure( pen_clear_t, "pen.clear" );
+
+  declareProcedure( pen_new_screen_canvas_t, "pen.new_screen_canvas" );
+  declareProcedure( pen_new_window_canvas_t, "pen.new_window_canvas" );
+  declareProcedure( pen_new_gl_window_canvas_t, "pen.new_gl_window_canvas" );
+  declareProcedure( pen_new_canvas_t, "pen.new_canvas" );
+  declareProcedure( pen_save_canvas_t, "pen.save_canvas" );
+  declareProcedure( pen_set_title_t, "pen.set_title" );
+  declareProcedure( pen_close_canvas_t, "pen.close_canvas" );
+
+  declareProcedure( pen_wait_to_reveal_t, "pen.wait_to_reveal" );
+  declareProcedure( pen_reveal_t, "pen.reveal" );
+  declareProcedure( pen_reveal_now_t, "pen.reveal_now" );
+
+  declareProcedure( pen_clip_rect_t, "pen.clip_rect" );
+
+  declareProcedure( pen_greyscale_t, "pen.greyscale" );
+  declareProcedure( pen_blend_t, "pen.blend" );
+  declareProcedure( pen_fade_t, "pen.fade" );
+
+  declareProcedure( pen_plot_t, "pen.plot" );
+
+  declareIdent( pen_pen_color_name_t, "pen.color_name", root_enumerated_t, typeClass );
+
+  -- the declarations of pen color names have been broken out into separate
+  -- procedures in order to reduce the frame size.  some machines give a
+  -- warning.
+
+  declarePenColorNames1;
+  declarePenColorNames2;
+  declarePenColorNames3;
+  declarePenColorNames4;
+  declarePenColorNames5;
 
 -- record handling is limited in business shell
 --  declareIdent( pen_a_display_info_rec_t, "pen.a_display_info_rec", root_record_t, typeClass );

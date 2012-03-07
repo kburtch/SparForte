@@ -1,9 +1,9 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "chessboard" );
-pragma annotate( "" );
-pragma annotate( "Draw a chessboard with graphics using the Business Shell" );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "chessboard" );
+pragma annotate( description, "Draw a chessboard with graphics using SparForte" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -35,4 +35,7 @@ begin
   s := get_line;
 
 end chessboard;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

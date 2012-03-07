@@ -4,13 +4,17 @@
 <IMG SRC="wumpus.gif"><HR>
 <PRE>
 #!/usr/local/bin/spar
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- *** HUNT THE WUMPUS ***</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- Originally for the PDP-8.</EM></FONT>
-<FONT COLOR=green><EM>-- The Timeless cave-crawling classing based on GW-BASIC source</EM></FONT>
-<FONT COLOR=green><EM>-- www.ifarchive.org.  Modified for SparForte by Ken O. Burtch.</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
+
+<FONT COLOR=green><EM>-- HUNT THE WUMPUS</EM></FONT>
+
+<b>pragma</b> annotate( summary, "wumpus" );
+<b>pragma</b> annotate( description, "Hunt the Wumpus" );
+<b>pragma</b> annotate( description, "Originally for the PDP-8." );
+<b>pragma</b> annotate( description, "The Timeless cave-crawling classic based on GW-BASIC source" );
+<b>pragma</b> annotate( description, "www.ifarchive.org.  Modified for SparForte by Ken O. Burtch." );
+<b>pragma</b> annotate( description, "For sound effects, run as superuser" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> ada_95;                       <FONT COLOR=green><EM>-- strict programming practices</EM></FONT>
 <b>pragma</b> restriction( no_external_commands ); <FONT COLOR=green><EM>-- O/S independent</EM></FONT>
@@ -355,7 +359,7 @@ player_room := room(player);
               status := lost;
               <b>exit</b>;
            <b>elsif</b> player_room = room(bats1) <b>or</b> player_room = room(bats2) <b>then</b>
-              put_line( "ZAP--SUPER BAT SNATCH! ELSEWHEREVILLE FOR YOU!" );
+              put_line( "ZAP<FONT COLOR=green><EM>--SUPER BAT SNATCH! ELSEWHEREVILLE FOR YOU!" );</EM></FONT>
               <b>if</b> soundfx <b>then</b>
                  sound.play( "./bats.wav" );
               <b>end</b> <b>if</b>;
@@ -395,5 +399,8 @@ player_room := room(player);
 <b>end</b> <b>loop</b>; <FONT COLOR=green><EM>-- main loop</EM></FONT>
 
 <b>end</b> wumpus;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

@@ -1,9 +1,9 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "mandel" );
-pragma annotate( "" );
-pragma annotate( "Create a color image of the Mandelbrot set" );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "mandel" );
+pragma annotate( description, "Create a color image of the Mandelbrot set" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -94,3 +94,5 @@ begin
 
 end mandel;
 
+-- VIM editor formatting instructions
+-- vim: ft=spar

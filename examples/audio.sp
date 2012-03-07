@@ -1,14 +1,13 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
 procedure audio is
 
-pragma annotate( "audio" );
-pragma annotate( "" );
-pragma annotate( "play audio files" );
-pragma annotate( "" );
-pragma annotate( "Translated from a shell script by Heiner Steven" );
-pragma annotate( "http://www.shelldorado.com/scripts/cmds/audio.txt" );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "audio [-l] file..." );
+pragma annotate( description, "play audio files" );
+pragma annotate( description, "Translated from a shell script by Heiner Steven" );
+pragma annotate( see_also, "http://www.shelldorado.com/scripts/cmds/audio.txt" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 sound_path : constant string := "/usr/share/doc/packages/sox/";
 pragma unchecked_import( shell, sound_path );
@@ -63,4 +62,7 @@ begin
       end if;      
   end loop;
 end audio;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

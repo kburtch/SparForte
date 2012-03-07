@@ -1008,6 +1008,395 @@ procedure resetScanner is
      end loop;
   end importEnvironment;
 
+  procedure declareASCIICharacters is
+  begin
+     declareStandardConstant( "ASCII.NUL", character_t, "" & ASCII.NUL );
+     declareStandardConstant( "ASCII.SOH", character_t, "" & ASCII.soh );
+     declareStandardConstant( "ASCII.STX", character_t, "" & ASCII.stx );
+     declareStandardConstant( "ASCII.ETX", character_t, "" & ASCII.etx );
+     declareStandardConstant( "ASCII.EOT", character_t, "" & ASCII.eot );
+     declareStandardConstant( "ASCII.ENQ", character_t, "" & ASCII.enq );
+     declareStandardConstant( "ASCII.ACK", character_t, "" & ASCII.ack );
+     declareStandardConstant( "ASCII.BEL", character_t, "" & ASCII.bel );
+     declareStandardConstant( "ASCII.BS",  character_t, "" & ASCII.bs );
+     declareStandardConstant( "ASCII.HT",  character_t, "" & ASCII.ht );
+     declareStandardConstant( "ASCII.LF",  character_t, "" & ASCII.lf );
+     declareStandardConstant( "ASCII.VT",  character_t, "" & ASCII.vt );
+     declareStandardConstant( "ASCII.FF",  character_t, "" & ASCII.ff );
+     declareStandardConstant( "ASCII.CR",  character_t, "" & ASCII.cr );
+     declareStandardConstant( "ASCII.SO",  character_t, "" & ASCII.so );
+     declareStandardConstant( "ASCII.SI",  character_t, "" & ASCII.si );
+     declareStandardConstant( "ASCII.DLE", character_t, "" & ASCII.dle );
+     declareStandardConstant( "ASCII.DC1", character_t, "" & ASCII.dc1 );
+     declareStandardConstant( "ASCII.DC2", character_t, "" & ASCII.dc2 );
+     declareStandardConstant( "ASCII.DC3", character_t, "" & ASCII.dc3 );
+     declareStandardConstant( "ASCII.DC4", character_t, "" & ASCII.dc4 );
+     declareStandardConstant( "ASCII.NAK", character_t, "" & ASCII.nak );
+     declareStandardConstant( "ASCII.SYN", character_t, "" & ASCII.syn );
+     declareStandardConstant( "ASCII.ETB", character_t, "" & ASCII.etb );
+     declareStandardConstant( "ASCII.CAN", character_t, "" & ASCII.can );
+     declareStandardConstant( "ASCII.EM",  character_t, "" & ASCII.em );
+     declareStandardConstant( "ASCII.SUB", character_t, "" & ASCII.sub );
+     declareStandardConstant( "ASCII.ESC", character_t, "" & ASCII.esc );
+     declareStandardConstant( "ASCII.FS",  character_t, "" & ASCII.fs );
+     declareStandardConstant( "ASCII.GS",  character_t, "" & ASCII.gs );
+     declareStandardConstant( "ASCII.RS",  character_t, "" & ASCII.rs );
+     declareStandardConstant( "ASCII.US",  character_t, "" & ASCII.us );
+     declareStandardConstant( "ASCII.DEL", character_t, "" & ASCII.del );
+     declareStandardConstant( "ASCII.Exclam",    character_t, "!" );
+     declareStandardConstant( "ASCII.Quotation", character_t, """" );
+     declareStandardConstant( "ASCII.Sharp",     character_t, "#" );
+     declareStandardConstant( "ASCII.Dollar",    character_t, "$" );
+     declareStandardConstant( "ASCII.Percent",   character_t, "%" );
+     declareStandardConstant( "ASCII.Ampersand", character_t, "&" );
+     declareStandardConstant( "ASCII.Colon",     character_t, ":" );
+     declareStandardConstant( "ASCII.Semicolon", character_t, ";" );
+     declareStandardConstant( "ASCII.Query",     character_t, "?" );
+     declareStandardConstant( "ASCII.At_Sign",   character_t, "@" );
+     declareStandardConstant( "ASCII.L_Bracket", character_t, "[" );
+     declareStandardConstant( "ASCII.Back_Slash",character_t, "\" );
+     declareStandardConstant( "ASCII.R_Bracket", character_t, "]" );
+     declareStandardConstant( "ASCII.Circumflex",character_t, "^" );
+     declareStandardConstant( "ASCII.Underline", character_t, "_" );
+     declareStandardConstant( "ASCII.Grave",     character_t, "`" );
+     declareStandardConstant( "ASCII.L_Brace",   character_t, "{" );
+     declareStandardConstant( "ASCII.Bar",       character_t, "|" );
+     declareStandardConstant( "ASCII.R_Brace",   character_t, "}" );
+     declareStandardConstant( "ASCII.Tilde",     character_t, "~" );
+     declareStandardConstant( "ASCII.LC_A",      character_t, "a" );
+     declareStandardConstant( "ASCII.LC_B",      character_t, "b" );
+     declareStandardConstant( "ASCII.LC_C",      character_t, "c" );
+     declareStandardConstant( "ASCII.LC_D",      character_t, "d" );
+     declareStandardConstant( "ASCII.LC_E",      character_t, "e" );
+     declareStandardConstant( "ASCII.LC_F",      character_t, "f" );
+     declareStandardConstant( "ASCII.LC_G",      character_t, "g" );
+     declareStandardConstant( "ASCII.LC_H",      character_t, "h" );
+     declareStandardConstant( "ASCII.LC_I",      character_t, "i" );
+     declareStandardConstant( "ASCII.LC_J",      character_t, "j" );
+     declareStandardConstant( "ASCII.LC_K",      character_t, "k" );
+     declareStandardConstant( "ASCII.LC_L",      character_t, "l" );
+     declareStandardConstant( "ASCII.LC_M",      character_t, "m" );
+     declareStandardConstant( "ASCII.LC_N",      character_t, "n" );
+     declareStandardConstant( "ASCII.LC_O",      character_t, "o" );
+     declareStandardConstant( "ASCII.LC_P",      character_t, "p" );
+     declareStandardConstant( "ASCII.LC_Q",      character_t, "q" );
+     declareStandardConstant( "ASCII.LC_R",      character_t, "r" );
+     declareStandardConstant( "ASCII.LC_S",      character_t, "s" );
+     declareStandardConstant( "ASCII.LC_T",      character_t, "t" );
+     declareStandardConstant( "ASCII.LC_U",      character_t, "u" );
+     declareStandardConstant( "ASCII.LC_V",      character_t, "v" );
+     declareStandardConstant( "ASCII.LC_W",      character_t, "w" );
+     declareStandardConstant( "ASCII.LC_X",      character_t, "x" );
+     declareStandardConstant( "ASCII.LC_Y",      character_t, "y" );
+     declareStandardConstant( "ASCII.LC_Z",      character_t, "z" );
+     declareStandardConstant( "ASCII.UC_A",      character_t, "A" );
+     declareStandardConstant( "ASCII.UC_B",      character_t, "B" );
+     declareStandardConstant( "ASCII.UC_C",      character_t, "C" );
+     declareStandardConstant( "ASCII.UC_D",      character_t, "D" );
+     declareStandardConstant( "ASCII.UC_E",      character_t, "E" );
+     declareStandardConstant( "ASCII.UC_F",      character_t, "F" );
+     declareStandardConstant( "ASCII.UC_G",      character_t, "G" );
+     declareStandardConstant( "ASCII.UC_H",      character_t, "H" );
+     declareStandardConstant( "ASCII.UC_I",      character_t, "I" );
+     declareStandardConstant( "ASCII.UC_J",      character_t, "J" );
+     declareStandardConstant( "ASCII.UC_K",      character_t, "K" );
+     declareStandardConstant( "ASCII.UC_L",      character_t, "L" );
+     declareStandardConstant( "ASCII.UC_M",      character_t, "M" );
+     declareStandardConstant( "ASCII.UC_N",      character_t, "N" );
+     declareStandardConstant( "ASCII.UC_O",      character_t, "O" );
+     declareStandardConstant( "ASCII.UC_P",      character_t, "P" );
+     declareStandardConstant( "ASCII.UC_Q",      character_t, "Q" );
+     declareStandardConstant( "ASCII.UC_R",      character_t, "R" );
+     declareStandardConstant( "ASCII.UC_S",      character_t, "S" );
+     declareStandardConstant( "ASCII.UC_T",      character_t, "T" );
+     declareStandardConstant( "ASCII.UC_U",      character_t, "U" );
+     declareStandardConstant( "ASCII.UC_V",      character_t, "V" );
+     declareStandardConstant( "ASCII.UC_W",      character_t, "W" );
+     declareStandardConstant( "ASCII.UC_X",      character_t, "X" );
+     declareStandardConstant( "ASCII.UC_Y",      character_t, "Y" );
+     declareStandardConstant( "ASCII.UC_Z",      character_t, "Z" );
+  end declareASCIICharacters;
+
+  procedure declareLatin1Characters is
+  begin
+
+     ------------------------
+     -- Control Characters --
+     ------------------------
+
+     declareStandardConstant( "Latin_1.NUL", character_t, "" & Character'Val (0));
+     declareStandardConstant( "Latin_1.SOH", character_t, "" & Character'Val (1));
+     declareStandardConstant( "Latin_1.STX", character_t, "" & Character'Val (2));
+     declareStandardConstant( "Latin_1.ETX", character_t, "" & Character'Val (3));
+     declareStandardConstant( "Latin_1.EOT", character_t, "" & Character'Val (4));
+     declareStandardConstant( "Latin_1.ENQ", character_t, "" & Character'Val (5));
+     declareStandardConstant( "Latin_1.ACK", character_t, "" & Character'Val (6));
+     declareStandardConstant( "Latin_1.BEL", character_t, "" & Character'Val (7));
+     declareStandardConstant( "Latin_1.BS", character_t,  "" & Character'Val (8));
+     declareStandardConstant( "Latin_1.HT", character_t,  "" & Character'Val (9));
+     declareStandardConstant( "Latin_1.LF", character_t,  "" & Character'Val (10));
+     declareStandardConstant( "Latin_1.VT", character_t,  "" & Character'Val (11));
+     declareStandardConstant( "Latin_1.FF", character_t,  "" & Character'Val (12));
+     declareStandardConstant( "Latin_1.CR", character_t, "" & Character'Val (13));
+     declareStandardConstant( "Latin_1.SO", character_t, "" & Character'Val (14));
+     declareStandardConstant( "Latin_1.SI", character_t, "" & Character'Val (15));
+
+     declareStandardConstant( "Latin_1.DLE", character_t, "" & Character'Val (16));
+     declareStandardConstant( "Latin_1.DC1", character_t, "" & Character'Val (17));
+     declareStandardConstant( "Latin_1.DC2", character_t, "" & Character'Val (18));
+     declareStandardConstant( "Latin_1.DC3", character_t, "" & Character'Val (19));
+     declareStandardConstant( "Latin_1.DC4", character_t, "" & Character'Val (20));
+     declareStandardConstant( "Latin_1.NAK", character_t, "" & Character'Val (21));
+     declareStandardConstant( "Latin_1.SYN", character_t, "" & Character'Val (22));
+     declareStandardConstant( "Latin_1.ETB", character_t, "" & Character'Val (23));
+     declareStandardConstant( "Latin_1.CAN", character_t, "" & Character'Val (24));
+     declareStandardConstant( "Latin_1.EM", character_t, "" & Character'Val (25));
+     declareStandardConstant( "Latin_1.SUB", character_t, "" & Character'Val (26));
+     declareStandardConstant( "Latin_1.ESC", character_t, "" & Character'Val (27));
+     declareStandardConstant( "Latin_1.FS", character_t, "" & Character'Val (28));
+     declareStandardConstant( "Latin_1.GS", character_t, "" & Character'Val (29));
+     declareStandardConstant( "Latin_1.RS", character_t, "" & Character'Val (30));
+     declareStandardConstant( "Latin_1.US", character_t, "" & Character'Val (31));
+
+     --------------------------------
+     -- ISO 646 Graphic Characters --
+     --------------------------------
+
+     declareStandardConstant( "Latin_1.Space", character_t, " ");
+     declareStandardConstant( "Latin_1.Exclamation", character_t, "!");
+     declareStandardConstant( "Latin_1.Quotation", character_t, """");
+     declareStandardConstant( "Latin_1.Number_Sign", character_t, "#");
+     declareStandardConstant( "Latin_1.Dollar_Sign", character_t, "$");
+     declareStandardConstant( "Latin_1.Percent_Sign", character_t, "%");
+     declareStandardConstant( "Latin_1.Ampersand", character_t, "&");
+     declareStandardConstant( "Latin_1.Apostrophe", character_t, "'");
+     declareStandardConstant( "Latin_1.Left_Parenthesis", character_t, "(");
+     declareStandardConstant( "Latin_1.Right_Parenthesis", character_t, ")");
+     declareStandardConstant( "Latin_1.Asterisk", character_t, "*");
+     declareStandardConstant( "Latin_1.Plus_Sign", character_t, "+");
+     declareStandardConstant( "Latin_1.Comma", character_t, ",");
+     declareStandardConstant( "Latin_1.Hyphen", character_t, "-");
+     declareStandardConstant( "Latin_1.Minus_Sign", character_t, "-");
+     declareStandardConstant( "Latin_1.Full_Stop", character_t, ".");
+     declareStandardConstant( "Latin_1.Solidus", character_t, "/");
+
+     --  Decimal digits '0' though '9' are at positions 48 through 57
+
+     declareStandardConstant( "Latin_1.Colon", character_t, ":");
+     declareStandardConstant( "Latin_1.Semicolon", character_t, ";");
+     declareStandardConstant( "Latin_1.Less_Than_Sign", character_t, "<");
+     declareStandardConstant( "Latin_1.Equals_Sign", character_t, "=");
+     declareStandardConstant( "Latin_1.Greater_Than_Sign", character_t, ">");
+     declareStandardConstant( "Latin_1.Question", character_t, "?");
+
+     declareStandardConstant( "Latin_1.Commercial_At", character_t, "@");
+
+     --  Letters 'A' through 'Z' are at positions 65 through 90
+
+     declareStandardConstant( "Latin_1.Left_Square_Bracket", character_t, "[");
+     declareStandardConstant( "Latin_1.Reverse_Solidus", character_t, "\");
+     declareStandardConstant( "Latin_1.Right_Square_Bracket", character_t, "]");
+     declareStandardConstant( "Latin_1.Circumflex", character_t, "^");
+     declareStandardConstant( "Latin_1.Low_Line", character_t, "_");
+
+     declareStandardConstant( "Latin_1.Grave", character_t, "`");
+     declareStandardConstant( "Latin_1.LC_A", character_t, "a");
+     declareStandardConstant( "Latin_1.LC_B", character_t, "b");
+     declareStandardConstant( "Latin_1.LC_C", character_t, "c");
+     declareStandardConstant( "Latin_1.LC_D", character_t, "d");
+     declareStandardConstant( "Latin_1.LC_E", character_t, "e");
+     declareStandardConstant( "Latin_1.LC_F", character_t, "f");
+     declareStandardConstant( "Latin_1.LC_G", character_t, "g");
+     declareStandardConstant( "Latin_1.LC_H", character_t, "h");
+     declareStandardConstant( "Latin_1.LC_I", character_t, "i");
+     declareStandardConstant( "Latin_1.LC_J", character_t, "j");
+     declareStandardConstant( "Latin_1.LC_K", character_t, "k");
+     declareStandardConstant( "Latin_1.LC_L", character_t, "l");
+     declareStandardConstant( "Latin_1.LC_M", character_t, "m");
+     declareStandardConstant( "Latin_1.LC_N", character_t, "n");
+     declareStandardConstant( "Latin_1.LC_O", character_t, "o");
+     declareStandardConstant( "Latin_1.LC_P", character_t, "p");
+     declareStandardConstant( "Latin_1.LC_Q", character_t, "q");
+     declareStandardConstant( "Latin_1.LC_R", character_t, "r");
+     declareStandardConstant( "Latin_1.LC_S", character_t, "s");
+     declareStandardConstant( "Latin_1.LC_T", character_t, "t");
+     declareStandardConstant( "Latin_1.LC_U", character_t, "u");
+     declareStandardConstant( "Latin_1.LC_V", character_t, "v");
+     declareStandardConstant( "Latin_1.LC_W", character_t, "w");
+     declareStandardConstant( "Latin_1.LC_X", character_t, "x");
+     declareStandardConstant( "Latin_1.LC_Y", character_t, "y");
+     declareStandardConstant( "Latin_1.LC_Z", character_t, "z");
+     declareStandardConstant( "Latin_1.Left_Curly_Bracket", character_t, "{");
+     declareStandardConstant( "Latin_1.Vertical_Line", character_t, "|");
+     declareStandardConstant( "Latin_1.Right_Curly_Bracket", character_t, "}");
+     declareStandardConstant( "Latin_1.Tilde", character_t, "~");
+     declareStandardConstant( "Latin_1.DEL", character_t, "" & Character'Val (127));
+
+     ---------------------------------
+     -- ISO 6429 Control Characters --
+     ---------------------------------
+
+     declareStandardConstant( "Latin_1.IS4", character_t, "" & Character'Val (28));
+     declareStandardConstant( "Latin_1.IS3", character_t, "" & Character'Val (29));
+     declareStandardConstant( "Latin_1.IS2", character_t, "" & Character'Val (30));
+     declareStandardConstant( "Latin_1.IS1", character_t, "" & Character'Val (31));
+
+     declareStandardConstant( "Latin_1.Reserved_128", character_t, "" & Character'Val (128));
+     declareStandardConstant( "Latin_1.Reserved_129", character_t, "" & Character'Val (129));
+     declareStandardConstant( "Latin_1.BPH", character_t, "" & Character'Val (130));
+     declareStandardConstant( "Latin_1.NBH", character_t, "" & Character'Val (131));
+     declareStandardConstant( "Latin_1.Reserved_132", character_t, "" & Character'Val (132));
+     declareStandardConstant( "Latin_1.NEL", character_t, "" & Character'Val (133));
+     declareStandardConstant( "Latin_1.SSA", character_t, "" & Character'Val (134));
+     declareStandardConstant( "Latin_1.ESA", character_t, "" & Character'Val (135));
+     declareStandardConstant( "Latin_1.HTS", character_t, "" & Character'Val (136));
+     declareStandardConstant( "Latin_1.HTJ", character_t, "" & Character'Val (137));
+     declareStandardConstant( "Latin_1.VTS", character_t, "" & Character'Val (138));
+     declareStandardConstant( "Latin_1.PLD", character_t, "" & Character'Val (139));
+     declareStandardConstant( "Latin_1.PLU", character_t, "" & Character'Val (140));
+     declareStandardConstant( "Latin_1.RI", character_t, "" & Character'Val (141));
+     declareStandardConstant( "Latin_1.SS2", character_t, "" & Character'Val (142));
+     declareStandardConstant( "Latin_1.SS3", character_t, "" & Character'Val (143));
+
+     declareStandardConstant( "Latin_1.DCS", character_t, "" & Character'Val (144));
+     declareStandardConstant( "Latin_1.PU1", character_t, "" & Character'Val (145));
+     declareStandardConstant( "Latin_1.PU2", character_t, "" & Character'Val (146));
+     declareStandardConstant( "Latin_1.STS", character_t, "" & Character'Val (147));
+     declareStandardConstant( "Latin_1.CCH", character_t, "" & Character'Val (148));
+     declareStandardConstant( "Latin_1.MW", character_t, "" & Character'Val (149));
+     declareStandardConstant( "Latin_1.SPA", character_t, "" & Character'Val (150));
+     declareStandardConstant( "Latin_1.EPA", character_t, "" & Character'Val (151));
+
+     declareStandardConstant( "Latin_1.SOS", character_t, "" & Character'Val (152));
+     declareStandardConstant( "Latin_1.Reserved_153", character_t, "" & Character'Val (153));
+     declareStandardConstant( "Latin_1.SCI", character_t, "" & Character'Val (154));
+     declareStandardConstant( "Latin_1.CSI", character_t, "" & Character'Val (155));
+     declareStandardConstant( "Latin_1.ST", character_t, "" & Character'Val (156));
+     declareStandardConstant( "Latin_1.OSC", character_t, "" & Character'Val (157));
+     declareStandardConstant( "Latin_1.PM", character_t, "" & Character'Val (158));
+     declareStandardConstant( "Latin_1.APC", character_t, "" & Character'Val (159));
+
+      ------------------------------
+      -- Other Graphic Characters --
+      ------------------------------
+
+      --  Character positions 160 (16#A0#) .. 175 (16#AF#)
+
+     declareStandardConstant( "Latin_1.No_Break_Space", character_t, "" & Character'Val (160));
+     declareStandardConstant( "Latin_1.NBSP", character_t, "" & Character'Val (160));
+     declareStandardConstant( "Latin_1.Inverted_Exclamation", character_t, "" & Character'Val (161));
+     declareStandardConstant( "Latin_1.Cent_Sign", character_t, "" & Character'Val (162));
+     declareStandardConstant( "Latin_1.Pound_Sign", character_t, "" & Character'Val (163));
+     declareStandardConstant( "Latin_1.Currency_Sign", character_t, "" & Character'Val (164));
+     declareStandardConstant( "Latin_1.Yen_Sign", character_t, "" & Character'Val (165));
+     declareStandardConstant( "Latin_1.Broken_Bar", character_t, "" & Character'Val (166));
+     declareStandardConstant( "Latin_1.Section_Sign", character_t, "" & Character'Val (167));
+     declareStandardConstant( "Latin_1.Diaeresis", character_t, "" & Character'Val (168));
+     declareStandardConstant( "Latin_1.Copyright_Sign", character_t, "" & Character'Val (169));
+     declareStandardConstant( "Latin_1.Feminine_Ordinal_Indicator", character_t, "" & Character'Val (170));
+     declareStandardConstant( "Latin_1.Left_Angle_Quotation", character_t, "" & Character'Val (171));
+     declareStandardConstant( "Latin_1.Not_Sign", character_t, "" & Character'Val (172));
+     declareStandardConstant( "Latin_1.Soft_Hyphen", character_t, "" & Character'Val (173));
+     declareStandardConstant( "Latin_1.Registered_Trade_Mark_Sign", character_t, "" & Character'Val (174));
+     declareStandardConstant( "Latin_1.Macron", character_t, "" & Character'Val (175));
+
+      --  Character positions 176 (16#B0#) .. 191 (16#BF#)
+
+     declareStandardConstant( "Latin_1.Degree_Sign", character_t, "" & Character'Val (176));
+      declareStandardConstant( "Latin_1.Ring_Above", character_t, "" & "" & Character'Val (176));
+     declareStandardConstant( "Latin_1.Plus_Minus_Sign", character_t, "" & Character'Val (177));
+     declareStandardConstant( "Latin_1.Superscript_Two", character_t, "" & Character'Val (178));
+     declareStandardConstant( "Latin_1.Superscript_Three", character_t, "" & Character'Val (179));
+     declareStandardConstant( "Latin_1.Acute", character_t, "" & Character'Val (180));
+     declareStandardConstant( "Latin_1.Micro_Sign", character_t, "" & Character'Val (181));
+     declareStandardConstant( "Latin_1.Pilcrow_Sign", character_t, "" & Character'Val (182));
+     declareStandardConstant( "Latin_1.Paragraph_Sign", character_t, "" & Character'Val (182));
+     declareStandardConstant( "Latin_1.Middle_Dot", character_t, "" & Character'Val (183));
+     declareStandardConstant( "Latin_1.Cedilla", character_t, "" & Character'Val (184));
+     declareStandardConstant( "Latin_1.Superscript_One", character_t, "" & Character'Val (185));
+     declareStandardConstant( "Latin_1.Masculine_Ordinal_Indicator", character_t, "" & Character'Val (186));
+     declareStandardConstant( "Latin_1.Right_Angle_Quotation", character_t, "" & Character'Val (187));
+     declareStandardConstant( "Latin_1.Fraction_One_Quarter", character_t, "" & Character'Val (188));
+     declareStandardConstant( "Latin_1.Fraction_One_Half", character_t, "" & Character'Val (189));
+     declareStandardConstant( "Latin_1.Fraction_Three_Quarters", character_t, "" & Character'Val (190));
+     declareStandardConstant( "Latin_1.Inverted_Question", character_t, "" & Character'Val (191));
+
+      --  Character positions 192 (16#C0#) .. 207 (16#CF#)
+
+     declareStandardConstant( "Latin_1.UC_A_Grave", character_t, "" & Character'Val (192));
+     declareStandardConstant( "Latin_1.UC_A_Acute", character_t, "" & Character'Val (193));
+     declareStandardConstant( "Latin_1.UC_A_Circumflex", character_t, "" & Character'Val (194));
+     declareStandardConstant( "Latin_1.UC_A_Tilde", character_t, "" & Character'Val (195));
+     declareStandardConstant( "Latin_1.UC_A_Diaeresis", character_t, "" & Character'Val (196));
+     declareStandardConstant( "Latin_1.UC_A_Ring", character_t, "" & Character'Val (197));
+     declareStandardConstant( "Latin_1.UC_AE_Diphthong", character_t, "" & Character'Val (198));
+     declareStandardConstant( "Latin_1.UC_C_Cedilla", character_t, "" & Character'Val (199));
+     declareStandardConstant( "Latin_1.UC_E_Grave", character_t, "" & Character'Val (200));
+     declareStandardConstant( "Latin_1.UC_E_Acute", character_t, "" & Character'Val (201));
+     declareStandardConstant( "Latin_1.UC_E_Circumflex", character_t, "" & Character'Val (202));
+     declareStandardConstant( "Latin_1.UC_E_Diaeresis", character_t, "" & Character'Val (203));
+     declareStandardConstant( "Latin_1.UC_I_Grave", character_t, "" & Character'Val (204));
+     declareStandardConstant( "Latin_1.UC_I_Acute", character_t, "" & Character'Val (205));
+     declareStandardConstant( "Latin_1.UC_I_Circumflex", character_t, "" & Character'Val (206));
+     declareStandardConstant( "Latin_1.UC_I_Diaeresis", character_t, "" & Character'Val (207));
+
+      --  Character positions 208 (16#D0#) .. 223 (16#DF#)
+
+     declareStandardConstant( "Latin_1.UC_Icelandic_Eth", character_t, "" & Character'Val (208));
+     declareStandardConstant( "Latin_1.UC_N_Tilde", character_t, "" & Character'Val (209));
+     declareStandardConstant( "Latin_1.UC_O_Grave", character_t, "" & Character'Val (210));
+     declareStandardConstant( "Latin_1.UC_O_Acute", character_t, "" & Character'Val (211));
+     declareStandardConstant( "Latin_1.UC_O_Circumflex", character_t, "" & Character'Val (212));
+     declareStandardConstant( "Latin_1.UC_O_Tilde", character_t, "" & Character'Val (213));
+     declareStandardConstant( "Latin_1.UC_O_Diaeresis", character_t, "" & Character'Val (214));
+     declareStandardConstant( "Latin_1.Multiplication_Sign", character_t, "" & Character'Val (215));
+     declareStandardConstant( "Latin_1.UC_O_Oblique_Stroke", character_t, "" & Character'Val (216));
+     declareStandardConstant( "Latin_1.UC_U_Grave", character_t, "" & Character'Val (217));
+     declareStandardConstant( "Latin_1.UC_U_Acute", character_t, "" & Character'Val (218));
+     declareStandardConstant( "Latin_1.UC_U_Circumflex", character_t, "" & Character'Val (219));
+     declareStandardConstant( "Latin_1.UC_U_Diaeresis", character_t, "" & Character'Val (220));
+     declareStandardConstant( "Latin_1.UC_Y_Acute", character_t, "" & Character'Val (221));
+     declareStandardConstant( "Latin_1.UC_Icelandic_Thorn", character_t, "" & Character'Val (222));
+     declareStandardConstant( "Latin_1.LC_German_Sharp_S", character_t, "" & Character'Val (223));
+
+      --  Character positions 224 (16#E0#) .. 239 (16#EF#)
+
+     declareStandardConstant( "Latin_1.LC_A_Grave", character_t, "" & Character'Val (224));
+     declareStandardConstant( "Latin_1.LC_A_Acute", character_t, "" & Character'Val (225));
+     declareStandardConstant( "Latin_1.LC_A_Circumflex", character_t, "" & Character'Val (226));
+     declareStandardConstant( "Latin_1.LC_A_Tilde", character_t, "" & Character'Val (227));
+     declareStandardConstant( "Latin_1.LC_A_Diaeresis", character_t, "" & Character'Val (228));
+     declareStandardConstant( "Latin_1.LC_A_Ring", character_t, "" & Character'Val (229));
+     declareStandardConstant( "Latin_1.LC_AE_Diphthong", character_t, "" & Character'Val (230));
+     declareStandardConstant( "Latin_1.LC_C_Cedilla", character_t, "" & Character'Val (231));
+     declareStandardConstant( "Latin_1.LC_E_Grave", character_t, "" & Character'Val (232));
+     declareStandardConstant( "Latin_1.LC_E_Acute", character_t, "" & Character'Val (233));
+     declareStandardConstant( "Latin_1.LC_E_Circumflex", character_t, "" & Character'Val (234));
+     declareStandardConstant( "Latin_1.LC_E_Diaeresis", character_t, "" & Character'Val (235));
+     declareStandardConstant( "Latin_1.LC_I_Grave", character_t, "" & Character'Val (236));
+     declareStandardConstant( "Latin_1.LC_I_Acute", character_t, "" & Character'Val (237));
+     declareStandardConstant( "Latin_1.LC_I_Circumflex", character_t, "" & Character'Val (238));
+     declareStandardConstant( "Latin_1.LC_I_Diaeresis", character_t, "" & Character'Val (239));
+
+      --  Character positions 240 (16#F0#) .. 255 (16#FF)
+     declareStandardConstant( "Latin_1.LC_Icelandic_Eth", character_t, "" & Character'Val (240));
+     declareStandardConstant( "Latin_1.LC_N_Tilde", character_t, "" & Character'Val (241));
+     declareStandardConstant( "Latin_1.LC_O_Grave", character_t, "" & Character'Val (242));
+     declareStandardConstant( "Latin_1.LC_O_Acute", character_t, "" & Character'Val (243));
+     declareStandardConstant( "Latin_1.LC_O_Circumflex", character_t, "" & Character'Val (244));
+     declareStandardConstant( "Latin_1.LC_O_Tilde", character_t, "" & Character'Val (245));
+     declareStandardConstant( "Latin_1.LC_O_Diaeresis", character_t, "" & Character'Val (246));
+     declareStandardConstant( "Latin_1.Division_Sign", character_t, "" & Character'Val (247));
+     declareStandardConstant( "Latin_1.LC_O_Oblique_Stroke", character_t, "" & Character'Val (248));
+     declareStandardConstant( "Latin_1.LC_U_Grave", character_t, "" & Character'Val (249));
+     declareStandardConstant( "Latin_1.LC_U_Acute", character_t, "" & Character'Val (250));
+     declareStandardConstant( "Latin_1.LC_U_Circumflex", character_t, "" & Character'Val (251));
+     declareStandardConstant( "Latin_1.LC_U_Diaeresis", character_t, "" & Character'Val (252));
+     declareStandardConstant( "Latin_1.LC_Y_Acute", character_t, "" & Character'Val (253));
+     declareStandardConstant( "Latin_1.LC_Icelandic_Thorn", character_t, "" & Character'Val (254));
+     declareStandardConstant( "Latin_1.LC_Y_Diaeresis", character_t, "" & Character'Val (255));
+  end declareLatin1Characters;
+
   temp_id : identifier;                                         -- unused id
 
 begin
@@ -1098,391 +1487,16 @@ begin
   declareIdent( json_string_t, "json_string", string_t, typeClass );
 
   -- Standard Package constants: ASCII
+  -- this is broken out to reduce the size of this procedure.  On some
+  -- machines, this gives a frame size warning otherwise.
 
-  declareStandardConstant( "ASCII.NUL", character_t, "" & ASCII.NUL );
-  declareStandardConstant( "ASCII.SOH", character_t, "" & ASCII.soh );
-  declareStandardConstant( "ASCII.STX", character_t, "" & ASCII.stx );
-  declareStandardConstant( "ASCII.ETX", character_t, "" & ASCII.etx );
-  declareStandardConstant( "ASCII.EOT", character_t, "" & ASCII.eot );
-  declareStandardConstant( "ASCII.ENQ", character_t, "" & ASCII.enq );
-  declareStandardConstant( "ASCII.ACK", character_t, "" & ASCII.ack );
-  declareStandardConstant( "ASCII.BEL", character_t, "" & ASCII.bel );
-  declareStandardConstant( "ASCII.BS",  character_t, "" & ASCII.bs );
-  declareStandardConstant( "ASCII.HT",  character_t, "" & ASCII.ht );
-  declareStandardConstant( "ASCII.LF",  character_t, "" & ASCII.lf );
-  declareStandardConstant( "ASCII.VT",  character_t, "" & ASCII.vt );
-  declareStandardConstant( "ASCII.FF",  character_t, "" & ASCII.ff );
-  declareStandardConstant( "ASCII.CR",  character_t, "" & ASCII.cr );
-  declareStandardConstant( "ASCII.SO",  character_t, "" & ASCII.so );
-  declareStandardConstant( "ASCII.SI",  character_t, "" & ASCII.si );
-  declareStandardConstant( "ASCII.DLE", character_t, "" & ASCII.dle );
-  declareStandardConstant( "ASCII.DC1", character_t, "" & ASCII.dc1 );
-  declareStandardConstant( "ASCII.DC2", character_t, "" & ASCII.dc2 );
-  declareStandardConstant( "ASCII.DC3", character_t, "" & ASCII.dc3 );
-  declareStandardConstant( "ASCII.DC4", character_t, "" & ASCII.dc4 );
-  declareStandardConstant( "ASCII.NAK", character_t, "" & ASCII.nak );
-  declareStandardConstant( "ASCII.SYN", character_t, "" & ASCII.syn );
-  declareStandardConstant( "ASCII.ETB", character_t, "" & ASCII.etb );
-  declareStandardConstant( "ASCII.CAN", character_t, "" & ASCII.can );
-  declareStandardConstant( "ASCII.EM",  character_t, "" & ASCII.em );
-  declareStandardConstant( "ASCII.SUB", character_t, "" & ASCII.sub );
-  declareStandardConstant( "ASCII.ESC", character_t, "" & ASCII.esc );
-  declareStandardConstant( "ASCII.FS",  character_t, "" & ASCII.fs );
-  declareStandardConstant( "ASCII.GS",  character_t, "" & ASCII.gs );
-  declareStandardConstant( "ASCII.RS",  character_t, "" & ASCII.rs );
-  declareStandardConstant( "ASCII.US",  character_t, "" & ASCII.us );
-  declareStandardConstant( "ASCII.DEL", character_t, "" & ASCII.del );
-  declareStandardConstant( "ASCII.Exclam",    character_t, "!" );
-  declareStandardConstant( "ASCII.Quotation", character_t, """" );
-  declareStandardConstant( "ASCII.Sharp",     character_t, "#" );
-  declareStandardConstant( "ASCII.Dollar",    character_t, "$" );
-  declareStandardConstant( "ASCII.Percent",   character_t, "%" );
-  declareStandardConstant( "ASCII.Ampersand", character_t, "&" );
-  declareStandardConstant( "ASCII.Colon",     character_t, ":" );
-  declareStandardConstant( "ASCII.Semicolon", character_t, ";" );
-  declareStandardConstant( "ASCII.Query",     character_t, "?" );
-  declareStandardConstant( "ASCII.At_Sign",   character_t, "@" );
-  declareStandardConstant( "ASCII.L_Bracket", character_t, "[" );
-  declareStandardConstant( "ASCII.Back_Slash",character_t, "\" );
-  declareStandardConstant( "ASCII.R_Bracket", character_t, "]" );
-  declareStandardConstant( "ASCII.Circumflex",character_t, "^" );
-  declareStandardConstant( "ASCII.Underline", character_t, "_" );
-  declareStandardConstant( "ASCII.Grave",     character_t, "`" );
-  declareStandardConstant( "ASCII.L_Brace",   character_t, "{" );
-  declareStandardConstant( "ASCII.Bar",       character_t, "|" );
-  declareStandardConstant( "ASCII.R_Brace",   character_t, "}" );
-  declareStandardConstant( "ASCII.Tilde",     character_t, "~" );
-  declareStandardConstant( "ASCII.LC_A",      character_t, "a" );
-  declareStandardConstant( "ASCII.LC_B",      character_t, "b" );
-  declareStandardConstant( "ASCII.LC_C",      character_t, "c" );
-  declareStandardConstant( "ASCII.LC_D",      character_t, "d" );
-  declareStandardConstant( "ASCII.LC_E",      character_t, "e" );
-  declareStandardConstant( "ASCII.LC_F",      character_t, "f" );
-  declareStandardConstant( "ASCII.LC_G",      character_t, "g" );
-  declareStandardConstant( "ASCII.LC_H",      character_t, "h" );
-  declareStandardConstant( "ASCII.LC_I",      character_t, "i" );
-  declareStandardConstant( "ASCII.LC_J",      character_t, "j" );
-  declareStandardConstant( "ASCII.LC_K",      character_t, "k" );
-  declareStandardConstant( "ASCII.LC_L",      character_t, "l" );
-  declareStandardConstant( "ASCII.LC_M",      character_t, "m" );
-  declareStandardConstant( "ASCII.LC_N",      character_t, "n" );
-  declareStandardConstant( "ASCII.LC_O",      character_t, "o" );
-  declareStandardConstant( "ASCII.LC_P",      character_t, "p" );
-  declareStandardConstant( "ASCII.LC_Q",      character_t, "q" );
-  declareStandardConstant( "ASCII.LC_R",      character_t, "r" );
-  declareStandardConstant( "ASCII.LC_S",      character_t, "s" );
-  declareStandardConstant( "ASCII.LC_T",      character_t, "t" );
-  declareStandardConstant( "ASCII.LC_U",      character_t, "u" );
-  declareStandardConstant( "ASCII.LC_V",      character_t, "v" );
-  declareStandardConstant( "ASCII.LC_W",      character_t, "w" );
-  declareStandardConstant( "ASCII.LC_X",      character_t, "x" );
-  declareStandardConstant( "ASCII.LC_Y",      character_t, "y" );
-  declareStandardConstant( "ASCII.LC_Z",      character_t, "z" );
-  declareStandardConstant( "ASCII.UC_A",      character_t, "A" );
-  declareStandardConstant( "ASCII.UC_B",      character_t, "B" );
-  declareStandardConstant( "ASCII.UC_C",      character_t, "C" );
-  declareStandardConstant( "ASCII.UC_D",      character_t, "D" );
-  declareStandardConstant( "ASCII.UC_E",      character_t, "E" );
-  declareStandardConstant( "ASCII.UC_F",      character_t, "F" );
-  declareStandardConstant( "ASCII.UC_G",      character_t, "G" );
-  declareStandardConstant( "ASCII.UC_H",      character_t, "H" );
-  declareStandardConstant( "ASCII.UC_I",      character_t, "I" );
-  declareStandardConstant( "ASCII.UC_J",      character_t, "J" );
-  declareStandardConstant( "ASCII.UC_K",      character_t, "K" );
-  declareStandardConstant( "ASCII.UC_L",      character_t, "L" );
-  declareStandardConstant( "ASCII.UC_M",      character_t, "M" );
-  declareStandardConstant( "ASCII.UC_N",      character_t, "N" );
-  declareStandardConstant( "ASCII.UC_O",      character_t, "O" );
-  declareStandardConstant( "ASCII.UC_P",      character_t, "P" );
-  declareStandardConstant( "ASCII.UC_Q",      character_t, "Q" );
-  declareStandardConstant( "ASCII.UC_R",      character_t, "R" );
-  declareStandardConstant( "ASCII.UC_S",      character_t, "S" );
-  declareStandardConstant( "ASCII.UC_T",      character_t, "T" );
-  declareStandardConstant( "ASCII.UC_U",      character_t, "U" );
-  declareStandardConstant( "ASCII.UC_V",      character_t, "V" );
-  declareStandardConstant( "ASCII.UC_W",      character_t, "W" );
-  declareStandardConstant( "ASCII.UC_X",      character_t, "X" );
-  declareStandardConstant( "ASCII.UC_Y",      character_t, "Y" );
-  declareStandardConstant( "ASCII.UC_Z",      character_t, "Z" );
+  declareASCIICharacters;
 
   -- Latin_1
+  -- this is broken out to reduce the size of this procedure.  On some
+  -- machines, this gives a frame size warning otherwise.
 
-  ------------------------
-  -- Control Characters --
-  ------------------------
-
-  declareStandardConstant( "Latin_1.NUL", character_t, "" & Character'Val (0));
-  declareStandardConstant( "Latin_1.SOH", character_t, "" & Character'Val (1));
-  declareStandardConstant( "Latin_1.STX", character_t, "" & Character'Val (2));
-  declareStandardConstant( "Latin_1.ETX", character_t, "" & Character'Val (3));
-  declareStandardConstant( "Latin_1.EOT", character_t, "" & Character'Val (4));
-  declareStandardConstant( "Latin_1.ENQ", character_t, "" & Character'Val (5));
-  declareStandardConstant( "Latin_1.ACK", character_t, "" & Character'Val (6));
-  declareStandardConstant( "Latin_1.BEL", character_t, "" & Character'Val (7));
-  declareStandardConstant( "Latin_1.BS", character_t,  "" & Character'Val (8));
-  declareStandardConstant( "Latin_1.HT", character_t,  "" & Character'Val (9));
-  declareStandardConstant( "Latin_1.LF", character_t,  "" & Character'Val (10));
-  declareStandardConstant( "Latin_1.VT", character_t,  "" & Character'Val (11));
-  declareStandardConstant( "Latin_1.FF", character_t,  "" & Character'Val (12));
-  declareStandardConstant( "Latin_1.CR", character_t, "" & Character'Val (13));
-  declareStandardConstant( "Latin_1.SO", character_t, "" & Character'Val (14));
-  declareStandardConstant( "Latin_1.SI", character_t, "" & Character'Val (15));
-
-  declareStandardConstant( "Latin_1.DLE", character_t, "" & Character'Val (16));
-  declareStandardConstant( "Latin_1.DC1", character_t, "" & Character'Val (17));
-  declareStandardConstant( "Latin_1.DC2", character_t, "" & Character'Val (18));
-  declareStandardConstant( "Latin_1.DC3", character_t, "" & Character'Val (19));
-  declareStandardConstant( "Latin_1.DC4", character_t, "" & Character'Val (20));
-  declareStandardConstant( "Latin_1.NAK", character_t, "" & Character'Val (21));
-  declareStandardConstant( "Latin_1.SYN", character_t, "" & Character'Val (22));
-  declareStandardConstant( "Latin_1.ETB", character_t, "" & Character'Val (23));
-  declareStandardConstant( "Latin_1.CAN", character_t, "" & Character'Val (24));
-  declareStandardConstant( "Latin_1.EM", character_t, "" & Character'Val (25));
-  declareStandardConstant( "Latin_1.SUB", character_t, "" & Character'Val (26));
-  declareStandardConstant( "Latin_1.ESC", character_t, "" & Character'Val (27));
-  declareStandardConstant( "Latin_1.FS", character_t, "" & Character'Val (28));
-  declareStandardConstant( "Latin_1.GS", character_t, "" & Character'Val (29));
-  declareStandardConstant( "Latin_1.RS", character_t, "" & Character'Val (30));
-  declareStandardConstant( "Latin_1.US", character_t, "" & Character'Val (31));
-
-  --------------------------------
-  -- ISO 646 Graphic Characters --
-  --------------------------------
-
-  declareStandardConstant( "Latin_1.Space", character_t, " ");
-  declareStandardConstant( "Latin_1.Exclamation", character_t, "!");
-  declareStandardConstant( "Latin_1.Quotation", character_t, """");
-  declareStandardConstant( "Latin_1.Number_Sign", character_t, "#");
-  declareStandardConstant( "Latin_1.Dollar_Sign", character_t, "$");
-  declareStandardConstant( "Latin_1.Percent_Sign", character_t, "%");
-  declareStandardConstant( "Latin_1.Ampersand", character_t, "&");
-  declareStandardConstant( "Latin_1.Apostrophe", character_t, "'");
-  declareStandardConstant( "Latin_1.Left_Parenthesis", character_t, "(");
-  declareStandardConstant( "Latin_1.Right_Parenthesis", character_t, ")");
-  declareStandardConstant( "Latin_1.Asterisk", character_t, "*");
-  declareStandardConstant( "Latin_1.Plus_Sign", character_t, "+");
-  declareStandardConstant( "Latin_1.Comma", character_t, ",");
-  declareStandardConstant( "Latin_1.Hyphen", character_t, "-");
-  declareStandardConstant( "Latin_1.Minus_Sign", character_t, "-");
-  declareStandardConstant( "Latin_1.Full_Stop", character_t, ".");
-  declareStandardConstant( "Latin_1.Solidus", character_t, "/");
-
-  --  Decimal digits '0' though '9' are at positions 48 through 57
-
-  declareStandardConstant( "Latin_1.Colon", character_t, ":");
-  declareStandardConstant( "Latin_1.Semicolon", character_t, ";");
-  declareStandardConstant( "Latin_1.Less_Than_Sign", character_t, "<");
-  declareStandardConstant( "Latin_1.Equals_Sign", character_t, "=");
-  declareStandardConstant( "Latin_1.Greater_Than_Sign", character_t, ">");
-  declareStandardConstant( "Latin_1.Question", character_t, "?");
-
-  declareStandardConstant( "Latin_1.Commercial_At", character_t, "@");
-
-  --  Letters 'A' through 'Z' are at positions 65 through 90
-
-  declareStandardConstant( "Latin_1.Left_Square_Bracket", character_t, "[");
-  declareStandardConstant( "Latin_1.Reverse_Solidus", character_t, "\");
-  declareStandardConstant( "Latin_1.Right_Square_Bracket", character_t, "]");
-  declareStandardConstant( "Latin_1.Circumflex", character_t, "^");
-  declareStandardConstant( "Latin_1.Low_Line", character_t, "_");
-
-  declareStandardConstant( "Latin_1.Grave", character_t, "`");
-  declareStandardConstant( "Latin_1.LC_A", character_t, "a");
-  declareStandardConstant( "Latin_1.LC_B", character_t, "b");
-  declareStandardConstant( "Latin_1.LC_C", character_t, "c");
-  declareStandardConstant( "Latin_1.LC_D", character_t, "d");
-  declareStandardConstant( "Latin_1.LC_E", character_t, "e");
-  declareStandardConstant( "Latin_1.LC_F", character_t, "f");
-  declareStandardConstant( "Latin_1.LC_G", character_t, "g");
-  declareStandardConstant( "Latin_1.LC_H", character_t, "h");
-  declareStandardConstant( "Latin_1.LC_I", character_t, "i");
-  declareStandardConstant( "Latin_1.LC_J", character_t, "j");
-  declareStandardConstant( "Latin_1.LC_K", character_t, "k");
-  declareStandardConstant( "Latin_1.LC_L", character_t, "l");
-  declareStandardConstant( "Latin_1.LC_M", character_t, "m");
-  declareStandardConstant( "Latin_1.LC_N", character_t, "n");
-  declareStandardConstant( "Latin_1.LC_O", character_t, "o");
-  declareStandardConstant( "Latin_1.LC_P", character_t, "p");
-  declareStandardConstant( "Latin_1.LC_Q", character_t, "q");
-  declareStandardConstant( "Latin_1.LC_R", character_t, "r");
-  declareStandardConstant( "Latin_1.LC_S", character_t, "s");
-  declareStandardConstant( "Latin_1.LC_T", character_t, "t");
-  declareStandardConstant( "Latin_1.LC_U", character_t, "u");
-  declareStandardConstant( "Latin_1.LC_V", character_t, "v");
-  declareStandardConstant( "Latin_1.LC_W", character_t, "w");
-  declareStandardConstant( "Latin_1.LC_X", character_t, "x");
-  declareStandardConstant( "Latin_1.LC_Y", character_t, "y");
-  declareStandardConstant( "Latin_1.LC_Z", character_t, "z");
-  declareStandardConstant( "Latin_1.Left_Curly_Bracket", character_t, "{");
-  declareStandardConstant( "Latin_1.Vertical_Line", character_t, "|");
-  declareStandardConstant( "Latin_1.Right_Curly_Bracket", character_t, "}");
-  declareStandardConstant( "Latin_1.Tilde", character_t, "~");
-  declareStandardConstant( "Latin_1.DEL", character_t, "" & Character'Val (127));
-
-  ---------------------------------
-  -- ISO 6429 Control Characters --
-  ---------------------------------
-
-  declareStandardConstant( "Latin_1.IS4", character_t, "" & Character'Val (28));
-  declareStandardConstant( "Latin_1.IS3", character_t, "" & Character'Val (29));
-  declareStandardConstant( "Latin_1.IS2", character_t, "" & Character'Val (30));
-  declareStandardConstant( "Latin_1.IS1", character_t, "" & Character'Val (31));
-
-  declareStandardConstant( "Latin_1.Reserved_128", character_t, "" & Character'Val (128));
-  declareStandardConstant( "Latin_1.Reserved_129", character_t, "" & Character'Val (129));
-  declareStandardConstant( "Latin_1.BPH", character_t, "" & Character'Val (130));
-  declareStandardConstant( "Latin_1.NBH", character_t, "" & Character'Val (131));
-  declareStandardConstant( "Latin_1.Reserved_132", character_t, "" & Character'Val (132));
-  declareStandardConstant( "Latin_1.NEL", character_t, "" & Character'Val (133));
-  declareStandardConstant( "Latin_1.SSA", character_t, "" & Character'Val (134));
-  declareStandardConstant( "Latin_1.ESA", character_t, "" & Character'Val (135));
-  declareStandardConstant( "Latin_1.HTS", character_t, "" & Character'Val (136));
-  declareStandardConstant( "Latin_1.HTJ", character_t, "" & Character'Val (137));
-  declareStandardConstant( "Latin_1.VTS", character_t, "" & Character'Val (138));
-  declareStandardConstant( "Latin_1.PLD", character_t, "" & Character'Val (139));
-  declareStandardConstant( "Latin_1.PLU", character_t, "" & Character'Val (140));
-  declareStandardConstant( "Latin_1.RI", character_t, "" & Character'Val (141));
-  declareStandardConstant( "Latin_1.SS2", character_t, "" & Character'Val (142));
-  declareStandardConstant( "Latin_1.SS3", character_t, "" & Character'Val (143));
-
-  declareStandardConstant( "Latin_1.DCS", character_t, "" & Character'Val (144));
-  declareStandardConstant( "Latin_1.PU1", character_t, "" & Character'Val (145));
-  declareStandardConstant( "Latin_1.PU2", character_t, "" & Character'Val (146));
-  declareStandardConstant( "Latin_1.STS", character_t, "" & Character'Val (147));
-  declareStandardConstant( "Latin_1.CCH", character_t, "" & Character'Val (148));
-  declareStandardConstant( "Latin_1.MW", character_t, "" & Character'Val (149));
-  declareStandardConstant( "Latin_1.SPA", character_t, "" & Character'Val (150));
-  declareStandardConstant( "Latin_1.EPA", character_t, "" & Character'Val (151));
-
-  declareStandardConstant( "Latin_1.SOS", character_t, "" & Character'Val (152));
-  declareStandardConstant( "Latin_1.Reserved_153", character_t, "" & Character'Val (153));
-  declareStandardConstant( "Latin_1.SCI", character_t, "" & Character'Val (154));
-  declareStandardConstant( "Latin_1.CSI", character_t, "" & Character'Val (155));
-  declareStandardConstant( "Latin_1.ST", character_t, "" & Character'Val (156));
-  declareStandardConstant( "Latin_1.OSC", character_t, "" & Character'Val (157));
-  declareStandardConstant( "Latin_1.PM", character_t, "" & Character'Val (158));
-  declareStandardConstant( "Latin_1.APC", character_t, "" & Character'Val (159));
-
-   ------------------------------
-   -- Other Graphic Characters --
-   ------------------------------
-
-   --  Character positions 160 (16#A0#) .. 175 (16#AF#)
-
-  declareStandardConstant( "Latin_1.No_Break_Space", character_t, "" & Character'Val (160));
-  declareStandardConstant( "Latin_1.NBSP", character_t, "" & Character'Val (160));
-  declareStandardConstant( "Latin_1.Inverted_Exclamation", character_t, "" & Character'Val (161));
-  declareStandardConstant( "Latin_1.Cent_Sign", character_t, "" & Character'Val (162));
-  declareStandardConstant( "Latin_1.Pound_Sign", character_t, "" & Character'Val (163));
-  declareStandardConstant( "Latin_1.Currency_Sign", character_t, "" & Character'Val (164));
-  declareStandardConstant( "Latin_1.Yen_Sign", character_t, "" & Character'Val (165));
-  declareStandardConstant( "Latin_1.Broken_Bar", character_t, "" & Character'Val (166));
-  declareStandardConstant( "Latin_1.Section_Sign", character_t, "" & Character'Val (167));
-  declareStandardConstant( "Latin_1.Diaeresis", character_t, "" & Character'Val (168));
-  declareStandardConstant( "Latin_1.Copyright_Sign", character_t, "" & Character'Val (169));
-  declareStandardConstant( "Latin_1.Feminine_Ordinal_Indicator", character_t, "" & Character'Val (170));
-  declareStandardConstant( "Latin_1.Left_Angle_Quotation", character_t, "" & Character'Val (171));
-  declareStandardConstant( "Latin_1.Not_Sign", character_t, "" & Character'Val (172));
-  declareStandardConstant( "Latin_1.Soft_Hyphen", character_t, "" & Character'Val (173));
-  declareStandardConstant( "Latin_1.Registered_Trade_Mark_Sign", character_t, "" & Character'Val (174));
-  declareStandardConstant( "Latin_1.Macron", character_t, "" & Character'Val (175));
-
-   --  Character positions 176 (16#B0#) .. 191 (16#BF#)
-
-  declareStandardConstant( "Latin_1.Degree_Sign", character_t, "" & Character'Val (176));
-   declareStandardConstant( "Latin_1.Ring_Above", character_t, "" & "" & Character'Val (176));
-  declareStandardConstant( "Latin_1.Plus_Minus_Sign", character_t, "" & Character'Val (177));
-  declareStandardConstant( "Latin_1.Superscript_Two", character_t, "" & Character'Val (178));
-  declareStandardConstant( "Latin_1.Superscript_Three", character_t, "" & Character'Val (179));
-  declareStandardConstant( "Latin_1.Acute", character_t, "" & Character'Val (180));
-  declareStandardConstant( "Latin_1.Micro_Sign", character_t, "" & Character'Val (181));
-  declareStandardConstant( "Latin_1.Pilcrow_Sign", character_t, "" & Character'Val (182));
-  declareStandardConstant( "Latin_1.Paragraph_Sign", character_t, "" & Character'Val (182));
-  declareStandardConstant( "Latin_1.Middle_Dot", character_t, "" & Character'Val (183));
-  declareStandardConstant( "Latin_1.Cedilla", character_t, "" & Character'Val (184));
-  declareStandardConstant( "Latin_1.Superscript_One", character_t, "" & Character'Val (185));
-  declareStandardConstant( "Latin_1.Masculine_Ordinal_Indicator", character_t, "" & Character'Val (186));
-  declareStandardConstant( "Latin_1.Right_Angle_Quotation", character_t, "" & Character'Val (187));
-  declareStandardConstant( "Latin_1.Fraction_One_Quarter", character_t, "" & Character'Val (188));
-  declareStandardConstant( "Latin_1.Fraction_One_Half", character_t, "" & Character'Val (189));
-  declareStandardConstant( "Latin_1.Fraction_Three_Quarters", character_t, "" & Character'Val (190));
-  declareStandardConstant( "Latin_1.Inverted_Question", character_t, "" & Character'Val (191));
-
-   --  Character positions 192 (16#C0#) .. 207 (16#CF#)
-
-  declareStandardConstant( "Latin_1.UC_A_Grave", character_t, "" & Character'Val (192));
-  declareStandardConstant( "Latin_1.UC_A_Acute", character_t, "" & Character'Val (193));
-  declareStandardConstant( "Latin_1.UC_A_Circumflex", character_t, "" & Character'Val (194));
-  declareStandardConstant( "Latin_1.UC_A_Tilde", character_t, "" & Character'Val (195));
-  declareStandardConstant( "Latin_1.UC_A_Diaeresis", character_t, "" & Character'Val (196));
-  declareStandardConstant( "Latin_1.UC_A_Ring", character_t, "" & Character'Val (197));
-  declareStandardConstant( "Latin_1.UC_AE_Diphthong", character_t, "" & Character'Val (198));
-  declareStandardConstant( "Latin_1.UC_C_Cedilla", character_t, "" & Character'Val (199));
-  declareStandardConstant( "Latin_1.UC_E_Grave", character_t, "" & Character'Val (200));
-  declareStandardConstant( "Latin_1.UC_E_Acute", character_t, "" & Character'Val (201));
-  declareStandardConstant( "Latin_1.UC_E_Circumflex", character_t, "" & Character'Val (202));
-  declareStandardConstant( "Latin_1.UC_E_Diaeresis", character_t, "" & Character'Val (203));
-  declareStandardConstant( "Latin_1.UC_I_Grave", character_t, "" & Character'Val (204));
-  declareStandardConstant( "Latin_1.UC_I_Acute", character_t, "" & Character'Val (205));
-  declareStandardConstant( "Latin_1.UC_I_Circumflex", character_t, "" & Character'Val (206));
-  declareStandardConstant( "Latin_1.UC_I_Diaeresis", character_t, "" & Character'Val (207));
-
-   --  Character positions 208 (16#D0#) .. 223 (16#DF#)
-
-  declareStandardConstant( "Latin_1.UC_Icelandic_Eth", character_t, "" & Character'Val (208));
-  declareStandardConstant( "Latin_1.UC_N_Tilde", character_t, "" & Character'Val (209));
-  declareStandardConstant( "Latin_1.UC_O_Grave", character_t, "" & Character'Val (210));
-  declareStandardConstant( "Latin_1.UC_O_Acute", character_t, "" & Character'Val (211));
-  declareStandardConstant( "Latin_1.UC_O_Circumflex", character_t, "" & Character'Val (212));
-  declareStandardConstant( "Latin_1.UC_O_Tilde", character_t, "" & Character'Val (213));
-  declareStandardConstant( "Latin_1.UC_O_Diaeresis", character_t, "" & Character'Val (214));
-  declareStandardConstant( "Latin_1.Multiplication_Sign", character_t, "" & Character'Val (215));
-  declareStandardConstant( "Latin_1.UC_O_Oblique_Stroke", character_t, "" & Character'Val (216));
-  declareStandardConstant( "Latin_1.UC_U_Grave", character_t, "" & Character'Val (217));
-  declareStandardConstant( "Latin_1.UC_U_Acute", character_t, "" & Character'Val (218));
-  declareStandardConstant( "Latin_1.UC_U_Circumflex", character_t, "" & Character'Val (219));
-  declareStandardConstant( "Latin_1.UC_U_Diaeresis", character_t, "" & Character'Val (220));
-  declareStandardConstant( "Latin_1.UC_Y_Acute", character_t, "" & Character'Val (221));
-  declareStandardConstant( "Latin_1.UC_Icelandic_Thorn", character_t, "" & Character'Val (222));
-  declareStandardConstant( "Latin_1.LC_German_Sharp_S", character_t, "" & Character'Val (223));
-
-   --  Character positions 224 (16#E0#) .. 239 (16#EF#)
-
-  declareStandardConstant( "Latin_1.LC_A_Grave", character_t, "" & Character'Val (224));
-  declareStandardConstant( "Latin_1.LC_A_Acute", character_t, "" & Character'Val (225));
-  declareStandardConstant( "Latin_1.LC_A_Circumflex", character_t, "" & Character'Val (226));
-  declareStandardConstant( "Latin_1.LC_A_Tilde", character_t, "" & Character'Val (227));
-  declareStandardConstant( "Latin_1.LC_A_Diaeresis", character_t, "" & Character'Val (228));
-  declareStandardConstant( "Latin_1.LC_A_Ring", character_t, "" & Character'Val (229));
-  declareStandardConstant( "Latin_1.LC_AE_Diphthong", character_t, "" & Character'Val (230));
-  declareStandardConstant( "Latin_1.LC_C_Cedilla", character_t, "" & Character'Val (231));
-  declareStandardConstant( "Latin_1.LC_E_Grave", character_t, "" & Character'Val (232));
-  declareStandardConstant( "Latin_1.LC_E_Acute", character_t, "" & Character'Val (233));
-  declareStandardConstant( "Latin_1.LC_E_Circumflex", character_t, "" & Character'Val (234));
-  declareStandardConstant( "Latin_1.LC_E_Diaeresis", character_t, "" & Character'Val (235));
-  declareStandardConstant( "Latin_1.LC_I_Grave", character_t, "" & Character'Val (236));
-  declareStandardConstant( "Latin_1.LC_I_Acute", character_t, "" & Character'Val (237));
-  declareStandardConstant( "Latin_1.LC_I_Circumflex", character_t, "" & Character'Val (238));
-  declareStandardConstant( "Latin_1.LC_I_Diaeresis", character_t, "" & Character'Val (239));
-
-   --  Character positions 240 (16#F0#) .. 255 (16#FF)
-  declareStandardConstant( "Latin_1.LC_Icelandic_Eth", character_t, "" & Character'Val (240));
-  declareStandardConstant( "Latin_1.LC_N_Tilde", character_t, "" & Character'Val (241));
-  declareStandardConstant( "Latin_1.LC_O_Grave", character_t, "" & Character'Val (242));
-  declareStandardConstant( "Latin_1.LC_O_Acute", character_t, "" & Character'Val (243));
-  declareStandardConstant( "Latin_1.LC_O_Circumflex", character_t, "" & Character'Val (244));
-  declareStandardConstant( "Latin_1.LC_O_Tilde", character_t, "" & Character'Val (245));
-  declareStandardConstant( "Latin_1.LC_O_Diaeresis", character_t, "" & Character'Val (246));
-  declareStandardConstant( "Latin_1.Division_Sign", character_t, "" & Character'Val (247));
-  declareStandardConstant( "Latin_1.LC_O_Oblique_Stroke", character_t, "" & Character'Val (248));
-  declareStandardConstant( "Latin_1.LC_U_Grave", character_t, "" & Character'Val (249));
-  declareStandardConstant( "Latin_1.LC_U_Acute", character_t, "" & Character'Val (250));
-  declareStandardConstant( "Latin_1.LC_U_Circumflex", character_t, "" & Character'Val (251));
-  declareStandardConstant( "Latin_1.LC_U_Diaeresis", character_t, "" & Character'Val (252));
-  declareStandardConstant( "Latin_1.LC_Y_Acute", character_t, "" & Character'Val (253));
-  declareStandardConstant( "Latin_1.LC_Icelandic_Thorn", character_t, "" & Character'Val (254));
-  declareStandardConstant( "Latin_1.LC_Y_Diaeresis", character_t, "" & Character'Val (255));
-
+  declareLatin1Characters;
 
   -- System Package constants
 
