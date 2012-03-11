@@ -259,7 +259,7 @@ begin
   else
      loop
         readchar( amountRead, tputResultsFD, ch, 1 );
-        if amountRead < 0 or amountRead = 18446744073709551615 then -- error?
+        if amountRead < 0 or amountRead = size_t'last then -- error?
            if C_errno /= EINTR and C_errno /= EAGAIN then
               ttyCode := null_unbounded_string;
               exit;
@@ -372,7 +372,7 @@ begin
      if amountRead = 0 then                        -- nothing read?
         ch := ASCII.EOT;                           -- return a control-d
 -- KB: 2012/02/15: for an explaination of the kludge, see below
-     elsif amountRead < 0 or amountRead = 18446744073709551615 then -- error?
+     elsif amountRead < 0 or amountRead = size_t'last then -- error?
         if bush_os.C_errno = EINTR and not wasSIGINT then
             -- interrupted by signal (other than SIGINT)
             goto read_notty;                       -- then try again
@@ -431,7 +431,7 @@ begin
               readchar( amountRead, stdin, ch, 1 );-- read a character
               if amountRead = 0 then               -- nothing read?
                  ch := ASCII.EOT;                  -- return a control-d
-              elsif amountRead < 0 or amountRead = 18446744073709551615 then -- error?
+              elsif amountRead < 0 or amountRead = size_t'last  then -- error?
                  if bush_os.C_errno = EINTR and not wasSIGINT then
                     -- interrupted by signal (other than SIGINT)
                     goto retryread;                -- then try again

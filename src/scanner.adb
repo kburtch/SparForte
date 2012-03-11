@@ -935,78 +935,8 @@ end shutdownScanner;
 -- in the future purpose.)
 -----------------------------------------------------------------------------
 
-procedure resetScanner is
-
-  --procedure importEnvironment is
-  --  -- Declare all Environment Variables.  If --import_all is not used,
-  --  -- still declare PATH, PWD, OLDPWD, HOME, TERM if they exist.
-  --  path_key   : unbounded_string := to_unbounded_string( "PATH=" );
-  --  pwd_key    : unbounded_string := to_unbounded_string( "PWD=" );
-  --  oldpwd_key : unbounded_string := to_unbounded_string( "OLDPWD=" );
-  --  home_key   : unbounded_string := to_unbounded_string( "HOME=" );
-  --  term_key   : unbounded_string := to_unbounded_string( "TERM=" );
-  --  shell_key  : unbounded_string := to_unbounded_string( "SHELL=" );
-  --  ev  : unbounded_string;                                     -- an env var
-  --begin
---put_line( "IMPORTING ENVIRONMENT" ); -- DEBUG
---put( "ENV COUNT = " ); put_line( Environment_Count'img ); -- DEBUG
-  --   for i in 1..Environment_Count loop
-  --      ev := to_unbounded_string( Environment_Value( i ) );
---put( "ENV = " ); put_line( ev ); -- DEBUG
-  --      if Head( ev, 5 ) = path_key then
-  --         init_env_ident( Environment_Value( i ) );
-  --      elsif Head( ev, 4 ) = pwd_key then
-  --         init_env_ident( Environment_Value( i ) );
-  --      elsif Head( ev, 7 ) = oldpwd_key then
-  --         init_env_ident( Environment_Value( i ) );
-  --      elsif Head( ev, 5 ) = home_key then
-  --         init_env_ident( Environment_Value( i ) );
-  --      elsif Head( ev, 5 ) = term_key then
-  --         init_env_ident( Environment_Value( i ) );
-  --         identifiers( identifiers_top-1).export := true;
---put_line( "  TERM FOUND" ); -- DEBUG
-  --      elsif Head( ev, 6 ) = shell_key then
-  --         init_env_ident( Environment_Value( i ) );
-  --      elsif importOpt then
-  --         init_env_ident( Environment_Value( i ) );
-  --      end if;
-  --   end loop;
-  --end importEnvironment;
-
-  procedure importEnvironment is
-    -- Declare all Environment Variables.  If --import_all is not used,
-    -- still declare PATH, PWD, OLDPWD, HOME, TERM if they exist.
-    path_key   : unbounded_string := to_unbounded_string( "PATH=" );
-    pwd_key    : unbounded_string := to_unbounded_string( "PWD=" );
-    oldpwd_key : unbounded_string := to_unbounded_string( "OLDPWD=" );
-    home_key   : unbounded_string := to_unbounded_string( "HOME=" );
-    term_key   : unbounded_string := to_unbounded_string( "TERM=" );
-    shell_key  : unbounded_string := to_unbounded_string( "SHELL=" );
-    library_key: unbounded_string := to_unbounded_string( "SPAR_LIBRARY_PATH=" );
-    ev  : unbounded_string;                                     -- an env var
-  begin
-     for i in 1..environmentList.Length( initialEnvironment ) loop
-        environmentList.Find( initialEnvironment, i, ev );
-        if Head( ev, 5 ) = path_key then
-           init_env_ident( to_string( ev ) );
-        elsif Head( ev, 4 ) = pwd_key then
-           init_env_ident( to_string( ev ) );
-        elsif Head( ev, 7 ) = oldpwd_key then
-           init_env_ident( to_string( ev ) );
-        elsif Head( ev, 5 ) = home_key then
-           init_env_ident( to_string( ev ) );
-        elsif Head( ev, 5 ) = term_key then
-           init_env_ident( to_string( ev ) );
-           identifiers( identifiers_top-1).export := true;
-        elsif Head( ev, 6 ) = shell_key then
-           init_env_ident( to_string( ev ) );
-        elsif Head( ev, 18 ) = library_key then
-           init_env_ident( to_string( ev ) );
-        elsif importOpt then
-           init_env_ident( to_string( ev ) );
-        end if;
-     end loop;
-  end importEnvironment;
+-- these are pulled out of reset scanner to avoid large function warnings
+-- on red hat 6
 
   procedure declareASCIICharacters is
   begin
@@ -1396,6 +1326,80 @@ procedure resetScanner is
      declareStandardConstant( "Latin_1.LC_Icelandic_Thorn", character_t, "" & Character'Val (254));
      declareStandardConstant( "Latin_1.LC_Y_Diaeresis", character_t, "" & Character'Val (255));
   end declareLatin1Characters;
+
+
+procedure resetScanner is
+
+  --procedure importEnvironment is
+  --  -- Declare all Environment Variables.  If --import_all is not used,
+  --  -- still declare PATH, PWD, OLDPWD, HOME, TERM if they exist.
+  --  path_key   : unbounded_string := to_unbounded_string( "PATH=" );
+  --  pwd_key    : unbounded_string := to_unbounded_string( "PWD=" );
+  --  oldpwd_key : unbounded_string := to_unbounded_string( "OLDPWD=" );
+  --  home_key   : unbounded_string := to_unbounded_string( "HOME=" );
+  --  term_key   : unbounded_string := to_unbounded_string( "TERM=" );
+  --  shell_key  : unbounded_string := to_unbounded_string( "SHELL=" );
+  --  ev  : unbounded_string;                                     -- an env var
+  --begin
+--put_line( "IMPORTING ENVIRONMENT" ); -- DEBUG
+--put( "ENV COUNT = " ); put_line( Environment_Count'img ); -- DEBUG
+  --   for i in 1..Environment_Count loop
+  --      ev := to_unbounded_string( Environment_Value( i ) );
+--put( "ENV = " ); put_line( ev ); -- DEBUG
+  --      if Head( ev, 5 ) = path_key then
+  --         init_env_ident( Environment_Value( i ) );
+  --      elsif Head( ev, 4 ) = pwd_key then
+  --         init_env_ident( Environment_Value( i ) );
+  --      elsif Head( ev, 7 ) = oldpwd_key then
+  --         init_env_ident( Environment_Value( i ) );
+  --      elsif Head( ev, 5 ) = home_key then
+  --         init_env_ident( Environment_Value( i ) );
+  --      elsif Head( ev, 5 ) = term_key then
+  --         init_env_ident( Environment_Value( i ) );
+  --         identifiers( identifiers_top-1).export := true;
+--put_line( "  TERM FOUND" ); -- DEBUG
+  --      elsif Head( ev, 6 ) = shell_key then
+  --         init_env_ident( Environment_Value( i ) );
+  --      elsif importOpt then
+  --         init_env_ident( Environment_Value( i ) );
+  --      end if;
+  --   end loop;
+  --end importEnvironment;
+
+  procedure importEnvironment is
+    -- Declare all Environment Variables.  If --import_all is not used,
+    -- still declare PATH, PWD, OLDPWD, HOME, TERM if they exist.
+    path_key   : unbounded_string := to_unbounded_string( "PATH=" );
+    pwd_key    : unbounded_string := to_unbounded_string( "PWD=" );
+    oldpwd_key : unbounded_string := to_unbounded_string( "OLDPWD=" );
+    home_key   : unbounded_string := to_unbounded_string( "HOME=" );
+    term_key   : unbounded_string := to_unbounded_string( "TERM=" );
+    shell_key  : unbounded_string := to_unbounded_string( "SHELL=" );
+    library_key: unbounded_string := to_unbounded_string( "SPAR_LIBRARY_PATH=" );
+    ev  : unbounded_string;                                     -- an env var
+  begin
+     for i in 1..environmentList.Length( initialEnvironment ) loop
+        environmentList.Find( initialEnvironment, i, ev );
+        if Head( ev, 5 ) = path_key then
+           init_env_ident( to_string( ev ) );
+        elsif Head( ev, 4 ) = pwd_key then
+           init_env_ident( to_string( ev ) );
+        elsif Head( ev, 7 ) = oldpwd_key then
+           init_env_ident( to_string( ev ) );
+        elsif Head( ev, 5 ) = home_key then
+           init_env_ident( to_string( ev ) );
+        elsif Head( ev, 5 ) = term_key then
+           init_env_ident( to_string( ev ) );
+           identifiers( identifiers_top-1).export := true;
+        elsif Head( ev, 6 ) = shell_key then
+           init_env_ident( to_string( ev ) );
+        elsif Head( ev, 18 ) = library_key then
+           init_env_ident( to_string( ev ) );
+        elsif importOpt then
+           init_env_ident( to_string( ev ) );
+        end if;
+     end loop;
+  end importEnvironment;
 
   temp_id : identifier;                                         -- unused id
 

@@ -1742,7 +1742,7 @@ begin
   end if;
 end ParsePenPlot;
 
-procedure StartupPen is
+-- These are split from StartupPen (see StartupPen)
 
 procedure declarePenColorNames1 is
 begin
@@ -2035,6 +2035,10 @@ declareStandardConstant( color_name_navajowhite2_t, "pen_color_name.navajowhite2
 declareStandardConstant( color_name_navajowhite3_t, "pen_color_name.navajowhite3", pen_pen_color_name_t, "278" );
 declareStandardConstant( color_name_navajowhite4_t, "pen_color_name.navajowhite4", pen_pen_color_name_t, "279" );
 declareStandardConstant( color_name_navyblue_t, "pen_color_name.navyblue", pen_pen_color_name_t, "280" );
+end declarePenColorNames3;
+
+procedure declarePenColorNames4 is
+begin
 declareStandardConstant( color_name_oldlace_t, "pen_color_name.oldlace", pen_pen_color_name_t, "281" );
 declareStandardConstant( color_name_olivedrab_t, "pen_color_name.olivedrab", pen_pen_color_name_t, "282" );
 declareStandardConstant( color_name_olivedrab1_t, "pen_color_name.olivedrab1", pen_pen_color_name_t, "283" );
@@ -2056,10 +2060,6 @@ declareStandardConstant( color_name_orchid1_t, "pen_color_name.orchid1", pen_pen
 declareStandardConstant( color_name_orchid2_t, "pen_color_name.orchid2", pen_pen_color_name_t, "299" );
 declareStandardConstant( color_name_orchid3_t, "pen_color_name.orchid3", pen_pen_color_name_t, "300" );
 declareStandardConstant( color_name_orchid4_t, "pen_color_name.orchid4", pen_pen_color_name_t, "301" );
-end declarePenColorNames3;
-
-procedure declarePenColorNames4 is
-begin
 declareStandardConstant( color_name_palegoldenrod_t, "pen_color_name.palegoldenrod", pen_pen_color_name_t, "302" );
 declareStandardConstant( color_name_palegreen_t, "pen_color_name.palegreen", pen_pen_color_name_t, "303" );
 declareStandardConstant( color_name_palegreen1_t, "pen_color_name.palegreen1", pen_pen_color_name_t, "304" );
@@ -2151,6 +2151,10 @@ declareStandardConstant( color_name_slategray2_t, "pen_color_name.slategray2", p
 declareStandardConstant( color_name_slategray3_t, "pen_color_name.slategray3", pen_pen_color_name_t, "390" );
 declareStandardConstant( color_name_slategray4_t, "pen_color_name.slategray4", pen_pen_color_name_t, "391" );
 declareStandardConstant( color_name_slategrey_t, "pen_color_name.slategrey", pen_pen_color_name_t, "392" );
+end declarePenColorNames4;
+
+procedure declarePenColorNames5 is
+begin
 declareStandardConstant( color_name_snow_t, "pen_color_name.snow", pen_pen_color_name_t, "393" );
 declareStandardConstant( color_name_snow1_t, "pen_color_name.snow1", pen_pen_color_name_t, "394" );
 declareStandardConstant( color_name_snow2_t, "pen_color_name.snow2", pen_pen_color_name_t, "395" );
@@ -2186,10 +2190,6 @@ declareStandardConstant( color_name_turquoise1_t, "pen_color_name.turquoise1", p
 declareStandardConstant( color_name_turquoise2_t, "pen_color_name.turquoise2", pen_pen_color_name_t, "425" );
 declareStandardConstant( color_name_turquoise3_t, "pen_color_name.turquoise3", pen_pen_color_name_t, "426" );
 declareStandardConstant( color_name_turquoise4_t, "pen_color_name.turquoise4", pen_pen_color_name_t, "427" );
-end declarePenColorNames4;
-
-procedure declarePenColorNames5 is
-begin
 declareStandardConstant( color_name_violet_t, "pen_color_name.violet", pen_pen_color_name_t, "428" );
 declareStandardConstant( color_name_violetred_t, "pen_color_name.violetred", pen_pen_color_name_t, "429" );
 declareStandardConstant( color_name_violetred1_t, "pen_color_name.violetred1", pen_pen_color_name_t, "430" );
@@ -2211,7 +2211,15 @@ declareStandardConstant( color_name_yellow4_t, "pen_color_name.yellow4", pen_pen
 declareStandardConstant( color_name_yellowgreen_t, "pen_color_name.yellowgreen", pen_pen_color_name_t, "446" );
 end declarePenColorNames5;
 
+---  STARTUP PEN
+--
+-- Initialize the built-in Pen Package, declaring all identifiers.
+-----------------------------------------------------------------------------
+
+procedure StartupPen is
 begin
+
+  -- declare pen package types
 
   declareIdent( pen_coordinate_t, "pen.coordinate", float_t, typeClass );
 
@@ -2251,7 +2259,9 @@ begin
   declareStandardConstant( pen_brush_stamp_t, "pen_brush.stamp", pen_pen_brush_t, "4" );
   declareStandardConstant( pen_brush_smear_t, "pen_brush.smear", pen_pen_brush_t, "5" );
 
--- null rect needs to be declared
+  -- TODO: null rect needs to be declared
+
+  -- declare pen package procedures and functions
 
   declareProcedure( pen_set_rect_t, "pen.set_rect" );
   declareFunction( pen_is_empty_rect_t, "pen.is_empty_rect" );
@@ -2319,6 +2329,7 @@ begin
   declarePenColorNames5;
 
 -- record handling is limited in business shell
+-- TODO: do these when record handling is improved
 --  declareIdent( pen_a_display_info_rec_t, "pen.a_display_info_rec", root_record_t, typeClass );
 --  identifiers( pen_a_display_info_rec_t ).value := to_unbounded_string( "6" );
  -- declareIdent( pen_a_display_info_rec_textbased_t, "pen.a_display_info_rec.textbased", boolean_t, subClass );
@@ -2340,8 +2351,16 @@ begin
 --  identifiers( pen_a_display_info_rec_d_res_t ).field_of := pen_a_display_info_rec_t;
 --  identifiers( pen_a_display_info_rec_d_res_t ).value := to_unbounded_string( "6" );
 
+  -- We don't start the actual pen package unless we need it.
   -- Pen.StartupPen;
 end StartupPen;
+
+
+---  SHUTDOWN PEN
+--
+-- Shutdown the pen package, shutting down the actual pen package if we
+-- started it.
+-----------------------------------------------------------------------------
 
 procedure ShutdownPen is
 begin
@@ -2352,3 +2371,4 @@ begin
 end ShutdownPen;
 
 end parser_pen;
+

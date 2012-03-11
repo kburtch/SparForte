@@ -522,7 +522,7 @@ begin
    fd := aFileDescriptor'value( to_string( stringField( fileInfo, recSep, fd_field ) ) );
 <<reread>> readchar( result, fd, ch, 1 );
  -- KB: 2012/02/15: see bush_os-tty for an explaination of this kludge
-     if result < 0 or result = 18446744073709551615 then
+     if result < 0 or result = size_t'last then
       if C_errno = EAGAIN  or C_errno = EINTR then
          goto reread;                   -- interrupted? try again
       end if;                           -- error? report it
@@ -982,7 +982,7 @@ begin
      loop
         readchar( result, stdin, ch, 1 );
  -- KB: 2012/02/15: see bush_os-tty for an explaination of this kludge
-        if result < 0 or result = 18446744073709551615 then
+        if result < 0 or result = size_t'last then
            if C_errno /= EAGAIN and C_errno /= EINTR then
               err( "unable to read file:" & OSerror( C_errno ) );
               exit;
@@ -1055,7 +1055,7 @@ begin
         fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
    <<reread>> readchar( result, fd, ch, 1 );
  -- KB: 2012/02/15: see bush_os-tty for an explaination of this kludge
-         if result < 0 or result = 18446744073709551615 then
+         if result < 0 or result = size_t'last then
               if C_errno = EAGAIN  or C_errno = EINTR then
                  goto reread;
               end if;

@@ -47,7 +47,7 @@ begin
    loop
 <<reread>> readchar( amountRead, scriptFile, ch, 1 );
  -- KB: 2012/02/15: see bush_os-tty for an explaination of this kludge
-     if (amountRead < 0 or amountRead = 18446744073709551615)
+     if (amountRead < 0 or amountRead = size_t'last)
          and (C_errno = EAGAIN or C_errno = EINTR) then
         goto reread;
      end if;
