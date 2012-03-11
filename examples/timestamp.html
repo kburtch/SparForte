@@ -18,17 +18,16 @@ $ spar timestamp.sp
 </DIV>
 <HR>
 <PRE>
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
 <b>procedure</b> timestamp <b>is</b>
 
-<b>pragma</b> annotate( "timestamp" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "prints the current time at interval seconds (default 60)" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Translated from a shell script by Heiner Steven" );
-<b>pragma</b> annotate( "http://www.shelldorado.com/scripts/cmds/timestamp.txt" );
-<b>pragma</b> annotate( "by Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "timestamp" );
+<b>pragma</b> annotate( description, "prints the current time at interval seconds (default 60)" );
+<b>pragma</b> annotate( description, "Translated from a shell script by Heiner Steven" );
+<b>pragma</b> annotate( see_also, "http://www.shelldorado.com/scripts/cmds/timestamp.txt" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 delay_amount : duration := 60.0;
 
@@ -67,5 +66,8 @@ delay_amount : duration := 60.0;
   <b>end</b> <b>loop</b>;
 
 <b>end</b> timestamp;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

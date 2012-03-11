@@ -1,17 +1,19 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- A common interview test from Rosetta Code for testing basic programming
--- skills.
+pragma annotate( summary, "gss" );
+pragma annotate( description, "greatest sequential sum" );
+pragma annotate( description, "Given a sequence of integers, find a continuous subsequence which maximizes the" );
+pragma annotate( description, "sum of its elements, that is, the elements of no other single subsequence add" );
+pragma annotate( description, "up to a value larger than this one. An empty subsequence is considered to have" );
+pragma annotate( description, "the sum 0; thus if all elements are negative, the result must be the empty" );
+pragma annotate( description, "sequence. " );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Greatest_subsequential_sum" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
-pragma annotate( "gss" );
-pragma annotate( "" );
-pragma annotate( "Given a sequence of integers, find a continuous subsequence which maximizes the" );
-pragma annotate( "sum of its elements, that is, the elements of no other single subsequence add" );
-pragma annotate( "up to a value larger than this one. An empty subsequence is considered to have" );
-pragma annotate( "the sum 0; thus if all elements are negative, the result must be the empty" );
-pragma annotate( "sequence. " );
+pragma restriction( no_external_commands );
 
-procedure greatest_subsequential_sum is
+procedure gss is
 
   type int_array is array( 1..11 ) of integer;
 
@@ -41,5 +43,8 @@ begin
       ? a(i);
   end loop; 
 
-end greatest_subsequential_sum;
+end gss;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

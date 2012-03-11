@@ -20,13 +20,12 @@ Saturday, September 23, 2010
 <PRE>
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- From Rosetta Code http://rosettacode.org/wiki/Date_format</EM></FONT>
-
-<b>pragma</b> annotate( "dateformat");
-<b>pragma</b> annotate( "");
-<b>pragma</b> annotate( "Display the current date in the formats of '2007-11-10' " );
-<b>pragma</b> annotate( "and 'Sunday, November 10, 2007'." );
-<b>pragma</b> annotate( "translated by Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "dateformat");
+<b>pragma</b> annotate( description, "Display the current date in the formats of '2007-11-10' " );
+<b>pragma</b> annotate( description, "and 'Sunday, November 10, 2007'." );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Date_format" );
+<b>pragma</b> annotate( "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -76,5 +75,8 @@ Saturday, September 23, 2010
         strings.image( calendar.day( Today ) ) &amp; "," &amp;
         strings.image( calendar.year( Today ) ) );
 <b>end</b> dateformat;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

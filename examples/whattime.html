@@ -2,17 +2,12 @@
 <BODY>
 <HR><DIV ALIGN="center"><H1> File : whattime.sp </H1></DIV><HR>
 <PRE>
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- What Time</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- Show the time for different time zones</EM></FONT>
-<FONT COLOR=green><EM>-- Created by Ken O. Burtch</EM></FONT>
-
-<b>pragma</b> annotate( "whattime" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Times around the world" );
-<b>pragma</b> annotate( "usage: whattime [timezone]" );
+<b>pragma</b> annotate( summary, "usage: whattime [timezone]" );
+<b>pragma</b> annotate( description, "Show the time for different time zones" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>procedure</b> whattime <b>is</b>
 
@@ -66,6 +61,7 @@
 
 <b>end</b> whattime;
 
-<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

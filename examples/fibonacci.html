@@ -19,10 +19,10 @@ $ spar fibonacci 7
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "fibonacci" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Write a function to generate the nth Fibonacci number." );
-<b>pragma</b> annotate( "by Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "fibonacci n" );
+<b>pragma</b> annotate( description, "Write a function to generate the nth Fibonacci number." );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -58,5 +58,8 @@ $ spar fibonacci 7
   <b>end</b> <b>if</b>;
   ? fib( natural( param ) );
 <b>end</b> fibonacci;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

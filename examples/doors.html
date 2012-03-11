@@ -1,22 +1,44 @@
 <HEAD><TITLE>doors.sp</TITLE></HEAD>
 <BODY>
 <HR><DIV ALIGN="center"><H1> File : doors.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar doors
+ 1 is Open
+ 2 is Closed
+ 3 is Closed
+ 4 is Open
+ 5 is Closed
+...
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+
 <PRE>
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- A common interview test from Rosetta Code for testing basic programming</EM></FONT>
-<FONT COLOR=green><EM>-- skills.</EM></FONT>
+<b>pragma</b> annotate( summary, "doors" );
+<b>pragma</b> annotate( description, "Problem: You have 100 doors in a row that are all initially closed. You" );
+<b>pragma</b> annotate( description, "make 100 passes by the doors. The first time through, you visit every door" );
+<b>pragma</b> annotate( description, "and toggle the door (if the door is closed, you open it; if it is open, you" );
+<b>pragma</b> annotate( description, "close it). The second time you only visit every 2nd door (door #2, #4, #6," );
+<b>pragma</b> annotate( description, "...). The third time, every 3rd door (door #3, #6, #9, ...), etc, until you" );
+<b>pragma</b> annotate( description, "only visit the 100th door." );
+<b>pragma</b> annotate( description, "Question: What state are the doors in after the last pass? Which are open," );
+<b>pragma</b> annotate( description, "which are closed?" );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/100_doors" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
-<b>pragma</b> annotate( "doors" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate("Problem: You have 100 doors in a row that are all initially closed. You" );
-<b>pragma</b> annotate("make 100 passes by the doors. The first time through, you visit every door" );
-<b>pragma</b> annotate("and toggle the door (if the door is closed, you open it; if it is open, you" );
-<b>pragma</b> annotate("close it). The second time you only visit every 2nd door (door #2, #4, #6," );
-<b>pragma</b> annotate("...). The third time, every 3rd door (door #3, #6, #9, ...), etc, until you" );
-<b>pragma</b> annotate("only visit the 100th door." );
-<b>pragma</b> annotate("Question: What state are the doors in after the last pass? Which are open," );
-<b>pragma</b> annotate("which are closed?" );
+<b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> Doors <b>is</b>
    <b>type</b> Door_State <b>is</b> (Closed, Open);
@@ -42,5 +64,8 @@
       new_line;
    <b>end</b> <b>loop</b>;
 <b>end</b> Doors;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

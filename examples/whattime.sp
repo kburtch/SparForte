@@ -1,14 +1,9 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- What Time
---
--- Show the time for different time zones
--- Created by Ken O. Burtch
-
-pragma annotate( "whattime" );
-pragma annotate( "" );
-pragma annotate( "Times around the world" );
-pragma annotate( "usage: whattime [timezone]" );
+pragma annotate( summary, "usage: whattime [timezone]" );
+pragma annotate( description, "Show the time for different time zones" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 procedure whattime is
 
@@ -62,5 +57,6 @@ begin
 
 end whattime;
 
--- VIM editor formatting instructions -- vim: ft=bush
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

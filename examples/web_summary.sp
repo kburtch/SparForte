@@ -1,11 +1,9 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- Summarize the Apache server log
-
-pragma annotate( "web_summary" );
-pragma annotate( "" );
-pragma annotate( "Simple web summary of an Apache server log" );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "web_summary" );
+pragma annotate( description, "Simple web summary of an Apache server log" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 procedure web_summary is
   error_status  : constant short_short_integer := 192;
@@ -103,5 +101,6 @@ begin
 
 end web_summary;
 
--- VIM editor formatting instructions -- vim: ft=bush
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

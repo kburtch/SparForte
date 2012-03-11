@@ -1,17 +1,16 @@
 #!/usr/local/bin/spar
 
-pragma annotate( "monty" );
-pragma annotate( "" );
-pragma annotate( "Run random simulations of the Monty Hall game. Show the" );
-pragma annotate( "effects of a strategy of the contestant always keeping" );
-pragma annotate( "his first guess so it can be contrasted with the" );
-pragma annotate( "strategy of the contestant always switching his guess." );
-pragma annotate( "Simulate at least a thousand games using three doors" );
-pragma annotate( "for each strategy and show the results in such a way as" );
-pragma annotate( "to make it easy to compare the effects of each strategy." );
-pragma annotate( "" );
-pragma annotate( "http://rosettacode.org/wiki/Monty_Hall_problem" );
-pragma annotate( "by Ken O. Burtch (based on Ada version)" );
+pragma annotate( summary, "monty" );
+pragma annotate( description, "Run random simulations of the Monty Hall game. Show the" );
+pragma annotate( description, "effects of a strategy of the contestant always keeping" );
+pragma annotate( description, "his first guess so it can be contrasted with the" );
+pragma annotate( description, "strategy of the contestant always switching his guess." );
+pragma annotate( description, "Simulate at least a thousand games using three doors" );
+pragma annotate( description, "for each strategy and show the results in such a way as" );
+pragma annotate( description, "to make it easy to compare the effects of each strategy." );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Monty_Hall_problem" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -78,4 +77,7 @@ begin
   put( "Switch: count" ) @ ( winners ) @ ( " = " ) @ ( pct ) @ ( "%" );
   new_line;
 end monty;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

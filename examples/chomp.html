@@ -3,13 +3,12 @@
 <HR><DIV ALIGN="center"><H1> File : chomp.sp</H1></DIV><HR>
 <PRE>
 #!/usr/local/bin/spar
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- Morph</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- Program to convert one kind of text file to another</EM></FONT>
-<FONT COLOR=green><EM>-- Created by Ken O. Burtch</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- Like chomp2, but without praga ada_95</EM></FONT>
+
+<b>pragma</b> annotate( summary, "chomp" );
+<b>pragma</b> annotate( description, "Program to convert one kind of text file to another" );
+<b>pragma</b> annotate( description, "Like chomp2, but without praga ada_95" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -25,7 +24,7 @@ error_internal : <b>constant</b> short_short_integer := 194;
 <FONT COLOR=green><EM>-- conversions we can do</EM></FONT>
 
 target_type : text_types := unknown;
-verbose : boolean := true; <FONT COLOR=green><EM>-- was false</EM></FONT>
+verbose : boolean := false;
 
 <FONT COLOR=green><EM>-- Files</EM></FONT>
 
@@ -122,7 +121,7 @@ out_cnt    : natural := 0;
       <b>end</b> <b>if</b>;
       target_type := strip;
    <b>elsif</b> command_line.argument(i) = "-v" <b>then</b>
-      verbose := true;
+      verbose;
    <b>else</b>
       put( standard_error, source_info.file )
         @( standard_error, ":" )
@@ -161,14 +160,14 @@ open( input, in_file, sourcepath );
    len := strings.length( textline );
    ch := strings.element( textline, positive( len ) );
    <b>if</b> ch = ASCII.LF <b>then</b>
-      textline := strings.delete( textline, positive(len), len );
+      textline := strings.<b>delete</b>( textline, positive(len), len );
       len := len - 1;
       ch := strings.element( textline, positive( len ) );
       <b>if</b> ch = ASCII.CR <b>then</b>
-         textline := strings.delete( textline, positive( len ), len );
+         textline := strings.<b>delete</b>( textline, positive( len ), len );
       <b>end</b> <b>if</b>;
   <b>elsif</b> ch = ASCII.CR <b>then</b>
-      textline := strings.delete( textline, positive( len ), len );
+      textline := strings.<b>delete</b>( textline, positive( len ), len );
   <b>end</b> <b>if</b>;
   <FONT COLOR=green><EM>-- now add the correct ones</EM></FONT>
   <b>case</b> target_type <b>is</b>
@@ -207,5 +206,7 @@ close( input ) @ ( output );
 <b>end</b> <b>if</b>;
 command_line.set_exit_status( 0 );
 
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

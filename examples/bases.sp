@@ -1,12 +1,12 @@
 #!/usr/local/bin/spar
 
-pragma annotate( "bases" );
-pragma annotate( "" );
-pragma annotate( "Print a number to different bases using bc" );
-pragma annotate( "" );
-pragma annotate( "based on a shell script by Heiner Steven" );
-pragma annotate( "http://www.shelldorado.com/scripts/cmds/base.sh.txt" );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "bases" );
+pragma annotate( description, "Print a number to different bases using bc" );
+pragma annotate( description, "" );
+pragma annotate( description, "based on a shell script by Heiner Steven" );
+pragma annotate( see_also, "http://www.shelldorado.com/scripts/cmds/base.sh.txt" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 procedure bases is
 
@@ -80,4 +80,7 @@ begin
   end loop;
 
 end bases;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

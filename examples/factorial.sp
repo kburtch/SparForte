@@ -1,9 +1,9 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "factorial" );
-pragma annotate( "" );
-pragma annotate( "Write a function to return the factorial of a number." );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "factorial n" );
+pragma annotate( description, "Write a function to return the factorial of a number." );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -28,4 +28,7 @@ begin
   end loop;
   ? result;
 end factorial;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

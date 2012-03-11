@@ -1,14 +1,9 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- Title
---
--- Change the title of an xterm window
--- Created by Ken O. Burtch
-
-pragma annotate( "title" );
-pragma annotate( "" );
-pragma annotate( "Change the title of an xterm window" );
-pragma annotate( "usage: title new-title" );
+pragma annotate( summary, "usage: title new-title" );
+pragma annotate( description, "Change the title of an xterm window" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -45,5 +40,6 @@ begin
 
 end title;
 
--- VIM editor formatting instructions -- vim: ft=bush
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

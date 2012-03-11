@@ -1,12 +1,10 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- Estimate the number of SparForte or Ada statements in a source code file
-
-pragma annotate( "Count Statements" );
-pragma annotate( "" );
-pragma annotate( "Estimate the number of SparForte or Ada statements in a source code file" );
-pragma annotate( "by William A. Whitaker  WIS JPMO   3 March 1984" );
-pragma annotate( "adapted to SparForte by Ken O. Burtch" );
+pragma annotate( summary, "count_statements" );
+pragma annotate( description, "Estimate the number of SparForte or Ada statements in a source code file" );
+pragma annotate( description, "by William A. Whitaker  WIS JPMO   3 March 1984" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -141,5 +139,6 @@ begin
   new_line; 
 end count_statements;
 
--- VIM editor formatting instructions -- vim: ft=bush
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

@@ -4,14 +4,11 @@
 <PRE>
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-------------------------------------------------------------------------------</EM></FONT>
-<FONT COLOR=green><EM>-- CONVERT                                                                   --</EM></FONT>
-<FONT COLOR=green><EM>--                                                                           --</EM></FONT>
-<FONT COLOR=green><EM>-- Descripton: Convert CSV comma separated value files to Postgres friendly  --</EM></FONT>
-<FONT COLOR=green><EM>-- CSV files that can be imported using Postgres' COPY command               --</EM></FONT>
-<FONT COLOR=green><EM>--                                                                           --</EM></FONT>
-<FONT COLOR=green><EM>-- Written by Ken O. Burtch &lt;ken@pegasoft.ca&gt;                                --</EM></FONT>
-<FONT COLOR=green><EM>-------------------------------------------------------------------------------</EM></FONT>
+<b>pragma</b> annotate( summary, "postgres_csv" );
+<b>pragma</b> annotate( description, "Convert CSV comma separated value files to Postgres friendly" );
+<b>pragma</b> annotate( description, "CSV files that can be imported using Postgres' COPY command" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>procedure</b> postgres_csv <b>is</b>
   convert_source : string;
@@ -129,13 +126,9 @@
   new_line( standard_error );
   put_line( standard_error, "Converted" &amp; strings.image( record_count ) &amp;
     " rows" );
-<FONT COLOR=green><EM>-- $Log: postgres_csv.html,v $
-<FONT COLOR=green><EM>-- Revision 1.2  2005/08/23 12:27:13  ken
-<FONT COLOR=green><EM>-- Bush 1.0.2 release
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- Revision 1.1.1.1  2003/10/16 03:08:34  ken</EM></FONT>
-<FONT COLOR=green><EM>-- imported by TIA</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
 <b>end</b> postgres_csv;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

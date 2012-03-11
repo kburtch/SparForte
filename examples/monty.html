@@ -20,18 +20,17 @@ Switch: count 66456 =  6.64560000000000E+01%
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "monty" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Run random simulations of the Monty Hall game. Show the" );
-<b>pragma</b> annotate( "effects of a strategy of the contestant always keeping" );
-<b>pragma</b> annotate( "his first guess so it can be contrasted with the" );
-<b>pragma</b> annotate( "strategy of the contestant always switching his guess." );
-<b>pragma</b> annotate( "Simulate at least a thousand games using three doors" );
-<b>pragma</b> annotate( "for each strategy and show the results in such a way as" );
-<b>pragma</b> annotate( "to make it easy to compare the effects of each strategy." );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "http://rosettacode.org/wiki/Monty_Hall_problem" );
-<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+<b>pragma</b> annotate( summary, "monty" );
+<b>pragma</b> annotate( description, "Run random simulations of the Monty Hall game. Show the" );
+<b>pragma</b> annotate( description, "effects of a strategy of the contestant always keeping" );
+<b>pragma</b> annotate( description, "his first guess so it can be contrasted with the" );
+<b>pragma</b> annotate( description, "strategy of the contestant always switching his guess." );
+<b>pragma</b> annotate( description, "Simulate at least a thousand games using three doors" );
+<b>pragma</b> annotate( description, "for each strategy and show the results in such a way as" );
+<b>pragma</b> annotate( description, "to make it easy to compare the effects of each strategy." );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Monty_Hall_problem" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -98,5 +97,8 @@ Switch: count 66456 =  6.64560000000000E+01%
   put( "Switch: count" ) @ ( winners ) @ ( " = " ) @ ( pct ) @ ( "%" );
   new_line;
 <b>end</b> monty;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

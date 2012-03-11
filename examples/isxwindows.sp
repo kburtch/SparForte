@@ -1,14 +1,13 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-procedure isxwindow is
+procedure isxwindows is
 
-pragma annotate( "isxwindow" );
-pragma annotate( "" );
-pragma annotate( "return status zero if is started under X-Windows" );
-pragma annotate( "" );
-pragma annotate( "Translated from a shell script by Heiner Steven" );
-pragma annotate( "http://www.shelldorado.com/scripts/cmds/isxwindows.txt" );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "isxwindows" );
+pragma annotate( description, "return status zero if is started under X-Windows" );
+pragma annotate( description, "Translated from a shell script by Heiner Steven" );
+pragma annotate( see_also, "http://www.shelldorado.com/scripts/cmds/isxwindows.txt" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 DISPLAY : string := "";
 pragma unchecked_import( shell, DISPLAY );
@@ -41,5 +40,8 @@ begin
      end if;
   end if;
 
-end isxwindow;
+end isxwindows;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

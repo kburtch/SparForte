@@ -1,13 +1,10 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--------------------------------------------------------------------------------
--- CONVERT                                                                   --
---                                                                           --
--- Descripton: Convert CSV comma separated value files to Postgres friendly  --
--- CSV files that can be imported using Postgres' COPY command               --
---                                                                           --
--- Written by Ken O. Burtch <ken@pegasoft.ca>                                --
--------------------------------------------------------------------------------
+pragma annotate( summary, "postgres_csv" );
+pragma annotate( description, "Convert CSV comma separated value files to Postgres friendly" );
+pragma annotate( description, "CSV files that can be imported using Postgres' COPY command" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 procedure postgres_csv is
   convert_source : string;
@@ -125,12 +122,8 @@ begin
   new_line( standard_error );
   put_line( standard_error, "Converted" & strings.image( record_count ) &
     " rows" );
--- $Log: postgres_csv.bush,v $
--- Revision 1.2  2005/08/23 12:27:13  ken
--- Bush 1.0.2 release
---
--- Revision 1.1.1.1  2003/10/16 03:08:34  ken
--- imported by TIA
---
 end postgres_csv;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

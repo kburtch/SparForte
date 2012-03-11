@@ -4,12 +4,10 @@
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "random.cgi" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Display a random number when the page is loaded" );
-<b>pragma</b> annotate( "by Ken O. Burtch" );
-
-<FONT COLOR=green><EM>-- run env and get ther results</EM></FONT>
+<b>pragma</b> annotate( summary, "random.cgi" );
+<b>pragma</b> annotate( description, "Display a random number when the page is loaded" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 random_number : positive := numerics.rnd(100);
 
@@ -27,7 +25,7 @@ random_number : positive := numerics.rnd(100);
 &lt;<b>/head</b>&gt;
 &lt;<b>body</b>&gt;
 &lt;<b>h1</b>&gt;Your random number between 1 and 100 is&lt;/<b>h1</b>&gt;
-&lt;<b>p</b>&gt;&lt;?bush ? random_number; ?&gt;&lt;/<b>p</b>&gt;
+&lt;<b>p</b>&gt;&lt;?spar ? random_number; ?&gt;&lt;/<b>p</b>&gt;
 &lt;<b>/body</b>&gt;
 &lt;<b>/html</b>&gt;
 </pre>

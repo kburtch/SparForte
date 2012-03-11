@@ -1,9 +1,9 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "fibonacci" );
-pragma annotate( "" );
-pragma annotate( "Write a function to generate the nth Fibonacci number." );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "fibonacci n" );
+pragma annotate( description, "Write a function to generate the nth Fibonacci number." );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -39,4 +39,7 @@ begin
   end if;
   ? fib( natural( param ) );
 end fibonacci;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

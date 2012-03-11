@@ -1,9 +1,9 @@
-#!/usr/local/bin/bush
---
--- VALIDATE_NAME
---
--- Check a name for suspicious characters
--- Created by Ken O. Burtch
+#!/usr/local/bin/spar
+
+pragma annotate( summary, "validate_name string" );
+pragma annotate( description, "Check a name for suspicious characters" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -176,4 +176,7 @@ end;
 
   command_line.set_exit_status( 0 );
 end validate_name;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

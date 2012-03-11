@@ -1,11 +1,10 @@
-#!/usr/local/bin/bush
---
--- Morph
---
--- Program to convert one kind of text file to another
--- Created by Ken O. Burtch
---
--- Like chomp, but using pragma ada_95
+#!/usr/local/bin/spar
+
+pragma annotate( summary, "chomp2" );
+pragma annotate( description, "Program to convert one kind of text file to another" );
+pragma annotate( description, "Like chomp, but using pragma ada_95" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma ada_95;
 pragma restriction( no_external_commands );
@@ -216,4 +215,7 @@ end if;
 command_line.set_exit_status( 0 );
 
 end chomp2;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

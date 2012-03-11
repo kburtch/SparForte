@@ -22,13 +22,13 @@ bin=11010111
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "bases" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Print a number to different bases using bc" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "based on a shell script by Heiner Steven" );
-<b>pragma</b> annotate( "http://www.shelldorado.com/scripts/cmds/base.sh.txt" );
-<b>pragma</b> annotate( "by Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "bases" );
+<b>pragma</b> annotate( description, "Print a number to different bases using bc" );
+<b>pragma</b> annotate( description, "" );
+<b>pragma</b> annotate( description, "based on a shell script by Heiner Steven" );
+<b>pragma</b> annotate( see_also, "http://www.shelldorado.com/scripts/cmds/base.sh.txt" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>procedure</b> bases <b>is</b>
 
@@ -102,5 +102,8 @@ bin=11010111
   <b>end</b> <b>loop</b>;
 
 <b>end</b> bases;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

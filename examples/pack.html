@@ -1,19 +1,37 @@
 <HEAD><TITLE>pack.sp</TITLE></HEAD>
 <BODY>
 <HR><DIV ALIGN="center"><H1> File : pack.sp</H1></DIV><HR>
-<IMG SRC="pack.gif">
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar pack.sp pack.txt
+pack.sp: no compress
+pack.sp: zip size =  1489
+pack.sp: gzip size =  1350
+pack.sp: bzip2 size =  1524
+pack.sp: using gzip
+
+$ ls -l pack.txt.gz 
+-rwxr-xr-x 1 ken users 1350 Mar 10 22:03 pack.txt.gz
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
 <P>Compress a file using several tools and keep the best solution.</p>
 <PRE>
-
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- Pack</EM></FONT>
-
-<b>pragma</b> annotate( "Pack" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Try compressing a file using different compression programs" );
-<b>pragma</b> annotate( "and keep the best result." );
-<b>pragma</b> annotate( "by Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "pack [-v] source-file" );
+<b>pragma</b> annotate( description, "Try compressing a file using different compression programs" );
+<b>pragma</b> annotate( description, "and keep the best result." );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>procedure</b> pack <b>is</b>
 
@@ -40,11 +58,11 @@ command_line.set_exit_status( 0 );                            <FONT COLOR=green>
 <b>if</b> $# /= 1 <b>and</b> $# /= 2 <b>then</b>                                    <FONT COLOR=green><EM>-- not 2 params?</EM></FONT>
    usage;                                                     <FONT COLOR=green><EM>-- show usage</EM></FONT>
    <b>return</b>;                                                    <FONT COLOR=green><EM>-- and quit</EM></FONT>
-<b>elsif</b> $1 = "-h" <b>or</b> $1 = "--help" <b>then</b>                         <FONT COLOR=green><EM>-- help request?</EM></FONT>
+<b>elsif</b> $1 = "-h" <b>or</b> $1 = "<FONT COLOR=green><EM>--help" then                         -- help request?</EM></FONT>
    usage;                                                     <FONT COLOR=green><EM>-- show usage</EM></FONT>
    <b>return</b>;                                                    <FONT COLOR=green><EM>-- and quit</EM></FONT>
-<b>elsif</b> $1 = "-v" <b>or</b> $1 = "--verbose" <b>then</b>                      <FONT COLOR=green><EM>-- verbose?</EM></FONT>
-   verbose := true;
+<b>elsif</b> $1 = "-v" <b>or</b> $1 = "<FONT COLOR=green><EM>--verbose" then                      -- verbose?</EM></FONT>
+   verbose;
 <b>end</b> <b>if</b>;
 
   <FONT COLOR=green><EM>-- main block that does the work</EM></FONT>
@@ -90,7 +108,7 @@ command_line.set_exit_status( 0 );                            <FONT COLOR=green>
 
   <b>if</b> files.is_executable( compress ) <b>then</b>
      $compress "-c" "$source_path" &gt; "/tmp/temp.out";
-     this_size   := numerics.value( `stat -c '%s' /tmp/temp.out;` );
+     this_size   := numerics.value( `stat -c '%s' /tmp/temp.<b>out</b>;` );
      <b>if</b> verbose <b>then</b>
         put_line( source_info.file &amp; ": compress size = " &amp; strings.image( this_size ) );
      <b>end</b> <b>if</b>;
@@ -106,7 +124,7 @@ command_line.set_exit_status( 0 );                            <FONT COLOR=green>
 
   <b>if</b> files.is_executable( zip ) <b>then</b>
      $zip "-q" "-" "$source_path" &gt; "/tmp/temp.out";
-     this_size   := numerics.value( `stat -c '%s' /tmp/temp.out;` );
+     this_size   := numerics.value( `stat -c '%s' /tmp/temp.<b>out</b>;` );
      <b>if</b> verbose <b>then</b>
         put_line( source_info.file &amp; ": zip size = " &amp; strings.image( this_size ) );
      <b>end</b> <b>if</b>;
@@ -126,7 +144,7 @@ command_line.set_exit_status( 0 );                            <FONT COLOR=green>
 
   <b>if</b> files.is_executable( gzip ) <b>then</b>
      $gzip "-c" "$source_path" &gt; "/tmp/temp.out";
-     this_size   := numerics.value( `stat -c '%s' /tmp/temp.out;` );
+     this_size   := numerics.value( `stat -c '%s' /tmp/temp.<b>out</b>;` );
      <b>if</b> verbose <b>then</b>
         put_line( source_info.file &amp; ": gzip size = " &amp; strings.image( this_size ) );
      <b>end</b> <b>if</b>;
@@ -142,7 +160,7 @@ command_line.set_exit_status( 0 );                            <FONT COLOR=green>
 
   <b>if</b> files.is_executable( bzip ) <b>then</b>
      $bzip "-c" "$source_path" &gt; "/tmp/temp.out";
-     this_size   := numerics.value( `stat -c '%s' /tmp/temp.out;` );
+     this_size   := numerics.value( `stat -c '%s' /tmp/temp.<b>out</b>;` );
      <b>if</b> verbose <b>then</b>
         put_line( source_info.file &amp; ": bzip2 size = " &amp; strings.image( this_size ) );
      <b>end</b> <b>if</b>;
@@ -157,36 +175,38 @@ command_line.set_exit_status( 0 );                            <FONT COLOR=green>
   <b>end</b> <b>if</b>;
 
   <b>case</b> best_method <b>is</b>
-  <b>when</b> c_none <b>=></b>
+  <b>when</b> c_none =&gt;
        put_line( source_info.file &amp; ": no compression" );
        mv "$source_path" "$source_path"".none";
-  <b>when</b> c_compress <b>=></b>
+  <b>when</b> c_compress =&gt;
        put_line( source_info.file &amp; ": using compress" );
        $compress "$source_path";
-  <b>when</b> c_zip <b>=></b>
+  <b>when</b> c_zip =&gt;
        put_line( source_info.file &amp; ": using zip" );
        $zip "$source_path"".zip" "$source_path";
        rm  "$source_path";
-  <b>when</b> c_zoo <b>=></b>
-       null;
-  <b>when</b> c_gzip <b>=></b>
+  <b>when</b> c_zoo =&gt;
+       <b>null</b>;
+  <b>when</b> c_gzip =&gt;
        put_line( source_info.file &amp; ": using gzip" );
        $gzip "$source_path";
-  <b>when</b> c_bzip <b>=></b>
+  <b>when</b> c_bzip =&gt;
        put_line( source_info.file &amp; ": using bzip" );
        $bzip2 "$source_path";
-  <b>when</b> <b>others</b> <b>=></b>
+  <b>when</b> <b>others</b> =&gt;
      put( standard_error, source_info.file )
          @( standard_error, ": unknown compression method" );
      command_line.set_exit_status( 192 );
   <b>end</b> <b>case</b>;
 
 <b>end</b>;
-rm /tmp/temp.out;
+rm /tmp/temp.<b>out</b>;
 
 command_line.set_exit_status( 0 );
 
 <b>end</b> pack;
 
-<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
 </PRE></BODY></HTML>

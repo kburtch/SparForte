@@ -1,13 +1,12 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "stripcomment" );
-pragma annotate( "" );
-pragma annotate( "The task is to remove text that follow any of a set of" );
-pragma annotate( "comment markers, (in these examples either a hash or a" );
-pragma annotate( "semicolon) from a string or input line." );
-pragma annotate( "" );
-pragma annotate( "http://rosettacode.org/wiki/Strip_comments_from_a_string" );
-pragma annotate( "by Ken O. Burtch (based on Ada version)" );
+pragma annotate( summary, "stripcomment" );
+pragma annotate( description, "The task is to remove text that follow any of a set of" );
+pragma annotate( description, "comment markers, (in these examples either a hash or a" );
+pragma annotate( description, "semicolon) from a string or input line." );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Strip_comments_from_a_string" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -25,4 +24,7 @@ begin
      ? strings.slice( line, 1, eol );
   end if;
 end stripcomment;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

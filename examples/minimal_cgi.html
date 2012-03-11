@@ -2,17 +2,21 @@
 <BODY>
 <HR><DIV ALIGN="center"><H1> File : minimal_cgi.sp </H1></DIV><HR>
 <PRE>
-
 <b>procedure</b> minimal_cgi <b>is</b>
-  <FONT COLOR=green><EM>-- Demonstrate SparForte's CGI interface</EM></FONT>
-  <FONT COLOR=green><EM>-- based on AdaCGI's minimal.adb example</EM></FONT>
+  <b>pragma</b> annotate( summary, "minimal_cgi" );
+  <b>pragma</b> annotate( description, "Demonstrate SparFortes CGI interface" );
+  <b>pragma</b> annotate( description, "based on AdaCGI's minimal.adb example" );
+  <b>pragma</b> annotate( description, "To run this script directly (without a HTTP server), set the" );
+  <b>pragma</b> annotate( description, "environment variable REQUEST_METHOD to GET and the variable" );
+  <b>pragma</b> annotate( description, "QUERY_STRING to either '' or 'x=a&amp;y=b'." );
+  <b>pragma</b> license( unrestricted );
 
-  <FONT COLOR=green><EM>-- To run this script directly (without a HTTP server), set the</EM></FONT>
-  <FONT COLOR=green><EM>-- environment variable REQUEST_METHOD to "GET" and the variable</EM></FONT>
-  <FONT COLOR=green><EM>-- QUERY_STRING to either "" or "x=a&amp;y=b".</EM></FONT>
+  <b>pragma</b> ada_95;
+  <b>pragma</b> restriction( no_external_commands );
 
 <b>begin</b>
-  cgi.put_cgi_header;
+  <FONT COLOR=green><EM>-- cgi.put_cgi_header defaults to "content-type" but should do "Content-type"</EM></FONT>
+  cgi.put_cgi_header( "Content-type: text/html" );
   cgi.put_html_head( "Minimal Form Demonstration" );
   <b>if</b> cgi.input_received <b>then</b>
      cgi.put_variables;
@@ -24,5 +28,8 @@
   <b>end</b> <b>if</b>;
   cgi.put_html_tail;
 <b>end</b> minimal_cgi;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

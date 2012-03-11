@@ -1,14 +1,10 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- cecho
--- An "echo" beautifier - supports colours and boldface
--- based on http://www.zazzybob.com/bin/cecho.html
--- Created by Ken O. Burtch
-
-pragma annotate( "cecho" );
-pragma annotate( "" );
-pragma annotate( "echo with color or boldface" );
-pragma annotate( "usage: cecho style text" );
+pragma annotate( summary, "usage: cecho style text" );
+pragma annotate( description, "echo with color or boldface" );
+pragma annotate( see_also, "http://www.zazzybob.com/bin/cecho.html" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -66,5 +62,6 @@ begin
 
 end cecho;
 
--- VIM editor formatting instructions -- vim: ft=bush
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

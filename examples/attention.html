@@ -17,17 +17,16 @@ attention.sp: Don't Forget!
 </DIV>
 <HR>
 <PRE>
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
 <b>procedure</b> attention <b>is</b>
 
-<b>pragma</b> annotate( "attention" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "plays a sound to get the user's attention" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Translated from a shell script by Heiner Steven" );
-<b>pragma</b> annotate( "http://www.shelldorado.com/scripts/cmds/attention.txt" );
-<b>pragma</b> annotate( "by Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "attention" );
+<b>pragma</b> annotate( description, "Plays a sound to get the user's attention" );
+<b>pragma</b> annotate( description, "Translated from a shell script by Heiner Steven" );
+<b>pragma</b> annotate( see_also, "http://www.shelldorado.com/scripts/cmds/attention.txt" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 sound_path : <b>constant</b> string := "/usr/share/doc/packages/sox/monkey.au";
 devdsp     : <b>constant</b> string := "/dev/dsp";
@@ -68,13 +67,13 @@ played     : boolean := false;
        <b>if</b> files.is_writable( devaudio ) <b>then</b>
           <b>if</b> strings.tail( sound_path, 3 ) = ".au" <b>then</b>
              cat "$sound_path" &gt;&gt; "$devaudio";
-             played := true;
+             played;
           <b>end</b> <b>if</b>;
        <b>end</b> <b>if</b>;
        <FONT COLOR=green><EM>-- dsp exists? try to play sound</EM></FONT>
        <b>if</b> <b>not</b> played <b>and</b> files.is_writable( devdsp ) <b>then</b>
           sound.play( sound_path );
-          played := true;
+          played;
        <b>end</b> <b>if</b>;
     <b>else</b>
        put_line( standard_error, source_info.source_location &amp; ": sound file doesn't exist or isn't readable" );
@@ -87,4 +86,8 @@ played     : boolean := false;
   new_line;
 
 <b>end</b> attention;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
 </PRE></BODY></HTML>

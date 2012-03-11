@@ -1,17 +1,16 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "yorn" );
-pragma annotate( "" );
-pragma annotate( "Obtain a valid Y or N response from the keyboard. The" );
-pragma annotate( "keyboard should be flushed, so that any outstanding keypresses" );
-pragma annotate( "are removed, preventing any existing Y or N keypress from" );
-pragma annotate( "being evaluated. The response should be obtained as soon as" );
-pragma annotate( "Y or N are pressed, and there should be no need to press an" );
-pragma annotate( "enter key. " );
-pragma annotate( "" );
-pragma annotate( "http://rosettacode.org/wiki/Keyboard_Input/Obtain_a_Y_or_N_response" );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "yorn" );
+pragma annotate( description, "Obtain a valid Y or N response from the keyboard. The" );
+pragma annotate( description, "keyboard should be flushed, so that any outstanding keypresses" );
+pragma annotate( description, "are removed, preventing any existing Y or N keypress from" );
+pragma annotate( description, "being evaluated. The response should be obtained as soon as" );
+pragma annotate( description, "Y or N are pressed, and there should be no need to press an" );
+pragma annotate( description, "enter key. " );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Keyboard_Input/Obtain_a_Y_or_N_response" );
+pragma annotate( author, "Ken O. Burtch" );
 
+pragma ada_95;
 pragma restriction( no_external_commands );
 
 procedure yorn is
@@ -33,4 +32,7 @@ begin
   end loop;
   put_line( answer );
 end yorn;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

@@ -1,14 +1,13 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
 procedure timestamp is
 
-pragma annotate( "timestamp" );
-pragma annotate( "" );
-pragma annotate( "prints the current time at interval seconds (default 60)" );
-pragma annotate( "" );
-pragma annotate( "Translated from a shell script by Heiner Steven" );
-pragma annotate( "http://www.shelldorado.com/scripts/cmds/timestamp.txt" );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "timestamp" );
+pragma annotate( description, "prints the current time at interval seconds (default 60)" );
+pragma annotate( description, "Translated from a shell script by Heiner Steven" );
+pragma annotate( see_also, "http://www.shelldorado.com/scripts/cmds/timestamp.txt" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 delay_amount : duration := 60.0;
 
@@ -47,4 +46,7 @@ begin
   end loop;
 
 end timestamp;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

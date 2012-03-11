@@ -1,13 +1,15 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-pragma annotate( "dispatch server-type remote-command" );
-pragma annotate( "" );
-pragma annotate( "Run a command across a pre-defined set of computers " );
-pragma annotate( "using Secure Shell (SSH)." );
-pragma annotate( "On success, returns status code 0." );
-pragma annotate( "192 - cannot log into a server" );
-pragma annotate( "193 - the ssh command failed" );
-pragma annotate( "by Ken. O. Burtch" );
+pragma annotate( summary, "dispatch server-type remote-command" );
+pragma annotate( param, "server-type - the type of server to run the command on" );
+pragma annotate( param, "remote-command - the command to run" );
+pragma annotate( description, "Run a command across a pre-defined set of computers " );
+pragma annotate( description, "using Secure Shell (SSH)." );
+pragma annotate( return, "On success, returns status code 0." );
+pragma annotate( errors, "192 - cannot log into a server" );
+pragma annotate( errors, "193 - the ssh command failed" );
+pragma annotate( author, "Ken. O. Burtch" );
+pragma license( unrestricted );
 
 procedure dispatch is
 
@@ -118,4 +120,5 @@ begin
   end loop;
 end dispatch;
 
--- VIM editor formatting instructions -- vim: ft=bush
+-- VIM editor formatting instructions
+-- vim: ft=spar

@@ -24,21 +24,20 @@ Awake!
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "sleep_demo" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Write a program that does the following in this order:" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "* Input an amount of time to sleep in whatever units are" );
-<b>pragma</b> annotate( "most natural for your language (milliseconds, seconds," );
-<b>pragma</b> annotate( "ticks, etc.). This unit should be noted in comments or" );
-<b>pragma</b> annotate( "in a description." );
-<b>pragma</b> annotate( "* Print 'Sleeping...'" );
-<b>pragma</b> annotate( "* Sleep the main thread for the given amount of time." );
-<b>pragma</b> annotate( "* Print 'Awake!'" );
-<b>pragma</b> annotate( "* End." );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "http://rosettacode.org/wiki/Sleep" );
-<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+<b>pragma</b> annotate( summary, "sleep_demo" );
+<b>pragma</b> annotate( description, "Write a program that does the following in this order:" );
+<b>pragma</b> annotate( description, "" );
+<b>pragma</b> annotate( description, "* Input an amount of time to sleep in whatever units are" );
+<b>pragma</b> annotate( description, "most natural for your language (milliseconds, seconds," );
+<b>pragma</b> annotate( description, "ticks, etc.). This unit should be noted in comments or" );
+<b>pragma</b> annotate( description, "in a description." );
+<b>pragma</b> annotate( description, "* Print 'Sleeping...'" );
+<b>pragma</b> annotate( description, "* Sleep the main thread for the given amount of time." );
+<b>pragma</b> annotate( description, "* Print 'Awake!'" );
+<b>pragma</b> annotate( description, "* End." );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Sleep" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>procedure</b> sleep_demo <b>is</b>
   in_val : duration;
@@ -56,5 +55,8 @@ Awake!
   sleep "$in_val" ;
   ? "Awake!";
 <b>end</b> sleep_demo;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

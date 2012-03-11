@@ -3,20 +3,17 @@
 <HR><DIV ALIGN="center"><H1> File : count_statements.sp</H1></DIV><HR>
 <P>Estimate the number of SparForte or Ada statements in a source code file</P>
 <PRE>
-
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- Estimate the number of SparForte or Ada statements in a source code file</EM></FONT>
-
-<b>pragma</b> annotate( "Count Statements" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Estimate the number of SparForte or Ada statements in a source code file" );
-<b>pragma</b> annotate( "by William A. Whitaker  WIS JPMO   3 March 1984" );
-<b>pragma</b> annotate( "adapted to SparForte by Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "count_statements" );
+<b>pragma</b> annotate( description, "Estimate the number of SparForte or Ada statements in a source code file" );
+<b>pragma</b> annotate( description, "by William A. Whitaker  WIS JPMO   3 March 1984" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
-<b>procedure</b> count_statements <b>is</b>
+<b>procedure</b> count_statements <b>is</b> 
 
   FILE_NAME_TO_CHECK  : string;
 
@@ -85,7 +82,7 @@
           <b>end</b> <b>loop</b>;
 
         <FONT COLOR=green><EM>--  Now check for string brackets of either kind, " or %</EM></FONT>
-        <b>elsif</b> C = '"' or C = '%' <b>then</b>
+        <b>elsif</b> C = '"' <b>or</b> C = '%' <b>then</b>
           <FONT COLOR=green><EM>--  Treat them in parallel, one must lead off</EM></FONT>
           <b>if</b> C = '"' <b>then</b>
             <b>loop</b>
@@ -105,6 +102,12 @@
               <b>exit</b> <b>when</b> C = '`';
             <b>end</b> <b>loop</b>;
           <FONT COLOR=green><EM>--  The '%' is handled exactly the same way as '"'</EM></FONT>
+          <b>elsif</b> C = '%' <b>then</b>
+            <b>loop</b>
+              <b>exit</b> <b>when</b> end_of_file( INPUT );
+              get (INPUT, C);
+              <b>exit</b> <b>when</b> C = '%';
+            <b>end</b> <b>loop</b>;
           <b>elsif</b> C = ''' <b>then</b>
             <b>loop</b>
               <b>exit</b> <b>when</b> end_of_file( INPUT );
@@ -114,12 +117,6 @@
               <b>exit</b> <b>when</b> C = ''';
             <b>end</b> <b>loop</b>;
           <FONT COLOR=green><EM>--  The '%' is handled exactly the same way as '"'</EM></FONT>
-          <b>elsif</b> C = '%' <b>then</b>
-            <b>loop</b>
-              <b>exit</b> <b>when</b> end_of_file( INPUT );
-              get (INPUT, C);
-              <b>exit</b> <b>when</b> C = '%';
-            <b>end</b> <b>loop</b>;
           <b>end</b> <b>if</b>;
 
         <b>end</b> <b>if</b>;
@@ -139,7 +136,7 @@
 
 
 <b>begin</b>
-  put("Input file name terminated by <RETURN> =&gt; ");
+  put("Input file name terminated by &lt;RETURN&gt; =&gt; ");
   FILE_NAME_TO_CHECK := get_line;
   new_line; new_line;
   put (LOC (FILE_NAME_TO_CHECK));
@@ -147,5 +144,7 @@
   new_line; 
 <b>end</b> count_statements;
 
-<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
 </PRE></BODY></HTML>

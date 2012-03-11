@@ -2,13 +2,12 @@
 
 procedure attention is
 
-pragma annotate( "attention" );
-pragma annotate( "" );
-pragma annotate( "plays a sound to get the user's attention" );
-pragma annotate( "" );
-pragma annotate( "Translated from a shell script by Heiner Steven" );
-pragma annotate( "http://www.shelldorado.com/scripts/cmds/attention.txt" );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "attention" );
+pragma annotate( description, "Plays a sound to get the user's attention" );
+pragma annotate( description, "Translated from a shell script by Heiner Steven" );
+pragma annotate( see_also, "http://www.shelldorado.com/scripts/cmds/attention.txt" );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 sound_path : constant string := "/usr/share/doc/packages/sox/monkey.au";
 devdsp     : constant string := "/dev/dsp";
@@ -68,4 +67,7 @@ begin
   new_line;
 
 end attention;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

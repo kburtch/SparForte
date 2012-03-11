@@ -3,11 +3,11 @@
 <HR><DIV ALIGN="center"><H1> File : validate_name.sp </H1></DIV><HR>
 <PRE>
 #!/usr/local/bin/spar
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- VALIDATE_NAME</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- Check a name for suspicious characters</EM></FONT>
-<FONT COLOR=green><EM>-- Created by Ken O. Burtch</EM></FONT>
+
+<b>pragma</b> annotate( summary, "validate_name string" );
+<b>pragma</b> annotate( description, "Check a name for suspicious characters" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -120,7 +120,7 @@
                 @( standard_error, ": name contains a repeated comma" );
             new_line;
          <b>else</b>
-            lastWasComma := true;
+            lastWasComma;
          <b>end</b> <b>if</b>;
       <b>elsif</b> ch = '-' <b>then</b>
          lastWasComma := false;
@@ -131,7 +131,7 @@
                 @( standard_error, ": name contains a repeated dash" );
             new_line;
          <b>else</b>
-            lastWasMinus := true;
+            lastWasMinus;
          <b>end</b> <b>if</b>;
       <b>elsif</b> ch = "'" <b>then</b>
          lastWasComma := false;
@@ -142,7 +142,7 @@
                 @( standard_error, ": name contains a repeated apostraphe" );
             new_line;
          <b>else</b>
-            lastWasApostrophe := true;
+            lastWasApostrophe;
          <b>end</b> <b>if</b>;
       <b>elsif</b> ch = "." <b>then</b>
          lastWasComma := false;
@@ -153,7 +153,7 @@
                 @( standard_error, ": name contains a repeated period" );
             new_line;
          <b>else</b>
-            lastWasPeriod := true;
+            lastWasPeriod;
          <b>end</b> <b>if</b>;
       <b>else</b>
          lastWasComma := false;
@@ -180,5 +180,8 @@
 
   command_line.set_exit_status( 0 );
 <b>end</b> validate_name;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

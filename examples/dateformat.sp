@@ -1,12 +1,11 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- From Rosetta Code http://rosettacode.org/wiki/Date_format
-
-pragma annotate( "dateformat");
-pragma annotate( "");
-pragma annotate( "Display the current date in the formats of '2007-11-10' " );
-pragma annotate( "and 'Sunday, November 10, 2007'." );
-pragma annotate( "translated by Ken O. Burtch" );
+pragma annotate( summary, "dateformat");
+pragma annotate( description, "Display the current date in the formats of '2007-11-10' " );
+pragma annotate( description, "and 'Sunday, November 10, 2007'." );
+pragma annotate( see_also, "http://rosettacode.org/wiki/Date_format" );
+pragma annotate( "Ken O. Burtch" );
+pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
@@ -56,4 +55,7 @@ begin
         strings.image( calendar.day( Today ) ) & "," &
         strings.image( calendar.year( Today ) ) );
 end dateformat;
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

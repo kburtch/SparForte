@@ -1,21 +1,43 @@
 <HEAD><TITLE>gss.sp</TITLE></HEAD>
 <BODY>
 <HR><DIV ALIGN="center"><H1> File : gss.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar gss
+ 3
+ 5
+ 6
+-2
+-1
+ 4
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
 <PRE>
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- A common interview test from Rosetta Code for testing basic programming</EM></FONT>
-<FONT COLOR=green><EM>-- skills.</EM></FONT>
+<b>pragma</b> annotate( summary, "gss" );
+<b>pragma</b> annotate( description, "greatest sequential sum" );
+<b>pragma</b> annotate( description, "Given a sequence of integers, find a continuous subsequence which maximizes the" );
+<b>pragma</b> annotate( description, "sum of its elements, that is, the elements of no other single subsequence add" );
+<b>pragma</b> annotate( description, "up to a value larger than this one. An empty subsequence is considered to have" );
+<b>pragma</b> annotate( description, "the sum 0; thus if all elements are negative, the result must be the empty" );
+<b>pragma</b> annotate( description, "sequence. " );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Greatest_subsequential_sum" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
-<b>pragma</b> annotate( "gss" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Given a sequence of integers, find a continuous subsequence which maximizes the" );
-<b>pragma</b> annotate( "sum of its elements, that is, the elements of no other single subsequence add" );
-<b>pragma</b> annotate( "up to a value larger than this one. An empty subsequence is considered to have" );
-<b>pragma</b> annotate( "the sum 0; thus if all elements are negative, the result must be the empty" );
-<b>pragma</b> annotate( "sequence. " );
+<b>pragma</b> restriction( no_external_commands );
 
-<b>procedure</b> greatest_subsequential_sum <b>is</b>
+<b>procedure</b> gss <b>is</b>
 
   <b>type</b> int_array <b>is</b> <b>array</b>( 1..11 ) <b>of</b> integer;
 
@@ -45,6 +67,9 @@
       ? a(i);
   <b>end</b> <b>loop</b>; 
 
-<b>end</b> greatest_subsequential_sum;
+<b>end</b> gss;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

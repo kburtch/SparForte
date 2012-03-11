@@ -22,22 +22,21 @@ Discarding a temporary file
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( "tmpfile" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Create a temporary file, securely and exclusively" );
-<b>pragma</b> annotate( "(opening it such that there are no possible race" );
-<b>pragma</b> annotate( "conditions). It's fine assuming local filesystem" );
-<b>pragma</b> annotate( "semantics (NFS or other networking filesystems can" );
-<b>pragma</b> annotate( "have signficantly more complicated semantics for" );
-<b>pragma</b> annotate( "satisfying the 'no race conditions' criteria). The" );
-<b>pragma</b> annotate( "function should automatically resolve name collisions" );
-<b>pragma</b> annotate( "and should only fail in cases where permission is" );
-<b>pragma</b> annotate( "denied, the filesystem is read-only or full, or similar" );
-<b>pragma</b> annotate( "conditions exist (returning an error or raising an" );
-<b>pragma</b> annotate( "exception as appropriate to the language/environment)." );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "http://rosettacode.org/wiki/Secure_temporary_file" );
-<b>pragma</b> annotate( "by Ken O. Burtch (based on Ada version)" );
+<b>pragma</b> annotate( summary, "tmpfile" );
+<b>pragma</b> annotate( description, "Create a temporary file, securely and exclusively" );
+<b>pragma</b> annotate( description, "(opening it such that there are no possible race" );
+<b>pragma</b> annotate( description, "conditions). It's fine assuming local filesystem" );
+<b>pragma</b> annotate( description, "semantics (NFS or other networking filesystems can" );
+<b>pragma</b> annotate( description, "have signficantly more complicated semantics for" );
+<b>pragma</b> annotate( description, "satisfying the 'no race conditions' criteria). The" );
+<b>pragma</b> annotate( description, "function should automatically resolve name collisions" );
+<b>pragma</b> annotate( description, "and should only fail in cases where permission is" );
+<b>pragma</b> annotate( description, "denied, the filesystem is read-only or full, or similar" );
+<b>pragma</b> annotate( description, "conditions exist (returning an error or raising an" );
+<b>pragma</b> annotate( description, "exception as appropriate to the language/environment)." );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Secure_temporary_file" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -57,5 +56,8 @@ Discarding a temporary file
    ? "Discarding a temporary file";
    close( temp );
 <b>end</b> tmpfile;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

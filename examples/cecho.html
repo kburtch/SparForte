@@ -4,18 +4,13 @@
 <!-- IMG SRC="distance.gif" -->
 <P>An "echo" beautifier - supports colours and boldface</P>
 <PRE>
-
 #!/usr/local/bin/spar
 
-<FONT COLOR=green><EM>-- cecho</EM></FONT>
-<FONT COLOR=green><EM>-- An "echo" beautifier - supports colours and boldface</EM></FONT>
-<FONT COLOR=green><EM>-- based on http://www.zazzybob.com/bin/cecho.html</EM></FONT>
-<FONT COLOR=green><EM>-- Created by Ken O. Burtch</EM></FONT>
-
-<b>pragma</b> annotate( "cecho" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "echo with color or boldface" );
-<b>pragma</b> annotate( "usage: cecho style text" );
+<b>pragma</b> annotate( summary, "usage: cecho style text" );
+<b>pragma</b> annotate( description, "echo with color or boldface" );
+<b>pragma</b> annotate( see_also, "http://www.zazzybob.com/bin/cecho.html" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -28,22 +23,22 @@
      command_line.set_exit_status( 0 );
   <b>end</b> usage;
 
-  open_escape : string := ASCII.ESC & "[0m";
-  close_escape : string := ASCII.ESC & "[0m";
+  open_escape : string := ASCII.ESC &amp; "[0m";
+  close_escape : string := ASCII.ESC &amp; "[0m";
 
 <b>begin</b>
 
-<FONT COLOR=green><EM>  -- Usage</EM></FONT>
+  <FONT COLOR=green><EM>-- Usage</EM></FONT>
 
   <b>if</b> $# /= 1 <b>then</b>
      usage;
      <b>return</b>;
-  <b>elsif</b> $1 = "-h" <b>or</b> $1 = "--help" <b>then</b>
+  <b>elsif</b> $1 = "-h" <b>or</b> $1 = "<FONT COLOR=green><EM>--help" then</EM></FONT>
      usage;
      <b>return</b>;
   <b>end</b> <b>if</b>;
 
-<FONT COLOR=green><E>  -- Interpret the colour parameter</EM></FONT>
+  <FONT COLOR=green><EM>-- Interpret the colour parameter</EM></FONT>
 
   <b>if</b> $1 = "red" <b>then</b>
      open_escape := ASCII.ESC &amp; "[31m";
@@ -63,15 +58,17 @@
      open_escape := ASCII.ESC &amp; "[1m";
   <b>else</b>
      <b>null</b>;
-  <b>end if</b>;
+  <b>end</b> <b>if</b>;
 
-<FONT COLOR=green><EM>  -- Display the message with colour</EM></FONT>
+  <FONT COLOR=green><EM>-- Display the message with colour</EM></FONT>
 
-  put_line( open_escape & $1 & close_escape );
+  put_line( open_escape &amp; $1 &amp; close_escape );
 
   command_line.set_exit_status( 0 );
 
 <b>end</b> cecho;
 
-<FONT COLOR=green><EM>-- VIM editor formatting instructions -- vim: ft=bush</EM></FONT>
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
 </PRE></BODY></HTML>

@@ -1,18 +1,17 @@
-<HEAD><TITLE>isxwindow.sp</TITLE></HEAD>
+<HEAD><TITLE>isxwindows.sp</TITLE></HEAD>
 <BODY>
-<HR><DIV ALIGN="center"><H1> File : isxwindow.sp </H1></DIV><HR>
+<HR><DIV ALIGN="center"><H1> File : isxwindows.sp </H1></DIV><HR>
 <PRE>
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
-<b>procedure</b> isxwindow <b>is</b>
+<b>procedure</b> isxwindows <b>is</b>
 
-<b>pragma</b> annotate( "isxwindow" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "return status zero if is started under X-Windows" );
-<b>pragma</b> annotate( "" );
-<b>pragma</b> annotate( "Translated from a shell script by Heiner Steven" );
-<b>pragma</b> annotate( "http://www.shelldorado.com/scripts/cmds/isxwindows.txt" );
-<b>pragma</b> annotate( "by Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "isxwindows" );
+<b>pragma</b> annotate( description, "return status zero if is started under X-Windows" );
+<b>pragma</b> annotate( description, "Translated from a shell script by Heiner Steven" );
+<b>pragma</b> annotate( see_also, "http://www.shelldorado.com/scripts/cmds/isxwindows.txt" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
 
 DISPLAY : string := "";
 <b>pragma</b> unchecked_import( shell, DISPLAY );
@@ -45,6 +44,9 @@ WINDOWID : string := "";
      <b>end</b> <b>if</b>;
   <b>end</b> <b>if</b>;
 
-<b>end</b> isxwindow;
+<b>end</b> isxwindows;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>

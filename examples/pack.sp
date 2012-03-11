@@ -1,12 +1,10 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
--- Pack
-
-pragma annotate( "Pack" );
-pragma annotate( "" );
-pragma annotate( "Try compressing a file using different compression programs" );
-pragma annotate( "and keep the best result." );
-pragma annotate( "by Ken O. Burtch" );
+pragma annotate( summary, "pack [-v] source-file" );
+pragma annotate( description, "Try compressing a file using different compression programs" );
+pragma annotate( description, "and keep the best result." );
+pragma annotate( author, "Ken O. Burtch" );
+pragma license( unrestricted );
 
 procedure pack is
 
@@ -181,4 +179,6 @@ command_line.set_exit_status( 0 );
 
 end pack;
 
--- VIM editor formatting instructions -- vim: ft=bush
+-- VIM editor formatting instructions
+-- vim: ft=spar
+
