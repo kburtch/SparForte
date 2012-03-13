@@ -2028,6 +2028,10 @@ declareStandardConstant( color_name_mistyrose1_t, "pen_color_name.mistyrose1", p
 declareStandardConstant( color_name_mistyrose2_t, "pen_color_name.mistyrose2", pen_pen_color_name_t, "271" );
 declareStandardConstant( color_name_mistyrose3_t, "pen_color_name.mistyrose3", pen_pen_color_name_t, "272" );
 declareStandardConstant( color_name_mistyrose4_t, "pen_color_name.mistyrose4", pen_pen_color_name_t, "273" );
+end declarePenColorNames3;
+
+procedure declarePenColorNames4 is
+begin
 declareStandardConstant( color_name_moccasin_t, "pen_color_name.moccasin", pen_pen_color_name_t, "274" );
 declareStandardConstant( color_name_navajowhite_t, "pen_color_name.navajowhite", pen_pen_color_name_t, "275" );
 declareStandardConstant( color_name_navajowhite1_t, "pen_color_name.navajowhite1", pen_pen_color_name_t, "276" );
@@ -2035,10 +2039,6 @@ declareStandardConstant( color_name_navajowhite2_t, "pen_color_name.navajowhite2
 declareStandardConstant( color_name_navajowhite3_t, "pen_color_name.navajowhite3", pen_pen_color_name_t, "278" );
 declareStandardConstant( color_name_navajowhite4_t, "pen_color_name.navajowhite4", pen_pen_color_name_t, "279" );
 declareStandardConstant( color_name_navyblue_t, "pen_color_name.navyblue", pen_pen_color_name_t, "280" );
-end declarePenColorNames3;
-
-procedure declarePenColorNames4 is
-begin
 declareStandardConstant( color_name_oldlace_t, "pen_color_name.oldlace", pen_pen_color_name_t, "281" );
 declareStandardConstant( color_name_olivedrab_t, "pen_color_name.olivedrab", pen_pen_color_name_t, "282" );
 declareStandardConstant( color_name_olivedrab1_t, "pen_color_name.olivedrab1", pen_pen_color_name_t, "283" );
@@ -2136,6 +2136,10 @@ declareStandardConstant( color_name_sienna1_t, "pen_color_name.sienna1", pen_pen
 declareStandardConstant( color_name_sienna2_t, "pen_color_name.sienna2", pen_pen_color_name_t, "375" );
 declareStandardConstant( color_name_sienna3_t, "pen_color_name.sienna3", pen_pen_color_name_t, "376" );
 declareStandardConstant( color_name_sienna4_t, "pen_color_name.sienna4", pen_pen_color_name_t, "377" );
+end declarePenColorNames4;
+
+procedure declarePenColorNames5 is
+begin
 declareStandardConstant( color_name_skyblue_t, "pen_color_name.skyblue", pen_pen_color_name_t, "378" );
 declareStandardConstant( color_name_skyblue1_t, "pen_color_name.skyblue1", pen_pen_color_name_t, "379" );
 declareStandardConstant( color_name_skyblue2_t, "pen_color_name.skyblue2", pen_pen_color_name_t, "380" );
@@ -2151,10 +2155,6 @@ declareStandardConstant( color_name_slategray2_t, "pen_color_name.slategray2", p
 declareStandardConstant( color_name_slategray3_t, "pen_color_name.slategray3", pen_pen_color_name_t, "390" );
 declareStandardConstant( color_name_slategray4_t, "pen_color_name.slategray4", pen_pen_color_name_t, "391" );
 declareStandardConstant( color_name_slategrey_t, "pen_color_name.slategrey", pen_pen_color_name_t, "392" );
-end declarePenColorNames4;
-
-procedure declarePenColorNames5 is
-begin
 declareStandardConstant( color_name_snow_t, "pen_color_name.snow", pen_pen_color_name_t, "393" );
 declareStandardConstant( color_name_snow1_t, "pen_color_name.snow1", pen_pen_color_name_t, "394" );
 declareStandardConstant( color_name_snow2_t, "pen_color_name.snow2", pen_pen_color_name_t, "395" );
@@ -2211,14 +2211,8 @@ declareStandardConstant( color_name_yellow4_t, "pen_color_name.yellow4", pen_pen
 declareStandardConstant( color_name_yellowgreen_t, "pen_color_name.yellowgreen", pen_pen_color_name_t, "446" );
 end declarePenColorNames5;
 
----  STARTUP PEN
---
--- Initialize the built-in Pen Package, declaring all identifiers.
------------------------------------------------------------------------------
-
-procedure StartupPen is
+procedure declarePenStandardTypes is
 begin
-
   -- declare pen package types
 
   declareIdent( pen_coordinate_t, "pen.coordinate", float_t, typeClass );
@@ -2260,6 +2254,18 @@ begin
   declareStandardConstant( pen_brush_smear_t, "pen_brush.smear", pen_pen_brush_t, "5" );
 
   -- TODO: null rect needs to be declared
+
+
+end declarePenStandardTypes;
+
+---  STARTUP PEN
+--
+-- Initialize the built-in Pen Package, declaring all identifiers.
+-----------------------------------------------------------------------------
+
+procedure StartupPen is
+begin
+  declarePenStandardTypes;
 
   -- declare pen package procedures and functions
 
