@@ -27,7 +27,7 @@ project website
 %setup -q
 
 %build
-%configure
+%configure --without-sound
 make max
 strip src/spar
 
@@ -44,6 +44,8 @@ rm -rf %{buildroot}
 /usr/bin/spar
 
 %changelog
+* Tue Mar 13 2012 Ken Burtch <ken@pegasoft.ca>
+- 20120313-1 suppress OSS sound library
 * Wed Mar 23 2011 Ken Burtch <ken@pegasoft.ca>
 - 20110323-1 initial version of package spec %{version}
 
