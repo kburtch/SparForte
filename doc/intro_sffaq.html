@@ -193,6 +193,12 @@ drivers on Linux.  Try opening the URL about:config, confirm the warning
 and change gfx.color_management.mode from 2 to 0 to disable colour
 management.</p>
 
+<h4>When I use spar as a login shell, why can't I use Control-D to log out?</h4>
+
+<p>This is the same behaviour as in the Bash shell if you use the
+ignoreeof option.  It is to prevent you from accidentally logging
+yourself out when exiting several shells quickly using Control-D.</p>
+
 <h4>How Do I Install Sparforte?</h4>
 
 <p>Follow the instructions in the INSTALL text file included with
@@ -420,11 +426,23 @@ different audiences than Ada.</p>
 could mean different things.  See my article on The Lone Coder site on the
 myth of agile languages, "What is an Agile Language?".</p>
 
+<h4>Many popular languages are "mash-ups" of other languages.  Isn't
+SparForte just another example?</h4>
+
+<p>The Bourne shell features in AdaScript are a compatibility layer
+provided for command line and scripting convenience.  It is a
+strictly-defined alternative syntax in recognition of a standard
+lasting decades.  It can also be turned off.</p>
+
+<p>The command line SQL support is an attempt to address the problem
+of "mode errors" (right command typed in the wrong interpeter or
+"mode".   This also can be turned off.</p>
+
 <h4>Can strong typing be used successfully in a shell?</h4>
 
-<p>Sparforte makes allowances by supplying universal types and
-using "duck typing" when automatically declaring variables
-at the command prompt.</p>
+<p>Sparforte makes allowances by supplying universal types (a form
+of weak typing) and using "duck typing" when automatically declaring
+variables at the command prompt.</p>
 
 <h4>Why can't I undo <tt>pragma restriction</tt>, <tt>pragma ada_95</tt>, running in restricted shell mode, etc.?</h4>
 
@@ -444,6 +462,17 @@ had heard of Python and before Python was popular.</p>
 <h4>Why are there no objects or exceptions?</h4>
 
 <p>Objects, exceptions, user-defined packages, etc. are scheduled to be added to Sparforte.  See the project roadmap map.</p>
+
+<h4>Is SparForte innovative?</h4>
+
+<p>For many years Ken has had many ideas for programming languages.  Some have
+started appearing in popular languages.  Some have not.</p>
+
+<p>AdaScript has always been a language based on standards and solving real-world
+problems has always been its main objective.</p>
+
+<p>While many of its features many not be innovative, it solves design problems
+that other languages may find difficult.</p>
 
 <h4>Won't big project features slow development of small nimble project?</h4>
 
@@ -508,7 +537,7 @@ kind of time-consuming issues that other languages neglect.</p>
 used to.  There are several reasons for this.</p>
 
 <p>First, SparForte version 1.x is focused on implementing core features,
-not on optimizing performance.  Some features are not implemented for speed.
+not on optimizing performance.  Some features are not optmized for speed.
 Arrays, for example, are very slow compared to other languages.</p>
 
 <p>Second, SparForte is built with the maximum error checking possible.
@@ -522,7 +551,7 @@ the language, the faster the interpreter will run.  SparForte is more
 high level than many languages.</p>
 
 <p>These things mean that your scripts will probably run slower.  For example,
-SparForte takes around twice as long as PHP to initialize prior to running
+SparForte takes around twice as long as PHP 5.3 to initialize prior to running
 a program.  A simple test of a palindrome checker took about twice as long as
 PHP to run.</p>
 
@@ -540,7 +569,7 @@ gratification, performance and what language will help them get their
 next job: SparForte does not deliver these things.  Most architects
 are afraid of trying something new because it could damage their
 reputation: as the expression goes, no one got fired for recommending
-that status quo.</p>
+the status quo.</p>
 
 &nbsp;<br>
 
