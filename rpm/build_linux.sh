@@ -1,6 +1,6 @@
 #!/bin/bash
 
-declare -r VERSION=1.2
+declare -r VERSION=1.3
 declare -r RELEASE=1
 
 declare -r ROOTDIR=`pwd`
