@@ -1327,6 +1327,78 @@ end shutdownScanner;
      declareStandardConstant( "Latin_1.LC_Y_Diaeresis", character_t, "" & Character'Val (255));
   end declareLatin1Characters;
 
+  procedure declareStandardTypes is
+  begin
+
+  declareIdent( variable_t, "root variable type", keyword_t );
+  declareIdent( uni_numeric_t, "universal_numeric", variable_t, typeClass );
+  declareIdent( uni_string_t, "universal_string", variable_t, typeClass );
+  declareIdent( root_enumerated_t, "root enumerated", variable_t, typeClass );
+  declareIdent( root_record_t, "root record", variable_t, typeClass );
+  declareIdent( command_t, "command", variable_t, typeClass );
+  declareIdent( file_type_t, "file_type", variable_t, typeClass );
+  identifiers( identifiers_top-1 ).limit := true; -- limited type
+  declareIdent( socket_type_t, "socket_type", variable_t, typeClass );
+  identifiers( identifiers_top-1 ).limit := true; -- limited type
+  declareIdent( universal_t, "universal_typeless", variable_t, typeClass );
+  declareIdent( integer_t, "integer", uni_numeric_t, typeClass );
+  declareIdent( natural_t, "natural", uni_numeric_t, typeClass );
+  declareIdent( positive_t, "positive", uni_numeric_t, typeClass );
+  declareIdent( short_short_integer_t, "short_short_integer", uni_numeric_t, typeClass );
+  declareIdent( short_integer_t, "short_integer", uni_numeric_t, typeClass );
+  declareIdent( long_integer_t, "long_integer", uni_numeric_t, typeClass );
+  declareIdent( long_long_integer_t, "long_long_integer", uni_numeric_t, typeClass );
+  declareIdent( character_t, "character", uni_string_t, typeClass );
+  declareIdent( float_t, "float", uni_numeric_t, typeClass );
+  declareIdent( short_float_t, "short_float", uni_numeric_t, typeClass );
+  declareIdent( long_float_t, "long_float", uni_numeric_t, typeClass );
+  declareIdent( boolean_t, "boolean", root_enumerated_t, typeClass );
+  declareIdent( string_t, "string", uni_string_t, typeClass );
+  declareIdent( duration_t, "duration", uni_numeric_t, typeClass );
+  declareIdent( file_mode_t, "file_mode", root_enumerated_t, typeClass );
+  declareIdent( unbounded_string_t, "unbounded_string", uni_string_t, typeClass );
+  declareIdent( complex_t, "complex", root_record_t, typeClass );
+  identifiers( complex_t ).value := to_unbounded_string( "2" );
+  declareIdent( complex_real_t, "complex.re", long_float_t, subClass );
+  identifiers( complex_real_t ).field_of := complex_t;
+  identifiers( complex_real_t ).value := to_unbounded_string( "1" );
+  declareIdent( complex_imaginary_t, "complex.im", long_float_t, subClass );
+  identifiers( complex_imaginary_t ).field_of := complex_t;
+  identifiers( complex_imaginary_t ).value := to_unbounded_string( "2" );
+
+  end declareStandardTypes;
+
+  procedure declareStandardPackage is
+  begin
+  declareStandardConstant( "System.System_Name", uni_string_t, "SYSTEM_NAME_SPARFORTE" );
+  declareStandardConstant( "System.Min_Int", uni_numeric_t, to_string( to_unbounded_string( long_float( integerOutputType'first+0.9 ) ) ) );
+  -- out minimum integer is the limit of a long_float's mantissa.  should
+  -- probably check that system.min_int isn't smaller, but Gnat gives bogus
+  -- result on long_float( max_int ) if mantissa isn't big enough.
+  declareStandardConstant( "System.Max_Int", uni_numeric_t, to_string( to_unbounded_string( maxInteger ) ) );
+  -- out maximum integer is the limit of a long_float's mantissa
+  -- probably check that system.min_max isn't smaller
+  declareStandardConstant( "System.Max_Binary_Modulus", uni_numeric_t,
+    long_long_float'image( long_long_float( system.max_binary_modulus ) ) );
+  declareStandardConstant( "System.Max_Nonbinary_Modulus", uni_numeric_t,
+    long_long_float'image( long_long_float( system.max_nonbinary_modulus ) ) );
+  declareStandardConstant( "System.Max_Base_Digits", uni_numeric_t, system.max_base_digits'img );
+  declareStandardConstant( "System.Max_Digits", uni_numeric_t, system.max_digits'img );
+  declareStandardConstant( "System.Max_Mantissa", uni_numeric_t, system.max_mantissa'img );
+  declareStandardConstant( "System.Fine_Delta", uni_numeric_t, system.fine_delta'img );
+  declareStandardConstant( "System.Tick", uni_numeric_t, system.tick'img );
+  declareStandardConstant( "System.Storage_Unit", uni_numeric_t, system.storage_unit'img );
+  declareStandardConstant( "System.Word_Size", uni_numeric_t, system.word_size'img );
+  declareStandardConstant( "System.Memory_Size", uni_numeric_t, long_float'image( long_float( system.memory_size ) ) );
+  -- NOTE: This was a universal integer but memory_size of 512 MB or larger gave an 'img error
+  -- so it is now a long float.
+  declareStandardConstant( "System.Default_Bit_Order", uni_string_t, system.default_bit_order'img );
+  declareStandardConstant( "System.Login_Shell", boolean_t,  integer'image( boolean'pos(isLoginShell))(2) & "" );
+  declareStandardConstant( "System.Restricted_Shell", boolean_t, integer'image( commandLineOption'pos(rshOpt))(2) & "" );
+  declareStandardConstant( "System.Script_License", uni_string_t, "" );
+  declareStandardConstant( "System.Script_Software_Model", uni_string_t, "" );
+  declareStandardConstant( "System.System_Version", uni_string_t, world.version );
+  end declareStandardPackage;
 
 procedure resetScanner is
 
@@ -1423,41 +1495,7 @@ begin
 
   -- Predefined types
 
-  declareIdent( variable_t, "root variable type", keyword_t );
-  declareIdent( uni_numeric_t, "universal_numeric", variable_t, typeClass );
-  declareIdent( uni_string_t, "universal_string", variable_t, typeClass );
-  declareIdent( root_enumerated_t, "root enumerated", variable_t, typeClass );
-  declareIdent( root_record_t, "root record", variable_t, typeClass );
-  declareIdent( command_t, "command", variable_t, typeClass );
-  declareIdent( file_type_t, "file_type", variable_t, typeClass );
-  identifiers( identifiers_top-1 ).limit := true; -- limited type
-  declareIdent( socket_type_t, "socket_type", variable_t, typeClass );
-  identifiers( identifiers_top-1 ).limit := true; -- limited type
-  declareIdent( universal_t, "universal_typeless", variable_t, typeClass );
-  declareIdent( integer_t, "integer", uni_numeric_t, typeClass );
-  declareIdent( natural_t, "natural", uni_numeric_t, typeClass );
-  declareIdent( positive_t, "positive", uni_numeric_t, typeClass );
-  declareIdent( short_short_integer_t, "short_short_integer", uni_numeric_t, typeClass );
-  declareIdent( short_integer_t, "short_integer", uni_numeric_t, typeClass );
-  declareIdent( long_integer_t, "long_integer", uni_numeric_t, typeClass );
-  declareIdent( long_long_integer_t, "long_long_integer", uni_numeric_t, typeClass );
-  declareIdent( character_t, "character", uni_string_t, typeClass );
-  declareIdent( float_t, "float", uni_numeric_t, typeClass );
-  declareIdent( short_float_t, "short_float", uni_numeric_t, typeClass );
-  declareIdent( long_float_t, "long_float", uni_numeric_t, typeClass );
-  declareIdent( boolean_t, "boolean", root_enumerated_t, typeClass );
-  declareIdent( string_t, "string", uni_string_t, typeClass );
-  declareIdent( duration_t, "duration", uni_numeric_t, typeClass );
-  declareIdent( file_mode_t, "file_mode", root_enumerated_t, typeClass );
-  declareIdent( unbounded_string_t, "unbounded_string", uni_string_t, typeClass );
-  declareIdent( complex_t, "complex", root_record_t, typeClass );
-  identifiers( complex_t ).value := to_unbounded_string( "2" );
-  declareIdent( complex_real_t, "complex.re", long_float_t, subClass );
-  identifiers( complex_real_t ).field_of := complex_t;
-  identifiers( complex_real_t ).value := to_unbounded_string( "1" );
-  declareIdent( complex_imaginary_t, "complex.im", long_float_t, subClass );
-  identifiers( complex_imaginary_t ).field_of := complex_t;
-  identifiers( complex_imaginary_t ).value := to_unbounded_string( "2" );
+  declareStandardTypes;
 
   -- Literals
 
@@ -1504,34 +1542,7 @@ begin
 
   -- System Package constants
 
-  declareStandardConstant( "System.System_Name", uni_string_t, "SYSTEM_NAME_SPARFORTE" );
-  declareStandardConstant( "System.Min_Int", uni_numeric_t, to_string( to_unbounded_string( long_float( integerOutputType'first+0.9 ) ) ) );
-  -- out minimum integer is the limit of a long_float's mantissa.  should
-  -- probably check that system.min_int isn't smaller, but Gnat gives bogus
-  -- result on long_float( max_int ) if mantissa isn't big enough.
-  declareStandardConstant( "System.Max_Int", uni_numeric_t, to_string( to_unbounded_string( maxInteger ) ) );
-  -- out maximum integer is the limit of a long_float's mantissa
-  -- probably check that system.min_max isn't smaller
-  declareStandardConstant( "System.Max_Binary_Modulus", uni_numeric_t,
-    long_long_float'image( long_long_float( system.max_binary_modulus ) ) );
-  declareStandardConstant( "System.Max_Nonbinary_Modulus", uni_numeric_t,
-    long_long_float'image( long_long_float( system.max_nonbinary_modulus ) ) );
-  declareStandardConstant( "System.Max_Base_Digits", uni_numeric_t, system.max_base_digits'img );
-  declareStandardConstant( "System.Max_Digits", uni_numeric_t, system.max_digits'img );
-  declareStandardConstant( "System.Max_Mantissa", uni_numeric_t, system.max_mantissa'img );
-  declareStandardConstant( "System.Fine_Delta", uni_numeric_t, system.fine_delta'img );
-  declareStandardConstant( "System.Tick", uni_numeric_t, system.tick'img );
-  declareStandardConstant( "System.Storage_Unit", uni_numeric_t, system.storage_unit'img );
-  declareStandardConstant( "System.Word_Size", uni_numeric_t, system.word_size'img );
-  declareStandardConstant( "System.Memory_Size", uni_numeric_t, long_float'image( long_float( system.memory_size ) ) );
-  -- NOTE: This was a universal integer but memory_size of 512 MB or larger gave an 'img error
-  -- so it is now a long float.
-  declareStandardConstant( "System.Default_Bit_Order", uni_string_t, system.default_bit_order'img );
-  declareStandardConstant( "System.Login_Shell", boolean_t,  integer'image( boolean'pos(isLoginShell))(2) & "" );
-  declareStandardConstant( "System.Restricted_Shell", boolean_t, integer'image( commandLineOption'pos(rshOpt))(2) & "" );
-  declareStandardConstant( "System.Script_License", uni_string_t, "" );
-  declareStandardConstant( "System.Script_Software_Model", uni_string_t, "" );
-  declareStandardConstant( "System.System_Version", uni_string_t, world.version );
+  declareStandardPackage;
 
 -- most of the source_info must be filled in later by the parser
 

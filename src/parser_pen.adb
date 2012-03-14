@@ -2253,6 +2253,8 @@ begin
   declareStandardConstant( pen_brush_stamp_t, "pen_brush.stamp", pen_pen_brush_t, "4" );
   declareStandardConstant( pen_brush_smear_t, "pen_brush.smear", pen_pen_brush_t, "5" );
 
+  declareIdent( pen_pen_color_name_t, "pen.color_name", root_enumerated_t, typeClass );
+
   -- TODO: null rect needs to be declared
 
 
@@ -2321,8 +2323,6 @@ begin
   declareProcedure( pen_fade_t, "pen.fade" );
 
   declareProcedure( pen_plot_t, "pen.plot" );
-
-  declareIdent( pen_pen_color_name_t, "pen.color_name", root_enumerated_t, typeClass );
 
   -- the declarations of pen color names have been broken out into separate
   -- procedures in order to reduce the frame size.  some machines give a
