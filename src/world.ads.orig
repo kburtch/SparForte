@@ -42,7 +42,7 @@ package world is
 -- Global Variables / Flags
 ------------------------------------------------------------------------------
 
-version   : constant string := "1.3";
+version   : constant string := "1.4";
 copyright : constant string :=  " Copyright (c)2001-2012 Free Software Foundation";
 
 random_generator : ada.numerics.float_random.generator;
