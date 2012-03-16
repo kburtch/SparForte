@@ -159,3 +159,5 @@ changed to handle missing "." and "..".  Also fixed tab completion for same.
 
 64: Fix: fixed tilde expansions.
 
+Version 1.3 Released.
+
