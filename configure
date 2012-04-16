@@ -479,17 +479,17 @@ TMP=`(exec $SDL_CONFIG --version 2>/dev/null)`
 if [ -z "$TMP" ] ; then
    # Cannot find SDL_config?  Use these defaults for makefile sed...
    if [ "$OS" = "FreeBSD" ] ; then
-      SDLLIBSTYPE="-L\/usr\/local\/lib -lSDL-1.1\ -lSDL_image -lpthread"
+      SDLLIBSTYPE="-L\/usr\/local\/lib -lSDL-1.1\ -lSDL_image -lpthread -lGL -lGLU"
       SDLINCLTYPE="-I\/usr\/local\/include\/SDL11"
    else
-      SDLLIBSTYPE="-l\ SDL\ -l\ SDL_image"
+      SDLLIBSTYPE="-l\ SDL\ -l\ SDL_image -lGL -lGLU"
       SDLINCLTYPE="-I\/usr\/include\/SDL"
    fi
    echo "no"
 else
    # Remove -D_REENTRANT (not recognized by GCC Ada) and escape special
    # sed characters (space and slash)
-   SDLLIBSTYPE=`$SDL_CONFIG --libs`" -lSDL_image"
+   SDLLIBSTYPE=`$SDL_CONFIG --libs`" -lSDL_image -lGL -lGLU"
    SDLLIBSTYPE=`echo "$SDLLIBSTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
    SDLINCLTYPE=`$SDL_CONFIG --cflags | sed "s/\ -D_REENTRANT//g"`
    SDLINCLTYPE=`echo "$SDLINCLTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`

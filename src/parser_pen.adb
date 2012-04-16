@@ -22,8 +22,10 @@
 ------------------------------------------------------------------------------
 
 with text_io;use text_io;
-with pen,
+with interfaces.c,
+    pen,
     bush_os.sdl,
+    bush_os.opengl,
     user_io,
     world,
     scanner,
@@ -34,6 +36,7 @@ with pen,
 use pen,
     bush_os,
     bush_os.sdl,
+    bush_os.opengl,
     user_io,
     world,
     scanner,
@@ -2260,6 +2263,1431 @@ begin
 
 end declarePenStandardTypes;
 
+procedure declarePenGLConstants is
+  function float_to_string( i : GLenum  ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLboolean ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLtypes ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLprimitives ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLvertexarrays ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLmodes ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLpoints ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLlines ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLpolygons ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLdlists ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLalphacompare ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLdbuffer ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLlighting ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLusercplane ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLabuffer ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLatesting ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLblending ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLrendermodes ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLfeedback ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLselection ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLfog ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLlogicops ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLstencil ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLscissorbox ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLuint ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLbuffers ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLlimits ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLhints ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLtransposemat ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLgets ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLhintmodes ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLtextureenvdot3 ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLobsolete ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLpixelmode ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLutility ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLtextureenvcomb ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLtexturemapping ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLerrors ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLpushbits ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLmultitexture ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLmultisample ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLarbmapping ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLtexturecubemap ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLtexturecomp ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLmultitexturearb ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLdebugshaders ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLevaluators ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLUquaddrawstyle ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLUquadricnormal ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLUquadorientation ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLUnurbscallbacks ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLUnurbsproperties ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLUtesscallbacks ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLUtesscontour ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( i : GLUtessproperties ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( i ) ) );
+  end float_to_string;
+
+  function float_to_string( us : Interfaces.C.unsigned_short ) return string is
+  begin
+    return to_string( to_unbounded_string( long_float( us ) )  );
+  end float_to_string;
+
+  function float_to_string( lf : long_float  ) return string is
+  begin
+    return to_string( to_unbounded_string( lf )  );
+  end float_to_string;
+
+begin
+  -- mainly for compatibility
+
+  declareIdent( pen_glenum_t, "pen.glenum", integer_t, typeClass  );
+  declareIdent( pen_glboolean_t, "pen.glboolean", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_false_t, "pen.gl_false", pen_glboolean_t, float_to_string( GL_FALSE ) );
+  declareStandardConstant( pen_gl_true_t, "pen.gl_true", pen_glboolean_t, float_to_string( GL_TRUE ) );
+
+  declareIdent( pen_gltypes_t, "pen.gltypes", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_byte_t, "pen.gl_byte", pen_gltypes_t, float_to_string( GL_BYTE ) );
+  declareStandardConstant( pen_gl_unsigned_byte_t, "pen.gl_unsigned_byte", pen_gltypes_t, float_to_string( GL_UNSIGNED_BYTE ) );
+  declareStandardConstant( pen_gl_short_t, "pen.gl_short", pen_gltypes_t, float_to_string( GL_SHORT ) );
+  declareStandardConstant( pen_gl_unsigned_short_t, "pen.gl_unsigned_short", pen_gltypes_t, float_to_string( GL_UNSIGNED_SHORT ) );
+  declareStandardConstant( pen_gl_int_t, "pen.gl_int", pen_gltypes_t, float_to_string( GL_INT ) );
+  declareStandardConstant( pen_gl_unsigned_int_t, "pen.gl_unsigned_int", pen_gltypes_t, float_to_string( GL_UNSIGNED_INT ) );
+  declareStandardConstant( pen_gl_float_t, "pen.gl_float", pen_gltypes_t, float_to_string( GL_FLOAT ) );
+  declareStandardConstant( pen_gl_2_bytes_t, "pen.gl_2_bytes", pen_gltypes_t, float_to_string( GL_2_BYTES ) );
+  declareStandardConstant( pen_gl_3_bytes_t, "pen.gl_3_bytes", pen_gltypes_t, float_to_string( GL_3_BYTES ) );
+  declareStandardConstant( pen_gl_4_bytes_t, "pen.gl_4_bytes", pen_gltypes_t, float_to_string( GL_4_BYTES ) );
+  declareStandardConstant( pen_gl_double_t, "pen.gl_double", pen_gltypes_t, float_to_string( GL_DOUBLE ) );
+
+  declareIdent( pen_glprimitives_t, "pen.glprimitives", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_points_t, "pen.gl_points", pen_glprimitives_t, float_to_string( GL_POINTS ) );
+  declareStandardConstant( pen_gl_lines_t, "pen.gl_lines", pen_glprimitives_t, float_to_string( GL_LINES ) );
+  declareStandardConstant( pen_gl_line_loop_t, "pen.gl_line_loop", pen_glprimitives_t, float_to_string( GL_LINE_LOOP ) );
+  declareStandardConstant( pen_gl_line_strip_t, "pen.gl_line_strip", pen_glprimitives_t, float_to_string( GL_LINE_STRIP ) );
+  declareStandardConstant( pen_gl_triangles_t, "pen.gl_triangles", pen_glprimitives_t, float_to_string( GL_TRIANGLES ) );
+  declareStandardConstant( pen_gl_triangle_strip_t, "pen.gl_triangle_strip", pen_glprimitives_t, float_to_string( GL_TRIANGLE_STRIP ) );
+  declareStandardConstant( pen_gl_triangle_fan_t, "pen.gl_triangle_fan", pen_glprimitives_t, float_to_string( GL_TRIANGLE_FAN ) );
+  declareStandardConstant( pen_gl_quads_t, "pen.gl_quads", pen_glprimitives_t, float_to_string( GL_QUADS ) );
+  declareStandardConstant( pen_gl_quad_strip_t, "pen.gl_quad_strip", pen_glprimitives_t, float_to_string( GL_QUAD_STRIP ) );
+  declareStandardConstant( pen_gl_polygon_t, "pen.gl_polygon", pen_glprimitives_t, float_to_string( GL_POLYGON ) );
+
+  declareIdent( pen_glvertexarrays_t, "pen.glvertexarrays", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_vertex_array_t, "pen.gl_vertex_array", pen_glvertexarrays_t, float_to_string( GL_VERTEX_ARRAY ) );
+  declareStandardConstant( pen_gl_normal_array_t, "pen.gl_normal_array", pen_glvertexarrays_t, float_to_string( GL_NORMAL_ARRAY ) );
+  declareStandardConstant( pen_gl_color_array_t, "pen.gl_color_array", pen_glvertexarrays_t, float_to_string( GL_COLOR_ARRAY ) );
+  declareStandardConstant( pen_gl_index_array_t, "pen.gl_index_array", pen_glvertexarrays_t, float_to_string( GL_INDEX_ARRAY ) );
+  declareStandardConstant( pen_gl_texture_coord_array_t, "pen.gl_texture_coord_array", pen_glvertexarrays_t, float_to_string( GL_TEXTURE_COORD_ARRAY ) );
+  declareStandardConstant( pen_gl_edge_flag_array_t, "pen.gl_edge_flag_array", pen_glvertexarrays_t, float_to_string( GL_EDGE_FLAG_ARRAY ) );
+  declareStandardConstant( pen_gl_vertex_array_size_t, "pen.gl_vertex_array_size", pen_glvertexarrays_t, float_to_string( GL_VERTEX_ARRAY_SIZE ) );
+  declareStandardConstant( pen_gl_vertex_array_type_t, "pen.gl_vertex_array_type", pen_glvertexarrays_t, float_to_string( GL_VERTEX_ARRAY_TYPE ) );
+  declareStandardConstant( pen_gl_vertex_array_stride_t, "pen.gl_vertex_array_stride", pen_glvertexarrays_t, float_to_string( GL_VERTEX_ARRAY_STRIDE ) );
+  declareStandardConstant( pen_gl_normal_array_type_t, "pen.gl_normal_array_type", pen_glvertexarrays_t, float_to_string( GL_NORMAL_ARRAY_TYPE ) );
+  declareStandardConstant( pen_gl_normal_array_stride_t, "pen.gl_normal_array_stride", pen_glvertexarrays_t, float_to_string( GL_NORMAL_ARRAY_STRIDE ) );
+  declareStandardConstant( pen_gl_color_array_size_t, "pen.gl_color_array_size", pen_glvertexarrays_t, float_to_string( GL_COLOR_ARRAY_SIZE ) );
+  declareStandardConstant( pen_gl_color_array_type_t, "pen.gl_color_array_type", pen_glvertexarrays_t, float_to_string( GL_COLOR_ARRAY_TYPE ) );
+  declareStandardConstant( pen_gl_color_array_stride_t, "pen.gl_color_array_stride", pen_glvertexarrays_t, float_to_string( GL_COLOR_ARRAY_STRIDE ) );
+  declareStandardConstant( pen_gl_index_array_type_t, "pen.gl_index_array_type", pen_glvertexarrays_t, float_to_string( GL_INDEX_ARRAY_TYPE ) );
+  declareStandardConstant( pen_gl_index_array_stride_t, "pen.gl_index_array_stride", pen_glvertexarrays_t, float_to_string( GL_INDEX_ARRAY_STRIDE ) );
+  declareStandardConstant( pen_gl_texture_coord_array_size_t, "pen.gl_texture_coord_array_size", pen_glvertexarrays_t, float_to_string( GL_TEXTURE_COORD_ARRAY_SIZE ) );
+  declareStandardConstant( pen_gl_texture_coord_array_type_t, "pen.gl_texture_coord_array_type", pen_glvertexarrays_t, float_to_string( GL_TEXTURE_COORD_ARRAY_TYPE ) );
+  declareStandardConstant( pen_gl_texture_coord_array_stride_t, "pen.gl_texture_coord_array_stride", pen_glvertexarrays_t, float_to_string( GL_TEXTURE_COORD_ARRAY_STRIDE ) );
+  declareStandardConstant( pen_gl_edge_flag_array_stride_t, "pen.gl_edge_flag_array_stride", pen_glvertexarrays_t, float_to_string( GL_EDGE_FLAG_ARRAY_STRIDE ) );
+  declareStandardConstant( pen_gl_vertex_array_pointer_t, "pen.gl_vertex_array_pointer", pen_glvertexarrays_t, float_to_string( GL_VERTEX_ARRAY_POINTER ) );
+  declareStandardConstant( pen_gl_normal_array_pointer_t, "pen.gl_normal_array_pointer", pen_glvertexarrays_t, float_to_string( GL_NORMAL_ARRAY_POINTER ) );
+  declareStandardConstant( pen_gl_color_array_pointer_t, "pen.gl_color_array_pointer", pen_glvertexarrays_t, float_to_string( GL_COLOR_ARRAY_POINTER ) );
+  declareStandardConstant( pen_gl_index_array_pointer_t, "pen.gl_index_array_pointer", pen_glvertexarrays_t, float_to_string( GL_INDEX_ARRAY_POINTER ) );
+  declareStandardConstant( pen_gl_texture_coord_array_pointer_t, "pen.gl_texture_coord_array_pointer", pen_glvertexarrays_t, float_to_string( GL_TEXTURE_COORD_ARRAY_POINTER ) );
+  declareStandardConstant( pen_gl_edge_flag_array_pointer_t, "pen.gl_edge_flag_array_pointer", pen_glvertexarrays_t, float_to_string( GL_EDGE_FLAG_ARRAY_POINTER ) );
+  declareStandardConstant( pen_gl_v2f_t, "pen.gl_v2f", pen_glvertexarrays_t, float_to_string( GL_V2F ) );
+  declareStandardConstant( pen_gl_v3f_t, "pen.gl_v3f", pen_glvertexarrays_t, float_to_string( GL_V3F ) );
+  declareStandardConstant( pen_gl_c4ub_v2f_t, "pen.gl_c4ub_v2f", pen_glvertexarrays_t, float_to_string( GL_C4UB_V2F ) );
+  declareStandardConstant( pen_gl_c4ub_v3f_t, "pen.gl_c4ub_v3f", pen_glvertexarrays_t, float_to_string( GL_C4UB_V3F ) );
+  declareStandardConstant( pen_gl_c3f_v3f_t, "pen.gl_c3f_v3f", pen_glvertexarrays_t, float_to_string( GL_C3F_V3F ) );
+  declareStandardConstant( pen_gl_n3f_v3f_t, "pen.gl_n3f_v3f", pen_glvertexarrays_t, float_to_string( GL_N3F_V3F ) );
+  declareStandardConstant( pen_gl_c4f_n3f_v3f_t, "pen.gl_c4f_n3f_v3f", pen_glvertexarrays_t, float_to_string( GL_C4F_N3F_V3F ) );
+  declareStandardConstant( pen_gl_t2f_v3f_t, "pen.gl_t2f_v3f", pen_glvertexarrays_t, float_to_string( GL_T2F_V3F ) );
+  declareStandardConstant( pen_gl_t4f_v4f_t, "pen.gl_t4f_v4f", pen_glvertexarrays_t, float_to_string( GL_T4F_V4F ) );
+  declareStandardConstant( pen_gl_t2f_c4ub_v3f_t, "pen.gl_t2f_c4ub_v3f", pen_glvertexarrays_t, float_to_string( GL_T2F_C4UB_V3F ) );
+  declareStandardConstant( pen_gl_t2f_c3f_v3f_t, "pen.gl_t2f_c3f_v3f", pen_glvertexarrays_t, float_to_string( GL_T2F_C3F_V3F ) );
+  declareStandardConstant( pen_gl_t2f_n3f_v3f_t, "pen.gl_t2f_n3f_v3f", pen_glvertexarrays_t, float_to_string( GL_T2F_N3F_V3F ) );
+  declareStandardConstant( pen_gl_t2f_c4f_n3f_v3f_t, "pen.gl_t2f_c4f_n3f_v3f", pen_glvertexarrays_t, float_to_string( GL_T2F_C4F_N3F_V3F ) );
+  declareStandardConstant( pen_gl_t4f_c4f_n3f_v4f_t, "pen.gl_t4f_c4f_n3f_v4f", pen_glvertexarrays_t, float_to_string( GL_T4F_C4F_N3F_V4F ) );
+
+  declareIdent( pen_glmodes_t, "pen.glmodes", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_matrix_mode_t, "pen.gl_matrix_mode", pen_glmodes_t, float_to_string( GL_MATRIX_MODE ) );
+  declareStandardConstant( pen_gl_modelview_t, "pen.gl_modelview", pen_glmodes_t, float_to_string( GL_MODELVIEW ) );
+  declareStandardConstant( pen_gl_projection_t, "pen.gl_projection", pen_glmodes_t, float_to_string( GL_PROJECTION ) );
+  declareStandardConstant( pen_gl_texture_t, "pen.gl_texture", pen_glmodes_t, float_to_string( GL_TEXTURE ) );
+
+  declareIdent( pen_glpoints_t, "pen.glpoints", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_point_smooth_t, "pen.gl_point_smooth", pen_glpoints_t, float_to_string( GL_POINT_SMOOTH ) );
+  declareStandardConstant( pen_gl_point_size_t, "pen.gl_point_size", pen_glpoints_t, float_to_string( GL_POINT_SIZE ) );
+  declareStandardConstant( pen_gl_point_size_granularity_t, "pen.gl_point_size_granularity", pen_glpoints_t, float_to_string( GL_POINT_SIZE_GRANULARITY ) );
+  declareStandardConstant( pen_gl_point_size_range_t, "pen.gl_point_size_range", pen_glpoints_t, float_to_string( GL_POINT_SIZE_RANGE ) );
+
+  declareIdent( pen_gllines_t, "pen.gllines", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_line_smooth_t, "pen.gl_line_smooth", pen_gllines_t, float_to_string( GL_LINE_SMOOTH ) );
+  declareStandardConstant( pen_gl_line_stipple_t, "pen.gl_line_stipple", pen_gllines_t, float_to_string( GL_LINE_STIPPLE ) );
+  declareStandardConstant( pen_gl_line_stipple_pattern_t, "pen.gl_line_stipple_pattern", pen_gllines_t, float_to_string( GL_LINE_STIPPLE_PATTERN ) );
+  declareStandardConstant( pen_gl_line_stipple_repeat_t, "pen.gl_line_stipple_repeat", pen_gllines_t, float_to_string( GL_LINE_STIPPLE_REPEAT ) );
+  declareStandardConstant( pen_gl_line_width_t, "pen.gl_line_width", pen_gllines_t, float_to_string( GL_LINE_WIDTH ) );
+  declareStandardConstant( pen_gl_line_width_granularity_t, "pen.gl_line_width_granularity", pen_gllines_t, float_to_string( GL_LINE_WIDTH_GRANULARITY ) );
+  declareStandardConstant( pen_gl_line_width_range_t, "pen.gl_line_width_range", pen_gllines_t, float_to_string( GL_LINE_WIDTH_RANGE ) );
+
+  declareIdent( pen_glpolygons_t, "pen.glpolygons", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_point_t, "pen.gl_point", pen_glpolygons_t, float_to_string( GL_POINT ) );
+  declareStandardConstant( pen_gl_line_t, "pen.gl_line", pen_glpolygons_t, float_to_string( GL_LINE ) );
+  declareStandardConstant( pen_gl_fill_t, "pen.gl_fill", pen_glpolygons_t, float_to_string( GL_FILL ) );
+  declareStandardConstant( pen_gl_cw_t, "pen.gl_cw", pen_glpolygons_t, float_to_string( GL_CW ) );
+  declareStandardConstant( pen_gl_ccw_t, "pen.gl_ccw", pen_glpolygons_t, float_to_string( GL_CCW ) );
+  declareStandardConstant( pen_gl_front_t, "pen.gl_front", pen_glpolygons_t, float_to_string( GL_FRONT ) );
+  declareStandardConstant( pen_gl_back_t, "pen.gl_back", pen_glpolygons_t, float_to_string( GL_BACK ) );
+  declareStandardConstant( pen_gl_polygon_mode_t, "pen.gl_polygon_mode", pen_glpolygons_t, float_to_string( GL_POLYGON_MODE ) );
+  declareStandardConstant( pen_gl_polygon_smooth_t, "pen.gl_polygon_smooth", pen_glpolygons_t, float_to_string( GL_POLYGON_SMOOTH ) );
+  declareStandardConstant( pen_gl_polygon_stipple_t, "pen.gl_polygon_stipple", pen_glpolygons_t, float_to_string( GL_POLYGON_STIPPLE ) );
+  declareStandardConstant( pen_gl_edge_flag_t, "pen.gl_edge_flag", pen_glpolygons_t, float_to_string( GL_EDGE_FLAG ) );
+  declareStandardConstant( pen_gl_cull_face_t, "pen.gl_cull_face", pen_glpolygons_t, float_to_string( GL_CULL_FACE ) );
+  declareStandardConstant( pen_gl_cull_face_mode_t, "pen.gl_cull_face_mode", pen_glpolygons_t, float_to_string( GL_CULL_FACE_MODE ) );
+  declareStandardConstant( pen_gl_front_face_t, "pen.gl_front_face", pen_glpolygons_t, float_to_string( GL_FRONT_FACE ) );
+  declareStandardConstant( pen_gl_polygon_offset_factor_t, "pen.gl_polygon_offset_factor", pen_glpolygons_t, float_to_string( GL_POLYGON_OFFSET_FACTOR ) );
+  declareStandardConstant( pen_gl_polygon_offset_units_t, "pen.gl_polygon_offset_units", pen_glpolygons_t, float_to_string( GL_POLYGON_OFFSET_UNITS ) );
+  declareStandardConstant( pen_gl_polygon_offset_point_t, "pen.gl_polygon_offset_point", pen_glpolygons_t, float_to_string( GL_POLYGON_OFFSET_POINT ) );
+  declareStandardConstant( pen_gl_polygon_offset_line_t, "pen.gl_polygon_offset_line", pen_glpolygons_t, float_to_string( GL_POLYGON_OFFSET_LINE ) );
+  declareStandardConstant( pen_gl_polygon_offset_fill_t, "pen.gl_polygon_offset_fill", pen_glpolygons_t, float_to_string( GL_POLYGON_OFFSET_FILL ) );
+
+  declareIdent( pen_gldlists_t, "pen.gldlists", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_compile_t, "pen.gl_compile", pen_gldlists_t, float_to_string( GL_COMPILE ) );
+  declareStandardConstant( pen_gl_compile_and_execute_t, "pen.gl_compile_and_execute", pen_gldlists_t, float_to_string( GL_COMPILE_AND_EXECUTE ) );
+  declareStandardConstant( pen_gl_list_base_t, "pen.gl_list_base", pen_gldlists_t, float_to_string( GL_LIST_BASE ) );
+  declareStandardConstant( pen_gl_list_index_t, "pen.gl_list_index", pen_gldlists_t, float_to_string( GL_LIST_INDEX ) );
+  declareStandardConstant( pen_gl_list_mode_t, "pen.gl_list_mode", pen_gldlists_t, float_to_string( GL_LIST_MODE ) );
+
+  declareIdent( pen_glalphacompare_t, "pen.glalphacompare", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_never_t, "pen.gl_never", pen_glalphacompare_t, float_to_string( GL_NEVER ) );
+  declareStandardConstant( pen_gl_less_t, "pen.gl_less", pen_glalphacompare_t, float_to_string( GL_LESS ) );
+  declareStandardConstant( pen_gl_equal_t, "pen.gl_equal", pen_glalphacompare_t, float_to_string( GL_EQUAL ) );
+  declareStandardConstant( pen_gl_lequal_t, "pen.gl_lequal", pen_glalphacompare_t, float_to_string( GL_LEQUAL ) );
+  declareStandardConstant( pen_gl_greater_t, "pen.gl_greater", pen_glalphacompare_t, float_to_string( GL_GREATER ) );
+  declareStandardConstant( pen_gl_notequal_t, "pen.gl_notequal", pen_glalphacompare_t, float_to_string( GL_NOTEQUAL ) );
+  declareStandardConstant( pen_gl_gequal_t, "pen.gl_gequal", pen_glalphacompare_t, float_to_string( GL_GEQUAL ) );
+  declareStandardConstant( pen_gl_always_t, "pen.gl_always", pen_glalphacompare_t, float_to_string( GL_ALWAYS ) );
+
+  declareIdent( pen_gldbuffer_t, "pen.gldbuffer", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_depth_test_t, "pen.gl_depth_test", pen_gldbuffer_t, float_to_string( GL_DEPTH_TEST ) );
+  declareStandardConstant( pen_gl_depth_bits_t, "pen.gl_depth_bits", pen_gldbuffer_t, float_to_string( GL_DEPTH_BITS ) );
+  declareStandardConstant( pen_gl_depth_clear_value_t, "pen.gl_depth_clear_value", pen_gldbuffer_t, float_to_string( GL_DEPTH_CLEAR_VALUE ) );
+  declareStandardConstant( pen_gl_depth_func_t, "pen.gl_depth_func", pen_gldbuffer_t, float_to_string( GL_DEPTH_FUNC ) );
+  declareStandardConstant( pen_gl_depth_range_t, "pen.gl_depth_range", pen_gldbuffer_t, float_to_string( GL_DEPTH_RANGE ) );
+  declareStandardConstant( pen_gl_depth_writemask_t, "pen.gl_depth_writemask", pen_gldbuffer_t, float_to_string( GL_DEPTH_WRITEMASK ) );
+  declareStandardConstant( pen_gl_depth_component_t, "pen.gl_depth_component", pen_gldbuffer_t, float_to_string( GL_DEPTH_COMPONENT ) );
+
+  declareIdent( pen_gllighting_t, "pen.gllighting", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_lighting_t, "pen.gl_lighting", pen_gllighting_t, float_to_string( GL_LIGHTING ) );
+  declareStandardConstant( pen_gl_light0_t, "pen.gl_light0", pen_gllighting_t, float_to_string( GL_LIGHT0 ) );
+  declareStandardConstant( pen_gl_light1_t, "pen.gl_light1", pen_gllighting_t, float_to_string( GL_LIGHT1 ) );
+  declareStandardConstant( pen_gl_light2_t, "pen.gl_light2", pen_gllighting_t, float_to_string( GL_LIGHT2 ) );
+  declareStandardConstant( pen_gl_light3_t, "pen.gl_light3", pen_gllighting_t, float_to_string( GL_LIGHT3 ) );
+  declareStandardConstant( pen_gl_light4_t, "pen.gl_light4", pen_gllighting_t, float_to_string( GL_LIGHT4 ) );
+  declareStandardConstant( pen_gl_light5_t, "pen.gl_light5", pen_gllighting_t, float_to_string( GL_LIGHT5 ) );
+  declareStandardConstant( pen_gl_light6_t, "pen.gl_light6", pen_gllighting_t, float_to_string( GL_LIGHT6 ) );
+  declareStandardConstant( pen_gl_light7_t, "pen.gl_light7", pen_gllighting_t, float_to_string( GL_LIGHT7 ) );
+  declareStandardConstant( pen_gl_spot_exponent_t, "pen.gl_spot_exponent", pen_gllighting_t, float_to_string( GL_SPOT_EXPONENT ) );
+  declareStandardConstant( pen_gl_spot_cutoff_t, "pen.gl_spot_cutoff", pen_gllighting_t, float_to_string( GL_SPOT_CUTOFF ) );
+  declareStandardConstant( pen_gl_constant_attenuation_t, "pen.gl_constant_attenuation", pen_gllighting_t, float_to_string( GL_CONSTANT_ATTENUATION ) );
+  declareStandardConstant( pen_gl_linear_attenuation_t, "pen.gl_linear_attenuation", pen_gllighting_t, float_to_string( GL_LINEAR_ATTENUATION ) );
+  declareStandardConstant( pen_gl_quadratic_attenuation_t, "pen.gl_quadratic_attenuation", pen_gllighting_t, float_to_string( GL_QUADRATIC_ATTENUATION ) );
+  declareStandardConstant( pen_gl_ambient_t, "pen.gl_ambient", pen_gllighting_t, float_to_string( GL_AMBIENT ) );
+  declareStandardConstant( pen_gl_diffuse_t, "pen.gl_diffuse", pen_gllighting_t, float_to_string( GL_DIFFUSE ) );
+  declareStandardConstant( pen_gl_specular_t, "pen.gl_specular", pen_gllighting_t, float_to_string( GL_SPECULAR ) );
+  declareStandardConstant( pen_gl_shininess_t, "pen.gl_shininess", pen_gllighting_t, float_to_string( GL_SHININESS ) );
+  declareStandardConstant( pen_gl_emission_t, "pen.gl_emission", pen_gllighting_t, float_to_string( GL_EMISSION ) );
+  declareStandardConstant( pen_gl_position_t, "pen.gl_position", pen_gllighting_t, float_to_string( GL_POSITION ) );
+  declareStandardConstant( pen_gl_spot_direction_t, "pen.gl_spot_direction", pen_gllighting_t, float_to_string( GL_SPOT_DIRECTION ) );
+  declareStandardConstant( pen_gl_ambient_and_diffuse_t, "pen.gl_ambient_and_diffuse", pen_gllighting_t, float_to_string( GL_AMBIENT_AND_DIFFUSE ) );
+  declareStandardConstant( pen_gl_color_indexes_t, "pen.gl_color_indexes", pen_gllighting_t, float_to_string( GL_COLOR_INDEXES ) );
+  declareStandardConstant( pen_gl_light_model_two_side_t, "pen.gl_light_model_two_side", pen_gllighting_t, float_to_string( GL_LIGHT_MODEL_TWO_SIDE ) );
+  declareStandardConstant( pen_gl_light_model_local_viewer_t, "pen.gl_light_model_local_viewer", pen_gllighting_t, float_to_string( GL_LIGHT_MODEL_LOCAL_VIEWER ) );
+  declareStandardConstant( pen_gl_light_model_ambient_t, "pen.gl_light_model_ambient", pen_gllighting_t, float_to_string( GL_LIGHT_MODEL_AMBIENT ) );
+  declareStandardConstant( pen_gl_front_and_back_t, "pen.gl_front_and_back", pen_gllighting_t, float_to_string( GL_FRONT_AND_BACK ) );
+  declareStandardConstant( pen_gl_shade_model_t, "pen.gl_shade_model", pen_gllighting_t, float_to_string( GL_SHADE_MODEL ) );
+  declareStandardConstant( pen_gl_flat_t, "pen.gl_flat", pen_gllighting_t, float_to_string( GL_FLAT ) );
+  declareStandardConstant( pen_gl_smooth_t, "pen.gl_smooth", pen_gllighting_t, float_to_string( GL_SMOOTH ) );
+  declareStandardConstant( pen_gl_color_material_t, "pen.gl_color_material", pen_gllighting_t, float_to_string( GL_COLOR_MATERIAL ) );
+  declareStandardConstant( pen_gl_color_material_face_t, "pen.gl_color_material_face", pen_gllighting_t, float_to_string( GL_COLOR_MATERIAL_FACE ) );
+  declareStandardConstant( pen_gl_color_material_parameter_t, "pen.gl_color_material_parameter", pen_gllighting_t, float_to_string( GL_COLOR_MATERIAL_PARAMETER ) );
+  declareStandardConstant( pen_gl_normalize_t, "pen.gl_normalize", pen_gllighting_t, float_to_string( GL_NORMALIZE ) );
+
+  declareIdent( pen_glusercplane_t, "pen.glusercplane", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_clip_plane0_t, "pen.gl_clip_plane0", pen_glusercplane_t, float_to_string( GL_CLIP_PLANE0 ) );
+  declareStandardConstant( pen_gl_clip_plane1_t, "pen.gl_clip_plane1", pen_glusercplane_t, float_to_string( GL_CLIP_PLANE1 ) );
+  declareStandardConstant( pen_gl_clip_plane2_t, "pen.gl_clip_plane2", pen_glusercplane_t, float_to_string( GL_CLIP_PLANE2 ) );
+  declareStandardConstant( pen_gl_clip_plane3_t, "pen.gl_clip_plane3", pen_glusercplane_t, float_to_string( GL_CLIP_PLANE3 ) );
+  declareStandardConstant( pen_gl_clip_plane4_t, "pen.gl_clip_plane4", pen_glusercplane_t, float_to_string( GL_CLIP_PLANE4 ) );
+  declareStandardConstant( pen_gl_clip_plane5_t, "pen.gl_clip_plane5", pen_glusercplane_t, float_to_string( GL_CLIP_PLANE5 ) );
+
+  declareIdent( pen_glabuffer_t, "pen.glabuffer", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_accum_red_bits_t, "pen.gl_accum_red_bits", pen_glabuffer_t, float_to_string( GL_ACCUM_RED_BITS ) );
+  declareStandardConstant( pen_gl_accum_green_bits_t, "pen.gl_accum_green_bits", pen_glabuffer_t, float_to_string( GL_ACCUM_GREEN_BITS ) );
+  declareStandardConstant( pen_gl_accum_blue_bits_t, "pen.gl_accum_blue_bits", pen_glabuffer_t, float_to_string( GL_ACCUM_BLUE_BITS ) );
+  declareStandardConstant( pen_gl_accum_alpha_bits_t, "pen.gl_accum_alpha_bits", pen_glabuffer_t, float_to_string( GL_ACCUM_ALPHA_BITS ) );
+  declareStandardConstant( pen_gl_accum_clear_value_t, "pen.gl_accum_clear_value", pen_glabuffer_t, float_to_string( GL_ACCUM_CLEAR_VALUE ) );
+  declareStandardConstant( pen_gl_accum_t, "pen.gl_accum", pen_glabuffer_t, float_to_string( GL_ACCUM ) );
+  declareStandardConstant( pen_gl_add_t, "pen.gl_add", pen_glabuffer_t, float_to_string( GL_ADD ) );
+  declareStandardConstant( pen_gl_load_t, "pen.gl_load", pen_glabuffer_t, float_to_string( GL_LOAD ) );
+  declareStandardConstant( pen_gl_mult_t, "pen.gl_mult", pen_glabuffer_t, float_to_string( GL_MULT ) );
+  declareStandardConstant( pen_gl_return_t, "pen.gl_return", pen_glabuffer_t, float_to_string( GL_RETURN ) );
+
+  declareIdent( pen_glatesting_t, "pen.glatesting", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_alpha_test_t, "pen.gl_alpha_test", pen_glatesting_t, float_to_string( GL_ALPHA_TEST ) );
+  declareStandardConstant( pen_gl_alpha_test_ref_t, "pen.gl_alpha_test_ref", pen_glatesting_t, float_to_string( GL_ALPHA_TEST_REF ) );
+  declareStandardConstant( pen_gl_alpha_test_func_t, "pen.gl_alpha_test_func", pen_glatesting_t, float_to_string( GL_ALPHA_TEST_FUNC ) );
+
+  declareIdent( pen_glblending_t, "pen.glblending", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_blend_t, "pen.gl_blend", pen_glblending_t, float_to_string( GL_BLEND ) );
+  declareStandardConstant( pen_gl_blend_src_t, "pen.gl_blend_src", pen_glblending_t, float_to_string( GL_BLEND_SRC ) );
+  declareStandardConstant( pen_gl_blend_dst_t, "pen.gl_blend_dst", pen_glblending_t, float_to_string( GL_BLEND_DST ) );
+  declareStandardConstant( pen_gl_zero_t, "pen.gl_zero", pen_glblending_t, float_to_string( GL_ZERO ) );
+  declareStandardConstant( pen_gl_one_t, "pen.gl_one", pen_glblending_t, float_to_string( GL_ONE ) );
+  declareStandardConstant( pen_gl_src_color_t, "pen.gl_src_color", pen_glblending_t, float_to_string( GL_SRC_COLOR ) );
+  declareStandardConstant( pen_gl_one_minus_src_color_t, "pen.gl_one_minus_src_color", pen_glblending_t, float_to_string( GL_ONE_MINUS_SRC_COLOR ) );
+  declareStandardConstant( pen_gl_src_alpha_t, "pen.gl_src_alpha", pen_glblending_t, float_to_string( GL_SRC_ALPHA ) );
+  declareStandardConstant( pen_gl_one_minus_src_alpha_t, "pen.gl_one_minus_src_alpha", pen_glblending_t, float_to_string( GL_ONE_MINUS_SRC_ALPHA ) );
+  declareStandardConstant( pen_gl_dst_alpha_t, "pen.gl_dst_alpha", pen_glblending_t, float_to_string( GL_DST_ALPHA ) );
+  declareStandardConstant( pen_gl_one_minus_dst_alpha_t, "pen.gl_one_minus_dst_alpha", pen_glblending_t, float_to_string( GL_ONE_MINUS_DST_ALPHA ) );
+  declareStandardConstant( pen_gl_dst_color_t, "pen.gl_dst_color", pen_glblending_t, float_to_string( GL_DST_COLOR ) );
+  declareStandardConstant( pen_gl_one_minus_dst_color_t, "pen.gl_one_minus_dst_color", pen_glblending_t, float_to_string( GL_ONE_MINUS_DST_COLOR ) );
+  declareStandardConstant( pen_gl_src_alpha_saturate_t, "pen.gl_src_alpha_saturate", pen_glblending_t, float_to_string( GL_SRC_ALPHA_SATURATE ) );
+
+  declareIdent( pen_glrendermodes_t, "pen.glrendermodes", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_feedback_t, "pen.gl_feedback", pen_glrendermodes_t, float_to_string( GL_FEEDBACK ) );
+  declareStandardConstant( pen_gl_render_t, "pen.gl_render", pen_glrendermodes_t, float_to_string( GL_RENDER ) );
+  declareStandardConstant( pen_gl_select_t, "pen.gl_select", pen_glrendermodes_t, float_to_string( GL_SELECT ) );
+
+  declareIdent( pen_glfeedback_t, "pen.glfeedback", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_2d_t, "pen.gl_2d", pen_glfeedback_t, float_to_string( GL_2D ) );
+  declareStandardConstant( pen_gl_3d_t, "pen.gl_3d", pen_glfeedback_t, float_to_string( GL_3D ) );
+  declareStandardConstant( pen_gl_3d_color_t, "pen.gl_3d_color", pen_glfeedback_t, float_to_string( GL_3D_COLOR ) );
+  declareStandardConstant( pen_gl_3d_color_texture_t, "pen.gl_3d_color_texture", pen_glfeedback_t, float_to_string( GL_3D_COLOR_TEXTURE ) );
+  declareStandardConstant( pen_gl_4d_color_texture_t, "pen.gl_4d_color_texture", pen_glfeedback_t, float_to_string( GL_4D_COLOR_TEXTURE ) );
+  declareStandardConstant( pen_gl_point_token_t, "pen.gl_point_token", pen_glfeedback_t, float_to_string( GL_POINT_TOKEN ) );
+  declareStandardConstant( pen_gl_line_token_t, "pen.gl_line_token", pen_glfeedback_t, float_to_string( GL_LINE_TOKEN ) );
+  declareStandardConstant( pen_gl_line_reset_token_t, "pen.gl_line_reset_token", pen_glfeedback_t, float_to_string( GL_LINE_RESET_TOKEN ) );
+  declareStandardConstant( pen_gl_polygon_token_t, "pen.gl_polygon_token", pen_glfeedback_t, float_to_string( GL_POLYGON_TOKEN ) );
+  declareStandardConstant( pen_gl_bitmap_token_t, "pen.gl_bitmap_token", pen_glfeedback_t, float_to_string( GL_BITMAP_TOKEN ) );
+  declareStandardConstant( pen_gl_draw_pixel_token_t, "pen.gl_draw_pixel_token", pen_glfeedback_t, float_to_string( GL_DRAW_PIXEL_TOKEN ) );
+  declareStandardConstant( pen_gl_copy_pixel_token_t, "pen.gl_copy_pixel_token", pen_glfeedback_t, float_to_string( GL_COPY_PIXEL_TOKEN ) );
+  declareStandardConstant( pen_gl_pass_through_token_t, "pen.gl_pass_through_token", pen_glfeedback_t, float_to_string( GL_PASS_THROUGH_TOKEN ) );
+  declareStandardConstant( pen_gl_feedback_buffer_pointer_t, "pen.gl_feedback_buffer_pointer", pen_glfeedback_t, float_to_string( GL_FEEDBACK_BUFFER_POINTER ) );
+  declareStandardConstant( pen_gl_feedback_buffer_size_t, "pen.gl_feedback_buffer_size", pen_glfeedback_t, float_to_string( GL_FEEDBACK_BUFFER_SIZE ) );
+  declareStandardConstant( pen_gl_feedback_buffer_type_t, "pen.gl_feedback_buffer_type", pen_glfeedback_t, float_to_string( GL_FEEDBACK_BUFFER_TYPE ) );
+
+  declareIdent( pen_glselection_t, "pen.glselection", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_selection_buffer_pointer_t, "pen.gl_selection_buffer_pointer", pen_glselection_t, float_to_string( GL_SELECTION_BUFFER_POINTER ) );
+  declareStandardConstant( pen_gl_selection_buffer_size_t, "pen.gl_selection_buffer_size", pen_glselection_t, float_to_string( GL_SELECTION_BUFFER_SIZE ) );
+
+  declareIdent( pen_glfog_t, "pen.glfog", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_fog_t, "pen.gl_fog", pen_glfog_t, float_to_string( GL_FOG ) );
+  declareStandardConstant( pen_gl_fog_mode_t, "pen.gl_fog_mode", pen_glfog_t, float_to_string( GL_FOG_MODE ) );
+  declareStandardConstant( pen_gl_fog_density_t, "pen.gl_fog_density", pen_glfog_t, float_to_string( GL_FOG_DENSITY ) );
+  declareStandardConstant( pen_gl_fog_color_t, "pen.gl_fog_color", pen_glfog_t, float_to_string( GL_FOG_COLOR ) );
+  declareStandardConstant( pen_gl_fog_index_t, "pen.gl_fog_index", pen_glfog_t, float_to_string( GL_FOG_INDEX ) );
+  declareStandardConstant( pen_gl_fog_start_t, "pen.gl_fog_start", pen_glfog_t, float_to_string( GL_FOG_START ) );
+  declareStandardConstant( pen_gl_fog_end_t, "pen.gl_fog_end", pen_glfog_t, float_to_string( GL_FOG_END ) );
+  declareStandardConstant( pen_gl_linear_t, "pen.gl_linear", pen_glfog_t, float_to_string( GL_LINEAR ) );
+  declareStandardConstant( pen_gl_exp_t, "pen.gl_exp", pen_glfog_t, float_to_string( GL_EXP ) );
+  declareStandardConstant( pen_gl_exp2_t, "pen.gl_exp2", pen_glfog_t, float_to_string( GL_EXP2 ) );
+
+  declareIdent( pen_gllogicops_t, "pen.gllogicops", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_logic_op_t, "pen.gl_logic_op", pen_gllogicops_t, float_to_string( GL_LOGIC_OP ) );
+  declareStandardConstant( pen_gl_index_logic_op_t, "pen.gl_index_logic_op", pen_gllogicops_t, float_to_string( GL_INDEX_LOGIC_OP ) );
+  declareStandardConstant( pen_gl_color_logic_op_t, "pen.gl_color_logic_op", pen_gllogicops_t, float_to_string( GL_COLOR_LOGIC_OP ) );
+  declareStandardConstant( pen_gl_logic_op_mode_t, "pen.gl_logic_op_mode", pen_gllogicops_t, float_to_string( GL_LOGIC_OP_MODE ) );
+  declareStandardConstant( pen_gl_clear_t, "pen.gl_clear", pen_gllogicops_t, float_to_string( GL_CLEAR ) );
+  declareStandardConstant( pen_gl_set_t, "pen.gl_set", pen_gllogicops_t, float_to_string( GL_SET ) );
+  declareStandardConstant( pen_gl_copy_t, "pen.gl_copy", pen_gllogicops_t, float_to_string( GL_COPY ) );
+  declareStandardConstant( pen_gl_copy_inverted_t, "pen.gl_copy_inverted", pen_gllogicops_t, float_to_string( GL_COPY_INVERTED ) );
+  declareStandardConstant( pen_gl_noop_t, "pen.gl_noop", pen_gllogicops_t, float_to_string( GL_NOOP ) );
+  declareStandardConstant( pen_gl_invert_t, "pen.gl_invert", pen_gllogicops_t, float_to_string( GL_INVERT ) );
+  declareStandardConstant( pen_gl_and_t, "pen.gl_and", pen_gllogicops_t, float_to_string( GL_AND ) );
+  declareStandardConstant( pen_gl_nand_t, "pen.gl_nand", pen_gllogicops_t, float_to_string( GL_NAND ) );
+  declareStandardConstant( pen_gl_or_t, "pen.gl_or", pen_gllogicops_t, float_to_string( GL_OR ) );
+  declareStandardConstant( pen_gl_nor_t, "pen.gl_nor", pen_gllogicops_t, float_to_string( GL_NOR ) );
+  declareStandardConstant( pen_gl_xor_t, "pen.gl_xor", pen_gllogicops_t, float_to_string( GL_XOR ) );
+  declareStandardConstant( pen_gl_equiv_t, "pen.gl_equiv", pen_gllogicops_t, float_to_string( GL_EQUIV ) );
+  declareStandardConstant( pen_gl_and_reverse_t, "pen.gl_and_reverse", pen_gllogicops_t, float_to_string( GL_AND_REVERSE ) );
+  declareStandardConstant( pen_gl_and_inverted_t, "pen.gl_and_inverted", pen_gllogicops_t, float_to_string( GL_AND_INVERTED ) );
+  declareStandardConstant( pen_gl_or_reverse_t, "pen.gl_or_reverse", pen_gllogicops_t, float_to_string( GL_OR_REVERSE ) );
+  declareStandardConstant( pen_gl_or_inverted_t, "pen.gl_or_inverted", pen_gllogicops_t, float_to_string( GL_OR_INVERTED ) );
+
+  declareIdent( pen_glstencil_t, "pen.glstencil", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_stencil_bits_t, "pen.gl_stencil_bits", pen_glstencil_t, float_to_string( GL_STENCIL_BITS ) );
+  declareStandardConstant( pen_gl_stencil_test_t, "pen.gl_stencil_test", pen_glstencil_t, float_to_string( GL_STENCIL_TEST ) );
+  declareStandardConstant( pen_gl_stencil_clear_value_t, "pen.gl_stencil_clear_value", pen_glstencil_t, float_to_string( GL_STENCIL_CLEAR_VALUE ) );
+  declareStandardConstant( pen_gl_stencil_func_t, "pen.gl_stencil_func", pen_glstencil_t, float_to_string( GL_STENCIL_FUNC ) );
+  declareStandardConstant( pen_gl_stencil_value_mask_t, "pen.gl_stencil_value_mask", pen_glstencil_t, float_to_string( GL_STENCIL_VALUE_MASK ) );
+  declareStandardConstant( pen_gl_stencil_fail_t, "pen.gl_stencil_fail", pen_glstencil_t, float_to_string( GL_STENCIL_FAIL ) );
+  declareStandardConstant( pen_gl_stencil_pass_depth_fail_t, "pen.gl_stencil_pass_depth_fail", pen_glstencil_t, float_to_string( GL_STENCIL_PASS_DEPTH_FAIL ) );
+  declareStandardConstant( pen_gl_stencil_pass_depth_pass_t, "pen.gl_stencil_pass_depth_pass", pen_glstencil_t, float_to_string( GL_STENCIL_PASS_DEPTH_PASS ) );
+  declareStandardConstant( pen_gl_stencil_ref_t, "pen.gl_stencil_ref", pen_glstencil_t, float_to_string( GL_STENCIL_REF ) );
+  declareStandardConstant( pen_gl_stencil_writemask_t, "pen.gl_stencil_writemask", pen_glstencil_t, float_to_string( GL_STENCIL_WRITEMASK ) );
+  declareStandardConstant( pen_gl_stencil_index_t, "pen.gl_stencil_index", pen_glstencil_t, float_to_string( GL_STENCIL_INDEX ) );
+  declareStandardConstant( pen_gl_keep_t, "pen.gl_keep", pen_glstencil_t, float_to_string( GL_KEEP ) );
+  declareStandardConstant( pen_gl_replace_t, "pen.gl_replace", pen_glstencil_t, float_to_string( GL_REPLACE ) );
+  declareStandardConstant( pen_gl_incr_t, "pen.gl_incr", pen_glstencil_t, float_to_string( GL_INCR ) );
+  declareStandardConstant( pen_gl_decr_t, "pen.gl_decr", pen_glstencil_t, float_to_string( GL_DECR ) );
+
+  declareIdent( pen_glbuffers_t, "pen.glbuffers", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_none_t, "pen.gl_none", pen_glbuffers_t, float_to_string( GL_NONE ) );
+  declareStandardConstant( pen_gl_left_t, "pen.gl_left", pen_glbuffers_t, float_to_string( GL_LEFT ) );
+  declareStandardConstant( pen_gl_right_t, "pen.gl_right", pen_glbuffers_t, float_to_string( GL_RIGHT ) );
+  declareStandardConstant( pen_gl_front_left_t, "pen.gl_front_left", pen_glbuffers_t, float_to_string( GL_FRONT_LEFT ) );
+  declareStandardConstant( pen_gl_front_right_t, "pen.gl_front_right", pen_glbuffers_t, float_to_string( GL_FRONT_RIGHT ) );
+  declareStandardConstant( pen_gl_back_left_t, "pen.gl_back_left", pen_glbuffers_t, float_to_string( GL_BACK_LEFT ) );
+  declareStandardConstant( pen_gl_back_right_t, "pen.gl_back_right", pen_glbuffers_t, float_to_string( GL_BACK_RIGHT ) );
+  declareStandardConstant( pen_gl_aux0_t, "pen.gl_aux0", pen_glbuffers_t, float_to_string( GL_AUX0 ) );
+  declareStandardConstant( pen_gl_aux1_t, "pen.gl_aux1", pen_glbuffers_t, float_to_string( GL_AUX1 ) );
+  declareStandardConstant( pen_gl_aux2_t, "pen.gl_aux2", pen_glbuffers_t, float_to_string( GL_AUX2 ) );
+  declareStandardConstant( pen_gl_aux3_t, "pen.gl_aux3", pen_glbuffers_t, float_to_string( GL_AUX3 ) );
+  declareStandardConstant( pen_gl_color_index_t, "pen.gl_color_index", pen_glbuffers_t, float_to_string( GL_COLOR_INDEX ) );
+  declareStandardConstant( pen_gl_red_t, "pen.gl_red", pen_glbuffers_t, float_to_string( GL_RED ) );
+  declareStandardConstant( pen_gl_green_t, "pen.gl_green", pen_glbuffers_t, float_to_string( GL_GREEN ) );
+  declareStandardConstant( pen_gl_blue_t, "pen.gl_blue", pen_glbuffers_t, float_to_string( GL_BLUE ) );
+  declareStandardConstant( pen_gl_alpha_t, "pen.gl_alpha", pen_glbuffers_t, float_to_string( GL_ALPHA ) );
+  declareStandardConstant( pen_gl_luminance_t, "pen.gl_luminance", pen_glbuffers_t, float_to_string( GL_LUMINANCE ) );
+  declareStandardConstant( pen_gl_luminance_alpha_t, "pen.gl_luminance_alpha", pen_glbuffers_t, float_to_string( GL_LUMINANCE_ALPHA ) );
+  declareStandardConstant( pen_gl_alpha_bits_t, "pen.gl_alpha_bits", pen_glbuffers_t, float_to_string( GL_ALPHA_BITS ) );
+  declareStandardConstant( pen_gl_red_bits_t, "pen.gl_red_bits", pen_glbuffers_t, float_to_string( GL_RED_BITS ) );
+  declareStandardConstant( pen_gl_green_bits_t, "pen.gl_green_bits", pen_glbuffers_t, float_to_string( GL_GREEN_BITS ) );
+  declareStandardConstant( pen_gl_blue_bits_t, "pen.gl_blue_bits", pen_glbuffers_t, float_to_string( GL_BLUE_BITS ) );
+  declareStandardConstant( pen_gl_index_bits_t, "pen.gl_index_bits", pen_glbuffers_t, float_to_string( GL_INDEX_BITS ) );
+  declareStandardConstant( pen_gl_subpixel_bits_t, "pen.gl_subpixel_bits", pen_glbuffers_t, float_to_string( GL_SUBPIXEL_BITS ) );
+  declareStandardConstant( pen_gl_aux_buffers_t, "pen.gl_aux_buffers", pen_glbuffers_t, float_to_string( GL_AUX_BUFFERS ) );
+  declareStandardConstant( pen_gl_read_buffer_t, "pen.gl_read_buffer", pen_glbuffers_t, float_to_string( GL_READ_BUFFER ) );
+  declareStandardConstant( pen_gl_draw_buffer_t, "pen.gl_draw_buffer", pen_glbuffers_t, float_to_string( GL_DRAW_BUFFER ) );
+  declareStandardConstant( pen_gl_doublebuffer_t, "pen.gl_doublebuffer", pen_glbuffers_t, float_to_string( GL_DOUBLEBUFFER ) );
+  declareStandardConstant( pen_gl_stereo_t, "pen.gl_stereo", pen_glbuffers_t, float_to_string( GL_STEREO ) );
+  declareStandardConstant( pen_gl_bitmap_t, "pen.gl_bitmap", pen_glbuffers_t, float_to_string( GL_BITMAP ) );
+  declareStandardConstant( pen_gl_color_t, "pen.gl_color", pen_glbuffers_t, float_to_string( GL_COLOR ) );
+  declareStandardConstant( pen_gl_depth_t, "pen.gl_depth", pen_glbuffers_t, float_to_string( GL_DEPTH ) );
+  declareStandardConstant( pen_gl_stencil_t, "pen.gl_stencil", pen_glbuffers_t, float_to_string( GL_STENCIL ) );
+  declareStandardConstant( pen_gl_dither_t, "pen.gl_dither", pen_glbuffers_t, float_to_string( GL_DITHER ) );
+  declareStandardConstant( pen_gl_rgb_t, "pen.gl_rgb", pen_glbuffers_t, float_to_string( GL_RGB ) );
+  declareStandardConstant( pen_gl_rgba_t, "pen.gl_rgba", pen_glbuffers_t, float_to_string( GL_RGBA ) );
+
+  declareIdent( pen_gllimits_t, "pen.gllimits", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_max_list_nesting_t, "pen.gl_max_list_nesting", pen_gllimits_t, float_to_string( GL_MAX_LIST_NESTING ) );
+  declareStandardConstant( pen_gl_max_eval_order_t, "pen.gl_max_eval_order", pen_gllimits_t, float_to_string( GL_MAX_EVAL_ORDER ) );
+  declareStandardConstant( pen_gl_max_lights_t, "pen.gl_max_lights", pen_gllimits_t, float_to_string( GL_MAX_LIGHTS ) );
+  declareStandardConstant( pen_gl_max_clip_planes_t, "pen.gl_max_clip_planes", pen_gllimits_t, float_to_string( GL_MAX_CLIP_PLANES ) );
+  declareStandardConstant( pen_gl_max_texture_size_t, "pen.gl_max_texture_size", pen_gllimits_t, float_to_string( GL_MAX_TEXTURE_SIZE ) );
+  declareStandardConstant( pen_gl_max_pixel_map_table_t, "pen.gl_max_pixel_map_table", pen_gllimits_t, float_to_string( GL_MAX_PIXEL_MAP_TABLE ) );
+  declareStandardConstant( pen_gl_max_attrib_stack_depth_t, "pen.gl_max_attrib_stack_depth", pen_gllimits_t, float_to_string( GL_MAX_ATTRIB_STACK_DEPTH ) );
+  declareStandardConstant( pen_gl_max_modelview_stack_depth_t, "pen.gl_max_modelview_stack_depth", pen_gllimits_t, float_to_string( GL_MAX_MODELVIEW_STACK_DEPTH ) );
+  declareStandardConstant( pen_gl_max_name_stack_depth_t, "pen.gl_max_name_stack_depth", pen_gllimits_t, float_to_string( GL_MAX_NAME_STACK_DEPTH ) );
+  declareStandardConstant( pen_gl_max_projection_stack_depth_t, "pen.gl_max_projection_stack_depth", pen_gllimits_t, float_to_string( GL_MAX_PROJECTION_STACK_DEPTH ) );
+  declareStandardConstant( pen_gl_max_texture_stack_depth_t, "pen.gl_max_texture_stack_depth", pen_gllimits_t, float_to_string( GL_MAX_TEXTURE_STACK_DEPTH ) );
+  declareStandardConstant( pen_gl_max_viewport_dims_t, "pen.gl_max_viewport_dims", pen_gllimits_t, float_to_string( GL_MAX_VIEWPORT_DIMS ) );
+  declareStandardConstant( pen_gl_max_client_attrib_stack_depth_t, "pen.gl_max_client_attrib_stack_depth", pen_gllimits_t, float_to_string( GL_MAX_CLIENT_ATTRIB_STACK_DEPTH ) );
+  declareStandardConstant( pen_gl_attrib_stack_depth_t, "pen.gl_attrib_stack_depth", pen_gllimits_t, float_to_string( GL_ATTRIB_STACK_DEPTH ) );
+  declareStandardConstant( pen_gl_client_attrib_stack_depth_t, "pen.gl_client_attrib_stack_depth", pen_gllimits_t, float_to_string( GL_CLIENT_ATTRIB_STACK_DEPTH ) );
+
+  declareIdent( pen_glgets_t, "pen.glgets", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_color_clear_value_t, "pen.gl_color_clear_value", pen_glgets_t, float_to_string( GL_COLOR_CLEAR_VALUE ) );
+  declareStandardConstant( pen_gl_color_writemask_t, "pen.gl_color_writemask", pen_glgets_t, float_to_string( GL_COLOR_WRITEMASK ) );
+  declareStandardConstant( pen_gl_current_index_t, "pen.gl_current_index", pen_glgets_t, float_to_string( GL_CURRENT_INDEX ) );
+  declareStandardConstant( pen_gl_current_color_t, "pen.gl_current_color", pen_glgets_t, float_to_string( GL_CURRENT_COLOR ) );
+  declareStandardConstant( pen_gl_current_normal_t, "pen.gl_current_normal", pen_glgets_t, float_to_string( GL_CURRENT_NORMAL ) );
+  declareStandardConstant( pen_gl_current_raster_color_t, "pen.gl_current_raster_color", pen_glgets_t, float_to_string( GL_CURRENT_RASTER_COLOR ) );
+  declareStandardConstant( pen_gl_current_raster_distance_t, "pen.gl_current_raster_distance", pen_glgets_t, float_to_string( GL_CURRENT_RASTER_DISTANCE ) );
+  declareStandardConstant( pen_gl_current_raster_index_t, "pen.gl_current_raster_index", pen_glgets_t, float_to_string( GL_CURRENT_RASTER_INDEX ) );
+  declareStandardConstant( pen_gl_current_raster_position_t, "pen.gl_current_raster_position", pen_glgets_t, float_to_string( GL_CURRENT_RASTER_POSITION ) );
+  declareStandardConstant( pen_gl_current_raster_texture_coords_t, "pen.gl_current_raster_texture_coords", pen_glgets_t, float_to_string( GL_CURRENT_RASTER_TEXTURE_COORDS ) );
+  declareStandardConstant( pen_gl_current_raster_position_valid_t, "pen.gl_current_raster_position_valid", pen_glgets_t, float_to_string( GL_CURRENT_RASTER_POSITION_VALID ) );
+  declareStandardConstant( pen_gl_current_texture_coords_t, "pen.gl_current_texture_coords", pen_glgets_t, float_to_string( GL_CURRENT_TEXTURE_COORDS ) );
+  declareStandardConstant( pen_gl_index_clear_value_t, "pen.gl_index_clear_value", pen_glgets_t, float_to_string( GL_INDEX_CLEAR_VALUE ) );
+  declareStandardConstant( pen_gl_index_mode_t, "pen.gl_index_mode", pen_glgets_t, float_to_string( GL_INDEX_MODE ) );
+  declareStandardConstant( pen_gl_index_writemask_t, "pen.gl_index_writemask", pen_glgets_t, float_to_string( GL_INDEX_WRITEMASK ) );
+  declareStandardConstant( pen_gl_modelview_matrix_t, "pen.gl_modelview_matrix", pen_glgets_t, float_to_string( GL_MODELVIEW_MATRIX ) );
+  declareStandardConstant( pen_gl_modelview_stack_depth_t, "pen.gl_modelview_stack_depth", pen_glgets_t, float_to_string( GL_MODELVIEW_STACK_DEPTH ) );
+  declareStandardConstant( pen_gl_name_stack_depth_t, "pen.gl_name_stack_depth", pen_glgets_t, float_to_string( GL_NAME_STACK_DEPTH ) );
+  declareStandardConstant( pen_gl_projection_matrix_t, "pen.gl_projection_matrix", pen_glgets_t, float_to_string( GL_PROJECTION_MATRIX ) );
+  declareStandardConstant( pen_gl_projection_stack_depth_t, "pen.gl_projection_stack_depth", pen_glgets_t, float_to_string( GL_PROJECTION_STACK_DEPTH ) );
+  declareStandardConstant( pen_gl_render_mode_t, "pen.gl_render_mode", pen_glgets_t, float_to_string( GL_RENDER_MODE ) );
+  declareStandardConstant( pen_gl_rgba_mode_t, "pen.gl_rgba_mode", pen_glgets_t, float_to_string( GL_RGBA_MODE ) );
+  declareStandardConstant( pen_gl_texture_matrix_t, "pen.gl_texture_matrix", pen_glgets_t, float_to_string( GL_TEXTURE_MATRIX ) );
+  declareStandardConstant( pen_gl_texture_stack_depth_t, "pen.gl_texture_stack_depth", pen_glgets_t, float_to_string( GL_TEXTURE_STACK_DEPTH ) );
+  declareStandardConstant( pen_gl_viewport_t, "pen.gl_viewport", pen_glgets_t, float_to_string( GL_VIEWPORT ) );
+
+  declareIdent( pen_glevaluators_t, "pen.glevaluators", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_auto_normal_t, "pen.gl_auto_normal", pen_glevaluators_t, float_to_string( GL_AUTO_NORMAL ) );
+  declareStandardConstant( pen_gl_map1_color_4_t, "pen.gl_map1_color_4", pen_glevaluators_t, float_to_string( GL_MAP1_COLOR_4 ) );
+  declareStandardConstant( pen_gl_map1_index_t, "pen.gl_map1_index", pen_glevaluators_t, float_to_string( GL_MAP1_INDEX ) );
+  declareStandardConstant( pen_gl_map1_normal_t, "pen.gl_map1_normal", pen_glevaluators_t, float_to_string( GL_MAP1_NORMAL ) );
+  declareStandardConstant( pen_gl_map1_texture_coord_1_t, "pen.gl_map1_texture_coord_1", pen_glevaluators_t, float_to_string( GL_MAP1_TEXTURE_COORD_1 ) );
+  declareStandardConstant( pen_gl_map1_texture_coord_2_t, "pen.gl_map1_texture_coord_2", pen_glevaluators_t, float_to_string( GL_MAP1_TEXTURE_COORD_2 ) );
+  declareStandardConstant( pen_gl_map1_texture_coord_3_t, "pen.gl_map1_texture_coord_3", pen_glevaluators_t, float_to_string( GL_MAP1_TEXTURE_COORD_3 ) );
+  declareStandardConstant( pen_gl_map1_texture_coord_4_t, "pen.gl_map1_texture_coord_4", pen_glevaluators_t, float_to_string( GL_MAP1_TEXTURE_COORD_4 ) );
+  declareStandardConstant( pen_gl_map1_vertex_3_t, "pen.gl_map1_vertex_3", pen_glevaluators_t, float_to_string( GL_MAP1_VERTEX_3 ) );
+  declareStandardConstant( pen_gl_map1_vertex_4_t, "pen.gl_map1_vertex_4", pen_glevaluators_t, float_to_string( GL_MAP1_VERTEX_4 ) );
+  declareStandardConstant( pen_gl_map2_color_4_t, "pen.gl_map2_color_4", pen_glevaluators_t, float_to_string( GL_MAP2_COLOR_4 ) );
+  declareStandardConstant( pen_gl_map2_index_t, "pen.gl_map2_index", pen_glevaluators_t, float_to_string( GL_MAP2_INDEX ) );
+  declareStandardConstant( pen_gl_map2_normal_t, "pen.gl_map2_normal", pen_glevaluators_t, float_to_string( GL_MAP2_NORMAL ) );
+  declareStandardConstant( pen_gl_map2_texture_coord_1_t, "pen.gl_map2_texture_coord_1", pen_glevaluators_t, float_to_string( GL_MAP2_TEXTURE_COORD_1 ) );
+  declareStandardConstant( pen_gl_map2_texture_coord_2_t, "pen.gl_map2_texture_coord_2", pen_glevaluators_t, float_to_string( GL_MAP2_TEXTURE_COORD_2 ) );
+  declareStandardConstant( pen_gl_map2_texture_coord_3_t, "pen.gl_map2_texture_coord_3", pen_glevaluators_t, float_to_string( GL_MAP2_TEXTURE_COORD_3 ) );
+  declareStandardConstant( pen_gl_map2_texture_coord_4_t, "pen.gl_map2_texture_coord_4", pen_glevaluators_t, float_to_string( GL_MAP2_TEXTURE_COORD_4 ) );
+  declareStandardConstant( pen_gl_map2_vertex_3_t, "pen.gl_map2_vertex_3", pen_glevaluators_t, float_to_string( GL_MAP2_VERTEX_3 ) );
+  declareStandardConstant( pen_gl_map2_vertex_4_t, "pen.gl_map2_vertex_4", pen_glevaluators_t, float_to_string( GL_MAP2_VERTEX_4 ) );
+  declareStandardConstant( pen_gl_map1_grid_domain_t, "pen.gl_map1_grid_domain", pen_glevaluators_t, float_to_string( GL_MAP1_GRID_DOMAIN ) );
+  declareStandardConstant( pen_gl_map1_grid_segments_t, "pen.gl_map1_grid_segments", pen_glevaluators_t, float_to_string( GL_MAP1_GRID_SEGMENTS ) );
+  declareStandardConstant( pen_gl_map2_grid_domain_t, "pen.gl_map2_grid_domain", pen_glevaluators_t, float_to_string( GL_MAP2_GRID_DOMAIN ) );
+  declareStandardConstant( pen_gl_map2_grid_segments_t, "pen.gl_map2_grid_segments", pen_glevaluators_t, float_to_string( GL_MAP2_GRID_SEGMENTS ) );
+  declareStandardConstant( pen_gl_coeff_t, "pen.gl_coeff", pen_glevaluators_t, float_to_string( GL_COEFF ) );
+  declareStandardConstant( pen_gl_order_t, "pen.gl_order", pen_glevaluators_t, float_to_string( GL_ORDER ) );
+  declareStandardConstant( pen_gl_domain_t, "pen.gl_domain", pen_glevaluators_t, float_to_string( GL_DOMAIN ) );
+
+  declareIdent( pen_glhints_t, "pen.glhints", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_perspective_correction_hint_t, "pen.gl_perspective_correction_hint", pen_glhints_t, float_to_string( GL_PERSPECTIVE_CORRECTION_HINT ) );
+  declareStandardConstant( pen_gl_point_smooth_hint_t, "pen.gl_point_smooth_hint", pen_glhints_t, float_to_string( GL_POINT_SMOOTH_HINT ) );
+  declareStandardConstant( pen_gl_line_smooth_hint_t, "pen.gl_line_smooth_hint", pen_glhints_t, float_to_string( GL_LINE_SMOOTH_HINT ) );
+  declareStandardConstant( pen_gl_polygon_smooth_hint_t, "pen.gl_polygon_smooth_hint", pen_glhints_t, float_to_string( GL_POLYGON_SMOOTH_HINT ) );
+  declareStandardConstant( pen_gl_fog_hint_t, "pen.gl_fog_hint", pen_glhints_t, float_to_string( GL_FOG_HINT ) );
+
+  declareIdent( pen_glhintmodes_t, "pen.glhintmodes", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_dont_care_t, "pen.gl_dont_care", pen_glhintmodes_t, float_to_string( GL_DONT_CARE ) );
+  declareStandardConstant( pen_gl_fastest_t, "pen.gl_fastest", pen_glhintmodes_t, float_to_string( GL_FASTEST ) );
+  declareStandardConstant( pen_gl_nicest_t, "pen.gl_nicest", pen_glhintmodes_t, float_to_string( GL_NICEST ) );
+
+  declareIdent( pen_glscissorbox_t, "pen.glscissorbox", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_scissor_box_t, "pen.gl_scissor_box", pen_glscissorbox_t, float_to_string( GL_SCISSOR_BOX ) );
+  declareStandardConstant( pen_gl_scissor_test_t, "pen.gl_scissor_test", pen_glscissorbox_t, float_to_string( GL_SCISSOR_TEST ) );
+
+  declareIdent( pen_glpixelmode_t, "pen.glpixelmode", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_map_color_t, "pen.gl_map_color", pen_glpixelmode_t, float_to_string( GL_MAP_COLOR ) );
+  declareStandardConstant( pen_gl_map_stencil_t, "pen.gl_map_stencil", pen_glpixelmode_t, float_to_string( GL_MAP_STENCIL ) );
+  declareStandardConstant( pen_gl_index_shift_t, "pen.gl_index_shift", pen_glpixelmode_t, float_to_string( GL_INDEX_SHIFT ) );
+  declareStandardConstant( pen_gl_index_offset_t, "pen.gl_index_offset", pen_glpixelmode_t, float_to_string( GL_INDEX_OFFSET ) );
+  declareStandardConstant( pen_gl_red_scale_t, "pen.gl_red_scale", pen_glpixelmode_t, float_to_string( GL_RED_SCALE ) );
+  declareStandardConstant( pen_gl_red_bias_t, "pen.gl_red_bias", pen_glpixelmode_t, float_to_string( GL_RED_BIAS ) );
+  declareStandardConstant( pen_gl_green_scale_t, "pen.gl_green_scale", pen_glpixelmode_t, float_to_string( GL_GREEN_SCALE ) );
+  declareStandardConstant( pen_gl_green_bias_t, "pen.gl_green_bias", pen_glpixelmode_t, float_to_string( GL_GREEN_BIAS ) );
+  declareStandardConstant( pen_gl_blue_scale_t, "pen.gl_blue_scale", pen_glpixelmode_t, float_to_string( GL_BLUE_SCALE ) );
+  declareStandardConstant( pen_gl_blue_bias_t, "pen.gl_blue_bias", pen_glpixelmode_t, float_to_string( GL_BLUE_BIAS ) );
+  declareStandardConstant( pen_gl_alpha_scale_t, "pen.gl_alpha_scale", pen_glpixelmode_t, float_to_string( GL_ALPHA_SCALE ) );
+  declareStandardConstant( pen_gl_alpha_bias_t, "pen.gl_alpha_bias", pen_glpixelmode_t, float_to_string( GL_ALPHA_BIAS ) );
+  declareStandardConstant( pen_gl_depth_scale_t, "pen.gl_depth_scale", pen_glpixelmode_t, float_to_string( GL_DEPTH_SCALE ) );
+  declareStandardConstant( pen_gl_depth_bias_t, "pen.gl_depth_bias", pen_glpixelmode_t, float_to_string( GL_DEPTH_BIAS ) );
+  declareStandardConstant( pen_gl_pixel_map_s_to_s_size_t, "pen.gl_pixel_map_s_to_s_size", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_S_TO_S_SIZE ) );
+  declareStandardConstant( pen_gl_pixel_map_i_to_i_size_t, "pen.gl_pixel_map_i_to_i_size", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_I_TO_I_SIZE ) );
+  declareStandardConstant( pen_gl_pixel_map_i_to_r_size_t, "pen.gl_pixel_map_i_to_r_size", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_I_TO_R_SIZE ) );
+  declareStandardConstant( pen_gl_pixel_map_i_to_g_size_t, "pen.gl_pixel_map_i_to_g_size", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_I_TO_G_SIZE ) );
+  declareStandardConstant( pen_gl_pixel_map_i_to_b_size_t, "pen.gl_pixel_map_i_to_b_size", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_I_TO_B_SIZE ) );
+  declareStandardConstant( pen_gl_pixel_map_i_to_a_size_t, "pen.gl_pixel_map_i_to_a_size", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_I_TO_A_SIZE ) );
+  declareStandardConstant( pen_gl_pixel_map_r_to_r_size_t, "pen.gl_pixel_map_r_to_r_size", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_R_TO_R_SIZE ) );
+  declareStandardConstant( pen_gl_pixel_map_g_to_g_size_t, "pen.gl_pixel_map_g_to_g_size", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_G_TO_G_SIZE ) );
+  declareStandardConstant( pen_gl_pixel_map_b_to_b_size_t, "pen.gl_pixel_map_b_to_b_size", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_B_TO_B_SIZE ) );
+  declareStandardConstant( pen_gl_pixel_map_a_to_a_size_t, "pen.gl_pixel_map_a_to_a_size", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_A_TO_A_SIZE ) );
+  declareStandardConstant( pen_gl_pixel_map_s_to_s_t, "pen.gl_pixel_map_s_to_s", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_S_TO_S ) );
+  declareStandardConstant( pen_gl_pixel_map_i_to_i_t, "pen.gl_pixel_map_i_to_i", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_I_TO_I ) );
+  declareStandardConstant( pen_gl_pixel_map_i_to_r_t, "pen.gl_pixel_map_i_to_r", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_I_TO_R ) );
+  declareStandardConstant( pen_gl_pixel_map_i_to_g_t, "pen.gl_pixel_map_i_to_g", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_I_TO_G ) );
+  declareStandardConstant( pen_gl_pixel_map_i_to_b_t, "pen.gl_pixel_map_i_to_b", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_I_TO_B ) );
+  declareStandardConstant( pen_gl_pixel_map_i_to_a_t, "pen.gl_pixel_map_i_to_a", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_I_TO_A ) );
+  declareStandardConstant( pen_gl_pixel_map_r_to_r_t, "pen.gl_pixel_map_r_to_r", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_R_TO_R ) );
+  declareStandardConstant( pen_gl_pixel_map_g_to_g_t, "pen.gl_pixel_map_g_to_g", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_G_TO_G ) );
+  declareStandardConstant( pen_gl_pixel_map_b_to_b_t, "pen.gl_pixel_map_b_to_b", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_B_TO_B ) );
+  declareStandardConstant( pen_gl_pixel_map_a_to_a_t, "pen.gl_pixel_map_a_to_a", pen_glpixelmode_t, float_to_string( GL_PIXEL_MAP_A_TO_A ) );
+  declareStandardConstant( pen_gl_pack_alignment_t, "pen.gl_pack_alignment", pen_glpixelmode_t, float_to_string( GL_PACK_ALIGNMENT ) );
+  declareStandardConstant( pen_gl_pack_lsb_first_t, "pen.gl_pack_lsb_first", pen_glpixelmode_t, float_to_string( GL_PACK_LSB_FIRST ) );
+  declareStandardConstant( pen_gl_pack_row_length_t, "pen.gl_pack_row_length", pen_glpixelmode_t, float_to_string( GL_PACK_ROW_LENGTH ) );
+  declareStandardConstant( pen_gl_pack_skip_pixels_t, "pen.gl_pack_skip_pixels", pen_glpixelmode_t, float_to_string( GL_PACK_SKIP_PIXELS ) );
+  declareStandardConstant( pen_gl_pack_skip_rows_t, "pen.gl_pack_skip_rows", pen_glpixelmode_t, float_to_string( GL_PACK_SKIP_ROWS ) );
+  declareStandardConstant( pen_gl_pack_swap_bytes_t, "pen.gl_pack_swap_bytes", pen_glpixelmode_t, float_to_string( GL_PACK_SWAP_BYTES ) );
+  declareStandardConstant( pen_gl_unpack_alignment_t, "pen.gl_unpack_alignment", pen_glpixelmode_t, float_to_string( GL_UNPACK_ALIGNMENT ) );
+  declareStandardConstant( pen_gl_unpack_lsb_first_t, "pen.gl_unpack_lsb_first", pen_glpixelmode_t, float_to_string( GL_UNPACK_LSB_FIRST ) );
+  declareStandardConstant( pen_gl_unpack_row_length_t, "pen.gl_unpack_row_length", pen_glpixelmode_t, float_to_string( GL_UNPACK_ROW_LENGTH ) );
+  declareStandardConstant( pen_gl_unpack_skip_pixels_t, "pen.gl_unpack_skip_pixels", pen_glpixelmode_t, float_to_string( GL_UNPACK_SKIP_PIXELS ) );
+  declareStandardConstant( pen_gl_unpack_skip_rows_t, "pen.gl_unpack_skip_rows", pen_glpixelmode_t, float_to_string( GL_UNPACK_SKIP_ROWS ) );
+  declareStandardConstant( pen_gl_unpack_swap_bytes_t, "pen.gl_unpack_swap_bytes", pen_glpixelmode_t, float_to_string( GL_UNPACK_SWAP_BYTES ) );
+  declareStandardConstant( pen_gl_zoom_x_t, "pen.gl_zoom_x", pen_glpixelmode_t, float_to_string( GL_ZOOM_X ) );
+  declareStandardConstant( pen_gl_zoom_y_t, "pen.gl_zoom_y", pen_glpixelmode_t, float_to_string( GL_ZOOM_Y ) );
+
+  declareIdent( pen_gltexturemapping_t, "pen.gltexturemapping", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_texture_env_t, "pen.gl_texture_env", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_ENV ) );
+  declareStandardConstant( pen_gl_texture_env_mode_t, "pen.gl_texture_env_mode", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_ENV_MODE ) );
+  declareStandardConstant( pen_gl_texture_1d_t, "pen.gl_texture_1d", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_1D ) );
+  declareStandardConstant( pen_gl_texture_2d_t, "pen.gl_texture_2d", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_2D ) );
+  declareStandardConstant( pen_gl_texture_wrap_s_t, "pen.gl_texture_wrap_s", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_WRAP_S ) );
+  declareStandardConstant( pen_gl_texture_wrap_t_t, "pen.gl_texture_wrap_t", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_WRAP_T ) );
+  declareStandardConstant( pen_gl_texture_mag_filter_t, "pen.gl_texture_mag_filter", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_MAG_FILTER ) );
+  declareStandardConstant( pen_gl_texture_min_filter_t, "pen.gl_texture_min_filter", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_MIN_FILTER ) );
+  declareStandardConstant( pen_gl_texture_env_color_t, "pen.gl_texture_env_color", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_ENV_COLOR ) );
+  declareStandardConstant( pen_gl_texture_gen_s_t, "pen.gl_texture_gen_s", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_GEN_S ) );
+  declareStandardConstant( pen_gl_texture_gen_t_t, "pen.gl_texture_gen_t", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_GEN_T ) );
+  declareStandardConstant( pen_gl_texture_gen_mode_t, "pen.gl_texture_gen_mode", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_GEN_MODE ) );
+  declareStandardConstant( pen_gl_texture_border_color_t, "pen.gl_texture_border_color", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_BORDER_COLOR ) );
+  declareStandardConstant( pen_gl_texture_width_t, "pen.gl_texture_width", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_WIDTH ) );
+  declareStandardConstant( pen_gl_texture_height_t, "pen.gl_texture_height", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_HEIGHT ) );
+  declareStandardConstant( pen_gl_texture_border_t, "pen.gl_texture_border", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_BORDER ) );
+  declareStandardConstant( pen_gl_texture_components_t, "pen.gl_texture_components", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_COMPONENTS ) );
+  declareStandardConstant( pen_gl_texture_red_size_t, "pen.gl_texture_red_size", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_RED_SIZE ) );
+  declareStandardConstant( pen_gl_texture_green_size_t, "pen.gl_texture_green_size", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_GREEN_SIZE ) );
+  declareStandardConstant( pen_gl_texture_blue_size_t, "pen.gl_texture_blue_size", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_BLUE_SIZE ) );
+  declareStandardConstant( pen_gl_texture_alpha_size_t, "pen.gl_texture_alpha_size", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_ALPHA_SIZE ) );
+  declareStandardConstant( pen_gl_texture_luminance_size_t, "pen.gl_texture_luminance_size", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_LUMINANCE_SIZE ) );
+  declareStandardConstant( pen_gl_texture_intensity_size_t, "pen.gl_texture_intensity_size", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_INTENSITY_SIZE ) );
+  declareStandardConstant( pen_gl_nearest_mipmap_nearest_t, "pen.gl_nearest_mipmap_nearest", pen_gltexturemapping_t, float_to_string( GL_NEAREST_MIPMAP_NEAREST ) );
+  declareStandardConstant( pen_gl_nearest_mipmap_linear_t, "pen.gl_nearest_mipmap_linear", pen_gltexturemapping_t, float_to_string( GL_NEAREST_MIPMAP_LINEAR ) );
+  declareStandardConstant( pen_gl_linear_mipmap_nearest_t, "pen.gl_linear_mipmap_nearest", pen_gltexturemapping_t, float_to_string( GL_LINEAR_MIPMAP_NEAREST ) );
+  declareStandardConstant( pen_gl_linear_mipmap_linear_t, "pen.gl_linear_mipmap_linear", pen_gltexturemapping_t, float_to_string( GL_LINEAR_MIPMAP_LINEAR ) );
+  declareStandardConstant( pen_gl_object_linear_t, "pen.gl_object_linear", pen_gltexturemapping_t, float_to_string( GL_OBJECT_LINEAR ) );
+  declareStandardConstant( pen_gl_object_plane_t, "pen.gl_object_plane", pen_gltexturemapping_t, float_to_string( GL_OBJECT_PLANE ) );
+  declareStandardConstant( pen_gl_eye_linear_t, "pen.gl_eye_linear", pen_gltexturemapping_t, float_to_string( GL_EYE_LINEAR ) );
+  declareStandardConstant( pen_gl_eye_plane_t, "pen.gl_eye_plane", pen_gltexturemapping_t, float_to_string( GL_EYE_PLANE ) );
+  declareStandardConstant( pen_gl_sphere_map_t, "pen.gl_sphere_map", pen_gltexturemapping_t, float_to_string( GL_SPHERE_MAP ) );
+  declareStandardConstant( pen_gl_decal_t, "pen.gl_decal", pen_gltexturemapping_t, float_to_string( GL_DECAL ) );
+  declareStandardConstant( pen_gl_modulate_t, "pen.gl_modulate", pen_gltexturemapping_t, float_to_string( GL_MODULATE ) );
+  declareStandardConstant( pen_gl_nearest_t, "pen.gl_nearest", pen_gltexturemapping_t, float_to_string( GL_NEAREST ) );
+  declareStandardConstant( pen_gl_repeat_t, "pen.gl_repeat", pen_gltexturemapping_t, float_to_string( GL_REPEAT ) );
+  declareStandardConstant( pen_gl_clamp_t, "pen.gl_clamp", pen_gltexturemapping_t, float_to_string( GL_CLAMP ) );
+  declareStandardConstant( pen_gl_s_t, "pen.gl_s", pen_gltexturemapping_t, float_to_string( GL_S ) );
+  declareStandardConstant( pen_gl_t_t, "pen.gl_t", pen_gltexturemapping_t, float_to_string( GL_T ) );
+  declareStandardConstant( pen_gl_r_t, "pen.gl_r", pen_gltexturemapping_t, float_to_string( GL_R ) );
+  declareStandardConstant( pen_gl_q_t, "pen.gl_q", pen_gltexturemapping_t, float_to_string( GL_Q ) );
+  declareStandardConstant( pen_gl_texture_gen_r_t, "pen.gl_texture_gen_r", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_GEN_R ) );
+  declareStandardConstant( pen_gl_texture_gen_q_t, "pen.gl_texture_gen_q", pen_gltexturemapping_t, float_to_string( GL_TEXTURE_GEN_Q ) );
+
+  declareIdent( pen_glutility_t, "pen.glutility", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_vendor_t, "pen.gl_vendor", pen_glutility_t, float_to_string( GL_VENDOR ) );
+  declareStandardConstant( pen_gl_renderer_t, "pen.gl_renderer", pen_glutility_t, float_to_string( GL_RENDERER ) );
+  declareStandardConstant( pen_gl_version_t, "pen.gl_version", pen_glutility_t, float_to_string( GL_VERSION ) );
+  declareStandardConstant( pen_gl_extensions_t, "pen.gl_extensions", pen_glutility_t, float_to_string( GL_EXTENSIONS ) );
+
+  declareIdent( pen_glerrors_t, "pen.glerrors", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_no_error_t, "pen.gl_no_error", pen_glerrors_t, float_to_string( GL_NO_ERROR ) );
+  declareStandardConstant( pen_gl_invalid_enum_t, "pen.gl_invalid_enum", pen_glerrors_t, float_to_string( GL_INVALID_ENUM ) );
+  declareStandardConstant( pen_gl_invalid_value_t, "pen.gl_invalid_value", pen_glerrors_t, float_to_string( GL_INVALID_VALUE ) );
+  declareStandardConstant( pen_gl_invalid_operation_t, "pen.gl_invalid_operation", pen_glerrors_t, float_to_string( GL_INVALID_OPERATION ) );
+  declareStandardConstant( pen_gl_stack_overflow_t, "pen.gl_stack_overflow", pen_glerrors_t, float_to_string( GL_STACK_OVERFLOW ) );
+  declareStandardConstant( pen_gl_stack_underflow_t, "pen.gl_stack_underflow", pen_glerrors_t, float_to_string( GL_STACK_UNDERFLOW ) );
+  declareStandardConstant( pen_gl_out_of_memory_t, "pen.gl_out_of_memory", pen_glerrors_t, float_to_string( GL_OUT_OF_MEMORY ) );
+
+  declareIdent( pen_glpushbits_t, "pen.glpushbits", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_current_bit_t, "pen.gl_current_bit", pen_glpushbits_t, float_to_string( GL_CURRENT_BIT ) );
+  declareStandardConstant( pen_gl_point_bit_t, "pen.gl_point_bit", pen_glpushbits_t, float_to_string( GL_POINT_BIT ) );
+  declareStandardConstant( pen_gl_line_bit_t, "pen.gl_line_bit", pen_glpushbits_t, float_to_string( GL_LINE_BIT ) );
+  declareStandardConstant( pen_gl_polygon_bit_t, "pen.gl_polygon_bit", pen_glpushbits_t, float_to_string( GL_POLYGON_BIT ) );
+  declareStandardConstant( pen_gl_polygon_stipple_bit_t, "pen.gl_polygon_stipple_bit", pen_glpushbits_t, float_to_string( GL_POLYGON_STIPPLE_BIT ) );
+  declareStandardConstant( pen_gl_pixel_mode_bit_t, "pen.gl_pixel_mode_bit", pen_glpushbits_t, float_to_string( GL_PIXEL_MODE_BIT ) );
+  declareStandardConstant( pen_gl_lighting_bit_t, "pen.gl_lighting_bit", pen_glpushbits_t, float_to_string( GL_LIGHTING_BIT ) );
+  declareStandardConstant( pen_gl_fog_bit_t, "pen.gl_fog_bit", pen_glpushbits_t, float_to_string( GL_FOG_BIT ) );
+  declareStandardConstant( pen_gl_depth_buffer_bit_t, "pen.gl_depth_buffer_bit", pen_glpushbits_t, float_to_string( GL_DEPTH_BUFFER_BIT ) );
+  declareStandardConstant( pen_gl_accum_buffer_bit_t, "pen.gl_accum_buffer_bit", pen_glpushbits_t, float_to_string( GL_ACCUM_BUFFER_BIT ) );
+  declareStandardConstant( pen_gl_stencil_buffer_bit_t, "pen.gl_stencil_buffer_bit", pen_glpushbits_t, float_to_string( GL_STENCIL_BUFFER_BIT ) );
+  declareStandardConstant( pen_gl_viewport_bit_t, "pen.gl_viewport_bit", pen_glpushbits_t, float_to_string( GL_VIEWPORT_BIT ) );
+  declareStandardConstant( pen_gl_transform_bit_t, "pen.gl_transform_bit", pen_glpushbits_t, float_to_string( GL_TRANSFORM_BIT ) );
+  declareStandardConstant( pen_gl_enable_bit_t, "pen.gl_enable_bit", pen_glpushbits_t, float_to_string( GL_ENABLE_BIT ) );
+  declareStandardConstant( pen_gl_color_buffer_bit_t, "pen.gl_color_buffer_bit", pen_glpushbits_t, float_to_string( GL_COLOR_BUFFER_BIT ) );
+  declareStandardConstant( pen_gl_hint_bit_t, "pen.gl_hint_bit", pen_glpushbits_t, float_to_string( GL_HINT_BIT ) );
+  declareStandardConstant( pen_gl_eval_bit_t, "pen.gl_eval_bit", pen_glpushbits_t, float_to_string( GL_EVAL_BIT ) );
+  declareStandardConstant( pen_gl_list_bit_t, "pen.gl_list_bit", pen_glpushbits_t, float_to_string( GL_LIST_BIT ) );
+  declareStandardConstant( pen_gl_texture_bit_t, "pen.gl_texture_bit", pen_glpushbits_t, float_to_string( GL_TEXTURE_BIT ) );
+  declareStandardConstant( pen_gl_scissor_bit_t, "pen.gl_scissor_bit", pen_glpushbits_t, float_to_string( GL_SCISSOR_BIT ) );
+  declareStandardConstant( pen_gl_all_attrib_bits_t, "pen.gl_all_attrib_bits", pen_glpushbits_t, float_to_string( GL_ALL_ATTRIB_BITS ) );
+
+  declareIdent( pen_glenum_t, "pen.glenum", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_proxy_texture_1d_t, "pen.gl_proxy_texture_1d", pen_glenum_t, float_to_string( GL_PROXY_TEXTURE_1D ) );
+  declareStandardConstant( pen_gl_proxy_texture_2d_t, "pen.gl_proxy_texture_2d", pen_glenum_t, float_to_string( GL_PROXY_TEXTURE_2D ) );
+  declareStandardConstant( pen_gl_texture_priority_t, "pen.gl_texture_priority", pen_glenum_t, float_to_string( GL_TEXTURE_PRIORITY ) );
+  declareStandardConstant( pen_gl_texture_resident_t, "pen.gl_texture_resident", pen_glenum_t, float_to_string( GL_TEXTURE_RESIDENT ) );
+  declareStandardConstant( pen_gl_texture_binding_1d_t, "pen.gl_texture_binding_1d", pen_glenum_t, float_to_string( GL_TEXTURE_BINDING_1D ) );
+  declareStandardConstant( pen_gl_texture_binding_2d_t, "pen.gl_texture_binding_2d", pen_glenum_t, float_to_string( GL_TEXTURE_BINDING_2D ) );
+  declareStandardConstant( pen_gl_texture_internal_format_t, "pen.gl_texture_internal_format", pen_glenum_t, float_to_string( GL_TEXTURE_INTERNAL_FORMAT ) );
+  declareStandardConstant( pen_gl_alpha4_t, "pen.gl_alpha4", pen_glenum_t, float_to_string( GL_ALPHA4 ) );
+  declareStandardConstant( pen_gl_alpha8_t, "pen.gl_alpha8", pen_glenum_t, float_to_string( GL_ALPHA8 ) );
+  declareStandardConstant( pen_gl_alpha12_t, "pen.gl_alpha12", pen_glenum_t, float_to_string( GL_ALPHA12 ) );
+  declareStandardConstant( pen_gl_alpha16_t, "pen.gl_alpha16", pen_glenum_t, float_to_string( GL_ALPHA16 ) );
+  declareStandardConstant( pen_gl_luminance4_t, "pen.gl_luminance4", pen_glenum_t, float_to_string( GL_LUMINANCE4 ) );
+  declareStandardConstant( pen_gl_luminance8_t, "pen.gl_luminance8", pen_glenum_t, float_to_string( GL_LUMINANCE8 ) );
+  declareStandardConstant( pen_gl_luminance12_t, "pen.gl_luminance12", pen_glenum_t, float_to_string( GL_LUMINANCE12 ) );
+  declareStandardConstant( pen_gl_luminance16_t, "pen.gl_luminance16", pen_glenum_t, float_to_string( GL_LUMINANCE16 ) );
+  declareStandardConstant( pen_gl_luminance4_alpha4_t, "pen.gl_luminance4_alpha4", pen_glenum_t, float_to_string( GL_LUMINANCE4_ALPHA4 ) );
+  declareStandardConstant( pen_gl_luminance6_alpha2_t, "pen.gl_luminance6_alpha2", pen_glenum_t, float_to_string( GL_LUMINANCE6_ALPHA2 ) );
+  declareStandardConstant( pen_gl_luminance8_alpha8_t, "pen.gl_luminance8_alpha8", pen_glenum_t, float_to_string( GL_LUMINANCE8_ALPHA8 ) );
+  declareStandardConstant( pen_gl_luminance12_alpha4_t, "pen.gl_luminance12_alpha4", pen_glenum_t, float_to_string( GL_LUMINANCE12_ALPHA4 ) );
+  declareStandardConstant( pen_gl_luminance12_alpha12_t, "pen.gl_luminance12_alpha12", pen_glenum_t, float_to_string( GL_LUMINANCE12_ALPHA12 ) );
+  declareStandardConstant( pen_gl_luminance16_alpha16_t, "pen.gl_luminance16_alpha16", pen_glenum_t, float_to_string( GL_LUMINANCE16_ALPHA16 ) );
+  declareStandardConstant( pen_gl_intensity_t, "pen.gl_intensity", pen_glenum_t, float_to_string( GL_INTENSITY ) );
+  declareStandardConstant( pen_gl_intensity4_t, "pen.gl_intensity4", pen_glenum_t, float_to_string( GL_INTENSITY4 ) );
+  declareStandardConstant( pen_gl_intensity8_t, "pen.gl_intensity8", pen_glenum_t, float_to_string( GL_INTENSITY8 ) );
+  declareStandardConstant( pen_gl_intensity12_t, "pen.gl_intensity12", pen_glenum_t, float_to_string( GL_INTENSITY12 ) );
+  declareStandardConstant( pen_gl_intensity16_t, "pen.gl_intensity16", pen_glenum_t, float_to_string( GL_INTENSITY16 ) );
+  declareStandardConstant( pen_gl_r3_g3_b2_t, "pen.gl_r3_g3_b2", pen_glenum_t, float_to_string( GL_R3_G3_B2 ) );
+  declareStandardConstant( pen_gl_rgb4_t, "pen.gl_rgb4", pen_glenum_t, float_to_string( GL_RGB4 ) );
+  declareStandardConstant( pen_gl_rgb5_t, "pen.gl_rgb5", pen_glenum_t, float_to_string( GL_RGB5 ) );
+  declareStandardConstant( pen_gl_rgb8_t, "pen.gl_rgb8", pen_glenum_t, float_to_string( GL_RGB8 ) );
+  declareStandardConstant( pen_gl_rgb10_t, "pen.gl_rgb10", pen_glenum_t, float_to_string( GL_RGB10 ) );
+  declareStandardConstant( pen_gl_rgb12_t, "pen.gl_rgb12", pen_glenum_t, float_to_string( GL_RGB12 ) );
+  declareStandardConstant( pen_gl_rgb16_t, "pen.gl_rgb16", pen_glenum_t, float_to_string( GL_RGB16 ) );
+  declareStandardConstant( pen_gl_rgba2_t, "pen.gl_rgba2", pen_glenum_t, float_to_string( GL_RGBA2 ) );
+  declareStandardConstant( pen_gl_rgba4_t, "pen.gl_rgba4", pen_glenum_t, float_to_string( GL_RGBA4 ) );
+  declareStandardConstant( pen_gl_rgb5_a1_t, "pen.gl_rgb5_a1", pen_glenum_t, float_to_string( GL_RGB5_A1 ) );
+  declareStandardConstant( pen_gl_rgba8_t, "pen.gl_rgba8", pen_glenum_t, float_to_string( GL_RGBA8 ) );
+  declareStandardConstant( pen_gl_rgb10_a2_t, "pen.gl_rgb10_a2", pen_glenum_t, float_to_string( GL_RGB10_A2 ) );
+  declareStandardConstant( pen_gl_rgba12_t, "pen.gl_rgba12", pen_glenum_t, float_to_string( GL_RGBA12 ) );
+  declareStandardConstant( pen_gl_rgba16_t, "pen.gl_rgba16", pen_glenum_t, float_to_string( GL_RGBA16 ) );
+  declareStandardConstant( pen_gl_client_pixel_store_bit_t, "pen.gl_client_pixel_store_bit", pen_glenum_t, float_to_string( GL_CLIENT_PIXEL_STORE_BIT ) );
+  declareStandardConstant( pen_gl_client_vertex_array_bit_t, "pen.gl_client_vertex_array_bit", pen_glenum_t, float_to_string( GL_CLIENT_VERTEX_ARRAY_BIT ) );
+  declareStandardConstant( pen_gl_all_client_attrib_bits_t, "pen.gl_all_client_attrib_bits", pen_glenum_t, float_to_string( GL_ALL_CLIENT_ATTRIB_BITS ) );
+  declareStandardConstant( pen_gl_client_all_attrib_bits_t, "pen.gl_client_all_attrib_bits", pen_glenum_t, float_to_string( GL_CLIENT_ALL_ATTRIB_BITS ) );
+  declareStandardConstant( pen_gl_rescale_normal_t, "pen.gl_rescale_normal", pen_glenum_t, float_to_string( GL_RESCALE_NORMAL ) );
+  declareStandardConstant( pen_gl_clamp_to_edge_t, "pen.gl_clamp_to_edge", pen_glenum_t, float_to_string( GL_CLAMP_TO_EDGE ) );
+  declareStandardConstant( pen_gl_max_elements_vertices_t, "pen.gl_max_elements_vertices", pen_glenum_t, float_to_string( GL_MAX_ELEMENTS_VERTICES ) );
+  declareStandardConstant( pen_gl_max_elements_indices_t, "pen.gl_max_elements_indices", pen_glenum_t, float_to_string( GL_MAX_ELEMENTS_INDICES ) );
+  declareStandardConstant( pen_gl_bgr_t, "pen.gl_bgr", pen_glenum_t, float_to_string( GL_BGR ) );
+  declareStandardConstant( pen_gl_bgra_t, "pen.gl_bgra", pen_glenum_t, float_to_string( GL_BGRA ) );
+  declareStandardConstant( pen_gl_unsigned_byte_3_3_2_t, "pen.gl_unsigned_byte_3_3_2", pen_glenum_t, float_to_string( GL_UNSIGNED_BYTE_3_3_2 ) );
+  declareStandardConstant( pen_gl_unsigned_byte_2_3_3_rev_t, "pen.gl_unsigned_byte_2_3_3_rev", pen_glenum_t, float_to_string( GL_UNSIGNED_BYTE_2_3_3_REV ) );
+  declareStandardConstant( pen_gl_unsigned_short_5_6_5_t, "pen.gl_unsigned_short_5_6_5", pen_glenum_t, float_to_string( GL_UNSIGNED_SHORT_5_6_5 ) );
+  declareStandardConstant( pen_gl_unsigned_short_5_6_5_rev_t, "pen.gl_unsigned_short_5_6_5_rev", pen_glenum_t, float_to_string( GL_UNSIGNED_SHORT_5_6_5_REV ) );
+  declareStandardConstant( pen_gl_unsigned_short_4_4_4_4_t, "pen.gl_unsigned_short_4_4_4_4", pen_glenum_t, float_to_string( GL_UNSIGNED_SHORT_4_4_4_4 ) );
+  declareStandardConstant( pen_gl_unsigned_short_4_4_4_4_rev_t, "pen.gl_unsigned_short_4_4_4_4_rev", pen_glenum_t, float_to_string( GL_UNSIGNED_SHORT_4_4_4_4_REV ) );
+  declareStandardConstant( pen_gl_unsigned_short_5_5_5_1_t, "pen.gl_unsigned_short_5_5_5_1", pen_glenum_t, float_to_string( GL_UNSIGNED_SHORT_5_5_5_1 ) );
+  declareStandardConstant( pen_gl_unsigned_short_1_5_5_5_rev_t, "pen.gl_unsigned_short_1_5_5_5_rev", pen_glenum_t, float_to_string( GL_UNSIGNED_SHORT_1_5_5_5_REV ) );
+  declareStandardConstant( pen_gl_unsigned_int_8_8_8_8_t, "pen.gl_unsigned_int_8_8_8_8", pen_glenum_t, float_to_string( GL_UNSIGNED_INT_8_8_8_8 ) );
+  declareStandardConstant( pen_gl_unsigned_int_8_8_8_8_rev_t, "pen.gl_unsigned_int_8_8_8_8_rev", pen_glenum_t, float_to_string( GL_UNSIGNED_INT_8_8_8_8_REV ) );
+  declareStandardConstant( pen_gl_unsigned_int_10_10_10_2_t, "pen.gl_unsigned_int_10_10_10_2", pen_glenum_t, float_to_string( GL_UNSIGNED_INT_10_10_10_2 ) );
+  declareStandardConstant( pen_gl_unsigned_int_2_10_10_10_rev_t, "pen.gl_unsigned_int_2_10_10_10_rev", pen_glenum_t, float_to_string( GL_UNSIGNED_INT_2_10_10_10_REV ) );
+  declareStandardConstant( pen_gl_light_model_color_control_t, "pen.gl_light_model_color_control", pen_glenum_t, float_to_string( GL_LIGHT_MODEL_COLOR_CONTROL ) );
+  declareStandardConstant( pen_gl_single_color_t, "pen.gl_single_color", pen_glenum_t, float_to_string( GL_SINGLE_COLOR ) );
+  declareStandardConstant( pen_gl_separate_specular_color_t, "pen.gl_separate_specular_color", pen_glenum_t, float_to_string( GL_SEPARATE_SPECULAR_COLOR ) );
+  declareStandardConstant( pen_gl_texture_min_lod_t, "pen.gl_texture_min_lod", pen_glenum_t, float_to_string( GL_TEXTURE_MIN_LOD ) );
+  declareStandardConstant( pen_gl_texture_max_lod_t, "pen.gl_texture_max_lod", pen_glenum_t, float_to_string( GL_TEXTURE_MAX_LOD ) );
+  declareStandardConstant( pen_gl_texture_base_level_t, "pen.gl_texture_base_level", pen_glenum_t, float_to_string( GL_TEXTURE_BASE_LEVEL ) );
+  declareStandardConstant( pen_gl_texture_max_level_t, "pen.gl_texture_max_level", pen_glenum_t, float_to_string( GL_TEXTURE_MAX_LEVEL ) );
+  declareStandardConstant( pen_gl_smooth_point_size_range_t, "pen.gl_smooth_point_size_range", pen_glenum_t, float_to_string( GL_SMOOTH_POINT_SIZE_RANGE ) );
+  declareStandardConstant( pen_gl_smooth_point_size_granularity_t, "pen.gl_smooth_point_size_granularity", pen_glenum_t, float_to_string( GL_SMOOTH_POINT_SIZE_GRANULARITY ) );
+  declareStandardConstant( pen_gl_smooth_line_width_range_t, "pen.gl_smooth_line_width_range", pen_glenum_t, float_to_string( GL_SMOOTH_LINE_WIDTH_RANGE ) );
+  declareStandardConstant( pen_gl_smooth_line_width_granularity_t, "pen.gl_smooth_line_width_granularity", pen_glenum_t, float_to_string( GL_SMOOTH_LINE_WIDTH_GRANULARITY ) );
+  declareStandardConstant( pen_gl_aliased_point_size_range_t, "pen.gl_aliased_point_size_range", pen_glenum_t, float_to_string( GL_ALIASED_POINT_SIZE_RANGE ) );
+  declareStandardConstant( pen_gl_aliased_line_width_range_t, "pen.gl_aliased_line_width_range", pen_glenum_t, float_to_string( GL_ALIASED_LINE_WIDTH_RANGE ) );
+  declareStandardConstant( pen_gl_pack_skip_images_t, "pen.gl_pack_skip_images", pen_glenum_t, float_to_string( GL_PACK_SKIP_IMAGES ) );
+  declareStandardConstant( pen_gl_pack_image_height_t, "pen.gl_pack_image_height", pen_glenum_t, float_to_string( GL_PACK_IMAGE_HEIGHT ) );
+  declareStandardConstant( pen_gl_unpack_skip_images_t, "pen.gl_unpack_skip_images", pen_glenum_t, float_to_string( GL_UNPACK_SKIP_IMAGES ) );
+  declareStandardConstant( pen_gl_unpack_image_height_t, "pen.gl_unpack_image_height", pen_glenum_t, float_to_string( GL_UNPACK_IMAGE_HEIGHT ) );
+  declareStandardConstant( pen_gl_texture_3d_t, "pen.gl_texture_3d", pen_glenum_t, float_to_string( GL_TEXTURE_3D ) );
+  declareStandardConstant( pen_gl_proxy_texture_3d_t, "pen.gl_proxy_texture_3d", pen_glenum_t, float_to_string( GL_PROXY_TEXTURE_3D ) );
+  declareStandardConstant( pen_gl_texture_depth_t, "pen.gl_texture_depth", pen_glenum_t, float_to_string( GL_TEXTURE_DEPTH ) );
+  declareStandardConstant( pen_gl_texture_wrap_r_t, "pen.gl_texture_wrap_r", pen_glenum_t, float_to_string( GL_TEXTURE_WRAP_R ) );
+  declareStandardConstant( pen_gl_max_3d_texture_size_t, "pen.gl_max_3d_texture_size", pen_glenum_t, float_to_string( GL_MAX_3D_TEXTURE_SIZE ) );
+  declareStandardConstant( pen_gl_texture_binding_3d_t, "pen.gl_texture_binding_3d", pen_glenum_t, float_to_string( GL_TEXTURE_BINDING_3D ) );
+
+  declareIdent( pen_glarbmapping_t, "pen.glarbmapping", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_constant_color_t, "pen.gl_constant_color", pen_glarbmapping_t, float_to_string( GL_CONSTANT_COLOR ) );
+  declareStandardConstant( pen_gl_one_minus_constant_color_t, "pen.gl_one_minus_constant_color", pen_glarbmapping_t, float_to_string( GL_ONE_MINUS_CONSTANT_COLOR ) );
+  declareStandardConstant( pen_gl_constant_alpha_t, "pen.gl_constant_alpha", pen_glarbmapping_t, float_to_string( GL_CONSTANT_ALPHA ) );
+  declareStandardConstant( pen_gl_one_minus_constant_alpha_t, "pen.gl_one_minus_constant_alpha", pen_glarbmapping_t, float_to_string( GL_ONE_MINUS_CONSTANT_ALPHA ) );
+  declareStandardConstant( pen_gl_color_table_t, "pen.gl_color_table", pen_glarbmapping_t, float_to_string( GL_COLOR_TABLE ) );
+  declareStandardConstant( pen_gl_post_convolution_color_table_t, "pen.gl_post_convolution_color_table", pen_glarbmapping_t, float_to_string( GL_POST_CONVOLUTION_COLOR_TABLE ) );
+  declareStandardConstant( pen_gl_post_color_matrix_color_table_t, "pen.gl_post_color_matrix_color_table", pen_glarbmapping_t, float_to_string( GL_POST_COLOR_MATRIX_COLOR_TABLE ) );
+  declareStandardConstant( pen_gl_proxy_color_table_t, "pen.gl_proxy_color_table", pen_glarbmapping_t, float_to_string( GL_PROXY_COLOR_TABLE ) );
+  declareStandardConstant( pen_gl_proxy_post_convolution_color_table_t, "pen.gl_proxy_post_convolution_color_table", pen_glarbmapping_t, float_to_string( GL_PROXY_POST_CONVOLUTION_COLOR_TABLE ) );
+  declareStandardConstant( pen_gl_proxy_post_color_matrix_color_table_t, "pen.gl_proxy_post_color_matrix_color_table", pen_glarbmapping_t, float_to_string( GL_PROXY_POST_COLOR_MATRIX_COLOR_TABLE ) );
+  declareStandardConstant( pen_gl_color_table_scale_t, "pen.gl_color_table_scale", pen_glarbmapping_t, float_to_string( GL_COLOR_TABLE_SCALE ) );
+  declareStandardConstant( pen_gl_color_table_bias_t, "pen.gl_color_table_bias", pen_glarbmapping_t, float_to_string( GL_COLOR_TABLE_BIAS ) );
+  declareStandardConstant( pen_gl_color_table_format_t, "pen.gl_color_table_format", pen_glarbmapping_t, float_to_string( GL_COLOR_TABLE_FORMAT ) );
+  declareStandardConstant( pen_gl_color_table_width_t, "pen.gl_color_table_width", pen_glarbmapping_t, float_to_string( GL_COLOR_TABLE_WIDTH ) );
+  declareStandardConstant( pen_gl_color_table_red_size_t, "pen.gl_color_table_red_size", pen_glarbmapping_t, float_to_string( GL_COLOR_TABLE_RED_SIZE ) );
+  declareStandardConstant( pen_gl_color_table_green_size_t, "pen.gl_color_table_green_size", pen_glarbmapping_t, float_to_string( GL_COLOR_TABLE_GREEN_SIZE ) );
+  declareStandardConstant( pen_gl_color_table_blue_size_t, "pen.gl_color_table_blue_size", pen_glarbmapping_t, float_to_string( GL_COLOR_TABLE_BLUE_SIZE ) );
+  declareStandardConstant( pen_gl_color_table_alpha_size_t, "pen.gl_color_table_alpha_size", pen_glarbmapping_t, float_to_string( GL_COLOR_TABLE_ALPHA_SIZE ) );
+  declareStandardConstant( pen_gl_color_table_luminance_size_t, "pen.gl_color_table_luminance_size", pen_glarbmapping_t, float_to_string( GL_COLOR_TABLE_LUMINANCE_SIZE ) );
+  declareStandardConstant( pen_gl_color_table_intensity_size_t, "pen.gl_color_table_intensity_size", pen_glarbmapping_t, float_to_string( GL_COLOR_TABLE_INTENSITY_SIZE ) );
+  declareStandardConstant( pen_gl_convolution_1d_t, "pen.gl_convolution_1d", pen_glarbmapping_t, float_to_string( GL_CONVOLUTION_1D ) );
+  declareStandardConstant( pen_gl_convolution_2d_t, "pen.gl_convolution_2d", pen_glarbmapping_t, float_to_string( GL_CONVOLUTION_2D ) );
+  declareStandardConstant( pen_gl_separable_2d_t, "pen.gl_separable_2d", pen_glarbmapping_t, float_to_string( GL_SEPARABLE_2D ) );
+  declareStandardConstant( pen_gl_convolution_border_mode_t, "pen.gl_convolution_border_mode", pen_glarbmapping_t, float_to_string( GL_CONVOLUTION_BORDER_MODE ) );
+  declareStandardConstant( pen_gl_convolution_filter_scale_t, "pen.gl_convolution_filter_scale", pen_glarbmapping_t, float_to_string( GL_CONVOLUTION_FILTER_SCALE ) );
+  declareStandardConstant( pen_gl_convolution_filter_bias_t, "pen.gl_convolution_filter_bias", pen_glarbmapping_t, float_to_string( GL_CONVOLUTION_FILTER_BIAS ) );
+  declareStandardConstant( pen_gl_reduce_t, "pen.gl_reduce", pen_glarbmapping_t, float_to_string( GL_REDUCE ) );
+  declareStandardConstant( pen_gl_convolution_format_t, "pen.gl_convolution_format", pen_glarbmapping_t, float_to_string( GL_CONVOLUTION_FORMAT ) );
+  declareStandardConstant( pen_gl_convolution_width_t, "pen.gl_convolution_width", pen_glarbmapping_t, float_to_string( GL_CONVOLUTION_WIDTH ) );
+  declareStandardConstant( pen_gl_convolution_height_t, "pen.gl_convolution_height", pen_glarbmapping_t, float_to_string( GL_CONVOLUTION_HEIGHT ) );
+  declareStandardConstant( pen_gl_max_convolution_width_t, "pen.gl_max_convolution_width", pen_glarbmapping_t, float_to_string( GL_MAX_CONVOLUTION_WIDTH ) );
+  declareStandardConstant( pen_gl_max_convolution_height_t, "pen.gl_max_convolution_height", pen_glarbmapping_t, float_to_string( GL_MAX_CONVOLUTION_HEIGHT ) );
+  declareStandardConstant( pen_gl_post_convolution_red_scale_t, "pen.gl_post_convolution_red_scale", pen_glarbmapping_t, float_to_string( GL_POST_CONVOLUTION_RED_SCALE ) );
+  declareStandardConstant( pen_gl_post_convolution_green_scale_t, "pen.gl_post_convolution_green_scale", pen_glarbmapping_t, float_to_string( GL_POST_CONVOLUTION_GREEN_SCALE ) );
+  declareStandardConstant( pen_gl_post_convolution_blue_scale_t, "pen.gl_post_convolution_blue_scale", pen_glarbmapping_t, float_to_string( GL_POST_CONVOLUTION_BLUE_SCALE ) );
+  declareStandardConstant( pen_gl_post_convolution_alpha_scale_t, "pen.gl_post_convolution_alpha_scale", pen_glarbmapping_t, float_to_string( GL_POST_CONVOLUTION_ALPHA_SCALE ) );
+  declareStandardConstant( pen_gl_post_convolution_red_bias_t, "pen.gl_post_convolution_red_bias", pen_glarbmapping_t, float_to_string( GL_POST_CONVOLUTION_RED_BIAS ) );
+  declareStandardConstant( pen_gl_post_convolution_green_bias_t, "pen.gl_post_convolution_green_bias", pen_glarbmapping_t, float_to_string( GL_POST_CONVOLUTION_GREEN_BIAS ) );
+  declareStandardConstant( pen_gl_post_convolution_blue_bias_t, "pen.gl_post_convolution_blue_bias", pen_glarbmapping_t, float_to_string( GL_POST_CONVOLUTION_BLUE_BIAS ) );
+  declareStandardConstant( pen_gl_post_convolution_alpha_bias_t, "pen.gl_post_convolution_alpha_bias", pen_glarbmapping_t, float_to_string( GL_POST_CONVOLUTION_ALPHA_BIAS ) );
+  declareStandardConstant( pen_gl_constant_border_t, "pen.gl_constant_border", pen_glarbmapping_t, float_to_string( GL_CONSTANT_BORDER ) );
+  declareStandardConstant( pen_gl_replicate_border_t, "pen.gl_replicate_border", pen_glarbmapping_t, float_to_string( GL_REPLICATE_BORDER ) );
+  declareStandardConstant( pen_gl_convolution_border_color_t, "pen.gl_convolution_border_color", pen_glarbmapping_t, float_to_string( GL_CONVOLUTION_BORDER_COLOR ) );
+  declareStandardConstant( pen_gl_color_matrix_t, "pen.gl_color_matrix", pen_glarbmapping_t, float_to_string( GL_COLOR_MATRIX ) );
+  declareStandardConstant( pen_gl_color_matrix_stack_depth_t, "pen.gl_color_matrix_stack_depth", pen_glarbmapping_t, float_to_string( GL_COLOR_MATRIX_STACK_DEPTH ) );
+  declareStandardConstant( pen_gl_max_color_matrix_stack_depth_t, "pen.gl_max_color_matrix_stack_depth", pen_glarbmapping_t, float_to_string( GL_MAX_COLOR_MATRIX_STACK_DEPTH ) );
+  declareStandardConstant( pen_gl_post_color_matrix_red_scale_t, "pen.gl_post_color_matrix_red_scale", pen_glarbmapping_t, float_to_string( GL_POST_COLOR_MATRIX_RED_SCALE ) );
+  declareStandardConstant( pen_gl_post_color_matrix_green_scale_t, "pen.gl_post_color_matrix_green_scale", pen_glarbmapping_t, float_to_string( GL_POST_COLOR_MATRIX_GREEN_SCALE ) );
+  declareStandardConstant( pen_gl_post_color_matrix_blue_scale_t, "pen.gl_post_color_matrix_blue_scale", pen_glarbmapping_t, float_to_string( GL_POST_COLOR_MATRIX_BLUE_SCALE ) );
+  declareStandardConstant( pen_gl_post_color_matrix_alpha_scale_t, "pen.gl_post_color_matrix_alpha_scale", pen_glarbmapping_t, float_to_string( GL_POST_COLOR_MATRIX_ALPHA_SCALE ) );
+  declareStandardConstant( pen_gl_post_color_matrix_red_bias_t, "pen.gl_post_color_matrix_red_bias", pen_glarbmapping_t, float_to_string( GL_POST_COLOR_MATRIX_RED_BIAS ) );
+  declareStandardConstant( pen_gl_post_color_matrix_green_bias_t, "pen.gl_post_color_matrix_green_bias", pen_glarbmapping_t, float_to_string( GL_POST_COLOR_MATRIX_GREEN_BIAS ) );
+  declareStandardConstant( pen_gl_post_color_matrix_blue_bias_t, "pen.gl_post_color_matrix_blue_bias", pen_glarbmapping_t, float_to_string( GL_POST_COLOR_MATRIX_BLUE_BIAS ) );
+  declareStandardConstant( pen_gl_post_color_matrix_alpha_bias_t, "pen.gl_post_color_matrix_alpha_bias", pen_glarbmapping_t, float_to_string( GL_POST_COLOR_MATRIX_ALPHA_BIAS ) );
+  declareStandardConstant( pen_gl_histogram_t, "pen.gl_histogram", pen_glarbmapping_t, float_to_string( GL_HISTOGRAM ) );
+  declareStandardConstant( pen_gl_proxy_histogram_t, "pen.gl_proxy_histogram", pen_glarbmapping_t, float_to_string( GL_PROXY_HISTOGRAM ) );
+  declareStandardConstant( pen_gl_histogram_width_t, "pen.gl_histogram_width", pen_glarbmapping_t, float_to_string( GL_HISTOGRAM_WIDTH ) );
+  declareStandardConstant( pen_gl_histogram_format_t, "pen.gl_histogram_format", pen_glarbmapping_t, float_to_string( GL_HISTOGRAM_FORMAT ) );
+  declareStandardConstant( pen_gl_histogram_red_size_t, "pen.gl_histogram_red_size", pen_glarbmapping_t, float_to_string( GL_HISTOGRAM_RED_SIZE ) );
+  declareStandardConstant( pen_gl_histogram_green_size_t, "pen.gl_histogram_green_size", pen_glarbmapping_t, float_to_string( GL_HISTOGRAM_GREEN_SIZE ) );
+  declareStandardConstant( pen_gl_histogram_blue_size_t, "pen.gl_histogram_blue_size", pen_glarbmapping_t, float_to_string( GL_HISTOGRAM_BLUE_SIZE ) );
+  declareStandardConstant( pen_gl_histogram_alpha_size_t, "pen.gl_histogram_alpha_size", pen_glarbmapping_t, float_to_string( GL_HISTOGRAM_ALPHA_SIZE ) );
+  declareStandardConstant( pen_gl_histogram_luminance_size_t, "pen.gl_histogram_luminance_size", pen_glarbmapping_t, float_to_string( GL_HISTOGRAM_LUMINANCE_SIZE ) );
+  declareStandardConstant( pen_gl_histogram_sink_t, "pen.gl_histogram_sink", pen_glarbmapping_t, float_to_string( GL_HISTOGRAM_SINK ) );
+  declareStandardConstant( pen_gl_minmax_t, "pen.gl_minmax", pen_glarbmapping_t, float_to_string( GL_MINMAX ) );
+  declareStandardConstant( pen_gl_minmax_format_t, "pen.gl_minmax_format", pen_glarbmapping_t, float_to_string( GL_MINMAX_FORMAT ) );
+  declareStandardConstant( pen_gl_minmax_sink_t, "pen.gl_minmax_sink", pen_glarbmapping_t, float_to_string( GL_MINMAX_SINK ) );
+  declareStandardConstant( pen_gl_table_too_large_t, "pen.gl_table_too_large", pen_glarbmapping_t, float_to_string( GL_TABLE_TOO_LARGE ) );
+  declareStandardConstant( pen_gl_blend_equation_t, "pen.gl_blend_equation", pen_glarbmapping_t, float_to_string( GL_BLEND_EQUATION ) );
+  declareStandardConstant( pen_gl_min_t, "pen.gl_min", pen_glarbmapping_t, float_to_string( GL_MIN ) );
+  declareStandardConstant( pen_gl_max_t, "pen.gl_max", pen_glarbmapping_t, float_to_string( GL_MAX ) );
+  declareStandardConstant( pen_gl_func_add_t, "pen.gl_func_add", pen_glarbmapping_t, float_to_string( GL_FUNC_ADD ) );
+  declareStandardConstant( pen_gl_func_subtract_t, "pen.gl_func_subtract", pen_glarbmapping_t, float_to_string( GL_FUNC_SUBTRACT ) );
+  declareStandardConstant( pen_gl_func_reverse_subtract_t, "pen.gl_func_reverse_subtract", pen_glarbmapping_t, float_to_string( GL_FUNC_REVERSE_SUBTRACT ) );
+  declareStandardConstant( pen_gl_blend_color_t, "pen.gl_blend_color", pen_glarbmapping_t, float_to_string( GL_BLEND_COLOR ) );
+
+  declareIdent( pen_glmultitexture_t, "pen.glmultitexture", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_texture0_t, "pen.gl_texture0", pen_glmultitexture_t, float_to_string( GL_TEXTURE0 ) );
+  declareStandardConstant( pen_gl_texture1_t, "pen.gl_texture1", pen_glmultitexture_t, float_to_string( GL_TEXTURE1 ) );
+  declareStandardConstant( pen_gl_texture2_t, "pen.gl_texture2", pen_glmultitexture_t, float_to_string( GL_TEXTURE2 ) );
+  declareStandardConstant( pen_gl_texture3_t, "pen.gl_texture3", pen_glmultitexture_t, float_to_string( GL_TEXTURE3 ) );
+  declareStandardConstant( pen_gl_texture4_t, "pen.gl_texture4", pen_glmultitexture_t, float_to_string( GL_TEXTURE4 ) );
+  declareStandardConstant( pen_gl_texture5_t, "pen.gl_texture5", pen_glmultitexture_t, float_to_string( GL_TEXTURE5 ) );
+  declareStandardConstant( pen_gl_texture6_t, "pen.gl_texture6", pen_glmultitexture_t, float_to_string( GL_TEXTURE6 ) );
+  declareStandardConstant( pen_gl_texture7_t, "pen.gl_texture7", pen_glmultitexture_t, float_to_string( GL_TEXTURE7 ) );
+  declareStandardConstant( pen_gl_texture8_t, "pen.gl_texture8", pen_glmultitexture_t, float_to_string( GL_TEXTURE8 ) );
+  declareStandardConstant( pen_gl_texture9_t, "pen.gl_texture9", pen_glmultitexture_t, float_to_string( GL_TEXTURE9 ) );
+  declareStandardConstant( pen_gl_texture10_t, "pen.gl_texture10", pen_glmultitexture_t, float_to_string( GL_TEXTURE10 ) );
+  declareStandardConstant( pen_gl_texture11_t, "pen.gl_texture11", pen_glmultitexture_t, float_to_string( GL_TEXTURE11 ) );
+  declareStandardConstant( pen_gl_texture12_t, "pen.gl_texture12", pen_glmultitexture_t, float_to_string( GL_TEXTURE12 ) );
+  declareStandardConstant( pen_gl_texture13_t, "pen.gl_texture13", pen_glmultitexture_t, float_to_string( GL_TEXTURE13 ) );
+  declareStandardConstant( pen_gl_texture14_t, "pen.gl_texture14", pen_glmultitexture_t, float_to_string( GL_TEXTURE14 ) );
+  declareStandardConstant( pen_gl_texture15_t, "pen.gl_texture15", pen_glmultitexture_t, float_to_string( GL_TEXTURE15 ) );
+  declareStandardConstant( pen_gl_texture16_t, "pen.gl_texture16", pen_glmultitexture_t, float_to_string( GL_TEXTURE16 ) );
+  declareStandardConstant( pen_gl_texture17_t, "pen.gl_texture17", pen_glmultitexture_t, float_to_string( GL_TEXTURE17 ) );
+  declareStandardConstant( pen_gl_texture18_t, "pen.gl_texture18", pen_glmultitexture_t, float_to_string( GL_TEXTURE18 ) );
+  declareStandardConstant( pen_gl_texture19_t, "pen.gl_texture19", pen_glmultitexture_t, float_to_string( GL_TEXTURE19 ) );
+  declareStandardConstant( pen_gl_texture20_t, "pen.gl_texture20", pen_glmultitexture_t, float_to_string( GL_TEXTURE20 ) );
+  declareStandardConstant( pen_gl_texture21_t, "pen.gl_texture21", pen_glmultitexture_t, float_to_string( GL_TEXTURE21 ) );
+  declareStandardConstant( pen_gl_texture22_t, "pen.gl_texture22", pen_glmultitexture_t, float_to_string( GL_TEXTURE22 ) );
+  declareStandardConstant( pen_gl_texture23_t, "pen.gl_texture23", pen_glmultitexture_t, float_to_string( GL_TEXTURE23 ) );
+  declareStandardConstant( pen_gl_texture24_t, "pen.gl_texture24", pen_glmultitexture_t, float_to_string( GL_TEXTURE24 ) );
+  declareStandardConstant( pen_gl_texture25_t, "pen.gl_texture25", pen_glmultitexture_t, float_to_string( GL_TEXTURE25 ) );
+  declareStandardConstant( pen_gl_texture26_t, "pen.gl_texture26", pen_glmultitexture_t, float_to_string( GL_TEXTURE26 ) );
+  declareStandardConstant( pen_gl_texture27_t, "pen.gl_texture27", pen_glmultitexture_t, float_to_string( GL_TEXTURE27 ) );
+  declareStandardConstant( pen_gl_texture28_t, "pen.gl_texture28", pen_glmultitexture_t, float_to_string( GL_TEXTURE28 ) );
+  declareStandardConstant( pen_gl_texture29_t, "pen.gl_texture29", pen_glmultitexture_t, float_to_string( GL_TEXTURE29 ) );
+  declareStandardConstant( pen_gl_texture30_t, "pen.gl_texture30", pen_glmultitexture_t, float_to_string( GL_TEXTURE30 ) );
+  declareStandardConstant( pen_gl_texture31_t, "pen.gl_texture31", pen_glmultitexture_t, float_to_string( GL_TEXTURE31 ) );
+  declareStandardConstant( pen_gl_active_texture_t, "pen.gl_active_texture", pen_glmultitexture_t, float_to_string( GL_ACTIVE_TEXTURE ) );
+  declareStandardConstant( pen_gl_client_active_texture_t, "pen.gl_client_active_texture", pen_glmultitexture_t, float_to_string( GL_CLIENT_ACTIVE_TEXTURE ) );
+  declareStandardConstant( pen_gl_max_texture_units_t, "pen.gl_max_texture_units", pen_glmultitexture_t, float_to_string( GL_MAX_TEXTURE_UNITS ) );
+
+  declareIdent( pen_gltexturecubemap_t, "pen.gltexturecubemap", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_normal_map_t, "pen.gl_normal_map", pen_gltexturecubemap_t, float_to_string( GL_NORMAL_MAP ) );
+  declareStandardConstant( pen_gl_reflection_map_t, "pen.gl_reflection_map", pen_gltexturecubemap_t, float_to_string( GL_REFLECTION_MAP ) );
+  declareStandardConstant( pen_gl_texture_cube_map_t, "pen.gl_texture_cube_map", pen_gltexturecubemap_t, float_to_string( GL_TEXTURE_CUBE_MAP ) );
+  declareStandardConstant( pen_gl_texture_binding_cube_map_t, "pen.gl_texture_binding_cube_map", pen_gltexturecubemap_t, float_to_string( GL_TEXTURE_BINDING_CUBE_MAP ) );
+  declareStandardConstant( pen_gl_texture_cube_map_positive_x_t, "pen.gl_texture_cube_map_positive_x", pen_gltexturecubemap_t, float_to_string( GL_TEXTURE_CUBE_MAP_POSITIVE_X ) );
+  declareStandardConstant( pen_gl_texture_cube_map_negative_x_t, "pen.gl_texture_cube_map_negative_x", pen_gltexturecubemap_t, float_to_string( GL_TEXTURE_CUBE_MAP_NEGATIVE_X ) );
+  declareStandardConstant( pen_gl_texture_cube_map_positive_y_t, "pen.gl_texture_cube_map_positive_y", pen_gltexturecubemap_t, float_to_string( GL_TEXTURE_CUBE_MAP_POSITIVE_Y ) );
+  declareStandardConstant( pen_gl_texture_cube_map_negative_y_t, "pen.gl_texture_cube_map_negative_y", pen_gltexturecubemap_t, float_to_string( GL_TEXTURE_CUBE_MAP_NEGATIVE_Y ) );
+  declareStandardConstant( pen_gl_texture_cube_map_positive_z_t, "pen.gl_texture_cube_map_positive_z", pen_gltexturecubemap_t, float_to_string( GL_TEXTURE_CUBE_MAP_POSITIVE_Z ) );
+  declareStandardConstant( pen_gl_texture_cube_map_negative_z_t, "pen.gl_texture_cube_map_negative_z", pen_gltexturecubemap_t, float_to_string( GL_TEXTURE_CUBE_MAP_NEGATIVE_Z ) );
+  declareStandardConstant( pen_gl_proxy_texture_cube_map_t, "pen.gl_proxy_texture_cube_map", pen_gltexturecubemap_t, float_to_string( GL_PROXY_TEXTURE_CUBE_MAP ) );
+  declareStandardConstant( pen_gl_max_cube_map_texture_size_t, "pen.gl_max_cube_map_texture_size", pen_gltexturecubemap_t, float_to_string( GL_MAX_CUBE_MAP_TEXTURE_SIZE ) );
+
+  declareIdent( pen_gltexturecomp_t, "pen.gltexturecomp", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_compressed_alpha_t, "pen.gl_compressed_alpha", pen_gltexturecomp_t, float_to_string( GL_COMPRESSED_ALPHA ) );
+  declareStandardConstant( pen_gl_compressed_luminance_t, "pen.gl_compressed_luminance", pen_gltexturecomp_t, float_to_string( GL_COMPRESSED_LUMINANCE ) );
+  declareStandardConstant( pen_gl_compressed_luminance_alpha_t, "pen.gl_compressed_luminance_alpha", pen_gltexturecomp_t, float_to_string( GL_COMPRESSED_LUMINANCE_ALPHA ) );
+  declareStandardConstant( pen_gl_compressed_intensity_t, "pen.gl_compressed_intensity", pen_gltexturecomp_t, float_to_string( GL_COMPRESSED_INTENSITY ) );
+  declareStandardConstant( pen_gl_compressed_rgb_t, "pen.gl_compressed_rgb", pen_gltexturecomp_t, float_to_string( GL_COMPRESSED_RGB ) );
+  declareStandardConstant( pen_gl_compressed_rgba_t, "pen.gl_compressed_rgba", pen_gltexturecomp_t, float_to_string( GL_COMPRESSED_RGBA ) );
+  declareStandardConstant( pen_gl_texture_compression_hint_t, "pen.gl_texture_compression_hint", pen_gltexturecomp_t, float_to_string( GL_TEXTURE_COMPRESSION_HINT ) );
+  declareStandardConstant( pen_gl_texture_compressed_image_size_t, "pen.gl_texture_compressed_image_size", pen_gltexturecomp_t, float_to_string( GL_TEXTURE_COMPRESSED_IMAGE_SIZE ) );
+  declareStandardConstant( pen_gl_texture_compressed_t, "pen.gl_texture_compressed", pen_gltexturecomp_t, float_to_string( GL_TEXTURE_COMPRESSED ) );
+  declareStandardConstant( pen_gl_num_compressed_texture_formats_t, "pen.gl_num_compressed_texture_formats", pen_gltexturecomp_t, float_to_string( GL_NUM_COMPRESSED_TEXTURE_FORMATS ) );
+  declareStandardConstant( pen_gl_compressed_texture_formats_t, "pen.gl_compressed_texture_formats", pen_gltexturecomp_t, float_to_string( GL_COMPRESSED_TEXTURE_FORMATS ) );
+
+  declareIdent( pen_glmultisample_t, "pen.glmultisample", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_multisample_t, "pen.gl_multisample", pen_glmultisample_t, float_to_string( GL_MULTISAMPLE ) );
+  declareStandardConstant( pen_gl_sample_alpha_to_coverage_t, "pen.gl_sample_alpha_to_coverage", pen_glmultisample_t, float_to_string( GL_SAMPLE_ALPHA_TO_COVERAGE ) );
+  declareStandardConstant( pen_gl_sample_alpha_to_one_t, "pen.gl_sample_alpha_to_one", pen_glmultisample_t, float_to_string( GL_SAMPLE_ALPHA_TO_ONE ) );
+  declareStandardConstant( pen_gl_sample_coverage_t, "pen.gl_sample_coverage", pen_glmultisample_t, float_to_string( GL_SAMPLE_COVERAGE ) );
+  declareStandardConstant( pen_gl_sample_buffers_t, "pen.gl_sample_buffers", pen_glmultisample_t, float_to_string( GL_SAMPLE_BUFFERS ) );
+  declareStandardConstant( pen_gl_samples_t, "pen.gl_samples", pen_glmultisample_t, float_to_string( GL_SAMPLES ) );
+  declareStandardConstant( pen_gl_sample_coverage_value_t, "pen.gl_sample_coverage_value", pen_glmultisample_t, float_to_string( GL_SAMPLE_COVERAGE_VALUE ) );
+  declareStandardConstant( pen_gl_sample_coverage_invert_t, "pen.gl_sample_coverage_invert", pen_glmultisample_t, float_to_string( GL_SAMPLE_COVERAGE_INVERT ) );
+
+  declareIdent( pen_gluint_t, "pen.gluint", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_multisample_bit_t, "pen.gl_multisample_bit", pen_gluint_t, float_to_string( GL_MULTISAMPLE_BIT ) );
+
+  declareIdent( pen_gltransposemat_t, "pen.gltransposemat", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_transpose_modelview_matrix_t, "pen.gl_transpose_modelview_matrix", pen_gltransposemat_t, float_to_string( GL_TRANSPOSE_MODELVIEW_MATRIX ) );
+  declareStandardConstant( pen_gl_transpose_projection_matrix_t, "pen.gl_transpose_projection_matrix", pen_gltransposemat_t, float_to_string( GL_TRANSPOSE_PROJECTION_MATRIX ) );
+  declareStandardConstant( pen_gl_transpose_texture_matrix_t, "pen.gl_transpose_texture_matrix", pen_gltransposemat_t, float_to_string( GL_TRANSPOSE_TEXTURE_MATRIX ) );
+  declareStandardConstant( pen_gl_transpose_color_matrix_t, "pen.gl_transpose_color_matrix", pen_gltransposemat_t, float_to_string( GL_TRANSPOSE_COLOR_MATRIX ) );
+
+  declareIdent( pen_gltextureenvcomb_t, "pen.gltextureenvcomb", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_combine_t, "pen.gl_combine", pen_gltextureenvcomb_t, float_to_string( GL_COMBINE ) );
+  declareStandardConstant( pen_gl_combine_rgb_t, "pen.gl_combine_rgb", pen_gltextureenvcomb_t, float_to_string( GL_COMBINE_RGB ) );
+  declareStandardConstant( pen_gl_combine_alpha_t, "pen.gl_combine_alpha", pen_gltextureenvcomb_t, float_to_string( GL_COMBINE_ALPHA ) );
+  declareStandardConstant( pen_gl_source0_rgb_t, "pen.gl_source0_rgb", pen_gltextureenvcomb_t, float_to_string( GL_SOURCE0_RGB ) );
+  declareStandardConstant( pen_gl_source1_rgb_t, "pen.gl_source1_rgb", pen_gltextureenvcomb_t, float_to_string( GL_SOURCE1_RGB ) );
+  declareStandardConstant( pen_gl_source2_rgb_t, "pen.gl_source2_rgb", pen_gltextureenvcomb_t, float_to_string( GL_SOURCE2_RGB ) );
+  declareStandardConstant( pen_gl_source0_alpha_t, "pen.gl_source0_alpha", pen_gltextureenvcomb_t, float_to_string( GL_SOURCE0_ALPHA ) );
+  declareStandardConstant( pen_gl_source1_alpha_t, "pen.gl_source1_alpha", pen_gltextureenvcomb_t, float_to_string( GL_SOURCE1_ALPHA ) );
+  declareStandardConstant( pen_gl_source2_alpha_t, "pen.gl_source2_alpha", pen_gltextureenvcomb_t, float_to_string( GL_SOURCE2_ALPHA ) );
+  declareStandardConstant( pen_gl_operand0_rgb_t, "pen.gl_operand0_rgb", pen_gltextureenvcomb_t, float_to_string( GL_OPERAND0_RGB ) );
+  declareStandardConstant( pen_gl_operand1_rgb_t, "pen.gl_operand1_rgb", pen_gltextureenvcomb_t, float_to_string( GL_OPERAND1_RGB ) );
+  declareStandardConstant( pen_gl_operand2_rgb_t, "pen.gl_operand2_rgb", pen_gltextureenvcomb_t, float_to_string( GL_OPERAND2_RGB ) );
+  declareStandardConstant( pen_gl_operand0_alpha_t, "pen.gl_operand0_alpha", pen_gltextureenvcomb_t, float_to_string( GL_OPERAND0_ALPHA ) );
+  declareStandardConstant( pen_gl_operand1_alpha_t, "pen.gl_operand1_alpha", pen_gltextureenvcomb_t, float_to_string( GL_OPERAND1_ALPHA ) );
+  declareStandardConstant( pen_gl_operand2_alpha_t, "pen.gl_operand2_alpha", pen_gltextureenvcomb_t, float_to_string( GL_OPERAND2_ALPHA ) );
+  declareStandardConstant( pen_gl_rgb_scale_t, "pen.gl_rgb_scale", pen_gltextureenvcomb_t, float_to_string( GL_RGB_SCALE ) );
+  declareStandardConstant( pen_gl_add_signed_t, "pen.gl_add_signed", pen_gltextureenvcomb_t, float_to_string( GL_ADD_SIGNED ) );
+  declareStandardConstant( pen_gl_interpolate_t, "pen.gl_interpolate", pen_gltextureenvcomb_t, float_to_string( GL_INTERPOLATE ) );
+  declareStandardConstant( pen_gl_subtract_t, "pen.gl_subtract", pen_gltextureenvcomb_t, float_to_string( GL_SUBTRACT ) );
+  declareStandardConstant( pen_gl_constant_t, "pen.gl_constant", pen_gltextureenvcomb_t, float_to_string( GL_CONSTANT ) );
+  declareStandardConstant( pen_gl_primary_color_t, "pen.gl_primary_color", pen_gltextureenvcomb_t, float_to_string( GL_PRIMARY_COLOR ) );
+  declareStandardConstant( pen_gl_previous_t, "pen.gl_previous", pen_gltextureenvcomb_t, float_to_string( GL_PREVIOUS ) );
+
+  declareIdent( pen_gltextureenvdot3_t, "pen.gltextureenvdot3", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_dot3_rgb_t, "pen.gl_dot3_rgb", pen_gltextureenvdot3_t, float_to_string( GL_DOT3_RGB ) );
+  declareStandardConstant( pen_gl_dot3_rgba_t, "pen.gl_dot3_rgba", pen_gltextureenvdot3_t, float_to_string( GL_DOT3_RGBA ) );
+
+  declareIdent( pen_glushort_t, "pen.glushort", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_clamp_to_border_t, "pen.gl_clamp_to_border", pen_glushort_t, float_to_string( GL_CLAMP_TO_BORDER ) );
+
+  declareIdent( pen_glmultitexturearb_t, "pen.glmultitexturearb", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_texture0_arb_t, "pen.gl_texture0_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE0_ARB ) );
+  declareStandardConstant( pen_gl_texture1_arb_t, "pen.gl_texture1_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE1_ARB ) );
+  declareStandardConstant( pen_gl_texture2_arb_t, "pen.gl_texture2_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE2_ARB ) );
+  declareStandardConstant( pen_gl_texture3_arb_t, "pen.gl_texture3_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE3_ARB ) );
+  declareStandardConstant( pen_gl_texture4_arb_t, "pen.gl_texture4_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE4_ARB ) );
+  declareStandardConstant( pen_gl_texture5_arb_t, "pen.gl_texture5_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE5_ARB ) );
+  declareStandardConstant( pen_gl_texture6_arb_t, "pen.gl_texture6_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE6_ARB ) );
+  declareStandardConstant( pen_gl_texture7_arb_t, "pen.gl_texture7_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE7_ARB ) );
+  declareStandardConstant( pen_gl_texture8_arb_t, "pen.gl_texture8_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE8_ARB ) );
+  declareStandardConstant( pen_gl_texture9_arb_t, "pen.gl_texture9_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE9_ARB ) );
+  declareStandardConstant( pen_gl_texture10_arb_t, "pen.gl_texture10_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE10_ARB ) );
+  declareStandardConstant( pen_gl_texture11_arb_t, "pen.gl_texture11_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE11_ARB ) );
+  declareStandardConstant( pen_gl_texture12_arb_t, "pen.gl_texture12_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE12_ARB ) );
+  declareStandardConstant( pen_gl_texture13_arb_t, "pen.gl_texture13_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE13_ARB ) );
+  declareStandardConstant( pen_gl_texture14_arb_t, "pen.gl_texture14_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE14_ARB ) );
+  declareStandardConstant( pen_gl_texture15_arb_t, "pen.gl_texture15_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE15_ARB ) );
+  declareStandardConstant( pen_gl_texture16_arb_t, "pen.gl_texture16_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE16_ARB ) );
+  declareStandardConstant( pen_gl_texture17_arb_t, "pen.gl_texture17_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE17_ARB ) );
+  declareStandardConstant( pen_gl_texture18_arb_t, "pen.gl_texture18_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE18_ARB ) );
+  declareStandardConstant( pen_gl_texture19_arb_t, "pen.gl_texture19_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE19_ARB ) );
+  declareStandardConstant( pen_gl_texture20_arb_t, "pen.gl_texture20_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE20_ARB ) );
+  declareStandardConstant( pen_gl_texture21_arb_t, "pen.gl_texture21_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE21_ARB ) );
+  declareStandardConstant( pen_gl_texture22_arb_t, "pen.gl_texture22_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE22_ARB ) );
+  declareStandardConstant( pen_gl_texture23_arb_t, "pen.gl_texture23_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE23_ARB ) );
+  declareStandardConstant( pen_gl_texture24_arb_t, "pen.gl_texture24_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE24_ARB ) );
+  declareStandardConstant( pen_gl_texture25_arb_t, "pen.gl_texture25_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE25_ARB ) );
+  declareStandardConstant( pen_gl_texture26_arb_t, "pen.gl_texture26_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE26_ARB ) );
+  declareStandardConstant( pen_gl_texture27_arb_t, "pen.gl_texture27_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE27_ARB ) );
+  declareStandardConstant( pen_gl_texture28_arb_t, "pen.gl_texture28_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE28_ARB ) );
+  declareStandardConstant( pen_gl_texture29_arb_t, "pen.gl_texture29_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE29_ARB ) );
+  declareStandardConstant( pen_gl_texture30_arb_t, "pen.gl_texture30_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE30_ARB ) );
+  declareStandardConstant( pen_gl_texture31_arb_t, "pen.gl_texture31_arb", pen_glmultitexturearb_t, float_to_string( GL_TEXTURE31_ARB ) );
+  declareStandardConstant( pen_gl_active_texture_arb_t, "pen.gl_active_texture_arb", pen_glmultitexturearb_t, float_to_string( GL_ACTIVE_TEXTURE_ARB ) );
+  declareStandardConstant( pen_gl_client_active_texture_arb_t, "pen.gl_client_active_texture_arb", pen_glmultitexturearb_t, float_to_string( GL_CLIENT_ACTIVE_TEXTURE_ARB ) );
+  declareStandardConstant( pen_gl_max_texture_units_arb_t, "pen.gl_max_texture_units_arb", pen_glmultitexturearb_t, float_to_string( GL_MAX_TEXTURE_UNITS_ARB ) );
+
+  declareIdent( pen_gldebugshaders_t, "pen.gldebugshaders", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_debug_object_mesa_t, "pen.gl_debug_object_mesa", pen_gldebugshaders_t, float_to_string( GL_DEBUG_OBJECT_MESA ) );
+  declareStandardConstant( pen_gl_debug_print_mesa_t, "pen.gl_debug_print_mesa", pen_gldebugshaders_t, float_to_string( GL_DEBUG_PRINT_MESA ) );
+  declareStandardConstant( pen_gl_debug_assert_mesa_t, "pen.gl_debug_assert_mesa", pen_gldebugshaders_t, float_to_string( GL_DEBUG_ASSERT_MESA ) );
+
+  declareIdent( pen_globsolete_t, "pen.globsolete", integer_t, typeClass  );
+
+  declareStandardConstant( pen_gl_depth_stencil_mesa_t, "pen.gl_depth_stencil_mesa", pen_globsolete_t, float_to_string( GL_DEPTH_STENCIL_MESA ) );
+  declareStandardConstant( pen_gl_unsigned_int_24_8_mesa_t, "pen.gl_unsigned_int_24_8_mesa", pen_globsolete_t, float_to_string( GL_UNSIGNED_INT_24_8_MESA ) );
+  declareStandardConstant( pen_gl_unsigned_int_8_24_rev_mesa_t, "pen.gl_unsigned_int_8_24_rev_mesa", pen_globsolete_t, float_to_string( GL_UNSIGNED_INT_8_24_REV_MESA ) );
+  declareStandardConstant( pen_gl_unsigned_short_15_1_mesa_t, "pen.gl_unsigned_short_15_1_mesa", pen_globsolete_t, float_to_string( GL_UNSIGNED_SHORT_15_1_MESA ) );
+  declareStandardConstant( pen_gl_unsigned_short_1_15_rev_mesa_t, "pen.gl_unsigned_short_1_15_rev_mesa", pen_globsolete_t, float_to_string( GL_UNSIGNED_SHORT_1_15_REV_MESA ) );
+  declareStandardConstant( pen_gl_fragment_program_position_mesa_t, "pen.gl_fragment_program_position_mesa", pen_globsolete_t, float_to_string( GL_FRAGMENT_PROGRAM_POSITION_MESA ) );
+  declareStandardConstant( pen_gl_fragment_program_callback_mesa_t, "pen.gl_fragment_program_callback_mesa", pen_globsolete_t, float_to_string( GL_FRAGMENT_PROGRAM_CALLBACK_MESA ) );
+  declareStandardConstant( pen_gl_fragment_program_callback_func_mesa_t, "pen.gl_fragment_program_callback_func_mesa", pen_globsolete_t, float_to_string( GL_FRAGMENT_PROGRAM_CALLBACK_FUNC_MESA ) );
+  declareStandardConstant( pen_gl_fragment_program_callback_data_mesa_t, "pen.gl_fragment_program_callback_data_mesa", pen_globsolete_t, float_to_string( GL_FRAGMENT_PROGRAM_CALLBACK_DATA_MESA ) );
+  declareStandardConstant( pen_gl_vertex_program_position_mesa_t, "pen.gl_vertex_program_position_mesa", pen_globsolete_t, float_to_string( GL_VERTEX_PROGRAM_POSITION_MESA ) );
+  declareStandardConstant( pen_gl_vertex_program_callback_mesa_t, "pen.gl_vertex_program_callback_mesa", pen_globsolete_t, float_to_string( GL_VERTEX_PROGRAM_CALLBACK_MESA ) );
+  declareStandardConstant( pen_gl_vertex_program_callback_func_mesa_t, "pen.gl_vertex_program_callback_func_mesa", pen_globsolete_t, float_to_string( GL_VERTEX_PROGRAM_CALLBACK_FUNC_MESA ) );
+  declareStandardConstant( pen_gl_vertex_program_callback_data_mesa_t, "pen.gl_vertex_program_callback_data_mesa", pen_globsolete_t, float_to_string( GL_VERTEX_PROGRAM_CALLBACK_DATA_MESA ) );
+
+  declareStandardConstant( pen_gl_texture_1d_array_ext_t, "pen.gl_texture_1d_array_ext", pen_glushort_t, float_to_string( GL_TEXTURE_1D_ARRAY_EXT ) );
+  declareStandardConstant( pen_gl_proxy_texture_1d_array_ext_t, "pen.gl_proxy_texture_1d_array_ext", pen_glushort_t, float_to_string( GL_PROXY_TEXTURE_1D_ARRAY_EXT ) );
+  declareStandardConstant( pen_gl_texture_2d_array_ext_t, "pen.gl_texture_2d_array_ext", pen_glushort_t, float_to_string( GL_TEXTURE_2D_ARRAY_EXT ) );
+  declareStandardConstant( pen_gl_proxy_texture_2d_array_ext_t, "pen.gl_proxy_texture_2d_array_ext", pen_glushort_t, float_to_string( GL_PROXY_TEXTURE_2D_ARRAY_EXT ) );
+  declareStandardConstant( pen_gl_texture_binding_1d_array_ext_t, "pen.gl_texture_binding_1d_array_ext", pen_glushort_t, float_to_string( GL_TEXTURE_BINDING_1D_ARRAY_EXT ) );
+  declareStandardConstant( pen_gl_texture_binding_2d_array_ext_t, "pen.gl_texture_binding_2d_array_ext", pen_glushort_t, float_to_string( GL_TEXTURE_BINDING_2D_ARRAY_EXT ) );
+  declareStandardConstant( pen_gl_max_array_texture_layers_ext_t, "pen.gl_max_array_texture_layers_ext", pen_glushort_t, float_to_string( GL_MAX_ARRAY_TEXTURE_LAYERS_EXT ) );
+  declareStandardConstant( pen_gl_framebuffer_attachment_texture_layer_ext_t, "pen.gl_framebuffer_attachment_texture_layer_ext", pen_glushort_t, float_to_string( GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER_EXT ) );
+  declareStandardConstant( pen_gl_alpha_blend_equation_ati_t, "pen.gl_alpha_blend_equation_ati", pen_glushort_t, float_to_string( GL_ALPHA_BLEND_EQUATION_ATI ) );
+
+  declareStandardConstant( pen_glu_ext_object_space_tess_t, "pen.glu_ext_object_space_tess", pen_glenum_t, float_to_string( GLU_EXT_object_space_tess ) );
+  declareStandardConstant( pen_glu_ext_nurbs_tessellator_t, "pen.glu_ext_nurbs_tessellator", pen_glenum_t, float_to_string( GLU_EXT_nurbs_tessellator ) );
+  declareStandardConstant( pen_glu_false_t, "pen.glu_false", pen_glenum_t, float_to_string( GLU_FALSE ) );
+  declareStandardConstant( pen_glu_true_t, "pen.glu_true", pen_glenum_t, float_to_string( GLU_TRUE ) );
+  declareStandardConstant( pen_glu_version_1_1_t, "pen.glu_version_1_1", pen_glenum_t, float_to_string( GLU_VERSION_1_1 ) );
+  declareStandardConstant( pen_glu_version_1_2_t, "pen.glu_version_1_2", pen_glenum_t, float_to_string( GLU_VERSION_1_2 ) );
+  declareStandardConstant( pen_glu_version_1_3_t, "pen.glu_version_1_3", pen_glenum_t, float_to_string( GLU_VERSION_1_3 ) );
+  declareStandardConstant( pen_glu_version_t, "pen.glu_version", pen_glenum_t, float_to_string( GLU_VERSION ) );
+  declareStandardConstant( pen_glu_extensions_t, "pen.glu_extensions", pen_glenum_t, float_to_string( GLU_EXTENSIONS ) );
+  declareStandardConstant( pen_glu_invalid_enum_t, "pen.glu_invalid_enum", pen_glenum_t, float_to_string( GLU_INVALID_ENUM ) );
+  declareStandardConstant( pen_glu_invalid_value_t, "pen.glu_invalid_value", pen_glenum_t, float_to_string( GLU_INVALID_VALUE ) );
+  declareStandardConstant( pen_glu_out_of_memory_t, "pen.glu_out_of_memory", pen_glenum_t, float_to_string( GLU_OUT_OF_MEMORY ) );
+  declareStandardConstant( pen_glu_incompatible_gl_version_t, "pen.glu_incompatible_gl_version", pen_glenum_t, float_to_string( GLU_INCOMPATIBLE_GL_VERSION ) );
+  declareStandardConstant( pen_glu_invalid_operation_t, "pen.glu_invalid_operation", pen_glenum_t, float_to_string( GLU_INVALID_OPERATION ) );
+  declareStandardConstant( pen_glu_outline_polygon_t, "pen.glu_outline_polygon", pen_glenum_t, float_to_string( GLU_OUTLINE_POLYGON ) );
+  declareStandardConstant( pen_glu_outline_patch_t, "pen.glu_outline_patch", pen_glenum_t, float_to_string( GLU_OUTLINE_PATCH ) );
+
+  declareIdent( pen_glunurbscallbacks_t, "pen.glunurbscallbacks", integer_t, typeClass  );
+
+  declareStandardConstant( pen_glu_nurbs_error_t, "pen.glu_nurbs_error", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_ERROR ) );
+  declareStandardConstant( pen_glu_error_t, "pen.glu_error", pen_glunurbscallbacks_t, float_to_string( GLU_ERROR ) );
+  declareStandardConstant( pen_glu_nurbs_begin_t, "pen.glu_nurbs_begin", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_BEGIN ) );
+  declareStandardConstant( pen_glu_nurbs_begin_ext_t, "pen.glu_nurbs_begin_ext", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_BEGIN_EXT ) );
+  declareStandardConstant( pen_glu_nurbs_vertex_t, "pen.glu_nurbs_vertex", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_VERTEX ) );
+  declareStandardConstant( pen_glu_nurbs_vertex_ext_t, "pen.glu_nurbs_vertex_ext", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_VERTEX_EXT ) );
+  declareStandardConstant( pen_glu_nurbs_normal_t, "pen.glu_nurbs_normal", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_NORMAL ) );
+  declareStandardConstant( pen_glu_nurbs_normal_ext_t, "pen.glu_nurbs_normal_ext", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_NORMAL_EXT ) );
+  declareStandardConstant( pen_glu_nurbs_color_t, "pen.glu_nurbs_color", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_COLOR ) );
+  declareStandardConstant( pen_glu_nurbs_color_ext_t, "pen.glu_nurbs_color_ext", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_COLOR_EXT ) );
+  declareStandardConstant( pen_glu_nurbs_texture_coord_t, "pen.glu_nurbs_texture_coord", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_TEXTURE_COORD ) );
+  declareStandardConstant( pen_glu_nurbs_tex_coord_ext_t, "pen.glu_nurbs_tex_coord_ext", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_TEX_COORD_EXT ) );
+  declareStandardConstant( pen_glu_nurbs_end_t, "pen.glu_nurbs_end", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_END ) );
+  declareStandardConstant( pen_glu_nurbs_end_ext_t, "pen.glu_nurbs_end_ext", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_END_EXT ) );
+  declareStandardConstant( pen_glu_nurbs_begin_data_t, "pen.glu_nurbs_begin_data", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_BEGIN_DATA ) );
+  declareStandardConstant( pen_glu_nurbs_begin_data_ext_t, "pen.glu_nurbs_begin_data_ext", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_BEGIN_DATA_EXT ) );
+  declareStandardConstant( pen_glu_nurbs_vertex_data_t, "pen.glu_nurbs_vertex_data", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_VERTEX_DATA ) );
+  declareStandardConstant( pen_glu_nurbs_vertex_data_ext_t, "pen.glu_nurbs_vertex_data_ext", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_VERTEX_DATA_EXT ) );
+  declareStandardConstant( pen_glu_nurbs_normal_data_t, "pen.glu_nurbs_normal_data", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_NORMAL_DATA ) );
+  declareStandardConstant( pen_glu_nurbs_normal_data_ext_t, "pen.glu_nurbs_normal_data_ext", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_NORMAL_DATA_EXT ) );
+  declareStandardConstant( pen_glu_nurbs_color_data_t, "pen.glu_nurbs_color_data", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_COLOR_DATA ) );
+  declareStandardConstant( pen_glu_nurbs_color_data_ext_t, "pen.glu_nurbs_color_data_ext", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_COLOR_DATA_EXT ) );
+  declareStandardConstant( pen_glu_nurbs_texture_coord_data_t, "pen.glu_nurbs_texture_coord_data", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_TEXTURE_COORD_DATA ) );
+  declareStandardConstant( pen_glu_nurbs_tex_coord_data_ext_t, "pen.glu_nurbs_tex_coord_data_ext", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_TEX_COORD_DATA_EXT ) );
+  declareStandardConstant( pen_glu_nurbs_end_data_t, "pen.glu_nurbs_end_data", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_END_DATA ) );
+  declareStandardConstant( pen_glu_nurbs_end_data_ext_t, "pen.glu_nurbs_end_data_ext", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_END_DATA_EXT ) );
+
+  declareStandardConstant( pen_glu_nurbs_error1_t, "pen.glu_nurbs_error1", pen_glenum_t, float_to_string( GLU_NURBS_ERROR1 ) );
+  declareStandardConstant( pen_glu_nurbs_error2_t, "pen.glu_nurbs_error2", pen_glenum_t, float_to_string( GLU_NURBS_ERROR2 ) );
+  declareStandardConstant( pen_glu_nurbs_error3_t, "pen.glu_nurbs_error3", pen_glenum_t, float_to_string( GLU_NURBS_ERROR3 ) );
+  declareStandardConstant( pen_glu_nurbs_error4_t, "pen.glu_nurbs_error4", pen_glenum_t, float_to_string( GLU_NURBS_ERROR4 ) );
+  declareStandardConstant( pen_glu_nurbs_error5_t, "pen.glu_nurbs_error5", pen_glenum_t, float_to_string( GLU_NURBS_ERROR5 ) );
+  declareStandardConstant( pen_glu_nurbs_error6_t, "pen.glu_nurbs_error6", pen_glenum_t, float_to_string( GLU_NURBS_ERROR6 ) );
+  declareStandardConstant( pen_glu_nurbs_error7_t, "pen.glu_nurbs_error7", pen_glenum_t, float_to_string( GLU_NURBS_ERROR7 ) );
+  declareStandardConstant( pen_glu_nurbs_error8_t, "pen.glu_nurbs_error8", pen_glenum_t, float_to_string( GLU_NURBS_ERROR8 ) );
+  declareStandardConstant( pen_glu_nurbs_error9_t, "pen.glu_nurbs_error9", pen_glenum_t, float_to_string( GLU_NURBS_ERROR9 ) );
+  declareStandardConstant( pen_glu_nurbs_error10_t, "pen.glu_nurbs_error10", pen_glenum_t, float_to_string( GLU_NURBS_ERROR10 ) );
+  declareStandardConstant( pen_glu_nurbs_error11_t, "pen.glu_nurbs_error11", pen_glenum_t, float_to_string( GLU_NURBS_ERROR11 ) );
+  declareStandardConstant( pen_glu_nurbs_error12_t, "pen.glu_nurbs_error12", pen_glenum_t, float_to_string( GLU_NURBS_ERROR12 ) );
+  declareStandardConstant( pen_glu_nurbs_error13_t, "pen.glu_nurbs_error13", pen_glenum_t, float_to_string( GLU_NURBS_ERROR13 ) );
+  declareStandardConstant( pen_glu_nurbs_error14_t, "pen.glu_nurbs_error14", pen_glenum_t, float_to_string( GLU_NURBS_ERROR14 ) );
+  declareStandardConstant( pen_glu_nurbs_error15_t, "pen.glu_nurbs_error15", pen_glenum_t, float_to_string( GLU_NURBS_ERROR15 ) );
+  declareStandardConstant( pen_glu_nurbs_error16_t, "pen.glu_nurbs_error16", pen_glenum_t, float_to_string( GLU_NURBS_ERROR16 ) );
+  declareStandardConstant( pen_glu_nurbs_error17_t, "pen.glu_nurbs_error17", pen_glenum_t, float_to_string( GLU_NURBS_ERROR17 ) );
+  declareStandardConstant( pen_glu_nurbs_error18_t, "pen.glu_nurbs_error18", pen_glenum_t, float_to_string( GLU_NURBS_ERROR18 ) );
+  declareStandardConstant( pen_glu_nurbs_error19_t, "pen.glu_nurbs_error19", pen_glenum_t, float_to_string( GLU_NURBS_ERROR19 ) );
+  declareStandardConstant( pen_glu_nurbs_error20_t, "pen.glu_nurbs_error20", pen_glenum_t, float_to_string( GLU_NURBS_ERROR20 ) );
+  declareStandardConstant( pen_glu_nurbs_error21_t, "pen.glu_nurbs_error21", pen_glenum_t, float_to_string( GLU_NURBS_ERROR21 ) );
+  declareStandardConstant( pen_glu_nurbs_error22_t, "pen.glu_nurbs_error22", pen_glenum_t, float_to_string( GLU_NURBS_ERROR22 ) );
+  declareStandardConstant( pen_glu_nurbs_error23_t, "pen.glu_nurbs_error23", pen_glenum_t, float_to_string( GLU_NURBS_ERROR23 ) );
+  declareStandardConstant( pen_glu_nurbs_error24_t, "pen.glu_nurbs_error24", pen_glenum_t, float_to_string( GLU_NURBS_ERROR24 ) );
+  declareStandardConstant( pen_glu_nurbs_error25_t, "pen.glu_nurbs_error25", pen_glenum_t, float_to_string( GLU_NURBS_ERROR25 ) );
+  declareStandardConstant( pen_glu_nurbs_error26_t, "pen.glu_nurbs_error26", pen_glenum_t, float_to_string( GLU_NURBS_ERROR26 ) );
+  declareStandardConstant( pen_glu_nurbs_error27_t, "pen.glu_nurbs_error27", pen_glenum_t, float_to_string( GLU_NURBS_ERROR27 ) );
+  declareStandardConstant( pen_glu_nurbs_error28_t, "pen.glu_nurbs_error28", pen_glenum_t, float_to_string( GLU_NURBS_ERROR28 ) );
+  declareStandardConstant( pen_glu_nurbs_error29_t, "pen.glu_nurbs_error29", pen_glenum_t, float_to_string( GLU_NURBS_ERROR29 ) );
+  declareStandardConstant( pen_glu_nurbs_error30_t, "pen.glu_nurbs_error30", pen_glenum_t, float_to_string( GLU_NURBS_ERROR30 ) );
+  declareStandardConstant( pen_glu_nurbs_error31_t, "pen.glu_nurbs_error31", pen_glenum_t, float_to_string( GLU_NURBS_ERROR31 ) );
+  declareStandardConstant( pen_glu_nurbs_error32_t, "pen.glu_nurbs_error32", pen_glenum_t, float_to_string( GLU_NURBS_ERROR32 ) );
+  declareStandardConstant( pen_glu_nurbs_error33_t, "pen.glu_nurbs_error33", pen_glenum_t, float_to_string( GLU_NURBS_ERROR33 ) );
+  declareStandardConstant( pen_glu_nurbs_error34_t, "pen.glu_nurbs_error34", pen_glenum_t, float_to_string( GLU_NURBS_ERROR34 ) );
+  declareStandardConstant( pen_glu_nurbs_error35_t, "pen.glu_nurbs_error35", pen_glenum_t, float_to_string( GLU_NURBS_ERROR35 ) );
+  declareStandardConstant( pen_glu_nurbs_error36_t, "pen.glu_nurbs_error36", pen_glenum_t, float_to_string( GLU_NURBS_ERROR36 ) );
+  declareStandardConstant( pen_glu_nurbs_error37_t, "pen.glu_nurbs_error37", pen_glenum_t, float_to_string( GLU_NURBS_ERROR37 ) );
+
+  declareIdent( pen_glunurbsproperties_t, "pen.glunurbsproperties", integer_t, typeClass  );
+
+  declareStandardConstant( pen_glu_auto_load_matrix_t, "pen.glu_auto_load_matrix", pen_glunurbsproperties_t, float_to_string( GLU_AUTO_LOAD_MATRIX ) );
+  declareStandardConstant( pen_glu_culling_t, "pen.glu_culling", pen_glunurbsproperties_t, float_to_string( GLU_CULLING ) );
+  declareStandardConstant( pen_glu_sampling_tolerance_t, "pen.glu_sampling_tolerance", pen_glunurbsproperties_t, float_to_string( GLU_SAMPLING_TOLERANCE ) );
+  declareStandardConstant( pen_glu_display_mode_t, "pen.glu_display_mode", pen_glunurbsproperties_t, float_to_string( GLU_DISPLAY_MODE ) );
+  declareStandardConstant( pen_glu_parametric_tolerance_t, "pen.glu_parametric_tolerance", pen_glunurbsproperties_t, float_to_string( GLU_PARAMETRIC_TOLERANCE ) );
+  declareStandardConstant( pen_glu_sampling_method_t, "pen.glu_sampling_method", pen_glunurbsproperties_t, float_to_string( GLU_SAMPLING_METHOD ) );
+  declareStandardConstant( pen_glu_u_step_t, "pen.glu_u_step", pen_glunurbsproperties_t, float_to_string( GLU_U_STEP ) );
+  declareStandardConstant( pen_glu_v_step_t, "pen.glu_v_step", pen_glunurbsproperties_t, float_to_string( GLU_V_STEP ) );
+  declareStandardConstant( pen_glu_nurbs_mode_t, "pen.glu_nurbs_mode", pen_glunurbsproperties_t, float_to_string( GLU_NURBS_MODE ) );
+  declareStandardConstant( pen_glu_nurbs_mode_ext_t, "pen.glu_nurbs_mode_ext", pen_glunurbsproperties_t, float_to_string( GLU_NURBS_MODE_EXT ) );
+  declareStandardConstant( pen_glu_nurbs_tessellator_t, "pen.glu_nurbs_tessellator", pen_glunurbsproperties_t, float_to_string( GLU_NURBS_TESSELLATOR ) );
+  declareStandardConstant( pen_glu_nurbs_tessellator_ext_t, "pen.glu_nurbs_tessellator_ext", pen_glunurbsproperties_t, float_to_string( GLU_NURBS_TESSELLATOR_EXT ) );
+  declareStandardConstant( pen_glu_nurbs_renderer_t, "pen.glu_nurbs_renderer", pen_glunurbsproperties_t, float_to_string( GLU_NURBS_RENDERER ) );
+  declareStandardConstant( pen_glu_nurbs_renderer_ext_t, "pen.glu_nurbs_renderer_ext", pen_glunurbsproperties_t, float_to_string( GLU_NURBS_RENDERER_EXT ) );
+
+  declareStandardConstant( pen_glu_object_parametric_error_t, "pen.glu_object_parametric_error", pen_glenum_t, float_to_string( GLU_OBJECT_PARAMETRIC_ERROR ) );
+  declareStandardConstant( pen_glu_object_parametric_error_ext_t, "pen.glu_object_parametric_error_ext", pen_glenum_t, float_to_string( GLU_OBJECT_PARAMETRIC_ERROR_EXT ) );
+  declareStandardConstant( pen_glu_object_path_length_t, "pen.glu_object_path_length", pen_glenum_t, float_to_string( GLU_OBJECT_PATH_LENGTH ) );
+  declareStandardConstant( pen_glu_object_path_length_ext_t, "pen.glu_object_path_length_ext", pen_glenum_t, float_to_string( GLU_OBJECT_PATH_LENGTH_EXT ) );
+  declareStandardConstant( pen_glu_path_length_t, "pen.glu_path_length", pen_glenum_t, float_to_string( GLU_PATH_LENGTH ) );
+  declareStandardConstant( pen_glu_parametric_error_t, "pen.glu_parametric_error", pen_glenum_t, float_to_string( GLU_PARAMETRIC_ERROR ) );
+  declareStandardConstant( pen_glu_domain_distance_t, "pen.glu_domain_distance", pen_glenum_t, float_to_string( GLU_DOMAIN_DISTANCE ) );
+
+  declareStandardConstant( pen_glu_map1_trim_2_t, "pen.glu_map1_trim_2", pen_glevaluators_t, float_to_string( GLU_MAP1_TRIM_2 ) );
+  declareStandardConstant( pen_glu_map1_trim_3_t, "pen.glu_map1_trim_3", pen_glevaluators_t, float_to_string( GLU_MAP1_TRIM_3 ) );
+
+  declareIdent( pen_gluquaddrawstyle_t, "pen.gluquaddrawstyle", integer_t, typeClass  );
+
+  declareStandardConstant( pen_glu_point_t, "pen.glu_point", pen_gluquaddrawstyle_t, float_to_string( GLU_POINT ) );
+  declareStandardConstant( pen_glu_line_t, "pen.glu_line", pen_gluquaddrawstyle_t, float_to_string( GLU_LINE ) );
+  declareStandardConstant( pen_glu_fill_t, "pen.glu_fill", pen_gluquaddrawstyle_t, float_to_string( GLU_FILL ) );
+  declareStandardConstant( pen_glu_silhouette_t, "pen.glu_silhouette", pen_gluquaddrawstyle_t, float_to_string( GLU_SILHOUETTE ) );
+
+  declareIdent( pen_gluquadricnormal_t, "pen.gluquadricnormal", integer_t, typeClass  );
+
+  declareStandardConstant( pen_glu_smooth_t, "pen.glu_smooth", pen_gluquadricnormal_t, float_to_string( GLU_SMOOTH ) );
+  declareStandardConstant( pen_glu_flat_t, "pen.glu_flat", pen_gluquadricnormal_t, float_to_string( GLU_FLAT ) );
+  declareStandardConstant( pen_glu_none_t, "pen.glu_none", pen_gluquadricnormal_t, float_to_string( GLU_NONE ) );
+
+  declareIdent( pen_gluquadorientation_t, "pen.gluquadorientation", integer_t, typeClass  );
+
+  declareStandardConstant( pen_glu_outside_t, "pen.glu_outside", pen_gluquadorientation_t, float_to_string( GLU_OUTSIDE ) );
+  declareStandardConstant( pen_glu_inside_t, "pen.glu_inside", pen_gluquadorientation_t, float_to_string( GLU_INSIDE ) );
+
+  declareIdent( pen_glutesscallbacks_t, "pen.glutesscallbacks", integer_t, typeClass  );
+
+  declareStandardConstant( pen_glu_tess_begin_t, "pen.glu_tess_begin", pen_glutesscallbacks_t, float_to_string( GLU_TESS_BEGIN ) );
+  declareStandardConstant( pen_glu_begin_t, "pen.glu_begin", pen_glutesscallbacks_t, float_to_string( GLU_BEGIN ) );
+  declareStandardConstant( pen_glu_tess_vertex_t, "pen.glu_tess_vertex", pen_glutesscallbacks_t, float_to_string( GLU_TESS_VERTEX ) );
+  declareStandardConstant( pen_glu_vertex_t, "pen.glu_vertex", pen_glutesscallbacks_t, float_to_string( GLU_VERTEX ) );
+  declareStandardConstant( pen_glu_tess_end_t, "pen.glu_tess_end", pen_glutesscallbacks_t, float_to_string( GLU_TESS_END ) );
+  declareStandardConstant( pen_glu_end_t, "pen.glu_end", pen_glutesscallbacks_t, float_to_string( GLU_END ) );
+  declareStandardConstant( pen_glu_tess_error_t, "pen.glu_tess_error", pen_glutesscallbacks_t, float_to_string( GLU_TESS_ERROR ) );
+  declareStandardConstant( pen_glu_tess_edge_flag_t, "pen.glu_tess_edge_flag", pen_glutesscallbacks_t, float_to_string( GLU_TESS_EDGE_FLAG ) );
+  declareStandardConstant( pen_glu_edge_flag_t, "pen.glu_edge_flag", pen_glutesscallbacks_t, float_to_string( GLU_EDGE_FLAG ) );
+  declareStandardConstant( pen_glu_tess_combine_t, "pen.glu_tess_combine", pen_glutesscallbacks_t, float_to_string( GLU_TESS_COMBINE ) );
+  declareStandardConstant( pen_glu_tess_begin_data_t, "pen.glu_tess_begin_data", pen_glutesscallbacks_t, float_to_string( GLU_TESS_BEGIN_DATA ) );
+  declareStandardConstant( pen_glu_tess_vertex_data_t, "pen.glu_tess_vertex_data", pen_glutesscallbacks_t, float_to_string( GLU_TESS_VERTEX_DATA ) );
+  declareStandardConstant( pen_glu_tess_end_data_t, "pen.glu_tess_end_data", pen_glutesscallbacks_t, float_to_string( GLU_TESS_END_DATA ) );
+  declareStandardConstant( pen_glu_tess_error_data_t, "pen.glu_tess_error_data", pen_glutesscallbacks_t, float_to_string( GLU_TESS_ERROR_DATA ) );
+  declareStandardConstant( pen_glu_tess_edge_flag_data_t, "pen.glu_tess_edge_flag_data", pen_glutesscallbacks_t, float_to_string( GLU_TESS_EDGE_FLAG_DATA ) );
+  declareStandardConstant( pen_glu_tess_combine_data_t, "pen.glu_tess_combine_data", pen_glutesscallbacks_t, float_to_string( GLU_TESS_COMBINE_DATA ) );
+
+  declareIdent( pen_glutesscontour_t, "pen.glutesscontour", integer_t, typeClass  );
+
+  declareStandardConstant( pen_glu_cw_t, "pen.glu_cw", pen_glutesscontour_t, float_to_string( GLU_CW ) );
+  declareStandardConstant( pen_glu_ccw_t, "pen.glu_ccw", pen_glutesscontour_t, float_to_string( GLU_CCW ) );
+  declareStandardConstant( pen_glu_interior_t, "pen.glu_interior", pen_glutesscontour_t, float_to_string( GLU_INTERIOR ) );
+  declareStandardConstant( pen_glu_exterior_t, "pen.glu_exterior", pen_glutesscontour_t, float_to_string( GLU_EXTERIOR ) );
+  declareStandardConstant( pen_glu_unknown_t, "pen.glu_unknown", pen_glutesscontour_t, float_to_string( GLU_UNKNOWN ) );
+
+  declareIdent( pen_glutessproperties_t, "pen.glutessproperties", integer_t, typeClass  );
+
+  declareStandardConstant( pen_glu_tess_winding_rule_t, "pen.glu_tess_winding_rule", pen_glutessproperties_t, float_to_string( GLU_TESS_WINDING_RULE ) );
+  declareStandardConstant( pen_glu_tess_boundary_only_t, "pen.glu_tess_boundary_only", pen_glutessproperties_t, float_to_string( GLU_TESS_BOUNDARY_ONLY ) );
+  declareStandardConstant( pen_glu_tess_tolerance_t, "pen.glu_tess_tolerance", pen_glutessproperties_t, float_to_string( GLU_TESS_TOLERANCE ) );
+
+  declareStandardConstant( pen_glu_tess_error1_t, "pen.glu_tess_error1", pen_glenum_t, float_to_string( GLU_TESS_ERROR1 ) );
+  declareStandardConstant( pen_glu_tess_error2_t, "pen.glu_tess_error2", pen_glenum_t, float_to_string( GLU_TESS_ERROR2 ) );
+  declareStandardConstant( pen_glu_tess_error3_t, "pen.glu_tess_error3", pen_glenum_t, float_to_string( GLU_TESS_ERROR3 ) );
+  declareStandardConstant( pen_glu_tess_error4_t, "pen.glu_tess_error4", pen_glenum_t, float_to_string( GLU_TESS_ERROR4 ) );
+  declareStandardConstant( pen_glu_tess_error5_t, "pen.glu_tess_error5", pen_glenum_t, float_to_string( GLU_TESS_ERROR5 ) );
+  declareStandardConstant( pen_glu_tess_error6_t, "pen.glu_tess_error6", pen_glenum_t, float_to_string( GLU_TESS_ERROR6 ) );
+  declareStandardConstant( pen_glu_tess_error7_t, "pen.glu_tess_error7", pen_glenum_t, float_to_string( GLU_TESS_ERROR7 ) );
+  declareStandardConstant( pen_glu_tess_error8_t, "pen.glu_tess_error8", pen_glenum_t, float_to_string( GLU_TESS_ERROR8 ) );
+  declareStandardConstant( pen_glu_tess_missing_begin_polygon_t, "pen.glu_tess_missing_begin_polygon", pen_glenum_t, float_to_string( GLU_TESS_MISSING_BEGIN_POLYGON ) );
+  declareStandardConstant( pen_glu_tess_missing_begin_contour_t, "pen.glu_tess_missing_begin_contour", pen_glenum_t, float_to_string( GLU_TESS_MISSING_BEGIN_CONTOUR ) );
+  declareStandardConstant( pen_glu_tess_missing_end_polygon_t, "pen.glu_tess_missing_end_polygon", pen_glenum_t, float_to_string( GLU_TESS_MISSING_END_POLYGON ) );
+  declareStandardConstant( pen_glu_tess_missing_end_contour_t, "pen.glu_tess_missing_end_contour", pen_glenum_t, float_to_string( GLU_TESS_MISSING_END_CONTOUR ) );
+  declareStandardConstant( pen_glu_tess_coord_too_large_t, "pen.glu_tess_coord_too_large", pen_glenum_t, float_to_string( GLU_TESS_COORD_TOO_LARGE ) );
+  declareStandardConstant( pen_glu_tess_need_combine_callback_t, "pen.glu_tess_need_combine_callback", pen_glenum_t, float_to_string( GLU_TESS_NEED_COMBINE_CALLBACK ) );
+  declareStandardConstant( pen_glu_tess_winding_odd_t, "pen.glu_tess_winding_odd", pen_glenum_t, float_to_string( GLU_TESS_WINDING_ODD ) );
+  declareStandardConstant( pen_glu_tess_winding_nonzero_t, "pen.glu_tess_winding_nonzero", pen_glenum_t, float_to_string( GLU_TESS_WINDING_NONZERO ) );
+  declareStandardConstant( pen_glu_tess_winding_positive_t, "pen.glu_tess_winding_positive", pen_glenum_t, float_to_string( GLU_TESS_WINDING_POSITIVE ) );
+  declareStandardConstant( pen_glu_tess_winding_negative_t, "pen.glu_tess_winding_negative", pen_glenum_t, float_to_string( GLU_TESS_WINDING_NEGATIVE ) );
+  declareStandardConstant( pen_glu_tess_winding_abs_geq_two_t, "pen.glu_tess_winding_abs_geq_two", pen_glenum_t, float_to_string( GLU_TESS_WINDING_ABS_GEQ_TWO ) );
+
+  declareIdent( pen_long_float_t, "pen.long_float", integer_t, typeClass  );
+
+  declareStandardConstant( pen_glu_tess_max_coord_t, "pen.glu_tess_max_coord", pen_long_float_t, float_to_string( GLU_TESS_MAX_COORD ) );
+end declarePenGLConstants;
+
+
 ---  STARTUP PEN
 --
 -- Initialize the built-in Pen Package, declaring all identifiers.
@@ -2333,6 +3761,7 @@ begin
   declarePenColorNames3;
   declarePenColorNames4;
   declarePenColorNames5;
+  declarePenGLConstants;
 
 -- record handling is limited in business shell
 -- TODO: do these when record handling is improved
@@ -2377,4 +3806,3 @@ begin
 end ShutdownPen;
 
 end parser_pen;
-

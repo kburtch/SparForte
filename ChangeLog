@@ -1,6 +1,6 @@
 For the latest news, visit the Linux Cafe at the PegaSoft web site. 
 
-SparForte 1.4's focus was on
+SparForte 1.4's focus was on REST, DB, OpenGL
 
 KNOWN BUGS
 
@@ -10,4 +10,11 @@ KNOWN BUGS
 CHANGES
 
 1. New: RPM spec for Red Hat builds.
+
+2. Fix: numerics.even no longer requires extra parenthesis.
+
+3. Fix: numerics.hash_of, sdbm_hash_of, fnv_hash_of, murmur_hash_of no longer
+throw an exception on a number instead of a string as the first parameter.
+
+4. New: started pen OpenGL capabilities by defining OpenGL constants.
 

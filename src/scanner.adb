@@ -913,7 +913,7 @@ begin
   ShutdownArrays;
   ShutdownMySQL;
   ShutdownDB;
-  ShutdownBushOS;
+  ShutdownSparOS;
 
   -- Clear the block and identifier symbol table, just in case the
   -- scanner should be started again later.
@@ -1556,7 +1556,7 @@ begin
   -- startup built-in packages from other modules
   --
 
-  StartupBushOS;
+  StartupSparOS;
   StartupDB;
   StartupMySQL;
   StartupArrays;

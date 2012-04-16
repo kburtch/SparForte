@@ -1509,8 +1509,8 @@ begin
      New_Line;
      Put_Line( "  new_canvas(h,v,c,id) new_screen_canvas(h,v,c,id) new_window_canvas(h,v,c,id)");
      Put_Line( "  new_canvas(p,id)     new_gl_screen_canvas(h,v,c,id)  save_canvas(p,id)      ");
-     Put_Line( "  close_canvas( id )        wait_to_reveal( id )     reveal( id )             ");
-     Put_Line( "  reveal_now( id )                                                            ");
+     Put_Line( "  close_canvas( id )   new_gl_window_canvas(h,v,c,id)  wait_to_reveal( id )" );
+     Put_Line( "reveal( id )           reveal_now( id )                                                            ");
   elsif helpTopic = "step" then
      Put_Line( "step - on --break breakout, run one instruction and stop" );
      Put_Line( "  " & bold( "step" ) );

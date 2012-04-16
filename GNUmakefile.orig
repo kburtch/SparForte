@@ -50,3 +50,5 @@ help:
 	@echo "If you have the sources, there are more options"
 	@echo "in the src directory"
 
+.PHONY: all clean distclean test max install uninstall help
+

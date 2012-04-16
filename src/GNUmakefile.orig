@@ -228,4 +228,5 @@ help:
 	@echo "  bintar    - create a tgz of binary files to share with others"
 	@echo "  rpm       - build an rpm (must have spec file)"
 
+.PHONY: all max install uninstall clean distclean test zip srczip srctar bintar rpm help
 

@@ -1067,7 +1067,6 @@ procedure ParseNumericsEven( result : out unbounded_string ) is
   expr_type  : identifier;
 begin
   expect( even_t );
-  expect( symbol_t, "(" );
   ParseSingleNumericParameter( expr_val, expr_type, integer_t );
   begin
      if isExecutingCommand then
@@ -1343,19 +1342,13 @@ procedure ParseNumericsHashOf( result : in out unbounded_string) is
   expr2_type  : identifier;
 begin
   expect( hash_of_t );
-  expect( symbol_t, "(" );
-  ParseExpression( expr1_val, expr1_type );
-  if baseTypesOk( expr1_type, string_t ) then
-     expect( symbol_t, "," );
-     ParseExpression( expr2_val, expr2_type );
-     if intTypesOk( expr2_type, natural_t ) then
-        expect( symbol_t, ")" );
-     end if;
-  end if;
+  ParseFirstNumericParameter( expr1_val, expr1_type, string_t );
+  ParseLastNumericParameter( expr2_val, expr2_type, natural_t );
   declare
-    limit : hash_integer := hash_integer( to_numeric( expr2_val ) );
+    limit : hash_integer;
     hash : hash_integer := 5381;
   begin
+    limit := hash_integer( to_numeric( expr2_val ) );
     if isExecutingCommand then
        for i in 1..length(expr1_val) loop
            hash := (hash*37 + hash) + character'pos(element(expr1_val,i));
@@ -1376,19 +1369,13 @@ procedure ParseNumericsSdbmHashOf( result : in out unbounded_string) is
   expr2_type  : identifier;
 begin
   expect( sdbm_hash_of_t );
-  expect( symbol_t, "(" );
-  ParseExpression( expr1_val, expr1_type );
-  if baseTypesOk( expr1_type, string_t ) then
-     expect( symbol_t, "," );
-     ParseExpression( expr2_val, expr2_type );
-     if intTypesOk( expr2_type, natural_t ) then
-        expect( symbol_t, ")" );
-     end if;
-  end if;
+  ParseFirstNumericParameter( expr1_val, expr1_type, string_t );
+  ParseLastNumericParameter( expr2_val, expr2_type, natural_t );
   declare
-    limit : hash_integer := hash_integer( to_numeric( expr2_val ) );
+    limit : hash_integer;
     hash : hash_integer := 0;
   begin
+    limit := hash_integer( to_numeric( expr2_val ) );
     if isExecutingCommand then
        for i in 1..length(expr1_val) loop
            hash := character'pos(element(expr1_val,i)) + (hash*64) + (hash*65536
@@ -1410,20 +1397,14 @@ procedure ParseNumericsFnvHashOf( result : in out unbounded_string) is
   expr2_type  : identifier;
 begin
   expect( fnv_hash_of_t );
-  expect( symbol_t, "(" );
-  ParseExpression( expr1_val, expr1_type );
-  if baseTypesOk( expr1_type, string_t ) then
-     expect( symbol_t, "," );
-     ParseExpression( expr2_val, expr2_type );
-     if intTypesOk( expr2_type, natural_t ) then
-        expect( symbol_t, ")" );
-     end if;
-  end if;
+  ParseFirstNumericParameter( expr1_val, expr1_type, string_t );
+  ParseLastNumericParameter( expr2_val, expr2_type, natural_t );
   declare
     hash   : hash_integer := 16#811c9dc5#;
     k      : hash_integer;
-    limit : hash_integer := hash_integer( to_numeric( expr2_val ) );
+    limit  : hash_integer;
   begin
+    limit := hash_integer( to_numeric( expr2_val ) );
     if isExecutingCommand then
        for data in 1..length(expr1_val)-3 loop
            k := character'pos( element(expr1_val, data) ) +
@@ -1449,15 +1430,8 @@ procedure ParseNumericsMurmurHashOf( result : in out unbounded_string) is
   expr2_type  : identifier;
 begin
   expect( murmur_hash_of_t );
-  expect( symbol_t, "(" );
-  ParseExpression( expr1_val, expr1_type );
-  if baseTypesOk( expr1_type, string_t ) then
-     expect( symbol_t, "," );
-     ParseExpression( expr2_val, expr2_type );
-     if intTypesOk( expr2_type, natural_t ) then
-        expect( symbol_t, ")" );
-     end if;
-  end if;
+  ParseFirstNumericParameter( expr1_val, expr1_type, string_t );
+  ParseLastNumericParameter( expr2_val, expr2_type, natural_t );
   declare
     seed : constant hash_integer := 16#811c9dc5#;
     m : constant hash_integer := 16#5bd1e995#;
@@ -1465,10 +1439,11 @@ begin
     hash : hash_integer;
     data : integer := 1;
     k    : hash_integer;
-    limit : hash_integer := hash_integer( to_numeric( expr2_val ) );
+    limit : hash_integer;
     s    : string := to_string( expr1_val );
     len  : integer := s'length;
   begin
+    limit := hash_integer( to_numeric( expr2_val ) );
     if isExecutingCommand then
        -- this seed could be more elegnat - random seed here xor len
        hash := hash_integer( s'length ) xor seed;

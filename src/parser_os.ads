@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- BUSH_OS Package Parser                                                   --
+-- OS Package Parser                                                        --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
@@ -26,8 +26,8 @@ use  ada.strings.unbounded;
 
 package parser_os is
 
-procedure StartupBushOS;
-procedure ShutdownBushOS;
+procedure StartupSparOS;
+procedure ShutdownSparOS;
 
 ---------------------------------------------------------
 -- PARSE THE BUSH_OS PACKAGE

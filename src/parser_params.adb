@@ -54,10 +54,10 @@ procedure ParseSingleStringParameter( expr_val : out unbounded_string;
 begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
+  discard_result := baseTypesOk( expr_type, expected_type );
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
-  discard_result := baseTypesOk( expr_type, expected_type );
   expect( symbol_t, ")" );
 end ParseSingleStringParameter;
 
@@ -107,10 +107,10 @@ procedure ParseFirstStringParameter( expr_val : out unbounded_string;
 begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
+  discard_result := baseTypesOk( expr_type, expected_type );
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
-  discard_result := baseTypesOk( expr_type, expected_type );
 end ParseFirstStringParameter;
 
 
@@ -124,10 +124,10 @@ procedure ParseNextStringParameter( expr_val : out unbounded_string;
 begin
   expect( symbol_t, "," );
   ParseExpression( expr_val, expr_type );
+  discard_result := baseTypesOk( expr_type, expected_type );
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
-  discard_result := baseTypesOk( expr_type, expected_type );
 end ParseNextStringParameter;
 
 
@@ -141,10 +141,10 @@ procedure ParseLastStringParameter( expr_val : out unbounded_string;
 begin
   expect( symbol_t, "," );
   ParseExpression( expr_val, expr_type );
+  discard_result := baseTypesOk( expr_type, expected_type );
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
-  discard_result := baseTypesOk( expr_type, expected_type );
   expect( symbol_t, ")" );
 end ParseLastStringParameter;
 
@@ -173,10 +173,10 @@ procedure ParseSingleNumericParameter( expr_val : out unbounded_string;
 begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
+  discard_result := intTypesOk( expr_type, expected_type );
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
-  discard_result := intTypesOk( expr_type, expected_type );
   expect( symbol_t, ")" );
 end ParseSingleNumericParameter;
 
@@ -188,10 +188,10 @@ procedure ParseFirstNumericParameter( expr_val : out unbounded_string;
 begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
+  discard_result := intTypesOk( expr_type, expected_type );
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
-  discard_result := intTypesOk( expr_type, expected_type );
 end ParseFirstNumericParameter;
 
 
@@ -203,10 +203,10 @@ procedure ParseNextNumericParameter( expr_val : out unbounded_string;
 begin
   expect( symbol_t, "," );
   ParseExpression( expr_val, expr_type );
+  discard_result := intTypesOk( expr_type, expected_type );
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
-  discard_result := intTypesOk( expr_type, expected_type );
 end ParseNextNumericParameter;
 
 
@@ -218,10 +218,10 @@ procedure ParseLastNumericParameter( expr_val : out unbounded_string;
 begin
   expect( symbol_t, "," );
   ParseExpression( expr_val, expr_type );
+  discard_result := intTypesOk( expr_type, expected_type );
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
-  discard_result := intTypesOk( expr_type, expected_type );
   expect( symbol_t, ")" );
 end ParseLastNumericParameter;
 

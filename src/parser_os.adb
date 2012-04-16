@@ -28,6 +28,7 @@ with gnat.lock_files,
     string_util,
     parser_aux,
     parser,
+    parser_params,
     bush_os;
 use gnat.lock_files,
     world,
@@ -35,6 +36,7 @@ use gnat.lock_files,
     string_util,
     parser_aux,
     parser,
+    parser_params,
     bush_os;
 
 package body parser_os is
@@ -45,11 +47,7 @@ procedure ParseOSSystem is
   expr_type  : identifier;
 begin
   expect( os_system_t );
-  expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
-  if baseTypesOk( expr_type, string_t ) then
-     expect( symbol_t, ")" );
-  end if;
+  ParseSingleStringParameter( expr_val, expr_type, string_t );
   if isExecutingCommand then
      begin
         last_status:= aStatusCode( linux_system( to_string( expr_val ) & ascii.nul ) );
@@ -66,15 +64,15 @@ begin
   result := to_unbounded_string( aStatusCode'image( last_status ) );
 end ParseOSStatus;
 
-procedure StartupBushOS is
+procedure StartupSparOS is
 begin
   declareProcedure( os_system_t, "os.system" );
   declareFunction( os_status_t, "os.status" );
-end StartupBushOS;
+end StartupSparOS;
 
-procedure ShutdownBushOS is
+procedure ShutdownSparOS is
 begin
   null;
-end ShutdownBushOS;
+end ShutdownSparOS;
 
 end parser_os;
