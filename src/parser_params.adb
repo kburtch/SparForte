@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- Memcache Parckage Parser                                                 --
+-- Parser Parameter Handling Support Package                                --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
@@ -79,6 +79,23 @@ begin
 end ParseFirstInOutParameter;
 
 
+--  PARSE LAST IN OUT PARAMETER
+--
+-- Expect a last parameter that is an in out identifier.  If there is no expected
+-- type, assume it's a universal string type.
+
+procedure ParseLastInOutParameter( param_id : out identifier; expected_type : identifier ) is
+begin
+  ParseIdentifier( param_id ); -- in out
+  --ParseExpression( expr_val, expr_type );
+  --if isExecutingCommand then
+  --   expr_val := castToType( expr_val, expected_type );
+  --end if;
+  expect( symbol_t, ")" );
+  discard_result := baseTypesOk( identifiers( param_id ).kind, expected_type );
+end ParseLastInOutParameter;
+
+
 --  PARSE SINGLE IN OUT PARAMETER
 --
 -- Expect a first parameter that is a numeric expression.  If there is no expected
@@ -95,7 +112,6 @@ begin
   discard_result := baseTypesOk( identifiers( param_id ).kind, expected_type );
   expect( symbol_t, ")" );
 end ParseSingleInOutParameter;
-
 
 --  PARSE FIRST STRING PARAMETER
 --

@@ -6191,7 +6191,7 @@ begin
           if chars = 0 then                                -- read none?
              exit;                                         --   done
  -- KB: 2012/02/15: see bush_os-tty for an explaination of this kludge
-          elsif chars < 0 or chars = 18446744073709551615 then -- error
+          elsif chars not in 0..Interfaces.C.size_t'Last-1 then
              if C_errno = EAGAIN or C_errno = EINTR then   -- retry?
                 goto reread;                               -- do so
              end if;                                       -- other error?

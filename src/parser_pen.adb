@@ -32,6 +32,7 @@ with interfaces.c,
     string_util,
     scanner_arrays,
     parser_aux,
+    parser_params,
     parser;
 use pen,
     bush_os,
@@ -43,6 +44,7 @@ use pen,
     string_util,
     scanner_arrays,
     parser_aux,
+    parser_params,
     parser,
     bush_os;
 
@@ -1745,6 +1747,11718 @@ begin
   end if;
 end ParsePenPlot;
 
+-- OpenGL
+
+procedure ParsePenglClearIndex is
+  -- Syntax: glClearIndex( c : GLfloat );
+  -- Source: bush_os.opengl.glClearIndex
+  c_val  : unbounded_string;
+  c_type : identifier;
+begin
+  expect( pen_glclearindex_t );
+  ParseSingleNumericParameter( c_val, c_type, pen_glfloat_t ); -- c : GLfloat
+  if isExecutingCommand then
+    begin
+      glClearIndex( GLfloat( to_numeric( c_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglClearIndex;
+
+procedure ParsePenglClearColor is
+  -- Syntax: glClearColor( red, green, blue, alpha: GLclampf );
+  -- Source: bush_os.opengl.glClearColor
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+  alpha_val  : unbounded_string;
+  alpha_type : identifier;
+begin
+  expect( pen_glclearcolor_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_glclampf_t ); -- red : GLclampf
+  ParseNextNumericParameter( green_val, green_type, pen_glclampf_t ); -- green : GLclampf
+  ParseNextNumericParameter( blue_val, blue_type, pen_glclampf_t ); -- blue : GLclampf
+  ParseLastNumericParameter( alpha_val, alpha_type, pen_glclampf_t ); -- alpha : GLclampf
+  if isExecutingCommand then
+    begin
+      glClearColor( GLclampf( to_numeric( red_val ) ), GLclampf( to_numeric( green_val ) ), GLclampf( to_numeric( blue_val ) ), GLclampf( to_numeric( alpha_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglClearColor;
+
+procedure ParsePenglClear is
+  -- Syntax: glClear( mask: GLbitfield );
+  -- Source: bush_os.opengl.glClear
+  mask_val  : unbounded_string;
+  mask_type : identifier;
+begin
+  expect( pen_glclear_t );
+  ParseSingleNumericParameter( mask_val, mask_type, pen_glbitfield_t ); -- mask : GLbitfield
+  if isExecutingCommand then
+    begin
+      glClear( GLbitfield( to_numeric( mask_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglClear;
+
+procedure ParsePenglIndexMask is
+  -- Syntax: glIndexMask( mask : GLuint );
+  -- Source: bush_os.opengl.glIndexMask
+  mask_val  : unbounded_string;
+  mask_type : identifier;
+begin
+  expect( pen_glindexmask_t );
+  ParseSingleNumericParameter( mask_val, mask_type, pen_gluint_t ); -- mask : GLuint
+  if isExecutingCommand then
+    begin
+      glIndexMask( GLuint( to_numeric( mask_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglIndexMask;
+
+procedure ParsePenglColorMask is
+  -- Syntax: glColorMask( red, green, blue, alpha : GLboolean );
+  -- Source: bush_os.opengl.glColorMask
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+  alpha_val  : unbounded_string;
+  alpha_type : identifier;
+begin
+  expect( pen_glcolormask_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_glboolean_t ); -- red : GLboolean
+  ParseNextNumericParameter( green_val, green_type, pen_glboolean_t ); -- green : GLboolean
+  ParseNextNumericParameter( blue_val, blue_type, pen_glboolean_t ); -- blue : GLboolean
+  ParseLastNumericParameter( alpha_val, alpha_type, pen_glboolean_t ); -- alpha : GLboolean
+  if isExecutingCommand then
+    begin
+      glColorMask( GLboolean( to_numeric( red_val ) ), GLboolean( to_numeric( green_val ) ), GLboolean( to_numeric( blue_val ) ), GLboolean( to_numeric( alpha_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColorMask;
+
+procedure ParsePenglAlphaFunc is
+  -- Syntax: glAlphaFunc( func : GLalphacompare; ref : GLclampf );
+  -- Source: bush_os.opengl.glAlphaFunc
+  func_val  : unbounded_string;
+  func_type : identifier;
+  ref_val  : unbounded_string;
+  ref_type : identifier;
+begin
+  expect( pen_glalphafunc_t );
+  ParseFirstNumericParameter( func_val, func_type, pen_glalphacompare_t ); -- func : GLalphacompare
+  ParseLastNumericParameter( ref_val, ref_type, pen_glclampf_t ); -- ref : GLclampf
+  if isExecutingCommand then
+    begin
+      glAlphaFunc( GLalphacompare( to_numeric( func_val ) ), GLclampf( to_numeric( ref_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglAlphaFunc;
+
+procedure ParsePenglBlendFunc is
+  -- Syntax: glBlendFunc( sfactor, dfactor : GLblending );
+  -- Source: bush_os.opengl.glBlendFunc
+  sfactor_val  : unbounded_string;
+  sfactor_type : identifier;
+  dfactor_val  : unbounded_string;
+  dfactor_type : identifier;
+begin
+  expect( pen_glblendfunc_t );
+  ParseFirstNumericParameter( sfactor_val, sfactor_type, pen_glblending_t ); -- sfactor : GLblending
+  ParseLastNumericParameter( dfactor_val, dfactor_type, pen_glblending_t ); -- dfactor : GLblending
+  if isExecutingCommand then
+    begin
+      glBlendFunc( GLblending( to_numeric( sfactor_val ) ), GLblending( to_numeric( dfactor_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglBlendFunc;
+
+procedure ParsePenglLogicOp is
+  -- Syntax: glLogicOp( opcode : GLlogicops );
+  -- Source: bush_os.opengl.glLogicOp
+  opcode_val  : unbounded_string;
+  opcode_type : identifier;
+begin
+  expect( pen_gllogicop_t );
+  ParseSingleNumericParameter( opcode_val, opcode_type, pen_gllogicops_t ); -- opcode : GLlogicops
+  if isExecutingCommand then
+    begin
+      glLogicOp( GLlogicops( to_numeric( opcode_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLogicOp;
+
+procedure ParsePenglCullFace is
+  -- Syntax: glCullFace( mode : GLbuffers );
+  -- Source: bush_os.opengl.glCullFace
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+begin
+  expect( pen_glcullface_t );
+  ParseSingleNumericParameter( mode_val, mode_type, pen_glbuffers_t ); -- mode : GLbuffers
+  if isExecutingCommand then
+    begin
+      glCullFace( GLbuffers( to_numeric( mode_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCullFace;
+
+procedure ParsePenglFrontFace is
+  -- Syntax: glFrontFace( mode : GLpolygons );
+  -- Source: bush_os.opengl.glFrontFace
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+begin
+  expect( pen_glfrontface_t );
+  ParseSingleNumericParameter( mode_val, mode_type, pen_glpolygons_t ); -- mode : GLpolygons
+  if isExecutingCommand then
+    begin
+      glFrontFace( GLpolygons( to_numeric( mode_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglFrontFace;
+
+procedure ParsePenglPointSize is
+  -- Syntax: glPointSize( size : GLfloat );
+  -- Source: bush_os.opengl.glPointSize
+  size_val  : unbounded_string;
+  size_type : identifier;
+begin
+  expect( pen_glpointsize_t );
+  ParseSingleNumericParameter( size_val, size_type, pen_glfloat_t ); -- size : GLfloat
+  if isExecutingCommand then
+    begin
+      glPointSize( GLfloat( to_numeric( size_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPointSize;
+
+procedure ParsePenglLineWidth is
+  -- Syntax: glLineWidth( width : GLfloat );
+  -- Source: bush_os.opengl.glLineWidth
+  width_val  : unbounded_string;
+  width_type : identifier;
+begin
+  expect( pen_gllinewidth_t );
+  ParseSingleNumericParameter( width_val, width_type, pen_glfloat_t ); -- width : GLfloat
+  if isExecutingCommand then
+    begin
+      glLineWidth( GLfloat( to_numeric( width_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLineWidth;
+
+procedure ParsePenglLineStipple is
+  -- Syntax: glLineStipple( factor : GLint; pattern : GLushort );
+  -- Source: bush_os.opengl.glLineStipple
+  factor_val  : unbounded_string;
+  factor_type : identifier;
+  pattern_val  : unbounded_string;
+  pattern_type : identifier;
+begin
+  expect( pen_gllinestipple_t );
+  ParseFirstNumericParameter( factor_val, factor_type, pen_glint_t ); -- factor : GLint
+  ParseLastNumericParameter( pattern_val, pattern_type, pen_glushort_t ); -- pattern : GLushort
+  if isExecutingCommand then
+    begin
+      glLineStipple( GLint( to_numeric( factor_val ) ), GLushort( to_numeric( pattern_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLineStipple;
+
+procedure ParsePenglPolygonMode is
+  -- Syntax: glPolygonMode( face : GLbuffers; mode : GLpolygons );
+  -- Source: bush_os.opengl.glPolygonMode
+  face_val  : unbounded_string;
+  face_type : identifier;
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+begin
+  expect( pen_glpolygonmode_t );
+  ParseFirstNumericParameter( face_val, face_type, pen_glbuffers_t ); -- face : GLbuffers
+  ParseLastNumericParameter( mode_val, mode_type, pen_glpolygons_t ); -- mode : GLpolygons
+  if isExecutingCommand then
+    begin
+      glPolygonMode( GLbuffers( to_numeric( face_val ) ), GLpolygons( to_numeric( mode_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPolygonMode;
+
+procedure ParsePenglPolygonOffset is
+  -- Syntax: glPolygonOffset( factor : GLfloat; units : GLfloat );
+  -- Source: bush_os.opengl.glPolygonOffset
+  factor_val  : unbounded_string;
+  factor_type : identifier;
+  units_val  : unbounded_string;
+  units_type : identifier;
+begin
+  expect( pen_glpolygonoffset_t );
+  ParseFirstNumericParameter( factor_val, factor_type, pen_glfloat_t ); -- factor : GLfloat
+  ParseLastNumericParameter( units_val, units_type, pen_glfloat_t ); -- units : GLfloat
+  if isExecutingCommand then
+    begin
+      glPolygonOffset( GLfloat( to_numeric( factor_val ) ), GLfloat( to_numeric( units_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPolygonOffset;
+
+procedure ParsePenglPolygonStipple is
+  -- Syntax: glPolygonStipple( mask : in out GLubyte );
+  -- Source: bush_os.opengl.glPolygonStipple
+  mask_id : identifier;
+begin
+  expect( pen_glpolygonstipple_t );
+  ParseSingleInOutParameter( mask_id, pen_glubyte_t ); -- mask : GLubyte
+  if isExecutingCommand then
+    declare
+      mask : GLUbyte := GLubyte( to_numeric( identifiers( mask_id ).value ) );
+    begin
+      glPolygonStipple( mask );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPolygonStipple;
+
+procedure ParsePenglGetPolygonStipple is
+  -- Syntax: glGetPolygonStipple( mask : GLubyte );
+  -- Source: bush_os.opengl.glGetPolygonStipple
+  mask_val  : unbounded_string;
+  mask_type : identifier;
+begin
+  expect( pen_glgetpolygonstipple_t );
+  ParseSingleNumericParameter( mask_val, mask_type, pen_glubyte_t ); -- mask : GLubyte
+  if isExecutingCommand then
+    begin
+      glGetPolygonStipple( GLubyte( to_numeric( mask_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetPolygonStipple;
+
+procedure ParsePenglEdgeFlag is
+  -- Syntax: glEdgeFlag( flag : GLboolean );
+  -- Source: bush_os.opengl.glEdgeFlag
+  flag_val  : unbounded_string;
+  flag_type : identifier;
+begin
+  expect( pen_gledgeflag_t );
+  ParseSingleNumericParameter( flag_val, flag_type, pen_glboolean_t ); -- flag : GLboolean
+  if isExecutingCommand then
+    begin
+      glEdgeFlag( GLboolean( to_numeric( flag_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEdgeFlag;
+
+procedure ParsePenglEdgeFlagv is
+  -- Syntax: glEdgeFlagv( flag : in out GLboolean );
+  -- Source: bush_os.opengl.glEdgeFlagv
+  flag_id : identifier;
+begin
+  expect( pen_gledgeflagv_t );
+  ParseSingleInOutParameter( flag_id, pen_glboolean_t ); -- flag : GLboolean
+  if isExecutingCommand then
+    declare
+      flag : GLboolean := GLboolean( to_numeric( identifiers( flag_id ).value ) );
+    begin
+      glEdgeFlagv( flag );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEdgeFlagv;
+
+procedure ParsePenglScissor is
+  -- Syntax: glScissor( x, y : GLint; width, height : GLsizei );
+  -- Source: bush_os.opengl.glScissor
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+begin
+  expect( pen_glscissor_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseLastNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  if isExecutingCommand then
+    begin
+      glScissor( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglScissor;
+
+-- TODO: to return array
+--procedure ParsePenglClipPlane is
+--  -- Syntax: glClipPlane( plane : GLusercplane; equation : in out GLdouble );
+--  -- Source: bush_os.opengl.glClipPlane
+--  plane_val  : unbounded_string;
+--  plane_type : identifier;
+--  equation_val  : unbounded_string;
+--  equation_type : identifier;
+--begin
+--  expect( pen_glclipplane_t );
+--  ParseFirstNumericParameter( plane_val, plane_type, pen_glusercplane_t ); -- plane : GLusercplane
+--  ParseLastInOutNumericParameter( equation_val, equation_type, pen_gldouble_t ); -- equation : GLdouble
+--  if isExecutingCommand then
+--    declare
+--      equation : double_vertex_4d;
+--    begin
+--      glClipPlane( GLusercplane( to_numeric( plane_val ) ), equation( equation'first )'address );
+--    exception when others =>
+--      err( "exception raised" );
+--    end;
+--  end if;
+--end ParsePenglClipPlane;
+
+-- TODO: to return array
+--procedure ParsePenglGetClipPlane is
+--  -- Syntax: glGetClipPlane( plane : GLusercplane; equation : in out GLdouble );
+--  -- Source: bush_os.opengl.glGetClipPlane
+--  plane_val  : unbounded_string;
+--  plane_type : identifier;
+--  equation_val  : unbounded_string;
+--  equation_type : identifier;
+--begin
+--  expect( pen_glgetclipplane_t );
+--  ParseFirstNumericParameter( plane_val, plane_type, pen_glusercplane_t ); -- plane : GLusercplane
+--  ParseLastNumericParameter( equation_val, equation_type, pen_gldouble_t ); -- equation : GLdouble
+--  if isExecutingCommand then
+--    begin
+--      glGetClipPlane( GLusercplane( to_numeric( plane_val ) ), GLdouble( to_numeric( equation_val ) ) );
+--    exception when others =>
+--      err( "exception raised" );
+--    end;
+--  end if;
+--end ParsePenglGetClipPlane;
+
+procedure ParsePenglDrawBuffer is
+  -- Syntax: glDrawBuffer( mode : GLbuffers );
+  -- Source: bush_os.opengl.glDrawBuffer
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+begin
+  expect( pen_gldrawbuffer_t );
+  ParseSingleNumericParameter( mode_val, mode_type, pen_glbuffers_t ); -- mode : GLbuffers
+  if isExecutingCommand then
+    begin
+      glDrawBuffer( GLbuffers( to_numeric( mode_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglDrawBuffer;
+
+procedure ParsePenglReadBuffer is
+  -- Syntax: glReadBuffer( mode : GLbuffers );
+  -- Source: bush_os.opengl.glReadBuffer
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+begin
+  expect( pen_glreadbuffer_t );
+  ParseSingleNumericParameter( mode_val, mode_type, pen_glbuffers_t ); -- mode : GLbuffers
+  if isExecutingCommand then
+    begin
+      glReadBuffer( GLbuffers( to_numeric( mode_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglReadBuffer;
+
+procedure ParsePenglEnable is
+  -- Syntax: glEnable( cap : GLenum ); -- left as GLenum
+  -- Source: bush_os.opengl.glEnable
+  cap_val  : unbounded_string;
+  cap_type : identifier;
+begin
+  expect( pen_glenable_t );
+  ParseSingleNumericParameter( cap_val, cap_type, pen_glenum_t ); -- cap : GLenum
+  if isExecutingCommand then
+    begin
+      glEnable( GLenum( to_numeric( cap_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEnable;
+
+procedure ParsePenglDisable is
+  -- Syntax: glDisable( cap : GLenum ); -- left as GLenum
+  -- Source: bush_os.opengl.glDisable
+  cap_val  : unbounded_string;
+  cap_type : identifier;
+begin
+  expect( pen_gldisable_t );
+  ParseSingleNumericParameter( cap_val, cap_type, pen_glenum_t ); -- cap : GLenum
+  if isExecutingCommand then
+    begin
+      glDisable( GLenum( to_numeric( cap_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglDisable;
+
+procedure ParsePenglIsEnabled( result : out unbounded_string ) is
+  -- Syntax: glIsEnabled( cap : GLenum ) return GLboolean; -- left as GLenum
+  -- Source: bush_os.opengl.glIsEnabled
+  cap_val  : unbounded_string;
+  cap_type : identifier;
+begin
+  expect( pen_glisenabled_t );
+  ParseSingleNumericParameter( cap_val, cap_type, pen_glenum_t ); -- cap : GLenum
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( glIsEnabled( GLenum( to_numeric( cap_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglIsEnabled;
+
+procedure ParsePenglEnableClientState is
+  -- Syntax: glEnableClientState( cap : GLenum ); -- /* 1.1 */
+  -- Source: bush_os.opengl.glEnableClientState
+  cap_val  : unbounded_string;
+  cap_type : identifier;
+begin
+  expect( pen_glenableclientstate_t );
+  ParseSingleNumericParameter( cap_val, cap_type, pen_glenum_t ); -- cap : GLenum
+  if isExecutingCommand then
+    begin
+      glEnableClientState( GLenum( to_numeric( cap_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEnableClientState;
+
+procedure ParsePenglDisableClientState is
+  -- Syntax: glDisableClientState( cap : GLenum ); -- /* 1.1 */
+  -- Source: bush_os.opengl.glDisableClientState
+  cap_val  : unbounded_string;
+  cap_type : identifier;
+begin
+  expect( pen_gldisableclientstate_t );
+  ParseSingleNumericParameter( cap_val, cap_type, pen_glenum_t ); -- cap : GLenum
+  if isExecutingCommand then
+    begin
+      glDisableClientState( GLenum( to_numeric( cap_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglDisableClientState;
+
+-- TODO: this is a buffer overflow risk: the return size depends on the first param
+--procedure ParsePenglGetBooleanv is
+--  -- Syntax: glGetBooleanv( pname : GLenum; params : in out GLboolean );
+--  -- Source: bush_os.opengl.glGetBooleanv
+--  pname_val  : unbounded_string;
+--  pname_type : identifier;
+--  params_id  : unbounded_string;
+--begin
+--  expect( pen_glgetbooleanv_t );
+--  ParseFirstNumericParameter( pname_val, pname_type, pen_glenum_t ); -- pname : GLenum
+--  ParseLastInOutParameter( params_id, pen_glboolean_t ); -- params : GLboolean
+--  if isExecutingCommand then
+--    declare
+--      params : GLboolean;
+--    begin
+--      glGetBooleanv( GLenum( to_numeric( pname_val ) ), params );
+--    exception when others =>
+--      err( "exception raised" );
+--    end;
+--  end if;
+--end ParsePenglGetBooleanv;
+
+-- TODO: this is a buffer overflow risk: the return size depends on the first param
+--procedure ParsePenglGetDoublev is
+--  -- Syntax: glGetDoublev( pname : GLenum; params : in out GLdouble );
+--  -- Source: bush_os.opengl.glGetDoublev
+--  pname_val  : unbounded_string;
+--  pname_type : identifier;
+--  params_val  : unbounded_string;
+--  params_type : identifier;
+--begin
+--  expect( pen_glgetdoublev_t );
+--  ParseFirstNumericParameter( pname_val, pname_type, pen_glenum_t ); -- pname : GLenum
+--  ParseLastNumericParameter( params_val, params_type, pen_gldouble_t ); -- params : GLdouble
+--  if isExecutingCommand then
+--    begin
+--      glGetDoublev( GLenum( to_numeric( pname_val ) ), GLdouble( to_numeric( params_val ) ) );
+--    exception when others =>
+--      err( "exception raised" );
+--    end;
+--  end if;
+--end ParsePenglGetDoublev;
+
+-- TODO: this is a buffer overflow risk: the return size depends on the first param
+--procedure ParsePenglGetFloatv is
+--  -- Syntax: glGetFloatv( pname : GLenum; params : in out GLfloat );
+--  -- Source: bush_os.opengl.glGetFloatv
+--  pname_val  : unbounded_string;
+--  pname_type : identifier;
+--  params_val  : unbounded_string;
+--  params_type : identifier;
+--begin
+--  expect( pen_glgetfloatv_t );
+--  ParseFirstNumericParameter( pname_val, pname_type, pen_glenum_t ); -- pname : GLenum
+--  ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
+--  if isExecutingCommand then
+--    begin
+--      glGetFloatv( GLenum( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+--    exception when others =>
+--      err( "exception raised" );
+--    end;
+--  end if;
+--end ParsePenglGetFloatv;
+
+-- TODO: this is a buffer overflow risk: the return size depends on the first param
+--procedure ParsePenglGetIntegerv is
+--  -- Syntax: glGetIntegerv( pname : GLenum; params : in out GLint );
+--  -- Source: bush_os.opengl.glGetIntegerv
+--  pname_val  : unbounded_string;
+--  pname_type : identifier;
+--  params_val  : unbounded_string;
+--  params_type : identifier;
+--begin
+--  expect( pen_glgetintegerv_t );
+--  ParseFirstNumericParameter( pname_val, pname_type, pen_glenum_t ); -- pname : GLenum
+--  ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
+--  if isExecutingCommand then
+--    begin
+--      glGetIntegerv( GLenum( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+--    exception when others =>
+--      err( "exception raised" );
+--    end;
+--  end if;
+--end ParsePenglGetIntegerv;
+
+procedure ParsePenglPushAttrib is
+  -- Syntax: glPushAttrib( mask : GLbitfield );
+  -- Source: bush_os.opengl.glPushAttrib
+  mask_val  : unbounded_string;
+  mask_type : identifier;
+begin
+  expect( pen_glpushattrib_t );
+  ParseSingleNumericParameter( mask_val, mask_type, pen_glbitfield_t ); -- mask : GLbitfield
+  if isExecutingCommand then
+    begin
+      glPushAttrib( GLbitfield( to_numeric( mask_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPushAttrib;
+
+procedure ParsePenglPopAttrib is
+  -- Syntax: glPopAttrib;
+  -- Source: bush_os.opengl.glPopAttrib
+begin
+  expect( pen_glpopattrib_t );
+  if isExecutingCommand then
+    begin
+      glPopAttrib;
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPopAttrib;
+
+procedure ParsePenglPushClientAttrib is
+  -- Syntax: glPushClientAttrib( mask : GLbitfield ); -- /* 1.1 */
+  -- Source: bush_os.opengl.glPushClientAttrib
+  mask_val  : unbounded_string;
+  mask_type : identifier;
+begin
+  expect( pen_glpushclientattrib_t );
+  ParseSingleNumericParameter( mask_val, mask_type, pen_glbitfield_t ); -- mask : GLbitfield
+  if isExecutingCommand then
+    begin
+      glPushClientAttrib( GLbitfield( to_numeric( mask_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPushClientAttrib;
+
+procedure ParsePenglPopClientAttrib is
+  -- Syntax: glPopClientAttrib; -- /* 1.1 */
+  -- Source: bush_os.opengl.glPopClientAttrib
+begin
+  expect( pen_glpopclientattrib_t );
+  if isExecutingCommand then
+    begin
+      glPopClientAttrib;
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPopClientAttrib;
+
+procedure ParsePenglRenderMode( result : out unbounded_string ) is
+  -- Syntax: glRenderMode( mode : GLrendermodes ) return GLint;
+  -- Source: bush_os.opengl.glRenderMode
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+begin
+  expect( pen_glrendermode_t );
+  ParseSingleNumericParameter( mode_val, mode_type, pen_glrendermodes_t ); -- mode : GLrendermodes
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( glRenderMode( GLrendermodes( to_numeric( mode_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRenderMode;
+
+procedure ParsePenglGetError( result : out unbounded_string ) is
+  -- Syntax: glGetError return GLenum;
+  -- Source: bush_os.opengl.glGetError
+begin
+  expect( pen_glgeterror_t );
+  if isExecutingCommand then
+    declare
+      errNum : GLenum := glGetError;
+    begin
+      result := to_unbounded_string( long_float( errNum ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetError;
+
+procedure ParsePenglGetString( result : out unbounded_string ) is
+  -- Syntax: glGetString( name : GLenum ) return system.address; -- GLUbyte*
+  -- Source: bush_os.opengl.glGetString
+  name_val  : unbounded_string;
+  name_type : identifier;
+begin
+  expect( pen_glgetstring_t );
+  ParseSingleNumericParameter( name_val, name_type, pen_glenum_t ); -- name : GLenum
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( glGetString( GLenum( to_numeric( name_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetString;
+
+procedure ParsePenglFinish is
+  -- Syntax: glFinish;
+  -- Source: bush_os.opengl.glFinish
+begin
+  expect( pen_glfinish_t );
+  if isExecutingCommand then
+    begin
+      glFinish;
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglFinish;
+
+procedure ParsePenglFlush is
+  -- Syntax: glFlush;
+  -- Source: bush_os.opengl.glFlush
+begin
+  expect( pen_glflush_t );
+  if isExecutingCommand then
+    begin
+      glFlush;
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglFlush;
+
+procedure ParsePenglHint is
+  -- Syntax: glHint( target : GLhints; mode : GLhintmodes );
+  -- Source: bush_os.opengl.glHint
+  target_val  : unbounded_string;
+  target_type : identifier;
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+begin
+  expect( pen_glhint_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glhints_t ); -- target : GLhints
+  ParseLastNumericParameter( mode_val, mode_type, pen_glhintmodes_t ); -- mode : GLhintmodes
+  if isExecutingCommand then
+    begin
+      glHint( GLhints( to_numeric( target_val ) ), GLhintmodes( to_numeric( mode_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglHint;
+
+procedure ParsePenglClearDepth is
+  -- Syntax: glClearDepth( depth : GLclampd );
+  -- Source: bush_os.opengl.glClearDepth
+  depth_val  : unbounded_string;
+  depth_type : identifier;
+begin
+  expect( pen_glcleardepth_t );
+  ParseSingleNumericParameter( depth_val, depth_type, pen_glclampd_t ); -- depth : GLclampd
+  if isExecutingCommand then
+    begin
+      glClearDepth( GLclampd( to_numeric( depth_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglClearDepth;
+
+procedure ParsePenglDepthFunc is
+  -- Syntax: glDepthFunc( func : GLalphacompare );
+  -- Source: bush_os.opengl.glDepthFunc
+  func_val  : unbounded_string;
+  func_type : identifier;
+begin
+  expect( pen_gldepthfunc_t );
+  ParseSingleNumericParameter( func_val, func_type, pen_glalphacompare_t ); -- func : GLalphacompare
+  if isExecutingCommand then
+    begin
+      glDepthFunc( GLalphacompare( to_numeric( func_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglDepthFunc;
+
+procedure ParsePenglDepthMask is
+  -- Syntax: glDepthMask( flag : GLboolean );
+  -- Source: bush_os.opengl.glDepthMask
+  flag_val  : unbounded_string;
+  flag_type : identifier;
+begin
+  expect( pen_gldepthmask_t );
+  ParseSingleNumericParameter( flag_val, flag_type, pen_glboolean_t ); -- flag : GLboolean
+  if isExecutingCommand then
+    begin
+      glDepthMask( GLboolean( to_numeric( flag_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglDepthMask;
+
+procedure ParsePenglDepthRange is
+  -- Syntax: glDepthRange( near_val, far_val : GLclampd );
+  -- Source: bush_os.opengl.glDepthRange
+  near_val_val  : unbounded_string;
+  near_val_type : identifier;
+  far_val_val  : unbounded_string;
+  far_val_type : identifier;
+begin
+  expect( pen_gldepthrange_t );
+  ParseFirstNumericParameter( near_val_val, near_val_type, pen_glclampd_t ); -- near_val : GLclampd
+  ParseLastNumericParameter( far_val_val, far_val_type, pen_glclampd_t ); -- far_val : GLclampd
+  if isExecutingCommand then
+    begin
+      glDepthRange( GLclampd( to_numeric( near_val_val ) ), GLclampd( to_numeric( far_val_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglDepthRange;
+
+procedure ParsePenglClearAccum is
+  -- Syntax: glClearAccum( red, green, blue, alpha : GLfloat );
+  -- Source: bush_os.opengl.glClearAccum
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+  alpha_val  : unbounded_string;
+  alpha_type : identifier;
+begin
+  expect( pen_glclearaccum_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_glfloat_t ); -- red : GLfloat
+  ParseNextNumericParameter( green_val, green_type, pen_glfloat_t ); -- green : GLfloat
+  ParseNextNumericParameter( blue_val, blue_type, pen_glfloat_t ); -- blue : GLfloat
+  ParseLastNumericParameter( alpha_val, alpha_type, pen_glfloat_t ); -- alpha : GLfloat
+  if isExecutingCommand then
+    begin
+      glClearAccum( GLfloat( to_numeric( red_val ) ), GLfloat( to_numeric( green_val ) ), GLfloat( to_numeric( blue_val ) ), GLfloat( to_numeric( alpha_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglClearAccum;
+
+procedure ParsePenglAccum is
+  -- Syntax: glAccum( op : GLenum; value : GLfloat );
+  -- Source: bush_os.opengl.glAccum
+  op_val  : unbounded_string;
+  op_type : identifier;
+  value_val  : unbounded_string;
+  value_type : identifier;
+begin
+  expect( pen_glaccum_t );
+  ParseFirstNumericParameter( op_val, op_type, pen_glenum_t ); -- op : GLenum
+  ParseLastNumericParameter( value_val, value_type, pen_glfloat_t ); -- value : GLfloat
+  if isExecutingCommand then
+    begin
+      glAccum( GLenum( to_numeric( op_val ) ), GLfloat( to_numeric( value_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglAccum;
+
+procedure ParsePenglMatrixMode is
+  -- Syntax: glMatrixMode( mode : GLmodes );
+  -- Source: bush_os.opengl.glMatrixMode
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+begin
+  expect( pen_glmatrixmode_t );
+  ParseSingleNumericParameter( mode_val, mode_type, pen_glmodes_t ); -- mode : GLmodes
+  if isExecutingCommand then
+    begin
+      glMatrixMode( GLmodes( to_numeric( mode_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMatrixMode;
+
+procedure ParsePenglOrtho is
+  -- Syntax: glOrtho( left, right, bottom, top, near_val, far_val : GLdouble );
+  -- Source: bush_os.opengl.glOrtho
+  left_val  : unbounded_string;
+  left_type : identifier;
+  right_val  : unbounded_string;
+  right_type : identifier;
+  bottom_val  : unbounded_string;
+  bottom_type : identifier;
+  top_val  : unbounded_string;
+  top_type : identifier;
+  near_val_val  : unbounded_string;
+  near_val_type : identifier;
+  far_val_val  : unbounded_string;
+  far_val_type : identifier;
+begin
+  expect( pen_glortho_t );
+  ParseFirstNumericParameter( left_val, left_type, pen_gldouble_t ); -- left : GLdouble
+  ParseNextNumericParameter( right_val, right_type, pen_gldouble_t ); -- right : GLdouble
+  ParseNextNumericParameter( bottom_val, bottom_type, pen_gldouble_t ); -- bottom : GLdouble
+  ParseNextNumericParameter( top_val, top_type, pen_gldouble_t ); -- top : GLdouble
+  ParseNextNumericParameter( near_val_val, near_val_type, pen_gldouble_t ); -- near_val : GLdouble
+  ParseLastNumericParameter( far_val_val, far_val_type, pen_gldouble_t ); -- far_val : GLdouble
+  if isExecutingCommand then
+    begin
+      glOrtho( GLdouble( to_numeric( left_val ) ), GLdouble( to_numeric( right_val ) ), GLdouble( to_numeric( bottom_val ) ), GLdouble( to_numeric( top_val ) ), GLdouble( to_numeric( near_val_val ) ), GLdouble( to_numeric( far_val_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglOrtho;
+
+procedure ParsePenglFrustum is
+  -- Syntax: glFrustum( left, right, bottom, top, near_val, far_val : GLdouble );
+  -- Source: bush_os.opengl.glFrustum
+  left_val  : unbounded_string;
+  left_type : identifier;
+  right_val  : unbounded_string;
+  right_type : identifier;
+  bottom_val  : unbounded_string;
+  bottom_type : identifier;
+  top_val  : unbounded_string;
+  top_type : identifier;
+  near_val_val  : unbounded_string;
+  near_val_type : identifier;
+  far_val_val  : unbounded_string;
+  far_val_type : identifier;
+begin
+  expect( pen_glfrustum_t );
+  ParseFirstNumericParameter( left_val, left_type, pen_gldouble_t ); -- left : GLdouble
+  ParseNextNumericParameter( right_val, right_type, pen_gldouble_t ); -- right : GLdouble
+  ParseNextNumericParameter( bottom_val, bottom_type, pen_gldouble_t ); -- bottom : GLdouble
+  ParseNextNumericParameter( top_val, top_type, pen_gldouble_t ); -- top : GLdouble
+  ParseNextNumericParameter( near_val_val, near_val_type, pen_gldouble_t ); -- near_val : GLdouble
+  ParseLastNumericParameter( far_val_val, far_val_type, pen_gldouble_t ); -- far_val : GLdouble
+  if isExecutingCommand then
+    begin
+      glFrustum( GLdouble( to_numeric( left_val ) ), GLdouble( to_numeric( right_val ) ), GLdouble( to_numeric( bottom_val ) ), GLdouble( to_numeric( top_val ) ), GLdouble( to_numeric( near_val_val ) ), GLdouble( to_numeric( far_val_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglFrustum;
+
+procedure ParsePenglViewport is
+  -- Syntax: glViewport( x, y : GLint; width, height : GLsizei );
+  -- Source: bush_os.opengl.glViewport
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+begin
+  expect( pen_glviewport_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseLastNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  if isExecutingCommand then
+    begin
+      glViewport( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglViewport;
+
+procedure ParsePenglPushMatrix is
+  -- Syntax: glPushMatrix;
+  -- Source: bush_os.opengl.glPushMatrix
+begin
+  expect( pen_glpushmatrix_t );
+  if isExecutingCommand then
+    begin
+      glPushMatrix;
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPushMatrix;
+
+procedure ParsePenglPopMatrix is
+  -- Syntax: glPopMatrix;
+  -- Source: bush_os.opengl.glPopMatrix
+begin
+  expect( pen_glpopmatrix_t );
+  if isExecutingCommand then
+    begin
+      glPopMatrix;
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPopMatrix;
+
+procedure ParsePenglLoadIdentity is
+  -- Syntax: glLoadIdentity;
+  -- Source: bush_os.opengl.glLoadIdentity
+begin
+  expect( pen_glloadidentity_t );
+  if isExecutingCommand then
+    begin
+      glLoadIdentity;
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLoadIdentity;
+
+procedure ParsePenglLoadMatrixd is
+  -- Syntax: glLoadMatrixd( m : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glLoadMatrixd
+  m_val  : unbounded_string;
+  m_type : identifier;
+begin
+  expect( pen_glloadmatrixd_t );
+  ParseSingleNumericParameter( m_val, m_type, pen_gl_double_array_ptr_t ); -- m : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glLoadMatrixd( GL_Double_Array_Ptr( to_numeric( m_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLoadMatrixd;
+
+procedure ParsePenglLoadMatrixf is
+  -- Syntax: glLoadMatrixf( m : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glLoadMatrixf
+  m_val  : unbounded_string;
+  m_type : identifier;
+begin
+  expect( pen_glloadmatrixf_t );
+  ParseSingleNumericParameter( m_val, m_type, pen_gl_float_array_ptr_t ); -- m : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glLoadMatrixf( GL_Float_Array_Ptr( to_numeric( m_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLoadMatrixf;
+
+procedure ParsePenglMultMatrixd is
+  -- Syntax: glMultMatrixd( m : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glMultMatrixd
+  m_val  : unbounded_string;
+  m_type : identifier;
+begin
+  expect( pen_glmultmatrixd_t );
+  ParseSingleNumericParameter( m_val, m_type, pen_gl_double_array_ptr_t ); -- m : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glMultMatrixd( GL_Double_Array_Ptr( to_numeric( m_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultMatrixd;
+
+procedure ParsePenglMultMatrixf is
+  -- Syntax: glMultMatrixf( m : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glMultMatrixf
+  m_val  : unbounded_string;
+  m_type : identifier;
+begin
+  expect( pen_glmultmatrixf_t );
+  ParseSingleNumericParameter( m_val, m_type, pen_gl_float_array_ptr_t ); -- m : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glMultMatrixf( GL_Float_Array_Ptr( to_numeric( m_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultMatrixf;
+
+procedure ParsePenglRotated is
+  -- Syntax: glRotated( angle, x, y, z : GLdouble );
+  -- Source: bush_os.opengl.glRotated
+  angle_val  : unbounded_string;
+  angle_type : identifier;
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+begin
+  expect( pen_glrotated_t );
+  ParseFirstNumericParameter( angle_val, angle_type, pen_gldouble_t ); -- angle : GLdouble
+  ParseNextNumericParameter( x_val, x_type, pen_gldouble_t ); -- x : GLdouble
+  ParseNextNumericParameter( y_val, y_type, pen_gldouble_t ); -- y : GLdouble
+  ParseLastNumericParameter( z_val, z_type, pen_gldouble_t ); -- z : GLdouble
+  if isExecutingCommand then
+    begin
+      glRotated( GLdouble( to_numeric( angle_val ) ), GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( z_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRotated;
+
+procedure ParsePenglRotatef is
+  -- Syntax: glRotatef( angle, x, y, z : GLfloat );
+  -- Source: bush_os.opengl.glRotatef
+  angle_val  : unbounded_string;
+  angle_type : identifier;
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+begin
+  expect( pen_glrotatef_t );
+  ParseFirstNumericParameter( angle_val, angle_type, pen_glfloat_t ); -- angle : GLfloat
+  ParseNextNumericParameter( x_val, x_type, pen_glfloat_t ); -- x : GLfloat
+  ParseNextNumericParameter( y_val, y_type, pen_glfloat_t ); -- y : GLfloat
+  ParseLastNumericParameter( z_val, z_type, pen_glfloat_t ); -- z : GLfloat
+  if isExecutingCommand then
+    begin
+      glRotatef( GLfloat( to_numeric( angle_val ) ), GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ), GLfloat( to_numeric( z_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRotatef;
+
+procedure ParsePenglScaled is
+  -- Syntax: glScaled( x, y, z : GLdouble );
+  -- Source: bush_os.opengl.glScaled
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+begin
+  expect( pen_glscaled_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_gldouble_t ); -- x : GLdouble
+  ParseNextNumericParameter( y_val, y_type, pen_gldouble_t ); -- y : GLdouble
+  ParseLastNumericParameter( z_val, z_type, pen_gldouble_t ); -- z : GLdouble
+  if isExecutingCommand then
+    begin
+      glScaled( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( z_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglScaled;
+
+procedure ParsePenglScalef is
+  -- Syntax: glScalef( x, y, z : GLfloat );
+  -- Source: bush_os.opengl.glScalef
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+begin
+  expect( pen_glscalef_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glfloat_t ); -- x : GLfloat
+  ParseNextNumericParameter( y_val, y_type, pen_glfloat_t ); -- y : GLfloat
+  ParseLastNumericParameter( z_val, z_type, pen_glfloat_t ); -- z : GLfloat
+  if isExecutingCommand then
+    begin
+      glScalef( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ), GLfloat( to_numeric( z_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglScalef;
+
+procedure ParsePenglTranslated is
+  -- Syntax: glTranslated( x, y, z : GLdouble );
+  -- Source: bush_os.opengl.glTranslated
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+begin
+  expect( pen_gltranslated_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_gldouble_t ); -- x : GLdouble
+  ParseNextNumericParameter( y_val, y_type, pen_gldouble_t ); -- y : GLdouble
+  ParseLastNumericParameter( z_val, z_type, pen_gldouble_t ); -- z : GLdouble
+  if isExecutingCommand then
+    begin
+      glTranslated( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( z_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTranslated;
+
+procedure ParsePenglTranslatef is
+  -- Syntax: glTranslatef( x, y,z : GLfloat );
+  -- Source: bush_os.opengl.glTranslatef
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+begin
+  expect( pen_gltranslatef_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glfloat_t ); -- x : GLfloat
+  ParseNextNumericParameter( y_val, y_type, pen_glfloat_t ); -- y : GLfloat
+  ParseLastNumericParameter( z_val, z_type, pen_glfloat_t ); -- z : GLfloat
+  if isExecutingCommand then
+    begin
+      glTranslatef( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ), GLfloat( to_numeric( z_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTranslatef;
+
+procedure ParsePenglIsList( result : out unbounded_string ) is
+  -- Syntax: glIsList( list : GLuint ) return GLboolean;
+  -- Source: bush_os.opengl.glIsList
+  list_val  : unbounded_string;
+  list_type : identifier;
+begin
+  expect( pen_glislist_t );
+  ParseSingleNumericParameter( list_val, list_type, pen_gluint_t ); -- list : GLuint
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( glIsList( GLuint( to_numeric( list_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglIsList;
+
+procedure ParsePenglDeleteLists is
+  -- Syntax: glDeleteLists( list : GLuint; rng : GLsizei );
+  -- Source: bush_os.opengl.glDeleteLists
+  list_val  : unbounded_string;
+  list_type : identifier;
+  rng_val  : unbounded_string;
+  rng_type : identifier;
+begin
+  expect( pen_gldeletelists_t );
+  ParseFirstNumericParameter( list_val, list_type, pen_gluint_t ); -- list : GLuint
+  ParseLastNumericParameter( rng_val, rng_type, pen_glsizei_t ); -- rng : GLsizei
+  if isExecutingCommand then
+    begin
+      glDeleteLists( GLuint( to_numeric( list_val ) ), GLsizei( to_numeric( rng_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglDeleteLists;
+
+procedure ParsePenglGenLists( result : out unbounded_string ) is
+  -- Syntax: glGenLists( rng : GLsizei ) return GLuint;
+  -- Source: bush_os.opengl.glGenLists
+  rng_val  : unbounded_string;
+  rng_type : identifier;
+begin
+  expect( pen_glgenlists_t );
+  ParseSingleNumericParameter( rng_val, rng_type, pen_glsizei_t ); -- rng : GLsizei
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( glGenLists( GLsizei( to_numeric( rng_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGenLists;
+
+procedure ParsePenglNewList is
+  -- Syntax: glNewList( list : GLuint; mode : GLdlists );
+  -- Source: bush_os.opengl.glNewList
+  list_val  : unbounded_string;
+  list_type : identifier;
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+begin
+  expect( pen_glnewlist_t );
+  ParseFirstNumericParameter( list_val, list_type, pen_gluint_t ); -- list : GLuint
+  ParseLastNumericParameter( mode_val, mode_type, pen_gldlists_t ); -- mode : GLdlists
+  if isExecutingCommand then
+    begin
+      glNewList( GLuint( to_numeric( list_val ) ), GLdlists( to_numeric( mode_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglNewList;
+
+procedure ParsePenglEndList is
+  -- Syntax: glEndList;
+  -- Source: bush_os.opengl.glEndList
+begin
+  expect( pen_glendlist_t );
+  if isExecutingCommand then
+    begin
+      glEndList;
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEndList;
+
+procedure ParsePenglCallList is
+  -- Syntax: glCallList( list : GLuint );
+  -- Source: bush_os.opengl.glCallList
+  list_val  : unbounded_string;
+  list_type : identifier;
+begin
+  expect( pen_glcalllist_t );
+  ParseSingleNumericParameter( list_val, list_type, pen_gluint_t ); -- list : GLuint
+  if isExecutingCommand then
+    begin
+      glCallList( GLuint( to_numeric( list_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCallList;
+
+procedure ParsePenglCallLists is
+  -- Syntax: glCallLists( n : GLsizei; kind : GLtypes; lists : System.address );
+  -- Source: bush_os.opengl.glCallLists
+  n_val  : unbounded_string;
+  n_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  lists_val  : unbounded_string;
+  lists_type : identifier;
+begin
+  expect( pen_glcalllists_t );
+  ParseFirstNumericParameter( n_val, n_type, pen_glsizei_t ); -- n : GLsizei
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( lists_val, lists_type, pen_system.address_t ); -- lists : System.address
+  if isExecutingCommand then
+    begin
+      glCallLists( GLsizei( to_numeric( n_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( lists_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCallLists;
+
+procedure ParsePenglListBase is
+  -- Syntax: glListBase( base : GLuint );
+  -- Source: bush_os.opengl.glListBase
+  base_val  : unbounded_string;
+  base_type : identifier;
+begin
+  expect( pen_gllistbase_t );
+  ParseSingleNumericParameter( base_val, base_type, pen_gluint_t ); -- base : GLuint
+  if isExecutingCommand then
+    begin
+      glListBase( GLuint( to_numeric( base_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglListBase;
+
+procedure ParsePenglBegin is
+  -- Syntax: glBegin( mode : GLprimitives );
+  -- Source: bush_os.opengl.glBegin
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+begin
+  expect( pen_glbegin_t );
+  ParseSingleNumericParameter( mode_val, mode_type, pen_glprimitives_t ); -- mode : GLprimitives
+  if isExecutingCommand then
+    begin
+      glBegin( GLprimitives( to_numeric( mode_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglBegin;
+
+procedure ParsePenglEnd is
+  -- Syntax: glEnd;
+  -- Source: bush_os.opengl.glEnd
+begin
+  expect( pen_glend_t );
+  if isExecutingCommand then
+    begin
+      glEnd;
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEnd;
+
+procedure ParsePenglVertex2d is
+  -- Syntax: glVertex2d( x, y : GLdouble );
+  -- Source: bush_os.opengl.glVertex2d
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+begin
+  expect( pen_glvertex2d_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_gldouble_t ); -- x : GLdouble
+  ParseLastNumericParameter( y_val, y_type, pen_gldouble_t ); -- y : GLdouble
+  if isExecutingCommand then
+    begin
+      glVertex2d( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex2d;
+
+procedure ParsePenglVertex2f is
+  -- Syntax: glVertex2f( x, y : GLfloat );
+  -- Source: bush_os.opengl.glVertex2f
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+begin
+  expect( pen_glvertex2f_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glfloat_t ); -- x : GLfloat
+  ParseLastNumericParameter( y_val, y_type, pen_glfloat_t ); -- y : GLfloat
+  if isExecutingCommand then
+    begin
+      glVertex2f( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex2f;
+
+procedure ParsePenglVertex2i is
+  -- Syntax: glVertex2i( x, y : GLint );
+  -- Source: bush_os.opengl.glVertex2i
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+begin
+  expect( pen_glvertex2i_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseLastNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  if isExecutingCommand then
+    begin
+      glVertex2i( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex2i;
+
+procedure ParsePenglVertex2s is
+  -- Syntax: glVertex2s( x, y : GLshort );
+  -- Source: bush_os.opengl.glVertex2s
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+begin
+  expect( pen_glvertex2s_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glshort_t ); -- x : GLshort
+  ParseLastNumericParameter( y_val, y_type, pen_glshort_t ); -- y : GLshort
+  if isExecutingCommand then
+    begin
+      glVertex2s( GLshort( to_numeric( x_val ) ), GLshort( to_numeric( y_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex2s;
+
+procedure ParsePenglVertex3d is
+  -- Syntax: glVertex3d( x, y, z : GLdouble );
+  -- Source: bush_os.opengl.glVertex3d
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+begin
+  expect( pen_glvertex3d_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_gldouble_t ); -- x : GLdouble
+  ParseNextNumericParameter( y_val, y_type, pen_gldouble_t ); -- y : GLdouble
+  ParseLastNumericParameter( z_val, z_type, pen_gldouble_t ); -- z : GLdouble
+  if isExecutingCommand then
+    begin
+      glVertex3d( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( z_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex3d;
+
+procedure ParsePenglVertex3f is
+  -- Syntax: glVertex3f( x, y, z : GLfloat );
+  -- Source: bush_os.opengl.glVertex3f
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+begin
+  expect( pen_glvertex3f_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glfloat_t ); -- x : GLfloat
+  ParseNextNumericParameter( y_val, y_type, pen_glfloat_t ); -- y : GLfloat
+  ParseLastNumericParameter( z_val, z_type, pen_glfloat_t ); -- z : GLfloat
+  if isExecutingCommand then
+    begin
+      glVertex3f( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ), GLfloat( to_numeric( z_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex3f;
+
+procedure ParsePenglVertex3i is
+  -- Syntax: glVertex3i( x, y, z : GLint );
+  -- Source: bush_os.opengl.glVertex3i
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+begin
+  expect( pen_glvertex3i_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseLastNumericParameter( z_val, z_type, pen_glint_t ); -- z : GLint
+  if isExecutingCommand then
+    begin
+      glVertex3i( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLint( to_numeric( z_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex3i;
+
+procedure ParsePenglVertex3s is
+  -- Syntax: glVertex3s( x, y, z : GLshort );
+  -- Source: bush_os.opengl.glVertex3s
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+begin
+  expect( pen_glvertex3s_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glshort_t ); -- x : GLshort
+  ParseNextNumericParameter( y_val, y_type, pen_glshort_t ); -- y : GLshort
+  ParseLastNumericParameter( z_val, z_type, pen_glshort_t ); -- z : GLshort
+  if isExecutingCommand then
+    begin
+      glVertex3s( GLshort( to_numeric( x_val ) ), GLshort( to_numeric( y_val ) ), GLshort( to_numeric( z_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex3s;
+
+procedure ParsePenglVertex4d is
+  -- Syntax: glVertex4d( x, y, z, w : GLdouble );
+  -- Source: bush_os.opengl.glVertex4d
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+  w_val  : unbounded_string;
+  w_type : identifier;
+begin
+  expect( pen_glvertex4d_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_gldouble_t ); -- x : GLdouble
+  ParseNextNumericParameter( y_val, y_type, pen_gldouble_t ); -- y : GLdouble
+  ParseNextNumericParameter( z_val, z_type, pen_gldouble_t ); -- z : GLdouble
+  ParseLastNumericParameter( w_val, w_type, pen_gldouble_t ); -- w : GLdouble
+  if isExecutingCommand then
+    begin
+      glVertex4d( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( z_val ) ), GLdouble( to_numeric( w_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex4d;
+
+procedure ParsePenglVertex4f is
+  -- Syntax: glVertex4f( x, y, z, w : GLfloat );
+  -- Source: bush_os.opengl.glVertex4f
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+  w_val  : unbounded_string;
+  w_type : identifier;
+begin
+  expect( pen_glvertex4f_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glfloat_t ); -- x : GLfloat
+  ParseNextNumericParameter( y_val, y_type, pen_glfloat_t ); -- y : GLfloat
+  ParseNextNumericParameter( z_val, z_type, pen_glfloat_t ); -- z : GLfloat
+  ParseLastNumericParameter( w_val, w_type, pen_glfloat_t ); -- w : GLfloat
+  if isExecutingCommand then
+    begin
+      glVertex4f( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ), GLfloat( to_numeric( z_val ) ), GLfloat( to_numeric( w_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex4f;
+
+procedure ParsePenglVertex4i is
+  -- Syntax: glVertex4i( x, y, z, w : GLint );
+  -- Source: bush_os.opengl.glVertex4i
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+  w_val  : unbounded_string;
+  w_type : identifier;
+begin
+  expect( pen_glvertex4i_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseNextNumericParameter( z_val, z_type, pen_glint_t ); -- z : GLint
+  ParseLastNumericParameter( w_val, w_type, pen_glint_t ); -- w : GLint
+  if isExecutingCommand then
+    begin
+      glVertex4i( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLint( to_numeric( z_val ) ), GLint( to_numeric( w_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex4i;
+
+procedure ParsePenglVertex4s is
+  -- Syntax: glVertex4s( x, y, z, w : GLshort );
+  -- Source: bush_os.opengl.glVertex4s
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+  w_val  : unbounded_string;
+  w_type : identifier;
+begin
+  expect( pen_glvertex4s_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glshort_t ); -- x : GLshort
+  ParseNextNumericParameter( y_val, y_type, pen_glshort_t ); -- y : GLshort
+  ParseNextNumericParameter( z_val, z_type, pen_glshort_t ); -- z : GLshort
+  ParseLastNumericParameter( w_val, w_type, pen_glshort_t ); -- w : GLshort
+  if isExecutingCommand then
+    begin
+      glVertex4s( GLshort( to_numeric( x_val ) ), GLshort( to_numeric( y_val ) ), GLshort( to_numeric( z_val ) ), GLshort( to_numeric( w_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex4s;
+
+procedure ParsePenglVertex2dv is
+  -- Syntax: glVertex2dv( v : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glVertex2dv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glvertex2dv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glVertex2dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex2dv;
+
+procedure ParsePenglVertex2fv is
+  -- Syntax: glVertex2fv( v : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glVertex2fv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glvertex2fv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glVertex2fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex2fv;
+
+procedure ParsePenglVertex2iv is
+  -- Syntax: glVertex2iv( v : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glVertex2iv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glvertex2iv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glVertex2iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex2iv;
+
+procedure ParsePenglVertex2sv is
+  -- Syntax: glVertex2sv( v : GL_Short_Array_Ptr );
+  -- Source: bush_os.opengl.glVertex2sv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glvertex2sv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glVertex2sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex2sv;
+
+procedure ParsePenglVertex3dv is
+  -- Syntax: glVertex3dv( v : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glVertex3dv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glvertex3dv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glVertex3dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex3dv;
+
+procedure ParsePenglVertex3fv is
+  -- Syntax: glVertex3fv( v : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glVertex3fv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glvertex3fv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glVertex3fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex3fv;
+
+procedure ParsePenglVertex3iv is
+  -- Syntax: glVertex3iv( v : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glVertex3iv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glvertex3iv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glVertex3iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex3iv;
+
+procedure ParsePenglVertex3sv is
+  -- Syntax: glVertex3sv( v : GL_Short_Array_Ptr );
+  -- Source: bush_os.opengl.glVertex3sv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glvertex3sv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glVertex3sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex3sv;
+
+procedure ParsePenglVertex4dv is
+  -- Syntax: glVertex4dv( v : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glVertex4dv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glvertex4dv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glVertex4dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex4dv;
+
+procedure ParsePenglVertex4fv is
+  -- Syntax: glVertex4fv( v : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glVertex4fv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glvertex4fv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glVertex4fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex4fv;
+
+procedure ParsePenglVertex4iv is
+  -- Syntax: glVertex4iv( v : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glVertex4iv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glvertex4iv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glVertex4iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex4iv;
+
+procedure ParsePenglVertex4sv is
+  -- Syntax: glVertex4sv( v : GL_Short_Array_Ptr );
+  -- Source: bush_os.opengl.glVertex4sv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glvertex4sv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glVertex4sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertex4sv;
+
+procedure ParsePenglNormal3b is
+  -- Syntax: glNormal3b( nx, ny, nz : GLbyte );
+  -- Source: bush_os.opengl.glNormal3b
+  nx_val  : unbounded_string;
+  nx_type : identifier;
+  ny_val  : unbounded_string;
+  ny_type : identifier;
+  nz_val  : unbounded_string;
+  nz_type : identifier;
+begin
+  expect( pen_glnormal3b_t );
+  ParseFirstNumericParameter( nx_val, nx_type, pen_glbyte_t ); -- nx : GLbyte
+  ParseNextNumericParameter( ny_val, ny_type, pen_glbyte_t ); -- ny : GLbyte
+  ParseLastNumericParameter( nz_val, nz_type, pen_glbyte_t ); -- nz : GLbyte
+  if isExecutingCommand then
+    begin
+      glNormal3b( GLbyte( to_numeric( nx_val ) ), GLbyte( to_numeric( ny_val ) ), GLbyte( to_numeric( nz_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglNormal3b;
+
+procedure ParsePenglNormal3d is
+  -- Syntax: glNormal3d( nx, ny, nz : GLdouble );
+  -- Source: bush_os.opengl.glNormal3d
+  nx_val  : unbounded_string;
+  nx_type : identifier;
+  ny_val  : unbounded_string;
+  ny_type : identifier;
+  nz_val  : unbounded_string;
+  nz_type : identifier;
+begin
+  expect( pen_glnormal3d_t );
+  ParseFirstNumericParameter( nx_val, nx_type, pen_gldouble_t ); -- nx : GLdouble
+  ParseNextNumericParameter( ny_val, ny_type, pen_gldouble_t ); -- ny : GLdouble
+  ParseLastNumericParameter( nz_val, nz_type, pen_gldouble_t ); -- nz : GLdouble
+  if isExecutingCommand then
+    begin
+      glNormal3d( GLdouble( to_numeric( nx_val ) ), GLdouble( to_numeric( ny_val ) ), GLdouble( to_numeric( nz_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglNormal3d;
+
+procedure ParsePenglNormal3f is
+  -- Syntax: glNormal3f( nx, ny, nz : GLfloat );
+  -- Source: bush_os.opengl.glNormal3f
+  nx_val  : unbounded_string;
+  nx_type : identifier;
+  ny_val  : unbounded_string;
+  ny_type : identifier;
+  nz_val  : unbounded_string;
+  nz_type : identifier;
+begin
+  expect( pen_glnormal3f_t );
+  ParseFirstNumericParameter( nx_val, nx_type, pen_glfloat_t ); -- nx : GLfloat
+  ParseNextNumericParameter( ny_val, ny_type, pen_glfloat_t ); -- ny : GLfloat
+  ParseLastNumericParameter( nz_val, nz_type, pen_glfloat_t ); -- nz : GLfloat
+  if isExecutingCommand then
+    begin
+      glNormal3f( GLfloat( to_numeric( nx_val ) ), GLfloat( to_numeric( ny_val ) ), GLfloat( to_numeric( nz_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglNormal3f;
+
+procedure ParsePenglNormal3i is
+  -- Syntax: glNormal3i( nx, ny, nz : GLint );
+  -- Source: bush_os.opengl.glNormal3i
+  nx_val  : unbounded_string;
+  nx_type : identifier;
+  ny_val  : unbounded_string;
+  ny_type : identifier;
+  nz_val  : unbounded_string;
+  nz_type : identifier;
+begin
+  expect( pen_glnormal3i_t );
+  ParseFirstNumericParameter( nx_val, nx_type, pen_glint_t ); -- nx : GLint
+  ParseNextNumericParameter( ny_val, ny_type, pen_glint_t ); -- ny : GLint
+  ParseLastNumericParameter( nz_val, nz_type, pen_glint_t ); -- nz : GLint
+  if isExecutingCommand then
+    begin
+      glNormal3i( GLint( to_numeric( nx_val ) ), GLint( to_numeric( ny_val ) ), GLint( to_numeric( nz_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglNormal3i;
+
+procedure ParsePenglNormal3s is
+  -- Syntax: glNormal3s( nx, ny, nz : GLshort );
+  -- Source: bush_os.opengl.glNormal3s
+  nx_val  : unbounded_string;
+  nx_type : identifier;
+  ny_val  : unbounded_string;
+  ny_type : identifier;
+  nz_val  : unbounded_string;
+  nz_type : identifier;
+begin
+  expect( pen_glnormal3s_t );
+  ParseFirstNumericParameter( nx_val, nx_type, pen_glshort_t ); -- nx : GLshort
+  ParseNextNumericParameter( ny_val, ny_type, pen_glshort_t ); -- ny : GLshort
+  ParseLastNumericParameter( nz_val, nz_type, pen_glshort_t ); -- nz : GLshort
+  if isExecutingCommand then
+    begin
+      glNormal3s( GLshort( to_numeric( nx_val ) ), GLshort( to_numeric( ny_val ) ), GLshort( to_numeric( nz_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglNormal3s;
+
+procedure ParsePenglNormal3bv is
+  -- Syntax: glNormal3bv( v : GL_Byte_Array_Ptr );
+  -- Source: bush_os.opengl.glNormal3bv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glnormal3bv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_byte_array_ptr_t ); -- v : GL_Byte_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glNormal3bv( GL_Byte_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglNormal3bv;
+
+procedure ParsePenglNormal3dv is
+  -- Syntax: glNormal3dv( v : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glNormal3dv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glnormal3dv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glNormal3dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglNormal3dv;
+
+procedure ParsePenglNormal3fv is
+  -- Syntax: glNormal3fv( v : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glNormal3fv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glnormal3fv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glNormal3fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglNormal3fv;
+
+procedure ParsePenglNormal3iv is
+  -- Syntax: glNormal3iv( v : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glNormal3iv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glnormal3iv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glNormal3iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglNormal3iv;
+
+procedure ParsePenglNormal3sv is
+  -- Syntax: glNormal3sv( v : GL_Short_Array_Ptr );
+  -- Source: bush_os.opengl.glNormal3sv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glnormal3sv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glNormal3sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglNormal3sv;
+
+procedure ParsePenglIndexd is
+  -- Syntax: glIndexd( c : GLdouble );
+  -- Source: bush_os.opengl.glIndexd
+  c_val  : unbounded_string;
+  c_type : identifier;
+begin
+  expect( pen_glindexd_t );
+  ParseSingleNumericParameter( c_val, c_type, pen_gldouble_t ); -- c : GLdouble
+  if isExecutingCommand then
+    begin
+      glIndexd( GLdouble( to_numeric( c_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglIndexd;
+
+procedure ParsePenglIndexf is
+  -- Syntax: glIndexf( c : GLfloat );
+  -- Source: bush_os.opengl.glIndexf
+  c_val  : unbounded_string;
+  c_type : identifier;
+begin
+  expect( pen_glindexf_t );
+  ParseSingleNumericParameter( c_val, c_type, pen_glfloat_t ); -- c : GLfloat
+  if isExecutingCommand then
+    begin
+      glIndexf( GLfloat( to_numeric( c_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglIndexf;
+
+procedure ParsePenglIndexi is
+  -- Syntax: glIndexi( c : GLint );
+  -- Source: bush_os.opengl.glIndexi
+  c_val  : unbounded_string;
+  c_type : identifier;
+begin
+  expect( pen_glindexi_t );
+  ParseSingleNumericParameter( c_val, c_type, pen_glint_t ); -- c : GLint
+  if isExecutingCommand then
+    begin
+      glIndexi( GLint( to_numeric( c_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglIndexi;
+
+procedure ParsePenglIndexs is
+  -- Syntax: glIndexs( c : GLshort );
+  -- Source: bush_os.opengl.glIndexs
+  c_val  : unbounded_string;
+  c_type : identifier;
+begin
+  expect( pen_glindexs_t );
+  ParseSingleNumericParameter( c_val, c_type, pen_glshort_t ); -- c : GLshort
+  if isExecutingCommand then
+    begin
+      glIndexs( GLshort( to_numeric( c_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglIndexs;
+
+procedure ParsePenglIndexub is
+  -- Syntax: glIndexub( c : GLubyte ); -- /* 1.1 */
+  -- Source: bush_os.opengl.glIndexub
+  c_val  : unbounded_string;
+  c_type : identifier;
+begin
+  expect( pen_glindexub_t );
+  ParseSingleNumericParameter( c_val, c_type, pen_glubyte_t ); -- c : GLubyte
+  if isExecutingCommand then
+    begin
+      glIndexub( GLubyte( to_numeric( c_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglIndexub;
+
+procedure ParsePenglIndexdv is
+  -- Syntax: glIndexdv( c : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glIndexdv
+  c_val  : unbounded_string;
+  c_type : identifier;
+begin
+  expect( pen_glindexdv_t );
+  ParseSingleNumericParameter( c_val, c_type, pen_gl_double_array_ptr_t ); -- c : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glIndexdv( GL_Double_Array_Ptr( to_numeric( c_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglIndexdv;
+
+procedure ParsePenglIndexfv is
+  -- Syntax: glIndexfv( c : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glIndexfv
+  c_val  : unbounded_string;
+  c_type : identifier;
+begin
+  expect( pen_glindexfv_t );
+  ParseSingleNumericParameter( c_val, c_type, pen_gl_float_array_ptr_t ); -- c : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glIndexfv( GL_Float_Array_Ptr( to_numeric( c_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglIndexfv;
+
+procedure ParsePenglIndexiv is
+  -- Syntax: glIndexiv( c : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glIndexiv
+  c_val  : unbounded_string;
+  c_type : identifier;
+begin
+  expect( pen_glindexiv_t );
+  ParseSingleNumericParameter( c_val, c_type, pen_gl_int_array_ptr_t ); -- c : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glIndexiv( GL_Int_Array_Ptr( to_numeric( c_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglIndexiv;
+
+procedure ParsePenglIndexsv is
+  -- Syntax: glIndexsv( c : GL_Short_Array_Ptr );
+  -- Source: bush_os.opengl.glIndexsv
+  c_val  : unbounded_string;
+  c_type : identifier;
+begin
+  expect( pen_glindexsv_t );
+  ParseSingleNumericParameter( c_val, c_type, pen_gl_short_array_ptr_t ); -- c : GL_Short_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glIndexsv( GL_Short_Array_Ptr( to_numeric( c_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglIndexsv;
+
+procedure ParsePenglIndexubv is
+  -- Syntax: glIndexubv( c : GL_UByte_Array_Ptr ); -- /* 1.1 */
+  -- Source: bush_os.opengl.glIndexubv
+  c_val  : unbounded_string;
+  c_type : identifier;
+begin
+  expect( pen_glindexubv_t );
+  ParseSingleNumericParameter( c_val, c_type, pen_gl_ubyte_array_ptr_t ); -- c : GL_UByte_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glIndexubv( GL_UByte_Array_Ptr( to_numeric( c_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglIndexubv;
+
+procedure ParsePenglColor3b is
+  -- Syntax: glColor3b( red, green, blue : GLbyte );
+  -- Source: bush_os.opengl.glColor3b
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+begin
+  expect( pen_glcolor3b_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_glbyte_t ); -- red : GLbyte
+  ParseNextNumericParameter( green_val, green_type, pen_glbyte_t ); -- green : GLbyte
+  ParseLastNumericParameter( blue_val, blue_type, pen_glbyte_t ); -- blue : GLbyte
+  if isExecutingCommand then
+    begin
+      glColor3b( GLbyte( to_numeric( red_val ) ), GLbyte( to_numeric( green_val ) ), GLbyte( to_numeric( blue_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3b;
+
+procedure ParsePenglColor3d is
+  -- Syntax: glColor3d( red, green, blue : GLdouble );
+  -- Source: bush_os.opengl.glColor3d
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+begin
+  expect( pen_glcolor3d_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_gldouble_t ); -- red : GLdouble
+  ParseNextNumericParameter( green_val, green_type, pen_gldouble_t ); -- green : GLdouble
+  ParseLastNumericParameter( blue_val, blue_type, pen_gldouble_t ); -- blue : GLdouble
+  if isExecutingCommand then
+    begin
+      glColor3d( GLdouble( to_numeric( red_val ) ), GLdouble( to_numeric( green_val ) ), GLdouble( to_numeric( blue_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3d;
+
+procedure ParsePenglColor3f is
+  -- Syntax: glColor3f( red, green, blue : GLfloat );
+  -- Source: bush_os.opengl.glColor3f
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+begin
+  expect( pen_glcolor3f_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_glfloat_t ); -- red : GLfloat
+  ParseNextNumericParameter( green_val, green_type, pen_glfloat_t ); -- green : GLfloat
+  ParseLastNumericParameter( blue_val, blue_type, pen_glfloat_t ); -- blue : GLfloat
+  if isExecutingCommand then
+    begin
+      glColor3f( GLfloat( to_numeric( red_val ) ), GLfloat( to_numeric( green_val ) ), GLfloat( to_numeric( blue_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3f;
+
+procedure ParsePenglColor3i is
+  -- Syntax: glColor3i( red, green, blue : GLint );
+  -- Source: bush_os.opengl.glColor3i
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+begin
+  expect( pen_glcolor3i_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_glint_t ); -- red : GLint
+  ParseNextNumericParameter( green_val, green_type, pen_glint_t ); -- green : GLint
+  ParseLastNumericParameter( blue_val, blue_type, pen_glint_t ); -- blue : GLint
+  if isExecutingCommand then
+    begin
+      glColor3i( GLint( to_numeric( red_val ) ), GLint( to_numeric( green_val ) ), GLint( to_numeric( blue_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3i;
+
+procedure ParsePenglColor3s is
+  -- Syntax: glColor3s( red, green, blue : GLshort );
+  -- Source: bush_os.opengl.glColor3s
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+begin
+  expect( pen_glcolor3s_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_glshort_t ); -- red : GLshort
+  ParseNextNumericParameter( green_val, green_type, pen_glshort_t ); -- green : GLshort
+  ParseLastNumericParameter( blue_val, blue_type, pen_glshort_t ); -- blue : GLshort
+  if isExecutingCommand then
+    begin
+      glColor3s( GLshort( to_numeric( red_val ) ), GLshort( to_numeric( green_val ) ), GLshort( to_numeric( blue_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3s;
+
+procedure ParsePenglColor3ub is
+  -- Syntax: glColor3ub( red, green, blue : GLubyte );
+  -- Source: bush_os.opengl.glColor3ub
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+begin
+  expect( pen_glcolor3ub_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_glubyte_t ); -- red : GLubyte
+  ParseNextNumericParameter( green_val, green_type, pen_glubyte_t ); -- green : GLubyte
+  ParseLastNumericParameter( blue_val, blue_type, pen_glubyte_t ); -- blue : GLubyte
+  if isExecutingCommand then
+    begin
+      glColor3ub( GLubyte( to_numeric( red_val ) ), GLubyte( to_numeric( green_val ) ), GLubyte( to_numeric( blue_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3ub;
+
+procedure ParsePenglColor3ui is
+  -- Syntax: glColor3ui( red, green, blue : GLuint );
+  -- Source: bush_os.opengl.glColor3ui
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+begin
+  expect( pen_glcolor3ui_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_gluint_t ); -- red : GLuint
+  ParseNextNumericParameter( green_val, green_type, pen_gluint_t ); -- green : GLuint
+  ParseLastNumericParameter( blue_val, blue_type, pen_gluint_t ); -- blue : GLuint
+  if isExecutingCommand then
+    begin
+      glColor3ui( GLuint( to_numeric( red_val ) ), GLuint( to_numeric( green_val ) ), GLuint( to_numeric( blue_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3ui;
+
+procedure ParsePenglColor3us is
+  -- Syntax: glColor3us( red, green, blue : GLushort );
+  -- Source: bush_os.opengl.glColor3us
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+begin
+  expect( pen_glcolor3us_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_glushort_t ); -- red : GLushort
+  ParseNextNumericParameter( green_val, green_type, pen_glushort_t ); -- green : GLushort
+  ParseLastNumericParameter( blue_val, blue_type, pen_glushort_t ); -- blue : GLushort
+  if isExecutingCommand then
+    begin
+      glColor3us( GLushort( to_numeric( red_val ) ), GLushort( to_numeric( green_val ) ), GLushort( to_numeric( blue_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3us;
+
+procedure ParsePenglColor4b is
+  -- Syntax: glColor4b( red, green, blue, alpha : GLbyte );
+  -- Source: bush_os.opengl.glColor4b
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+  alpha_val  : unbounded_string;
+  alpha_type : identifier;
+begin
+  expect( pen_glcolor4b_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_glbyte_t ); -- red : GLbyte
+  ParseNextNumericParameter( green_val, green_type, pen_glbyte_t ); -- green : GLbyte
+  ParseNextNumericParameter( blue_val, blue_type, pen_glbyte_t ); -- blue : GLbyte
+  ParseLastNumericParameter( alpha_val, alpha_type, pen_glbyte_t ); -- alpha : GLbyte
+  if isExecutingCommand then
+    begin
+      glColor4b( GLbyte( to_numeric( red_val ) ), GLbyte( to_numeric( green_val ) ), GLbyte( to_numeric( blue_val ) ), GLbyte( to_numeric( alpha_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4b;
+
+procedure ParsePenglColor4d is
+  -- Syntax: glColor4d( red, green, blue, alpha : GLdouble );
+  -- Source: bush_os.opengl.glColor4d
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+  alpha_val  : unbounded_string;
+  alpha_type : identifier;
+begin
+  expect( pen_glcolor4d_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_gldouble_t ); -- red : GLdouble
+  ParseNextNumericParameter( green_val, green_type, pen_gldouble_t ); -- green : GLdouble
+  ParseNextNumericParameter( blue_val, blue_type, pen_gldouble_t ); -- blue : GLdouble
+  ParseLastNumericParameter( alpha_val, alpha_type, pen_gldouble_t ); -- alpha : GLdouble
+  if isExecutingCommand then
+    begin
+      glColor4d( GLdouble( to_numeric( red_val ) ), GLdouble( to_numeric( green_val ) ), GLdouble( to_numeric( blue_val ) ), GLdouble( to_numeric( alpha_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4d;
+
+procedure ParsePenglColor4f is
+  -- Syntax: glColor4f( red, green, blue, alpha : GLfloat );
+  -- Source: bush_os.opengl.glColor4f
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+  alpha_val  : unbounded_string;
+  alpha_type : identifier;
+begin
+  expect( pen_glcolor4f_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_glfloat_t ); -- red : GLfloat
+  ParseNextNumericParameter( green_val, green_type, pen_glfloat_t ); -- green : GLfloat
+  ParseNextNumericParameter( blue_val, blue_type, pen_glfloat_t ); -- blue : GLfloat
+  ParseLastNumericParameter( alpha_val, alpha_type, pen_glfloat_t ); -- alpha : GLfloat
+  if isExecutingCommand then
+    begin
+      glColor4f( GLfloat( to_numeric( red_val ) ), GLfloat( to_numeric( green_val ) ), GLfloat( to_numeric( blue_val ) ), GLfloat( to_numeric( alpha_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4f;
+
+procedure ParsePenglColor4i is
+  -- Syntax: glColor4i( red, green, blue, alpha : GLint );
+  -- Source: bush_os.opengl.glColor4i
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+  alpha_val  : unbounded_string;
+  alpha_type : identifier;
+begin
+  expect( pen_glcolor4i_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_glint_t ); -- red : GLint
+  ParseNextNumericParameter( green_val, green_type, pen_glint_t ); -- green : GLint
+  ParseNextNumericParameter( blue_val, blue_type, pen_glint_t ); -- blue : GLint
+  ParseLastNumericParameter( alpha_val, alpha_type, pen_glint_t ); -- alpha : GLint
+  if isExecutingCommand then
+    begin
+      glColor4i( GLint( to_numeric( red_val ) ), GLint( to_numeric( green_val ) ), GLint( to_numeric( blue_val ) ), GLint( to_numeric( alpha_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4i;
+
+procedure ParsePenglColor4s is
+  -- Syntax: glColor4s( red, green, blue, alpha : GLshort );
+  -- Source: bush_os.opengl.glColor4s
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+  alpha_val  : unbounded_string;
+  alpha_type : identifier;
+begin
+  expect( pen_glcolor4s_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_glshort_t ); -- red : GLshort
+  ParseNextNumericParameter( green_val, green_type, pen_glshort_t ); -- green : GLshort
+  ParseNextNumericParameter( blue_val, blue_type, pen_glshort_t ); -- blue : GLshort
+  ParseLastNumericParameter( alpha_val, alpha_type, pen_glshort_t ); -- alpha : GLshort
+  if isExecutingCommand then
+    begin
+      glColor4s( GLshort( to_numeric( red_val ) ), GLshort( to_numeric( green_val ) ), GLshort( to_numeric( blue_val ) ), GLshort( to_numeric( alpha_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4s;
+
+procedure ParsePenglColor4ub is
+  -- Syntax: glColor4ub( red, green, blue, alpha : GLubyte );
+  -- Source: bush_os.opengl.glColor4ub
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+  alpha_val  : unbounded_string;
+  alpha_type : identifier;
+begin
+  expect( pen_glcolor4ub_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_glubyte_t ); -- red : GLubyte
+  ParseNextNumericParameter( green_val, green_type, pen_glubyte_t ); -- green : GLubyte
+  ParseNextNumericParameter( blue_val, blue_type, pen_glubyte_t ); -- blue : GLubyte
+  ParseLastNumericParameter( alpha_val, alpha_type, pen_glubyte_t ); -- alpha : GLubyte
+  if isExecutingCommand then
+    begin
+      glColor4ub( GLubyte( to_numeric( red_val ) ), GLubyte( to_numeric( green_val ) ), GLubyte( to_numeric( blue_val ) ), GLubyte( to_numeric( alpha_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4ub;
+
+procedure ParsePenglColor4ui is
+  -- Syntax: glColor4ui( red, green, blue, alpha : GLuint );
+  -- Source: bush_os.opengl.glColor4ui
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+  alpha_val  : unbounded_string;
+  alpha_type : identifier;
+begin
+  expect( pen_glcolor4ui_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_gluint_t ); -- red : GLuint
+  ParseNextNumericParameter( green_val, green_type, pen_gluint_t ); -- green : GLuint
+  ParseNextNumericParameter( blue_val, blue_type, pen_gluint_t ); -- blue : GLuint
+  ParseLastNumericParameter( alpha_val, alpha_type, pen_gluint_t ); -- alpha : GLuint
+  if isExecutingCommand then
+    begin
+      glColor4ui( GLuint( to_numeric( red_val ) ), GLuint( to_numeric( green_val ) ), GLuint( to_numeric( blue_val ) ), GLuint( to_numeric( alpha_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4ui;
+
+procedure ParsePenglColor4us is
+  -- Syntax: glColor4us( red, green, blue, alpha : GLushort );
+  -- Source: bush_os.opengl.glColor4us
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+  alpha_val  : unbounded_string;
+  alpha_type : identifier;
+begin
+  expect( pen_glcolor4us_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_glushort_t ); -- red : GLushort
+  ParseNextNumericParameter( green_val, green_type, pen_glushort_t ); -- green : GLushort
+  ParseNextNumericParameter( blue_val, blue_type, pen_glushort_t ); -- blue : GLushort
+  ParseLastNumericParameter( alpha_val, alpha_type, pen_glushort_t ); -- alpha : GLushort
+  if isExecutingCommand then
+    begin
+      glColor4us( GLushort( to_numeric( red_val ) ), GLushort( to_numeric( green_val ) ), GLushort( to_numeric( blue_val ) ), GLushort( to_numeric( alpha_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4us;
+
+procedure ParsePenglColor3bv is
+  -- Syntax: glColor3bv( v : GL_Byte_Array_Ptr );
+  -- Source: bush_os.opengl.glColor3bv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glcolor3bv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_byte_array_ptr_t ); -- v : GL_Byte_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColor3bv( GL_Byte_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3bv;
+
+procedure ParsePenglColor3dv is
+  -- Syntax: glColor3dv( v : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glColor3dv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glcolor3dv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColor3dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3dv;
+
+procedure ParsePenglColor3fv is
+  -- Syntax: glColor3fv( v : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glColor3fv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glcolor3fv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColor3fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3fv;
+
+procedure ParsePenglColor3iv is
+  -- Syntax: glColor3iv( v : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glColor3iv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glcolor3iv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColor3iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3iv;
+
+procedure ParsePenglColor3sv is
+  -- Syntax: glColor3sv( v : GL_Short_Array_Ptr );
+  -- Source: bush_os.opengl.glColor3sv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glcolor3sv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColor3sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3sv;
+
+procedure ParsePenglColor3ubv is
+  -- Syntax: glColor3ubv( v : GL_UByte_Array_Ptr );
+  -- Source: bush_os.opengl.glColor3ubv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glcolor3ubv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_ubyte_array_ptr_t ); -- v : GL_UByte_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColor3ubv( GL_UByte_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3ubv;
+
+procedure ParsePenglColor3uiv is
+  -- Syntax: glColor3uiv( v : GL_UInt_Array_Ptr );
+  -- Source: bush_os.opengl.glColor3uiv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glcolor3uiv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_uint_array_ptr_t ); -- v : GL_UInt_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColor3uiv( GL_UInt_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3uiv;
+
+procedure ParsePenglColor3usv is
+  -- Syntax: glColor3usv( v : GL_UShort_Array_Ptr );
+  -- Source: bush_os.opengl.glColor3usv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glcolor3usv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_ushort_array_ptr_t ); -- v : GL_UShort_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColor3usv( GL_UShort_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3usv;
+
+procedure ParsePenglColor4bv is
+  -- Syntax: glColor4bv( v : GL_Byte_Array_Ptr );
+  -- Source: bush_os.opengl.glColor4bv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glcolor4bv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_byte_array_ptr_t ); -- v : GL_Byte_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColor4bv( GL_Byte_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4bv;
+
+procedure ParsePenglColor4dv is
+  -- Syntax: glColor4dv( v : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glColor4dv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glcolor4dv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColor4dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4dv;
+
+procedure ParsePenglColor4fv is
+  -- Syntax: glColor4fv( v : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glColor4fv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glcolor4fv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColor4fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4fv;
+
+procedure ParsePenglColor4iv is
+  -- Syntax: glColor4iv( v : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glColor4iv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glcolor4iv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColor4iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4iv;
+
+procedure ParsePenglColor4sv is
+  -- Syntax: glColor4sv( v : GL_Short_Array_Ptr );
+  -- Source: bush_os.opengl.glColor4sv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glcolor4sv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColor4sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4sv;
+
+procedure ParsePenglColor4ubv is
+  -- Syntax: glColor4ubv( v : GL_UByte_Array_Ptr );
+  -- Source: bush_os.opengl.glColor4ubv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glcolor4ubv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_ubyte_array_ptr_t ); -- v : GL_UByte_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColor4ubv( GL_UByte_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4ubv;
+
+procedure ParsePenglColor4uiv is
+  -- Syntax: glColor4uiv( v : GL_UInt_Array_Ptr );
+  -- Source: bush_os.opengl.glColor4uiv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glcolor4uiv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_uint_array_ptr_t ); -- v : GL_UInt_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColor4uiv( GL_UInt_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4uiv;
+
+procedure ParsePenglColor4usv is
+  -- Syntax: glColor4usv( v : GL_UShort_Array_Ptr );
+  -- Source: bush_os.opengl.glColor4usv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glcolor4usv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_ushort_array_ptr_t ); -- v : GL_UShort_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColor4usv( GL_UShort_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4usv;
+
+procedure ParsePenglTexCoord1d is
+  -- Syntax: glTexCoord1d( s : GLdouble );
+  -- Source: bush_os.opengl.glTexCoord1d
+  s_val  : unbounded_string;
+  s_type : identifier;
+begin
+  expect( pen_gltexcoord1d_t );
+  ParseSingleNumericParameter( s_val, s_type, pen_gldouble_t ); -- s : GLdouble
+  if isExecutingCommand then
+    begin
+      glTexCoord1d( GLdouble( to_numeric( s_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord1d;
+
+procedure ParsePenglTexCoord1f is
+  -- Syntax: glTexCoord1f( s : GLfloat );
+  -- Source: bush_os.opengl.glTexCoord1f
+  s_val  : unbounded_string;
+  s_type : identifier;
+begin
+  expect( pen_gltexcoord1f_t );
+  ParseSingleNumericParameter( s_val, s_type, pen_glfloat_t ); -- s : GLfloat
+  if isExecutingCommand then
+    begin
+      glTexCoord1f( GLfloat( to_numeric( s_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord1f;
+
+procedure ParsePenglTexCoord1i is
+  -- Syntax: glTexCoord1i( s : GLint );
+  -- Source: bush_os.opengl.glTexCoord1i
+  s_val  : unbounded_string;
+  s_type : identifier;
+begin
+  expect( pen_gltexcoord1i_t );
+  ParseSingleNumericParameter( s_val, s_type, pen_glint_t ); -- s : GLint
+  if isExecutingCommand then
+    begin
+      glTexCoord1i( GLint( to_numeric( s_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord1i;
+
+procedure ParsePenglTexCoord1s is
+  -- Syntax: glTexCoord1s( s : GLshort );
+  -- Source: bush_os.opengl.glTexCoord1s
+  s_val  : unbounded_string;
+  s_type : identifier;
+begin
+  expect( pen_gltexcoord1s_t );
+  ParseSingleNumericParameter( s_val, s_type, pen_glshort_t ); -- s : GLshort
+  if isExecutingCommand then
+    begin
+      glTexCoord1s( GLshort( to_numeric( s_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord1s;
+
+procedure ParsePenglTexCoord2d is
+  -- Syntax: glTexCoord2d( s, t : GLdouble );
+  -- Source: bush_os.opengl.glTexCoord2d
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+begin
+  expect( pen_gltexcoord2d_t );
+  ParseFirstNumericParameter( s_val, s_type, pen_gldouble_t ); -- s : GLdouble
+  ParseLastNumericParameter( t_val, t_type, pen_gldouble_t ); -- t : GLdouble
+  if isExecutingCommand then
+    begin
+      glTexCoord2d( GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord2d;
+
+procedure ParsePenglTexCoord2f is
+  -- Syntax: glTexCoord2f( s, t : GLfloat );
+  -- Source: bush_os.opengl.glTexCoord2f
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+begin
+  expect( pen_gltexcoord2f_t );
+  ParseFirstNumericParameter( s_val, s_type, pen_glfloat_t ); -- s : GLfloat
+  ParseLastNumericParameter( t_val, t_type, pen_glfloat_t ); -- t : GLfloat
+  if isExecutingCommand then
+    begin
+      glTexCoord2f( GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord2f;
+
+procedure ParsePenglTexCoord2i is
+  -- Syntax: glTexCoord2i( s, t : GLint );
+  -- Source: bush_os.opengl.glTexCoord2i
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+begin
+  expect( pen_gltexcoord2i_t );
+  ParseFirstNumericParameter( s_val, s_type, pen_glint_t ); -- s : GLint
+  ParseLastNumericParameter( t_val, t_type, pen_glint_t ); -- t : GLint
+  if isExecutingCommand then
+    begin
+      glTexCoord2i( GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord2i;
+
+procedure ParsePenglTexCoord2s is
+  -- Syntax: glTexCoord2s( s, t : GLshort );
+  -- Source: bush_os.opengl.glTexCoord2s
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+begin
+  expect( pen_gltexcoord2s_t );
+  ParseFirstNumericParameter( s_val, s_type, pen_glshort_t ); -- s : GLshort
+  ParseLastNumericParameter( t_val, t_type, pen_glshort_t ); -- t : GLshort
+  if isExecutingCommand then
+    begin
+      glTexCoord2s( GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord2s;
+
+procedure ParsePenglTexCoord3d is
+  -- Syntax: glTexCoord3d( s, t, r : GLdouble );
+  -- Source: bush_os.opengl.glTexCoord3d
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+begin
+  expect( pen_gltexcoord3d_t );
+  ParseFirstNumericParameter( s_val, s_type, pen_gldouble_t ); -- s : GLdouble
+  ParseNextNumericParameter( t_val, t_type, pen_gldouble_t ); -- t : GLdouble
+  ParseLastNumericParameter( r_val, r_type, pen_gldouble_t ); -- r : GLdouble
+  if isExecutingCommand then
+    begin
+      glTexCoord3d( GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ), GLdouble( to_numeric( r_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord3d;
+
+procedure ParsePenglTexCoord3f is
+  -- Syntax: glTexCoord3f( s, t, r : GLfloat );
+  -- Source: bush_os.opengl.glTexCoord3f
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+begin
+  expect( pen_gltexcoord3f_t );
+  ParseFirstNumericParameter( s_val, s_type, pen_glfloat_t ); -- s : GLfloat
+  ParseNextNumericParameter( t_val, t_type, pen_glfloat_t ); -- t : GLfloat
+  ParseLastNumericParameter( r_val, r_type, pen_glfloat_t ); -- r : GLfloat
+  if isExecutingCommand then
+    begin
+      glTexCoord3f( GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ), GLfloat( to_numeric( r_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord3f;
+
+procedure ParsePenglTexCoord3i is
+  -- Syntax: glTexCoord3i( s, t, r : GLint );
+  -- Source: bush_os.opengl.glTexCoord3i
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+begin
+  expect( pen_gltexcoord3i_t );
+  ParseFirstNumericParameter( s_val, s_type, pen_glint_t ); -- s : GLint
+  ParseNextNumericParameter( t_val, t_type, pen_glint_t ); -- t : GLint
+  ParseLastNumericParameter( r_val, r_type, pen_glint_t ); -- r : GLint
+  if isExecutingCommand then
+    begin
+      glTexCoord3i( GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ), GLint( to_numeric( r_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord3i;
+
+procedure ParsePenglTexCoord3s is
+  -- Syntax: glTexCoord3s( s, t, r : GLshort );
+  -- Source: bush_os.opengl.glTexCoord3s
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+begin
+  expect( pen_gltexcoord3s_t );
+  ParseFirstNumericParameter( s_val, s_type, pen_glshort_t ); -- s : GLshort
+  ParseNextNumericParameter( t_val, t_type, pen_glshort_t ); -- t : GLshort
+  ParseLastNumericParameter( r_val, r_type, pen_glshort_t ); -- r : GLshort
+  if isExecutingCommand then
+    begin
+      glTexCoord3s( GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ), GLshort( to_numeric( r_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord3s;
+
+procedure ParsePenglTexCoord4d is
+  -- Syntax: glTexCoord4d( s, t, r, q : GLdouble );
+  -- Source: bush_os.opengl.glTexCoord4d
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+  q_val  : unbounded_string;
+  q_type : identifier;
+begin
+  expect( pen_gltexcoord4d_t );
+  ParseFirstNumericParameter( s_val, s_type, pen_gldouble_t ); -- s : GLdouble
+  ParseNextNumericParameter( t_val, t_type, pen_gldouble_t ); -- t : GLdouble
+  ParseNextNumericParameter( r_val, r_type, pen_gldouble_t ); -- r : GLdouble
+  ParseLastNumericParameter( q_val, q_type, pen_gldouble_t ); -- q : GLdouble
+  if isExecutingCommand then
+    begin
+      glTexCoord4d( GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ), GLdouble( to_numeric( r_val ) ), GLdouble( to_numeric( q_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord4d;
+
+procedure ParsePenglTexCoord4f is
+  -- Syntax: glTexCoord4f( s, t, r, q : GLfloat );
+  -- Source: bush_os.opengl.glTexCoord4f
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+  q_val  : unbounded_string;
+  q_type : identifier;
+begin
+  expect( pen_gltexcoord4f_t );
+  ParseFirstNumericParameter( s_val, s_type, pen_glfloat_t ); -- s : GLfloat
+  ParseNextNumericParameter( t_val, t_type, pen_glfloat_t ); -- t : GLfloat
+  ParseNextNumericParameter( r_val, r_type, pen_glfloat_t ); -- r : GLfloat
+  ParseLastNumericParameter( q_val, q_type, pen_glfloat_t ); -- q : GLfloat
+  if isExecutingCommand then
+    begin
+      glTexCoord4f( GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ), GLfloat( to_numeric( r_val ) ), GLfloat( to_numeric( q_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord4f;
+
+procedure ParsePenglTexCoord4i is
+  -- Syntax: glTexCoord4i( s, t, r, q : GLint );
+  -- Source: bush_os.opengl.glTexCoord4i
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+  q_val  : unbounded_string;
+  q_type : identifier;
+begin
+  expect( pen_gltexcoord4i_t );
+  ParseFirstNumericParameter( s_val, s_type, pen_glint_t ); -- s : GLint
+  ParseNextNumericParameter( t_val, t_type, pen_glint_t ); -- t : GLint
+  ParseNextNumericParameter( r_val, r_type, pen_glint_t ); -- r : GLint
+  ParseLastNumericParameter( q_val, q_type, pen_glint_t ); -- q : GLint
+  if isExecutingCommand then
+    begin
+      glTexCoord4i( GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ), GLint( to_numeric( r_val ) ), GLint( to_numeric( q_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord4i;
+
+procedure ParsePenglTexCoord4s is
+  -- Syntax: glTexCoord4s( s, t, r, q : GLshort );
+  -- Source: bush_os.opengl.glTexCoord4s
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+  q_val  : unbounded_string;
+  q_type : identifier;
+begin
+  expect( pen_gltexcoord4s_t );
+  ParseFirstNumericParameter( s_val, s_type, pen_glshort_t ); -- s : GLshort
+  ParseNextNumericParameter( t_val, t_type, pen_glshort_t ); -- t : GLshort
+  ParseNextNumericParameter( r_val, r_type, pen_glshort_t ); -- r : GLshort
+  ParseLastNumericParameter( q_val, q_type, pen_glshort_t ); -- q : GLshort
+  if isExecutingCommand then
+    begin
+      glTexCoord4s( GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ), GLshort( to_numeric( r_val ) ), GLshort( to_numeric( q_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord4s;
+
+procedure ParsePenglTexCoord1dv is
+  -- Syntax: glTexCoord1dv( v : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glTexCoord1dv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_gltexcoord1dv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexCoord1dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord1dv;
+
+procedure ParsePenglTexCoord1fv is
+  -- Syntax: glTexCoord1fv( v : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glTexCoord1fv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_gltexcoord1fv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexCoord1fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord1fv;
+
+procedure ParsePenglTexCoord1iv is
+  -- Syntax: glTexCoord1iv( v : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glTexCoord1iv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_gltexcoord1iv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexCoord1iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord1iv;
+
+procedure ParsePenglTexCoord1sv is
+  -- Syntax: glTexCoord1sv( v : GL_Short_Array_Ptr );
+  -- Source: bush_os.opengl.glTexCoord1sv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_gltexcoord1sv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexCoord1sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord1sv;
+
+procedure ParsePenglTexCoord2dv is
+  -- Syntax: glTexCoord2dv( v : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glTexCoord2dv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_gltexcoord2dv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexCoord2dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord2dv;
+
+procedure ParsePenglTexCoord2fv is
+  -- Syntax: glTexCoord2fv( v : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glTexCoord2fv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_gltexcoord2fv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexCoord2fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord2fv;
+
+procedure ParsePenglTexCoord2iv is
+  -- Syntax: glTexCoord2iv( v : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glTexCoord2iv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_gltexcoord2iv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexCoord2iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord2iv;
+
+procedure ParsePenglTexCoord2sv is
+  -- Syntax: glTexCoord2sv( v : GL_Short_Array_Ptr );
+  -- Source: bush_os.opengl.glTexCoord2sv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_gltexcoord2sv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexCoord2sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord2sv;
+
+procedure ParsePenglTexCoord3dv is
+  -- Syntax: glTexCoord3dv( v : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glTexCoord3dv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_gltexcoord3dv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexCoord3dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord3dv;
+
+procedure ParsePenglTexCoord3fv is
+  -- Syntax: glTexCoord3fv( v : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glTexCoord3fv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_gltexcoord3fv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexCoord3fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord3fv;
+
+procedure ParsePenglTexCoord3iv is
+  -- Syntax: glTexCoord3iv( v : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glTexCoord3iv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_gltexcoord3iv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexCoord3iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord3iv;
+
+procedure ParsePenglTexCoord3sv is
+  -- Syntax: glTexCoord3sv( v : GL_Short_Array_Ptr );
+  -- Source: bush_os.opengl.glTexCoord3sv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_gltexcoord3sv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexCoord3sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord3sv;
+
+procedure ParsePenglTexCoord4dv is
+  -- Syntax: glTexCoord4dv( v : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glTexCoord4dv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_gltexcoord4dv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexCoord4dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord4dv;
+
+procedure ParsePenglTexCoord4fv is
+  -- Syntax: glTexCoord4fv( v : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glTexCoord4fv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_gltexcoord4fv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexCoord4fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord4fv;
+
+procedure ParsePenglTexCoord4iv is
+  -- Syntax: glTexCoord4iv( v : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glTexCoord4iv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_gltexcoord4iv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexCoord4iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord4iv;
+
+procedure ParsePenglTexCoord4sv is
+  -- Syntax: glTexCoord4sv( v : GL_Short_Array_Ptr );
+  -- Source: bush_os.opengl.glTexCoord4sv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_gltexcoord4sv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexCoord4sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoord4sv;
+
+procedure ParsePenglRasterPos2d is
+  -- Syntax: glRasterPos2d( x, y : GLdouble );
+  -- Source: bush_os.opengl.glRasterPos2d
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+begin
+  expect( pen_glrasterpos2d_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_gldouble_t ); -- x : GLdouble
+  ParseLastNumericParameter( y_val, y_type, pen_gldouble_t ); -- y : GLdouble
+  if isExecutingCommand then
+    begin
+      glRasterPos2d( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos2d;
+
+procedure ParsePenglRasterPos2f is
+  -- Syntax: glRasterPos2f( x, y : GLfloat );
+  -- Source: bush_os.opengl.glRasterPos2f
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+begin
+  expect( pen_glrasterpos2f_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glfloat_t ); -- x : GLfloat
+  ParseLastNumericParameter( y_val, y_type, pen_glfloat_t ); -- y : GLfloat
+  if isExecutingCommand then
+    begin
+      glRasterPos2f( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos2f;
+
+procedure ParsePenglRasterPos2i is
+  -- Syntax: glRasterPos2i( x, y : GLint );
+  -- Source: bush_os.opengl.glRasterPos2i
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+begin
+  expect( pen_glrasterpos2i_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseLastNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  if isExecutingCommand then
+    begin
+      glRasterPos2i( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos2i;
+
+procedure ParsePenglRasterPos2s is
+  -- Syntax: glRasterPos2s( x, y : GLshort );
+  -- Source: bush_os.opengl.glRasterPos2s
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+begin
+  expect( pen_glrasterpos2s_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glshort_t ); -- x : GLshort
+  ParseLastNumericParameter( y_val, y_type, pen_glshort_t ); -- y : GLshort
+  if isExecutingCommand then
+    begin
+      glRasterPos2s( GLshort( to_numeric( x_val ) ), GLshort( to_numeric( y_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos2s;
+
+procedure ParsePenglRasterPos3d is
+  -- Syntax: glRasterPos3d( x, y, z : GLdouble );
+  -- Source: bush_os.opengl.glRasterPos3d
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+begin
+  expect( pen_glrasterpos3d_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_gldouble_t ); -- x : GLdouble
+  ParseNextNumericParameter( y_val, y_type, pen_gldouble_t ); -- y : GLdouble
+  ParseLastNumericParameter( z_val, z_type, pen_gldouble_t ); -- z : GLdouble
+  if isExecutingCommand then
+    begin
+      glRasterPos3d( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( z_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos3d;
+
+procedure ParsePenglRasterPos3f is
+  -- Syntax: glRasterPos3f( x, y, z : GLfloat );
+  -- Source: bush_os.opengl.glRasterPos3f
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+begin
+  expect( pen_glrasterpos3f_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glfloat_t ); -- x : GLfloat
+  ParseNextNumericParameter( y_val, y_type, pen_glfloat_t ); -- y : GLfloat
+  ParseLastNumericParameter( z_val, z_type, pen_glfloat_t ); -- z : GLfloat
+  if isExecutingCommand then
+    begin
+      glRasterPos3f( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ), GLfloat( to_numeric( z_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos3f;
+
+procedure ParsePenglRasterPos3i is
+  -- Syntax: glRasterPos3i( x, y, z : GLint );
+  -- Source: bush_os.opengl.glRasterPos3i
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+begin
+  expect( pen_glrasterpos3i_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseLastNumericParameter( z_val, z_type, pen_glint_t ); -- z : GLint
+  if isExecutingCommand then
+    begin
+      glRasterPos3i( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLint( to_numeric( z_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos3i;
+
+procedure ParsePenglRasterPos3s is
+  -- Syntax: glRasterPos3s( x, y, z : GLshort );
+  -- Source: bush_os.opengl.glRasterPos3s
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+begin
+  expect( pen_glrasterpos3s_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glshort_t ); -- x : GLshort
+  ParseNextNumericParameter( y_val, y_type, pen_glshort_t ); -- y : GLshort
+  ParseLastNumericParameter( z_val, z_type, pen_glshort_t ); -- z : GLshort
+  if isExecutingCommand then
+    begin
+      glRasterPos3s( GLshort( to_numeric( x_val ) ), GLshort( to_numeric( y_val ) ), GLshort( to_numeric( z_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos3s;
+
+procedure ParsePenglRasterPos4d is
+  -- Syntax: glRasterPos4d( x, y, z, w : GLdouble );
+  -- Source: bush_os.opengl.glRasterPos4d
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+  w_val  : unbounded_string;
+  w_type : identifier;
+begin
+  expect( pen_glrasterpos4d_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_gldouble_t ); -- x : GLdouble
+  ParseNextNumericParameter( y_val, y_type, pen_gldouble_t ); -- y : GLdouble
+  ParseNextNumericParameter( z_val, z_type, pen_gldouble_t ); -- z : GLdouble
+  ParseLastNumericParameter( w_val, w_type, pen_gldouble_t ); -- w : GLdouble
+  if isExecutingCommand then
+    begin
+      glRasterPos4d( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( z_val ) ), GLdouble( to_numeric( w_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos4d;
+
+procedure ParsePenglRasterPos4f is
+  -- Syntax: glRasterPos4f( x, y, z, w : GLfloat );
+  -- Source: bush_os.opengl.glRasterPos4f
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+  w_val  : unbounded_string;
+  w_type : identifier;
+begin
+  expect( pen_glrasterpos4f_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glfloat_t ); -- x : GLfloat
+  ParseNextNumericParameter( y_val, y_type, pen_glfloat_t ); -- y : GLfloat
+  ParseNextNumericParameter( z_val, z_type, pen_glfloat_t ); -- z : GLfloat
+  ParseLastNumericParameter( w_val, w_type, pen_glfloat_t ); -- w : GLfloat
+  if isExecutingCommand then
+    begin
+      glRasterPos4f( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ), GLfloat( to_numeric( z_val ) ), GLfloat( to_numeric( w_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos4f;
+
+procedure ParsePenglRasterPos4i is
+  -- Syntax: glRasterPos4i( x, y, z, w : GLint );
+  -- Source: bush_os.opengl.glRasterPos4i
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+  w_val  : unbounded_string;
+  w_type : identifier;
+begin
+  expect( pen_glrasterpos4i_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseNextNumericParameter( z_val, z_type, pen_glint_t ); -- z : GLint
+  ParseLastNumericParameter( w_val, w_type, pen_glint_t ); -- w : GLint
+  if isExecutingCommand then
+    begin
+      glRasterPos4i( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLint( to_numeric( z_val ) ), GLint( to_numeric( w_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos4i;
+
+procedure ParsePenglRasterPos4s is
+  -- Syntax: glRasterPos4s( x, y, z, w : GLshort );
+  -- Source: bush_os.opengl.glRasterPos4s
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  z_val  : unbounded_string;
+  z_type : identifier;
+  w_val  : unbounded_string;
+  w_type : identifier;
+begin
+  expect( pen_glrasterpos4s_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glshort_t ); -- x : GLshort
+  ParseNextNumericParameter( y_val, y_type, pen_glshort_t ); -- y : GLshort
+  ParseNextNumericParameter( z_val, z_type, pen_glshort_t ); -- z : GLshort
+  ParseLastNumericParameter( w_val, w_type, pen_glshort_t ); -- w : GLshort
+  if isExecutingCommand then
+    begin
+      glRasterPos4s( GLshort( to_numeric( x_val ) ), GLshort( to_numeric( y_val ) ), GLshort( to_numeric( z_val ) ), GLshort( to_numeric( w_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos4s;
+
+procedure ParsePenglRasterPos2dv is
+  -- Syntax: glRasterPos2dv( v : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glRasterPos2dv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glrasterpos2dv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glRasterPos2dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos2dv;
+
+procedure ParsePenglRasterPos2fv is
+  -- Syntax: glRasterPos2fv( v : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glRasterPos2fv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glrasterpos2fv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glRasterPos2fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos2fv;
+
+procedure ParsePenglRasterPos2iv is
+  -- Syntax: glRasterPos2iv( v : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glRasterPos2iv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glrasterpos2iv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glRasterPos2iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos2iv;
+
+procedure ParsePenglRasterPos2sv is
+  -- Syntax: glRasterPos2sv( v : GL_Short_Array_Ptr );
+  -- Source: bush_os.opengl.glRasterPos2sv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glrasterpos2sv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glRasterPos2sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos2sv;
+
+procedure ParsePenglRasterPos3dv is
+  -- Syntax: glRasterPos3dv( v : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glRasterPos3dv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glrasterpos3dv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glRasterPos3dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos3dv;
+
+procedure ParsePenglRasterPos3fv is
+  -- Syntax: glRasterPos3fv( v : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glRasterPos3fv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glrasterpos3fv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glRasterPos3fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos3fv;
+
+procedure ParsePenglRasterPos3iv is
+  -- Syntax: glRasterPos3iv( v : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glRasterPos3iv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glrasterpos3iv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glRasterPos3iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos3iv;
+
+procedure ParsePenglRasterPos3sv is
+  -- Syntax: glRasterPos3sv( v : GL_Short_Array_Ptr );
+  -- Source: bush_os.opengl.glRasterPos3sv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glrasterpos3sv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glRasterPos3sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos3sv;
+
+procedure ParsePenglRasterPos4dv is
+  -- Syntax: glRasterPos4dv( v : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glRasterPos4dv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glrasterpos4dv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glRasterPos4dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos4dv;
+
+procedure ParsePenglRasterPos4fv is
+  -- Syntax: glRasterPos4fv( v : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glRasterPos4fv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glrasterpos4fv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glRasterPos4fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos4fv;
+
+procedure ParsePenglRasterPos4iv is
+  -- Syntax: glRasterPos4iv( v : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glRasterPos4iv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glrasterpos4iv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glRasterPos4iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos4iv;
+
+procedure ParsePenglRasterPos4sv is
+  -- Syntax: glRasterPos4sv( v : GL_Short_Array_Ptr );
+  -- Source: bush_os.opengl.glRasterPos4sv
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glrasterpos4sv_t );
+  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glRasterPos4sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRasterPos4sv;
+
+procedure ParsePenglRectd is
+  -- Syntax: glRectd( x1, y1, x2, y2 : GLdouble );
+  -- Source: bush_os.opengl.glRectd
+  x1_val  : unbounded_string;
+  x1_type : identifier;
+  y1_val  : unbounded_string;
+  y1_type : identifier;
+  x2_val  : unbounded_string;
+  x2_type : identifier;
+  y2_val  : unbounded_string;
+  y2_type : identifier;
+begin
+  expect( pen_glrectd_t );
+  ParseFirstNumericParameter( x1_val, x1_type, pen_gldouble_t ); -- x1 : GLdouble
+  ParseNextNumericParameter( y1_val, y1_type, pen_gldouble_t ); -- y1 : GLdouble
+  ParseNextNumericParameter( x2_val, x2_type, pen_gldouble_t ); -- x2 : GLdouble
+  ParseLastNumericParameter( y2_val, y2_type, pen_gldouble_t ); -- y2 : GLdouble
+  if isExecutingCommand then
+    begin
+      glRectd( GLdouble( to_numeric( x1_val ) ), GLdouble( to_numeric( y1_val ) ), GLdouble( to_numeric( x2_val ) ), GLdouble( to_numeric( y2_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRectd;
+
+procedure ParsePenglRectf is
+  -- Syntax: glRectf( x1, y1, x2, y2 : GLfloat );
+  -- Source: bush_os.opengl.glRectf
+  x1_val  : unbounded_string;
+  x1_type : identifier;
+  y1_val  : unbounded_string;
+  y1_type : identifier;
+  x2_val  : unbounded_string;
+  x2_type : identifier;
+  y2_val  : unbounded_string;
+  y2_type : identifier;
+begin
+  expect( pen_glrectf_t );
+  ParseFirstNumericParameter( x1_val, x1_type, pen_glfloat_t ); -- x1 : GLfloat
+  ParseNextNumericParameter( y1_val, y1_type, pen_glfloat_t ); -- y1 : GLfloat
+  ParseNextNumericParameter( x2_val, x2_type, pen_glfloat_t ); -- x2 : GLfloat
+  ParseLastNumericParameter( y2_val, y2_type, pen_glfloat_t ); -- y2 : GLfloat
+  if isExecutingCommand then
+    begin
+      glRectf( GLfloat( to_numeric( x1_val ) ), GLfloat( to_numeric( y1_val ) ), GLfloat( to_numeric( x2_val ) ), GLfloat( to_numeric( y2_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRectf;
+
+procedure ParsePenglRecti is
+  -- Syntax: glRecti( x1, y1, x2, y2 : GLint );
+  -- Source: bush_os.opengl.glRecti
+  x1_val  : unbounded_string;
+  x1_type : identifier;
+  y1_val  : unbounded_string;
+  y1_type : identifier;
+  x2_val  : unbounded_string;
+  x2_type : identifier;
+  y2_val  : unbounded_string;
+  y2_type : identifier;
+begin
+  expect( pen_glrecti_t );
+  ParseFirstNumericParameter( x1_val, x1_type, pen_glint_t ); -- x1 : GLint
+  ParseNextNumericParameter( y1_val, y1_type, pen_glint_t ); -- y1 : GLint
+  ParseNextNumericParameter( x2_val, x2_type, pen_glint_t ); -- x2 : GLint
+  ParseLastNumericParameter( y2_val, y2_type, pen_glint_t ); -- y2 : GLint
+  if isExecutingCommand then
+    begin
+      glRecti( GLint( to_numeric( x1_val ) ), GLint( to_numeric( y1_val ) ), GLint( to_numeric( x2_val ) ), GLint( to_numeric( y2_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRecti;
+
+procedure ParsePenglRects is
+  -- Syntax: glRects( x1, y1, x2, y2 : GLshort );
+  -- Source: bush_os.opengl.glRects
+  x1_val  : unbounded_string;
+  x1_type : identifier;
+  y1_val  : unbounded_string;
+  y1_type : identifier;
+  x2_val  : unbounded_string;
+  x2_type : identifier;
+  y2_val  : unbounded_string;
+  y2_type : identifier;
+begin
+  expect( pen_glrects_t );
+  ParseFirstNumericParameter( x1_val, x1_type, pen_glshort_t ); -- x1 : GLshort
+  ParseNextNumericParameter( y1_val, y1_type, pen_glshort_t ); -- y1 : GLshort
+  ParseNextNumericParameter( x2_val, x2_type, pen_glshort_t ); -- x2 : GLshort
+  ParseLastNumericParameter( y2_val, y2_type, pen_glshort_t ); -- y2 : GLshort
+  if isExecutingCommand then
+    begin
+      glRects( GLshort( to_numeric( x1_val ) ), GLshort( to_numeric( y1_val ) ), GLshort( to_numeric( x2_val ) ), GLshort( to_numeric( y2_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRects;
+
+procedure ParsePenglRectdv is
+  -- Syntax: glRectdv( v1, v2 : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glRectdv
+  v1_val  : unbounded_string;
+  v1_type : identifier;
+  v2_val  : unbounded_string;
+  v2_type : identifier;
+begin
+  expect( pen_glrectdv_t );
+  ParseFirstNumericParameter( v1_val, v1_type, pen_gl_double_array_ptr_t ); -- v1 : GL_Double_Array_Ptr
+  ParseLastNumericParameter( v2_val, v2_type, pen_gl_double_array_ptr_t ); -- v2 : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glRectdv( GL_Double_Array_Ptr( to_numeric( v1_val ) ), GL_Double_Array_Ptr( to_numeric( v2_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRectdv;
+
+procedure ParsePenglRectfv is
+  -- Syntax: glRectfv( v1, v2 : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glRectfv
+  v1_val  : unbounded_string;
+  v1_type : identifier;
+  v2_val  : unbounded_string;
+  v2_type : identifier;
+begin
+  expect( pen_glrectfv_t );
+  ParseFirstNumericParameter( v1_val, v1_type, pen_gl_float_array_ptr_t ); -- v1 : GL_Float_Array_Ptr
+  ParseLastNumericParameter( v2_val, v2_type, pen_gl_float_array_ptr_t ); -- v2 : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glRectfv( GL_Float_Array_Ptr( to_numeric( v1_val ) ), GL_Float_Array_Ptr( to_numeric( v2_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRectfv;
+
+procedure ParsePenglRectiv is
+  -- Syntax: glRectiv( v1, v2 : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glRectiv
+  v1_val  : unbounded_string;
+  v1_type : identifier;
+  v2_val  : unbounded_string;
+  v2_type : identifier;
+begin
+  expect( pen_glrectiv_t );
+  ParseFirstNumericParameter( v1_val, v1_type, pen_gl_int_array_ptr_t ); -- v1 : GL_Int_Array_Ptr
+  ParseLastNumericParameter( v2_val, v2_type, pen_gl_int_array_ptr_t ); -- v2 : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glRectiv( GL_Int_Array_Ptr( to_numeric( v1_val ) ), GL_Int_Array_Ptr( to_numeric( v2_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRectiv;
+
+procedure ParsePenglRectsv is
+  -- Syntax: glRectsv( v1, v2 : GL_Short_Array_Ptr );
+  -- Source: bush_os.opengl.glRectsv
+  v1_val  : unbounded_string;
+  v1_type : identifier;
+  v2_val  : unbounded_string;
+  v2_type : identifier;
+begin
+  expect( pen_glrectsv_t );
+  ParseFirstNumericParameter( v1_val, v1_type, pen_gl_short_array_ptr_t ); -- v1 : GL_Short_Array_Ptr
+  ParseLastNumericParameter( v2_val, v2_type, pen_gl_short_array_ptr_t ); -- v2 : GL_Short_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glRectsv( GL_Short_Array_Ptr( to_numeric( v1_val ) ), GL_Short_Array_Ptr( to_numeric( v2_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglRectsv;
+
+procedure ParsePenglVertexPointer is
+  -- Syntax: glVertexPointer( size : GLint; kind : GLtypes; stride : GLsizei; ptr : System.address );
+  -- Source: bush_os.opengl.glVertexPointer
+  size_val  : unbounded_string;
+  size_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  stride_val  : unbounded_string;
+  stride_type : identifier;
+  ptr_val  : unbounded_string;
+  ptr_type : identifier;
+begin
+  expect( pen_glvertexpointer_t );
+  ParseFirstNumericParameter( size_val, size_type, pen_glint_t ); -- size : GLint
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseNextNumericParameter( stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
+  ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
+  if isExecutingCommand then
+    begin
+      glVertexPointer( GLint( to_numeric( size_val ) ), GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), System.address( to_numeric( ptr_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglVertexPointer;
+
+procedure ParsePenglNormalPointer is
+  -- Syntax: glNormalPointer( kind : GLtypes; stride : GLsizei; ptr : System.address );
+  -- Source: bush_os.opengl.glNormalPointer
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  stride_val  : unbounded_string;
+  stride_type : identifier;
+  ptr_val  : unbounded_string;
+  ptr_type : identifier;
+begin
+  expect( pen_glnormalpointer_t );
+  ParseFirstNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseNextNumericParameter( stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
+  ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
+  if isExecutingCommand then
+    begin
+      glNormalPointer( GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), System.address( to_numeric( ptr_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglNormalPointer;
+
+procedure ParsePenglColorPointer is
+  -- Syntax: glColorPointer( size : GLint; kind : GLtypes; stride : GLsizei; ptr : System.address );
+  -- Source: bush_os.opengl.glColorPointer
+  size_val  : unbounded_string;
+  size_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  stride_val  : unbounded_string;
+  stride_type : identifier;
+  ptr_val  : unbounded_string;
+  ptr_type : identifier;
+begin
+  expect( pen_glcolorpointer_t );
+  ParseFirstNumericParameter( size_val, size_type, pen_glint_t ); -- size : GLint
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseNextNumericParameter( stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
+  ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
+  if isExecutingCommand then
+    begin
+      glColorPointer( GLint( to_numeric( size_val ) ), GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), System.address( to_numeric( ptr_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColorPointer;
+
+procedure ParsePenglIndexPointer is
+  -- Syntax: glIndexPointer( kind : GLtypes; stride : GLsizei; ptr : System.address );
+  -- Source: bush_os.opengl.glIndexPointer
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  stride_val  : unbounded_string;
+  stride_type : identifier;
+  ptr_val  : unbounded_string;
+  ptr_type : identifier;
+begin
+  expect( pen_glindexpointer_t );
+  ParseFirstNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseNextNumericParameter( stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
+  ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
+  if isExecutingCommand then
+    begin
+      glIndexPointer( GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), System.address( to_numeric( ptr_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglIndexPointer;
+
+procedure ParsePenglTexCoordPointer is
+  -- Syntax: glTexCoordPointer( size : GLint; kind : GLtypes; stride : GLsizei; ptr : System.address );
+  -- Source: bush_os.opengl.glTexCoordPointer
+  size_val  : unbounded_string;
+  size_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  stride_val  : unbounded_string;
+  stride_type : identifier;
+  ptr_val  : unbounded_string;
+  ptr_type : identifier;
+begin
+  expect( pen_gltexcoordpointer_t );
+  ParseFirstNumericParameter( size_val, size_type, pen_glint_t ); -- size : GLint
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseNextNumericParameter( stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
+  ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
+  if isExecutingCommand then
+    begin
+      glTexCoordPointer( GLint( to_numeric( size_val ) ), GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), System.address( to_numeric( ptr_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexCoordPointer;
+
+procedure ParsePenglEdgeFlagPointer is
+  -- Syntax: glEdgeFlagPointer( stride : GLsizei; ptr : System.address );
+  -- Source: bush_os.opengl.glEdgeFlagPointer
+  stride_val  : unbounded_string;
+  stride_type : identifier;
+  ptr_val  : unbounded_string;
+  ptr_type : identifier;
+begin
+  expect( pen_gledgeflagpointer_t );
+  ParseFirstNumericParameter( stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
+  ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
+  if isExecutingCommand then
+    begin
+      glEdgeFlagPointer( GLsizei( to_numeric( stride_val ) ), System.address( to_numeric( ptr_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEdgeFlagPointer;
+
+procedure ParsePenglGetPointerv is
+  -- Syntax: glGetPointerv( pname : GLvertexarrays; params : in out System.address );
+  -- Source: bush_os.opengl.glGetPointerv
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgetpointerv_t );
+  ParseFirstNumericParameter( pname_val, pname_type, pen_glvertexarrays_t ); -- pname : GLvertexarrays
+  ParseLastNumericParameter( params_val, params_type, pen_system.address_t ); -- params : System.address
+  if isExecutingCommand then
+    begin
+      glGetPointerv( GLvertexarrays( to_numeric( pname_val ) ), System.address( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetPointerv;
+
+procedure ParsePenglArrayElement is
+  -- Syntax: glArrayElement( i : GLint );
+  -- Source: bush_os.opengl.glArrayElement
+  i_val  : unbounded_string;
+  i_type : identifier;
+begin
+  expect( pen_glarrayelement_t );
+  ParseSingleNumericParameter( i_val, i_type, pen_glint_t ); -- i : GLint
+  if isExecutingCommand then
+    begin
+      glArrayElement( GLint( to_numeric( i_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglArrayElement;
+
+procedure ParsePenglDrawArrays is
+  -- Syntax: glDrawArrays( mode : GLprimitives; first : GLint; count : GLsizei );
+  -- Source: bush_os.opengl.glDrawArrays
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+  first_val  : unbounded_string;
+  first_type : identifier;
+  count_val  : unbounded_string;
+  count_type : identifier;
+begin
+  expect( pen_gldrawarrays_t );
+  ParseFirstNumericParameter( mode_val, mode_type, pen_glprimitives_t ); -- mode : GLprimitives
+  ParseNextNumericParameter( first_val, first_type, pen_glint_t ); -- first : GLint
+  ParseLastNumericParameter( count_val, count_type, pen_glsizei_t ); -- count : GLsizei
+  if isExecutingCommand then
+    begin
+      glDrawArrays( GLprimitives( to_numeric( mode_val ) ), GLint( to_numeric( first_val ) ), GLsizei( to_numeric( count_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglDrawArrays;
+
+procedure ParsePenglDrawElements is
+  -- Syntax: glDrawElements( mode : GLtypes; count : GLsizei; kind : GLprimitives; indices : System.address );
+  -- Source: bush_os.opengl.glDrawElements
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+  count_val  : unbounded_string;
+  count_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  indices_val  : unbounded_string;
+  indices_type : identifier;
+begin
+  expect( pen_gldrawelements_t );
+  ParseFirstNumericParameter( mode_val, mode_type, pen_gltypes_t ); -- mode : GLtypes
+  ParseNextNumericParameter( count_val, count_type, pen_glsizei_t ); -- count : GLsizei
+  ParseNextNumericParameter( kind_val, kind_type, pen_glprimitives_t ); -- kind : GLprimitives
+  ParseLastNumericParameter( indices_val, indices_type, pen_system.address_t ); -- indices : System.address
+  if isExecutingCommand then
+    begin
+      glDrawElements( GLtypes( to_numeric( mode_val ) ), GLsizei( to_numeric( count_val ) ), GLprimitives( to_numeric( kind_val ) ), System.address( to_numeric( indices_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglDrawElements;
+
+procedure ParsePenglInterleavedArrays is
+  -- Syntax: glInterleavedArrays( format : GLvertexarrays; stride : GLsizei; pointer : System.address );
+  -- Source: bush_os.opengl.glInterleavedArrays
+  format_val  : unbounded_string;
+  format_type : identifier;
+  stride_val  : unbounded_string;
+  stride_type : identifier;
+  pointer_val  : unbounded_string;
+  pointer_type : identifier;
+begin
+  expect( pen_glinterleavedarrays_t );
+  ParseFirstNumericParameter( format_val, format_type, pen_glvertexarrays_t ); -- format : GLvertexarrays
+  ParseNextNumericParameter( stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
+  ParseLastNumericParameter( pointer_val, pointer_type, pen_system.address_t ); -- pointer : System.address
+  if isExecutingCommand then
+    begin
+      glInterleavedArrays( GLvertexarrays( to_numeric( format_val ) ), GLsizei( to_numeric( stride_val ) ), System.address( to_numeric( pointer_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglInterleavedArrays;
+
+procedure ParsePenglShadeModel is
+  -- Syntax: glShadeModel( mode : GLlighting );
+  -- Source: bush_os.opengl.glShadeModel
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+begin
+  expect( pen_glshademodel_t );
+  ParseSingleNumericParameter( mode_val, mode_type, pen_gllighting_t ); -- mode : GLlighting
+  if isExecutingCommand then
+    begin
+      glShadeModel( GLlighting( to_numeric( mode_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglShadeModel;
+
+procedure ParsePenglLightf is
+  -- Syntax: glLightf( light : GLenum; pname : GLlighting; param : GLfloat );
+  -- Source: bush_os.opengl.glLightf
+  light_val  : unbounded_string;
+  light_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_gllightf_t );
+  ParseFirstNumericParameter( light_val, light_type, pen_glenum_t ); -- light : GLenum
+  ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
+  ParseLastNumericParameter( param_val, param_type, pen_glfloat_t ); -- param : GLfloat
+  if isExecutingCommand then
+    begin
+      glLightf( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLightf;
+
+procedure ParsePenglLighti is
+  -- Syntax: glLighti( light : GLenum; pname : GLlighting; param : GLint );
+  -- Source: bush_os.opengl.glLighti
+  light_val  : unbounded_string;
+  light_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_gllighti_t );
+  ParseFirstNumericParameter( light_val, light_type, pen_glenum_t ); -- light : GLenum
+  ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
+  ParseLastNumericParameter( param_val, param_type, pen_glint_t ); -- param : GLint
+  if isExecutingCommand then
+    begin
+      glLighti( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLighti;
+
+procedure ParsePenglLightfv is
+  -- Syntax: glLightfv( light : GLenum; pname : GLlighting; params : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glLightfv
+  light_val  : unbounded_string;
+  light_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_gllightfv_t );
+  ParseFirstNumericParameter( light_val, light_type, pen_glenum_t ); -- light : GLenum
+  ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
+  ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glLightfv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLightfv;
+
+procedure ParsePenglLightiv is
+  -- Syntax: glLightiv( light : GLenum; pname : GLlighting; params : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glLightiv
+  light_val  : unbounded_string;
+  light_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_gllightiv_t );
+  ParseFirstNumericParameter( light_val, light_type, pen_glenum_t ); -- light : GLenum
+  ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
+  ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glLightiv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLightiv;
+
+procedure ParsePenglGetLightfv is
+  -- Syntax: glGetLightfv( light : GLenum; pname : GLlighting; params : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glGetLightfv
+  light_val  : unbounded_string;
+  light_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgetlightfv_t );
+  ParseFirstNumericParameter( light_val, light_type, pen_glenum_t ); -- light : GLenum
+  ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
+  ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glGetLightfv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetLightfv;
+
+procedure ParsePenglGetLightiv is
+  -- Syntax: glGetLightiv( light : GLenum; pname : GLlighting; params : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glGetLightiv
+  light_val  : unbounded_string;
+  light_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgetlightiv_t );
+  ParseFirstNumericParameter( light_val, light_type, pen_glenum_t ); -- light : GLenum
+  ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
+  ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glGetLightiv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetLightiv;
+
+procedure ParsePenglLightModelf is
+  -- Syntax: glLightModelf( pname : GLenum; param : GLfloat );
+  -- Source: bush_os.opengl.glLightModelf
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_gllightmodelf_t );
+  ParseFirstNumericParameter( pname_val, pname_type, pen_glenum_t ); -- pname : GLenum
+  ParseLastNumericParameter( param_val, param_type, pen_glfloat_t ); -- param : GLfloat
+  if isExecutingCommand then
+    begin
+      glLightModelf( GLenum( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLightModelf;
+
+procedure ParsePenglLightModeli is
+  -- Syntax: glLightModeli( pname : GLenum; param : GLint );
+  -- Source: bush_os.opengl.glLightModeli
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_gllightmodeli_t );
+  ParseFirstNumericParameter( pname_val, pname_type, pen_glenum_t ); -- pname : GLenum
+  ParseLastNumericParameter( param_val, param_type, pen_glint_t ); -- param : GLint
+  if isExecutingCommand then
+    begin
+      glLightModeli( GLenum( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLightModeli;
+
+procedure ParsePenglLightModelfv is
+  -- Syntax: glLightModelfv( pname : GLenum; params : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glLightModelfv
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_gllightmodelfv_t );
+  ParseFirstNumericParameter( pname_val, pname_type, pen_glenum_t ); -- pname : GLenum
+  ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glLightModelfv( GLenum( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLightModelfv;
+
+procedure ParsePenglLightModeliv is
+  -- Syntax: glLightModeliv( pname : GLenum; params : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glLightModeliv
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_gllightmodeliv_t );
+  ParseFirstNumericParameter( pname_val, pname_type, pen_glenum_t ); -- pname : GLenum
+  ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glLightModeliv( GLenum( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLightModeliv;
+
+procedure ParsePenglMaterialf is
+  -- Syntax: glMaterialf( face : GLbuffers; pname : GLlighting; param : GLfloat );
+  -- Source: bush_os.opengl.glMaterialf
+  face_val  : unbounded_string;
+  face_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_glmaterialf_t );
+  ParseFirstNumericParameter( face_val, face_type, pen_glbuffers_t ); -- face : GLbuffers
+  ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
+  ParseLastNumericParameter( param_val, param_type, pen_glfloat_t ); -- param : GLfloat
+  if isExecutingCommand then
+    begin
+      glMaterialf( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMaterialf;
+
+procedure ParsePenglMateriali is
+  -- Syntax: glMateriali( face : GLbuffers; pname : GLlighting; param : GLint );
+  -- Source: bush_os.opengl.glMateriali
+  face_val  : unbounded_string;
+  face_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_glmateriali_t );
+  ParseFirstNumericParameter( face_val, face_type, pen_glbuffers_t ); -- face : GLbuffers
+  ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
+  ParseLastNumericParameter( param_val, param_type, pen_glint_t ); -- param : GLint
+  if isExecutingCommand then
+    begin
+      glMateriali( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMateriali;
+
+procedure ParsePenglMaterialfv is
+  -- Syntax: glMaterialfv( face : GLbuffers; pname : GLlighting; param : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glMaterialfv
+  face_val  : unbounded_string;
+  face_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_glmaterialfv_t );
+  ParseFirstNumericParameter( face_val, face_type, pen_glbuffers_t ); -- face : GLbuffers
+  ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
+  ParseLastNumericParameter( param_val, param_type, pen_gl_float_array_ptr_t ); -- param : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glMaterialfv( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMaterialfv;
+
+procedure ParsePenglMaterialiv is
+  -- Syntax: glMaterialiv( face : GLbuffers; pname : GLlighting; param : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glMaterialiv
+  face_val  : unbounded_string;
+  face_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_glmaterialiv_t );
+  ParseFirstNumericParameter( face_val, face_type, pen_glbuffers_t ); -- face : GLbuffers
+  ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
+  ParseLastNumericParameter( param_val, param_type, pen_gl_int_array_ptr_t ); -- param : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glMaterialiv( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMaterialiv;
+
+procedure ParsePenglGetMaterialfv is
+  -- Syntax: glGetMaterialfv( face : GLbuffers; pname : GLlighting; param : in out GLfloat );
+  -- Source: bush_os.opengl.glGetMaterialfv
+  face_val  : unbounded_string;
+  face_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_glgetmaterialfv_t );
+  ParseFirstNumericParameter( face_val, face_type, pen_glbuffers_t ); -- face : GLbuffers
+  ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
+  ParseLastNumericParameter( param_val, param_type, pen_glfloat_t ); -- param : GLfloat
+  if isExecutingCommand then
+    begin
+      glGetMaterialfv( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetMaterialfv;
+
+procedure ParsePenglGetMaterialiv is
+  -- Syntax: glGetMaterialiv( face : GLbuffers; pname : GLlighting; param : in out GLint );
+  -- Source: bush_os.opengl.glGetMaterialiv
+  face_val  : unbounded_string;
+  face_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_glgetmaterialiv_t );
+  ParseFirstNumericParameter( face_val, face_type, pen_glbuffers_t ); -- face : GLbuffers
+  ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
+  ParseLastNumericParameter( param_val, param_type, pen_glint_t ); -- param : GLint
+  if isExecutingCommand then
+    begin
+      glGetMaterialiv( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetMaterialiv;
+
+procedure ParsePenglColorMaterial is
+  -- Syntax: glColorMaterial( face : GLbuffers; mode : GLlighting );
+  -- Source: bush_os.opengl.glColorMaterial
+  face_val  : unbounded_string;
+  face_type : identifier;
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+begin
+  expect( pen_glcolormaterial_t );
+  ParseFirstNumericParameter( face_val, face_type, pen_glbuffers_t ); -- face : GLbuffers
+  ParseLastNumericParameter( mode_val, mode_type, pen_gllighting_t ); -- mode : GLlighting
+  if isExecutingCommand then
+    begin
+      glColorMaterial( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( mode_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColorMaterial;
+
+procedure ParsePenglPixelZoom is
+  -- Syntax: glPixelZoom( xfactor, yfactor : GLfloat );
+  -- Source: bush_os.opengl.glPixelZoom
+  xfactor_val  : unbounded_string;
+  xfactor_type : identifier;
+  yfactor_val  : unbounded_string;
+  yfactor_type : identifier;
+begin
+  expect( pen_glpixelzoom_t );
+  ParseFirstNumericParameter( xfactor_val, xfactor_type, pen_glfloat_t ); -- xfactor : GLfloat
+  ParseLastNumericParameter( yfactor_val, yfactor_type, pen_glfloat_t ); -- yfactor : GLfloat
+  if isExecutingCommand then
+    begin
+      glPixelZoom( GLfloat( to_numeric( xfactor_val ) ), GLfloat( to_numeric( yfactor_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPixelZoom;
+
+procedure ParsePenglPixelStoref is
+  -- Syntax: glPixelStoref( pname : GLpixelmode; param : GLfloat );
+  -- Source: bush_os.opengl.glPixelStoref
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_glpixelstoref_t );
+  ParseFirstNumericParameter( pname_val, pname_type, pen_glpixelmode_t ); -- pname : GLpixelmode
+  ParseLastNumericParameter( param_val, param_type, pen_glfloat_t ); -- param : GLfloat
+  if isExecutingCommand then
+    begin
+      glPixelStoref( GLpixelmode( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPixelStoref;
+
+procedure ParsePenglPixelStorei is
+  -- Syntax: glPixelStorei( pname : GLpixelmode; param : GLint );
+  -- Source: bush_os.opengl.glPixelStorei
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_glpixelstorei_t );
+  ParseFirstNumericParameter( pname_val, pname_type, pen_glpixelmode_t ); -- pname : GLpixelmode
+  ParseLastNumericParameter( param_val, param_type, pen_glint_t ); -- param : GLint
+  if isExecutingCommand then
+    begin
+      glPixelStorei( GLpixelmode( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPixelStorei;
+
+procedure ParsePenglPixelTransferf is
+  -- Syntax: glPixelTransferf( pname : GLpixelmode; param : GLfloat );
+  -- Source: bush_os.opengl.glPixelTransferf
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_glpixeltransferf_t );
+  ParseFirstNumericParameter( pname_val, pname_type, pen_glpixelmode_t ); -- pname : GLpixelmode
+  ParseLastNumericParameter( param_val, param_type, pen_glfloat_t ); -- param : GLfloat
+  if isExecutingCommand then
+    begin
+      glPixelTransferf( GLpixelmode( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPixelTransferf;
+
+procedure ParsePenglPixelTransferi is
+  -- Syntax: glPixelTransferi( pname : GLpixelmode; param : GLint );
+  -- Source: bush_os.opengl.glPixelTransferi
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_glpixeltransferi_t );
+  ParseFirstNumericParameter( pname_val, pname_type, pen_glpixelmode_t ); -- pname : GLpixelmode
+  ParseLastNumericParameter( param_val, param_type, pen_glint_t ); -- param : GLint
+  if isExecutingCommand then
+    begin
+      glPixelTransferi( GLpixelmode( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPixelTransferi;
+
+procedure ParsePenglPixelMapfv is
+  -- Syntax: glPixelMapfv( map : GLpixelmode; mapsize : GLsizei; values : in out GLfloat );
+  -- Source: bush_os.opengl.glPixelMapfv
+  map_val  : unbounded_string;
+  map_type : identifier;
+  mapsize_val  : unbounded_string;
+  mapsize_type : identifier;
+  values_val  : unbounded_string;
+  values_type : identifier;
+begin
+  expect( pen_glpixelmapfv_t );
+  ParseFirstNumericParameter( map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
+  ParseNextNumericParameter( mapsize_val, mapsize_type, pen_glsizei_t ); -- mapsize : GLsizei
+  ParseLastNumericParameter( values_val, values_type, pen_glfloat_t ); -- values : GLfloat
+  if isExecutingCommand then
+    begin
+      glPixelMapfv( GLpixelmode( to_numeric( map_val ) ), GLsizei( to_numeric( mapsize_val ) ), GLfloat( to_numeric( values_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPixelMapfv;
+
+procedure ParsePenglPixelMapuiv is
+  -- Syntax: glPixelMapuiv( map : GLpixelmode; mapsize : GLsizei; values : in out GLuint );
+  -- Source: bush_os.opengl.glPixelMapuiv
+  map_val  : unbounded_string;
+  map_type : identifier;
+  mapsize_val  : unbounded_string;
+  mapsize_type : identifier;
+  values_val  : unbounded_string;
+  values_type : identifier;
+begin
+  expect( pen_glpixelmapuiv_t );
+  ParseFirstNumericParameter( map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
+  ParseNextNumericParameter( mapsize_val, mapsize_type, pen_glsizei_t ); -- mapsize : GLsizei
+  ParseLastNumericParameter( values_val, values_type, pen_gluint_t ); -- values : GLuint
+  if isExecutingCommand then
+    begin
+      glPixelMapuiv( GLpixelmode( to_numeric( map_val ) ), GLsizei( to_numeric( mapsize_val ) ), GLuint( to_numeric( values_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPixelMapuiv;
+
+procedure ParsePenglPixelMapusv is
+  -- Syntax: glPixelMapusv( map : GLpixelmode; mapsize : GLsizei; values : in out GLushort );
+  -- Source: bush_os.opengl.glPixelMapusv
+  map_val  : unbounded_string;
+  map_type : identifier;
+  mapsize_val  : unbounded_string;
+  mapsize_type : identifier;
+  values_val  : unbounded_string;
+  values_type : identifier;
+begin
+  expect( pen_glpixelmapusv_t );
+  ParseFirstNumericParameter( map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
+  ParseNextNumericParameter( mapsize_val, mapsize_type, pen_glsizei_t ); -- mapsize : GLsizei
+  ParseLastNumericParameter( values_val, values_type, pen_glushort_t ); -- values : GLushort
+  if isExecutingCommand then
+    begin
+      glPixelMapusv( GLpixelmode( to_numeric( map_val ) ), GLsizei( to_numeric( mapsize_val ) ), GLushort( to_numeric( values_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPixelMapusv;
+
+procedure ParsePenglGetPixelMapfv is
+  -- Syntax: glGetPixelMapfv( map : GLpixelmode; values : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glGetPixelMapfv
+  map_val  : unbounded_string;
+  map_type : identifier;
+  values_val  : unbounded_string;
+  values_type : identifier;
+begin
+  expect( pen_glgetpixelmapfv_t );
+  ParseFirstNumericParameter( map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
+  ParseLastNumericParameter( values_val, values_type, pen_gl_float_array_ptr_t ); -- values : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glGetPixelMapfv( GLpixelmode( to_numeric( map_val ) ), GL_Float_Array_Ptr( to_numeric( values_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetPixelMapfv;
+
+procedure ParsePenglGetPixelMapuiv is
+  -- Syntax: glGetPixelMapuiv( map : GLpixelmode; values : GL_UInt_Array_Ptr );
+  -- Source: bush_os.opengl.glGetPixelMapuiv
+  map_val  : unbounded_string;
+  map_type : identifier;
+  values_val  : unbounded_string;
+  values_type : identifier;
+begin
+  expect( pen_glgetpixelmapuiv_t );
+  ParseFirstNumericParameter( map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
+  ParseLastNumericParameter( values_val, values_type, pen_gl_uint_array_ptr_t ); -- values : GL_UInt_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glGetPixelMapuiv( GLpixelmode( to_numeric( map_val ) ), GL_UInt_Array_Ptr( to_numeric( values_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetPixelMapuiv;
+
+procedure ParsePenglGetPixelMapusv is
+  -- Syntax: glGetPixelMapusv( map : GLpixelmode; values : GL_UShort_Array_Ptr );
+  -- Source: bush_os.opengl.glGetPixelMapusv
+  map_val  : unbounded_string;
+  map_type : identifier;
+  values_val  : unbounded_string;
+  values_type : identifier;
+begin
+  expect( pen_glgetpixelmapusv_t );
+  ParseFirstNumericParameter( map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
+  ParseLastNumericParameter( values_val, values_type, pen_gl_ushort_array_ptr_t ); -- values : GL_UShort_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glGetPixelMapusv( GLpixelmode( to_numeric( map_val ) ), GL_UShort_Array_Ptr( to_numeric( values_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetPixelMapusv;
+
+procedure ParsePenglBitmap is
+  -- Syntax: glBitmap( width, height : GLsizei; xorig, yorig : GLfloat; xmove, ymove : GLfloat; bitmap : GL_UByte_Array_Ptr );
+  -- Source: bush_os.opengl.glBitmap
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  xorig_val  : unbounded_string;
+  xorig_type : identifier;
+  yorig_val  : unbounded_string;
+  yorig_type : identifier;
+  xmove_val  : unbounded_string;
+  xmove_type : identifier;
+  ymove_val  : unbounded_string;
+  ymove_type : identifier;
+  bitmap_val  : unbounded_string;
+  bitmap_type : identifier;
+begin
+  expect( pen_glbitmap_t );
+  ParseFirstNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( xorig_val, xorig_type, pen_glfloat_t ); -- xorig : GLfloat
+  ParseNextNumericParameter( yorig_val, yorig_type, pen_glfloat_t ); -- yorig : GLfloat
+  ParseNextNumericParameter( xmove_val, xmove_type, pen_glfloat_t ); -- xmove : GLfloat
+  ParseNextNumericParameter( ymove_val, ymove_type, pen_glfloat_t ); -- ymove : GLfloat
+  ParseLastNumericParameter( bitmap_val, bitmap_type, pen_gl_ubyte_array_ptr_t ); -- bitmap : GL_UByte_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glBitmap( GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLfloat( to_numeric( xorig_val ) ), GLfloat( to_numeric( yorig_val ) ), GLfloat( to_numeric( xmove_val ) ), GLfloat( to_numeric( ymove_val ) ), GL_UByte_Array_Ptr( to_numeric( bitmap_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglBitmap;
+
+procedure ParsePenglReadPixels is
+  -- Syntax: glReadPixels( x, y : GLint; width, height : GLsizei; format : GLenum; kind : GLtypes; pixels : System.address );
+  -- Source: bush_os.opengl.glReadPixels
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  pixels_val  : unbounded_string;
+  pixels_type : identifier;
+begin
+  expect( pen_glreadpixels_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glenum_t ); -- format : GLenum
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  if isExecutingCommand then
+    begin
+      glReadPixels( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLenum( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglReadPixels;
+
+procedure ParsePenglDrawPixels is
+  -- Syntax: glDrawPixels( width, height : GLsizei; format : GLbuffers; kind : GLtypes; pixels : System.address );
+  -- Source: bush_os.opengl.glDrawPixels
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  pixels_val  : unbounded_string;
+  pixels_type : identifier;
+begin
+  expect( pen_gldrawpixels_t );
+  ParseFirstNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  if isExecutingCommand then
+    begin
+      glDrawPixels( GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglDrawPixels;
+
+procedure ParsePenglCopyPixels is
+  -- Syntax: glCopyPixels( x, y : GLint; width, height : GLsizei; kind : GLbuffers );
+  -- Source: bush_os.opengl.glCopyPixels
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+begin
+  expect( pen_glcopypixels_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseLastNumericParameter( kind_val, kind_type, pen_glbuffers_t ); -- kind : GLbuffers
+  if isExecutingCommand then
+    begin
+      glCopyPixels( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( kind_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCopyPixels;
+
+procedure ParsePenglStencilFunc is
+  -- Syntax: glStencilFunc( func : GLenum; ref : GLint; mask : GLuint );
+  -- Source: bush_os.opengl.glStencilFunc
+  func_val  : unbounded_string;
+  func_type : identifier;
+  ref_val  : unbounded_string;
+  ref_type : identifier;
+  mask_val  : unbounded_string;
+  mask_type : identifier;
+begin
+  expect( pen_glstencilfunc_t );
+  ParseFirstNumericParameter( func_val, func_type, pen_glenum_t ); -- func : GLenum
+  ParseNextNumericParameter( ref_val, ref_type, pen_glint_t ); -- ref : GLint
+  ParseLastNumericParameter( mask_val, mask_type, pen_gluint_t ); -- mask : GLuint
+  if isExecutingCommand then
+    begin
+      glStencilFunc( GLenum( to_numeric( func_val ) ), GLint( to_numeric( ref_val ) ), GLuint( to_numeric( mask_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglStencilFunc;
+
+procedure ParsePenglStencilMask is
+  -- Syntax: glStencilMask( mask : GLuint );
+  -- Source: bush_os.opengl.glStencilMask
+  mask_val  : unbounded_string;
+  mask_type : identifier;
+begin
+  expect( pen_glstencilmask_t );
+  ParseSingleNumericParameter( mask_val, mask_type, pen_gluint_t ); -- mask : GLuint
+  if isExecutingCommand then
+    begin
+      glStencilMask( GLuint( to_numeric( mask_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglStencilMask;
+
+procedure ParsePenglStencilOp is
+  -- Syntax: glStencilOp( fail : GLstencil; zfail : GLstencil; zpass : GLstencil );
+  -- Source: bush_os.opengl.glStencilOp
+  fail_val  : unbounded_string;
+  fail_type : identifier;
+  zfail_val  : unbounded_string;
+  zfail_type : identifier;
+  zpass_val  : unbounded_string;
+  zpass_type : identifier;
+begin
+  expect( pen_glstencilop_t );
+  ParseFirstNumericParameter( fail_val, fail_type, pen_glstencil_t ); -- fail : GLstencil
+  ParseNextNumericParameter( zfail_val, zfail_type, pen_glstencil_t ); -- zfail : GLstencil
+  ParseLastNumericParameter( zpass_val, zpass_type, pen_glstencil_t ); -- zpass : GLstencil
+  if isExecutingCommand then
+    begin
+      glStencilOp( GLstencil( to_numeric( fail_val ) ), GLstencil( to_numeric( zfail_val ) ), GLstencil( to_numeric( zpass_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglStencilOp;
+
+procedure ParsePenglClearStencil is
+  -- Syntax: glClearStencil( s : GLint );
+  -- Source: bush_os.opengl.glClearStencil
+  s_val  : unbounded_string;
+  s_type : identifier;
+begin
+  expect( pen_glclearstencil_t );
+  ParseSingleNumericParameter( s_val, s_type, pen_glint_t ); -- s : GLint
+  if isExecutingCommand then
+    begin
+      glClearStencil( GLint( to_numeric( s_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglClearStencil;
+
+procedure ParsePenglTexGend is
+  -- Syntax: glTexGend( coord : GLtexturemapping; pname : GLtexturemapping; param : GLdouble );
+  -- Source: bush_os.opengl.glTexGend
+  coord_val  : unbounded_string;
+  coord_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_gltexgend_t );
+  ParseFirstNumericParameter( coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( param_val, param_type, pen_gldouble_t ); -- param : GLdouble
+  if isExecutingCommand then
+    begin
+      glTexGend( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLdouble( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexGend;
+
+procedure ParsePenglTexGenf is
+  -- Syntax: glTexGenf( coord : GLtexturemapping; pname : GLtexturemapping; param : GLfloat );
+  -- Source: bush_os.opengl.glTexGenf
+  coord_val  : unbounded_string;
+  coord_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_gltexgenf_t );
+  ParseFirstNumericParameter( coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( param_val, param_type, pen_glfloat_t ); -- param : GLfloat
+  if isExecutingCommand then
+    begin
+      glTexGenf( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexGenf;
+
+procedure ParsePenglTexGeni is
+  -- Syntax: glTexGeni( coord : GLtexturemapping; pname : GLtexturemapping; param : GLint );
+  -- Source: bush_os.opengl.glTexGeni
+  coord_val  : unbounded_string;
+  coord_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_gltexgeni_t );
+  ParseFirstNumericParameter( coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( param_val, param_type, pen_glint_t ); -- param : GLint
+  if isExecutingCommand then
+    begin
+      glTexGeni( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexGeni;
+
+procedure ParsePenglTexGendv is
+  -- Syntax: glTexGendv( coord : GLtexturemapping; pname : GLtexturemapping; params : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glTexGendv
+  coord_val  : unbounded_string;
+  coord_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_gltexgendv_t );
+  ParseFirstNumericParameter( coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( params_val, params_type, pen_gl_double_array_ptr_t ); -- params : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexGendv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GL_Double_Array_Ptr( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexGendv;
+
+procedure ParsePenglTexGenfv is
+  -- Syntax: glTexGenfv( coord : GLtexturemapping; pname : GLtexturemapping; params : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glTexGenfv
+  coord_val  : unbounded_string;
+  coord_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_gltexgenfv_t );
+  ParseFirstNumericParameter( coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexGenfv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexGenfv;
+
+procedure ParsePenglTexGeniv is
+  -- Syntax: glTexGeniv( coord : GLtexturemapping; pname : GLtexturemapping; params : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glTexGeniv
+  coord_val  : unbounded_string;
+  coord_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_gltexgeniv_t );
+  ParseFirstNumericParameter( coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexGeniv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexGeniv;
+
+procedure ParsePenglGetTexGendv is
+  -- Syntax: glGetTexGendv( coord : GLtexturemapping; pname : GLtexturemapping; params : in out GLdouble );
+  -- Source: bush_os.opengl.glGetTexGendv
+  coord_val  : unbounded_string;
+  coord_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgettexgendv_t );
+  ParseFirstNumericParameter( coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( params_val, params_type, pen_gldouble_t ); -- params : GLdouble
+  if isExecutingCommand then
+    begin
+      glGetTexGendv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLdouble( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetTexGendv;
+
+procedure ParsePenglGetTexGenfv is
+  -- Syntax: glGetTexGenfv( coord : GLtexturemapping; pname : GLtexturemapping; params : in out GLfloat );
+  -- Source: bush_os.opengl.glGetTexGenfv
+  coord_val  : unbounded_string;
+  coord_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgettexgenfv_t );
+  ParseFirstNumericParameter( coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
+  if isExecutingCommand then
+    begin
+      glGetTexGenfv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetTexGenfv;
+
+procedure ParsePenglGetTexGeniv is
+  -- Syntax: glGetTexGeniv( coord : GLtexturemapping; pname : GLtexturemapping; params : in out GLint );
+  -- Source: bush_os.opengl.glGetTexGeniv
+  coord_val  : unbounded_string;
+  coord_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgettexgeniv_t );
+  ParseFirstNumericParameter( coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
+  if isExecutingCommand then
+    begin
+      glGetTexGeniv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetTexGeniv;
+
+procedure ParsePenglTexEnvf is
+  -- Syntax: glTexEnvf( target : GLtexturemapping; pname : GLtexturemapping; param : GLfloat );
+  -- Source: bush_os.opengl.glTexEnvf
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_gltexenvf_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( param_val, param_type, pen_glfloat_t ); -- param : GLfloat
+  if isExecutingCommand then
+    begin
+      glTexEnvf( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexEnvf;
+
+procedure ParsePenglTexEnvi is
+  -- Syntax: glTexEnvi( target : GLtexturemapping; pname : GLtexturemapping; param : GLint );
+  -- Source: bush_os.opengl.glTexEnvi
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_gltexenvi_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( param_val, param_type, pen_glint_t ); -- param : GLint
+  if isExecutingCommand then
+    begin
+      glTexEnvi( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexEnvi;
+
+procedure ParsePenglTexEnvfv is
+  -- Syntax: glTexEnvfv( target : GLtexturemapping; pname : GLtexturemapping; param : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glTexEnvfv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_gltexenvfv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( param_val, param_type, pen_gl_float_array_ptr_t ); -- param : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexEnvfv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexEnvfv;
+
+procedure ParsePenglTexEnviv is
+  -- Syntax: glTexEnviv( target : GLtexturemapping; pname : GLtexturemapping; param : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glTexEnviv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_gltexenviv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( param_val, param_type, pen_gl_int_array_ptr_t ); -- param : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glTexEnviv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexEnviv;
+
+procedure ParsePenglGetTexEnvfv is
+  -- Syntax: glGetTexEnvfv( target : GLtexturemapping; pname : GLtexturemapping; param : in out GLfloat );
+  -- Source: bush_os.opengl.glGetTexEnvfv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_glgettexenvfv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( param_val, param_type, pen_glfloat_t ); -- param : GLfloat
+  if isExecutingCommand then
+    begin
+      glGetTexEnvfv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetTexEnvfv;
+
+procedure ParsePenglGetTexEnviv is
+  -- Syntax: glGetTexEnviv( target : GLtexturemapping; pname : GLtexturemapping; param : in out GLint );
+  -- Source: bush_os.opengl.glGetTexEnviv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_glgettexenviv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( param_val, param_type, pen_glint_t ); -- param : GLint
+  if isExecutingCommand then
+    begin
+      glGetTexEnviv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetTexEnviv;
+
+procedure ParsePenglTexParameterf is
+  -- Syntax: glTexParameterf( target : GLtexturemapping; pname : GLtexturemapping; param : GLfloat );
+  -- Source: bush_os.opengl.glTexParameterf
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_gltexparameterf_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( param_val, param_type, pen_glfloat_t ); -- param : GLfloat
+  if isExecutingCommand then
+    begin
+      glTexParameterf( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexParameterf;
+
+procedure ParsePenglTexParameteri is
+  -- Syntax: glTexParameteri( target : GLtexturemapping; pname : GLtexturemapping; param : GLint );
+  -- Source: bush_os.opengl.glTexParameteri
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_gltexparameteri_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( param_val, param_type, pen_glint_t ); -- param : GLint
+  if isExecutingCommand then
+    begin
+      glTexParameteri( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexParameteri;
+
+procedure ParsePenglTexParameterfv is
+  -- Syntax: glTexParameterfv( target : GLtexturemapping; pname : GLtexturemapping; params : in out GLfloat );
+  -- Source: bush_os.opengl.glTexParameterfv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_gltexparameterfv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
+  if isExecutingCommand then
+    begin
+      glTexParameterfv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexParameterfv;
+
+procedure ParsePenglTexParameteriv is
+  -- Syntax: glTexParameteriv( target : GLtexturemapping; pname : GLtexturemapping; params : in out GLint );
+  -- Source: bush_os.opengl.glTexParameteriv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_gltexparameteriv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
+  if isExecutingCommand then
+    begin
+      glTexParameteriv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexParameteriv;
+
+procedure ParsePenglGetTexParameterfv is
+  -- Syntax: glGetTexParameterfv( target : GLtexturemapping; pname : GLtexturemapping; params : in out GLfloat );
+  -- Source: bush_os.opengl.glGetTexParameterfv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgettexparameterfv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
+  if isExecutingCommand then
+    begin
+      glGetTexParameterfv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetTexParameterfv;
+
+procedure ParsePenglGetTexParameteriv is
+  -- Syntax: glGetTexParameteriv( target : GLtexturemapping; pname : GLtexturemapping; params : in out GLint );
+  -- Source: bush_os.opengl.glGetTexParameteriv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgettexparameteriv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
+  ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
+  if isExecutingCommand then
+    begin
+      glGetTexParameteriv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetTexParameteriv;
+
+procedure ParsePenglGetTexLevelParameterfv is
+  -- Syntax: glGetTexLevelParameterfv( target : GLtexturemapping; level : GLint; pname : GLenum; params : in out GLfloat );
+  -- Source: bush_os.opengl.glGetTexLevelParameterfv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgettexlevelparameterfv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( pname_val, pname_type, pen_glenum_t ); -- pname : GLenum
+  ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
+  if isExecutingCommand then
+    begin
+      glGetTexLevelParameterfv( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLenum( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetTexLevelParameterfv;
+
+procedure ParsePenglGetTexLevelParameteriv is
+  -- Syntax: glGetTexLevelParameteriv( target : GLtexturemapping; level : GLint; pname : GLenum; params : in out GLint );
+  -- Source: bush_os.opengl.glGetTexLevelParameteriv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgettexlevelparameteriv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( pname_val, pname_type, pen_glenum_t ); -- pname : GLenum
+  ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
+  if isExecutingCommand then
+    begin
+      glGetTexLevelParameteriv( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLenum( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetTexLevelParameteriv;
+
+procedure ParsePenglTexImage1D is
+  -- Syntax: glTexImage1D( target : GLtexturemapping; level : GLint; internalFormat : GLint; width : GLsizei; border : GLint; format : GLbuffers; kind : GLtypes; pixels : System.address );
+  -- Source: bush_os.opengl.glTexImage1D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  internalFormat_val  : unbounded_string;
+  internalFormat_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  border_val  : unbounded_string;
+  border_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  pixels_val  : unbounded_string;
+  pixels_type : identifier;
+begin
+  expect( pen_glteximage1d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( internalFormat_val, internalFormat_type, pen_glint_t ); -- internalFormat : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( border_val, border_type, pen_glint_t ); -- border : GLint
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  if isExecutingCommand then
+    begin
+      glTexImage1D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLint( to_numeric( border_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexImage1D;
+
+procedure ParsePenglTexImage2D is
+  -- Syntax: glTexImage2D( target : GLenum; level : GLint; internalFormat : GLint; width : GLsizei; height : GLsizei; border : GLint; format : GLenum; kind : GLenum; pixels : System.address );
+  -- Source: bush_os.opengl.glTexImage2D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  internalFormat_val  : unbounded_string;
+  internalFormat_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  border_val  : unbounded_string;
+  border_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  pixels_val  : unbounded_string;
+  pixels_type : identifier;
+begin
+  expect( pen_glteximage2d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( internalFormat_val, internalFormat_type, pen_glint_t ); -- internalFormat : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( border_val, border_type, pen_glint_t ); -- border : GLint
+  ParseNextNumericParameter( format_val, format_type, pen_glenum_t ); -- format : GLenum
+  ParseNextNumericParameter( kind_val, kind_type, pen_glenum_t ); -- kind : GLenum
+  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  if isExecutingCommand then
+    begin
+      glTexImage2D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLint( to_numeric( border_val ) ), GLenum( to_numeric( format_val ) ), GLenum( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexImage2D;
+
+procedure ParsePenglGetTexImage is
+  -- Syntax: glGetTexImage( target : GLtexturemapping; level : GLint; format : GLbuffers; kind : GLtypes; pixels : System.address );
+  -- Source: bush_os.opengl.glGetTexImage
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  pixels_val  : unbounded_string;
+  pixels_type : identifier;
+begin
+  expect( pen_glgetteximage_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  if isExecutingCommand then
+    begin
+      glGetTexImage( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetTexImage;
+
+procedure ParsePenglGenTextures is
+  -- Syntax: glGenTextures( n : GLsizei; textures : GL_UInt_Array_Ptr );
+  -- Source: bush_os.opengl.glGenTextures
+  n_val  : unbounded_string;
+  n_type : identifier;
+  textures_val  : unbounded_string;
+  textures_type : identifier;
+begin
+  expect( pen_glgentextures_t );
+  ParseFirstNumericParameter( n_val, n_type, pen_glsizei_t ); -- n : GLsizei
+  ParseLastNumericParameter( textures_val, textures_type, pen_gl_uint_array_ptr_t ); -- textures : GL_UInt_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glGenTextures( GLsizei( to_numeric( n_val ) ), GL_UInt_Array_Ptr( to_numeric( textures_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGenTextures;
+
+procedure ParsePenglDeleteTextures is
+  -- Syntax: glDeleteTextures( n : GLsizei; textures : GL_UInt_Array_Ptr );
+  -- Source: bush_os.opengl.glDeleteTextures
+  n_val  : unbounded_string;
+  n_type : identifier;
+  textures_val  : unbounded_string;
+  textures_type : identifier;
+begin
+  expect( pen_gldeletetextures_t );
+  ParseFirstNumericParameter( n_val, n_type, pen_glsizei_t ); -- n : GLsizei
+  ParseLastNumericParameter( textures_val, textures_type, pen_gl_uint_array_ptr_t ); -- textures : GL_UInt_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glDeleteTextures( GLsizei( to_numeric( n_val ) ), GL_UInt_Array_Ptr( to_numeric( textures_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglDeleteTextures;
+
+procedure ParsePenglBindTexture is
+  -- Syntax: glBindTexture( target : GLtexturemapping; texture : GLuint );
+  -- Source: bush_os.opengl.glBindTexture
+  target_val  : unbounded_string;
+  target_type : identifier;
+  texture_val  : unbounded_string;
+  texture_type : identifier;
+begin
+  expect( pen_glbindtexture_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseLastNumericParameter( texture_val, texture_type, pen_gluint_t ); -- texture : GLuint
+  if isExecutingCommand then
+    begin
+      glBindTexture( GLtexturemapping( to_numeric( target_val ) ), GLuint( to_numeric( texture_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglBindTexture;
+
+procedure ParsePenglPrioritizeTextures is
+  -- Syntax: glPrioritizeTextures( n : GLsizei; textures : GL_UInt_Array_Ptr; priorities : GL_Clampf_Array_Ptr );
+  -- Source: bush_os.opengl.glPrioritizeTextures
+  n_val  : unbounded_string;
+  n_type : identifier;
+  textures_val  : unbounded_string;
+  textures_type : identifier;
+  priorities_val  : unbounded_string;
+  priorities_type : identifier;
+begin
+  expect( pen_glprioritizetextures_t );
+  ParseFirstNumericParameter( n_val, n_type, pen_glsizei_t ); -- n : GLsizei
+  ParseNextNumericParameter( textures_val, textures_type, pen_gl_uint_array_ptr_t ); -- textures : GL_UInt_Array_Ptr
+  ParseLastNumericParameter( priorities_val, priorities_type, pen_gl_clampf_array_ptr_t ); -- priorities : GL_Clampf_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glPrioritizeTextures( GLsizei( to_numeric( n_val ) ), GL_UInt_Array_Ptr( to_numeric( textures_val ) ), GL_Clampf_Array_Ptr( to_numeric( priorities_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPrioritizeTextures;
+
+procedure ParsePenglAreTexturesResident( result : out unbounded_string ) is
+  -- Syntax: glAreTexturesResident( n : GLsizei; textures : GL_UInt_Array_Ptr; residences : GL_Boolean_Array_Ptr ) return GLboolean;
+  -- Source: bush_os.opengl.glAreTexturesResident
+  n_val  : unbounded_string;
+  n_type : identifier;
+  textures_val  : unbounded_string;
+  textures_type : identifier;
+  residences_val  : unbounded_string;
+  residences_type : identifier;
+begin
+  expect( pen_glaretexturesresident_t );
+  ParseFirstNumericParameter( n_val, n_type, pen_glsizei_t ); -- n : GLsizei
+  ParseNextNumericParameter( textures_val, textures_type, pen_gl_uint_array_ptr_t ); -- textures : GL_UInt_Array_Ptr
+  ParseLastNumericParameter( residences_val, residences_type, pen_gl_boolean_array_ptr_t ); -- residences : GL_Boolean_Array_Ptr
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( glAreTexturesResident( GLsizei( to_numeric( n_val ) ), GL_UInt_Array_Ptr( to_numeric( textures_val ) ), GL_Boolean_Array_Ptr( to_numeric( residences_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglAreTexturesResident;
+
+procedure ParsePenglIsTexture( result : out unbounded_string ) is
+  -- Syntax: glIsTexture( texture : GL_UInt_Array_Ptr ) return GLboolean;
+  -- Source: bush_os.opengl.glIsTexture
+  texture_val  : unbounded_string;
+  texture_type : identifier;
+begin
+  expect( pen_glistexture_t );
+  ParseSingleNumericParameter( texture_val, texture_type, pen_gl_uint_array_ptr_t ); -- texture : GL_UInt_Array_Ptr
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( glIsTexture( GL_UInt_Array_Ptr( to_numeric( texture_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglIsTexture;
+
+procedure ParsePenglTexSubImage1D is
+  -- Syntax: glTexSubImage1D( target : GLtexturemapping; level : GLint; xoffset : GLint; width : GLsizei; format : GLbuffers; kind : GLtypes; pixels : System.address );
+  -- Source: bush_os.opengl.glTexSubImage1D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  xoffset_val  : unbounded_string;
+  xoffset_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  pixels_val  : unbounded_string;
+  pixels_type : identifier;
+begin
+  expect( pen_gltexsubimage1d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( xoffset_val, xoffset_type, pen_glint_t ); -- xoffset : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  if isExecutingCommand then
+    begin
+      glTexSubImage1D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexSubImage1D;
+
+procedure ParsePenglTexSubImage2D is
+  -- Syntax: glTexSubImage2D( target : GLtexturemapping; level : GLint; xoffset, yoffset : GLint; width, height : GLsizei; format : GLbuffers; kind : GLtypes; pixels : System.address );
+  -- Source: bush_os.opengl.glTexSubImage2D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  xoffset_val  : unbounded_string;
+  xoffset_type : identifier;
+  yoffset_val  : unbounded_string;
+  yoffset_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  pixels_val  : unbounded_string;
+  pixels_type : identifier;
+begin
+  expect( pen_gltexsubimage2d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( xoffset_val, xoffset_type, pen_glint_t ); -- xoffset : GLint
+  ParseNextNumericParameter( yoffset_val, yoffset_type, pen_glint_t ); -- yoffset : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  if isExecutingCommand then
+    begin
+      glTexSubImage2D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexSubImage2D;
+
+procedure ParsePenglCopyTexImage1D is
+  -- Syntax: glCopyTexImage1D( target : GLtexturemapping; level : GLint; internalformat : GLenum; x, y : GLint; width : GLsizei; border : GLint );
+  -- Source: bush_os.opengl.glCopyTexImage1D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  internalformat_val  : unbounded_string;
+  internalformat_type : identifier;
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  border_val  : unbounded_string;
+  border_type : identifier;
+begin
+  expect( pen_glcopyteximage1d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glenum_t ); -- internalformat : GLenum
+  ParseNextNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseLastNumericParameter( border_val, border_type, pen_glint_t ); -- border : GLint
+  if isExecutingCommand then
+    begin
+      glCopyTexImage1D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLenum( to_numeric( internalformat_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLint( to_numeric( border_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCopyTexImage1D;
+
+procedure ParsePenglCopyTexImage2D is
+  -- Syntax: glCopyTexImage2D( target : GLtexturemapping; level : GLint; internalformat : GLenum; x, y : GLint; width, height : GLsizei; border : GLint );
+  -- Source: bush_os.opengl.glCopyTexImage2D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  internalformat_val  : unbounded_string;
+  internalformat_type : identifier;
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  border_val  : unbounded_string;
+  border_type : identifier;
+begin
+  expect( pen_glcopyteximage2d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glenum_t ); -- internalformat : GLenum
+  ParseNextNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseLastNumericParameter( border_val, border_type, pen_glint_t ); -- border : GLint
+  if isExecutingCommand then
+    begin
+      glCopyTexImage2D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLenum( to_numeric( internalformat_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLint( to_numeric( border_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCopyTexImage2D;
+
+procedure ParsePenglCopyTexSubImage1D is
+  -- Syntax: glCopyTexSubImage1D( target : GLtexturemapping; level : GLint; xoffset : GLint; x, y : GLint; width : GLsizei );
+  -- Source: bush_os.opengl.glCopyTexSubImage1D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  xoffset_val  : unbounded_string;
+  xoffset_type : identifier;
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+begin
+  expect( pen_glcopytexsubimage1d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( xoffset_val, xoffset_type, pen_glint_t ); -- xoffset : GLint
+  ParseNextNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseLastNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  if isExecutingCommand then
+    begin
+      glCopyTexSubImage1D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCopyTexSubImage1D;
+
+procedure ParsePenglCopyTexSubImage2D is
+  -- Syntax: glCopyTexSubImage2D( target : GLtexturemapping; level : GLint; xoffset, yoffset : GLint; x, y : GLint; width, height : GLsizei );
+  -- Source: bush_os.opengl.glCopyTexSubImage2D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  xoffset_val  : unbounded_string;
+  xoffset_type : identifier;
+  yoffset_val  : unbounded_string;
+  yoffset_type : identifier;
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+begin
+  expect( pen_glcopytexsubimage2d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( xoffset_val, xoffset_type, pen_glint_t ); -- xoffset : GLint
+  ParseNextNumericParameter( yoffset_val, yoffset_type, pen_glint_t ); -- yoffset : GLint
+  ParseNextNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseLastNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  if isExecutingCommand then
+    begin
+      glCopyTexSubImage2D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCopyTexSubImage2D;
+
+procedure ParsePenglMap1d is
+  -- Syntax: glMap1d( target : GLevaluators; u1, u2 : GLdouble; stride : GLint; order : GLint; points : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glMap1d
+  target_val  : unbounded_string;
+  target_type : identifier;
+  u1_val  : unbounded_string;
+  u1_type : identifier;
+  u2_val  : unbounded_string;
+  u2_type : identifier;
+  stride_val  : unbounded_string;
+  stride_type : identifier;
+  order_val  : unbounded_string;
+  order_type : identifier;
+  points_val  : unbounded_string;
+  points_type : identifier;
+begin
+  expect( pen_glmap1d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
+  ParseNextNumericParameter( u1_val, u1_type, pen_gldouble_t ); -- u1 : GLdouble
+  ParseNextNumericParameter( u2_val, u2_type, pen_gldouble_t ); -- u2 : GLdouble
+  ParseNextNumericParameter( stride_val, stride_type, pen_glint_t ); -- stride : GLint
+  ParseNextNumericParameter( order_val, order_type, pen_glint_t ); -- order : GLint
+  ParseLastNumericParameter( points_val, points_type, pen_gl_double_array_ptr_t ); -- points : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glMap1d( GLevaluators( to_numeric( target_val ) ), GLdouble( to_numeric( u1_val ) ), GLdouble( to_numeric( u2_val ) ), GLint( to_numeric( stride_val ) ), GLint( to_numeric( order_val ) ), GL_Double_Array_Ptr( to_numeric( points_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMap1d;
+
+procedure ParsePenglMap1f is
+  -- Syntax: glMap1f( target : GLevaluators; u1, u2 : GLfloat; stride : GLint; order : GLint; points : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glMap1f
+  target_val  : unbounded_string;
+  target_type : identifier;
+  u1_val  : unbounded_string;
+  u1_type : identifier;
+  u2_val  : unbounded_string;
+  u2_type : identifier;
+  stride_val  : unbounded_string;
+  stride_type : identifier;
+  order_val  : unbounded_string;
+  order_type : identifier;
+  points_val  : unbounded_string;
+  points_type : identifier;
+begin
+  expect( pen_glmap1f_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
+  ParseNextNumericParameter( u1_val, u1_type, pen_glfloat_t ); -- u1 : GLfloat
+  ParseNextNumericParameter( u2_val, u2_type, pen_glfloat_t ); -- u2 : GLfloat
+  ParseNextNumericParameter( stride_val, stride_type, pen_glint_t ); -- stride : GLint
+  ParseNextNumericParameter( order_val, order_type, pen_glint_t ); -- order : GLint
+  ParseLastNumericParameter( points_val, points_type, pen_gl_float_array_ptr_t ); -- points : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glMap1f( GLevaluators( to_numeric( target_val ) ), GLfloat( to_numeric( u1_val ) ), GLfloat( to_numeric( u2_val ) ), GLint( to_numeric( stride_val ) ), GLint( to_numeric( order_val ) ), GL_Float_Array_Ptr( to_numeric( points_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMap1f;
+
+procedure ParsePenglMap2d is
+  -- Syntax: glMap2d( target : GLevaluators; u1, u2 : GLdouble; ustride : GLint; uorder : GLint; v1, v2 : GLdouble; vstride : GLint; vorder : GLint; points : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glMap2d
+  target_val  : unbounded_string;
+  target_type : identifier;
+  u1_val  : unbounded_string;
+  u1_type : identifier;
+  u2_val  : unbounded_string;
+  u2_type : identifier;
+  ustride_val  : unbounded_string;
+  ustride_type : identifier;
+  uorder_val  : unbounded_string;
+  uorder_type : identifier;
+  v1_val  : unbounded_string;
+  v1_type : identifier;
+  v2_val  : unbounded_string;
+  v2_type : identifier;
+  vstride_val  : unbounded_string;
+  vstride_type : identifier;
+  vorder_val  : unbounded_string;
+  vorder_type : identifier;
+  points_val  : unbounded_string;
+  points_type : identifier;
+begin
+  expect( pen_glmap2d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
+  ParseNextNumericParameter( u1_val, u1_type, pen_gldouble_t ); -- u1 : GLdouble
+  ParseNextNumericParameter( u2_val, u2_type, pen_gldouble_t ); -- u2 : GLdouble
+  ParseNextNumericParameter( ustride_val, ustride_type, pen_glint_t ); -- ustride : GLint
+  ParseNextNumericParameter( uorder_val, uorder_type, pen_glint_t ); -- uorder : GLint
+  ParseNextNumericParameter( v1_val, v1_type, pen_gldouble_t ); -- v1 : GLdouble
+  ParseNextNumericParameter( v2_val, v2_type, pen_gldouble_t ); -- v2 : GLdouble
+  ParseNextNumericParameter( vstride_val, vstride_type, pen_glint_t ); -- vstride : GLint
+  ParseNextNumericParameter( vorder_val, vorder_type, pen_glint_t ); -- vorder : GLint
+  ParseLastNumericParameter( points_val, points_type, pen_gl_double_array_ptr_t ); -- points : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glMap2d( GLevaluators( to_numeric( target_val ) ), GLdouble( to_numeric( u1_val ) ), GLdouble( to_numeric( u2_val ) ), GLint( to_numeric( ustride_val ) ), GLint( to_numeric( uorder_val ) ), GLdouble( to_numeric( v1_val ) ), GLdouble( to_numeric( v2_val ) ), GLint( to_numeric( vstride_val ) ), GLint( to_numeric( vorder_val ) ), GL_Double_Array_Ptr( to_numeric( points_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMap2d;
+
+procedure ParsePenglMap2f is
+  -- Syntax: glMap2f( target : GLevaluators; u1, u2 : GLfloat; ustride : GLint; uorder : GLint; v1, v2 : GLfloat; vstride : GLint; vorder : GLint; points : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glMap2f
+  target_val  : unbounded_string;
+  target_type : identifier;
+  u1_val  : unbounded_string;
+  u1_type : identifier;
+  u2_val  : unbounded_string;
+  u2_type : identifier;
+  ustride_val  : unbounded_string;
+  ustride_type : identifier;
+  uorder_val  : unbounded_string;
+  uorder_type : identifier;
+  v1_val  : unbounded_string;
+  v1_type : identifier;
+  v2_val  : unbounded_string;
+  v2_type : identifier;
+  vstride_val  : unbounded_string;
+  vstride_type : identifier;
+  vorder_val  : unbounded_string;
+  vorder_type : identifier;
+  points_val  : unbounded_string;
+  points_type : identifier;
+begin
+  expect( pen_glmap2f_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
+  ParseNextNumericParameter( u1_val, u1_type, pen_glfloat_t ); -- u1 : GLfloat
+  ParseNextNumericParameter( u2_val, u2_type, pen_glfloat_t ); -- u2 : GLfloat
+  ParseNextNumericParameter( ustride_val, ustride_type, pen_glint_t ); -- ustride : GLint
+  ParseNextNumericParameter( uorder_val, uorder_type, pen_glint_t ); -- uorder : GLint
+  ParseNextNumericParameter( v1_val, v1_type, pen_glfloat_t ); -- v1 : GLfloat
+  ParseNextNumericParameter( v2_val, v2_type, pen_glfloat_t ); -- v2 : GLfloat
+  ParseNextNumericParameter( vstride_val, vstride_type, pen_glint_t ); -- vstride : GLint
+  ParseNextNumericParameter( vorder_val, vorder_type, pen_glint_t ); -- vorder : GLint
+  ParseLastNumericParameter( points_val, points_type, pen_gl_float_array_ptr_t ); -- points : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glMap2f( GLevaluators( to_numeric( target_val ) ), GLfloat( to_numeric( u1_val ) ), GLfloat( to_numeric( u2_val ) ), GLint( to_numeric( ustride_val ) ), GLint( to_numeric( uorder_val ) ), GLfloat( to_numeric( v1_val ) ), GLfloat( to_numeric( v2_val ) ), GLint( to_numeric( vstride_val ) ), GLint( to_numeric( vorder_val ) ), GL_Float_Array_Ptr( to_numeric( points_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMap2f;
+
+procedure ParsePenglGetMapdv is
+  -- Syntax: glGetMapdv( target, query : GLevaluators; v : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glGetMapdv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  query_val  : unbounded_string;
+  query_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glgetmapdv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
+  ParseNextNumericParameter( query_val, query_type, pen_glevaluators_t ); -- query : GLevaluators
+  ParseLastNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glGetMapdv( GLevaluators( to_numeric( target_val ) ), GLevaluators( to_numeric( query_val ) ), GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetMapdv;
+
+procedure ParsePenglGetMapfv is
+  -- Syntax: glGetMapfv( target, query : GLevaluators; v : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glGetMapfv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  query_val  : unbounded_string;
+  query_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glgetmapfv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
+  ParseNextNumericParameter( query_val, query_type, pen_glevaluators_t ); -- query : GLevaluators
+  ParseLastNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glGetMapfv( GLevaluators( to_numeric( target_val ) ), GLevaluators( to_numeric( query_val ) ), GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetMapfv;
+
+procedure ParsePenglGetMapiv is
+  -- Syntax: glGetMapiv( target, query : GLevaluators; v : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glGetMapiv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  query_val  : unbounded_string;
+  query_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glgetmapiv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
+  ParseNextNumericParameter( query_val, query_type, pen_glevaluators_t ); -- query : GLevaluators
+  ParseLastNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glGetMapiv( GLevaluators( to_numeric( target_val ) ), GLevaluators( to_numeric( query_val ) ), GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetMapiv;
+
+procedure ParsePenglEvalCoord1d is
+  -- Syntax: glEvalCoord1d( u : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glEvalCoord1d
+  u_val  : unbounded_string;
+  u_type : identifier;
+begin
+  expect( pen_glevalcoord1d_t );
+  ParseSingleNumericParameter( u_val, u_type, pen_gl_double_array_ptr_t ); -- u : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glEvalCoord1d( GL_Double_Array_Ptr( to_numeric( u_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEvalCoord1d;
+
+procedure ParsePenglEvalCoord1f is
+  -- Syntax: glEvalCoord1f( u : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glEvalCoord1f
+  u_val  : unbounded_string;
+  u_type : identifier;
+begin
+  expect( pen_glevalcoord1f_t );
+  ParseSingleNumericParameter( u_val, u_type, pen_gl_float_array_ptr_t ); -- u : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glEvalCoord1f( GL_Float_Array_Ptr( to_numeric( u_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEvalCoord1f;
+
+procedure ParsePenglEvalCoord1dv is
+  -- Syntax: glEvalCoord1dv( u : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glEvalCoord1dv
+  u_val  : unbounded_string;
+  u_type : identifier;
+begin
+  expect( pen_glevalcoord1dv_t );
+  ParseSingleNumericParameter( u_val, u_type, pen_gl_double_array_ptr_t ); -- u : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glEvalCoord1dv( GL_Double_Array_Ptr( to_numeric( u_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEvalCoord1dv;
+
+procedure ParsePenglEvalCoord1fv is
+  -- Syntax: glEvalCoord1fv( u : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glEvalCoord1fv
+  u_val  : unbounded_string;
+  u_type : identifier;
+begin
+  expect( pen_glevalcoord1fv_t );
+  ParseSingleNumericParameter( u_val, u_type, pen_gl_float_array_ptr_t ); -- u : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glEvalCoord1fv( GL_Float_Array_Ptr( to_numeric( u_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEvalCoord1fv;
+
+procedure ParsePenglEvalCoord2d is
+  -- Syntax: glEvalCoord2d( u, v : GLdouble );
+  -- Source: bush_os.opengl.glEvalCoord2d
+  u_val  : unbounded_string;
+  u_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glevalcoord2d_t );
+  ParseFirstNumericParameter( u_val, u_type, pen_gldouble_t ); -- u : GLdouble
+  ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
+  if isExecutingCommand then
+    begin
+      glEvalCoord2d( GLdouble( to_numeric( u_val ) ), GLdouble( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEvalCoord2d;
+
+procedure ParsePenglEvalCoord2f is
+  -- Syntax: glEvalCoord2f( u, v : GLfloat );
+  -- Source: bush_os.opengl.glEvalCoord2f
+  u_val  : unbounded_string;
+  u_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glevalcoord2f_t );
+  ParseFirstNumericParameter( u_val, u_type, pen_glfloat_t ); -- u : GLfloat
+  ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
+  if isExecutingCommand then
+    begin
+      glEvalCoord2f( GLfloat( to_numeric( u_val ) ), GLfloat( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEvalCoord2f;
+
+procedure ParsePenglEvalCoord2dv is
+  -- Syntax: glEvalCoord2dv( u : GL_Double_Array_Ptr );
+  -- Source: bush_os.opengl.glEvalCoord2dv
+  u_val  : unbounded_string;
+  u_type : identifier;
+begin
+  expect( pen_glevalcoord2dv_t );
+  ParseSingleNumericParameter( u_val, u_type, pen_gl_double_array_ptr_t ); -- u : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glEvalCoord2dv( GL_Double_Array_Ptr( to_numeric( u_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEvalCoord2dv;
+
+procedure ParsePenglEvalCoord2fv is
+  -- Syntax: glEvalCoord2fv( u : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glEvalCoord2fv
+  u_val  : unbounded_string;
+  u_type : identifier;
+begin
+  expect( pen_glevalcoord2fv_t );
+  ParseSingleNumericParameter( u_val, u_type, pen_gl_float_array_ptr_t ); -- u : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glEvalCoord2fv( GL_Float_Array_Ptr( to_numeric( u_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEvalCoord2fv;
+
+procedure ParsePenglMapGrid1d is
+  -- Syntax: glMapGrid1d( un : GLint; u1, u2 : GLdouble );
+  -- Source: bush_os.opengl.glMapGrid1d
+  un_val  : unbounded_string;
+  un_type : identifier;
+  u1_val  : unbounded_string;
+  u1_type : identifier;
+  u2_val  : unbounded_string;
+  u2_type : identifier;
+begin
+  expect( pen_glmapgrid1d_t );
+  ParseFirstNumericParameter( un_val, un_type, pen_glint_t ); -- un : GLint
+  ParseNextNumericParameter( u1_val, u1_type, pen_gldouble_t ); -- u1 : GLdouble
+  ParseLastNumericParameter( u2_val, u2_type, pen_gldouble_t ); -- u2 : GLdouble
+  if isExecutingCommand then
+    begin
+      glMapGrid1d( GLint( to_numeric( un_val ) ), GLdouble( to_numeric( u1_val ) ), GLdouble( to_numeric( u2_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMapGrid1d;
+
+procedure ParsePenglMapGrid1f is
+  -- Syntax: glMapGrid1f( un : GLint; u1, u2 : GLfloat );
+  -- Source: bush_os.opengl.glMapGrid1f
+  un_val  : unbounded_string;
+  un_type : identifier;
+  u1_val  : unbounded_string;
+  u1_type : identifier;
+  u2_val  : unbounded_string;
+  u2_type : identifier;
+begin
+  expect( pen_glmapgrid1f_t );
+  ParseFirstNumericParameter( un_val, un_type, pen_glint_t ); -- un : GLint
+  ParseNextNumericParameter( u1_val, u1_type, pen_glfloat_t ); -- u1 : GLfloat
+  ParseLastNumericParameter( u2_val, u2_type, pen_glfloat_t ); -- u2 : GLfloat
+  if isExecutingCommand then
+    begin
+      glMapGrid1f( GLint( to_numeric( un_val ) ), GLfloat( to_numeric( u1_val ) ), GLfloat( to_numeric( u2_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMapGrid1f;
+
+procedure ParsePenglMapGrid2d is
+  -- Syntax: glMapGrid2d( un : GLint; u1, u2 : GLdouble; vn : GLint; v1, v2 : GLdouble );
+  -- Source: bush_os.opengl.glMapGrid2d
+  un_val  : unbounded_string;
+  un_type : identifier;
+  u1_val  : unbounded_string;
+  u1_type : identifier;
+  u2_val  : unbounded_string;
+  u2_type : identifier;
+  vn_val  : unbounded_string;
+  vn_type : identifier;
+  v1_val  : unbounded_string;
+  v1_type : identifier;
+  v2_val  : unbounded_string;
+  v2_type : identifier;
+begin
+  expect( pen_glmapgrid2d_t );
+  ParseFirstNumericParameter( un_val, un_type, pen_glint_t ); -- un : GLint
+  ParseNextNumericParameter( u1_val, u1_type, pen_gldouble_t ); -- u1 : GLdouble
+  ParseNextNumericParameter( u2_val, u2_type, pen_gldouble_t ); -- u2 : GLdouble
+  ParseNextNumericParameter( vn_val, vn_type, pen_glint_t ); -- vn : GLint
+  ParseNextNumericParameter( v1_val, v1_type, pen_gldouble_t ); -- v1 : GLdouble
+  ParseLastNumericParameter( v2_val, v2_type, pen_gldouble_t ); -- v2 : GLdouble
+  if isExecutingCommand then
+    begin
+      glMapGrid2d( GLint( to_numeric( un_val ) ), GLdouble( to_numeric( u1_val ) ), GLdouble( to_numeric( u2_val ) ), GLint( to_numeric( vn_val ) ), GLdouble( to_numeric( v1_val ) ), GLdouble( to_numeric( v2_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMapGrid2d;
+
+procedure ParsePenglMapGrid2f is
+  -- Syntax: glMapGrid2f( un : GLint; u1, u2 : GLfloat; vn : GLint; v1, v2 : GLfloat );
+  -- Source: bush_os.opengl.glMapGrid2f
+  un_val  : unbounded_string;
+  un_type : identifier;
+  u1_val  : unbounded_string;
+  u1_type : identifier;
+  u2_val  : unbounded_string;
+  u2_type : identifier;
+  vn_val  : unbounded_string;
+  vn_type : identifier;
+  v1_val  : unbounded_string;
+  v1_type : identifier;
+  v2_val  : unbounded_string;
+  v2_type : identifier;
+begin
+  expect( pen_glmapgrid2f_t );
+  ParseFirstNumericParameter( un_val, un_type, pen_glint_t ); -- un : GLint
+  ParseNextNumericParameter( u1_val, u1_type, pen_glfloat_t ); -- u1 : GLfloat
+  ParseNextNumericParameter( u2_val, u2_type, pen_glfloat_t ); -- u2 : GLfloat
+  ParseNextNumericParameter( vn_val, vn_type, pen_glint_t ); -- vn : GLint
+  ParseNextNumericParameter( v1_val, v1_type, pen_glfloat_t ); -- v1 : GLfloat
+  ParseLastNumericParameter( v2_val, v2_type, pen_glfloat_t ); -- v2 : GLfloat
+  if isExecutingCommand then
+    begin
+      glMapGrid2f( GLint( to_numeric( un_val ) ), GLfloat( to_numeric( u1_val ) ), GLfloat( to_numeric( u2_val ) ), GLint( to_numeric( vn_val ) ), GLfloat( to_numeric( v1_val ) ), GLfloat( to_numeric( v2_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMapGrid2f;
+
+procedure ParsePenglEvalPoint1 is
+  -- Syntax: glEvalPoint1( i : GLint );
+  -- Source: bush_os.opengl.glEvalPoint1
+  i_val  : unbounded_string;
+  i_type : identifier;
+begin
+  expect( pen_glevalpoint1_t );
+  ParseSingleNumericParameter( i_val, i_type, pen_glint_t ); -- i : GLint
+  if isExecutingCommand then
+    begin
+      glEvalPoint1( GLint( to_numeric( i_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEvalPoint1;
+
+procedure ParsePenglEvalPoint2 is
+  -- Syntax: glEvalPoint2( i, j : GLint );
+  -- Source: bush_os.opengl.glEvalPoint2
+  i_val  : unbounded_string;
+  i_type : identifier;
+  j_val  : unbounded_string;
+  j_type : identifier;
+begin
+  expect( pen_glevalpoint2_t );
+  ParseFirstNumericParameter( i_val, i_type, pen_glint_t ); -- i : GLint
+  ParseLastNumericParameter( j_val, j_type, pen_glint_t ); -- j : GLint
+  if isExecutingCommand then
+    begin
+      glEvalPoint2( GLint( to_numeric( i_val ) ), GLint( to_numeric( j_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEvalPoint2;
+
+procedure ParsePenglEvalMesh1 is
+  -- Syntax: glEvalMesh1( mode : GLpolygons; i1, i2 : GLint );
+  -- Source: bush_os.opengl.glEvalMesh1
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+  i1_val  : unbounded_string;
+  i1_type : identifier;
+  i2_val  : unbounded_string;
+  i2_type : identifier;
+begin
+  expect( pen_glevalmesh1_t );
+  ParseFirstNumericParameter( mode_val, mode_type, pen_glpolygons_t ); -- mode : GLpolygons
+  ParseNextNumericParameter( i1_val, i1_type, pen_glint_t ); -- i1 : GLint
+  ParseLastNumericParameter( i2_val, i2_type, pen_glint_t ); -- i2 : GLint
+  if isExecutingCommand then
+    begin
+      glEvalMesh1( GLpolygons( to_numeric( mode_val ) ), GLint( to_numeric( i1_val ) ), GLint( to_numeric( i2_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEvalMesh1;
+
+procedure ParsePenglEvalMesh2 is
+  -- Syntax: glEvalMesh2( mode : GLpolygons; i1, i2 :GLint; j1, j2 : GLint );
+  -- Source: bush_os.opengl.glEvalMesh2
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+  i1_val  : unbounded_string;
+  i1_type : identifier;
+  i2_val  : unbounded_string;
+  i2_type : identifier;
+  j1_val  : unbounded_string;
+  j1_type : identifier;
+  j2_val  : unbounded_string;
+  j2_type : identifier;
+begin
+  expect( pen_glevalmesh2_t );
+  ParseFirstNumericParameter( mode_val, mode_type, pen_glpolygons_t ); -- mode : GLpolygons
+  ParseNextNumericParameter( i1_val, i1_type, pen_glint_t ); -- i1 : GLint
+  ParseNextNumericParameter( i2_val, i2_type, pen_glint_t ); -- i2 : GLint
+  ParseNextNumericParameter( j1_val, j1_type, pen_glint_t ); -- j1 : GLint
+  ParseLastNumericParameter( j2_val, j2_type, pen_glint_t ); -- j2 : GLint
+  if isExecutingCommand then
+    begin
+      glEvalMesh2( GLpolygons( to_numeric( mode_val ) ), GLint( to_numeric( i1_val ) ), GLint( to_numeric( i2_val ) ), GLint( to_numeric( j1_val ) ), GLint( to_numeric( j2_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEvalMesh2;
+
+procedure ParsePenglFogf is
+  -- Syntax: glFogf( pname : GLfog; param : GLfloat );
+  -- Source: bush_os.opengl.glFogf
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_glfogf_t );
+  ParseFirstNumericParameter( pname_val, pname_type, pen_glfog_t ); -- pname : GLfog
+  ParseLastNumericParameter( param_val, param_type, pen_glfloat_t ); -- param : GLfloat
+  if isExecutingCommand then
+    begin
+      glFogf( GLfog( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglFogf;
+
+procedure ParsePenglFogi is
+  -- Syntax: glFogi( pname : GLfog; param : GLint );
+  -- Source: bush_os.opengl.glFogi
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_glfogi_t );
+  ParseFirstNumericParameter( pname_val, pname_type, pen_glfog_t ); -- pname : GLfog
+  ParseLastNumericParameter( param_val, param_type, pen_glint_t ); -- param : GLint
+  if isExecutingCommand then
+    begin
+      glFogi( GLfog( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglFogi;
+
+procedure ParsePenglFogfv is
+  -- Syntax: glFogfv( pname : GLfog; param : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glFogfv
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_glfogfv_t );
+  ParseFirstNumericParameter( pname_val, pname_type, pen_glfog_t ); -- pname : GLfog
+  ParseLastNumericParameter( param_val, param_type, pen_gl_float_array_ptr_t ); -- param : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glFogfv( GLfog( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglFogfv;
+
+procedure ParsePenglFogiv is
+  -- Syntax: glFogiv( pname : GLfog; param : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glFogiv
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  param_val  : unbounded_string;
+  param_type : identifier;
+begin
+  expect( pen_glfogiv_t );
+  ParseFirstNumericParameter( pname_val, pname_type, pen_glfog_t ); -- pname : GLfog
+  ParseLastNumericParameter( param_val, param_type, pen_gl_int_array_ptr_t ); -- param : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glFogiv( GLfog( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( param_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglFogiv;
+
+procedure ParsePenglFeedbackBuffer is
+  -- Syntax: glFeedbackBuffer( size : GLsizei; kind : GLfeedback; buffer : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glFeedbackBuffer
+  size_val  : unbounded_string;
+  size_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  buffer_val  : unbounded_string;
+  buffer_type : identifier;
+begin
+  expect( pen_glfeedbackbuffer_t );
+  ParseFirstNumericParameter( size_val, size_type, pen_glsizei_t ); -- size : GLsizei
+  ParseNextNumericParameter( kind_val, kind_type, pen_glfeedback_t ); -- kind : GLfeedback
+  ParseLastNumericParameter( buffer_val, buffer_type, pen_gl_float_array_ptr_t ); -- buffer : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glFeedbackBuffer( GLsizei( to_numeric( size_val ) ), GLfeedback( to_numeric( kind_val ) ), GL_Float_Array_Ptr( to_numeric( buffer_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglFeedbackBuffer;
+
+procedure ParsePenglPassThrough is
+  -- Syntax: glPassThrough( token : GLfloat );
+  -- Source: bush_os.opengl.glPassThrough
+  token_val  : unbounded_string;
+  token_type : identifier;
+begin
+  expect( pen_glpassthrough_t );
+  ParseSingleNumericParameter( token_val, token_type, pen_glfloat_t ); -- token : GLfloat
+  if isExecutingCommand then
+    begin
+      glPassThrough( GLfloat( to_numeric( token_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPassThrough;
+
+procedure ParsePenglSelectBuffer is
+  -- Syntax: glSelectBuffer( kind : GLsizei; buffer : GL_UInt_Array_Ptr );
+  -- Source: bush_os.opengl.glSelectBuffer
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  buffer_val  : unbounded_string;
+  buffer_type : identifier;
+begin
+  expect( pen_glselectbuffer_t );
+  ParseFirstNumericParameter( kind_val, kind_type, pen_glsizei_t ); -- kind : GLsizei
+  ParseLastNumericParameter( buffer_val, buffer_type, pen_gl_uint_array_ptr_t ); -- buffer : GL_UInt_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glSelectBuffer( GLsizei( to_numeric( kind_val ) ), GL_UInt_Array_Ptr( to_numeric( buffer_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglSelectBuffer;
+
+procedure ParsePenglInitNames is
+  -- Syntax: glInitNames;
+  -- Source: bush_os.opengl.glInitNames
+begin
+  expect( pen_glinitnames_t );
+  if isExecutingCommand then
+    begin
+      glInitNames;
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglInitNames;
+
+procedure ParsePenglLoadName is
+  -- Syntax: glLoadName( name : GLuint );
+  -- Source: bush_os.opengl.glLoadName
+  name_val  : unbounded_string;
+  name_type : identifier;
+begin
+  expect( pen_glloadname_t );
+  ParseSingleNumericParameter( name_val, name_type, pen_gluint_t ); -- name : GLuint
+  if isExecutingCommand then
+    begin
+      glLoadName( GLuint( to_numeric( name_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLoadName;
+
+procedure ParsePenglPushName is
+  -- Syntax: glPushName( name : GLuint );
+  -- Source: bush_os.opengl.glPushName
+  name_val  : unbounded_string;
+  name_type : identifier;
+begin
+  expect( pen_glpushname_t );
+  ParseSingleNumericParameter( name_val, name_type, pen_gluint_t ); -- name : GLuint
+  if isExecutingCommand then
+    begin
+      glPushName( GLuint( to_numeric( name_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPushName;
+
+procedure ParsePenglPopName is
+  -- Syntax: glPopName;
+  -- Source: bush_os.opengl.glPopName
+begin
+  expect( pen_glpopname_t );
+  if isExecutingCommand then
+    begin
+      glPopName;
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglPopName;
+
+procedure ParsePenglDrawRangeElements is
+  -- Syntax: glDrawRangeElements( mode : GLprimitives; start : GLuint; done : GLuint; count : GLsizei; kind : GLtypes; indices : System.address );
+  -- Source: bush_os.opengl.glDrawRangeElements
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+  start_val  : unbounded_string;
+  start_type : identifier;
+  done_val  : unbounded_string;
+  done_type : identifier;
+  count_val  : unbounded_string;
+  count_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  indices_val  : unbounded_string;
+  indices_type : identifier;
+begin
+  expect( pen_gldrawrangeelements_t );
+  ParseFirstNumericParameter( mode_val, mode_type, pen_glprimitives_t ); -- mode : GLprimitives
+  ParseNextNumericParameter( start_val, start_type, pen_gluint_t ); -- start : GLuint
+  ParseNextNumericParameter( done_val, done_type, pen_gluint_t ); -- done : GLuint
+  ParseNextNumericParameter( count_val, count_type, pen_glsizei_t ); -- count : GLsizei
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( indices_val, indices_type, pen_system.address_t ); -- indices : System.address
+  if isExecutingCommand then
+    begin
+      glDrawRangeElements( GLprimitives( to_numeric( mode_val ) ), GLuint( to_numeric( start_val ) ), GLuint( to_numeric( done_val ) ), GLsizei( to_numeric( count_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( indices_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglDrawRangeElements;
+
+procedure ParsePenglTexImage3D is
+  -- Syntax: glTexImage3D( target : GLenum; level : GLint; internalFormat : GLint; width, height, depth : GLsizei; border : GLint; format : GLbuffers; kind : GLtypes; pixels : System.address );
+  -- Source: bush_os.opengl.glTexImage3D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  internalFormat_val  : unbounded_string;
+  internalFormat_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  depth_val  : unbounded_string;
+  depth_type : identifier;
+  border_val  : unbounded_string;
+  border_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  pixels_val  : unbounded_string;
+  pixels_type : identifier;
+begin
+  expect( pen_glteximage3d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( internalFormat_val, internalFormat_type, pen_glint_t ); -- internalFormat : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( depth_val, depth_type, pen_glsizei_t ); -- depth : GLsizei
+  ParseNextNumericParameter( border_val, border_type, pen_glint_t ); -- border : GLint
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  if isExecutingCommand then
+    begin
+      glTexImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLint( to_numeric( border_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexImage3D;
+
+procedure ParsePenglTexSubImage3D is
+  -- Syntax: glTexSubImage3D( target : GLenum; level : GLint; xoffset, yoffset, zoffset : GLint; width, height, depth : GLsizei; format : GLbuffers; kind : GLtypes; pixels : System.address );
+  -- Source: bush_os.opengl.glTexSubImage3D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  xoffset_val  : unbounded_string;
+  xoffset_type : identifier;
+  yoffset_val  : unbounded_string;
+  yoffset_type : identifier;
+  zoffset_val  : unbounded_string;
+  zoffset_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  depth_val  : unbounded_string;
+  depth_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  pixels_val  : unbounded_string;
+  pixels_type : identifier;
+begin
+  expect( pen_gltexsubimage3d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( xoffset_val, xoffset_type, pen_glint_t ); -- xoffset : GLint
+  ParseNextNumericParameter( yoffset_val, yoffset_type, pen_glint_t ); -- yoffset : GLint
+  ParseNextNumericParameter( zoffset_val, zoffset_type, pen_glint_t ); -- zoffset : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( depth_val, depth_type, pen_glsizei_t ); -- depth : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  if isExecutingCommand then
+    begin
+      glTexSubImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLint( to_numeric( zoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglTexSubImage3D;
+
+procedure ParsePenglCopyTexSubImage3D is
+  -- Syntax: glCopyTexSubImage3D( target : GLenum; level : GLint; xoffset, yoffset, zoffset : GLint; x, y : GLint; width, height : GLsizei );
+  -- Source: bush_os.opengl.glCopyTexSubImage3D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  xoffset_val  : unbounded_string;
+  xoffset_type : identifier;
+  yoffset_val  : unbounded_string;
+  yoffset_type : identifier;
+  zoffset_val  : unbounded_string;
+  zoffset_type : identifier;
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+begin
+  expect( pen_glcopytexsubimage3d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( xoffset_val, xoffset_type, pen_glint_t ); -- xoffset : GLint
+  ParseNextNumericParameter( yoffset_val, yoffset_type, pen_glint_t ); -- yoffset : GLint
+  ParseNextNumericParameter( zoffset_val, zoffset_type, pen_glint_t ); -- zoffset : GLint
+  ParseNextNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseLastNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  if isExecutingCommand then
+    begin
+      glCopyTexSubImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLint( to_numeric( zoffset_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCopyTexSubImage3D;
+
+procedure ParsePenglColorTable is
+  -- Syntax: glColorTable( target : GLenum; internalformat : GLenum; width : GLsizei; format : GLenum; kind : GLenum; table : System.address );
+  -- Source: bush_os.opengl.glColorTable
+  target_val  : unbounded_string;
+  target_type : identifier;
+  internalformat_val  : unbounded_string;
+  internalformat_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  table_val  : unbounded_string;
+  table_type : identifier;
+begin
+  expect( pen_glcolortable_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glenum_t ); -- internalformat : GLenum
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glenum_t ); -- format : GLenum
+  ParseNextNumericParameter( kind_val, kind_type, pen_glenum_t ); -- kind : GLenum
+  ParseLastNumericParameter( table_val, table_type, pen_system.address_t ); -- table : System.address
+  if isExecutingCommand then
+    begin
+      glColorTable( GLenum( to_numeric( target_val ) ), GLenum( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLenum( to_numeric( format_val ) ), GLenum( to_numeric( kind_val ) ), System.address( to_numeric( table_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColorTable;
+
+procedure ParsePenglColorSubTable is
+  -- Syntax: glColorSubTable( target : GLarbmapping; start : GLsizei; count : GLsizei; format : GLbuffers; kind : GLtypes; data : System.address );
+  -- Source: bush_os.opengl.glColorSubTable
+  target_val  : unbounded_string;
+  target_type : identifier;
+  start_val  : unbounded_string;
+  start_type : identifier;
+  count_val  : unbounded_string;
+  count_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glcolorsubtable_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( start_val, start_type, pen_glsizei_t ); -- start : GLsizei
+  ParseNextNumericParameter( count_val, count_type, pen_glsizei_t ); -- count : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  if isExecutingCommand then
+    begin
+      glColorSubTable( GLarbmapping( to_numeric( target_val ) ), GLsizei( to_numeric( start_val ) ), GLsizei( to_numeric( count_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( data_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColorSubTable;
+
+procedure ParsePenglColorTableParameteriv is
+  -- Syntax: glColorTableParameteriv( target : GLarbmapping; pname : GLarbmapping; params : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glColorTableParameteriv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glcolortableparameteriv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
+  ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColorTableParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColorTableParameteriv;
+
+procedure ParsePenglColorTableParameterfv is
+  -- Syntax: glColorTableParameterfv( target : GLarbmapping; pname : GLarbmapping; params : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glColorTableParameterfv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glcolortableparameterfv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
+  ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glColorTableParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColorTableParameterfv;
+
+procedure ParsePenglCopyColorSubTable is
+  -- Syntax: glCopyColorSubTable( target : GLarbmapping; start : GLsizei; x, y : GLint; width : GLsizei );
+  -- Source: bush_os.opengl.glCopyColorSubTable
+  target_val  : unbounded_string;
+  target_type : identifier;
+  start_val  : unbounded_string;
+  start_type : identifier;
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+begin
+  expect( pen_glcopycolorsubtable_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( start_val, start_type, pen_glsizei_t ); -- start : GLsizei
+  ParseNextNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseLastNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  if isExecutingCommand then
+    begin
+      glCopyColorSubTable( GLarbmapping( to_numeric( target_val ) ), GLsizei( to_numeric( start_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCopyColorSubTable;
+
+procedure ParsePenglCopyColorTable is
+  -- Syntax: glCopyColorTable( target : GLarbmapping; internalformat : GLenum; x, y : GLint; width : GLsizei );
+  -- Source: bush_os.opengl.glCopyColorTable
+  target_val  : unbounded_string;
+  target_type : identifier;
+  internalformat_val  : unbounded_string;
+  internalformat_type : identifier;
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+begin
+  expect( pen_glcopycolortable_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glenum_t ); -- internalformat : GLenum
+  ParseNextNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseLastNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  if isExecutingCommand then
+    begin
+      glCopyColorTable( GLarbmapping( to_numeric( target_val ) ), GLenum( to_numeric( internalformat_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCopyColorTable;
+
+procedure ParsePenglGetColorTable is
+  -- Syntax: glGetColorTable( target : GLarbmapping; format : GLbuffers; kind : GLtypes; table : System.address );
+  -- Source: bush_os.opengl.glGetColorTable
+  target_val  : unbounded_string;
+  target_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  table_val  : unbounded_string;
+  table_type : identifier;
+begin
+  expect( pen_glgetcolortable_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( table_val, table_type, pen_system.address_t ); -- table : System.address
+  if isExecutingCommand then
+    begin
+      glGetColorTable( GLarbmapping( to_numeric( target_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( table_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetColorTable;
+
+procedure ParsePenglGetColorTableParameterfv is
+  -- Syntax: glGetColorTableParameterfv( target : GLarbmapping; pname : GLarbmapping; params : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glGetColorTableParameterfv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgetcolortableparameterfv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
+  ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glGetColorTableParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetColorTableParameterfv;
+
+procedure ParsePenglGetColorTableParameteriv is
+  -- Syntax: glGetColorTableParameteriv( target : GLarbmapping; pname : GLarbmapping; params : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glGetColorTableParameteriv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgetcolortableparameteriv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
+  ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glGetColorTableParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetColorTableParameteriv;
+
+procedure ParsePenglBlendEquation is
+  -- Syntax: glBlendEquation( mode : GLarbmapping );
+  -- Source: bush_os.opengl.glBlendEquation
+  mode_val  : unbounded_string;
+  mode_type : identifier;
+begin
+  expect( pen_glblendequation_t );
+  ParseSingleNumericParameter( mode_val, mode_type, pen_glarbmapping_t ); -- mode : GLarbmapping
+  if isExecutingCommand then
+    begin
+      glBlendEquation( GLarbmapping( to_numeric( mode_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglBlendEquation;
+
+procedure ParsePenglBlendColor is
+  -- Syntax: glBlendColor( red, green, blue, alpha : GLclampf );
+  -- Source: bush_os.opengl.glBlendColor
+  red_val  : unbounded_string;
+  red_type : identifier;
+  green_val  : unbounded_string;
+  green_type : identifier;
+  blue_val  : unbounded_string;
+  blue_type : identifier;
+  alpha_val  : unbounded_string;
+  alpha_type : identifier;
+begin
+  expect( pen_glblendcolor_t );
+  ParseFirstNumericParameter( red_val, red_type, pen_glclampf_t ); -- red : GLclampf
+  ParseNextNumericParameter( green_val, green_type, pen_glclampf_t ); -- green : GLclampf
+  ParseNextNumericParameter( blue_val, blue_type, pen_glclampf_t ); -- blue : GLclampf
+  ParseLastNumericParameter( alpha_val, alpha_type, pen_glclampf_t ); -- alpha : GLclampf
+  if isExecutingCommand then
+    begin
+      glBlendColor( GLclampf( to_numeric( red_val ) ), GLclampf( to_numeric( green_val ) ), GLclampf( to_numeric( blue_val ) ), GLclampf( to_numeric( alpha_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglBlendColor;
+
+procedure ParsePenglHistogram is
+  -- Syntax: glHistogram( target : GLarbmapping; width : GLsizei; internalformat : GLenum; sink : GLboolean );
+  -- Source: bush_os.opengl.glHistogram
+  target_val  : unbounded_string;
+  target_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  internalformat_val  : unbounded_string;
+  internalformat_type : identifier;
+  sink_val  : unbounded_string;
+  sink_type : identifier;
+begin
+  expect( pen_glhistogram_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glenum_t ); -- internalformat : GLenum
+  ParseLastNumericParameter( sink_val, sink_type, pen_glboolean_t ); -- sink : GLboolean
+  if isExecutingCommand then
+    begin
+      glHistogram( GLarbmapping( to_numeric( target_val ) ), GLsizei( to_numeric( width_val ) ), GLenum( to_numeric( internalformat_val ) ), GLboolean( to_numeric( sink_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglHistogram;
+
+procedure ParsePenglResetHistogram is
+  -- Syntax: glResetHistogram( target : GLarbmapping );
+  -- Source: bush_os.opengl.glResetHistogram
+  target_val  : unbounded_string;
+  target_type : identifier;
+begin
+  expect( pen_glresethistogram_t );
+  ParseSingleNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  if isExecutingCommand then
+    begin
+      glResetHistogram( GLarbmapping( to_numeric( target_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglResetHistogram;
+
+procedure ParsePenglGetHistogram is
+  -- Syntax: glGetHistogram( target : GLarbmapping; reset : GLboolean; format : GLbuffers; kind : GLtypes; values : System.address );
+  -- Source: bush_os.opengl.glGetHistogram
+  target_val  : unbounded_string;
+  target_type : identifier;
+  reset_val  : unbounded_string;
+  reset_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  values_val  : unbounded_string;
+  values_type : identifier;
+begin
+  expect( pen_glgethistogram_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( reset_val, reset_type, pen_glboolean_t ); -- reset : GLboolean
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( values_val, values_type, pen_system.address_t ); -- values : System.address
+  if isExecutingCommand then
+    begin
+      glGetHistogram( GLarbmapping( to_numeric( target_val ) ), GLboolean( to_numeric( reset_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( values_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetHistogram;
+
+procedure ParsePenglGetHistogramParameterfv is
+  -- Syntax: glGetHistogramParameterfv( target : GLarbmapping; pname : GLarbmapping; params : in out GLfloat );
+  -- Source: bush_os.opengl.glGetHistogramParameterfv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgethistogramparameterfv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
+  ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
+  if isExecutingCommand then
+    begin
+      glGetHistogramParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetHistogramParameterfv;
+
+procedure ParsePenglGetHistogramParameteriv is
+  -- Syntax: glGetHistogramParameteriv( target : GLarbmapping; pname : GLarbmapping; params : in out GLint );
+  -- Source: bush_os.opengl.glGetHistogramParameteriv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgethistogramparameteriv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
+  ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
+  if isExecutingCommand then
+    begin
+      glGetHistogramParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetHistogramParameteriv;
+
+procedure ParsePenglMinmax is
+  -- Syntax: glMinmax( target : GLarbmapping; internalformat : GLenum; sink : GLboolean );
+  -- Source: bush_os.opengl.glMinmax
+  target_val  : unbounded_string;
+  target_type : identifier;
+  internalformat_val  : unbounded_string;
+  internalformat_type : identifier;
+  sink_val  : unbounded_string;
+  sink_type : identifier;
+begin
+  expect( pen_glminmax_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glenum_t ); -- internalformat : GLenum
+  ParseLastNumericParameter( sink_val, sink_type, pen_glboolean_t ); -- sink : GLboolean
+  if isExecutingCommand then
+    begin
+      glMinmax( GLarbmapping( to_numeric( target_val ) ), GLenum( to_numeric( internalformat_val ) ), GLboolean( to_numeric( sink_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMinmax;
+
+procedure ParsePenglResetMinmax is
+  -- Syntax: glResetMinmax( target : GLarbmapping );
+  -- Source: bush_os.opengl.glResetMinmax
+  target_val  : unbounded_string;
+  target_type : identifier;
+begin
+  expect( pen_glresetminmax_t );
+  ParseSingleNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  if isExecutingCommand then
+    begin
+      glResetMinmax( GLarbmapping( to_numeric( target_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglResetMinmax;
+
+procedure ParsePenglGetMinmax is
+  -- Syntax: glGetMinmax( target : GLarbmapping; reset : GLboolean; format : GLbuffers; kind : GLtypes; values : System.address );
+  -- Source: bush_os.opengl.glGetMinmax
+  target_val  : unbounded_string;
+  target_type : identifier;
+  reset_val  : unbounded_string;
+  reset_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  values_val  : unbounded_string;
+  values_type : identifier;
+begin
+  expect( pen_glgetminmax_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( reset_val, reset_type, pen_glboolean_t ); -- reset : GLboolean
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( values_val, values_type, pen_system.address_t ); -- values : System.address
+  if isExecutingCommand then
+    begin
+      glGetMinmax( GLarbmapping( to_numeric( target_val ) ), GLboolean( to_numeric( reset_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( values_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetMinmax;
+
+procedure ParsePenglGetMinmaxParameterfv is
+  -- Syntax: glGetMinmaxParameterfv( target : GLarbmapping; pname : GLarbmapping; params : in out GLfloat );
+  -- Source: bush_os.opengl.glGetMinmaxParameterfv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgetminmaxparameterfv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
+  ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
+  if isExecutingCommand then
+    begin
+      glGetMinmaxParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetMinmaxParameterfv;
+
+procedure ParsePenglGetMinmaxParameteriv is
+  -- Syntax: glGetMinmaxParameteriv( target : GLarbmapping; pname : GLarbmapping; params : in out GLint );
+  -- Source: bush_os.opengl.glGetMinmaxParameteriv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgetminmaxparameteriv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
+  ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
+  if isExecutingCommand then
+    begin
+      glGetMinmaxParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetMinmaxParameteriv;
+
+procedure ParsePenglConvolutionFilter1D is
+  -- Syntax: glConvolutionFilter1D( target : GLbuffers; internalformat : GLbuffers; width : GLsizei; format : GLbuffers; kind : GLtypes; image : System.address );
+  -- Source: bush_os.opengl.glConvolutionFilter1D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  internalformat_val  : unbounded_string;
+  internalformat_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  image_val  : unbounded_string;
+  image_type : identifier;
+begin
+  expect( pen_glconvolutionfilter1d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glbuffers_t ); -- target : GLbuffers
+  ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glbuffers_t ); -- internalformat : GLbuffers
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( image_val, image_type, pen_system.address_t ); -- image : System.address
+  if isExecutingCommand then
+    begin
+      glConvolutionFilter1D( GLbuffers( to_numeric( target_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( image_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglConvolutionFilter1D;
+
+procedure ParsePenglConvolutionFilter2D is
+  -- Syntax: glConvolutionFilter2D( target : GLbuffers; internalformat : GLbuffers; width, height : GLsizei; format : GLbuffers; kind : GLtypes; image : System.address );
+  -- Source: bush_os.opengl.glConvolutionFilter2D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  internalformat_val  : unbounded_string;
+  internalformat_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  image_val  : unbounded_string;
+  image_type : identifier;
+begin
+  expect( pen_glconvolutionfilter2d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glbuffers_t ); -- target : GLbuffers
+  ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glbuffers_t ); -- internalformat : GLbuffers
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( image_val, image_type, pen_system.address_t ); -- image : System.address
+  if isExecutingCommand then
+    begin
+      glConvolutionFilter2D( GLbuffers( to_numeric( target_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( image_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglConvolutionFilter2D;
+
+procedure ParsePenglConvolutionParameterf is
+  -- Syntax: glConvolutionParameterf( target : GLarbmapping; pname : GLarbmapping; params : GLfloat );
+  -- Source: bush_os.opengl.glConvolutionParameterf
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glconvolutionparameterf_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
+  ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
+  if isExecutingCommand then
+    begin
+      glConvolutionParameterf( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglConvolutionParameterf;
+
+procedure ParsePenglConvolutionParameterfv is
+  -- Syntax: glConvolutionParameterfv( target : GLarbmapping; pname : GLarbmapping; params : in out GLfloat );
+  -- Source: bush_os.opengl.glConvolutionParameterfv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glconvolutionparameterfv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
+  ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
+  if isExecutingCommand then
+    begin
+      glConvolutionParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglConvolutionParameterfv;
+
+procedure ParsePenglConvolutionParameterfv is
+  -- Syntax: glConvolutionParameterfv( target : GLarbmapping; pname : GLarbmapping; params : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.glConvolutionParameterfv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glconvolutionparameterfv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
+  ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glConvolutionParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglConvolutionParameterfv;
+
+procedure ParsePenglConvolutionParameteri is
+  -- Syntax: glConvolutionParameteri( target : GLarbmapping; pname : GLarbmapping; params : GLint );
+  -- Source: bush_os.opengl.glConvolutionParameteri
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glconvolutionparameteri_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
+  ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
+  if isExecutingCommand then
+    begin
+      glConvolutionParameteri( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglConvolutionParameteri;
+
+procedure ParsePenglConvolutionParameteriv is
+  -- Syntax: glConvolutionParameteriv( target : GLarbmapping; pname : GLarbmapping; params : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.glConvolutionParameteriv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glconvolutionparameteriv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
+  ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      glConvolutionParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglConvolutionParameteriv;
+
+procedure ParsePenglCopyConvolutionFilter1D is
+  -- Syntax: glCopyConvolutionFilter1D( target : GLarbmapping; internalformat : GLarbmapping; x, y : GLint; width : GLsizei );
+  -- Source: bush_os.opengl.glCopyConvolutionFilter1D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  internalformat_val  : unbounded_string;
+  internalformat_type : identifier;
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+begin
+  expect( pen_glcopyconvolutionfilter1d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glarbmapping_t ); -- internalformat : GLarbmapping
+  ParseNextNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseLastNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  if isExecutingCommand then
+    begin
+      glCopyConvolutionFilter1D( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( internalformat_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCopyConvolutionFilter1D;
+
+procedure ParsePenglCopyConvolutionFilter2D is
+  -- Syntax: glCopyConvolutionFilter2D( target : GLarbmapping; internalformat : GLarbmapping; x, y : GLint; width, height : GLsizei );
+  -- Source: bush_os.opengl.glCopyConvolutionFilter2D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  internalformat_val  : unbounded_string;
+  internalformat_type : identifier;
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+begin
+  expect( pen_glcopyconvolutionfilter2d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glarbmapping_t ); -- internalformat : GLarbmapping
+  ParseNextNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
+  ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseLastNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  if isExecutingCommand then
+    begin
+      glCopyConvolutionFilter2D( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( internalformat_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCopyConvolutionFilter2D;
+
+procedure ParsePenglGetConvolutionFilter is
+  -- Syntax: glGetConvolutionFilter( target : GLarbmapping; format : GLbuffers; kind : GLtypes; image : System.address );
+  -- Source: bush_os.opengl.glGetConvolutionFilter
+  target_val  : unbounded_string;
+  target_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  image_val  : unbounded_string;
+  image_type : identifier;
+begin
+  expect( pen_glgetconvolutionfilter_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( image_val, image_type, pen_system.address_t ); -- image : System.address
+  if isExecutingCommand then
+    begin
+      glGetConvolutionFilter( GLarbmapping( to_numeric( target_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( image_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetConvolutionFilter;
+
+procedure ParsePenglGetConvolutionParameterfv is
+  -- Syntax: glGetConvolutionParameterfv( target : GLarbmapping; pname : GLarbmapping; params : in out GLfloat );
+  -- Source: bush_os.opengl.glGetConvolutionParameterfv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgetconvolutionparameterfv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
+  ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
+  if isExecutingCommand then
+    begin
+      glGetConvolutionParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetConvolutionParameterfv;
+
+procedure ParsePenglGetConvolutionParameteriv is
+  -- Syntax: glGetConvolutionParameteriv( target : GLarbmapping; pname : GLarbmapping; params : in out GLint );
+  -- Source: bush_os.opengl.glGetConvolutionParameteriv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  pname_val  : unbounded_string;
+  pname_type : identifier;
+  params_val  : unbounded_string;
+  params_type : identifier;
+begin
+  expect( pen_glgetconvolutionparameteriv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
+  ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
+  if isExecutingCommand then
+    begin
+      glGetConvolutionParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetConvolutionParameteriv;
+
+procedure ParsePenglSeparableFilter2D is
+  -- Syntax: glSeparableFilter2D( target : GLarbmapping; internalformat : GLbuffers; width, height : GLsizei; format : GLbuffers; kind : GLtypes; row, column : System.address );
+  -- Source: bush_os.opengl.glSeparableFilter2D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  internalformat_val  : unbounded_string;
+  internalformat_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  row_val  : unbounded_string;
+  row_type : identifier;
+  column_val  : unbounded_string;
+  column_type : identifier;
+begin
+  expect( pen_glseparablefilter2d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glbuffers_t ); -- internalformat : GLbuffers
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseNextNumericParameter( row_val, row_type, pen_system.address_t ); -- row : System.address
+  ParseLastNumericParameter( column_val, column_type, pen_system.address_t ); -- column : System.address
+  if isExecutingCommand then
+    begin
+      glSeparableFilter2D( GLarbmapping( to_numeric( target_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( row_val ) ), System.address( to_numeric( column_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglSeparableFilter2D;
+
+procedure ParsePenglGetSeparableFilter is
+  -- Syntax: glGetSeparableFilter( target : GLarbmapping; format : GLbuffers; kind : GLtypes; row, column, span : System.address );
+  -- Source: bush_os.opengl.glGetSeparableFilter
+  target_val  : unbounded_string;
+  target_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  row_val  : unbounded_string;
+  row_type : identifier;
+  column_val  : unbounded_string;
+  column_type : identifier;
+  span_val  : unbounded_string;
+  span_type : identifier;
+begin
+  expect( pen_glgetseparablefilter_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseNextNumericParameter( row_val, row_type, pen_system.address_t ); -- row : System.address
+  ParseNextNumericParameter( column_val, column_type, pen_system.address_t ); -- column : System.address
+  ParseLastNumericParameter( span_val, span_type, pen_system.address_t ); -- span : System.address
+  if isExecutingCommand then
+    begin
+      glGetSeparableFilter( GLarbmapping( to_numeric( target_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( row_val ) ), System.address( to_numeric( column_val ) ), System.address( to_numeric( span_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetSeparableFilter;
+
+procedure ParsePenglActiveTexture is
+  -- Syntax: glActiveTexture( texture : GLenum );
+  -- Source: bush_os.opengl.glActiveTexture
+  texture_val  : unbounded_string;
+  texture_type : identifier;
+begin
+  expect( pen_glactivetexture_t );
+  ParseSingleNumericParameter( texture_val, texture_type, pen_glenum_t ); -- texture : GLenum
+  if isExecutingCommand then
+    begin
+      glActiveTexture( GLenum( to_numeric( texture_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglActiveTexture;
+
+procedure ParsePenglClientActiveTexture is
+  -- Syntax: glClientActiveTexture( texture : GLenum );
+  -- Source: bush_os.opengl.glClientActiveTexture
+  texture_val  : unbounded_string;
+  texture_type : identifier;
+begin
+  expect( pen_glclientactivetexture_t );
+  ParseSingleNumericParameter( texture_val, texture_type, pen_glenum_t ); -- texture : GLenum
+  if isExecutingCommand then
+    begin
+      glClientActiveTexture( GLenum( to_numeric( texture_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglClientActiveTexture;
+
+procedure ParsePenglCompressedTexImage1D is
+  -- Syntax: glCompressedTexImage1D( target : GLenum; level : GLint; internalformat : GLbuffers; width : GLsizei; border : GLint; imageSize : GLsizei; data : System.address );
+  -- Source: bush_os.opengl.glCompressedTexImage1D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  internalformat_val  : unbounded_string;
+  internalformat_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  border_val  : unbounded_string;
+  border_type : identifier;
+  imageSize_val  : unbounded_string;
+  imageSize_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glcompressedteximage1d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glbuffers_t ); -- internalformat : GLbuffers
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( border_val, border_type, pen_glint_t ); -- border : GLint
+  ParseNextNumericParameter( imageSize_val, imageSize_type, pen_glsizei_t ); -- imageSize : GLsizei
+  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  if isExecutingCommand then
+    begin
+      glCompressedTexImage1D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLint( to_numeric( border_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCompressedTexImage1D;
+
+procedure ParsePenglCompressedTexImage2D is
+  -- Syntax: glCompressedTexImage2D( target : GLenum; level : GLint; internalformat : GLbuffers; width, height : GLsizei; border : GLint; imageSize : GLsizei; data : System.address );
+  -- Source: bush_os.opengl.glCompressedTexImage2D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  internalformat_val  : unbounded_string;
+  internalformat_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  border_val  : unbounded_string;
+  border_type : identifier;
+  imageSize_val  : unbounded_string;
+  imageSize_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glcompressedteximage2d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glbuffers_t ); -- internalformat : GLbuffers
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( border_val, border_type, pen_glint_t ); -- border : GLint
+  ParseNextNumericParameter( imageSize_val, imageSize_type, pen_glsizei_t ); -- imageSize : GLsizei
+  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  if isExecutingCommand then
+    begin
+      glCompressedTexImage2D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLint( to_numeric( border_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCompressedTexImage2D;
+
+procedure ParsePenglCompressedTexImage3D is
+  -- Syntax: glCompressedTexImage3D( target : GLenum; level : GLint; internalformat : GLbuffers; width, height, depth : GLsizei; border : GLint; imageSize : GLsizei; data : System.address );
+  -- Source: bush_os.opengl.glCompressedTexImage3D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  internalformat_val  : unbounded_string;
+  internalformat_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  depth_val  : unbounded_string;
+  depth_type : identifier;
+  border_val  : unbounded_string;
+  border_type : identifier;
+  imageSize_val  : unbounded_string;
+  imageSize_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glcompressedteximage3d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glbuffers_t ); -- internalformat : GLbuffers
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( depth_val, depth_type, pen_glsizei_t ); -- depth : GLsizei
+  ParseNextNumericParameter( border_val, border_type, pen_glint_t ); -- border : GLint
+  ParseNextNumericParameter( imageSize_val, imageSize_type, pen_glsizei_t ); -- imageSize : GLsizei
+  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  if isExecutingCommand then
+    begin
+      glCompressedTexImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLint( to_numeric( border_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCompressedTexImage3D;
+
+procedure ParsePenglCompressedTexSubImage1D is
+  -- Syntax: glCompressedTexSubImage1D( target : GLenum; level : GLint; xoffset : GLint; width : GLsizei; format : GLbuffers; imageSize : GLsizei; data : System.address );
+  -- Source: bush_os.opengl.glCompressedTexSubImage1D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  xoffset_val  : unbounded_string;
+  xoffset_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  imageSize_val  : unbounded_string;
+  imageSize_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glcompressedtexsubimage1d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( xoffset_val, xoffset_type, pen_glint_t ); -- xoffset : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( imageSize_val, imageSize_type, pen_glsizei_t ); -- imageSize : GLsizei
+  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  if isExecutingCommand then
+    begin
+      glCompressedTexSubImage1D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCompressedTexSubImage1D;
+
+procedure ParsePenglCompressedTexSubImage2D is
+  -- Syntax: glCompressedTexSubImage2D( target : GLenum; level : GLint; xoffset, yoffset : GLint; width, height : GLsizei; format : GLbuffers; imageSize : GLsizei; data : System.address );
+  -- Source: bush_os.opengl.glCompressedTexSubImage2D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  xoffset_val  : unbounded_string;
+  xoffset_type : identifier;
+  yoffset_val  : unbounded_string;
+  yoffset_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  imageSize_val  : unbounded_string;
+  imageSize_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glcompressedtexsubimage2d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( xoffset_val, xoffset_type, pen_glint_t ); -- xoffset : GLint
+  ParseNextNumericParameter( yoffset_val, yoffset_type, pen_glint_t ); -- yoffset : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( imageSize_val, imageSize_type, pen_glsizei_t ); -- imageSize : GLsizei
+  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  if isExecutingCommand then
+    begin
+      glCompressedTexSubImage2D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCompressedTexSubImage2D;
+
+procedure ParsePenglCompressedTexSubImage3D is
+  -- Syntax: glCompressedTexSubImage3D( target : GLenum; level : GLint; xoffset, yoffset, zoffset : GLint; width, height, depth : GLsizei; format : GLbuffers; imageSize : GLsizei; data : System.address );
+  -- Source: bush_os.opengl.glCompressedTexSubImage3D
+  target_val  : unbounded_string;
+  target_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  xoffset_val  : unbounded_string;
+  xoffset_type : identifier;
+  yoffset_val  : unbounded_string;
+  yoffset_type : identifier;
+  zoffset_val  : unbounded_string;
+  zoffset_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  depth_val  : unbounded_string;
+  depth_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  imageSize_val  : unbounded_string;
+  imageSize_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glcompressedtexsubimage3d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( xoffset_val, xoffset_type, pen_glint_t ); -- xoffset : GLint
+  ParseNextNumericParameter( yoffset_val, yoffset_type, pen_glint_t ); -- yoffset : GLint
+  ParseNextNumericParameter( zoffset_val, zoffset_type, pen_glint_t ); -- zoffset : GLint
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( depth_val, depth_type, pen_glsizei_t ); -- depth : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( imageSize_val, imageSize_type, pen_glsizei_t ); -- imageSize : GLsizei
+  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  if isExecutingCommand then
+    begin
+      glCompressedTexSubImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLint( to_numeric( zoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCompressedTexSubImage3D;
+
+procedure ParsePenglGetCompressedTexImage is
+  -- Syntax: glGetCompressedTexImage( target : GLenum; lod : GLint; img : System.address );
+  -- Source: bush_os.opengl.glGetCompressedTexImage
+  target_val  : unbounded_string;
+  target_type : identifier;
+  lod_val  : unbounded_string;
+  lod_type : identifier;
+  img_val  : unbounded_string;
+  img_type : identifier;
+begin
+  expect( pen_glgetcompressedteximage_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( lod_val, lod_type, pen_glint_t ); -- lod : GLint
+  ParseLastNumericParameter( img_val, img_type, pen_system.address_t ); -- img : System.address
+  if isExecutingCommand then
+    begin
+      glGetCompressedTexImage( GLenum( to_numeric( target_val ) ), GLint( to_numeric( lod_val ) ), System.address( to_numeric( img_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetCompressedTexImage;
+
+procedure ParsePenglMultiTexCoord1d is
+  -- Syntax: glMultiTexCoord1d( target : GLenum; s : GLdouble );
+  -- Source: bush_os.opengl.glMultiTexCoord1d
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+begin
+  expect( pen_glmultitexcoord1d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( s_val, s_type, pen_gldouble_t ); -- s : GLdouble
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord1d( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( s_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord1d;
+
+procedure ParsePenglMultiTexCoord1dv is
+  -- Syntax: glMultiTexCoord1dv( target : GLenum; v : in out GLdouble );
+  -- Source: bush_os.opengl.glMultiTexCoord1dv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord1dv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord1dv( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord1dv;
+
+procedure ParsePenglMultiTexCoord1f is
+  -- Syntax: glMultiTexCoord1f( target : GLenum; s : GLfloat );
+  -- Source: bush_os.opengl.glMultiTexCoord1f
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+begin
+  expect( pen_glmultitexcoord1f_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( s_val, s_type, pen_glfloat_t ); -- s : GLfloat
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord1f( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( s_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord1f;
+
+procedure ParsePenglMultiTexCoord1fv is
+  -- Syntax: glMultiTexCoord1fv( target : GLenum; v : in out GLfloat );
+  -- Source: bush_os.opengl.glMultiTexCoord1fv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord1fv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord1fv( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord1fv;
+
+procedure ParsePenglMultiTexCoord1i is
+  -- Syntax: glMultiTexCoord1i( target : GLenum; s : GLint );
+  -- Source: bush_os.opengl.glMultiTexCoord1i
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+begin
+  expect( pen_glmultitexcoord1i_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( s_val, s_type, pen_glint_t ); -- s : GLint
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord1i( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord1i;
+
+procedure ParsePenglMultiTexCoord1iv is
+  -- Syntax: glMultiTexCoord1iv( target : GLenum; v : in out GLint );
+  -- Source: bush_os.opengl.glMultiTexCoord1iv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord1iv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glint_t ); -- v : GLint
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord1iv( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord1iv;
+
+procedure ParsePenglMultiTexCoord1s is
+  -- Syntax: glMultiTexCoord1s( target : GLenum; s : GLshort );
+  -- Source: bush_os.opengl.glMultiTexCoord1s
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+begin
+  expect( pen_glmultitexcoord1s_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( s_val, s_type, pen_glshort_t ); -- s : GLshort
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord1s( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( s_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord1s;
+
+procedure ParsePenglMultiTexCoord1sv is
+  -- Syntax: glMultiTexCoord1sv( target : GLenum; v : in out GLshort );
+  -- Source: bush_os.opengl.glMultiTexCoord1sv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord1sv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glshort_t ); -- v : GLshort
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord1sv( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord1sv;
+
+procedure ParsePenglMultiTexCoord2d is
+  -- Syntax: glMultiTexCoord2d( target : GLenum; s, t : GLdouble );
+  -- Source: bush_os.opengl.glMultiTexCoord2d
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+begin
+  expect( pen_glmultitexcoord2d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_gldouble_t ); -- s : GLdouble
+  ParseLastNumericParameter( t_val, t_type, pen_gldouble_t ); -- t : GLdouble
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord2d( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord2d;
+
+procedure ParsePenglMultiTexCoord2dv is
+  -- Syntax: glMultiTexCoord2dv( target : GLenum; v : in out GLdouble );
+  -- Source: bush_os.opengl.glMultiTexCoord2dv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord2dv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord2dv( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord2dv;
+
+procedure ParsePenglMultiTexCoord2f is
+  -- Syntax: glMultiTexCoord2f( target : GLenum; s, t : GLfloat );
+  -- Source: bush_os.opengl.glMultiTexCoord2f
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+begin
+  expect( pen_glmultitexcoord2f_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glfloat_t ); -- s : GLfloat
+  ParseLastNumericParameter( t_val, t_type, pen_glfloat_t ); -- t : GLfloat
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord2f( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord2f;
+
+procedure ParsePenglMultiTexCoord2fv is
+  -- Syntax: glMultiTexCoord2fv( target : GLenum; v : in out GLfloat );
+  -- Source: bush_os.opengl.glMultiTexCoord2fv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord2fv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord2fv( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord2fv;
+
+procedure ParsePenglMultiTexCoord2i is
+  -- Syntax: glMultiTexCoord2i( target : GLenum; s, t : GLint );
+  -- Source: bush_os.opengl.glMultiTexCoord2i
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+begin
+  expect( pen_glmultitexcoord2i_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glint_t ); -- s : GLint
+  ParseLastNumericParameter( t_val, t_type, pen_glint_t ); -- t : GLint
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord2i( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord2i;
+
+procedure ParsePenglMultiTexCoord2iv is
+  -- Syntax: glMultiTexCoord2iv( target : GLenum; v : in out GLint );
+  -- Source: bush_os.opengl.glMultiTexCoord2iv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord2iv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glint_t ); -- v : GLint
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord2iv( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord2iv;
+
+procedure ParsePenglMultiTexCoord2s is
+  -- Syntax: glMultiTexCoord2s( target : GLenum; s, t : GLshort );
+  -- Source: bush_os.opengl.glMultiTexCoord2s
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+begin
+  expect( pen_glmultitexcoord2s_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glshort_t ); -- s : GLshort
+  ParseLastNumericParameter( t_val, t_type, pen_glshort_t ); -- t : GLshort
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord2s( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord2s;
+
+procedure ParsePenglMultiTexCoord2sv is
+  -- Syntax: glMultiTexCoord2sv( target : GLenum; v : in out GLshort );
+  -- Source: bush_os.opengl.glMultiTexCoord2sv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord2sv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glshort_t ); -- v : GLshort
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord2sv( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord2sv;
+
+procedure ParsePenglMultiTexCoord3d is
+  -- Syntax: glMultiTexCoord3d( target : GLenum; s, t, r : GLdouble );
+  -- Source: bush_os.opengl.glMultiTexCoord3d
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+begin
+  expect( pen_glmultitexcoord3d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_gldouble_t ); -- s : GLdouble
+  ParseNextNumericParameter( t_val, t_type, pen_gldouble_t ); -- t : GLdouble
+  ParseLastNumericParameter( r_val, r_type, pen_gldouble_t ); -- r : GLdouble
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord3d( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ), GLdouble( to_numeric( r_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord3d;
+
+procedure ParsePenglMultiTexCoord3dv is
+  -- Syntax: glMultiTexCoord3dv( target : GLenum; v : in out GLdouble );
+  -- Source: bush_os.opengl.glMultiTexCoord3dv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord3dv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord3dv( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord3dv;
+
+procedure ParsePenglMultiTexCoord3f is
+  -- Syntax: glMultiTexCoord3f( target : GLenum; s, t, r : GLfloat );
+  -- Source: bush_os.opengl.glMultiTexCoord3f
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+begin
+  expect( pen_glmultitexcoord3f_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glfloat_t ); -- s : GLfloat
+  ParseNextNumericParameter( t_val, t_type, pen_glfloat_t ); -- t : GLfloat
+  ParseLastNumericParameter( r_val, r_type, pen_glfloat_t ); -- r : GLfloat
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord3f( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ), GLfloat( to_numeric( r_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord3f;
+
+procedure ParsePenglMultiTexCoord3fv is
+  -- Syntax: glMultiTexCoord3fv( target : GLenum; v : in out GLfloat );
+  -- Source: bush_os.opengl.glMultiTexCoord3fv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord3fv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord3fv( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord3fv;
+
+procedure ParsePenglMultiTexCoord3i is
+  -- Syntax: glMultiTexCoord3i( target : GLenum; s, t, r : GLint );
+  -- Source: bush_os.opengl.glMultiTexCoord3i
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+begin
+  expect( pen_glmultitexcoord3i_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glint_t ); -- s : GLint
+  ParseNextNumericParameter( t_val, t_type, pen_glint_t ); -- t : GLint
+  ParseLastNumericParameter( r_val, r_type, pen_glint_t ); -- r : GLint
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord3i( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ), GLint( to_numeric( r_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord3i;
+
+procedure ParsePenglMultiTexCoord3iv is
+  -- Syntax: glMultiTexCoord3iv( target : GLenum; v : in out GLint );
+  -- Source: bush_os.opengl.glMultiTexCoord3iv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord3iv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glint_t ); -- v : GLint
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord3iv( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord3iv;
+
+procedure ParsePenglMultiTexCoord3s is
+  -- Syntax: glMultiTexCoord3s( target : GLenum; s, t, r : GLshort );
+  -- Source: bush_os.opengl.glMultiTexCoord3s
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+begin
+  expect( pen_glmultitexcoord3s_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glshort_t ); -- s : GLshort
+  ParseNextNumericParameter( t_val, t_type, pen_glshort_t ); -- t : GLshort
+  ParseLastNumericParameter( r_val, r_type, pen_glshort_t ); -- r : GLshort
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord3s( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ), GLshort( to_numeric( r_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord3s;
+
+procedure ParsePenglMultiTexCoord3sv is
+  -- Syntax: glMultiTexCoord3sv( target : GLenum; v : in out GLshort );
+  -- Source: bush_os.opengl.glMultiTexCoord3sv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord3sv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glshort_t ); -- v : GLshort
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord3sv( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord3sv;
+
+procedure ParsePenglMultiTexCoord4d is
+  -- Syntax: glMultiTexCoord4d( target : GLenum; s, t, r, q : GLdouble );
+  -- Source: bush_os.opengl.glMultiTexCoord4d
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+  q_val  : unbounded_string;
+  q_type : identifier;
+begin
+  expect( pen_glmultitexcoord4d_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_gldouble_t ); -- s : GLdouble
+  ParseNextNumericParameter( t_val, t_type, pen_gldouble_t ); -- t : GLdouble
+  ParseNextNumericParameter( r_val, r_type, pen_gldouble_t ); -- r : GLdouble
+  ParseLastNumericParameter( q_val, q_type, pen_gldouble_t ); -- q : GLdouble
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord4d( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ), GLdouble( to_numeric( r_val ) ), GLdouble( to_numeric( q_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord4d;
+
+procedure ParsePenglMultiTexCoord4dv is
+  -- Syntax: glMultiTexCoord4dv( target : GLenum; v : in out GLdouble );
+  -- Source: bush_os.opengl.glMultiTexCoord4dv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord4dv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord4dv( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord4dv;
+
+procedure ParsePenglMultiTexCoord4f is
+  -- Syntax: glMultiTexCoord4f( target : GLenum; s, t, r, q : GLfloat );
+  -- Source: bush_os.opengl.glMultiTexCoord4f
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+  q_val  : unbounded_string;
+  q_type : identifier;
+begin
+  expect( pen_glmultitexcoord4f_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glfloat_t ); -- s : GLfloat
+  ParseNextNumericParameter( t_val, t_type, pen_glfloat_t ); -- t : GLfloat
+  ParseNextNumericParameter( r_val, r_type, pen_glfloat_t ); -- r : GLfloat
+  ParseLastNumericParameter( q_val, q_type, pen_glfloat_t ); -- q : GLfloat
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord4f( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ), GLfloat( to_numeric( r_val ) ), GLfloat( to_numeric( q_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord4f;
+
+procedure ParsePenglMultiTexCoord4fv is
+  -- Syntax: glMultiTexCoord4fv( target : GLenum; v : in out GLfloat );
+  -- Source: bush_os.opengl.glMultiTexCoord4fv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord4fv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord4fv( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord4fv;
+
+procedure ParsePenglMultiTexCoord4i is
+  -- Syntax: glMultiTexCoord4i( target : GLenum; s, t, r, q : GLint );
+  -- Source: bush_os.opengl.glMultiTexCoord4i
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+  q_val  : unbounded_string;
+  q_type : identifier;
+begin
+  expect( pen_glmultitexcoord4i_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glint_t ); -- s : GLint
+  ParseNextNumericParameter( t_val, t_type, pen_glint_t ); -- t : GLint
+  ParseNextNumericParameter( r_val, r_type, pen_glint_t ); -- r : GLint
+  ParseLastNumericParameter( q_val, q_type, pen_glint_t ); -- q : GLint
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord4i( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ), GLint( to_numeric( r_val ) ), GLint( to_numeric( q_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord4i;
+
+procedure ParsePenglMultiTexCoord4iv is
+  -- Syntax: glMultiTexCoord4iv( target : GLenum; v : in out GLint );
+  -- Source: bush_os.opengl.glMultiTexCoord4iv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord4iv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glint_t ); -- v : GLint
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord4iv( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord4iv;
+
+procedure ParsePenglMultiTexCoord4s is
+  -- Syntax: glMultiTexCoord4s( target : GLenum; s, t, r, q : GLshort );
+  -- Source: bush_os.opengl.glMultiTexCoord4s
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+  q_val  : unbounded_string;
+  q_type : identifier;
+begin
+  expect( pen_glmultitexcoord4s_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glshort_t ); -- s : GLshort
+  ParseNextNumericParameter( t_val, t_type, pen_glshort_t ); -- t : GLshort
+  ParseNextNumericParameter( r_val, r_type, pen_glshort_t ); -- r : GLshort
+  ParseLastNumericParameter( q_val, q_type, pen_glshort_t ); -- q : GLshort
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord4s( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ), GLshort( to_numeric( r_val ) ), GLshort( to_numeric( q_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord4s;
+
+procedure ParsePenglMultiTexCoord4sv is
+  -- Syntax: glMultiTexCoord4sv( target : GLenum; v : in out GLshort );
+  -- Source: bush_os.opengl.glMultiTexCoord4sv
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord4sv_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glshort_t ); -- v : GLshort
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord4sv( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord4sv;
+
+procedure ParsePenglLoadTransposeMatrixd is
+  -- TODO: matrix operations not implemented
+  -- Syntax: --glLoadTransposeMatrixd( GLdouble m[16] );
+  -- Source: bush_os.opengl.glLoadTransposeMatrixd
+  --GLdoublem[16]_val  : unbounded_string;
+  --GLdoublem[16]_type : identifier;
+begin
+  expect( pen_glloadtransposematrixd_t );
+  null; --ParseSingleNumericParameter( GLdoublem[16]_val, GLdoublem[16]_type, pen_gldoublem[16]_t ); -- GLdoublem[16] : GLdoublem[16]
+  if isExecutingCommand then
+    begin
+      null; --glLoadTransposeMatrixd( GLdoublem[16]( to_numeric( GLdoublem[16]_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLoadTransposeMatrixd;
+
+procedure ParsePenglLoadTransposeMatrixf is
+  -- TODO: matrix operations not implemented
+  -- Syntax: --glLoadTransposeMatrixf( GLfloat m[16] );
+  -- Source: bush_os.opengl.glLoadTransposeMatrixf
+  --GLfloatm[16]_val  : unbounded_string;
+  --GLfloatm[16]_type : identifier;
+begin
+  expect( pen_glloadtransposematrixf_t );
+  null; --ParseSingleNumericParameter( GLfloatm[16]_val, GLfloatm[16]_type, pen_glfloatm[16]_t ); -- GLfloatm[16] : GLfloatm[16]
+  if isExecutingCommand then
+    begin
+      null; --glLoadTransposeMatrixf( GLfloatm[16]( to_numeric( GLfloatm[16]_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglLoadTransposeMatrixf;
+
+procedure ParsePenglMultTransposeMatrixd is
+  -- TODO: matrix operations not implemented
+  -- Syntax: --glMultTransposeMatrixd( GLdouble m[16] );
+  -- Source: bush_os.opengl.glMultTransposeMatrixd
+  --GLdoublem[16]_val  : unbounded_string;
+  --GLdoublem[16]_type : identifier;
+begin
+  expect( pen_glmulttransposematrixd_t );
+  null; --ParseSingleNumericParameter( GLdoublem[16]_val, GLdoublem[16]_type, pen_gldoublem[16]_t ); -- GLdoublem[16] : GLdoublem[16]
+  if isExecutingCommand then
+    begin
+      null; --glMultTransposeMatrixd( GLdoublem[16]( to_numeric( GLdoublem[16]_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultTransposeMatrixd;
+
+procedure ParsePenglMultTransposeMatrixf is
+  -- TODO: matrix operations not implemented
+  -- Syntax: --glMultTransposeMatrixf( GLfloat m[16] );
+  -- Source: bush_os.opengl.glMultTransposeMatrixf
+  --GLfloatm[16]_val  : unbounded_string;
+  --GLfloatm[16]_type : identifier;
+begin
+  expect( pen_glmulttransposematrixf_t );
+  --ParseSingleNumericParameter( GLfloatm[16]_val, GLfloatm[16]_type, pen_glfloatm[16]_t ); -- GLfloatm[16] : GLfloatm[16]
+  if isExecutingCommand then
+    begin
+      null; --glMultTransposeMatrixf( GLfloatm[16]( to_numeric( GLfloatm[16]_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultTransposeMatrixf;
+
+procedure ParsePenglSampleCoverage is
+  -- Syntax: glSampleCoverage( value : GLclampf; invert : GLboolean );
+  -- Source: bush_os.opengl.glSampleCoverage
+  value_val  : unbounded_string;
+  value_type : identifier;
+  invert_val  : unbounded_string;
+  invert_type : identifier;
+begin
+  expect( pen_glsamplecoverage_t );
+  ParseFirstNumericParameter( value_val, value_type, pen_glclampf_t ); -- value : GLclampf
+  ParseLastNumericParameter( invert_val, invert_type, pen_glboolean_t ); -- invert : GLboolean
+  if isExecutingCommand then
+    begin
+      glSampleCoverage( GLclampf( to_numeric( value_val ) ), GLboolean( to_numeric( invert_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglSampleCoverage;
+
+procedure ParsePenglActiveTextureARB is
+  -- Syntax: glActiveTextureARB( texture : GLenum );
+  -- Source: bush_os.opengl.glActiveTextureARB
+  texture_val  : unbounded_string;
+  texture_type : identifier;
+begin
+  expect( pen_glactivetexturearb_t );
+  ParseSingleNumericParameter( texture_val, texture_type, pen_glenum_t ); -- texture : GLenum
+  if isExecutingCommand then
+    begin
+      glActiveTextureARB( GLenum( to_numeric( texture_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglActiveTextureARB;
+
+procedure ParsePenglClientActiveTextureARB is
+  -- Syntax: glClientActiveTextureARB( texture : GLenum );
+  -- Source: bush_os.opengl.glClientActiveTextureARB
+  texture_val  : unbounded_string;
+  texture_type : identifier;
+begin
+  expect( pen_glclientactivetexturearb_t );
+  ParseSingleNumericParameter( texture_val, texture_type, pen_glenum_t ); -- texture : GLenum
+  if isExecutingCommand then
+    begin
+      glClientActiveTextureARB( GLenum( to_numeric( texture_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglClientActiveTextureARB;
+
+procedure ParsePenglMultiTexCoord1dARB is
+  -- Syntax: glMultiTexCoord1dARB( target : GLenum; s : GLdouble );
+  -- Source: bush_os.opengl.glMultiTexCoord1dARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+begin
+  expect( pen_glmultitexcoord1darb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( s_val, s_type, pen_gldouble_t ); -- s : GLdouble
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord1dARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( s_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord1dARB;
+
+procedure ParsePenglMultiTexCoord1dvARB is
+  -- Syntax: glMultiTexCoord1dvARB( target : GLenum; v : in out GLdouble );
+  -- Source: bush_os.opengl.glMultiTexCoord1dvARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord1dvarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord1dvARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord1dvARB;
+
+procedure ParsePenglMultiTexCoord1fARB is
+  -- Syntax: glMultiTexCoord1fARB( target : GLenum; s : GLfloat );
+  -- Source: bush_os.opengl.glMultiTexCoord1fARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+begin
+  expect( pen_glmultitexcoord1farb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( s_val, s_type, pen_glfloat_t ); -- s : GLfloat
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord1fARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( s_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord1fARB;
+
+procedure ParsePenglMultiTexCoord1fvARB is
+  -- Syntax: glMultiTexCoord1fvARB( target : GLenum; v : in out GLfloat );
+  -- Source: bush_os.opengl.glMultiTexCoord1fvARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord1fvarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord1fvARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord1fvARB;
+
+procedure ParsePenglMultiTexCoord1iARB is
+  -- Syntax: glMultiTexCoord1iARB( target : GLenum; s : GLint );
+  -- Source: bush_os.opengl.glMultiTexCoord1iARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+begin
+  expect( pen_glmultitexcoord1iarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( s_val, s_type, pen_glint_t ); -- s : GLint
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord1iARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord1iARB;
+
+procedure ParsePenglMultiTexCoord1ivARB is
+  -- Syntax: glMultiTexCoord1ivARB( target : GLenum; v : in out GLint );
+  -- Source: bush_os.opengl.glMultiTexCoord1ivARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord1ivarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glint_t ); -- v : GLint
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord1ivARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord1ivARB;
+
+procedure ParsePenglMultiTexCoord1sARB is
+  -- Syntax: glMultiTexCoord1sARB( target : GLenum; s : GLshort );
+  -- Source: bush_os.opengl.glMultiTexCoord1sARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+begin
+  expect( pen_glmultitexcoord1sarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( s_val, s_type, pen_glshort_t ); -- s : GLshort
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord1sARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( s_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord1sARB;
+
+procedure ParsePenglMultiTexCoord1svARB is
+  -- Syntax: glMultiTexCoord1svARB( target : GLenum; v : in out GLshort );
+  -- Source: bush_os.opengl.glMultiTexCoord1svARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord1svarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glshort_t ); -- v : GLshort
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord1svARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord1svARB;
+
+procedure ParsePenglMultiTexCoord2dARB is
+  -- Syntax: glMultiTexCoord2dARB( target : GLenum; s, t : GLdouble );
+  -- Source: bush_os.opengl.glMultiTexCoord2dARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+begin
+  expect( pen_glmultitexcoord2darb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_gldouble_t ); -- s : GLdouble
+  ParseLastNumericParameter( t_val, t_type, pen_gldouble_t ); -- t : GLdouble
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord2dARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord2dARB;
+
+procedure ParsePenglMultiTexCoord2dvARB is
+  -- Syntax: glMultiTexCoord2dvARB( target : GLenum; v : in out GLdouble );
+  -- Source: bush_os.opengl.glMultiTexCoord2dvARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord2dvarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord2dvARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord2dvARB;
+
+procedure ParsePenglMultiTexCoord2fARB is
+  -- Syntax: glMultiTexCoord2fARB( target : GLenum; s, t : GLfloat );
+  -- Source: bush_os.opengl.glMultiTexCoord2fARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+begin
+  expect( pen_glmultitexcoord2farb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glfloat_t ); -- s : GLfloat
+  ParseLastNumericParameter( t_val, t_type, pen_glfloat_t ); -- t : GLfloat
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord2fARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord2fARB;
+
+procedure ParsePenglMultiTexCoord2fvARB is
+  -- Syntax: glMultiTexCoord2fvARB( target : GLenum; v : in out GLfloat );
+  -- Source: bush_os.opengl.glMultiTexCoord2fvARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord2fvarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord2fvARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord2fvARB;
+
+procedure ParsePenglMultiTexCoord2iARB is
+  -- Syntax: glMultiTexCoord2iARB( target : GLenum; s, t : GLint );
+  -- Source: bush_os.opengl.glMultiTexCoord2iARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+begin
+  expect( pen_glmultitexcoord2iarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glint_t ); -- s : GLint
+  ParseLastNumericParameter( t_val, t_type, pen_glint_t ); -- t : GLint
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord2iARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord2iARB;
+
+procedure ParsePenglMultiTexCoord2ivARB is
+  -- Syntax: glMultiTexCoord2ivARB( target : GLenum; v : in out GLint );
+  -- Source: bush_os.opengl.glMultiTexCoord2ivARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord2ivarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glint_t ); -- v : GLint
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord2ivARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord2ivARB;
+
+procedure ParsePenglMultiTexCoord2sARB is
+  -- Syntax: glMultiTexCoord2sARB( target : GLenum; s, t : GLshort );
+  -- Source: bush_os.opengl.glMultiTexCoord2sARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+begin
+  expect( pen_glmultitexcoord2sarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glshort_t ); -- s : GLshort
+  ParseLastNumericParameter( t_val, t_type, pen_glshort_t ); -- t : GLshort
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord2sARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord2sARB;
+
+procedure ParsePenglMultiTexCoord2svARB is
+  -- Syntax: glMultiTexCoord2svARB( target : GLenum; v : in out GLshort );
+  -- Source: bush_os.opengl.glMultiTexCoord2svARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord2svarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glshort_t ); -- v : GLshort
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord2svARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord2svARB;
+
+procedure ParsePenglMultiTexCoord3dARB is
+  -- Syntax: glMultiTexCoord3dARB( target : GLenum; s, t, r : GLdouble );
+  -- Source: bush_os.opengl.glMultiTexCoord3dARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+begin
+  expect( pen_glmultitexcoord3darb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_gldouble_t ); -- s : GLdouble
+  ParseNextNumericParameter( t_val, t_type, pen_gldouble_t ); -- t : GLdouble
+  ParseLastNumericParameter( r_val, r_type, pen_gldouble_t ); -- r : GLdouble
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord3dARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ), GLdouble( to_numeric( r_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord3dARB;
+
+procedure ParsePenglMultiTexCoord3dvARB is
+  -- Syntax: glMultiTexCoord3dvARB( target : GLenum; v : in out GLdouble );
+  -- Source: bush_os.opengl.glMultiTexCoord3dvARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord3dvarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord3dvARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord3dvARB;
+
+procedure ParsePenglMultiTexCoord3fARB is
+  -- Syntax: glMultiTexCoord3fARB( target : GLenum; s, t, r : GLfloat );
+  -- Source: bush_os.opengl.glMultiTexCoord3fARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+begin
+  expect( pen_glmultitexcoord3farb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glfloat_t ); -- s : GLfloat
+  ParseNextNumericParameter( t_val, t_type, pen_glfloat_t ); -- t : GLfloat
+  ParseLastNumericParameter( r_val, r_type, pen_glfloat_t ); -- r : GLfloat
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord3fARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ), GLfloat( to_numeric( r_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord3fARB;
+
+procedure ParsePenglMultiTexCoord3fvARB is
+  -- Syntax: glMultiTexCoord3fvARB( target : GLenum; v : in out GLfloat );
+  -- Source: bush_os.opengl.glMultiTexCoord3fvARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord3fvarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord3fvARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord3fvARB;
+
+procedure ParsePenglMultiTexCoord3iARB is
+  -- Syntax: glMultiTexCoord3iARB( target : GLenum; s, t, r : GLint );
+  -- Source: bush_os.opengl.glMultiTexCoord3iARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+begin
+  expect( pen_glmultitexcoord3iarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glint_t ); -- s : GLint
+  ParseNextNumericParameter( t_val, t_type, pen_glint_t ); -- t : GLint
+  ParseLastNumericParameter( r_val, r_type, pen_glint_t ); -- r : GLint
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord3iARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ), GLint( to_numeric( r_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord3iARB;
+
+procedure ParsePenglMultiTexCoord3ivARB is
+  -- Syntax: glMultiTexCoord3ivARB( target : GLenum; v : in out GLint );
+  -- Source: bush_os.opengl.glMultiTexCoord3ivARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord3ivarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glint_t ); -- v : GLint
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord3ivARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord3ivARB;
+
+procedure ParsePenglMultiTexCoord3sARB is
+  -- Syntax: glMultiTexCoord3sARB( target : GLenum; s, t, r : GLshort );
+  -- Source: bush_os.opengl.glMultiTexCoord3sARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+begin
+  expect( pen_glmultitexcoord3sarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glshort_t ); -- s : GLshort
+  ParseNextNumericParameter( t_val, t_type, pen_glshort_t ); -- t : GLshort
+  ParseLastNumericParameter( r_val, r_type, pen_glshort_t ); -- r : GLshort
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord3sARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ), GLshort( to_numeric( r_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord3sARB;
+
+procedure ParsePenglMultiTexCoord3svARB is
+  -- Syntax: glMultiTexCoord3svARB( target : GLenum; v : in out GLshort );
+  -- Source: bush_os.opengl.glMultiTexCoord3svARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord3svarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glshort_t ); -- v : GLshort
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord3svARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord3svARB;
+
+procedure ParsePenglMultiTexCoord4dARB is
+  -- Syntax: glMultiTexCoord4dARB( target : GLenum; s, t, r, q : GLdouble );
+  -- Source: bush_os.opengl.glMultiTexCoord4dARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+  q_val  : unbounded_string;
+  q_type : identifier;
+begin
+  expect( pen_glmultitexcoord4darb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_gldouble_t ); -- s : GLdouble
+  ParseNextNumericParameter( t_val, t_type, pen_gldouble_t ); -- t : GLdouble
+  ParseNextNumericParameter( r_val, r_type, pen_gldouble_t ); -- r : GLdouble
+  ParseLastNumericParameter( q_val, q_type, pen_gldouble_t ); -- q : GLdouble
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord4dARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ), GLdouble( to_numeric( r_val ) ), GLdouble( to_numeric( q_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord4dARB;
+
+procedure ParsePenglMultiTexCoord4dvARB is
+  -- Syntax: glMultiTexCoord4dvARB( target : GLenum; v : in out GLdouble );
+  -- Source: bush_os.opengl.glMultiTexCoord4dvARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord4dvarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord4dvARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord4dvARB;
+
+procedure ParsePenglMultiTexCoord4fARB is
+  -- Syntax: glMultiTexCoord4fARB( target : GLenum; s, t, r, q : GLfloat );
+  -- Source: bush_os.opengl.glMultiTexCoord4fARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+  q_val  : unbounded_string;
+  q_type : identifier;
+begin
+  expect( pen_glmultitexcoord4farb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glfloat_t ); -- s : GLfloat
+  ParseNextNumericParameter( t_val, t_type, pen_glfloat_t ); -- t : GLfloat
+  ParseNextNumericParameter( r_val, r_type, pen_glfloat_t ); -- r : GLfloat
+  ParseLastNumericParameter( q_val, q_type, pen_glfloat_t ); -- q : GLfloat
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord4fARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ), GLfloat( to_numeric( r_val ) ), GLfloat( to_numeric( q_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord4fARB;
+
+procedure ParsePenglMultiTexCoord4fvARB is
+  -- Syntax: glMultiTexCoord4fvARB( target : GLenum; v : in out GLfloat );
+  -- Source: bush_os.opengl.glMultiTexCoord4fvARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord4fvarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord4fvARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord4fvARB;
+
+procedure ParsePenglMultiTexCoord4iARB is
+  -- Syntax: glMultiTexCoord4iARB( target : GLenum; s, t, r, q : GLint );
+  -- Source: bush_os.opengl.glMultiTexCoord4iARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+  q_val  : unbounded_string;
+  q_type : identifier;
+begin
+  expect( pen_glmultitexcoord4iarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glint_t ); -- s : GLint
+  ParseNextNumericParameter( t_val, t_type, pen_glint_t ); -- t : GLint
+  ParseNextNumericParameter( r_val, r_type, pen_glint_t ); -- r : GLint
+  ParseLastNumericParameter( q_val, q_type, pen_glint_t ); -- q : GLint
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord4iARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ), GLint( to_numeric( r_val ) ), GLint( to_numeric( q_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord4iARB;
+
+procedure ParsePenglMultiTexCoord4ivARB is
+  -- Syntax: glMultiTexCoord4ivARB( target : GLenum; v : in out GLint );
+  -- Source: bush_os.opengl.glMultiTexCoord4ivARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord4ivarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glint_t ); -- v : GLint
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord4ivARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord4ivARB;
+
+procedure ParsePenglMultiTexCoord4sARB is
+  -- Syntax: glMultiTexCoord4sARB( target : GLenum; s, t, r, q : GLshort );
+  -- Source: bush_os.opengl.glMultiTexCoord4sARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  s_val  : unbounded_string;
+  s_type : identifier;
+  t_val  : unbounded_string;
+  t_type : identifier;
+  r_val  : unbounded_string;
+  r_type : identifier;
+  q_val  : unbounded_string;
+  q_type : identifier;
+begin
+  expect( pen_glmultitexcoord4sarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( s_val, s_type, pen_glshort_t ); -- s : GLshort
+  ParseNextNumericParameter( t_val, t_type, pen_glshort_t ); -- t : GLshort
+  ParseNextNumericParameter( r_val, r_type, pen_glshort_t ); -- r : GLshort
+  ParseLastNumericParameter( q_val, q_type, pen_glshort_t ); -- q : GLshort
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord4sARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ), GLshort( to_numeric( r_val ) ), GLshort( to_numeric( q_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord4sARB;
+
+procedure ParsePenglMultiTexCoord4svARB is
+  -- Syntax: glMultiTexCoord4svARB( target : GLenum; v : in out GLshort );
+  -- Source: bush_os.opengl.glMultiTexCoord4svARB
+  target_val  : unbounded_string;
+  target_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glmultitexcoord4svarb_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( v_val, v_type, pen_glshort_t ); -- v : GLshort
+  if isExecutingCommand then
+    begin
+      glMultiTexCoord4svARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglMultiTexCoord4svARB;
+
+procedure ParsePenglCreateDebugObjectMESA( result : out unbounded_string ) is
+  -- Syntax: --glCreateDebugObjectMESA return GLhandleARB;
+  -- Source: bush_os.opengl.glCreateDebugObjectMESA
+begin
+  expect( pen_glcreatedebugobjectmesa_t );
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( glCreateDebugObjectMESA ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglCreateDebugObjectMESA;
+
+procedure ParsePenglClearDebugLogMESA is
+  -- Syntax: --glClearDebugLogMESA( obj : GLhandleARB; logType : GLenum; shaderType : GLenum);
+  -- Source: bush_os.opengl.glClearDebugLogMESA
+  obj_val  : unbounded_string;
+  obj_type : identifier;
+  logType_val  : unbounded_string;
+  logType_type : identifier;
+  shaderType_val  : unbounded_string;
+  shaderType_type : identifier;
+begin
+  expect( pen_glcleardebuglogmesa_t );
+  ParseFirstNumericParameter( obj_val, obj_type, pen_glhandlearb_t ); -- obj : GLhandleARB
+  ParseNextNumericParameter( logType_val, logType_type, pen_glenum_t ); -- logType : GLenum
+  ParseLastNumericParameter( shaderType_val, shaderType_type, pen_glenum_t ); -- shaderType : GLenum
+  if isExecutingCommand then
+    begin
+      glClearDebugLogMESA( GLhandleARB( to_numeric( obj_val ) ), GLenum( to_numeric( logType_val ) ), GLenum( to_numeric( shaderType_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglClearDebugLogMESA;
+
+procedure ParsePenglGetDebugLogMESA is
+  -- Syntax: --glGetDebugLogMESA( obj : GLhandleARB; logType : GLenum; shaderType : GLenum; maxLength : GLsizei; length : in out GLsizei; debugLog : in out GLcharARB );
+  -- Source: bush_os.opengl.glGetDebugLogMESA
+  obj_val  : unbounded_string;
+  obj_type : identifier;
+  logType_val  : unbounded_string;
+  logType_type : identifier;
+  shaderType_val  : unbounded_string;
+  shaderType_type : identifier;
+  maxLength_val  : unbounded_string;
+  maxLength_type : identifier;
+  length_val  : unbounded_string;
+  length_type : identifier;
+  debugLog_val  : unbounded_string;
+  debugLog_type : identifier;
+begin
+  expect( pen_glgetdebuglogmesa_t );
+  ParseFirstNumericParameter( obj_val, obj_type, pen_glhandlearb_t ); -- obj : GLhandleARB
+  ParseNextNumericParameter( logType_val, logType_type, pen_glenum_t ); -- logType : GLenum
+  ParseNextNumericParameter( shaderType_val, shaderType_type, pen_glenum_t ); -- shaderType : GLenum
+  ParseNextNumericParameter( maxLength_val, maxLength_type, pen_glsizei_t ); -- maxLength : GLsizei
+  ParseNextNumericParameter( length_val, length_type, pen_glsizei_t ); -- length : GLsizei
+  ParseLastNumericParameter( debugLog_val, debugLog_type, pen_glchararb_t ); -- debugLog : GLcharARB
+  if isExecutingCommand then
+    begin
+      glGetDebugLogMESA( GLhandleARB( to_numeric( obj_val ) ), GLenum( to_numeric( logType_val ) ), GLenum( to_numeric( shaderType_val ) ), GLsizei( to_numeric( maxLength_val ) ), GLsizei( to_numeric( length_val ) ), GLcharARB( to_numeric( debugLog_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetDebugLogMESA;
+
+procedure ParsePenglGetDebugLogLengthMESA( result : out unbounded_string ) is
+  -- Syntax: --glGetDebugLogLengthMESA ( obj : GLhandleARB; logType : GLenum; shaderType : GLenum ) return GLsizei;
+  -- Source: bush_os.opengl.glGetDebugLogLengthMESA
+  obj_val  : unbounded_string;
+  obj_type : identifier;
+  logType_val  : unbounded_string;
+  logType_type : identifier;
+  shaderType_val  : unbounded_string;
+  shaderType_type : identifier;
+begin
+  expect( pen_glgetdebugloglengthmesa_t );
+  ParseFirstNumericParameter( obj_val, obj_type, pen_glhandlearb_t ); -- obj : GLhandleARB
+  ParseNextNumericParameter( logType_val, logType_type, pen_glenum_t ); -- logType : GLenum
+  ParseLastNumericParameter( shaderType_val, shaderType_type, pen_glenum_t ); -- shaderType : GLenum
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( glGetDebugLogLengthMESA( GLhandleARB( to_numeric( obj_val ) ), GLenum( to_numeric( logType_val ) ), GLenum( to_numeric( shaderType_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetDebugLogLengthMESA;
+
+procedure ParsePenglProgramCallbackMESA is
+  -- Syntax: --glProgramCallbackMESA( target : GLenum; callback : GLprogramcallbackMESA; data : System.address );
+  -- Source: bush_os.opengl.glProgramCallbackMESA
+  target_val  : unbounded_string;
+  target_type : identifier;
+  callback_val  : unbounded_string;
+  callback_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glprogramcallbackmesa_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( callback_val, callback_type, pen_glprogramcallbackmesa_t ); -- callback : GLprogramcallbackMESA
+  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  if isExecutingCommand then
+    begin
+      glProgramCallbackMESA( GLenum( to_numeric( target_val ) ), GLprogramcallbackMESA( to_numeric( callback_val ) ), System.address( to_numeric( data_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglProgramCallbackMESA;
+
+procedure ParsePenglGetProgramRegisterfvMESA is
+  -- Syntax: --glGetProgramRegisterfvMESA( target : GLenum; len : GLsizei; name : in out GLubyte; v : in out GLfloat );
+  -- Source: bush_os.opengl.glGetProgramRegisterfvMESA
+  target_val  : unbounded_string;
+  target_type : identifier;
+  len_val  : unbounded_string;
+  len_type : identifier;
+  name_val  : unbounded_string;
+  name_type : identifier;
+  v_val  : unbounded_string;
+  v_type : identifier;
+begin
+  expect( pen_glgetprogramregisterfvmesa_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( len_val, len_type, pen_glsizei_t ); -- len : GLsizei
+  ParseNextNumericParameter( name_val, name_type, pen_glubyte_t ); -- name : GLubyte
+  ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
+  if isExecutingCommand then
+    begin
+      glGetProgramRegisterfvMESA( GLenum( to_numeric( target_val ) ), GLsizei( to_numeric( len_val ) ), GLubyte( to_numeric( name_val ) ), GLfloat( to_numeric( v_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglGetProgramRegisterfvMESA;
+
+procedure ParsePenglFramebufferTextureLayerEXT is
+  -- Syntax: --glFramebufferTextureLayerEXT( target : GLenum; attachment : GLenum; texture : GLuint; level : GLint; layer : GLint );
+  -- Source: bush_os.opengl.glFramebufferTextureLayerEXT
+  target_val  : unbounded_string;
+  target_type : identifier;
+  attachment_val  : unbounded_string;
+  attachment_type : identifier;
+  texture_val  : unbounded_string;
+  texture_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  layer_val  : unbounded_string;
+  layer_type : identifier;
+begin
+  expect( pen_glframebuffertexturelayerext_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( attachment_val, attachment_type, pen_glenum_t ); -- attachment : GLenum
+  ParseNextNumericParameter( texture_val, texture_type, pen_gluint_t ); -- texture : GLuint
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseLastNumericParameter( layer_val, layer_type, pen_glint_t ); -- layer : GLint
+  if isExecutingCommand then
+    begin
+      glFramebufferTextureLayerEXT( GLenum( to_numeric( target_val ) ), GLenum( to_numeric( attachment_val ) ), GLuint( to_numeric( texture_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( layer_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglFramebufferTextureLayerEXT;
+
+procedure ParsePenglBlendEquationSeparateATI is
+  -- Syntax: --glBlendEquationSeparateATI( modeRGB, modeA : GLenum );
+  -- Source: bush_os.opengl.glBlendEquationSeparateATI
+  modeRGB_val  : unbounded_string;
+  modeRGB_type : identifier;
+  modeA_val  : unbounded_string;
+  modeA_type : identifier;
+begin
+  expect( pen_glblendequationseparateati_t );
+  ParseFirstNumericParameter( modeRGB_val, modeRGB_type, pen_glenum_t ); -- modeRGB : GLenum
+  ParseLastNumericParameter( modeA_val, modeA_type, pen_glenum_t ); -- modeA : GLenum
+  if isExecutingCommand then
+    begin
+      glBlendEquationSeparateATI( GLenum( to_numeric( modeRGB_val ) ), GLenum( to_numeric( modeA_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglBlendEquationSeparateATI;
+
+procedure ParsePenglEGLImageTargetTexture2DOES is
+  -- Syntax: --glEGLImageTargetTexture2DOES ( target : GLenum; image : GLeglImageOES );
+  -- Source: bush_os.opengl.glEGLImageTargetTexture2DOES
+  target_val  : unbounded_string;
+  target_type : identifier;
+  image_val  : unbounded_string;
+  image_type : identifier;
+begin
+  expect( pen_gleglimagetargettexture2does_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( image_val, image_type, pen_gleglimageoes_t ); -- image : GLeglImageOES
+  if isExecutingCommand then
+    begin
+      glEGLImageTargetTexture2DOES( GLenum( to_numeric( target_val ) ), GLeglImageOES( to_numeric( image_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEGLImageTargetTexture2DOES;
+
+procedure ParsePenglEGLImageTargetRenderbufferStorageOES is
+  -- Syntax: --glEGLImageTargetRenderbufferStorageOES (target : GLenum; image : GLeglImageOES );
+  -- Source: bush_os.opengl.glEGLImageTargetRenderbufferStorageOES
+  target_val  : unbounded_string;
+  target_type : identifier;
+  image_val  : unbounded_string;
+  image_type : identifier;
+begin
+  expect( pen_gleglimagetargetrenderbufferstorageoes_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseLastNumericParameter( image_val, image_type, pen_gleglimageoes_t ); -- image : GLeglImageOES
+  if isExecutingCommand then
+    begin
+      glEGLImageTargetRenderbufferStorageOES( GLenum( to_numeric( target_val ) ), GLeglImageOES( to_numeric( image_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglEGLImageTargetRenderbufferStorageOES;
+
+procedure ParsePengluBeginCurve is
+  -- Syntax: gluBeginCurve ( nurb : GLUnurbs_Ptr );
+  -- Source: bush_os.opengl.gluBeginCurve
+  nurb_val  : unbounded_string;
+  nurb_type : identifier;
+begin
+  expect( pen_glubegincurve_t );
+  ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  if isExecutingCommand then
+    begin
+      gluBeginCurve( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluBeginCurve;
+
+procedure ParsePengluBeginPolygon is
+  -- Syntax: gluBeginPolygon ( tess : GLUtessellator_Ptr);
+  -- Source: bush_os.opengl.gluBeginPolygon
+  tess_val  : unbounded_string;
+  tess_type : identifier;
+begin
+  expect( pen_glubeginpolygon_t );
+  ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  if isExecutingCommand then
+    begin
+      gluBeginPolygon( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluBeginPolygon;
+
+procedure ParsePengluBeginSurface is
+  -- Syntax: gluBeginSurface ( nurb : GLUnurbs_Ptr );
+  -- Source: bush_os.opengl.gluBeginSurface
+  nurb_val  : unbounded_string;
+  nurb_type : identifier;
+begin
+  expect( pen_glubeginsurface_t );
+  ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  if isExecutingCommand then
+    begin
+      gluBeginSurface( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluBeginSurface;
+
+procedure ParsePengluBeginTrim is
+  -- Syntax: gluBeginTrim ( nurb : GLUnurbs_Ptr);
+  -- Source: bush_os.opengl.gluBeginTrim
+  nurb_val  : unbounded_string;
+  nurb_type : identifier;
+begin
+  expect( pen_glubegintrim_t );
+  ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  if isExecutingCommand then
+    begin
+      gluBeginTrim( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluBeginTrim;
+
+procedure ParsePengluBuild1DMipmapLevels( result : out unbounded_string ) is
+  -- Syntax: gluBuild1DMipmapLevels ( target : GLenum; internalFormat : GLbuffers; width : GLsizei; format : GLbuffers; kind : GLtypes; level, base, max : GLint; data : System.address) return GLint;
+  -- Source: bush_os.opengl.gluBuild1DMipmapLevels
+  target_val  : unbounded_string;
+  target_type : identifier;
+  internalFormat_val  : unbounded_string;
+  internalFormat_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  base_val  : unbounded_string;
+  base_type : identifier;
+  max_val  : unbounded_string;
+  max_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glubuild1dmipmaplevels_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( base_val, base_type, pen_glint_t ); -- base : GLint
+  ParseNextNumericParameter( max_val, max_type, pen_glint_t ); -- max : GLint
+  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( gluBuild1DMipmapLevels( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), System.address( to_numeric( data_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluBuild1DMipmapLevels;
+
+procedure ParsePengluBuild1DMipmaps( result : out unbounded_string ) is
+  -- Syntax: gluBuild1DMipmaps ( target : GLenum; internalFormat : GLbuffers; width : GLsizei; format : GLbuffers; kind : GLtypes; data : System.address) return GLint;
+  -- Source: bush_os.opengl.gluBuild1DMipmaps
+  target_val  : unbounded_string;
+  target_type : identifier;
+  internalFormat_val  : unbounded_string;
+  internalFormat_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glubuild1dmipmaps_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( gluBuild1DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( data_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluBuild1DMipmaps;
+
+procedure ParsePengluBuild2DMipmapLevels( result : out unbounded_string ) is
+  -- Syntax: gluBuild2DMipmapLevels ( target : GLenum; internalFormat : GLbuffers; width, height : GLsizei; format : GLbuffers; kind : GLtypes; level, base, max : GLint; data : System.address) return GLint;
+  -- Source: bush_os.opengl.gluBuild2DMipmapLevels
+  target_val  : unbounded_string;
+  target_type : identifier;
+  internalFormat_val  : unbounded_string;
+  internalFormat_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  base_val  : unbounded_string;
+  base_type : identifier;
+  max_val  : unbounded_string;
+  max_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glubuild2dmipmaplevels_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( base_val, base_type, pen_glint_t ); -- base : GLint
+  ParseNextNumericParameter( max_val, max_type, pen_glint_t ); -- max : GLint
+  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( gluBuild2DMipmapLevels( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), System.address( to_numeric( data_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluBuild2DMipmapLevels;
+
+procedure ParsePengluBuild2DMipmaps( result : out unbounded_string ) is
+  -- Syntax: gluBuild2DMipmaps ( target : GLenum; internalFormat : GLbuffers; width, height : GLsizei; format : GLbuffers; kind : GLtypes; data : System.address) return GLint;
+  -- Source: bush_os.opengl.gluBuild2DMipmaps
+  target_val  : unbounded_string;
+  target_type : identifier;
+  internalFormat_val  : unbounded_string;
+  internalFormat_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glubuild2dmipmaps_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( gluBuild2DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( data_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluBuild2DMipmaps;
+
+procedure ParsePengluBuild3DMipmapLevels( result : out unbounded_string ) is
+  -- Syntax: gluBuild3DMipmapLevels ( taraget : GLenum; internalFormat : GLbuffers; width, height, depth : GLsizei; format : GLbuffers; kind : GLtypes; level, base, max : GLint; data : System.address) return GLint;
+  -- Source: bush_os.opengl.gluBuild3DMipmapLevels
+  taraget_val  : unbounded_string;
+  taraget_type : identifier;
+  internalFormat_val  : unbounded_string;
+  internalFormat_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  depth_val  : unbounded_string;
+  depth_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  level_val  : unbounded_string;
+  level_type : identifier;
+  base_val  : unbounded_string;
+  base_type : identifier;
+  max_val  : unbounded_string;
+  max_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glubuild3dmipmaplevels_t );
+  ParseFirstNumericParameter( taraget_val, taraget_type, pen_glenum_t ); -- taraget : GLenum
+  ParseNextNumericParameter( internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( depth_val, depth_type, pen_glsizei_t ); -- depth : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
+  ParseNextNumericParameter( base_val, base_type, pen_glint_t ); -- base : GLint
+  ParseNextNumericParameter( max_val, max_type, pen_glint_t ); -- max : GLint
+  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( gluBuild3DMipmapLevels( GLenum( to_numeric( taraget_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), System.address( to_numeric( data_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluBuild3DMipmapLevels;
+
+procedure ParsePengluBuild3DMipmaps( result : out unbounded_string ) is
+  -- Syntax: gluBuild3DMipmaps ( target : GLenum; internalFormat : GLbuffers; width, height, depth : GLsizei; format : GLbuffers; kind : GLtypes; data : System.address ) return GLint;
+  -- Source: bush_os.opengl.gluBuild3DMipmaps
+  target_val  : unbounded_string;
+  target_type : identifier;
+  internalFormat_val  : unbounded_string;
+  internalFormat_type : identifier;
+  width_val  : unbounded_string;
+  width_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  depth_val  : unbounded_string;
+  depth_type : identifier;
+  format_val  : unbounded_string;
+  format_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glubuild3dmipmaps_t );
+  ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
+  ParseNextNumericParameter( internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
+  ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
+  ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
+  ParseNextNumericParameter( depth_val, depth_type, pen_glsizei_t ); -- depth : GLsizei
+  ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
+  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( gluBuild3DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( data_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluBuild3DMipmaps;
+
+procedure ParsePengluCheckExtension( result : out unbounded_string ) is
+  -- Syntax: gluCheckExtension ( extName, extString : char_array) return GLboolean;
+  -- Source: bush_os.opengl.gluCheckExtension
+  extName_val  : unbounded_string;
+  extName_type : identifier;
+  extString_val  : unbounded_string;
+  extString_type : identifier;
+begin
+  expect( pen_glucheckextension_t );
+  ParseFirstNumericParameter( extName_val, extName_type, pen_char_array_t ); -- extName : char_array
+  ParseLastNumericParameter( extString_val, extString_type, pen_char_array_t ); -- extString : char_array
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( gluCheckExtension( char_array( to_numeric( extName_val ) ), char_array( to_numeric( extString_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluCheckExtension;
+
+procedure ParsePengluCylinder is
+  -- Syntax: gluCylinder (quad : GLUquadratic_Ptr; base, top, height : GLdouble; slices : GLint; stacks : GLint);
+  -- Source: bush_os.opengl.gluCylinder
+  quad_val  : unbounded_string;
+  quad_type : identifier;
+  base_val  : unbounded_string;
+  base_type : identifier;
+  top_val  : unbounded_string;
+  top_type : identifier;
+  height_val  : unbounded_string;
+  height_type : identifier;
+  slices_val  : unbounded_string;
+  slices_type : identifier;
+  stacks_val  : unbounded_string;
+  stacks_type : identifier;
+begin
+  expect( pen_glucylinder_t );
+  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  ParseNextNumericParameter( base_val, base_type, pen_gldouble_t ); -- base : GLdouble
+  ParseNextNumericParameter( top_val, top_type, pen_gldouble_t ); -- top : GLdouble
+  ParseNextNumericParameter( height_val, height_type, pen_gldouble_t ); -- height : GLdouble
+  ParseNextNumericParameter( slices_val, slices_type, pen_glint_t ); -- slices : GLint
+  ParseLastNumericParameter( stacks_val, stacks_type, pen_glint_t ); -- stacks : GLint
+  if isExecutingCommand then
+    begin
+      gluCylinder( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLdouble( to_numeric( base_val ) ), GLdouble( to_numeric( top_val ) ), GLdouble( to_numeric( height_val ) ), GLint( to_numeric( slices_val ) ), GLint( to_numeric( stacks_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluCylinder;
+
+procedure ParsePengluDeleteNurbsRenderer is
+  -- Syntax: gluDeleteNurbsRenderer ( nurb : GLUnurbs_Ptr );
+  -- Source: bush_os.opengl.gluDeleteNurbsRenderer
+  nurb_val  : unbounded_string;
+  nurb_type : identifier;
+begin
+  expect( pen_gludeletenurbsrenderer_t );
+  ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  if isExecutingCommand then
+    begin
+      gluDeleteNurbsRenderer( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluDeleteNurbsRenderer;
+
+procedure ParsePengluDeleteQuadric is
+  -- Syntax: gluDeleteQuadric ( quad : GLUquadratic_Ptr );
+  -- Source: bush_os.opengl.gluDeleteQuadric
+  quad_val  : unbounded_string;
+  quad_type : identifier;
+begin
+  expect( pen_gludeletequadric_t );
+  ParseSingleNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  if isExecutingCommand then
+    begin
+      gluDeleteQuadric( GLUquadratic_Ptr( to_numeric( quad_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluDeleteQuadric;
+
+procedure ParsePengluDeleteTess is
+  -- Syntax: gluDeleteTess ( tess : GLUtessellator_Ptr );
+  -- Source: bush_os.opengl.gluDeleteTess
+  tess_val  : unbounded_string;
+  tess_type : identifier;
+begin
+  expect( pen_gludeletetess_t );
+  ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  if isExecutingCommand then
+    begin
+      gluDeleteTess( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluDeleteTess;
+
+procedure ParsePengluDisk is
+  -- Syntax: gluDisk ( quad : GLUquadratic_Ptr; inner, outer : GLdouble; slices : GLint; loops : GLint );
+  -- Source: bush_os.opengl.gluDisk
+  quad_val  : unbounded_string;
+  quad_type : identifier;
+  inner_val  : unbounded_string;
+  inner_type : identifier;
+  outer_val  : unbounded_string;
+  outer_type : identifier;
+  slices_val  : unbounded_string;
+  slices_type : identifier;
+  loops_val  : unbounded_string;
+  loops_type : identifier;
+begin
+  expect( pen_gludisk_t );
+  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  ParseNextNumericParameter( inner_val, inner_type, pen_gldouble_t ); -- inner : GLdouble
+  ParseNextNumericParameter( outer_val, outer_type, pen_gldouble_t ); -- outer : GLdouble
+  ParseNextNumericParameter( slices_val, slices_type, pen_glint_t ); -- slices : GLint
+  ParseLastNumericParameter( loops_val, loops_type, pen_glint_t ); -- loops : GLint
+  if isExecutingCommand then
+    begin
+      gluDisk( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLdouble( to_numeric( inner_val ) ), GLdouble( to_numeric( outer_val ) ), GLint( to_numeric( slices_val ) ), GLint( to_numeric( loops_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluDisk;
+
+procedure ParsePengluEndCurve is
+  -- Syntax: gluEndCurve ( nurb : GLUnurbs_Ptr );
+  -- Source: bush_os.opengl.gluEndCurve
+  nurb_val  : unbounded_string;
+  nurb_type : identifier;
+begin
+  expect( pen_gluendcurve_t );
+  ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  if isExecutingCommand then
+    begin
+      gluEndCurve( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluEndCurve;
+
+procedure ParsePengluEndPolygon is
+  -- Syntax: gluEndPolygon ( tess : GLUtessellator_Ptr );
+  -- Source: bush_os.opengl.gluEndPolygon
+  tess_val  : unbounded_string;
+  tess_type : identifier;
+begin
+  expect( pen_gluendpolygon_t );
+  ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  if isExecutingCommand then
+    begin
+      gluEndPolygon( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluEndPolygon;
+
+procedure ParsePengluEndSurface is
+  -- Syntax: gluEndSurface ( nurb : GLUnurbs_Ptr );
+  -- Source: bush_os.opengl.gluEndSurface
+  nurb_val  : unbounded_string;
+  nurb_type : identifier;
+begin
+  expect( pen_gluendsurface_t );
+  ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  if isExecutingCommand then
+    begin
+      gluEndSurface( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluEndSurface;
+
+procedure ParsePengluEndTrim is
+  -- Syntax: gluEndTrim ( nurb : GLUnurbs_Ptr );
+  -- Source: bush_os.opengl.gluEndTrim
+  nurb_val  : unbounded_string;
+  nurb_type : identifier;
+begin
+  expect( pen_gluendtrim_t );
+  ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  if isExecutingCommand then
+    begin
+      gluEndTrim( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluEndTrim;
+
+procedure ParsePengluErrorString( result : out unbounded_string ) is
+  -- Syntax: gluErrorString ( error : GLenum ) return char_array_ptr;
+  -- Source: bush_os.opengl.gluErrorString
+  error_val  : unbounded_string;
+  error_type : identifier;
+begin
+  expect( pen_gluerrorstring_t );
+  ParseSingleNumericParameter( error_val, error_type, pen_glenum_t ); -- error : GLenum
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( gluErrorString( GLenum( to_numeric( error_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluErrorString;
+
+procedure ParsePengluGetNurbsProperty is
+  -- Syntax: gluGetNurbsProperty ( nurb : GLUnurbs_Ptr; property : GLUnurbsproperties; data : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.gluGetNurbsProperty
+  nurb_val  : unbounded_string;
+  nurb_type : identifier;
+  property_val  : unbounded_string;
+  property_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glugetnurbsproperty_t );
+  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  ParseNextNumericParameter( property_val, property_type, pen_glunurbsproperties_t ); -- property : GLUnurbsproperties
+  ParseLastNumericParameter( data_val, data_type, pen_gl_float_array_ptr_t ); -- data : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      gluGetNurbsProperty( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLUnurbsproperties( to_numeric( property_val ) ), GL_Float_Array_Ptr( to_numeric( data_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluGetNurbsProperty;
+
+procedure ParsePengluGetString( result : out unbounded_string ) is
+  -- Syntax: gluGetString ( name : GLenum ) return char_array_ptr;
+  -- Source: bush_os.opengl.gluGetString
+  name_val  : unbounded_string;
+  name_type : identifier;
+begin
+  expect( pen_glugetstring_t );
+  ParseSingleNumericParameter( name_val, name_type, pen_glenum_t ); -- name : GLenum
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( gluGetString( GLenum( to_numeric( name_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluGetString;
+
+procedure ParsePengluGetTessProperty is
+  -- Syntax: gluGetTessProperty (tess : GLUtessellator_Ptr; which : GLUtessproperties; data : GL_Float_Array_Ptr );
+  -- Source: bush_os.opengl.gluGetTessProperty
+  tess_val  : unbounded_string;
+  tess_type : identifier;
+  which_val  : unbounded_string;
+  which_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glugettessproperty_t );
+  ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  ParseNextNumericParameter( which_val, which_type, pen_glutessproperties_t ); -- which : GLUtessproperties
+  ParseLastNumericParameter( data_val, data_type, pen_gl_float_array_ptr_t ); -- data : GL_Float_Array_Ptr
+  if isExecutingCommand then
+    begin
+      gluGetTessProperty( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLUtessproperties( to_numeric( which_val ) ), GL_Float_Array_Ptr( to_numeric( data_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluGetTessProperty;
+
+procedure ParsePengluLoadSamplingMatrices is
+  -- Syntax: gluLoadSamplingMatrices ( nurb : GLUnurbs_Ptr; model : GL_Float_Array_Ptr; perspective : GL_Float_Array_Ptr; view : GL_Int_Array_Ptr );
+  -- Source: bush_os.opengl.gluLoadSamplingMatrices
+  nurb_val  : unbounded_string;
+  nurb_type : identifier;
+  model_val  : unbounded_string;
+  model_type : identifier;
+  perspective_val  : unbounded_string;
+  perspective_type : identifier;
+  view_val  : unbounded_string;
+  view_type : identifier;
+begin
+  expect( pen_gluloadsamplingmatrices_t );
+  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  ParseNextNumericParameter( model_val, model_type, pen_gl_float_array_ptr_t ); -- model : GL_Float_Array_Ptr
+  ParseNextNumericParameter( perspective_val, perspective_type, pen_gl_float_array_ptr_t ); -- perspective : GL_Float_Array_Ptr
+  ParseLastNumericParameter( view_val, view_type, pen_gl_int_array_ptr_t ); -- view : GL_Int_Array_Ptr
+  if isExecutingCommand then
+    begin
+      gluLoadSamplingMatrices( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GL_Float_Array_Ptr( to_numeric( model_val ) ), GL_Float_Array_Ptr( to_numeric( perspective_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluLoadSamplingMatrices;
+
+procedure ParsePengluLookAt is
+  -- Syntax: gluLookAt ( eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ : GLdouble );
+  -- Source: bush_os.opengl.gluLookAt
+  eyeX_val  : unbounded_string;
+  eyeX_type : identifier;
+  eyeY_val  : unbounded_string;
+  eyeY_type : identifier;
+  eyeZ_val  : unbounded_string;
+  eyeZ_type : identifier;
+  centerX_val  : unbounded_string;
+  centerX_type : identifier;
+  centerY_val  : unbounded_string;
+  centerY_type : identifier;
+  centerZ_val  : unbounded_string;
+  centerZ_type : identifier;
+  upX_val  : unbounded_string;
+  upX_type : identifier;
+  upY_val  : unbounded_string;
+  upY_type : identifier;
+  upZ_val  : unbounded_string;
+  upZ_type : identifier;
+begin
+  expect( pen_glulookat_t );
+  ParseFirstNumericParameter( eyeX_val, eyeX_type, pen_gldouble_t ); -- eyeX : GLdouble
+  ParseNextNumericParameter( eyeY_val, eyeY_type, pen_gldouble_t ); -- eyeY : GLdouble
+  ParseNextNumericParameter( eyeZ_val, eyeZ_type, pen_gldouble_t ); -- eyeZ : GLdouble
+  ParseNextNumericParameter( centerX_val, centerX_type, pen_gldouble_t ); -- centerX : GLdouble
+  ParseNextNumericParameter( centerY_val, centerY_type, pen_gldouble_t ); -- centerY : GLdouble
+  ParseNextNumericParameter( centerZ_val, centerZ_type, pen_gldouble_t ); -- centerZ : GLdouble
+  ParseNextNumericParameter( upX_val, upX_type, pen_gldouble_t ); -- upX : GLdouble
+  ParseNextNumericParameter( upY_val, upY_type, pen_gldouble_t ); -- upY : GLdouble
+  ParseLastNumericParameter( upZ_val, upZ_type, pen_gldouble_t ); -- upZ : GLdouble
+  if isExecutingCommand then
+    begin
+      gluLookAt( GLdouble( to_numeric( eyeX_val ) ), GLdouble( to_numeric( eyeY_val ) ), GLdouble( to_numeric( eyeZ_val ) ), GLdouble( to_numeric( centerX_val ) ), GLdouble( to_numeric( centerY_val ) ), GLdouble( to_numeric( centerZ_val ) ), GLdouble( to_numeric( upX_val ) ), GLdouble( to_numeric( upY_val ) ), GLdouble( to_numeric( upZ_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluLookAt;
+
+procedure ParsePengluNewNurbsRenderer( result : out unbounded_string ) is
+  -- Syntax: gluNewNurbsRenderer return GLUnurbs_Ptr;
+  -- Source: bush_os.opengl.gluNewNurbsRenderer
+begin
+  expect( pen_glunewnurbsrenderer_t );
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( gluNewNurbsRenderer ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluNewNurbsRenderer;
+
+procedure ParsePengluNewQuadric( result : out unbounded_string ) is
+  -- Syntax: gluNewQuadric return GLUquadratic_Ptr;
+  -- Source: bush_os.opengl.gluNewQuadric
+begin
+  expect( pen_glunewquadric_t );
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( gluNewQuadric ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluNewQuadric;
+
+procedure ParsePengluNewTess( result : out unbounded_string ) is
+  -- Syntax: gluNewTess return GLUtessellator_Ptr;
+  -- Source: bush_os.opengl.gluNewTess
+begin
+  expect( pen_glunewtess_t );
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( gluNewTess ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluNewTess;
+
+procedure ParsePengluNextContour is
+  -- Syntax: gluNextContour ( tess : GLUtessellator_Ptr; kind : GLUtesscontour );
+  -- Source: bush_os.opengl.gluNextContour
+  tess_val  : unbounded_string;
+  tess_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+begin
+  expect( pen_glunextcontour_t );
+  ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  ParseLastNumericParameter( kind_val, kind_type, pen_glutesscontour_t ); -- kind : GLUtesscontour
+  if isExecutingCommand then
+    begin
+      gluNextContour( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLUtesscontour( to_numeric( kind_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluNextContour;
+
+procedure ParsePengluNurbsCallback is
+  -- Syntax: gluNurbsCallback ( nurb : GLUnurbs_Ptr; which : GLUnurbscallbacks; CallBackFunc : System.address );
+  -- Source: bush_os.opengl.gluNurbsCallback
+  nurb_val  : unbounded_string;
+  nurb_type : identifier;
+  which_val  : unbounded_string;
+  which_type : identifier;
+  CallBackFunc_val  : unbounded_string;
+  CallBackFunc_type : identifier;
+begin
+  expect( pen_glunurbscallback_t );
+  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  ParseNextNumericParameter( which_val, which_type, pen_glunurbscallbacks_t ); -- which : GLUnurbscallbacks
+  ParseLastNumericParameter( CallBackFunc_val, CallBackFunc_type, pen_system.address_t ); -- CallBackFunc : System.address
+  if isExecutingCommand then
+    begin
+      gluNurbsCallback( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLUnurbscallbacks( to_numeric( which_val ) ), System.address( to_numeric( CallBackFunc_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluNurbsCallback;
+
+procedure ParsePengluNurbsCallbackData is
+  -- Syntax: gluNurbsCallbackData ( nurb : GLUnurbs_Ptr; userData : System.address );
+  -- Source: bush_os.opengl.gluNurbsCallbackData
+  nurb_val  : unbounded_string;
+  nurb_type : identifier;
+  userData_val  : unbounded_string;
+  userData_type : identifier;
+begin
+  expect( pen_glunurbscallbackdata_t );
+  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  ParseLastNumericParameter( userData_val, userData_type, pen_system.address_t ); -- userData : System.address
+  if isExecutingCommand then
+    begin
+      gluNurbsCallbackData( GLUnurbs_Ptr( to_numeric( nurb_val ) ), System.address( to_numeric( userData_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluNurbsCallbackData;
+
+procedure ParsePengluNurbsCallbackDataEXT is
+  -- Syntax: gluNurbsCallbackDataEXT ( nurb : GLUnurbs_Ptr; userData : System.address );
+  -- Source: bush_os.opengl.gluNurbsCallbackDataEXT
+  nurb_val  : unbounded_string;
+  nurb_type : identifier;
+  userData_val  : unbounded_string;
+  userData_type : identifier;
+begin
+  expect( pen_glunurbscallbackdataext_t );
+  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  ParseLastNumericParameter( userData_val, userData_type, pen_system.address_t ); -- userData : System.address
+  if isExecutingCommand then
+    begin
+      gluNurbsCallbackDataEXT( GLUnurbs_Ptr( to_numeric( nurb_val ) ), System.address( to_numeric( userData_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluNurbsCallbackDataEXT;
+
+procedure ParsePengluNurbsCurve is
+  -- Syntax: gluNurbsCurve ( nurb : GLUnurbs_Ptr; knotCount : GLint; knots : GL_Float_Array_Ptr; stride : GLint; control : GL_Float_Array_Ptr; order : GLint; kind : GLevaluators );
+  -- Source: bush_os.opengl.gluNurbsCurve
+  nurb_val  : unbounded_string;
+  nurb_type : identifier;
+  knotCount_val  : unbounded_string;
+  knotCount_type : identifier;
+  knots_val  : unbounded_string;
+  knots_type : identifier;
+  stride_val  : unbounded_string;
+  stride_type : identifier;
+  control_val  : unbounded_string;
+  control_type : identifier;
+  order_val  : unbounded_string;
+  order_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+begin
+  expect( pen_glunurbscurve_t );
+  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  ParseNextNumericParameter( knotCount_val, knotCount_type, pen_glint_t ); -- knotCount : GLint
+  ParseNextNumericParameter( knots_val, knots_type, pen_gl_float_array_ptr_t ); -- knots : GL_Float_Array_Ptr
+  ParseNextNumericParameter( stride_val, stride_type, pen_glint_t ); -- stride : GLint
+  ParseNextNumericParameter( control_val, control_type, pen_gl_float_array_ptr_t ); -- control : GL_Float_Array_Ptr
+  ParseNextNumericParameter( order_val, order_type, pen_glint_t ); -- order : GLint
+  ParseLastNumericParameter( kind_val, kind_type, pen_glevaluators_t ); -- kind : GLevaluators
+  if isExecutingCommand then
+    begin
+      gluNurbsCurve( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLint( to_numeric( knotCount_val ) ), GL_Float_Array_Ptr( to_numeric( knots_val ) ), GLint( to_numeric( stride_val ) ), GL_Float_Array_Ptr( to_numeric( control_val ) ), GLint( to_numeric( order_val ) ), GLevaluators( to_numeric( kind_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluNurbsCurve;
+
+procedure ParsePengluNurbsProperty is
+  -- Syntax: gluNurbsProperty ( nurb : GLUnurbs_Ptr; property : GLUnurbsproperties; value : GLfloat );
+  -- Source: bush_os.opengl.gluNurbsProperty
+  nurb_val  : unbounded_string;
+  nurb_type : identifier;
+  property_val  : unbounded_string;
+  property_type : identifier;
+  value_val  : unbounded_string;
+  value_type : identifier;
+begin
+  expect( pen_glunurbsproperty_t );
+  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  ParseNextNumericParameter( property_val, property_type, pen_glunurbsproperties_t ); -- property : GLUnurbsproperties
+  ParseLastNumericParameter( value_val, value_type, pen_glfloat_t ); -- value : GLfloat
+  if isExecutingCommand then
+    begin
+      gluNurbsProperty( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLUnurbsproperties( to_numeric( property_val ) ), GLfloat( to_numeric( value_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluNurbsProperty;
+
+procedure ParsePengluNurbsSurface is
+  -- Syntax: gluNurbsSurface ( nurb : GLUnurbs_Ptr; sKnotCount : GLint; sKnots : GL_Float_Array_Ptr; tKnotCount : GLint; tKnots : GL_Float_Array_Ptr; sStride, tStride : GLint; control : GL_Float_Array_Ptr; sOrder, tOrder : GLint; kind : GLenum );
+  -- Source: bush_os.opengl.gluNurbsSurface
+  nurb_val  : unbounded_string;
+  nurb_type : identifier;
+  sKnotCount_val  : unbounded_string;
+  sKnotCount_type : identifier;
+  sKnots_val  : unbounded_string;
+  sKnots_type : identifier;
+  tKnotCount_val  : unbounded_string;
+  tKnotCount_type : identifier;
+  tKnots_val  : unbounded_string;
+  tKnots_type : identifier;
+  sStride_val  : unbounded_string;
+  sStride_type : identifier;
+  tStride_val  : unbounded_string;
+  tStride_type : identifier;
+  control_val  : unbounded_string;
+  control_type : identifier;
+  sOrder_val  : unbounded_string;
+  sOrder_type : identifier;
+  tOrder_val  : unbounded_string;
+  tOrder_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+begin
+  expect( pen_glunurbssurface_t );
+  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  ParseNextNumericParameter( sKnotCount_val, sKnotCount_type, pen_glint_t ); -- sKnotCount : GLint
+  ParseNextNumericParameter( sKnots_val, sKnots_type, pen_gl_float_array_ptr_t ); -- sKnots : GL_Float_Array_Ptr
+  ParseNextNumericParameter( tKnotCount_val, tKnotCount_type, pen_glint_t ); -- tKnotCount : GLint
+  ParseNextNumericParameter( tKnots_val, tKnots_type, pen_gl_float_array_ptr_t ); -- tKnots : GL_Float_Array_Ptr
+  ParseNextNumericParameter( sStride_val, sStride_type, pen_glint_t ); -- sStride : GLint
+  ParseNextNumericParameter( tStride_val, tStride_type, pen_glint_t ); -- tStride : GLint
+  ParseNextNumericParameter( control_val, control_type, pen_gl_float_array_ptr_t ); -- control : GL_Float_Array_Ptr
+  ParseNextNumericParameter( sOrder_val, sOrder_type, pen_glint_t ); -- sOrder : GLint
+  ParseNextNumericParameter( tOrder_val, tOrder_type, pen_glint_t ); -- tOrder : GLint
+  ParseLastNumericParameter( kind_val, kind_type, pen_glenum_t ); -- kind : GLenum
+  if isExecutingCommand then
+    begin
+      gluNurbsSurface( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLint( to_numeric( sKnotCount_val ) ), GL_Float_Array_Ptr( to_numeric( sKnots_val ) ), GLint( to_numeric( tKnotCount_val ) ), GL_Float_Array_Ptr( to_numeric( tKnots_val ) ), GLint( to_numeric( sStride_val ) ), GLint( to_numeric( tStride_val ) ), GL_Float_Array_Ptr( to_numeric( control_val ) ), GLint( to_numeric( sOrder_val ) ), GLint( to_numeric( tOrder_val ) ), GLenum( to_numeric( kind_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluNurbsSurface;
+
+procedure ParsePengluOrtho2D is
+  -- Syntax: gluOrtho2D ( left, right, bottom, top : GLdouble );
+  -- Source: bush_os.opengl.gluOrtho2D
+  left_val  : unbounded_string;
+  left_type : identifier;
+  right_val  : unbounded_string;
+  right_type : identifier;
+  bottom_val  : unbounded_string;
+  bottom_type : identifier;
+  top_val  : unbounded_string;
+  top_type : identifier;
+begin
+  expect( pen_gluortho2d_t );
+  ParseFirstNumericParameter( left_val, left_type, pen_gldouble_t ); -- left : GLdouble
+  ParseNextNumericParameter( right_val, right_type, pen_gldouble_t ); -- right : GLdouble
+  ParseNextNumericParameter( bottom_val, bottom_type, pen_gldouble_t ); -- bottom : GLdouble
+  ParseLastNumericParameter( top_val, top_type, pen_gldouble_t ); -- top : GLdouble
+  if isExecutingCommand then
+    begin
+      gluOrtho2D( GLdouble( to_numeric( left_val ) ), GLdouble( to_numeric( right_val ) ), GLdouble( to_numeric( bottom_val ) ), GLdouble( to_numeric( top_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluOrtho2D;
+
+procedure ParsePengluPartialDisk is
+  -- Syntax: gluPartialDisk ( quad : GLUquadratic_Ptr; inner, outer : GLdouble; slices : GLint; loops : GLint; start : GLdouble; sweep : GLdouble );
+  -- Source: bush_os.opengl.gluPartialDisk
+  quad_val  : unbounded_string;
+  quad_type : identifier;
+  inner_val  : unbounded_string;
+  inner_type : identifier;
+  outer_val  : unbounded_string;
+  outer_type : identifier;
+  slices_val  : unbounded_string;
+  slices_type : identifier;
+  loops_val  : unbounded_string;
+  loops_type : identifier;
+  start_val  : unbounded_string;
+  start_type : identifier;
+  sweep_val  : unbounded_string;
+  sweep_type : identifier;
+begin
+  expect( pen_glupartialdisk_t );
+  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  ParseNextNumericParameter( inner_val, inner_type, pen_gldouble_t ); -- inner : GLdouble
+  ParseNextNumericParameter( outer_val, outer_type, pen_gldouble_t ); -- outer : GLdouble
+  ParseNextNumericParameter( slices_val, slices_type, pen_glint_t ); -- slices : GLint
+  ParseNextNumericParameter( loops_val, loops_type, pen_glint_t ); -- loops : GLint
+  ParseNextNumericParameter( start_val, start_type, pen_gldouble_t ); -- start : GLdouble
+  ParseLastNumericParameter( sweep_val, sweep_type, pen_gldouble_t ); -- sweep : GLdouble
+  if isExecutingCommand then
+    begin
+      gluPartialDisk( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLdouble( to_numeric( inner_val ) ), GLdouble( to_numeric( outer_val ) ), GLint( to_numeric( slices_val ) ), GLint( to_numeric( loops_val ) ), GLdouble( to_numeric( start_val ) ), GLdouble( to_numeric( sweep_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluPartialDisk;
+
+procedure ParsePengluPerspective is
+  -- Syntax: gluPerspective ( fovy, aspect, zNear, zFar : GLdouble );
+  -- Source: bush_os.opengl.gluPerspective
+  fovy_val  : unbounded_string;
+  fovy_type : identifier;
+  aspect_val  : unbounded_string;
+  aspect_type : identifier;
+  zNear_val  : unbounded_string;
+  zNear_type : identifier;
+  zFar_val  : unbounded_string;
+  zFar_type : identifier;
+begin
+  expect( pen_gluperspective_t );
+  ParseFirstNumericParameter( fovy_val, fovy_type, pen_gldouble_t ); -- fovy : GLdouble
+  ParseNextNumericParameter( aspect_val, aspect_type, pen_gldouble_t ); -- aspect : GLdouble
+  ParseNextNumericParameter( zNear_val, zNear_type, pen_gldouble_t ); -- zNear : GLdouble
+  ParseLastNumericParameter( zFar_val, zFar_type, pen_gldouble_t ); -- zFar : GLdouble
+  if isExecutingCommand then
+    begin
+      gluPerspective( GLdouble( to_numeric( fovy_val ) ), GLdouble( to_numeric( aspect_val ) ), GLdouble( to_numeric( zNear_val ) ), GLdouble( to_numeric( zFar_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluPerspective;
+
+procedure ParsePengluPickMatrix is
+  -- Syntax: gluPickMatrix ( x, y : GLdouble; delX, delY : GLdouble; viewport : in out GLint );
+  -- Source: bush_os.opengl.gluPickMatrix
+  x_val  : unbounded_string;
+  x_type : identifier;
+  y_val  : unbounded_string;
+  y_type : identifier;
+  delX_val  : unbounded_string;
+  delX_type : identifier;
+  delY_val  : unbounded_string;
+  delY_type : identifier;
+  viewport_val  : unbounded_string;
+  viewport_type : identifier;
+begin
+  expect( pen_glupickmatrix_t );
+  ParseFirstNumericParameter( x_val, x_type, pen_gldouble_t ); -- x : GLdouble
+  ParseNextNumericParameter( y_val, y_type, pen_gldouble_t ); -- y : GLdouble
+  ParseNextNumericParameter( delX_val, delX_type, pen_gldouble_t ); -- delX : GLdouble
+  ParseNextNumericParameter( delY_val, delY_type, pen_gldouble_t ); -- delY : GLdouble
+  ParseLastNumericParameter( viewport_val, viewport_type, pen_glint_t ); -- viewport : GLint
+  if isExecutingCommand then
+    begin
+      gluPickMatrix( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( delX_val ) ), GLdouble( to_numeric( delY_val ) ), GLint( to_numeric( viewport_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluPickMatrix;
+
+procedure ParsePengluProject( result : out unbounded_string ) is
+  -- Syntax: gluProject ( objX, objY, objZ : GLdouble; model, proj : GL_Double_Array_Ptr; view : GL_Int_Array_Ptr; winX, winY, winZ : GL_Double_Array_Ptr ) return GLint;
+  -- Source: bush_os.opengl.gluProject
+  objX_val  : unbounded_string;
+  objX_type : identifier;
+  objY_val  : unbounded_string;
+  objY_type : identifier;
+  objZ_val  : unbounded_string;
+  objZ_type : identifier;
+  model_val  : unbounded_string;
+  model_type : identifier;
+  proj_val  : unbounded_string;
+  proj_type : identifier;
+  view_val  : unbounded_string;
+  view_type : identifier;
+  winX_val  : unbounded_string;
+  winX_type : identifier;
+  winY_val  : unbounded_string;
+  winY_type : identifier;
+  winZ_val  : unbounded_string;
+  winZ_type : identifier;
+begin
+  expect( pen_gluproject_t );
+  ParseFirstNumericParameter( objX_val, objX_type, pen_gldouble_t ); -- objX : GLdouble
+  ParseNextNumericParameter( objY_val, objY_type, pen_gldouble_t ); -- objY : GLdouble
+  ParseNextNumericParameter( objZ_val, objZ_type, pen_gldouble_t ); -- objZ : GLdouble
+  ParseNextNumericParameter( model_val, model_type, pen_gl_double_array_ptr_t ); -- model : GL_Double_Array_Ptr
+  ParseNextNumericParameter( proj_val, proj_type, pen_gl_double_array_ptr_t ); -- proj : GL_Double_Array_Ptr
+  ParseNextNumericParameter( view_val, view_type, pen_gl_int_array_ptr_t ); -- view : GL_Int_Array_Ptr
+  ParseNextNumericParameter( winX_val, winX_type, pen_gl_double_array_ptr_t ); -- winX : GL_Double_Array_Ptr
+  ParseNextNumericParameter( winY_val, winY_type, pen_gl_double_array_ptr_t ); -- winY : GL_Double_Array_Ptr
+  ParseLastNumericParameter( winZ_val, winZ_type, pen_gl_double_array_ptr_t ); -- winZ : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( gluProject( GLdouble( to_numeric( objX_val ) ), GLdouble( to_numeric( objY_val ) ), GLdouble( to_numeric( objZ_val ) ), GL_Double_Array_Ptr( to_numeric( model_val ) ), GL_Double_Array_Ptr( to_numeric( proj_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ), GL_Double_Array_Ptr( to_numeric( winX_val ) ), GL_Double_Array_Ptr( to_numeric( winY_val ) ), GL_Double_Array_Ptr( to_numeric( winZ_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluProject;
+
+procedure ParsePengluPwlCurve is
+  -- Syntax: gluPwlCurve ( nurb : GLUnurbs_Ptr; count : GLint; data : GL_Float_Array_Ptr; stride : GLint; kind : GLevaluators );
+  -- Source: bush_os.opengl.gluPwlCurve
+  nurb_val  : unbounded_string;
+  nurb_type : identifier;
+  count_val  : unbounded_string;
+  count_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+  stride_val  : unbounded_string;
+  stride_type : identifier;
+  kind_val  : unbounded_string;
+  kind_type : identifier;
+begin
+  expect( pen_glupwlcurve_t );
+  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  ParseNextNumericParameter( count_val, count_type, pen_glint_t ); -- count : GLint
+  ParseNextNumericParameter( data_val, data_type, pen_gl_float_array_ptr_t ); -- data : GL_Float_Array_Ptr
+  ParseNextNumericParameter( stride_val, stride_type, pen_glint_t ); -- stride : GLint
+  ParseLastNumericParameter( kind_val, kind_type, pen_glevaluators_t ); -- kind : GLevaluators
+  if isExecutingCommand then
+    begin
+      gluPwlCurve( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLint( to_numeric( count_val ) ), GL_Float_Array_Ptr( to_numeric( data_val ) ), GLint( to_numeric( stride_val ) ), GLevaluators( to_numeric( kind_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluPwlCurve;
+
+procedure ParsePengluQuadricCallback is
+  -- Syntax: gluQuadricCallback ( quad : GLUquadratic_Ptr; which : GLUnurbscallbacks; CallBackFunc : System.address );
+  -- Source: bush_os.opengl.gluQuadricCallback
+  quad_val  : unbounded_string;
+  quad_type : identifier;
+  which_val  : unbounded_string;
+  which_type : identifier;
+  CallBackFunc_val  : unbounded_string;
+  CallBackFunc_type : identifier;
+begin
+  expect( pen_gluquadriccallback_t );
+  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  ParseNextNumericParameter( which_val, which_type, pen_glunurbscallbacks_t ); -- which : GLUnurbscallbacks
+  ParseLastNumericParameter( CallBackFunc_val, CallBackFunc_type, pen_system.address_t ); -- CallBackFunc : System.address
+  if isExecutingCommand then
+    begin
+      gluQuadricCallback( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLUnurbscallbacks( to_numeric( which_val ) ), System.address( to_numeric( CallBackFunc_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluQuadricCallback;
+
+procedure ParsePengluQuadricDrawStyle is
+  -- Syntax: gluQuadricDrawStyle ( quad : GLUquadratic_Ptr; draw : GLUquaddrawstyle );
+  -- Source: bush_os.opengl.gluQuadricDrawStyle
+  quad_val  : unbounded_string;
+  quad_type : identifier;
+  draw_val  : unbounded_string;
+  draw_type : identifier;
+begin
+  expect( pen_gluquadricdrawstyle_t );
+  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  ParseLastNumericParameter( draw_val, draw_type, pen_gluquaddrawstyle_t ); -- draw : GLUquaddrawstyle
+  if isExecutingCommand then
+    begin
+      gluQuadricDrawStyle( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLUquaddrawstyle( to_numeric( draw_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluQuadricDrawStyle;
+
+procedure ParsePengluQuadricNormals is
+  -- Syntax: gluQuadricNormals ( quad : GLUquadratic_Ptr; normal : GLUquadricnormal );
+  -- Source: bush_os.opengl.gluQuadricNormals
+  quad_val  : unbounded_string;
+  quad_type : identifier;
+  normal_val  : unbounded_string;
+  normal_type : identifier;
+begin
+  expect( pen_gluquadricnormals_t );
+  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  ParseLastNumericParameter( normal_val, normal_type, pen_gluquadricnormal_t ); -- normal : GLUquadricnormal
+  if isExecutingCommand then
+    begin
+      gluQuadricNormals( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLUquadricnormal( to_numeric( normal_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluQuadricNormals;
+
+procedure ParsePengluQuadricOrientation is
+  -- Syntax: gluQuadricOrientation ( quad : GLUquadratic_Ptr; orientation : GLUquadorientation );
+  -- Source: bush_os.opengl.gluQuadricOrientation
+  quad_val  : unbounded_string;
+  quad_type : identifier;
+  orientation_val  : unbounded_string;
+  orientation_type : identifier;
+begin
+  expect( pen_gluquadricorientation_t );
+  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  ParseLastNumericParameter( orientation_val, orientation_type, pen_gluquadorientation_t ); -- orientation : GLUquadorientation
+  if isExecutingCommand then
+    begin
+      gluQuadricOrientation( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLUquadorientation( to_numeric( orientation_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluQuadricOrientation;
+
+procedure ParsePengluQuadricTexture is
+  -- Syntax: gluQuadricTexture ( quad : GLUquadratic_Ptr; texture : GLboolean );
+  -- Source: bush_os.opengl.gluQuadricTexture
+  quad_val  : unbounded_string;
+  quad_type : identifier;
+  texture_val  : unbounded_string;
+  texture_type : identifier;
+begin
+  expect( pen_gluquadrictexture_t );
+  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  ParseLastNumericParameter( texture_val, texture_type, pen_glboolean_t ); -- texture : GLboolean
+  if isExecutingCommand then
+    begin
+      gluQuadricTexture( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLboolean( to_numeric( texture_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluQuadricTexture;
+
+procedure ParsePengluScaleImage( result : out unbounded_string ) is
+  -- Syntax: gluScaleImage ( format : GLbuffers; wIn, hIn : GLsizei; typeIn : GLtypes; dataIn : System.address; wOut, hOut : GLsizei; typeOut : GLtypes; dataOut : System.address ) return GLint;
+  -- Source: bush_os.opengl.gluScaleImage
+  format_val  : unbounded_string;
+  format_type : identifier;
+  wIn_val  : unbounded_string;
+  wIn_type : identifier;
+  hIn_val  : unbounded_string;
+  hIn_type : identifier;
+  typeIn_val  : unbounded_string;
+  typeIn_type : identifier;
+  dataIn_val  : unbounded_string;
+  dataIn_type : identifier;
+  wOut_val  : unbounded_string;
+  wOut_type : identifier;
+  hOut_val  : unbounded_string;
+  hOut_type : identifier;
+  typeOut_val  : unbounded_string;
+  typeOut_type : identifier;
+  dataOut_val  : unbounded_string;
+  dataOut_type : identifier;
+begin
+  expect( pen_gluscaleimage_t );
+  ParseFirstNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
+  ParseNextNumericParameter( wIn_val, wIn_type, pen_glsizei_t ); -- wIn : GLsizei
+  ParseNextNumericParameter( hIn_val, hIn_type, pen_glsizei_t ); -- hIn : GLsizei
+  ParseNextNumericParameter( typeIn_val, typeIn_type, pen_gltypes_t ); -- typeIn : GLtypes
+  ParseNextNumericParameter( dataIn_val, dataIn_type, pen_system.address_t ); -- dataIn : System.address
+  ParseNextNumericParameter( wOut_val, wOut_type, pen_glsizei_t ); -- wOut : GLsizei
+  ParseNextNumericParameter( hOut_val, hOut_type, pen_glsizei_t ); -- hOut : GLsizei
+  ParseNextNumericParameter( typeOut_val, typeOut_type, pen_gltypes_t ); -- typeOut : GLtypes
+  ParseLastNumericParameter( dataOut_val, dataOut_type, pen_system.address_t ); -- dataOut : System.address
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( gluScaleImage( GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( wIn_val ) ), GLsizei( to_numeric( hIn_val ) ), GLtypes( to_numeric( typeIn_val ) ), System.address( to_numeric( dataIn_val ) ), GLsizei( to_numeric( wOut_val ) ), GLsizei( to_numeric( hOut_val ) ), GLtypes( to_numeric( typeOut_val ) ), System.address( to_numeric( dataOut_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluScaleImage;
+
+procedure ParsePengluSphere is
+  -- Syntax: gluSphere ( quad : GLUquadratic_Ptr; radius : GLdouble; slices : GLint; stacks : GLint );
+  -- Source: bush_os.opengl.gluSphere
+  quad_val  : unbounded_string;
+  quad_type : identifier;
+  radius_val  : unbounded_string;
+  radius_type : identifier;
+  slices_val  : unbounded_string;
+  slices_type : identifier;
+  stacks_val  : unbounded_string;
+  stacks_type : identifier;
+begin
+  expect( pen_glusphere_t );
+  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  ParseNextNumericParameter( radius_val, radius_type, pen_gldouble_t ); -- radius : GLdouble
+  ParseNextNumericParameter( slices_val, slices_type, pen_glint_t ); -- slices : GLint
+  ParseLastNumericParameter( stacks_val, stacks_type, pen_glint_t ); -- stacks : GLint
+  if isExecutingCommand then
+    begin
+      gluSphere( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLdouble( to_numeric( radius_val ) ), GLint( to_numeric( slices_val ) ), GLint( to_numeric( stacks_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluSphere;
+
+procedure ParsePengluTessBeginContour is
+  -- Syntax: gluTessBeginContour ( tess : GLUtessellator_Ptr );
+  -- Source: bush_os.opengl.gluTessBeginContour
+  tess_val  : unbounded_string;
+  tess_type : identifier;
+begin
+  expect( pen_glutessbegincontour_t );
+  ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  if isExecutingCommand then
+    begin
+      gluTessBeginContour( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluTessBeginContour;
+
+procedure ParsePengluTessBeginPolygon is
+  -- Syntax: gluTessBeginPolygon ( tess : GLUtessellator_Ptr; data : System.address );
+  -- Source: bush_os.opengl.gluTessBeginPolygon
+  tess_val  : unbounded_string;
+  tess_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glutessbeginpolygon_t );
+  ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  if isExecutingCommand then
+    begin
+      gluTessBeginPolygon( GLUtessellator_Ptr( to_numeric( tess_val ) ), System.address( to_numeric( data_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluTessBeginPolygon;
+
+procedure ParsePengluTessCallback is
+  -- Syntax: gluTessCallback (tess : GLUtessellator_Ptr; which : GLUtesscallbacks; CallBackFunc : System.address );
+  -- Source: bush_os.opengl.gluTessCallback
+  tess_val  : unbounded_string;
+  tess_type : identifier;
+  which_val  : unbounded_string;
+  which_type : identifier;
+  CallBackFunc_val  : unbounded_string;
+  CallBackFunc_type : identifier;
+begin
+  expect( pen_glutesscallback_t );
+  ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  ParseNextNumericParameter( which_val, which_type, pen_glutesscallbacks_t ); -- which : GLUtesscallbacks
+  ParseLastNumericParameter( CallBackFunc_val, CallBackFunc_type, pen_system.address_t ); -- CallBackFunc : System.address
+  if isExecutingCommand then
+    begin
+      gluTessCallback( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLUtesscallbacks( to_numeric( which_val ) ), System.address( to_numeric( CallBackFunc_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluTessCallback;
+
+procedure ParsePengluTessEndContour is
+  -- Syntax: gluTessEndContour ( tess : GLUtessellator_Ptr );
+  -- Source: bush_os.opengl.gluTessEndContour
+  tess_val  : unbounded_string;
+  tess_type : identifier;
+begin
+  expect( pen_glutessendcontour_t );
+  ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  if isExecutingCommand then
+    begin
+      gluTessEndContour( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluTessEndContour;
+
+procedure ParsePengluTessEndPolygon is
+  -- Syntax: gluTessEndPolygon ( tess : GLUtessellator_Ptr );
+  -- Source: bush_os.opengl.gluTessEndPolygon
+  tess_val  : unbounded_string;
+  tess_type : identifier;
+begin
+  expect( pen_glutessendpolygon_t );
+  ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  if isExecutingCommand then
+    begin
+      gluTessEndPolygon( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluTessEndPolygon;
+
+procedure ParsePengluTessNormal is
+  -- Syntax: gluTessNormal ( tess : GLUtessellator_Ptr; valueX, valueY, valueZ : GLdouble );
+  -- Source: bush_os.opengl.gluTessNormal
+  tess_val  : unbounded_string;
+  tess_type : identifier;
+  valueX_val  : unbounded_string;
+  valueX_type : identifier;
+  valueY_val  : unbounded_string;
+  valueY_type : identifier;
+  valueZ_val  : unbounded_string;
+  valueZ_type : identifier;
+begin
+  expect( pen_glutessnormal_t );
+  ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  ParseNextNumericParameter( valueX_val, valueX_type, pen_gldouble_t ); -- valueX : GLdouble
+  ParseNextNumericParameter( valueY_val, valueY_type, pen_gldouble_t ); -- valueY : GLdouble
+  ParseLastNumericParameter( valueZ_val, valueZ_type, pen_gldouble_t ); -- valueZ : GLdouble
+  if isExecutingCommand then
+    begin
+      gluTessNormal( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLdouble( to_numeric( valueX_val ) ), GLdouble( to_numeric( valueY_val ) ), GLdouble( to_numeric( valueZ_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluTessNormal;
+
+procedure ParsePengluTessProperty is
+  -- Syntax: gluTessProperty ( tess : GLUtessellator_Ptr; which : GLUtessproperties; data : GLdouble );
+  -- Source: bush_os.opengl.gluTessProperty
+  tess_val  : unbounded_string;
+  tess_type : identifier;
+  which_val  : unbounded_string;
+  which_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glutessproperty_t );
+  ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  ParseNextNumericParameter( which_val, which_type, pen_glutessproperties_t ); -- which : GLUtessproperties
+  ParseLastNumericParameter( data_val, data_type, pen_gldouble_t ); -- data : GLdouble
+  if isExecutingCommand then
+    begin
+      gluTessProperty( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLUtessproperties( to_numeric( which_val ) ), GLdouble( to_numeric( data_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluTessProperty;
+
+procedure ParsePengluTessVertex is
+  -- Syntax: gluTessVertex ( tess : GLUtessellator_Ptr; location : in out GLdouble; data : System.address );
+  -- Source: bush_os.opengl.gluTessVertex
+  tess_val  : unbounded_string;
+  tess_type : identifier;
+  location_val  : unbounded_string;
+  location_type : identifier;
+  data_val  : unbounded_string;
+  data_type : identifier;
+begin
+  expect( pen_glutessvertex_t );
+  ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  ParseNextNumericParameter( location_val, location_type, pen_gldouble_t ); -- location : GLdouble
+  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  if isExecutingCommand then
+    begin
+      gluTessVertex( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLdouble( to_numeric( location_val ) ), System.address( to_numeric( data_val ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluTessVertex;
+
+procedure ParsePengluUnProject( result : out unbounded_string ) is
+  -- Syntax: gluUnProject ( winX, winY, winZ : GLdouble; model : GL_Double_Array_Ptr; proj : GL_Double_Array_Ptr; view : GL_Int_Array_Ptr; objX, objY, objZ : GL_Double_Array_Ptr) return GLint;
+  -- Source: bush_os.opengl.gluUnProject
+  winX_val  : unbounded_string;
+  winX_type : identifier;
+  winY_val  : unbounded_string;
+  winY_type : identifier;
+  winZ_val  : unbounded_string;
+  winZ_type : identifier;
+  model_val  : unbounded_string;
+  model_type : identifier;
+  proj_val  : unbounded_string;
+  proj_type : identifier;
+  view_val  : unbounded_string;
+  view_type : identifier;
+  objX_val  : unbounded_string;
+  objX_type : identifier;
+  objY_val  : unbounded_string;
+  objY_type : identifier;
+  objZ_val  : unbounded_string;
+  objZ_type : identifier;
+begin
+  expect( pen_gluunproject_t );
+  ParseFirstNumericParameter( winX_val, winX_type, pen_gldouble_t ); -- winX : GLdouble
+  ParseNextNumericParameter( winY_val, winY_type, pen_gldouble_t ); -- winY : GLdouble
+  ParseNextNumericParameter( winZ_val, winZ_type, pen_gldouble_t ); -- winZ : GLdouble
+  ParseNextNumericParameter( model_val, model_type, pen_gl_double_array_ptr_t ); -- model : GL_Double_Array_Ptr
+  ParseNextNumericParameter( proj_val, proj_type, pen_gl_double_array_ptr_t ); -- proj : GL_Double_Array_Ptr
+  ParseNextNumericParameter( view_val, view_type, pen_gl_int_array_ptr_t ); -- view : GL_Int_Array_Ptr
+  ParseNextNumericParameter( objX_val, objX_type, pen_gl_double_array_ptr_t ); -- objX : GL_Double_Array_Ptr
+  ParseNextNumericParameter( objY_val, objY_type, pen_gl_double_array_ptr_t ); -- objY : GL_Double_Array_Ptr
+  ParseLastNumericParameter( objZ_val, objZ_type, pen_gl_double_array_ptr_t ); -- objZ : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( gluUnProject( GLdouble( to_numeric( winX_val ) ), GLdouble( to_numeric( winY_val ) ), GLdouble( to_numeric( winZ_val ) ), GL_Double_Array_Ptr( to_numeric( model_val ) ), GL_Double_Array_Ptr( to_numeric( proj_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ), GL_Double_Array_Ptr( to_numeric( objX_val ) ), GL_Double_Array_Ptr( to_numeric( objY_val ) ), GL_Double_Array_Ptr( to_numeric( objZ_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluUnProject;
+
+procedure ParsePengluUnProject4( result : out unbounded_string ) is
+  -- Syntax: gluUnProject4 ( winX, winY, winZ : GLdouble; clipW : GLdouble; model : GL_Double_Array_Ptr; proj : GL_Double_Array_Ptr; view : GL_Int_Array_Ptr; nearVal, farVal : GLdouble; objX, objY, objZ, objW : GL_Double_Array_Ptr ) return GLint;
+  -- Source: bush_os.opengl.gluUnProject4
+  winX_val  : unbounded_string;
+  winX_type : identifier;
+  winY_val  : unbounded_string;
+  winY_type : identifier;
+  winZ_val  : unbounded_string;
+  winZ_type : identifier;
+  clipW_val  : unbounded_string;
+  clipW_type : identifier;
+  model_val  : unbounded_string;
+  model_type : identifier;
+  proj_val  : unbounded_string;
+  proj_type : identifier;
+  view_val  : unbounded_string;
+  view_type : identifier;
+  nearVal_val  : unbounded_string;
+  nearVal_type : identifier;
+  farVal_val  : unbounded_string;
+  farVal_type : identifier;
+  objX_val  : unbounded_string;
+  objX_type : identifier;
+  objY_val  : unbounded_string;
+  objY_type : identifier;
+  objZ_val  : unbounded_string;
+  objZ_type : identifier;
+  objW_val  : unbounded_string;
+  objW_type : identifier;
+begin
+  expect( pen_gluunproject4_t );
+  ParseFirstNumericParameter( winX_val, winX_type, pen_gldouble_t ); -- winX : GLdouble
+  ParseNextNumericParameter( winY_val, winY_type, pen_gldouble_t ); -- winY : GLdouble
+  ParseNextNumericParameter( winZ_val, winZ_type, pen_gldouble_t ); -- winZ : GLdouble
+  ParseNextNumericParameter( clipW_val, clipW_type, pen_gldouble_t ); -- clipW : GLdouble
+  ParseNextNumericParameter( model_val, model_type, pen_gl_double_array_ptr_t ); -- model : GL_Double_Array_Ptr
+  ParseNextNumericParameter( proj_val, proj_type, pen_gl_double_array_ptr_t ); -- proj : GL_Double_Array_Ptr
+  ParseNextNumericParameter( view_val, view_type, pen_gl_int_array_ptr_t ); -- view : GL_Int_Array_Ptr
+  ParseNextNumericParameter( nearVal_val, nearVal_type, pen_gldouble_t ); -- nearVal : GLdouble
+  ParseNextNumericParameter( farVal_val, farVal_type, pen_gldouble_t ); -- farVal : GLdouble
+  ParseNextNumericParameter( objX_val, objX_type, pen_gl_double_array_ptr_t ); -- objX : GL_Double_Array_Ptr
+  ParseNextNumericParameter( objY_val, objY_type, pen_gl_double_array_ptr_t ); -- objY : GL_Double_Array_Ptr
+  ParseNextNumericParameter( objZ_val, objZ_type, pen_gl_double_array_ptr_t ); -- objZ : GL_Double_Array_Ptr
+  ParseLastNumericParameter( objW_val, objW_type, pen_gl_double_array_ptr_t ); -- objW : GL_Double_Array_Ptr
+  if isExecutingCommand then
+    begin
+      result := to_unbounded_string( long_float( gluUnProject4( GLdouble( to_numeric( winX_val ) ), GLdouble( to_numeric( winY_val ) ), GLdouble( to_numeric( winZ_val ) ), GLdouble( to_numeric( clipW_val ) ), GL_Double_Array_Ptr( to_numeric( model_val ) ), GL_Double_Array_Ptr( to_numeric( proj_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ), GLdouble( to_numeric( nearVal_val ) ), GLdouble( to_numeric( farVal_val ) ), GL_Double_Array_Ptr( to_numeric( objX_val ) ), GL_Double_Array_Ptr( to_numeric( objY_val ) ), GL_Double_Array_Ptr( to_numeric( objZ_val ) ), GL_Double_Array_Ptr( to_numeric( objW_val ) ) ) ) );
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePengluUnProject4;
+
+
 -- These are split from StartupPen (see StartupPen)
 
 procedure declarePenColorNames1 is
@@ -2552,8 +14266,27 @@ procedure declarePenGLConstants is
 begin
   -- mainly for compatibility
 
-  declareIdent( pen_glenum_t, "pen.glenum", integer_t, typeClass  );
-  declareIdent( pen_glboolean_t, "pen.glboolean", integer_t, typeClass  );
+  -- OpenGL types
+  --
+  -- Here, i've used natural for unsigned types but they aren't exactly
+  -- the same!
+
+  declareIdent( pen_glenum_t,   "pen.glenum", natural_t, typeClass  );
+  declareIdent( pen_glboolean_t, "pen.glboolean", natural_t, typeClass  );
+  declareIdent( pen_glbitfield_t,"pen.glbitfield_t", natural_t, typeClass );
+  declareIdent( pen_glbyte_t,   "pen.glbyte_t", integer_t, subClass );
+  declareIdent( pen_glshort_t,  "pen.glshort_t", integer_t, subClass );
+  declareIdent( pen_glint_t,    "pen_glint_t", integer_t, subClass );
+  declareIdent( pen_glubyte_t,  "pen.glubyte_t", natural_t, subClass );
+  declareIdent( pen_glushort_t, "pen_glushort_t", natural_t, subClass );
+  declareIdent( pen_gluint_t,   "pen_gluint_t", natural_t, typeClass );
+  declareIdent( pen_glsizei_t, "pen_glsizei_t", natural_t, typeClass );
+  declareIdent( pen_glfloat_t,  "pen_glfloat_t", float_t, subClass );
+  declareIdent( pen_glclampf_t, "pen_glclampf_t", float_t, typeClass );
+  declareIdent( pen_gldouble_t, "pen_gldouble_t", float_t, subClass );
+  declareIdent( pen_glclampd_t, "pen_glclampd_t", float_t, typeClass );
+
+  -- OpenGL constants
 
   declareStandardConstant( pen_gl_false_t, "pen.gl_false", pen_glboolean_t, float_to_string( GL_FALSE ) );
   declareStandardConstant( pen_gl_true_t, "pen.gl_true", pen_glboolean_t, float_to_string( GL_TRUE ) );
@@ -3139,9 +14872,6 @@ begin
   declareStandardConstant( pen_gl_texture_bit_t, "pen.gl_texture_bit", pen_glpushbits_t, float_to_string( GL_TEXTURE_BIT ) );
   declareStandardConstant( pen_gl_scissor_bit_t, "pen.gl_scissor_bit", pen_glpushbits_t, float_to_string( GL_SCISSOR_BIT ) );
   declareStandardConstant( pen_gl_all_attrib_bits_t, "pen.gl_all_attrib_bits", pen_glpushbits_t, float_to_string( GL_ALL_ATTRIB_BITS ) );
-
-  declareIdent( pen_glenum_t, "pen.glenum", integer_t, typeClass  );
-
   declareStandardConstant( pen_gl_proxy_texture_1d_t, "pen.gl_proxy_texture_1d", pen_glenum_t, float_to_string( GL_PROXY_TEXTURE_1D ) );
   declareStandardConstant( pen_gl_proxy_texture_2d_t, "pen.gl_proxy_texture_2d", pen_glenum_t, float_to_string( GL_PROXY_TEXTURE_2D ) );
   declareStandardConstant( pen_gl_texture_priority_t, "pen.gl_texture_priority", pen_glenum_t, float_to_string( GL_TEXTURE_PRIORITY ) );
@@ -3383,9 +15113,6 @@ begin
   declareStandardConstant( pen_gl_samples_t, "pen.gl_samples", pen_glmultisample_t, float_to_string( GL_SAMPLES ) );
   declareStandardConstant( pen_gl_sample_coverage_value_t, "pen.gl_sample_coverage_value", pen_glmultisample_t, float_to_string( GL_SAMPLE_COVERAGE_VALUE ) );
   declareStandardConstant( pen_gl_sample_coverage_invert_t, "pen.gl_sample_coverage_invert", pen_glmultisample_t, float_to_string( GL_SAMPLE_COVERAGE_INVERT ) );
-
-  declareIdent( pen_gluint_t, "pen.gluint", integer_t, typeClass  );
-
   declareStandardConstant( pen_gl_multisample_bit_t, "pen.gl_multisample_bit", pen_gluint_t, float_to_string( GL_MULTISAMPLE_BIT ) );
 
   declareIdent( pen_gltransposemat_t, "pen.gltransposemat", integer_t, typeClass  );
@@ -3424,9 +15151,6 @@ begin
 
   declareStandardConstant( pen_gl_dot3_rgb_t, "pen.gl_dot3_rgb", pen_gltextureenvdot3_t, float_to_string( GL_DOT3_RGB ) );
   declareStandardConstant( pen_gl_dot3_rgba_t, "pen.gl_dot3_rgba", pen_gltextureenvdot3_t, float_to_string( GL_DOT3_RGBA ) );
-
-  declareIdent( pen_glushort_t, "pen.glushort", integer_t, typeClass  );
-
   declareStandardConstant( pen_gl_clamp_to_border_t, "pen.gl_clamp_to_border", pen_glushort_t, float_to_string( GL_CLAMP_TO_BORDER ) );
 
   declareIdent( pen_glmultitexturearb_t, "pen.glmultitexturearb", integer_t, typeClass  );
@@ -3488,7 +15212,6 @@ begin
   declareStandardConstant( pen_gl_vertex_program_callback_mesa_t, "pen.gl_vertex_program_callback_mesa", pen_globsolete_t, float_to_string( GL_VERTEX_PROGRAM_CALLBACK_MESA ) );
   declareStandardConstant( pen_gl_vertex_program_callback_func_mesa_t, "pen.gl_vertex_program_callback_func_mesa", pen_globsolete_t, float_to_string( GL_VERTEX_PROGRAM_CALLBACK_FUNC_MESA ) );
   declareStandardConstant( pen_gl_vertex_program_callback_data_mesa_t, "pen.gl_vertex_program_callback_data_mesa", pen_globsolete_t, float_to_string( GL_VERTEX_PROGRAM_CALLBACK_DATA_MESA ) );
-
   declareStandardConstant( pen_gl_texture_1d_array_ext_t, "pen.gl_texture_1d_array_ext", pen_glushort_t, float_to_string( GL_TEXTURE_1D_ARRAY_EXT ) );
   declareStandardConstant( pen_gl_proxy_texture_1d_array_ext_t, "pen.gl_proxy_texture_1d_array_ext", pen_glushort_t, float_to_string( GL_PROXY_TEXTURE_1D_ARRAY_EXT ) );
   declareStandardConstant( pen_gl_texture_2d_array_ext_t, "pen.gl_texture_2d_array_ext", pen_glushort_t, float_to_string( GL_TEXTURE_2D_ARRAY_EXT ) );
@@ -3498,7 +15221,6 @@ begin
   declareStandardConstant( pen_gl_max_array_texture_layers_ext_t, "pen.gl_max_array_texture_layers_ext", pen_glushort_t, float_to_string( GL_MAX_ARRAY_TEXTURE_LAYERS_EXT ) );
   declareStandardConstant( pen_gl_framebuffer_attachment_texture_layer_ext_t, "pen.gl_framebuffer_attachment_texture_layer_ext", pen_glushort_t, float_to_string( GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER_EXT ) );
   declareStandardConstant( pen_gl_alpha_blend_equation_ati_t, "pen.gl_alpha_blend_equation_ati", pen_glushort_t, float_to_string( GL_ALPHA_BLEND_EQUATION_ATI ) );
-
   declareStandardConstant( pen_glu_ext_object_space_tess_t, "pen.glu_ext_object_space_tess", pen_glenum_t, float_to_string( GLU_EXT_object_space_tess ) );
   declareStandardConstant( pen_glu_ext_nurbs_tessellator_t, "pen.glu_ext_nurbs_tessellator", pen_glenum_t, float_to_string( GLU_EXT_nurbs_tessellator ) );
   declareStandardConstant( pen_glu_false_t, "pen.glu_false", pen_glenum_t, float_to_string( GLU_FALSE ) );
@@ -3544,7 +15266,6 @@ begin
   declareStandardConstant( pen_glu_nurbs_tex_coord_data_ext_t, "pen.glu_nurbs_tex_coord_data_ext", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_TEX_COORD_DATA_EXT ) );
   declareStandardConstant( pen_glu_nurbs_end_data_t, "pen.glu_nurbs_end_data", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_END_DATA ) );
   declareStandardConstant( pen_glu_nurbs_end_data_ext_t, "pen.glu_nurbs_end_data_ext", pen_glunurbscallbacks_t, float_to_string( GLU_NURBS_END_DATA_EXT ) );
-
   declareStandardConstant( pen_glu_nurbs_error1_t, "pen.glu_nurbs_error1", pen_glenum_t, float_to_string( GLU_NURBS_ERROR1 ) );
   declareStandardConstant( pen_glu_nurbs_error2_t, "pen.glu_nurbs_error2", pen_glenum_t, float_to_string( GLU_NURBS_ERROR2 ) );
   declareStandardConstant( pen_glu_nurbs_error3_t, "pen.glu_nurbs_error3", pen_glenum_t, float_to_string( GLU_NURBS_ERROR3 ) );
@@ -3599,14 +15320,15 @@ begin
   declareStandardConstant( pen_glu_nurbs_tessellator_ext_t, "pen.glu_nurbs_tessellator_ext", pen_glunurbsproperties_t, float_to_string( GLU_NURBS_TESSELLATOR_EXT ) );
   declareStandardConstant( pen_glu_nurbs_renderer_t, "pen.glu_nurbs_renderer", pen_glunurbsproperties_t, float_to_string( GLU_NURBS_RENDERER ) );
   declareStandardConstant( pen_glu_nurbs_renderer_ext_t, "pen.glu_nurbs_renderer_ext", pen_glunurbsproperties_t, float_to_string( GLU_NURBS_RENDERER_EXT ) );
-
-  declareStandardConstant( pen_glu_object_parametric_error_t, "pen.glu_object_parametric_error", pen_glenum_t, float_to_string( GLU_OBJECT_PARAMETRIC_ERROR ) );
+  declareStandardConstant( pen_glu_object_parametric_error_t, "pen.glu_object_parametric_error:", pen_glenum_t, float_to_string( GLU_OBJECT_PARAMETRIC_ERROR ) );
   declareStandardConstant( pen_glu_object_parametric_error_ext_t, "pen.glu_object_parametric_error_ext", pen_glenum_t, float_to_string( GLU_OBJECT_PARAMETRIC_ERROR_EXT ) );
   declareStandardConstant( pen_glu_object_path_length_t, "pen.glu_object_path_length", pen_glenum_t, float_to_string( GLU_OBJECT_PATH_LENGTH ) );
   declareStandardConstant( pen_glu_object_path_length_ext_t, "pen.glu_object_path_length_ext", pen_glenum_t, float_to_string( GLU_OBJECT_PATH_LENGTH_EXT ) );
   declareStandardConstant( pen_glu_path_length_t, "pen.glu_path_length", pen_glenum_t, float_to_string( GLU_PATH_LENGTH ) );
   declareStandardConstant( pen_glu_parametric_error_t, "pen.glu_parametric_error", pen_glenum_t, float_to_string( GLU_PARAMETRIC_ERROR ) );
   declareStandardConstant( pen_glu_domain_distance_t, "pen.glu_domain_distance", pen_glenum_t, float_to_string( GLU_DOMAIN_DISTANCE ) );
+
+  declareIdent( pen_glevaluators_t, "pen.glevaluators", integer_t, typeClass  );
 
   declareStandardConstant( pen_glu_map1_trim_2_t, "pen.glu_map1_trim_2", pen_glevaluators_t, float_to_string( GLU_MAP1_TRIM_2 ) );
   declareStandardConstant( pen_glu_map1_trim_3_t, "pen.glu_map1_trim_3", pen_glevaluators_t, float_to_string( GLU_MAP1_TRIM_3 ) );
@@ -3661,7 +15383,6 @@ begin
   declareStandardConstant( pen_glu_tess_winding_rule_t, "pen.glu_tess_winding_rule", pen_glutessproperties_t, float_to_string( GLU_TESS_WINDING_RULE ) );
   declareStandardConstant( pen_glu_tess_boundary_only_t, "pen.glu_tess_boundary_only", pen_glutessproperties_t, float_to_string( GLU_TESS_BOUNDARY_ONLY ) );
   declareStandardConstant( pen_glu_tess_tolerance_t, "pen.glu_tess_tolerance", pen_glutessproperties_t, float_to_string( GLU_TESS_TOLERANCE ) );
-
   declareStandardConstant( pen_glu_tess_error1_t, "pen.glu_tess_error1", pen_glenum_t, float_to_string( GLU_TESS_ERROR1 ) );
   declareStandardConstant( pen_glu_tess_error2_t, "pen.glu_tess_error2", pen_glenum_t, float_to_string( GLU_TESS_ERROR2 ) );
   declareStandardConstant( pen_glu_tess_error3_t, "pen.glu_tess_error3", pen_glenum_t, float_to_string( GLU_TESS_ERROR3 ) );
@@ -3681,10 +15402,7 @@ begin
   declareStandardConstant( pen_glu_tess_winding_positive_t, "pen.glu_tess_winding_positive", pen_glenum_t, float_to_string( GLU_TESS_WINDING_POSITIVE ) );
   declareStandardConstant( pen_glu_tess_winding_negative_t, "pen.glu_tess_winding_negative", pen_glenum_t, float_to_string( GLU_TESS_WINDING_NEGATIVE ) );
   declareStandardConstant( pen_glu_tess_winding_abs_geq_two_t, "pen.glu_tess_winding_abs_geq_two", pen_glenum_t, float_to_string( GLU_TESS_WINDING_ABS_GEQ_TWO ) );
-
-  declareIdent( pen_long_float_t, "pen.long_float", integer_t, typeClass  );
-
-  declareStandardConstant( pen_glu_tess_max_coord_t, "pen.glu_tess_max_coord", pen_long_float_t, float_to_string( GLU_TESS_MAX_COORD ) );
+  declareStandardConstant( pen_glu_tess_max_coord_t, "pen.glu_tess_max_coord", long_float_t, float_to_string( GLU_TESS_MAX_COORD ) );
 end declarePenGLConstants;
 
 
@@ -3788,6 +15506,532 @@ begin
 
   -- We don't start the actual pen package unless we need it.
   -- Pen.StartupPen;
+
+  declareProcedure( pen_glclearindex_t, "pen.glclearindex" );
+  declareProcedure( pen_glclearcolor_t, "pen.glclearcolor" );
+  declareProcedure( pen_glclear_t, "pen.glclear" );
+  declareProcedure( pen_glindexmask_t, "pen.glindexmask" );
+  declareProcedure( pen_glcolormask_t, "pen.glcolormask" );
+  declareProcedure( pen_glalphafunc_t, "pen.glalphafunc" );
+  declareProcedure( pen_glblendfunc_t, "pen.glblendfunc" );
+  declareProcedure( pen_gllogicop_t, "pen.gllogicop" );
+  declareProcedure( pen_glcullface_t, "pen.glcullface" );
+  declareProcedure( pen_glfrontface_t, "pen.glfrontface" );
+  declareProcedure( pen_glpointsize_t, "pen.glpointsize" );
+  declareProcedure( pen_gllinewidth_t, "pen.gllinewidth" );
+  declareProcedure( pen_gllinestipple_t, "pen.gllinestipple" );
+  declareProcedure( pen_glpolygonmode_t, "pen.glpolygonmode" );
+  declareProcedure( pen_glpolygonoffset_t, "pen.glpolygonoffset" );
+  declareProcedure( pen_glpolygonstipple_t, "pen.glpolygonstipple" );
+  declareProcedure( pen_glgetpolygonstipple_t, "pen.glgetpolygonstipple" );
+  declareProcedure( pen_gledgeflag_t, "pen.gledgeflag" );
+  declareProcedure( pen_gledgeflagv_t, "pen.gledgeflagv" );
+  declareProcedure( pen_glscissor_t, "pen.glscissor" );
+  declareProcedure( pen_glclipplane_t, "pen.glclipplane" );
+  declareProcedure( pen_glgetclipplane_t, "pen.glgetclipplane" );
+  declareProcedure( pen_gldrawbuffer_t, "pen.gldrawbuffer" );
+  declareProcedure( pen_glreadbuffer_t, "pen.glreadbuffer" );
+  declareProcedure( pen_glenable_t, "pen.glenable" );
+  declareProcedure( pen_gldisable_t, "pen.gldisable" );
+  declareFunction(  pen_glisenabled_t, "pen.glisenabled" );
+  declareProcedure( pen_glenableclientstate_t, "pen.glenableclientstate" );
+  declareProcedure( pen_gldisableclientstate_t, "pen.gldisableclientstate" );
+  declareProcedure( pen_glgetbooleanv_t, "pen.glgetbooleanv" );
+  declareProcedure( pen_glgetdoublev_t, "pen.glgetdoublev" );
+  declareProcedure( pen_glgetfloatv_t, "pen.glgetfloatv" );
+  declareProcedure( pen_glgetintegerv_t, "pen.glgetintegerv" );
+  declareProcedure( pen_glpushattrib_t, "pen.glpushattrib" );
+  declareProcedure( pen_glpopattrib_t, "pen.glpopattrib" );
+  declareProcedure( pen_glpushclientattrib_t, "pen.glpushclientattrib" );
+  declareProcedure( pen_glpopclientattrib_t, "pen.glpopclientattrib" );
+  declareFunction(  pen_glrendermode_t, "pen.glrendermode" );
+  declareFunction(  pen_glgeterror_t, "pen.glgeterror" );
+  declareFunction(  pen_glgetstring_t, "pen.glgetstring" );
+  declareProcedure( pen_glfinish_t, "pen.glfinish" );
+  declareProcedure( pen_glflush_t, "pen.glflush" );
+  declareProcedure( pen_glhint_t, "pen.glhint" );
+  declareProcedure( pen_glcleardepth_t, "pen.glcleardepth" );
+  declareProcedure( pen_gldepthfunc_t, "pen.gldepthfunc" );
+  declareProcedure( pen_gldepthmask_t, "pen.gldepthmask" );
+  declareProcedure( pen_gldepthrange_t, "pen.gldepthrange" );
+  declareProcedure( pen_glclearaccum_t, "pen.glclearaccum" );
+  declareProcedure( pen_glaccum_t, "pen.glaccum" );
+  declareProcedure( pen_glmatrixmode_t, "pen.glmatrixmode" );
+  declareProcedure( pen_glortho_t, "pen.glortho" );
+  declareProcedure( pen_glfrustum_t, "pen.glfrustum" );
+  declareProcedure( pen_glviewport_t, "pen.glviewport" );
+  declareProcedure( pen_glpushmatrix_t, "pen.glpushmatrix" );
+  declareProcedure( pen_glpopmatrix_t, "pen.glpopmatrix" );
+  declareProcedure( pen_glloadidentity_t, "pen.glloadidentity" );
+  declareProcedure( pen_glloadmatrixd_t, "pen.glloadmatrixd" );
+  declareProcedure( pen_glloadmatrixf_t, "pen.glloadmatrixf" );
+  declareProcedure( pen_glmultmatrixd_t, "pen.glmultmatrixd" );
+  declareProcedure( pen_glmultmatrixf_t, "pen.glmultmatrixf" );
+  declareProcedure( pen_glrotated_t, "pen.glrotated" );
+  declareProcedure( pen_glrotatef_t, "pen.glrotatef" );
+  declareProcedure( pen_glscaled_t, "pen.glscaled" );
+  declareProcedure( pen_glscalef_t, "pen.glscalef" );
+  declareProcedure( pen_gltranslated_t, "pen.gltranslated" );
+  declareProcedure( pen_gltranslatef_t, "pen.gltranslatef" );
+  declareFunction(  pen_glislist_t, "pen.glislist" );
+  declareProcedure( pen_gldeletelists_t, "pen.gldeletelists" );
+  declareFunction(  pen_glgenlists_t, "pen.glgenlists" );
+  declareProcedure( pen_glnewlist_t, "pen.glnewlist" );
+  declareProcedure( pen_glendlist_t, "pen.glendlist" );
+  declareProcedure( pen_glcalllist_t, "pen.glcalllist" );
+  declareProcedure( pen_glcalllists_t, "pen.glcalllists" );
+  declareProcedure( pen_gllistbase_t, "pen.gllistbase" );
+  declareProcedure( pen_glbegin_t, "pen.glbegin" );
+  declareProcedure( pen_glend_t, "pen.glend" );
+  declareProcedure( pen_glvertex2d_t, "pen.glvertex2d" );
+  declareProcedure( pen_glvertex2f_t, "pen.glvertex2f" );
+  declareProcedure( pen_glvertex2i_t, "pen.glvertex2i" );
+  declareProcedure( pen_glvertex2s_t, "pen.glvertex2s" );
+  declareProcedure( pen_glvertex3d_t, "pen.glvertex3d" );
+  declareProcedure( pen_glvertex3f_t, "pen.glvertex3f" );
+  declareProcedure( pen_glvertex3i_t, "pen.glvertex3i" );
+  declareProcedure( pen_glvertex3s_t, "pen.glvertex3s" );
+  declareProcedure( pen_glvertex4d_t, "pen.glvertex4d" );
+  declareProcedure( pen_glvertex4f_t, "pen.glvertex4f" );
+  declareProcedure( pen_glvertex4i_t, "pen.glvertex4i" );
+  declareProcedure( pen_glvertex4s_t, "pen.glvertex4s" );
+  declareProcedure( pen_glvertex2dv_t, "pen.glvertex2dv" );
+  declareProcedure( pen_glvertex2fv_t, "pen.glvertex2fv" );
+  declareProcedure( pen_glvertex2iv_t, "pen.glvertex2iv" );
+  declareProcedure( pen_glvertex2sv_t, "pen.glvertex2sv" );
+  declareProcedure( pen_glvertex3dv_t, "pen.glvertex3dv" );
+  declareProcedure( pen_glvertex3fv_t, "pen.glvertex3fv" );
+  declareProcedure( pen_glvertex3iv_t, "pen.glvertex3iv" );
+  declareProcedure( pen_glvertex3sv_t, "pen.glvertex3sv" );
+  declareProcedure( pen_glvertex4dv_t, "pen.glvertex4dv" );
+  declareProcedure( pen_glvertex4fv_t, "pen.glvertex4fv" );
+  declareProcedure( pen_glvertex4iv_t, "pen.glvertex4iv" );
+  declareProcedure( pen_glvertex4sv_t, "pen.glvertex4sv" );
+  declareProcedure( pen_glnormal3b_t, "pen.glnormal3b" );
+  declareProcedure( pen_glnormal3d_t, "pen.glnormal3d" );
+  declareProcedure( pen_glnormal3f_t, "pen.glnormal3f" );
+  declareProcedure( pen_glnormal3i_t, "pen.glnormal3i" );
+  declareProcedure( pen_glnormal3s_t, "pen.glnormal3s" );
+  declareProcedure( pen_glnormal3bv_t, "pen.glnormal3bv" );
+  declareProcedure( pen_glnormal3dv_t, "pen.glnormal3dv" );
+  declareProcedure( pen_glnormal3fv_t, "pen.glnormal3fv" );
+  declareProcedure( pen_glnormal3iv_t, "pen.glnormal3iv" );
+  declareProcedure( pen_glnormal3sv_t, "pen.glnormal3sv" );
+  declareProcedure( pen_glindexd_t, "pen.glindexd" );
+  declareProcedure( pen_glindexf_t, "pen.glindexf" );
+  declareProcedure( pen_glindexi_t, "pen.glindexi" );
+  declareProcedure( pen_glindexs_t, "pen.glindexs" );
+  declareProcedure( pen_glindexub_t, "pen.glindexub" );
+  declareProcedure( pen_glindexdv_t, "pen.glindexdv" );
+  declareProcedure( pen_glindexfv_t, "pen.glindexfv" );
+  declareProcedure( pen_glindexiv_t, "pen.glindexiv" );
+  declareProcedure( pen_glindexsv_t, "pen.glindexsv" );
+  declareProcedure( pen_glindexubv_t, "pen.glindexubv" );
+  declareProcedure( pen_glcolor3b_t, "pen.glcolor3b" );
+  declareProcedure( pen_glcolor3d_t, "pen.glcolor3d" );
+  declareProcedure( pen_glcolor3f_t, "pen.glcolor3f" );
+  declareProcedure( pen_glcolor3i_t, "pen.glcolor3i" );
+  declareProcedure( pen_glcolor3s_t, "pen.glcolor3s" );
+  declareProcedure( pen_glcolor3ub_t, "pen.glcolor3ub" );
+  declareProcedure( pen_glcolor3ui_t, "pen.glcolor3ui" );
+  declareProcedure( pen_glcolor3us_t, "pen.glcolor3us" );
+  declareProcedure( pen_glcolor4b_t, "pen.glcolor4b" );
+  declareProcedure( pen_glcolor4d_t, "pen.glcolor4d" );
+  declareProcedure( pen_glcolor4f_t, "pen.glcolor4f" );
+  declareProcedure( pen_glcolor4i_t, "pen.glcolor4i" );
+  declareProcedure( pen_glcolor4s_t, "pen.glcolor4s" );
+  declareProcedure( pen_glcolor4ub_t, "pen.glcolor4ub" );
+  declareProcedure( pen_glcolor4ui_t, "pen.glcolor4ui" );
+  declareProcedure( pen_glcolor4us_t, "pen.glcolor4us" );
+  declareProcedure( pen_glcolor3bv_t, "pen.glcolor3bv" );
+  declareProcedure( pen_glcolor3dv_t, "pen.glcolor3dv" );
+  declareProcedure( pen_glcolor3fv_t, "pen.glcolor3fv" );
+  declareProcedure( pen_glcolor3iv_t, "pen.glcolor3iv" );
+  declareProcedure( pen_glcolor3sv_t, "pen.glcolor3sv" );
+  declareProcedure( pen_glcolor3ubv_t, "pen.glcolor3ubv" );
+  declareProcedure( pen_glcolor3uiv_t, "pen.glcolor3uiv" );
+  declareProcedure( pen_glcolor3usv_t, "pen.glcolor3usv" );
+  declareProcedure( pen_glcolor4bv_t, "pen.glcolor4bv" );
+  declareProcedure( pen_glcolor4dv_t, "pen.glcolor4dv" );
+  declareProcedure( pen_glcolor4fv_t, "pen.glcolor4fv" );
+  declareProcedure( pen_glcolor4iv_t, "pen.glcolor4iv" );
+  declareProcedure( pen_glcolor4sv_t, "pen.glcolor4sv" );
+  declareProcedure( pen_glcolor4ubv_t, "pen.glcolor4ubv" );
+  declareProcedure( pen_glcolor4uiv_t, "pen.glcolor4uiv" );
+  declareProcedure( pen_glcolor4usv_t, "pen.glcolor4usv" );
+  declareProcedure( pen_gltexcoord1d_t, "pen.gltexcoord1d" );
+  declareProcedure( pen_gltexcoord1f_t, "pen.gltexcoord1f" );
+  declareProcedure( pen_gltexcoord1i_t, "pen.gltexcoord1i" );
+  declareProcedure( pen_gltexcoord1s_t, "pen.gltexcoord1s" );
+  declareProcedure( pen_gltexcoord2d_t, "pen.gltexcoord2d" );
+  declareProcedure( pen_gltexcoord2f_t, "pen.gltexcoord2f" );
+  declareProcedure( pen_gltexcoord2i_t, "pen.gltexcoord2i" );
+  declareProcedure( pen_gltexcoord2s_t, "pen.gltexcoord2s" );
+  declareProcedure( pen_gltexcoord3d_t, "pen.gltexcoord3d" );
+  declareProcedure( pen_gltexcoord3f_t, "pen.gltexcoord3f" );
+  declareProcedure( pen_gltexcoord3i_t, "pen.gltexcoord3i" );
+  declareProcedure( pen_gltexcoord3s_t, "pen.gltexcoord3s" );
+  declareProcedure( pen_gltexcoord4d_t, "pen.gltexcoord4d" );
+  declareProcedure( pen_gltexcoord4f_t, "pen.gltexcoord4f" );
+  declareProcedure( pen_gltexcoord4i_t, "pen.gltexcoord4i" );
+  declareProcedure( pen_gltexcoord4s_t, "pen.gltexcoord4s" );
+  declareProcedure( pen_gltexcoord1dv_t, "pen.gltexcoord1dv" );
+  declareProcedure( pen_gltexcoord1fv_t, "pen.gltexcoord1fv" );
+  declareProcedure( pen_gltexcoord1iv_t, "pen.gltexcoord1iv" );
+  declareProcedure( pen_gltexcoord1sv_t, "pen.gltexcoord1sv" );
+  declareProcedure( pen_gltexcoord2dv_t, "pen.gltexcoord2dv" );
+  declareProcedure( pen_gltexcoord2fv_t, "pen.gltexcoord2fv" );
+  declareProcedure( pen_gltexcoord2iv_t, "pen.gltexcoord2iv" );
+  declareProcedure( pen_gltexcoord2sv_t, "pen.gltexcoord2sv" );
+  declareProcedure( pen_gltexcoord3dv_t, "pen.gltexcoord3dv" );
+  declareProcedure( pen_gltexcoord3fv_t, "pen.gltexcoord3fv" );
+  declareProcedure( pen_gltexcoord3iv_t, "pen.gltexcoord3iv" );
+  declareProcedure( pen_gltexcoord3sv_t, "pen.gltexcoord3sv" );
+  declareProcedure( pen_gltexcoord4dv_t, "pen.gltexcoord4dv" );
+  declareProcedure( pen_gltexcoord4fv_t, "pen.gltexcoord4fv" );
+  declareProcedure( pen_gltexcoord4iv_t, "pen.gltexcoord4iv" );
+  declareProcedure( pen_gltexcoord4sv_t, "pen.gltexcoord4sv" );
+  declareProcedure( pen_glrasterpos2d_t, "pen.glrasterpos2d" );
+  declareProcedure( pen_glrasterpos2f_t, "pen.glrasterpos2f" );
+  declareProcedure( pen_glrasterpos2i_t, "pen.glrasterpos2i" );
+  declareProcedure( pen_glrasterpos2s_t, "pen.glrasterpos2s" );
+  declareProcedure( pen_glrasterpos3d_t, "pen.glrasterpos3d" );
+  declareProcedure( pen_glrasterpos3f_t, "pen.glrasterpos3f" );
+  declareProcedure( pen_glrasterpos3i_t, "pen.glrasterpos3i" );
+  declareProcedure( pen_glrasterpos3s_t, "pen.glrasterpos3s" );
+  declareProcedure( pen_glrasterpos4d_t, "pen.glrasterpos4d" );
+  declareProcedure( pen_glrasterpos4f_t, "pen.glrasterpos4f" );
+  declareProcedure( pen_glrasterpos4i_t, "pen.glrasterpos4i" );
+  declareProcedure( pen_glrasterpos4s_t, "pen.glrasterpos4s" );
+  declareProcedure( pen_glrasterpos2dv_t, "pen.glrasterpos2dv" );
+  declareProcedure( pen_glrasterpos2fv_t, "pen.glrasterpos2fv" );
+  declareProcedure( pen_glrasterpos2iv_t, "pen.glrasterpos2iv" );
+  declareProcedure( pen_glrasterpos2sv_t, "pen.glrasterpos2sv" );
+  declareProcedure( pen_glrasterpos3dv_t, "pen.glrasterpos3dv" );
+  declareProcedure( pen_glrasterpos3fv_t, "pen.glrasterpos3fv" );
+  declareProcedure( pen_glrasterpos3iv_t, "pen.glrasterpos3iv" );
+  declareProcedure( pen_glrasterpos3sv_t, "pen.glrasterpos3sv" );
+  declareProcedure( pen_glrasterpos4dv_t, "pen.glrasterpos4dv" );
+  declareProcedure( pen_glrasterpos4fv_t, "pen.glrasterpos4fv" );
+  declareProcedure( pen_glrasterpos4iv_t, "pen.glrasterpos4iv" );
+  declareProcedure( pen_glrasterpos4sv_t, "pen.glrasterpos4sv" );
+  declareProcedure( pen_glrectd_t, "pen.glrectd" );
+  declareProcedure( pen_glrectf_t, "pen.glrectf" );
+  declareProcedure( pen_glrecti_t, "pen.glrecti" );
+  declareProcedure( pen_glrects_t, "pen.glrects" );
+  declareProcedure( pen_glrectdv_t, "pen.glrectdv" );
+  declareProcedure( pen_glrectfv_t, "pen.glrectfv" );
+  declareProcedure( pen_glrectiv_t, "pen.glrectiv" );
+  declareProcedure( pen_glrectsv_t, "pen.glrectsv" );
+  declareProcedure( pen_glvertexpointer_t, "pen.glvertexpointer" );
+  declareProcedure( pen_glnormalpointer_t, "pen.glnormalpointer" );
+  declareProcedure( pen_glcolorpointer_t, "pen.glcolorpointer" );
+  declareProcedure( pen_glindexpointer_t, "pen.glindexpointer" );
+  declareProcedure( pen_gltexcoordpointer_t, "pen.gltexcoordpointer" );
+  declareProcedure( pen_gledgeflagpointer_t, "pen.gledgeflagpointer" );
+  declareProcedure( pen_glgetpointerv_t, "pen.glgetpointerv" );
+  declareProcedure( pen_glarrayelement_t, "pen.glarrayelement" );
+  declareProcedure( pen_gldrawarrays_t, "pen.gldrawarrays" );
+  declareProcedure( pen_gldrawelements_t, "pen.gldrawelements" );
+  declareProcedure( pen_glinterleavedarrays_t, "pen.glinterleavedarrays" );
+  declareProcedure( pen_glshademodel_t, "pen.glshademodel" );
+  declareProcedure( pen_gllightf_t, "pen.gllightf" );
+  declareProcedure( pen_gllighti_t, "pen.gllighti" );
+  declareProcedure( pen_gllightfv_t, "pen.gllightfv" );
+  declareProcedure( pen_gllightiv_t, "pen.gllightiv" );
+  declareProcedure( pen_glgetlightfv_t, "pen.glgetlightfv" );
+  declareProcedure( pen_glgetlightiv_t, "pen.glgetlightiv" );
+  declareProcedure( pen_gllightmodelf_t, "pen.gllightmodelf" );
+  declareProcedure( pen_gllightmodeli_t, "pen.gllightmodeli" );
+  declareProcedure( pen_gllightmodelfv_t, "pen.gllightmodelfv" );
+  declareProcedure( pen_gllightmodeliv_t, "pen.gllightmodeliv" );
+  declareProcedure( pen_glmaterialf_t, "pen.glmaterialf" );
+  declareProcedure( pen_glmateriali_t, "pen.glmateriali" );
+  declareProcedure( pen_glmaterialfv_t, "pen.glmaterialfv" );
+  declareProcedure( pen_glmaterialiv_t, "pen.glmaterialiv" );
+  declareProcedure( pen_glgetmaterialfv_t, "pen.glgetmaterialfv" );
+  declareProcedure( pen_glgetmaterialiv_t, "pen.glgetmaterialiv" );
+  declareProcedure( pen_glcolormaterial_t, "pen.glcolormaterial" );
+  declareProcedure( pen_glpixelzoom_t, "pen.glpixelzoom" );
+  declareProcedure( pen_glpixelstoref_t, "pen.glpixelstoref" );
+  declareProcedure( pen_glpixelstorei_t, "pen.glpixelstorei" );
+  declareProcedure( pen_glpixeltransferf_t, "pen.glpixeltransferf" );
+  declareProcedure( pen_glpixeltransferi_t, "pen.glpixeltransferi" );
+  declareProcedure( pen_glpixelmapfv_t, "pen.glpixelmapfv" );
+  declareProcedure( pen_glpixelmapuiv_t, "pen.glpixelmapuiv" );
+  declareProcedure( pen_glpixelmapusv_t, "pen.glpixelmapusv" );
+  declareProcedure( pen_glgetpixelmapfv_t, "pen.glgetpixelmapfv" );
+  declareProcedure( pen_glgetpixelmapuiv_t, "pen.glgetpixelmapuiv" );
+  declareProcedure( pen_glgetpixelmapusv_t, "pen.glgetpixelmapusv" );
+  declareProcedure( pen_glbitmap_t, "pen.glbitmap" );
+  declareProcedure( pen_glreadpixels_t, "pen.glreadpixels" );
+  declareProcedure( pen_gldrawpixels_t, "pen.gldrawpixels" );
+  declareProcedure( pen_glcopypixels_t, "pen.glcopypixels" );
+  declareProcedure( pen_glstencilfunc_t, "pen.glstencilfunc" );
+  declareProcedure( pen_glstencilmask_t, "pen.glstencilmask" );
+  declareProcedure( pen_glstencilop_t, "pen.glstencilop" );
+  declareProcedure( pen_glclearstencil_t, "pen.glclearstencil" );
+  declareProcedure( pen_gltexgend_t, "pen.gltexgend" );
+  declareProcedure( pen_gltexgenf_t, "pen.gltexgenf" );
+  declareProcedure( pen_gltexgeni_t, "pen.gltexgeni" );
+  declareProcedure( pen_gltexgendv_t, "pen.gltexgendv" );
+  declareProcedure( pen_gltexgenfv_t, "pen.gltexgenfv" );
+  declareProcedure( pen_gltexgeniv_t, "pen.gltexgeniv" );
+  declareProcedure( pen_glgettexgendv_t, "pen.glgettexgendv" );
+  declareProcedure( pen_glgettexgenfv_t, "pen.glgettexgenfv" );
+  declareProcedure( pen_glgettexgeniv_t, "pen.glgettexgeniv" );
+  declareProcedure( pen_gltexenvf_t, "pen.gltexenvf" );
+  declareProcedure( pen_gltexenvi_t, "pen.gltexenvi" );
+  declareProcedure( pen_gltexenvfv_t, "pen.gltexenvfv" );
+  declareProcedure( pen_gltexenviv_t, "pen.gltexenviv" );
+  declareProcedure( pen_glgettexenvfv_t, "pen.glgettexenvfv" );
+  declareProcedure( pen_glgettexenviv_t, "pen.glgettexenviv" );
+  declareProcedure( pen_gltexparameterf_t, "pen.gltexparameterf" );
+  declareProcedure( pen_gltexparameteri_t, "pen.gltexparameteri" );
+  declareProcedure( pen_gltexparameterfv_t, "pen.gltexparameterfv" );
+  declareProcedure( pen_gltexparameteriv_t, "pen.gltexparameteriv" );
+  declareProcedure( pen_glgettexparameterfv_t, "pen.glgettexparameterfv" );
+  declareProcedure( pen_glgettexparameteriv_t, "pen.glgettexparameteriv" );
+  declareProcedure( pen_glgettexlevelparameterfv_t, "pen.glgettexlevelparameterfv" );
+  declareProcedure( pen_glgettexlevelparameteriv_t, "pen.glgettexlevelparameteriv" );
+  declareProcedure( pen_glteximage1d_t, "pen.glteximage1d" );
+  declareProcedure( pen_glteximage2d_t, "pen.glteximage2d" );
+  declareProcedure( pen_glgetteximage_t, "pen.glgetteximage" );
+  declareProcedure( pen_glgentextures_t, "pen.glgentextures" );
+  declareProcedure( pen_gldeletetextures_t, "pen.gldeletetextures" );
+  declareProcedure( pen_glbindtexture_t, "pen.glbindtexture" );
+  declareProcedure( pen_glprioritizetextures_t, "pen.glprioritizetextures" );
+  declareFunction(  pen_glaretexturesresident_t, "pen.glaretexturesresident" );
+  declareFunction(  pen_glistexture_t, "pen.glistexture" );
+  declareProcedure( pen_gltexsubimage1d_t, "pen.gltexsubimage1d" );
+  declareProcedure( pen_gltexsubimage2d_t, "pen.gltexsubimage2d" );
+  declareProcedure( pen_glcopyteximage1d_t, "pen.glcopyteximage1d" );
+  declareProcedure( pen_glcopyteximage2d_t, "pen.glcopyteximage2d" );
+  declareProcedure( pen_glcopytexsubimage1d_t, "pen.glcopytexsubimage1d" );
+  declareProcedure( pen_glcopytexsubimage2d_t, "pen.glcopytexsubimage2d" );
+  declareProcedure( pen_glmap1d_t, "pen.glmap1d" );
+  declareProcedure( pen_glmap1f_t, "pen.glmap1f" );
+  declareProcedure( pen_glmap2d_t, "pen.glmap2d" );
+  declareProcedure( pen_glmap2f_t, "pen.glmap2f" );
+  declareProcedure( pen_glgetmapdv_t, "pen.glgetmapdv" );
+  declareProcedure( pen_glgetmapfv_t, "pen.glgetmapfv" );
+  declareProcedure( pen_glgetmapiv_t, "pen.glgetmapiv" );
+  declareProcedure( pen_glevalcoord1d_t, "pen.glevalcoord1d" );
+  declareProcedure( pen_glevalcoord1f_t, "pen.glevalcoord1f" );
+  declareProcedure( pen_glevalcoord1dv_t, "pen.glevalcoord1dv" );
+  declareProcedure( pen_glevalcoord1fv_t, "pen.glevalcoord1fv" );
+  declareProcedure( pen_glevalcoord2d_t, "pen.glevalcoord2d" );
+  declareProcedure( pen_glevalcoord2f_t, "pen.glevalcoord2f" );
+  declareProcedure( pen_glevalcoord2dv_t, "pen.glevalcoord2dv" );
+  declareProcedure( pen_glevalcoord2fv_t, "pen.glevalcoord2fv" );
+  declareProcedure( pen_glmapgrid1d_t, "pen.glmapgrid1d" );
+  declareProcedure( pen_glmapgrid1f_t, "pen.glmapgrid1f" );
+  declareProcedure( pen_glmapgrid2d_t, "pen.glmapgrid2d" );
+  declareProcedure( pen_glmapgrid2f_t, "pen.glmapgrid2f" );
+  declareProcedure( pen_glevalpoint1_t, "pen.glevalpoint1" );
+  declareProcedure( pen_glevalpoint2_t, "pen.glevalpoint2" );
+  declareProcedure( pen_glevalmesh1_t, "pen.glevalmesh1" );
+  declareProcedure( pen_glevalmesh2_t, "pen.glevalmesh2" );
+  declareProcedure( pen_glfogf_t, "pen.glfogf" );
+  declareProcedure( pen_glfogi_t, "pen.glfogi" );
+  declareProcedure( pen_glfogfv_t, "pen.glfogfv" );
+  declareProcedure( pen_glfogiv_t, "pen.glfogiv" );
+  declareProcedure( pen_glfeedbackbuffer_t, "pen.glfeedbackbuffer" );
+  declareProcedure( pen_glpassthrough_t, "pen.glpassthrough" );
+  declareProcedure( pen_glselectbuffer_t, "pen.glselectbuffer" );
+  declareProcedure( pen_glinitnames_t, "pen.glinitnames" );
+  declareProcedure( pen_glloadname_t, "pen.glloadname" );
+  declareProcedure( pen_glpushname_t, "pen.glpushname" );
+  declareProcedure( pen_glpopname_t, "pen.glpopname" );
+  declareProcedure( pen_gldrawrangeelements_t, "pen.gldrawrangeelements" );
+  declareProcedure( pen_glteximage3d_t, "pen.glteximage3d" );
+  declareProcedure( pen_gltexsubimage3d_t, "pen.gltexsubimage3d" );
+  declareProcedure( pen_glcopytexsubimage3d_t, "pen.glcopytexsubimage3d" );
+  declareProcedure( pen_glcolortable_t, "pen.glcolortable" );
+  declareProcedure( pen_glcolorsubtable_t, "pen.glcolorsubtable" );
+  declareProcedure( pen_glcolortableparameteriv_t, "pen.glcolortableparameteriv" );
+  declareProcedure( pen_glcolortableparameterfv_t, "pen.glcolortableparameterfv" );
+  declareProcedure( pen_glcopycolorsubtable_t, "pen.glcopycolorsubtable" );
+  declareProcedure( pen_glcopycolortable_t, "pen.glcopycolortable" );
+  declareProcedure( pen_glgetcolortable_t, "pen.glgetcolortable" );
+  declareProcedure( pen_glgetcolortableparameterfv_t, "pen.glgetcolortableparameterfv" );
+  declareProcedure( pen_glgetcolortableparameteriv_t, "pen.glgetcolortableparameteriv" );
+  declareProcedure( pen_glblendequation_t, "pen.glblendequation" );
+  declareProcedure( pen_glblendcolor_t, "pen.glblendcolor" );
+  declareProcedure( pen_glhistogram_t, "pen.glhistogram" );
+  declareProcedure( pen_glresethistogram_t, "pen.glresethistogram" );
+  declareProcedure( pen_glgethistogram_t, "pen.glgethistogram" );
+  declareProcedure( pen_glgethistogramparameterfv_t, "pen.glgethistogramparameterfv" );
+  declareProcedure( pen_glgethistogramparameteriv_t, "pen.glgethistogramparameteriv" );
+  declareProcedure( pen_glminmax_t, "pen.glminmax" );
+  declareProcedure( pen_glresetminmax_t, "pen.glresetminmax" );
+  declareProcedure( pen_glgetminmax_t, "pen.glgetminmax" );
+  declareProcedure( pen_glgetminmaxparameterfv_t, "pen.glgetminmaxparameterfv" );
+  declareProcedure( pen_glgetminmaxparameteriv_t, "pen.glgetminmaxparameteriv" );
+  declareProcedure( pen_glconvolutionfilter1d_t, "pen.glconvolutionfilter1d" );
+  declareProcedure( pen_glconvolutionfilter2d_t, "pen.glconvolutionfilter2d" );
+  declareProcedure( pen_glconvolutionparameterf_t, "pen.glconvolutionparameterf" );
+  declareProcedure( pen_glconvolutionparameterfv_t, "pen.glconvolutionparameterfv" );
+  declareProcedure( pen_glconvolutionparameterfv2_t, "pen.glconvolutionparameterfv2" );
+  declareProcedure( pen_glconvolutionparameteri_t, "pen.glconvolutionparameteri" );
+  declareProcedure( pen_glconvolutionparameteriv_t, "pen.glconvolutionparameteriv" );
+  declareProcedure( pen_glcopyconvolutionfilter1d_t, "pen.glcopyconvolutionfilter1d" );
+  declareProcedure( pen_glcopyconvolutionfilter2d_t, "pen.glcopyconvolutionfilter2d" );
+  declareProcedure( pen_glgetconvolutionfilter_t, "pen.glgetconvolutionfilter" );
+  declareProcedure( pen_glgetconvolutionparameterfv_t, "pen.glgetconvolutionparameterfv" );
+  declareProcedure( pen_glgetconvolutionparameteriv_t, "pen.glgetconvolutionparameteriv" );
+  declareProcedure( pen_glseparablefilter2d_t, "pen.glseparablefilter2d" );
+  declareProcedure( pen_glgetseparablefilter_t, "pen.glgetseparablefilter" );
+  declareProcedure( pen_glactivetexture_t, "pen.glactivetexture" );
+  declareProcedure( pen_glclientactivetexture_t, "pen.glclientactivetexture" );
+  declareProcedure( pen_glcompressedteximage1d_t, "pen.glcompressedteximage1d" );
+  declareProcedure( pen_glcompressedteximage2d_t, "pen.glcompressedteximage2d" );
+  declareProcedure( pen_glcompressedteximage3d_t, "pen.glcompressedteximage3d" );
+  declareProcedure( pen_glcompressedtexsubimage1d_t, "pen.glcompressedtexsubimage1d" );
+  declareProcedure( pen_glcompressedtexsubimage2d_t, "pen.glcompressedtexsubimage2d" );
+  declareProcedure( pen_glcompressedtexsubimage3d_t, "pen.glcompressedtexsubimage3d" );
+  declareProcedure( pen_glgetcompressedteximage_t, "pen.glgetcompressedteximage" );
+  declareProcedure( pen_glmultitexcoord1d_t, "pen.glmultitexcoord1d" );
+  declareProcedure( pen_glmultitexcoord1dv_t, "pen.glmultitexcoord1dv" );
+  declareProcedure( pen_glmultitexcoord1f_t, "pen.glmultitexcoord1f" );
+  declareProcedure( pen_glmultitexcoord1fv_t, "pen.glmultitexcoord1fv" );
+  declareProcedure( pen_glmultitexcoord1i_t, "pen.glmultitexcoord1i" );
+  declareProcedure( pen_glmultitexcoord1iv_t, "pen.glmultitexcoord1iv" );
+  declareProcedure( pen_glmultitexcoord1s_t, "pen.glmultitexcoord1s" );
+  declareProcedure( pen_glmultitexcoord1sv_t, "pen.glmultitexcoord1sv" );
+  declareProcedure( pen_glmultitexcoord2d_t, "pen.glmultitexcoord2d" );
+  declareProcedure( pen_glmultitexcoord2dv_t, "pen.glmultitexcoord2dv" );
+  declareProcedure( pen_glmultitexcoord2f_t, "pen.glmultitexcoord2f" );
+  declareProcedure( pen_glmultitexcoord2fv_t, "pen.glmultitexcoord2fv" );
+  declareProcedure( pen_glmultitexcoord2i_t, "pen.glmultitexcoord2i" );
+  declareProcedure( pen_glmultitexcoord2iv_t, "pen.glmultitexcoord2iv" );
+  declareProcedure( pen_glmultitexcoord2s_t, "pen.glmultitexcoord2s" );
+  declareProcedure( pen_glmultitexcoord2sv_t, "pen.glmultitexcoord2sv" );
+  declareProcedure( pen_glmultitexcoord3d_t, "pen.glmultitexcoord3d" );
+  declareProcedure( pen_glmultitexcoord3dv_t, "pen.glmultitexcoord3dv" );
+  declareProcedure( pen_glmultitexcoord3f_t, "pen.glmultitexcoord3f" );
+  declareProcedure( pen_glmultitexcoord3fv_t, "pen.glmultitexcoord3fv" );
+  declareProcedure( pen_glmultitexcoord3i_t, "pen.glmultitexcoord3i" );
+  declareProcedure( pen_glmultitexcoord3iv_t, "pen.glmultitexcoord3iv" );
+  declareProcedure( pen_glmultitexcoord3s_t, "pen.glmultitexcoord3s" );
+  declareProcedure( pen_glmultitexcoord3sv_t, "pen.glmultitexcoord3sv" );
+  declareProcedure( pen_glmultitexcoord4d_t, "pen.glmultitexcoord4d" );
+  declareProcedure( pen_glmultitexcoord4dv_t, "pen.glmultitexcoord4dv" );
+  declareProcedure( pen_glmultitexcoord4f_t, "pen.glmultitexcoord4f" );
+  declareProcedure( pen_glmultitexcoord4fv_t, "pen.glmultitexcoord4fv" );
+  declareProcedure( pen_glmultitexcoord4i_t, "pen.glmultitexcoord4i" );
+  declareProcedure( pen_glmultitexcoord4iv_t, "pen.glmultitexcoord4iv" );
+  declareProcedure( pen_glmultitexcoord4s_t, "pen.glmultitexcoord4s" );
+  declareProcedure( pen_glmultitexcoord4sv_t, "pen.glmultitexcoord4sv" );
+  declareProcedure( pen_glloadtransposematrixd_t, "pen.glloadtransposematrixd" );
+  declareProcedure( pen_glloadtransposematrixf_t, "pen.glloadtransposematrixf" );
+  declareProcedure( pen_glmulttransposematrixd_t, "pen.glmulttransposematrixd" );
+  declareProcedure( pen_glmulttransposematrixf_t, "pen.glmulttransposematrixf" );
+  declareProcedure( pen_glsamplecoverage_t, "pen.glsamplecoverage" );
+  declareProcedure( pen_glactivetexturearb_t, "pen.glactivetexturearb" );
+  declareProcedure( pen_glclientactivetexturearb_t, "pen.glclientactivetexturearb" );
+  declareProcedure( pen_glmultitexcoord1darb_t, "pen.glmultitexcoord1darb" );
+  declareProcedure( pen_glmultitexcoord1dvarb_t, "pen.glmultitexcoord1dvarb" );
+  declareProcedure( pen_glmultitexcoord1farb_t, "pen.glmultitexcoord1farb" );
+  declareProcedure( pen_glmultitexcoord1fvarb_t, "pen.glmultitexcoord1fvarb" );
+  declareProcedure( pen_glmultitexcoord1iarb_t, "pen.glmultitexcoord1iarb" );
+  declareProcedure( pen_glmultitexcoord1ivarb_t, "pen.glmultitexcoord1ivarb" );
+  declareProcedure( pen_glmultitexcoord1sarb_t, "pen.glmultitexcoord1sarb" );
+  declareProcedure( pen_glmultitexcoord1svarb_t, "pen.glmultitexcoord1svarb" );
+  declareProcedure( pen_glmultitexcoord2darb_t, "pen.glmultitexcoord2darb" );
+  declareProcedure( pen_glmultitexcoord2dvarb_t, "pen.glmultitexcoord2dvarb" );
+  declareProcedure( pen_glmultitexcoord2farb_t, "pen.glmultitexcoord2farb" );
+  declareProcedure( pen_glmultitexcoord2fvarb_t, "pen.glmultitexcoord2fvarb" );
+  declareProcedure( pen_glmultitexcoord2iarb_t, "pen.glmultitexcoord2iarb" );
+  declareProcedure( pen_glmultitexcoord2ivarb_t, "pen.glmultitexcoord2ivarb" );
+  declareProcedure( pen_glmultitexcoord2sarb_t, "pen.glmultitexcoord2sarb" );
+  declareProcedure( pen_glmultitexcoord2svarb_t, "pen.glmultitexcoord2svarb" );
+  declareProcedure( pen_glmultitexcoord3darb_t, "pen.glmultitexcoord3darb" );
+  declareProcedure( pen_glmultitexcoord3dvarb_t, "pen.glmultitexcoord3dvarb" );
+  declareProcedure( pen_glmultitexcoord3farb_t, "pen.glmultitexcoord3farb" );
+  declareProcedure( pen_glmultitexcoord3fvarb_t, "pen.glmultitexcoord3fvarb" );
+  declareProcedure( pen_glmultitexcoord3iarb_t, "pen.glmultitexcoord3iarb" );
+  declareProcedure( pen_glmultitexcoord3ivarb_t, "pen.glmultitexcoord3ivarb" );
+  declareProcedure( pen_glmultitexcoord3sarb_t, "pen.glmultitexcoord3sarb" );
+  declareProcedure( pen_glmultitexcoord3svarb_t, "pen.glmultitexcoord3svarb" );
+  declareProcedure( pen_glmultitexcoord4darb_t, "pen.glmultitexcoord4darb" );
+  declareProcedure( pen_glmultitexcoord4dvarb_t, "pen.glmultitexcoord4dvarb" );
+  declareProcedure( pen_glmultitexcoord4farb_t, "pen.glmultitexcoord4farb" );
+  declareProcedure( pen_glmultitexcoord4fvarb_t, "pen.glmultitexcoord4fvarb" );
+  declareProcedure( pen_glmultitexcoord4iarb_t, "pen.glmultitexcoord4iarb" );
+  declareProcedure( pen_glmultitexcoord4ivarb_t, "pen.glmultitexcoord4ivarb" );
+  declareProcedure( pen_glmultitexcoord4sarb_t, "pen.glmultitexcoord4sarb" );
+  declareProcedure( pen_glmultitexcoord4svarb_t, "pen.glmultitexcoord4svarb" );
+  declareFunction(  pen_glcreatedebugobjectmesa_t, "pen.glcreatedebugobjectmesa" );
+  declareProcedure( pen_glcleardebuglogmesa_t, "pen.glcleardebuglogmesa" );
+  declareProcedure( pen_glgetdebuglogmesa_t, "pen.glgetdebuglogmesa" );
+  declareFunction(  pen_glgetdebugloglengthmesa_t, "pen.glgetdebugloglengthmesa" );
+  declareProcedure( pen_glprogramcallbackmesa_t, "pen.glprogramcallbackmesa" );
+  declareProcedure( pen_glgetprogramregisterfvmesa_t, "pen.glgetprogramregisterfvmesa" );
+  declareProcedure( pen_glframebuffertexturelayerext_t, "pen.glframebuffertexturelayerext" );
+  declareProcedure( pen_glblendequationseparateati_t, "pen.glblendequationseparateati" );
+  declareProcedure( pen_gleglimagetargettexture2does_t, "pen.gleglimagetargettexture2does" );
+  declareProcedure( pen_gleglimagetargetrenderbufferstorageoes_t, "pen.gleglimagetargetrenderbufferstorageoes" );
+  declareProcedure( pen_glubegincurve_t, "pen.glubegincurve" );
+  declareProcedure( pen_glubeginpolygon_t, "pen.glubeginpolygon" );
+  declareProcedure( pen_glubeginsurface_t, "pen.glubeginsurface" );
+  declareProcedure( pen_glubegintrim_t, "pen.glubegintrim" );
+  declareFunction(  pen_glubuild1dmipmaplevels_t, "pen.glubuild1dmipmaplevels" );
+  declareFunction(  pen_glubuild1dmipmaps_t, "pen.glubuild1dmipmaps" );
+  declareFunction(  pen_glubuild2dmipmaplevels_t, "pen.glubuild2dmipmaplevels" );
+  declareFunction(  pen_glubuild2dmipmaps_t, "pen.glubuild2dmipmaps" );
+  declareFunction(  pen_glubuild3dmipmaplevels_t, "pen.glubuild3dmipmaplevels" );
+  declareFunction(  pen_glubuild3dmipmaps_t, "pen.glubuild3dmipmaps" );
+  declareFunction(  pen_glucheckextension_t, "pen.glucheckextension" );
+  declareProcedure( pen_glucylinder_t, "pen.glucylinder" );
+  declareProcedure( pen_gludeletenurbsrenderer_t, "pen.gludeletenurbsrenderer" );
+  declareProcedure( pen_gludeletequadric_t, "pen.gludeletequadric" );
+  declareProcedure( pen_gludeletetess_t, "pen.gludeletetess" );
+  declareProcedure( pen_gludisk_t, "pen.gludisk" );
+  declareProcedure( pen_gluendcurve_t, "pen.gluendcurve" );
+  declareProcedure( pen_gluendpolygon_t, "pen.gluendpolygon" );
+  declareProcedure( pen_gluendsurface_t, "pen.gluendsurface" );
+  declareProcedure( pen_gluendtrim_t, "pen.gluendtrim" );
+  declareFunction(  pen_gluerrorstring_t, "pen.gluerrorstring" );
+  declareProcedure( pen_glugetnurbsproperty_t, "pen.glugetnurbsproperty" );
+  declareFunction(  pen_glugetstring_t, "pen.glugetstring" );
+  declareProcedure( pen_glugettessproperty_t, "pen.glugettessproperty" );
+  declareProcedure( pen_gluloadsamplingmatrices_t, "pen.gluloadsamplingmatrices" );
+  declareProcedure( pen_glulookat_t, "pen.glulookat" );
+  declareFunction(  pen_glunewnurbsrenderer_t, "pen.glunewnurbsrenderer" );
+  declareFunction(  pen_glunewquadric_t, "pen.glunewquadric" );
+  declareFunction(  pen_glunewtess_t, "pen.glunewtess" );
+  declareProcedure( pen_glunextcontour_t, "pen.glunextcontour" );
+  declareProcedure( pen_glunurbscallback_t, "pen.glunurbscallback" );
+  declareProcedure( pen_glunurbscallbackdata_t, "pen.glunurbscallbackdata" );
+  declareProcedure( pen_glunurbscallbackdataext_t, "pen.glunurbscallbackdataext" );
+  declareProcedure( pen_glunurbscurve_t, "pen.glunurbscurve" );
+  declareProcedure( pen_glunurbsproperty_t, "pen.glunurbsproperty" );
+  declareProcedure( pen_glunurbssurface_t, "pen.glunurbssurface" );
+  declareProcedure( pen_gluortho2d_t, "pen.gluortho2d" );
+  declareProcedure( pen_glupartialdisk_t, "pen.glupartialdisk" );
+  declareProcedure( pen_gluperspective_t, "pen.gluperspective" );
+  declareProcedure( pen_glupickmatrix_t, "pen.glupickmatrix" );
+  declareFunction(  pen_gluproject_t, "pen.gluproject" );
+  declareProcedure( pen_glupwlcurve_t, "pen.glupwlcurve" );
+  declareProcedure( pen_gluquadriccallback_t, "pen.gluquadriccallback" );
+  declareProcedure( pen_gluquadricdrawstyle_t, "pen.gluquadricdrawstyle" );
+  declareProcedure( pen_gluquadricnormals_t, "pen.gluquadricnormals" );
+  declareProcedure( pen_gluquadricorientation_t, "pen.gluquadricorientation" );
+  declareProcedure( pen_gluquadrictexture_t, "pen.gluquadrictexture" );
+  declareFunction(  pen_gluscaleimage_t, "pen.gluscaleimage" );
+  declareProcedure( pen_glusphere_t, "pen.glusphere" );
+  declareProcedure( pen_glutessbegincontour_t, "pen.glutessbegincontour" );
+  declareProcedure( pen_glutessbeginpolygon_t, "pen.glutessbeginpolygon" );
+  declareProcedure( pen_glutesscallback_t, "pen.glutesscallback" );
+  declareProcedure( pen_glutessendcontour_t, "pen.glutessendcontour" );
+  declareProcedure( pen_glutessendpolygon_t, "pen.glutessendpolygon" );
+  declareProcedure( pen_glutessnormal_t, "pen.glutessnormal" );
+  declareProcedure( pen_glutessproperty_t, "pen.glutessproperty" );
+  declareProcedure( pen_glutessvertex_t, "pen.glutessvertex" );
+  declareFunction(  pen_gluunproject_t, "pen.gluunproject" );
+  declareFunction(  pen_gluunproject4_t, "pen.gluunproject4" );
+
 end StartupPen;
 
 
@@ -3806,3 +16050,4 @@ begin
 end ShutdownPen;
 
 end parser_pen;
+
