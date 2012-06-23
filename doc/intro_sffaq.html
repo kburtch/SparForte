@@ -89,6 +89,11 @@ is the original AdaScript interpreter.  Since the language and the
 interpreter names are different, other projects can be developed using
 AdaScript--even other interpeters.</p>
 
+<h4>Do I need to know Ada to learn AdaScript?</h4>
+
+<p>No.  In fact, AdaScript may be easier to learn than Ada.  Also, the
+documentation doesn't assume knowledge of another language.</p>
+
 <h4>What are the biggest differences between Ada and AdaScript?</h4>
 
 <p>AdaScript is intended to be a subset of Ada 95 with extensions
@@ -204,6 +209,10 @@ yourself out when exiting several shells quickly using Control-D.</p>
 <p>Follow the instructions in the INSTALL text file included with
 your download.</p>
 
+<h4>Are there any Linux distributions that carry SparForte?</h4>
+
+<p>At the last time I checked, SparForte is available on ArchLinux.</p>
+
 <h4>How Do I Report a Sparforte Bug?</h4>
 
 <p>Follow the instructions in the Intro/Preface section of this
@@ -252,7 +261,7 @@ small script in the backquotes not the main script.</p>
 
 <p>There are built-in functions to do this.  <tt>numerics.value</tt> converts
 a string to its equivalent value: numerics.value("5") returns 5.
-<tt>numerics.pos</tt> returns the ASCII value: numerics.pos( "A" )
+<tt>numerics.pos</tt> returns the Latin-1 value: numerics.pos( "A" )
 returns 65.</p>
 
 <h4>When I convert numbers to strings, why do they sometimes have a leading space character?</h4>
@@ -390,9 +399,16 @@ doing during a test.</p>
 <h4>Is there a libspar I can call to run Spar scripts from another
 language, like I can with lua?</h4>
 
+<p>AdaScript is an interpreted language: the "spar" interpreter must be used
+to run a program.</p>
+
 <p>Business Shell 2.0 had a "libbush" that could be called to run
 scripts from C.  Expect this feature to be backported eventually
 into SparForte 1.x.</p>
+
+<h4>Is there something like "use" or "static with" so I can use "length" instead of "strings.length"?</h4>
+
+<p>Not yet.  There will be more information on this in future versions.</p>
 
 <h3>Design Questions</h3>
 
@@ -418,7 +434,7 @@ by other languages.</h4>
 <p>Ada is standard on most versions of Linux.  It remains one of the
 the top 10/top 20 (depending on which survey you read) langauges in
 the world.  It is the most popular language for high-reliability
-applications.  Ada has not be surplanted by Java or PHP because
+applications.  Ada has not been surplanted by Java or PHP because
 those languages traditionally solve different problems and target
 different audiences than Ada.</p>
 
@@ -437,6 +453,20 @@ lasting decades.  It can also be turned off.</p>
 <p>The command line SQL support is an attempt to address the problem
 of "mode errors" (right command typed in the wrong interpeter or
 "mode".   This also can be turned off.</p>
+
+<h4>Is AdaScript an enterprise language?</h4>
+
+<p>There is no strict definition of an enterprise language.  However, if you
+consider "enterprise" to mean large applications with code reuse and features
+such as strong typing to support quality programming, then you could consider
+SparForte an enterprise language.</p>
+
+<h4>Is AdaScript a cloud language?</h4>
+
+<p>There is no strict definition of an cloud language.  However, if you
+consider "cloud" to mean to ability to create networked applications and to
+access shared services like memcached, then you could consider SparForte to
+be a cloud language.</p>
 
 <h4>Can strong typing be used successfully in a shell?</h4>
 
@@ -462,6 +492,40 @@ had heard of Python and before Python was popular.</p>
 <h4>Why are there no objects or exceptions?</h4>
 
 <p>Objects, exceptions, user-defined packages, etc. are scheduled to be added to Sparforte.  See the project roadmap map.</p>
+
+<h4>Why does AdaScript allow global variables?  Some experts say they
+are bad.</h4>
+
+<p>Currently, the only way to limit scope is a subprogram or a declare
+statement.  A variable is global if it is declared at the top level of the
+main script.  Expect more ways to control scope in the future.</p>
+
+<p>More generally, opponents of global variables are concerned that these
+variables can be unexpectedly modified by any piece of programming
+and can lead to thread-unsafe programs.  Supporters of global variables
+point out their convenience for short scripts, how large parameter lists
+with repeated variables are difficult to read and maintain, and that
+globals can be safely used by tacit agreement between programmers.</p>
+
+<p>Since AdaScript is a shell and scripting language, global variables are
+often useful.  They are also necessary for compatibility with Ada.</p>
+
+<h4>Why does AdaScript lack goto statments?  Some experts say they are bad.</h4>
+
+<p>AdaScript doesn't have a goto statements because of the complexity of
+implementing gotos.</p>
+
+<p>The goto has had opponents back to the 1960's when programming languages were
+less developed.  The belief was that an inexperienced programmer could misuse
+the statement and create programs that were difficult to read and maintain.
+Supporters of goto believe that the statement can improve readability and
+maintenance in some cases: it is useful for breaking out of deeply nested loops,
+handing certain types of errors (like retry conditions), implementing alternate
+entry/exit points for initialization/cleanup (eliminating duplicate code),
+that labels can improve readability by documenting intent. They also
+believe that goto statements can improve performance as a result.</p>
+
+<p>The goto statement may be implemented in the future.</p>
 
 <h4>Is SparForte innovative?</h4>
 
