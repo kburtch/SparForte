@@ -91,11 +91,23 @@ done
 echo "Configuring SparForte..."
 sleep 1
 echo
-echo -n "checking for locate command... "
-locate --help >/dev/null 2>/dev/null
+LOCATE="glocate"
+echo -n "checking for locate ($LOCATE)... "
+"$LOCATE" --help >/dev/null 2>/dev/null
 if [ $? -ne 0 ] ; then
-   # freebsd has different parameters
-   locate thisisafakepatternbecausefreebsdlocatehasnohelp >/dev/null 2>/dev/null
+  echo "no"
+  LOCATE="locate"
+  echo -n "checking for locate ($LOCATE)... "
+  "$LOCATE" --help >/dev/null 2>/dev/null
+  if [ $? -ne 0 ] ; then
+     echo "no"
+     # freebsd 8 has different parameters
+     "$LOCATE" thisisafakepatternbecausefreebsdlocatehasnohelp >/dev/null 2>/dev/null
+  else
+     echo "yes"
+  fi
+else
+  echo "yes"
 fi
 if [ $? -ne 0 ] ; then
    echo "Could not run locate"
@@ -105,8 +117,6 @@ if [ $? -ne 0 ] ; then
    echo
    echo "Please install GNU locate and run updatedb (as root)."
    exit 1
-else
-   echo "yes"
 fi
 cd src
 echo -n "checking for OS (uname -s)... "
@@ -252,8 +262,16 @@ if test -f bush_os.ali ; then
       exit 1
    fi
 fi
-echo -n "checking for gcc w/Ada (with gcc)... "
+echo -n "checking for gcc ... "
 CC="gcc"
+(exec $CC --version >/dev/null 2>/dev/null)
+if [ $? -eq 0 ] ; then
+   echo "yes"
+else
+   echo "no"
+   exit 1
+fi
+echo -n "checking for gcc w/Ada (with gcc)... "
 (exec $CC -c bush_os.ads >/dev/null 2>/dev/null)
 #FreeBSD requires exec in a subshell because a command not found error
 #is reported before the stderr redirect
@@ -324,9 +342,9 @@ if [ -z "$TMP" ] ; then
       else
          echo "no"
          echo -n "checking for static libgnat.a only (e.g. Slackware)... "
-         TMP=`/usr/bin/locate adalib/libgnat`
+         TMP=`"$LOCATE" adalib/libgnat`
          if [ $? -eq 0 ] ; then
-            TMP2=`/usr/bin/locate adalib/libgnat.a`
+            TMP2=`"$LOCATE" adalib/libgnat.a`
          else
             TMP2="fail-me"
          fi
@@ -503,7 +521,8 @@ if test -r bush_os-sdl.ads ; then
    echo " (cached, make distclean to remove)";
 else
    cd ../test
-   (exec gcc sdlversion.c -lSDL > /dev/null 2>/dev/null )
+   # FreeBSD 9 /usr/local
+   (exec "$CC" sdlversion.c -I/usr/local/include -L/usr/local/lib -lSDL > /dev/null 2>/dev/null )
    TMP=`./a.out`
    rm a.out
    cd ../src
@@ -519,6 +538,7 @@ else
       echo "unknown"
       echo
       echo "Unable to determine if 32-bit or 64-bit SDL is being used."
+      echo "Do you have libSDL installed?"
       exit 192
    fi
 fi

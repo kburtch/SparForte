@@ -584,6 +584,8 @@ pen_glclampd_t : identifier;
 
 -- C arrays
 
+-- pen_gl_double_array_matrix_t : identifier;
+
 -- OpenGL Constants
 
 pen_gl_false_t : identifier;

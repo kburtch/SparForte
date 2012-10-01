@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2012 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -22,7 +22,8 @@
 ------------------------------------------------------------------------------
 
 with text_io;use text_io;
-with interfaces.c,
+with system,
+    interfaces.c,
     pen,
     bush_os.sdl,
     bush_os.opengl,
@@ -2482,11 +2483,15 @@ procedure ParsePenglGetString( result : out unbounded_string ) is
   name_val  : unbounded_string;
   name_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgetstring_t );
   ParseSingleNumericParameter( name_val, name_type, pen_glenum_t ); -- name : GLenum
   if isExecutingCommand then
+    declare
+      c_string_loc : system.address;
     begin
-      result := to_unbounded_string( long_float( glGetString( GLenum( to_numeric( name_val ) ) ) ) );
+      c_string_loc := glGetString( GLenum( to_numeric( name_val ) ) );
+      result := null_unbounded_string; -- TODO: convert C string to ada string
     exception when others =>
       err( "exception raised" );
     end;
@@ -2811,13 +2816,20 @@ procedure ParsePenglLoadMatrixd is
   -- Syntax: glLoadMatrixd( m : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glLoadMatrixd
   m_val  : unbounded_string;
-  m_type : identifier;
+  -- m_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glloadmatrixd_t );
-  ParseSingleNumericParameter( m_val, m_type, pen_gl_double_array_ptr_t ); -- m : GL_Double_Array_Ptr
+  -- TODO: pen_gl_double_array_matrix_t must be a 16 value sparforte array
+  --ParseSingleNumericParameter( m_val, m_type, pen_gl_double_array_matrix_t ); -- m : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Double_Array_Access := new double_array( 0..15 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glLoadMatrixd( GL_Double_Array_Ptr( to_numeric( m_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glLoadMatrixd( param_ptr );
+      free( param_array );
     exception when others =>
       err( "exception raised" );
     end;
@@ -2828,13 +2840,20 @@ procedure ParsePenglLoadMatrixf is
   -- Syntax: glLoadMatrixf( m : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glLoadMatrixf
   m_val  : unbounded_string;
-  m_type : identifier;
+--  m_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glloadmatrixf_t );
-  ParseSingleNumericParameter( m_val, m_type, pen_gl_float_array_ptr_t ); -- m : GL_Float_Array_Ptr
+  -- TODO: pen_gl_float_array_matrix_t must be a 16 value sparforte array
+  --ParseSingleNumericParameter( m_val, m_type, pen_gl_double_array_matrix_t ); -- m : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Float_Array_Access := new float_array( 0..15 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glLoadMatrixf( GL_Float_Array_Ptr( to_numeric( m_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glLoadMatrixf( param_ptr );
+      free( param_array );
     exception when others =>
       err( "exception raised" );
     end;
@@ -2845,13 +2864,20 @@ procedure ParsePenglMultMatrixd is
   -- Syntax: glMultMatrixd( m : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glMultMatrixd
   m_val  : unbounded_string;
-  m_type : identifier;
+--  m_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultmatrixd_t );
-  ParseSingleNumericParameter( m_val, m_type, pen_gl_double_array_ptr_t ); -- m : GL_Double_Array_Ptr
+  -- TODO: pen_gl_double_array_matrix_t must be a 16 value sparforte array
+  --ParseSingleNumericParameter( m_val, m_type, pen_gl_double_array_matrix_t ); -- m : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Double_Array_Access := new double_array( 0..15 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glMultMatrixd( GL_Double_Array_Ptr( to_numeric( m_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glMultMatrixd( param_ptr );
+      free( param_array );
     exception when others =>
       err( "exception raised" );
     end;
@@ -2862,13 +2888,20 @@ procedure ParsePenglMultMatrixf is
   -- Syntax: glMultMatrixf( m : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glMultMatrixf
   m_val  : unbounded_string;
-  m_type : identifier;
+--  m_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultmatrixf_t );
-  ParseSingleNumericParameter( m_val, m_type, pen_gl_float_array_ptr_t ); -- m : GL_Float_Array_Ptr
+  -- TODO: pen_gl_float_array_matrix_t must be a 16 value sparforte array
+  --ParseSingleNumericParameter( m_val, m_type, pen_gl_float_array_matrix_t ); -- m : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Float_Array_Access := new float_array( 0..15 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glMultMatrixf( GL_Float_Array_Ptr( to_numeric( m_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glMultMatrixf( param_ptr );
+      free( param_array );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3132,15 +3165,20 @@ procedure ParsePenglCallLists is
   kind_val  : unbounded_string;
   kind_type : identifier;
   lists_val  : unbounded_string;
-  lists_type : identifier;
+  --lists_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcalllists_t );
   ParseFirstNumericParameter( n_val, n_type, pen_glsizei_t ); -- n : GLsizei
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( lists_val, lists_type, pen_system.address_t ); -- lists : System.address
+  -- TODO: system.address is a pointer to a GL call list.
+  --ParseLastNumericParameter( lists_val, lists_type, pen_system.address_t ); -- lists : System.address
   if isExecutingCommand then
+    declare
+      fakeList : integer;
+      callList : system.address := fakeList'address;
     begin
-      glCallLists( GLsizei( to_numeric( n_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( lists_val ) ) );
+      glCallLists( GLsizei( to_numeric( n_val ) ), GLtypes( to_numeric( kind_val ) ), callList );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3475,13 +3513,19 @@ procedure ParsePenglVertex2dv is
   -- Syntax: glVertex2dv( v : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glVertex2dv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glvertex2dv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  -- TODO: must be a 2 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Double_Array_Access := new double_array( 0..1 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glVertex2dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glVertex2dv( param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3492,13 +3536,19 @@ procedure ParsePenglVertex2fv is
   -- Syntax: glVertex2fv( v : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glVertex2fv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glvertex2fv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  -- TODO: must be a 2 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Float_Array_Access := new float_array( 0..1 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glVertex2fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glVertex2fv( param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3509,13 +3559,19 @@ procedure ParsePenglVertex2iv is
   -- Syntax: glVertex2iv( v : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glVertex2iv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glvertex2iv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  -- TODO: must be a 2 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Int_Array_Access := new int_array( 0..1 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glVertex2iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glVertex2iv( param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3526,13 +3582,19 @@ procedure ParsePenglVertex2sv is
   -- Syntax: glVertex2sv( v : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glVertex2sv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glvertex2sv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  -- TODO: must be a 2 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Short_Array_Access := new short_array( 0..1 );
+      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
     begin
-      glVertex2sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glVertex2sv( param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3543,13 +3605,19 @@ procedure ParsePenglVertex3dv is
   -- Syntax: glVertex3dv( v : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glVertex3dv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glvertex3dv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Double_Array_Access := new double_array( 0..2 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glVertex3dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glVertex3dv( param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3560,13 +3628,19 @@ procedure ParsePenglVertex3fv is
   -- Syntax: glVertex3fv( v : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glVertex3fv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glvertex3fv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Float_Array_Access := new float_array( 0..2 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glVertex3fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glVertex3fv( param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3577,13 +3651,19 @@ procedure ParsePenglVertex3iv is
   -- Syntax: glVertex3iv( v : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glVertex3iv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glvertex3iv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Int_Array_Access := new int_array( 0..2 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glVertex3iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glVertex3iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3594,13 +3674,19 @@ procedure ParsePenglVertex3sv is
   -- Syntax: glVertex3sv( v : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glVertex3sv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glvertex3sv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Short_Array_Access := new short_array( 0..2 );
+      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
     begin
-      glVertex3sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glVertex3sv( param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3611,13 +3697,19 @@ procedure ParsePenglVertex4dv is
   -- Syntax: glVertex4dv( v : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glVertex4dv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glvertex4dv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  -- TODO: must be a 4 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Double_Array_Access := new double_array( 0..3 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glVertex4dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glVertex4dv( param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3628,13 +3720,19 @@ procedure ParsePenglVertex4fv is
   -- Syntax: glVertex4fv( v : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glVertex4fv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glvertex4fv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  -- TODO: must be a 4 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Float_Array_Access := new float_array( 0..3 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glVertex4fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glVertex4fv( param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3645,13 +3743,19 @@ procedure ParsePenglVertex4iv is
   -- Syntax: glVertex4iv( v : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glVertex4iv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glvertex4iv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  -- TODO: must be a 4 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Int_Array_Access := new int_array( 0..3 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glVertex4iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glVertex4iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3662,13 +3766,19 @@ procedure ParsePenglVertex4sv is
   -- Syntax: glVertex4sv( v : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glVertex4sv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glvertex4sv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  -- TODO: must be a 4 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Short_Array_Access := new short_array( 0..3 );
+      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
     begin
-      glVertex4sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glVertex4sv( param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3794,13 +3904,19 @@ procedure ParsePenglNormal3bv is
   -- Syntax: glNormal3bv( v : GL_Byte_Array_Ptr );
   -- Source: bush_os.opengl.glNormal3bv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glnormal3bv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_byte_array_ptr_t ); -- v : GL_Byte_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_byte_array_ptr_t ); -- v : GL_Byte_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Byte_Array_Access := new byte_array( 0..2 );
+      param_ptr   : GL_Byte_Array_Ptr := GL_Byte_Array_Conv.To_Address( param_array );
     begin
-      glNormal3bv( GL_Byte_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glNormal3bv( GL_Byte_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3811,13 +3927,19 @@ procedure ParsePenglNormal3dv is
   -- Syntax: glNormal3dv( v : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glNormal3dv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glnormal3dv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Double_Array_Access := new double_array( 0..2 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glNormal3dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glNormal3dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3828,13 +3950,19 @@ procedure ParsePenglNormal3fv is
   -- Syntax: glNormal3fv( v : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glNormal3fv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glnormal3fv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Float_Array_Access := new float_array( 0..2 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glNormal3fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glNormal3fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3845,13 +3973,19 @@ procedure ParsePenglNormal3iv is
   -- Syntax: glNormal3iv( v : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glNormal3iv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glnormal3iv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Int_Array_Access := new int_array( 0..2 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glNormal3iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glNormal3iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3862,13 +3996,19 @@ procedure ParsePenglNormal3sv is
   -- Syntax: glNormal3sv( v : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glNormal3sv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glnormal3sv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Short_Array_Access := new short_array( 0..2 );
+      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
     begin
-      glNormal3sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glNormal3sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3964,13 +4104,19 @@ procedure ParsePenglIndexdv is
   -- Syntax: glIndexdv( c : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glIndexdv
   c_val  : unbounded_string;
-  c_type : identifier;
+--  c_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glindexdv_t );
-  ParseSingleNumericParameter( c_val, c_type, pen_gl_double_array_ptr_t ); -- c : GL_Double_Array_Ptr
+  -- TODO: must be a 1 value sparforte array
+  --ParseSingleNumericParameter( c_val, c_type, pen_gl_double_array_ptr_t ); -- c : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Double_Array_Access := new double_array( 0..0 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glIndexdv( GL_Double_Array_Ptr( to_numeric( c_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glIndexdv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3981,13 +4127,19 @@ procedure ParsePenglIndexfv is
   -- Syntax: glIndexfv( c : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glIndexfv
   c_val  : unbounded_string;
-  c_type : identifier;
+--  c_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glindexfv_t );
-  ParseSingleNumericParameter( c_val, c_type, pen_gl_float_array_ptr_t ); -- c : GL_Float_Array_Ptr
+  -- TODO: must be a 1 value sparforte array
+  --ParseSingleNumericParameter( c_val, c_type, pen_gl_float_array_ptr_t ); -- c : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glIndexfv( GL_Float_Array_Ptr( to_numeric( c_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glIndexfv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -3998,13 +4150,19 @@ procedure ParsePenglIndexiv is
   -- Syntax: glIndexiv( c : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glIndexiv
   c_val  : unbounded_string;
-  c_type : identifier;
+--  c_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glindexiv_t );
-  ParseSingleNumericParameter( c_val, c_type, pen_gl_int_array_ptr_t ); -- c : GL_Int_Array_Ptr
+  -- TODO: must be a 1 value sparforte array
+  --ParseSingleNumericParameter( c_val, c_type, pen_gl_int_array_ptr_t ); -- c : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glIndexiv( GL_Int_Array_Ptr( to_numeric( c_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glIndexiv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4015,13 +4173,19 @@ procedure ParsePenglIndexsv is
   -- Syntax: glIndexsv( c : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glIndexsv
   c_val  : unbounded_string;
-  c_type : identifier;
+--  c_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glindexsv_t );
-  ParseSingleNumericParameter( c_val, c_type, pen_gl_short_array_ptr_t ); -- c : GL_Short_Array_Ptr
+  -- TODO: must be a 1 value sparforte array
+  --ParseSingleNumericParameter( c_val, c_type, pen_gl_short_array_ptr_t ); -- c : GL_Short_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Short_Array_Access := new short_array( 0..0 );
+      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
     begin
-      glIndexsv( GL_Short_Array_Ptr( to_numeric( c_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glIndexsv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4032,13 +4196,19 @@ procedure ParsePenglIndexubv is
   -- Syntax: glIndexubv( c : GL_UByte_Array_Ptr ); -- /* 1.1 */
   -- Source: bush_os.opengl.glIndexubv
   c_val  : unbounded_string;
-  c_type : identifier;
+--  c_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glindexubv_t );
-  ParseSingleNumericParameter( c_val, c_type, pen_gl_ubyte_array_ptr_t ); -- c : GL_UByte_Array_Ptr
+  -- TODO: must be a 1 value sparforte array
+  --ParseSingleNumericParameter( c_val, c_type, pen_gl_ubyte_array_ptr_t ); -- c : GL_UByte_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_UByte_Array_Access := new ubyte_array( 0..0 );
+      param_ptr   : GL_UByte_Array_Ptr := GL_UByte_Array_Conv.To_Address( param_array );
     begin
-      glIndexubv( GL_UByte_Array_Ptr( to_numeric( c_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glIndexubv( GL_UByte_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4441,13 +4611,19 @@ procedure ParsePenglColor3bv is
   -- Syntax: glColor3bv( v : GL_Byte_Array_Ptr );
   -- Source: bush_os.opengl.glColor3bv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolor3bv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_byte_array_ptr_t ); -- v : GL_Byte_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_byte_array_ptr_t ); -- v : GL_Byte_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Byte_Array_Access := new byte_array( 0..2 );
+      param_ptr   : GL_Byte_Array_Ptr := GL_Byte_Array_Conv.To_Address( param_array );
     begin
-      glColor3bv( GL_Byte_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glColor3bv( GL_Byte_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4458,13 +4634,19 @@ procedure ParsePenglColor3dv is
   -- Syntax: glColor3dv( v : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glColor3dv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolor3dv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Double_Array_Access := new double_array( 0..2 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glColor3dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glColor3dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4475,13 +4657,19 @@ procedure ParsePenglColor3fv is
   -- Syntax: glColor3fv( v : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glColor3fv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolor3fv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Float_Array_Access := new float_array( 0..2 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glColor3fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glColor3fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4492,13 +4680,19 @@ procedure ParsePenglColor3iv is
   -- Syntax: glColor3iv( v : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glColor3iv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolor3iv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Int_Array_Access := new int_array( 0..2 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glColor3iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glColor3iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4509,13 +4703,19 @@ procedure ParsePenglColor3sv is
   -- Syntax: glColor3sv( v : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glColor3sv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolor3sv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Short_Array_Access := new short_array( 0..2 );
+      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
     begin
-      glColor3sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glColor3sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4526,13 +4726,19 @@ procedure ParsePenglColor3ubv is
   -- Syntax: glColor3ubv( v : GL_UByte_Array_Ptr );
   -- Source: bush_os.opengl.glColor3ubv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolor3ubv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_ubyte_array_ptr_t ); -- v : GL_UByte_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_ubyte_array_ptr_t ); -- v : GL_UByte_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_UByte_Array_Access := new ubyte_array( 0..2 );
+      param_ptr   : GL_UByte_Array_Ptr := GL_UByte_Array_Conv.To_Address( param_array );
     begin
-      glColor3ubv( GL_UByte_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glColor3ubv( GL_UByte_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4543,13 +4749,19 @@ procedure ParsePenglColor3uiv is
   -- Syntax: glColor3uiv( v : GL_UInt_Array_Ptr );
   -- Source: bush_os.opengl.glColor3uiv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolor3uiv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_uint_array_ptr_t ); -- v : GL_UInt_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_uint_array_ptr_t ); -- v : GL_UInt_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_UInt_Array_Access := new uint_array( 0..2 );
+      param_ptr   : GL_UInt_Array_Ptr := GL_UInt_Array_Conv.To_Address( param_array );
     begin
-      glColor3uiv( GL_UInt_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glColor3uiv( GL_UInt_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4560,13 +4772,19 @@ procedure ParsePenglColor3usv is
   -- Syntax: glColor3usv( v : GL_UShort_Array_Ptr );
   -- Source: bush_os.opengl.glColor3usv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolor3usv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_ushort_array_ptr_t ); -- v : GL_UShort_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_ushort_array_ptr_t ); -- v : GL_UShort_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_UShort_Array_Access := new ushort_array( 0..2 );
+      param_ptr   : GL_UShort_Array_Ptr := GL_UShort_Array_Conv.To_Address( param_array );
     begin
-      glColor3usv( GL_UShort_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glColor3usv( GL_UShort_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4577,13 +4795,19 @@ procedure ParsePenglColor4bv is
   -- Syntax: glColor4bv( v : GL_Byte_Array_Ptr );
   -- Source: bush_os.opengl.glColor4bv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolor4bv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_byte_array_ptr_t ); -- v : GL_Byte_Array_Ptr
+  -- TODO: must be a 4 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_byte_array_ptr_t ); -- v : GL_Byte_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Byte_Array_Access := new byte_array( 0..3 );
+      param_ptr   : GL_Byte_Array_Ptr := GL_Byte_Array_Conv.To_Address( param_array );
     begin
-      glColor4bv( GL_Byte_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glColor4bv( GL_Byte_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4594,13 +4818,19 @@ procedure ParsePenglColor4dv is
   -- Syntax: glColor4dv( v : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glColor4dv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolor4dv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  -- TODO: must be a 4 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Double_Array_Access := new double_array( 0..3 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glColor4dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glColor4dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4611,13 +4841,19 @@ procedure ParsePenglColor4fv is
   -- Syntax: glColor4fv( v : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glColor4fv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolor4fv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  -- TODO: must be a 4 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Float_Array_Access := new float_array( 0..3 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glColor4fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glColor4fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4628,13 +4864,19 @@ procedure ParsePenglColor4iv is
   -- Syntax: glColor4iv( v : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glColor4iv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolor4iv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  -- TODO: must be a 4 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Int_Array_Access := new int_array( 0..3 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glColor4iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glColor4iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4645,13 +4887,19 @@ procedure ParsePenglColor4sv is
   -- Syntax: glColor4sv( v : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glColor4sv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolor4sv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  -- TODO: must be a 4 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Short_Array_Access := new short_array( 0..3 );
+      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
     begin
-      glColor4sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glColor4sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4662,13 +4910,19 @@ procedure ParsePenglColor4ubv is
   -- Syntax: glColor4ubv( v : GL_UByte_Array_Ptr );
   -- Source: bush_os.opengl.glColor4ubv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolor4ubv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_ubyte_array_ptr_t ); -- v : GL_UByte_Array_Ptr
+  -- TODO: must be a 4 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_ubyte_array_ptr_t ); -- v : GL_UByte_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_UByte_Array_Access := new ubyte_array( 0..3 );
+      param_ptr   : GL_UByte_Array_Ptr := GL_UByte_Array_Conv.To_Address( param_array );
     begin
-      glColor4ubv( GL_UByte_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glColor4ubv( GL_UByte_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4679,13 +4933,19 @@ procedure ParsePenglColor4uiv is
   -- Syntax: glColor4uiv( v : GL_UInt_Array_Ptr );
   -- Source: bush_os.opengl.glColor4uiv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolor4uiv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_uint_array_ptr_t ); -- v : GL_UInt_Array_Ptr
+  -- TODO: must be a 4 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_uint_array_ptr_t ); -- v : GL_UInt_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_UInt_Array_Access := new uint_array( 0..3 );
+      param_ptr   : GL_UInt_Array_Ptr := GL_UInt_Array_Conv.To_Address( param_array );
     begin
-      glColor4uiv( GL_UInt_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glColor4uiv( GL_UInt_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -4696,13 +4956,19 @@ procedure ParsePenglColor4usv is
   -- Syntax: glColor4usv( v : GL_UShort_Array_Ptr );
   -- Source: bush_os.opengl.glColor4usv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolor4usv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_ushort_array_ptr_t ); -- v : GL_UShort_Array_Ptr
+  -- TODO: must be a 4 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_ushort_array_ptr_t ); -- v : GL_UShort_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_UShort_Array_Access := new ushort_array( 0..3 );
+      param_ptr   : GL_UShort_Array_Ptr := GL_UShort_Array_Conv.To_Address( param_array );
     begin
-      glColor4usv( GL_UShort_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glColor4usv( GL_UShort_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5057,13 +5323,19 @@ procedure ParsePenglTexCoord1dv is
   -- Syntax: glTexCoord1dv( v : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glTexCoord1dv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoord1dv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  -- TODO: must be a 1 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Double_Array_Access := new double_array( 0..0 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glTexCoord1dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glTexCoord1dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5074,13 +5346,19 @@ procedure ParsePenglTexCoord1fv is
   -- Syntax: glTexCoord1fv( v : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glTexCoord1fv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoord1fv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  -- TODO: must be a 1 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glTexCoord1fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glTexCoord1fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5091,13 +5369,19 @@ procedure ParsePenglTexCoord1iv is
   -- Syntax: glTexCoord1iv( v : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glTexCoord1iv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoord1iv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  -- TODO: must be a 1 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glTexCoord1iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glTexCoord1iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5108,13 +5392,19 @@ procedure ParsePenglTexCoord1sv is
   -- Syntax: glTexCoord1sv( v : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glTexCoord1sv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoord1sv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  -- TODO: must be a 1 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Short_Array_Access := new short_array( 0..0 );
+      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
     begin
-      glTexCoord1sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glTexCoord1sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5125,13 +5415,19 @@ procedure ParsePenglTexCoord2dv is
   -- Syntax: glTexCoord2dv( v : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glTexCoord2dv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoord2dv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  -- TODO: must be a 2 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Double_Array_Access := new double_array( 0..1 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glTexCoord2dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glTexCoord2dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5142,13 +5438,19 @@ procedure ParsePenglTexCoord2fv is
   -- Syntax: glTexCoord2fv( v : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glTexCoord2fv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoord2fv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  -- TODO: must be a 2 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Float_Array_Access := new float_array( 0..1 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glTexCoord2fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glTexCoord2fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5159,13 +5461,19 @@ procedure ParsePenglTexCoord2iv is
   -- Syntax: glTexCoord2iv( v : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glTexCoord2iv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoord2iv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  -- TODO: must be a 2 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Int_Array_Access := new int_array( 0..1 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glTexCoord2iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glTexCoord2iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5176,13 +5484,19 @@ procedure ParsePenglTexCoord2sv is
   -- Syntax: glTexCoord2sv( v : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glTexCoord2sv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoord2sv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  -- TODO: must be a 2 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Short_Array_Access := new short_array( 0..1 );
+      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
     begin
-      glTexCoord2sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glTexCoord2sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5193,13 +5507,19 @@ procedure ParsePenglTexCoord3dv is
   -- Syntax: glTexCoord3dv( v : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glTexCoord3dv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoord3dv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Double_Array_Access := new double_array( 0..2 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glTexCoord3dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glTexCoord3dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5210,13 +5530,19 @@ procedure ParsePenglTexCoord3fv is
   -- Syntax: glTexCoord3fv( v : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glTexCoord3fv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoord3fv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Float_Array_Access := new float_array( 0..2 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glTexCoord3fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glTexCoord3fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5227,13 +5553,19 @@ procedure ParsePenglTexCoord3iv is
   -- Syntax: glTexCoord3iv( v : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glTexCoord3iv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoord3iv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Int_Array_Access := new int_array( 0..2 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glTexCoord3iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glTexCoord3iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5244,13 +5576,19 @@ procedure ParsePenglTexCoord3sv is
   -- Syntax: glTexCoord3sv( v : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glTexCoord3sv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoord3sv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Short_Array_Access := new short_array( 0..2 );
+      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
     begin
-      glTexCoord3sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glTexCoord3sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5261,13 +5599,19 @@ procedure ParsePenglTexCoord4dv is
   -- Syntax: glTexCoord4dv( v : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glTexCoord4dv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoord4dv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  -- TODO: must be a 4 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Double_Array_Access := new double_array( 0..3 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glTexCoord4dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glTexCoord4dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5278,13 +5622,19 @@ procedure ParsePenglTexCoord4fv is
   -- Syntax: glTexCoord4fv( v : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glTexCoord4fv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoord4fv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  -- TODO: must be a 4 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Float_Array_Access := new float_array( 0..3 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glTexCoord4fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glTexCoord4fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5295,13 +5645,19 @@ procedure ParsePenglTexCoord4iv is
   -- Syntax: glTexCoord4iv( v : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glTexCoord4iv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoord4iv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  -- TODO: must be a 4 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Int_Array_Access := new int_array( 0..3 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glTexCoord4iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glTexCoord4iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5312,13 +5668,19 @@ procedure ParsePenglTexCoord4sv is
   -- Syntax: glTexCoord4sv( v : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glTexCoord4sv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoord4sv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  -- TODO: must be a 4 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Short_Array_Access := new short_array( 0..3 );
+      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
     begin
-      glTexCoord4sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glTexCoord4sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5605,13 +5967,19 @@ procedure ParsePenglRasterPos2dv is
   -- Syntax: glRasterPos2dv( v : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glRasterPos2dv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glrasterpos2dv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  -- TODO: must be a 2 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Double_Array_Access := new double_array( 0..1 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glRasterPos2dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glRasterPos2dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5622,13 +5990,19 @@ procedure ParsePenglRasterPos2fv is
   -- Syntax: glRasterPos2fv( v : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glRasterPos2fv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glrasterpos2fv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  -- TODO: must be a 2 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Float_Array_Access := new float_array( 0..1 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glRasterPos2fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glRasterPos2fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5639,13 +6013,19 @@ procedure ParsePenglRasterPos2iv is
   -- Syntax: glRasterPos2iv( v : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glRasterPos2iv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glrasterpos2iv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  -- TODO: must be a 2 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Int_Array_Access := new int_array( 0..1 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glRasterPos2iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glRasterPos2iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5656,13 +6036,19 @@ procedure ParsePenglRasterPos2sv is
   -- Syntax: glRasterPos2sv( v : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glRasterPos2sv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glrasterpos2sv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  -- TODO: must be a 2 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Short_Array_Access := new short_array( 0..1 );
+      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
     begin
-      glRasterPos2sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glRasterPos2sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5673,13 +6059,19 @@ procedure ParsePenglRasterPos3dv is
   -- Syntax: glRasterPos3dv( v : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glRasterPos3dv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glrasterpos3dv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Double_Array_Access := new double_array( 0..2 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glRasterPos3dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glRasterPos3dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5690,13 +6082,19 @@ procedure ParsePenglRasterPos3fv is
   -- Syntax: glRasterPos3fv( v : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glRasterPos3fv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glrasterpos3fv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Float_Array_Access := new float_array( 0..2 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glRasterPos3fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glRasterPos3fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5707,13 +6105,19 @@ procedure ParsePenglRasterPos3iv is
   -- Syntax: glRasterPos3iv( v : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glRasterPos3iv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glrasterpos3iv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Int_Array_Access := new int_array( 0..2 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glRasterPos3iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glRasterPos3iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5724,13 +6128,19 @@ procedure ParsePenglRasterPos3sv is
   -- Syntax: glRasterPos3sv( v : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glRasterPos3sv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glrasterpos3sv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Short_Array_Access := new short_array( 0..2 );
+      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
     begin
-      glRasterPos3sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glRasterPos3sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5741,13 +6151,19 @@ procedure ParsePenglRasterPos4dv is
   -- Syntax: glRasterPos4dv( v : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glRasterPos4dv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glrasterpos4dv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Double_Array_Access := new double_array( 0..3 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glRasterPos4dv( GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glRasterPos4dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5758,13 +6174,19 @@ procedure ParsePenglRasterPos4fv is
   -- Syntax: glRasterPos4fv( v : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glRasterPos4fv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glrasterpos4fv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Float_Array_Access := new float_array( 0..3 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glRasterPos4fv( GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glRasterPos4fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5775,13 +6197,19 @@ procedure ParsePenglRasterPos4iv is
   -- Syntax: glRasterPos4iv( v : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glRasterPos4iv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glrasterpos4iv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Int_Array_Access := new int_array( 0..3 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glRasterPos4iv( GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glRasterPos4iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5792,13 +6220,19 @@ procedure ParsePenglRasterPos4sv is
   -- Syntax: glRasterPos4sv( v : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glRasterPos4sv
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glrasterpos4sv_t );
-  ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  -- TODO: must be a 3 value sparforte array
+  --ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array : GL_Short_Array_Access := new short_array( 0..3 );
+      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
     begin
-      glRasterPos4sv( GL_Short_Array_Ptr( to_numeric( v_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glRasterPos4sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5913,16 +6347,24 @@ procedure ParsePenglRectdv is
   -- Syntax: glRectdv( v1, v2 : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glRectdv
   v1_val  : unbounded_string;
-  v1_type : identifier;
+--  v1_type : identifier;
   v2_val  : unbounded_string;
-  v2_type : identifier;
+--  v2_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glrectdv_t );
-  ParseFirstNumericParameter( v1_val, v1_type, pen_gl_double_array_ptr_t ); -- v1 : GL_Double_Array_Ptr
-  ParseLastNumericParameter( v2_val, v2_type, pen_gl_double_array_ptr_t ); -- v2 : GL_Double_Array_Ptr
+  -- TODO: must be a 2 value sparforte array
+  --ParseFirstNumericParameter( v1_val, v1_type, pen_gl_double_array_ptr_t ); -- v1 : GL_Double_Array_Ptr
+  --ParseLastNumericParameter( v2_val, v2_type, pen_gl_double_array_ptr_t ); -- v2 : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array1: GL_Double_Array_Access := new double_array( 0..1 );
+      param_ptr1  : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array1 );
+      param_array2: GL_Double_Array_Access := new double_array( 0..1 );
+      param_ptr2  : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array2 );
     begin
-      glRectdv( GL_Double_Array_Ptr( to_numeric( v1_val ) ), GL_Double_Array_Ptr( to_numeric( v2_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glRectdv( GL_Double_Array_Ptr( param_ptr1 ), GL_Double_Array_Ptr( param_ptr2 ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5933,16 +6375,24 @@ procedure ParsePenglRectfv is
   -- Syntax: glRectfv( v1, v2 : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glRectfv
   v1_val  : unbounded_string;
-  v1_type : identifier;
+--  v1_type : identifier;
   v2_val  : unbounded_string;
-  v2_type : identifier;
+--  v2_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glrectfv_t );
-  ParseFirstNumericParameter( v1_val, v1_type, pen_gl_float_array_ptr_t ); -- v1 : GL_Float_Array_Ptr
-  ParseLastNumericParameter( v2_val, v2_type, pen_gl_float_array_ptr_t ); -- v2 : GL_Float_Array_Ptr
+  -- TODO: must be a 2 value sparforte array
+  --ParseFirstNumericParameter( v1_val, v1_type, pen_gl_float_array_ptr_t ); -- v1 : GL_Float_Array_Ptr
+  --ParseLastNumericParameter( v2_val, v2_type, pen_gl_float_array_ptr_t ); -- v2 : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array1: GL_Double_Array_Access := new double_array( 0..1 );
+      param_ptr1  : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array1 );
+      param_array2: GL_Double_Array_Access := new double_array( 0..1 );
+      param_ptr2  : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array2 );
     begin
-      glRectfv( GL_Float_Array_Ptr( to_numeric( v1_val ) ), GL_Float_Array_Ptr( to_numeric( v2_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glRectfv( GL_Float_Array_Ptr( param_ptr1 ), GL_Float_Array_Ptr( param_ptr2 ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5953,16 +6403,24 @@ procedure ParsePenglRectiv is
   -- Syntax: glRectiv( v1, v2 : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glRectiv
   v1_val  : unbounded_string;
-  v1_type : identifier;
+--  v1_type : identifier;
   v2_val  : unbounded_string;
-  v2_type : identifier;
+--  v2_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glrectiv_t );
-  ParseFirstNumericParameter( v1_val, v1_type, pen_gl_int_array_ptr_t ); -- v1 : GL_Int_Array_Ptr
-  ParseLastNumericParameter( v2_val, v2_type, pen_gl_int_array_ptr_t ); -- v2 : GL_Int_Array_Ptr
+  -- TODO: must be a 2 value sparforte array
+  --ParseFirstNumericParameter( v1_val, v1_type, pen_gl_int_array_ptr_t ); -- v1 : GL_Int_Array_Ptr
+  --ParseLastNumericParameter( v2_val, v2_type, pen_gl_int_array_ptr_t ); -- v2 : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array1: GL_Int_Array_Access := new int_array( 0..1 );
+      param_ptr1  : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array1 );
+      param_array2: GL_Int_Array_Access := new int_array( 0..1 );
+      param_ptr2  : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array2 );
     begin
-      glRectiv( GL_Int_Array_Ptr( to_numeric( v1_val ) ), GL_Int_Array_Ptr( to_numeric( v2_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glRectiv( GL_Int_Array_Ptr( param_ptr1 ), GL_Int_Array_Ptr( param_ptr2 ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5973,16 +6431,24 @@ procedure ParsePenglRectsv is
   -- Syntax: glRectsv( v1, v2 : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glRectsv
   v1_val  : unbounded_string;
-  v1_type : identifier;
+--  v1_type : identifier;
   v2_val  : unbounded_string;
-  v2_type : identifier;
+--  v2_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glrectsv_t );
-  ParseFirstNumericParameter( v1_val, v1_type, pen_gl_short_array_ptr_t ); -- v1 : GL_Short_Array_Ptr
-  ParseLastNumericParameter( v2_val, v2_type, pen_gl_short_array_ptr_t ); -- v2 : GL_Short_Array_Ptr
+  -- TODO: must be a 2 value sparforte array
+  --ParseFirstNumericParameter( v1_val, v1_type, pen_gl_short_array_ptr_t ); -- v1 : GL_Short_Array_Ptr
+  --ParseLastNumericParameter( v2_val, v2_type, pen_gl_short_array_ptr_t ); -- v2 : GL_Short_Array_Ptr
   if isExecutingCommand then
+    declare
+      param_array1: GL_Short_Array_Access := new short_array( 0..1 );
+      param_ptr1  : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array1 );
+      param_array2: GL_Short_Array_Access := new short_array( 0..1 );
+      param_ptr2  : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array2 );
     begin
-      glRectsv( GL_Short_Array_Ptr( to_numeric( v1_val ) ), GL_Short_Array_Ptr( to_numeric( v2_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glRectsv( param_ptr1, param_ptr2 );
     exception when others =>
       err( "exception raised" );
     end;
@@ -5999,16 +6465,21 @@ procedure ParsePenglVertexPointer is
   stride_val  : unbounded_string;
   stride_type : identifier;
   ptr_val  : unbounded_string;
-  ptr_type : identifier;
+--  ptr_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glvertexpointer_t );
   ParseFirstNumericParameter( size_val, size_type, pen_glint_t ); -- size : GLint
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
   ParseNextNumericParameter( stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
-  ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
+  -- TODO: returns a pointer to a C vertex structure, but we don't support that in SparForte
+  --ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glVertexPointer( GLint( to_numeric( size_val ) ), GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), System.address( to_numeric( ptr_val ) ) );
+      glVertexPointer( GLint( to_numeric( size_val ) ), GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6023,15 +6494,20 @@ procedure ParsePenglNormalPointer is
   stride_val  : unbounded_string;
   stride_type : identifier;
   ptr_val  : unbounded_string;
-  ptr_type : identifier;
+--  ptr_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glnormalpointer_t );
   ParseFirstNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
   ParseNextNumericParameter( stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
-  ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
+  -- TODO: returns a pointer to a C normals array, but we don't support that in SparForte
+  -- ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glNormalPointer( GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), System.address( to_numeric( ptr_val ) ) );
+      glNormalPointer( GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6048,16 +6524,21 @@ procedure ParsePenglColorPointer is
   stride_val  : unbounded_string;
   stride_type : identifier;
   ptr_val  : unbounded_string;
-  ptr_type : identifier;
+--  ptr_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glcolorpointer_t );
   ParseFirstNumericParameter( size_val, size_type, pen_glint_t ); -- size : GLint
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
   ParseNextNumericParameter( stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
-  ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
+  -- TODO: returns a pointer to a C component array, but we don't support that in SparForte
+  -- ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glColorPointer( GLint( to_numeric( size_val ) ), GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), System.address( to_numeric( ptr_val ) ) );
+      glColorPointer( GLint( to_numeric( size_val ) ), GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6072,15 +6553,20 @@ procedure ParsePenglIndexPointer is
   stride_val  : unbounded_string;
   stride_type : identifier;
   ptr_val  : unbounded_string;
-  ptr_type : identifier;
+--  ptr_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glindexpointer_t );
   ParseFirstNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
   ParseNextNumericParameter( stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
-  ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
+  -- TODO: returns a pointer to a C color index array, but we don't support that in SparForte
+  --ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glIndexPointer( GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), System.address( to_numeric( ptr_val ) ) );
+      glIndexPointer( GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6097,16 +6583,21 @@ procedure ParsePenglTexCoordPointer is
   stride_val  : unbounded_string;
   stride_type : identifier;
   ptr_val  : unbounded_string;
-  ptr_type : identifier;
+--  ptr_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexcoordpointer_t );
   ParseFirstNumericParameter( size_val, size_type, pen_glint_t ); -- size : GLint
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
   ParseNextNumericParameter( stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
-  ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
+  -- TODO: returns a pointer to a C texture coord array, but we don't support that in SparForte
+  --ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glTexCoordPointer( GLint( to_numeric( size_val ) ), GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), System.address( to_numeric( ptr_val ) ) );
+      glTexCoordPointer( GLint( to_numeric( size_val ) ), GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6119,14 +6610,19 @@ procedure ParsePenglEdgeFlagPointer is
   stride_val  : unbounded_string;
   stride_type : identifier;
   ptr_val  : unbounded_string;
-  ptr_type : identifier;
+--  ptr_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gledgeflagpointer_t );
   ParseFirstNumericParameter( stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
-  ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
+  -- TODO: returns a pointer to a C boolean edge flag array, but we don't support that in SparForte
+  -- ParseLastNumericParameter( ptr_val, ptr_type, pen_system.address_t ); -- ptr : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glEdgeFlagPointer( GLsizei( to_numeric( stride_val ) ), System.address( to_numeric( ptr_val ) ) );
+      glEdgeFlagPointer( GLsizei( to_numeric( stride_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6139,14 +6635,20 @@ procedure ParsePenglGetPointerv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgetpointerv_t );
   ParseFirstNumericParameter( pname_val, pname_type, pen_glvertexarrays_t ); -- pname : GLvertexarrays
-  ParseLastNumericParameter( params_val, params_type, pen_system.address_t ); -- params : System.address
+  -- TODO: returns a pointer to a C structure, but we don't support that in SparForte
+  -- no man page for this call?
+  -- ParseLastNumericParameter( params_val, params_type, pen_system.address_t ); -- params : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glGetPointerv( GLvertexarrays( to_numeric( pname_val ) ), System.address( to_numeric( params_val ) ) );
+      glGetPointerv( GLvertexarrays( to_numeric( pname_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6203,16 +6705,22 @@ procedure ParsePenglDrawElements is
   kind_val  : unbounded_string;
   kind_type : identifier;
   indices_val  : unbounded_string;
-  indices_type : identifier;
+--  indices_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gldrawelements_t );
   ParseFirstNumericParameter( mode_val, mode_type, pen_gltypes_t ); -- mode : GLtypes
   ParseNextNumericParameter( count_val, count_type, pen_glsizei_t ); -- count : GLsizei
   ParseNextNumericParameter( kind_val, kind_type, pen_glprimitives_t ); -- kind : GLprimitives
-  ParseLastNumericParameter( indices_val, indices_type, pen_system.address_t ); -- indices : System.address
+  -- TODO: must be am array of geometric primitives, but at this time SparForte doesn't
+  -- have arrays with arbitrary bounds.  Also, no type defined yet for primitives.
+  --ParseLastNumericParameter( indices_val, indices_type, pen_system.address_t ); -- indices : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glDrawElements( GLtypes( to_numeric( mode_val ) ), GLsizei( to_numeric( count_val ) ), GLprimitives( to_numeric( kind_val ) ), System.address( to_numeric( indices_val ) ) );
+      glDrawElements( GLtypes( to_numeric( mode_val ) ), GLsizei( to_numeric( count_val ) ), GLprimitives( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6227,15 +6735,21 @@ procedure ParsePenglInterleavedArrays is
   stride_val  : unbounded_string;
   stride_type : identifier;
   pointer_val  : unbounded_string;
-  pointer_type : identifier;
+--  pointer_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glinterleavedarrays_t );
   ParseFirstNumericParameter( format_val, format_type, pen_glvertexarrays_t ); -- format : GLvertexarrays
   ParseNextNumericParameter( stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
-  ParseLastNumericParameter( pointer_val, pointer_type, pen_system.address_t ); -- pointer : System.address
+  -- TODO: the interleaved arrays can't be easily defined in SparForte at the time of writing
+  --ParseLastNumericParameter( pointer_val, pointer_type, pen_system.address_t ); -- pointer : System.address
   if isExecutingCommand then
+    declare
+      dummy_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( dummy_array );
     begin
-      glInterleavedArrays( GLvertexarrays( to_numeric( format_val ) ), GLsizei( to_numeric( stride_val ) ), System.address( to_numeric( pointer_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glInterleavedArrays( GLvertexarrays( to_numeric( format_val ) ), GLsizei( to_numeric( stride_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6313,15 +6827,22 @@ procedure ParsePenglLightfv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gllightfv_t );
   ParseFirstNumericParameter( light_val, light_type, pen_glenum_t ); -- light : GLenum
   ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
-  ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
+  -- TODO: must be a multiple value sparforte array
+  --ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glLightfv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( params_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glLightfv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6336,15 +6857,22 @@ procedure ParsePenglLightiv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gllightiv_t );
   ParseFirstNumericParameter( light_val, light_type, pen_glenum_t ); -- light : GLenum
   ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
-  ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
+  -- TODO: must be a multiple value sparforte array
+  -- ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glLightiv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( params_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glLightiv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6359,15 +6887,20 @@ procedure ParsePenglGetLightfv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgetlightfv_t );
   ParseFirstNumericParameter( light_val, light_type, pen_glenum_t ); -- light : GLenum
   ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
-  ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
+  -- TODO: returns a pointer to a C array, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glGetLightfv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( params_val ) ) );
+      glGetLightfv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6382,15 +6915,20 @@ procedure ParsePenglGetLightiv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgetlightiv_t );
   ParseFirstNumericParameter( light_val, light_type, pen_glenum_t ); -- light : GLenum
   ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
-  ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
+  -- TODO: returns a pointer to a C array, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glGetLightiv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( params_val ) ) );
+      glGetLightiv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6443,14 +6981,21 @@ procedure ParsePenglLightModelfv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gllightmodelfv_t );
   ParseFirstNumericParameter( pname_val, pname_type, pen_glenum_t ); -- pname : GLenum
-  ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
+  -- TODO: takes a multivalue C float array of parameters
+  --ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glLightModelfv( GLenum( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( params_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glLightModelfv( GLenum( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6463,14 +7008,21 @@ procedure ParsePenglLightModeliv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gllightmodeliv_t );
   ParseFirstNumericParameter( pname_val, pname_type, pen_glenum_t ); -- pname : GLenum
-  ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glLightModeliv( GLenum( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( params_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glLightModeliv( GLenum( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6531,15 +7083,22 @@ procedure ParsePenglMaterialfv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
-  param_type : identifier;
+--  param_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glmaterialfv_t );
   ParseFirstNumericParameter( face_val, face_type, pen_glbuffers_t ); -- face : GLbuffers
   ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
-  ParseLastNumericParameter( param_val, param_type, pen_gl_float_array_ptr_t ); -- param : GL_Float_Array_Ptr
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( param_val, param_type, pen_gl_float_array_ptr_t ); -- param : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: 4 seems to be the maximum size (currently) for the return data
+      param_array : GL_Float_Array_Access := new float_array( 0..3 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glMaterialfv( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( param_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glMaterialfv( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6554,15 +7113,22 @@ procedure ParsePenglMaterialiv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
-  param_type : identifier;
+--  param_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glmaterialiv_t );
   ParseFirstNumericParameter( face_val, face_type, pen_glbuffers_t ); -- face : GLbuffers
   ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
-  ParseLastNumericParameter( param_val, param_type, pen_gl_int_array_ptr_t ); -- param : GL_Int_Array_Ptr
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( param_val, param_type, pen_gl_int_array_ptr_t ); -- param : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glMaterialiv( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( param_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glMaterialiv( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6577,15 +7143,22 @@ procedure ParsePenglGetMaterialfv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
-  param_type : identifier;
+--  param_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgetmaterialfv_t );
   ParseFirstNumericParameter( face_val, face_type, pen_glbuffers_t ); -- face : GLbuffers
   ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
-  ParseLastNumericParameter( param_val, param_type, pen_glfloat_t ); -- param : GLfloat
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( param_val, param_type, pen_glfloat_t ); -- param : GLfloat
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glGetMaterialfv( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glGetMaterialfv( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6600,15 +7173,22 @@ procedure ParsePenglGetMaterialiv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
-  param_type : identifier;
+--  param_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgetmaterialiv_t );
   ParseFirstNumericParameter( face_val, face_type, pen_glbuffers_t ); -- face : GLbuffers
   ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
-  ParseLastNumericParameter( param_val, param_type, pen_glint_t ); -- param : GLint
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( param_val, param_type, pen_glint_t ); -- param : GLint
   if isExecutingCommand then
+    declare
+      -- TODO: 4 seems to be the maximum size (currently) for the return data
+      param_array : GL_Int_Array_Access := new int_array( 0..3 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glGetMaterialiv( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+      -- TODO: load sparforte array into the array param_array
+      glGetMaterialiv( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6743,15 +7323,21 @@ procedure ParsePenglPixelMapfv is
   mapsize_val  : unbounded_string;
   mapsize_type : identifier;
   values_val  : unbounded_string;
-  values_type : identifier;
+--  values_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glpixelmapfv_t );
   ParseFirstNumericParameter( map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
   ParseNextNumericParameter( mapsize_val, mapsize_type, pen_glsizei_t ); -- mapsize : GLsizei
-  ParseLastNumericParameter( values_val, values_type, pen_glfloat_t ); -- values : GLfloat
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+ -- ParseLastNumericParameter( values_val, values_type, pen_glfloat_t ); -- values : GLfloat
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glPixelMapfv( GLpixelmode( to_numeric( map_val ) ), GLsizei( to_numeric( mapsize_val ) ), GLfloat( to_numeric( values_val ) ) );
+      glPixelMapfv( GLpixelmode( to_numeric( map_val ) ), GLsizei( to_numeric( mapsize_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6766,15 +7352,21 @@ procedure ParsePenglPixelMapuiv is
   mapsize_val  : unbounded_string;
   mapsize_type : identifier;
   values_val  : unbounded_string;
-  values_type : identifier;
+  --values_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glpixelmapuiv_t );
   ParseFirstNumericParameter( map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
   ParseNextNumericParameter( mapsize_val, mapsize_type, pen_glsizei_t ); -- mapsize : GLsizei
-  ParseLastNumericParameter( values_val, values_type, pen_gluint_t ); -- values : GLuint
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( values_val, values_type, pen_gluint_t ); -- values : GLuint
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_UInt_Array_Access := new uint_array( 0..0 );
+      param_ptr   : GL_UInt_Array_Ptr := GL_UInt_Array_Conv.To_Address( param_array );
     begin
-      glPixelMapuiv( GLpixelmode( to_numeric( map_val ) ), GLsizei( to_numeric( mapsize_val ) ), GLuint( to_numeric( values_val ) ) );
+      glPixelMapuiv( GLpixelmode( to_numeric( map_val ) ), GLsizei( to_numeric( mapsize_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6789,15 +7381,21 @@ procedure ParsePenglPixelMapusv is
   mapsize_val  : unbounded_string;
   mapsize_type : identifier;
   values_val  : unbounded_string;
-  values_type : identifier;
+  --values_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glpixelmapusv_t );
   ParseFirstNumericParameter( map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
   ParseNextNumericParameter( mapsize_val, mapsize_type, pen_glsizei_t ); -- mapsize : GLsizei
-  ParseLastNumericParameter( values_val, values_type, pen_glushort_t ); -- values : GLushort
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( values_val, values_type, pen_glushort_t ); -- values : GLushort
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_UShort_Array_Access := new ushort_array( 0..0 );
+      param_ptr   : GL_UShort_Array_Ptr := GL_UShort_Array_Conv.To_Address( param_array );
     begin
-      glPixelMapusv( GLpixelmode( to_numeric( map_val ) ), GLsizei( to_numeric( mapsize_val ) ), GLushort( to_numeric( values_val ) ) );
+      glPixelMapusv( GLpixelmode( to_numeric( map_val ) ), GLsizei( to_numeric( mapsize_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6810,14 +7408,20 @@ procedure ParsePenglGetPixelMapfv is
   map_val  : unbounded_string;
   map_type : identifier;
   values_val  : unbounded_string;
-  values_type : identifier;
+--  values_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgetpixelmapfv_t );
   ParseFirstNumericParameter( map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
-  ParseLastNumericParameter( values_val, values_type, pen_gl_float_array_ptr_t ); -- values : GL_Float_Array_Ptr
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( values_val, values_type, pen_gl_float_array_ptr_t ); -- values : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glGetPixelMapfv( GLpixelmode( to_numeric( map_val ) ), GL_Float_Array_Ptr( to_numeric( values_val ) ) );
+      glGetPixelMapfv( GLpixelmode( to_numeric( map_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6830,14 +7434,20 @@ procedure ParsePenglGetPixelMapuiv is
   map_val  : unbounded_string;
   map_type : identifier;
   values_val  : unbounded_string;
-  values_type : identifier;
+--  values_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgetpixelmapuiv_t );
   ParseFirstNumericParameter( map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
-  ParseLastNumericParameter( values_val, values_type, pen_gl_uint_array_ptr_t ); -- values : GL_UInt_Array_Ptr
+  -- TODO: takes a multivalue C uint array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( values_val, values_type, pen_gl_uint_array_ptr_t ); -- values : GL_UInt_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_UInt_Array_Access := new uint_array( 0..0 );
+      param_ptr   : GL_UInt_Array_Ptr := GL_UInt_Array_Conv.To_Address( param_array );
     begin
-      glGetPixelMapuiv( GLpixelmode( to_numeric( map_val ) ), GL_UInt_Array_Ptr( to_numeric( values_val ) ) );
+      glGetPixelMapuiv( GLpixelmode( to_numeric( map_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6850,14 +7460,20 @@ procedure ParsePenglGetPixelMapusv is
   map_val  : unbounded_string;
   map_type : identifier;
   values_val  : unbounded_string;
-  values_type : identifier;
+--  values_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgetpixelmapusv_t );
   ParseFirstNumericParameter( map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
-  ParseLastNumericParameter( values_val, values_type, pen_gl_ushort_array_ptr_t ); -- values : GL_UShort_Array_Ptr
+  -- TODO: takes a multivalue C ushort array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( values_val, values_type, pen_gl_ushort_array_ptr_t ); -- values : GL_UShort_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_UShort_Array_Access := new ushort_array( 0..0 );
+      param_ptr   : GL_UShort_Array_Ptr := GL_UShort_Array_Conv.To_Address( param_array );
     begin
-      glGetPixelMapusv( GLpixelmode( to_numeric( map_val ) ), GL_UShort_Array_Ptr( to_numeric( values_val ) ) );
+      glGetPixelMapusv( GLpixelmode( to_numeric( map_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6880,8 +7496,9 @@ procedure ParsePenglBitmap is
   ymove_val  : unbounded_string;
   ymove_type : identifier;
   bitmap_val  : unbounded_string;
-  bitmap_type : identifier;
+--  bitmap_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glbitmap_t );
   ParseFirstNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
   ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
@@ -6889,10 +7506,15 @@ begin
   ParseNextNumericParameter( yorig_val, yorig_type, pen_glfloat_t ); -- yorig : GLfloat
   ParseNextNumericParameter( xmove_val, xmove_type, pen_glfloat_t ); -- xmove : GLfloat
   ParseNextNumericParameter( ymove_val, ymove_type, pen_glfloat_t ); -- ymove : GLfloat
-  ParseLastNumericParameter( bitmap_val, bitmap_type, pen_gl_ubyte_array_ptr_t ); -- bitmap : GL_UByte_Array_Ptr
+  -- TODO: takes a multivalue C ubyte array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( bitmap_val, bitmap_type, pen_gl_ubyte_array_ptr_t ); -- bitmap : GL_UByte_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_UByte_Array_Access := new ubyte_array( 0..0 );
+      param_ptr   : GL_UByte_Array_Ptr := GL_UByte_Array_Conv.To_Address( param_array );
     begin
-      glBitmap( GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLfloat( to_numeric( xorig_val ) ), GLfloat( to_numeric( yorig_val ) ), GLfloat( to_numeric( xmove_val ) ), GLfloat( to_numeric( ymove_val ) ), GL_UByte_Array_Ptr( to_numeric( bitmap_val ) ) );
+      glBitmap( GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLfloat( to_numeric( xorig_val ) ), GLfloat( to_numeric( yorig_val ) ), GLfloat( to_numeric( xmove_val ) ), GLfloat( to_numeric( ymove_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6915,8 +7537,9 @@ procedure ParsePenglReadPixels is
   kind_val  : unbounded_string;
   kind_type : identifier;
   pixels_val  : unbounded_string;
-  pixels_type : identifier;
+--  pixels_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glreadpixels_t );
   ParseFirstNumericParameter( x_val, x_type, pen_glint_t ); -- x : GLint
   ParseNextNumericParameter( y_val, y_type, pen_glint_t ); -- y : GLint
@@ -6924,10 +7547,14 @@ begin
   ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
   ParseNextNumericParameter( format_val, format_type, pen_glenum_t ); -- format : GLenum
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  -- TODO: we can probably do this but we'll need to size a destination array.  Come back to this later
+  --ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glReadPixels( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLenum( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+      glReadPixels( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLenum( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -6946,17 +7573,22 @@ procedure ParsePenglDrawPixels is
   kind_val  : unbounded_string;
   kind_type : identifier;
   pixels_val  : unbounded_string;
-  pixels_type : identifier;
+--  pixels_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gldrawpixels_t );
   ParseFirstNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
   ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  -- TODO: we can probably do this but we'll need to size and populate a source array.  Come back to this later
+  --ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glDrawPixels( GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+      glDrawPixels( GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7149,15 +7781,21 @@ procedure ParsePenglTexGendv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexgendv_t );
   ParseFirstNumericParameter( coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
   ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
-  ParseLastNumericParameter( params_val, params_type, pen_gl_double_array_ptr_t ); -- params : GL_Double_Array_Ptr
+  -- TODO: takes a multivalue C double array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_gl_double_array_ptr_t ); -- params : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_Double_Array_Access := new double_array( 0..0 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glTexGendv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GL_Double_Array_Ptr( to_numeric( params_val ) ) );
+      glTexGendv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7172,15 +7810,21 @@ procedure ParsePenglTexGenfv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexgenfv_t );
   ParseFirstNumericParameter( coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
   ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
-  ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glTexGenfv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( params_val ) ) );
+      glTexGenfv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7195,15 +7839,21 @@ procedure ParsePenglTexGeniv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexgeniv_t );
   ParseFirstNumericParameter( coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
   ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
-  ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glTexGeniv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( params_val ) ) );
+      glTexGeniv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7218,15 +7868,21 @@ procedure ParsePenglGetTexGendv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgettexgendv_t );
   ParseFirstNumericParameter( coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
   ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
-  ParseLastNumericParameter( params_val, params_type, pen_gldouble_t ); -- params : GLdouble
+  -- TODO: takes a multivalue C double array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_gldouble_t ); -- params : GLdouble
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_Double_Array_Access := new double_array( 0..0 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glGetTexGendv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLdouble( to_numeric( params_val ) ) );
+      glGetTexGendv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7241,15 +7897,21 @@ procedure ParsePenglGetTexGenfv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgettexgenfv_t );
   ParseFirstNumericParameter( coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
   ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
-  ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glGetTexGenfv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+      glGetTexGenfv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7264,15 +7926,21 @@ procedure ParsePenglGetTexGeniv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgettexgeniv_t );
   ParseFirstNumericParameter( coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
   ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
-  ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glGetTexGeniv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+      glGetTexGeniv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7333,15 +8001,21 @@ procedure ParsePenglTexEnvfv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
-  param_type : identifier;
+--  param_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexenvfv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
-  ParseLastNumericParameter( param_val, param_type, pen_gl_float_array_ptr_t ); -- param : GL_Float_Array_Ptr
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( param_val, param_type, pen_gl_float_array_ptr_t ); -- param : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glTexEnvfv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( param_val ) ) );
+      glTexEnvfv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7356,15 +8030,21 @@ procedure ParsePenglTexEnviv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
-  param_type : identifier;
+--  param_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexenviv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
-  ParseLastNumericParameter( param_val, param_type, pen_gl_int_array_ptr_t ); -- param : GL_Int_Array_Ptr
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( param_val, param_type, pen_gl_int_array_ptr_t ); -- param : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: this will have to accept arrays of different sizes
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glTexEnviv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( param_val ) ) );
+      glTexEnviv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7379,15 +8059,21 @@ procedure ParsePenglGetTexEnvfv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
-  param_type : identifier;
+--  param_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgettexenvfv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
-  ParseLastNumericParameter( param_val, param_type, pen_glfloat_t ); -- param : GLfloat
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( param_val, param_type, pen_glfloat_t ); -- param : GLfloat
   if isExecutingCommand then
+    declare
+      -- worst case: 4-number colour
+      param_array : GL_Float_Array_Access := new float_array( 0..3 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glGetTexEnvfv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+      glGetTexEnvfv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7402,15 +8088,21 @@ procedure ParsePenglGetTexEnviv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
-  param_type : identifier;
+--  param_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgettexenviv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
-  ParseLastNumericParameter( param_val, param_type, pen_glint_t ); -- param : GLint
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( param_val, param_type, pen_glint_t ); -- param : GLint
   if isExecutingCommand then
+    declare
+      -- worst case: 4-number colour
+      param_array : GL_Int_Array_Access := new int_array( 0..3 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glGetTexEnviv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+      glGetTexEnviv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7471,15 +8163,21 @@ procedure ParsePenglTexParameterfv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexparameterfv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
-  ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glTexParameterfv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+      glTexParameterfv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7494,15 +8192,21 @@ procedure ParsePenglTexParameteriv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_gltexparameteriv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
-  ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glTexParameteriv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+      glTexParameteriv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7517,15 +8221,21 @@ procedure ParsePenglGetTexParameterfv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgettexparameterfv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
-  ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glGetTexParameterfv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+      glGetTexParameterfv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7540,15 +8250,21 @@ procedure ParsePenglGetTexParameteriv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgettexparameteriv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
-  ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glGetTexParameteriv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+      glGetTexParameteriv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7565,16 +8281,22 @@ procedure ParsePenglGetTexLevelParameterfv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgettexlevelparameterfv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
   ParseNextNumericParameter( pname_val, pname_type, pen_glenum_t ); -- pname : GLenum
-  ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glGetTexLevelParameterfv( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLenum( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+      glGetTexLevelParameterfv( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLenum( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7591,16 +8313,22 @@ procedure ParsePenglGetTexLevelParameteriv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glgettexlevelparameteriv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
   ParseNextNumericParameter( pname_val, pname_type, pen_glenum_t ); -- pname : GLenum
-  ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glGetTexLevelParameteriv( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLenum( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+      glGetTexLevelParameteriv( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLenum( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7625,8 +8353,9 @@ procedure ParsePenglTexImage1D is
   kind_val  : unbounded_string;
   kind_type : identifier;
   pixels_val  : unbounded_string;
-  pixels_type : identifier;
+--  pixels_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glteximage1d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
@@ -7635,10 +8364,14 @@ begin
   ParseNextNumericParameter( border_val, border_type, pen_glint_t ); -- border : GLint
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  -- TODO: we can probably do this but we'll need to size and populate a source array.  Come back to this later
+  --ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glTexImage1D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLint( to_numeric( border_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+      glTexImage1D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLint( to_numeric( border_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7665,8 +8398,9 @@ procedure ParsePenglTexImage2D is
   kind_val  : unbounded_string;
   kind_type : identifier;
   pixels_val  : unbounded_string;
-  pixels_type : identifier;
+--  pixels_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glteximage2d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
@@ -7676,10 +8410,15 @@ begin
   ParseNextNumericParameter( border_val, border_type, pen_glint_t ); -- border : GLint
   ParseNextNumericParameter( format_val, format_type, pen_glenum_t ); -- format : GLenum
   ParseNextNumericParameter( kind_val, kind_type, pen_glenum_t ); -- kind : GLenum
-  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  -- TODO: takes a multivalue C multitype array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
   if isExecutingCommand then
+     declare
+      -- TODO: determine the size and type of the array
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glTexImage2D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLint( to_numeric( border_val ) ), GLenum( to_numeric( format_val ) ), GLenum( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+      glTexImage2D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLint( to_numeric( border_val ) ), GLenum( to_numeric( format_val ) ), GLenum( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7698,17 +8437,22 @@ procedure ParsePenglGetTexImage is
   kind_val  : unbounded_string;
   kind_type : identifier;
   pixels_val  : unbounded_string;
-  pixels_type : identifier;
+  --pixels_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgetteximage_t );
   ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  -- TODO: copying the result to a sparforte array
+  --ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glGetTexImage( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+      glGetTexImage( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7721,14 +8465,20 @@ procedure ParsePenglGenTextures is
   n_val  : unbounded_string;
   n_type : identifier;
   textures_val  : unbounded_string;
-  textures_type : identifier;
+--  textures_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgentextures_t );
   ParseFirstNumericParameter( n_val, n_type, pen_glsizei_t ); -- n : GLsizei
-  ParseLastNumericParameter( textures_val, textures_type, pen_gl_uint_array_ptr_t ); -- textures : GL_UInt_Array_Ptr
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( textures_val, textures_type, pen_gl_uint_array_ptr_t ); -- textures : GL_UInt_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_UInt_Array_Access := new uint_array( 0..0 );
+      param_ptr   : GL_UInt_Array_Ptr := GL_UInt_Array_Conv.To_Address( param_array );
     begin
-      glGenTextures( GLsizei( to_numeric( n_val ) ), GL_UInt_Array_Ptr( to_numeric( textures_val ) ) );
+      glGenTextures( GLsizei( to_numeric( n_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7741,14 +8491,20 @@ procedure ParsePenglDeleteTextures is
   n_val  : unbounded_string;
   n_type : identifier;
   textures_val  : unbounded_string;
-  textures_type : identifier;
+--  textures_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gldeletetextures_t );
   ParseFirstNumericParameter( n_val, n_type, pen_glsizei_t ); -- n : GLsizei
-  ParseLastNumericParameter( textures_val, textures_type, pen_gl_uint_array_ptr_t ); -- textures : GL_UInt_Array_Ptr
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( textures_val, textures_type, pen_gl_uint_array_ptr_t ); -- textures : GL_UInt_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_UInt_Array_Access := new uint_array( 0..0 );
+      param_ptr   : GL_UInt_Array_Ptr := GL_UInt_Array_Conv.To_Address( param_array );
     begin
-      glDeleteTextures( GLsizei( to_numeric( n_val ) ), GL_UInt_Array_Ptr( to_numeric( textures_val ) ) );
+      glDeleteTextures( GLsizei( to_numeric( n_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7781,17 +8537,24 @@ procedure ParsePenglPrioritizeTextures is
   n_val  : unbounded_string;
   n_type : identifier;
   textures_val  : unbounded_string;
-  textures_type : identifier;
+--  textures_type : identifier;
   priorities_val  : unbounded_string;
-  priorities_type : identifier;
+--  priorities_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glprioritizetextures_t );
   ParseFirstNumericParameter( n_val, n_type, pen_glsizei_t ); -- n : GLsizei
-  ParseNextNumericParameter( textures_val, textures_type, pen_gl_uint_array_ptr_t ); -- textures : GL_UInt_Array_Ptr
-  ParseLastNumericParameter( priorities_val, priorities_type, pen_gl_clampf_array_ptr_t ); -- priorities : GL_Clampf_Array_Ptr
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseNextNumericParameter( textures_val, textures_type, pen_gl_uint_array_ptr_t ); -- textures : GL_UInt_Array_Ptr
+  -- TODO: clampf array not defined yet
+  --ParseLastNumericParameter( priorities_val, priorities_type, pen_gl_clampf_array_ptr_t ); -- priorities : GL_Clampf_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_UInt_Array_Access := new uint_array( 0..0 );
+      param_ptr   : GL_UInt_Array_Ptr := GL_UInt_Array_Conv.To_Address( param_array );
     begin
-      glPrioritizeTextures( GLsizei( to_numeric( n_val ) ), GL_UInt_Array_Ptr( to_numeric( textures_val ) ), GL_Clampf_Array_Ptr( to_numeric( priorities_val ) ) );
+      null; --glPrioritizeTextures( GLsizei( to_numeric( n_val ) ), param_ptr, GL_Clampf_Array_Ptr( to_numeric( priorities_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7804,17 +8567,25 @@ procedure ParsePenglAreTexturesResident( result : out unbounded_string ) is
   n_val  : unbounded_string;
   n_type : identifier;
   textures_val  : unbounded_string;
-  textures_type : identifier;
+--  textures_type : identifier;
   residences_val  : unbounded_string;
-  residences_type : identifier;
+--  residences_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glaretexturesresident_t );
   ParseFirstNumericParameter( n_val, n_type, pen_glsizei_t ); -- n : GLsizei
-  ParseNextNumericParameter( textures_val, textures_type, pen_gl_uint_array_ptr_t ); -- textures : GL_UInt_Array_Ptr
-  ParseLastNumericParameter( residences_val, residences_type, pen_gl_boolean_array_ptr_t ); -- residences : GL_Boolean_Array_Ptr
+-- TODO: takes a multivalue C uint/bool array of parameters, but we don't support that in SparForte
+  --ParseNextNumericParameter( textures_val, textures_type, pen_gl_uint_array_ptr_t ); -- textures : GL_UInt_Array_Ptr
+  --ParseLastNumericParameter( residences_val, residences_type, pen_gl_boolean_array_ptr_t ); -- residences : GL_Boolean_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
+      param2_array : GL_Boolean_Array_Access := new bool_array( 0..0 );
+      param2_ptr   : GL_Boolean_Array_Ptr := GL_Boolean_Array_Conv.To_Address( param2_array );
     begin
-      result := to_unbounded_string( long_float( glAreTexturesResident( GLsizei( to_numeric( n_val ) ), GL_UInt_Array_Ptr( to_numeric( textures_val ) ), GL_Boolean_Array_Ptr( to_numeric( residences_val ) ) ) ) );
+      result := to_unbounded_string( long_float( glAreTexturesResident( GLsizei( to_numeric( n_val ) ), param_ptr, param2_ptr ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7828,10 +8599,10 @@ procedure ParsePenglIsTexture( result : out unbounded_string ) is
   texture_type : identifier;
 begin
   expect( pen_glistexture_t );
-  ParseSingleNumericParameter( texture_val, texture_type, pen_gl_uint_array_ptr_t ); -- texture : GL_UInt_Array_Ptr
+  ParseSingleNumericParameter( texture_val, texture_type, pen_gluint_t ); -- texture : GL_UInt_Array_Ptr
   if isExecutingCommand then
     begin
-      result := to_unbounded_string( long_float( glIsTexture( GL_UInt_Array_Ptr( to_numeric( texture_val ) ) ) ) );
+      result := to_unbounded_string( long_float( glIsTexture( GLuint( to_numeric( texture_val ) ) ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7854,8 +8625,9 @@ procedure ParsePenglTexSubImage1D is
   kind_val  : unbounded_string;
   kind_type : identifier;
   pixels_val  : unbounded_string;
-  pixels_type : identifier;
+  --pixels_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gltexsubimage1d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
@@ -7863,10 +8635,14 @@ begin
   ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  -- TODO: pixels are an array of types based on the parameters.  Come back to this later.
+  --ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glTexSubImage1D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+      glTexSubImage1D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -7893,8 +8669,9 @@ procedure ParsePenglTexSubImage2D is
   kind_val  : unbounded_string;
   kind_type : identifier;
   pixels_val  : unbounded_string;
-  pixels_type : identifier;
+  --pixels_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gltexsubimage2d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
@@ -7904,10 +8681,14 @@ begin
   ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  -- TODO: pixels are an array of types based on the parameters.  Come back to this later.
+  --ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glTexSubImage2D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+      glTexSubImage2D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8071,18 +8852,24 @@ procedure ParsePenglMap1d is
   order_val  : unbounded_string;
   order_type : identifier;
   points_val  : unbounded_string;
-  points_type : identifier;
+--  points_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmap1d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
   ParseNextNumericParameter( u1_val, u1_type, pen_gldouble_t ); -- u1 : GLdouble
   ParseNextNumericParameter( u2_val, u2_type, pen_gldouble_t ); -- u2 : GLdouble
   ParseNextNumericParameter( stride_val, stride_type, pen_glint_t ); -- stride : GLint
   ParseNextNumericParameter( order_val, order_type, pen_glint_t ); -- order : GLint
-  ParseLastNumericParameter( points_val, points_type, pen_gl_double_array_ptr_t ); -- points : GL_Double_Array_Ptr
+  -- TODO: takes a multivalue C double array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( points_val, points_type, pen_gl_double_array_ptr_t ); -- points : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size, copy from SparForte array
+      param_array : GL_Double_Array_Access := new double_array( 0..0 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glMap1d( GLevaluators( to_numeric( target_val ) ), GLdouble( to_numeric( u1_val ) ), GLdouble( to_numeric( u2_val ) ), GLint( to_numeric( stride_val ) ), GLint( to_numeric( order_val ) ), GL_Double_Array_Ptr( to_numeric( points_val ) ) );
+      glMap1d( GLevaluators( to_numeric( target_val ) ), GLdouble( to_numeric( u1_val ) ), GLdouble( to_numeric( u2_val ) ), GLint( to_numeric( stride_val ) ), GLint( to_numeric( order_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8103,18 +8890,24 @@ procedure ParsePenglMap1f is
   order_val  : unbounded_string;
   order_type : identifier;
   points_val  : unbounded_string;
-  points_type : identifier;
+--  points_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmap1f_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
   ParseNextNumericParameter( u1_val, u1_type, pen_glfloat_t ); -- u1 : GLfloat
   ParseNextNumericParameter( u2_val, u2_type, pen_glfloat_t ); -- u2 : GLfloat
   ParseNextNumericParameter( stride_val, stride_type, pen_glint_t ); -- stride : GLint
   ParseNextNumericParameter( order_val, order_type, pen_glint_t ); -- order : GLint
-  ParseLastNumericParameter( points_val, points_type, pen_gl_float_array_ptr_t ); -- points : GL_Float_Array_Ptr
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( points_val, points_type, pen_gl_float_array_ptr_t ); -- points : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size, copy from sparforte array
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glMap1f( GLevaluators( to_numeric( target_val ) ), GLfloat( to_numeric( u1_val ) ), GLfloat( to_numeric( u2_val ) ), GLint( to_numeric( stride_val ) ), GLint( to_numeric( order_val ) ), GL_Float_Array_Ptr( to_numeric( points_val ) ) );
+      glMap1f( GLevaluators( to_numeric( target_val ) ), GLfloat( to_numeric( u1_val ) ), GLfloat( to_numeric( u2_val ) ), GLint( to_numeric( stride_val ) ), GLint( to_numeric( order_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8143,8 +8936,9 @@ procedure ParsePenglMap2d is
   vorder_val  : unbounded_string;
   vorder_type : identifier;
   points_val  : unbounded_string;
-  points_type : identifier;
+  --points_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmap2d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
   ParseNextNumericParameter( u1_val, u1_type, pen_gldouble_t ); -- u1 : GLdouble
@@ -8155,10 +8949,15 @@ begin
   ParseNextNumericParameter( v2_val, v2_type, pen_gldouble_t ); -- v2 : GLdouble
   ParseNextNumericParameter( vstride_val, vstride_type, pen_glint_t ); -- vstride : GLint
   ParseNextNumericParameter( vorder_val, vorder_type, pen_glint_t ); -- vorder : GLint
-  ParseLastNumericParameter( points_val, points_type, pen_gl_double_array_ptr_t ); -- points : GL_Double_Array_Ptr
+  -- TODO: takes a multivalue C double array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( points_val, points_type, pen_gl_double_array_ptr_t ); -- points : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Double_Array_Access := new double_array( 0..0 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glMap2d( GLevaluators( to_numeric( target_val ) ), GLdouble( to_numeric( u1_val ) ), GLdouble( to_numeric( u2_val ) ), GLint( to_numeric( ustride_val ) ), GLint( to_numeric( uorder_val ) ), GLdouble( to_numeric( v1_val ) ), GLdouble( to_numeric( v2_val ) ), GLint( to_numeric( vstride_val ) ), GLint( to_numeric( vorder_val ) ), GL_Double_Array_Ptr( to_numeric( points_val ) ) );
+      glMap2d( GLevaluators( to_numeric( target_val ) ), GLdouble( to_numeric( u1_val ) ), GLdouble( to_numeric( u2_val ) ), GLint( to_numeric( ustride_val ) ), GLint( to_numeric( uorder_val ) ), GLdouble( to_numeric( v1_val ) ), GLdouble( to_numeric( v2_val ) ), GLint( to_numeric( vstride_val ) ), GLint( to_numeric( vorder_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8187,8 +8986,9 @@ procedure ParsePenglMap2f is
   vorder_val  : unbounded_string;
   vorder_type : identifier;
   points_val  : unbounded_string;
-  points_type : identifier;
+  --points_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmap2f_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
   ParseNextNumericParameter( u1_val, u1_type, pen_glfloat_t ); -- u1 : GLfloat
@@ -8199,10 +8999,15 @@ begin
   ParseNextNumericParameter( v2_val, v2_type, pen_glfloat_t ); -- v2 : GLfloat
   ParseNextNumericParameter( vstride_val, vstride_type, pen_glint_t ); -- vstride : GLint
   ParseNextNumericParameter( vorder_val, vorder_type, pen_glint_t ); -- vorder : GLint
-  ParseLastNumericParameter( points_val, points_type, pen_gl_float_array_ptr_t ); -- points : GL_Float_Array_Ptr
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( points_val, points_type, pen_gl_float_array_ptr_t ); -- points : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glMap2f( GLevaluators( to_numeric( target_val ) ), GLfloat( to_numeric( u1_val ) ), GLfloat( to_numeric( u2_val ) ), GLint( to_numeric( ustride_val ) ), GLint( to_numeric( uorder_val ) ), GLfloat( to_numeric( v1_val ) ), GLfloat( to_numeric( v2_val ) ), GLint( to_numeric( vstride_val ) ), GLint( to_numeric( vorder_val ) ), GL_Float_Array_Ptr( to_numeric( points_val ) ) );
+      glMap2f( GLevaluators( to_numeric( target_val ) ), GLfloat( to_numeric( u1_val ) ), GLfloat( to_numeric( u2_val ) ), GLint( to_numeric( ustride_val ) ), GLint( to_numeric( uorder_val ) ), GLfloat( to_numeric( v1_val ) ), GLfloat( to_numeric( v2_val ) ), GLint( to_numeric( vstride_val ) ), GLint( to_numeric( vorder_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8217,15 +9022,21 @@ procedure ParsePenglGetMapdv is
   query_val  : unbounded_string;
   query_type : identifier;
   v_val  : unbounded_string;
-  v_type : identifier;
+  --v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgetmapdv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
   ParseNextNumericParameter( query_val, query_type, pen_glevaluators_t ); -- query : GLevaluators
-  ParseLastNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  -- TODO: takes a multivalue C double array of parameters, but we don't support that in SparForte
+--  ParseLastNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Double_Array_Access := new double_array( 0..0 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glGetMapdv( GLevaluators( to_numeric( target_val ) ), GLevaluators( to_numeric( query_val ) ), GL_Double_Array_Ptr( to_numeric( v_val ) ) );
+      glGetMapdv( GLevaluators( to_numeric( target_val ) ), GLevaluators( to_numeric( query_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8240,15 +9051,21 @@ procedure ParsePenglGetMapfv is
   query_val  : unbounded_string;
   query_type : identifier;
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgetmapfv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
   ParseNextNumericParameter( query_val, query_type, pen_glevaluators_t ); -- query : GLevaluators
-  ParseLastNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glGetMapfv( GLevaluators( to_numeric( target_val ) ), GLevaluators( to_numeric( query_val ) ), GL_Float_Array_Ptr( to_numeric( v_val ) ) );
+      glGetMapfv( GLevaluators( to_numeric( target_val ) ), GLevaluators( to_numeric( query_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8263,15 +9080,21 @@ procedure ParsePenglGetMapiv is
   query_val  : unbounded_string;
   query_type : identifier;
   v_val  : unbounded_string;
-  v_type : identifier;
+--  v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgetmapiv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
   ParseNextNumericParameter( query_val, query_type, pen_glevaluators_t ); -- query : GLevaluators
-  ParseLastNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glGetMapiv( GLevaluators( to_numeric( target_val ) ), GLevaluators( to_numeric( query_val ) ), GL_Int_Array_Ptr( to_numeric( v_val ) ) );
+      glGetMapiv( GLevaluators( to_numeric( target_val ) ), GLevaluators( to_numeric( query_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8282,13 +9105,19 @@ procedure ParsePenglEvalCoord1d is
   -- Syntax: glEvalCoord1d( u : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glEvalCoord1d
   u_val  : unbounded_string;
-  u_type : identifier;
+--  u_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glevalcoord1d_t );
-  ParseSingleNumericParameter( u_val, u_type, pen_gl_double_array_ptr_t ); -- u : GL_Double_Array_Ptr
+  -- TODO: define this
+  --ParseSingleNumericParameter( u_val, u_type, pen_gl_double_array_ptr_t ); -- u : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: populate the value
+      param_array : GL_Double_Array_Access := new double_array( 0..0 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glEvalCoord1d( GL_Double_Array_Ptr( to_numeric( u_val ) ) );
+      glEvalCoord1d( param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8299,13 +9128,19 @@ procedure ParsePenglEvalCoord1f is
   -- Syntax: glEvalCoord1f( u : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glEvalCoord1f
   u_val  : unbounded_string;
-  u_type : identifier;
+--  u_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glevalcoord1f_t );
-  ParseSingleNumericParameter( u_val, u_type, pen_gl_float_array_ptr_t ); -- u : GL_Float_Array_Ptr
+  -- TODO: define this
+  -- ParseSingleNumericParameter( u_val, u_type, pen_gl_float_array_ptr_t ); -- u : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: populate the value
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glEvalCoord1f( GL_Float_Array_Ptr( to_numeric( u_val ) ) );
+      glEvalCoord1f( param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8316,13 +9151,19 @@ procedure ParsePenglEvalCoord1dv is
   -- Syntax: glEvalCoord1dv( u : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glEvalCoord1dv
   u_val  : unbounded_string;
-  u_type : identifier;
+--  u_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glevalcoord1dv_t );
-  ParseSingleNumericParameter( u_val, u_type, pen_gl_double_array_ptr_t ); -- u : GL_Double_Array_Ptr
+  -- TODO: define this
+  -- ParseSingleNumericParameter( u_val, u_type, pen_gl_double_array_ptr_t ); -- u : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: populate the values
+      param_array : GL_Double_Array_Access := new double_array( 0..0 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glEvalCoord1dv( GL_Double_Array_Ptr( to_numeric( u_val ) ) );
+      glEvalCoord1dv( param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8333,13 +9174,19 @@ procedure ParsePenglEvalCoord1fv is
   -- Syntax: glEvalCoord1fv( u : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glEvalCoord1fv
   u_val  : unbounded_string;
-  u_type : identifier;
+--  u_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glevalcoord1fv_t );
-  ParseSingleNumericParameter( u_val, u_type, pen_gl_float_array_ptr_t ); -- u : GL_Float_Array_Ptr
+  -- TODO: define this
+  --ParseSingleNumericParameter( u_val, u_type, pen_gl_float_array_ptr_t ); -- u : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: populate the values
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glEvalCoord1fv( GL_Float_Array_Ptr( to_numeric( u_val ) ) );
+      glEvalCoord1fv( param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8390,13 +9237,19 @@ procedure ParsePenglEvalCoord2dv is
   -- Syntax: glEvalCoord2dv( u : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glEvalCoord2dv
   u_val  : unbounded_string;
-  u_type : identifier;
+--  u_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glevalcoord2dv_t );
-  ParseSingleNumericParameter( u_val, u_type, pen_gl_double_array_ptr_t ); -- u : GL_Double_Array_Ptr
+  -- TODO: define this
+  --ParseSingleNumericParameter( u_val, u_type, pen_gl_double_array_ptr_t ); -- u : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: populate the values
+      param_array : GL_Double_Array_Access := new double_array( 0..1 );
+      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
     begin
-      glEvalCoord2dv( GL_Double_Array_Ptr( to_numeric( u_val ) ) );
+      glEvalCoord2dv( param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8407,13 +9260,19 @@ procedure ParsePenglEvalCoord2fv is
   -- Syntax: glEvalCoord2fv( u : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glEvalCoord2fv
   u_val  : unbounded_string;
-  u_type : identifier;
+--  u_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glevalcoord2fv_t );
-  ParseSingleNumericParameter( u_val, u_type, pen_gl_float_array_ptr_t ); -- u : GL_Float_Array_Ptr
+  -- TODO: define this
+  --ParseSingleNumericParameter( u_val, u_type, pen_gl_float_array_ptr_t ); -- u : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: populate the values
+      param_array : GL_Float_Array_Access := new float_array( 0..1 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glEvalCoord2fv( GL_Float_Array_Ptr( to_numeric( u_val ) ) );
+      glEvalCoord2fv( param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8665,14 +9524,20 @@ procedure ParsePenglFogfv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
-  param_type : identifier;
+  --param_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glfogfv_t );
   ParseFirstNumericParameter( pname_val, pname_type, pen_glfog_t ); -- pname : GLfog
-  ParseLastNumericParameter( param_val, param_type, pen_gl_float_array_ptr_t ); -- param : GL_Float_Array_Ptr
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( param_val, param_type, pen_gl_float_array_ptr_t ); -- param : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glFogfv( GLfog( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( param_val ) ) );
+      glFogfv( GLfog( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8685,14 +9550,20 @@ procedure ParsePenglFogiv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
-  param_type : identifier;
+  --param_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glfogiv_t );
   ParseFirstNumericParameter( pname_val, pname_type, pen_glfog_t ); -- pname : GLfog
-  ParseLastNumericParameter( param_val, param_type, pen_gl_int_array_ptr_t ); -- param : GL_Int_Array_Ptr
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( param_val, param_type, pen_gl_int_array_ptr_t ); -- param : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glFogiv( GLfog( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( param_val ) ) );
+      glFogiv( GLfog( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8707,15 +9578,21 @@ procedure ParsePenglFeedbackBuffer is
   kind_val  : unbounded_string;
   kind_type : identifier;
   buffer_val  : unbounded_string;
-  buffer_type : identifier;
+--  buffer_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glfeedbackbuffer_t );
   ParseFirstNumericParameter( size_val, size_type, pen_glsizei_t ); -- size : GLsizei
   ParseNextNumericParameter( kind_val, kind_type, pen_glfeedback_t ); -- kind : GLfeedback
-  ParseLastNumericParameter( buffer_val, buffer_type, pen_gl_float_array_ptr_t ); -- buffer : GL_Float_Array_Ptr
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( buffer_val, buffer_type, pen_gl_float_array_ptr_t ); -- buffer : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glFeedbackBuffer( GLsizei( to_numeric( size_val ) ), GLfeedback( to_numeric( kind_val ) ), GL_Float_Array_Ptr( to_numeric( buffer_val ) ) );
+      glFeedbackBuffer( GLsizei( to_numeric( size_val ) ), GLfeedback( to_numeric( kind_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8745,14 +9622,20 @@ procedure ParsePenglSelectBuffer is
   kind_val  : unbounded_string;
   kind_type : identifier;
   buffer_val  : unbounded_string;
-  buffer_type : identifier;
+--  buffer_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glselectbuffer_t );
   ParseFirstNumericParameter( kind_val, kind_type, pen_glsizei_t ); -- kind : GLsizei
-  ParseLastNumericParameter( buffer_val, buffer_type, pen_gl_uint_array_ptr_t ); -- buffer : GL_UInt_Array_Ptr
+  -- TODO: takes a multivalue C uint array of parameters, but we don't support that in SparForte
+  -- ParseLastNumericParameter( buffer_val, buffer_type, pen_gl_uint_array_ptr_t ); -- buffer : GL_UInt_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_UInt_Array_Access := new uint_array( 0..0 );
+      param_ptr   : GL_UInt_Array_Ptr := GL_UInt_Array_Conv.To_Address( param_array );
     begin
-      glSelectBuffer( GLsizei( to_numeric( kind_val ) ), GL_UInt_Array_Ptr( to_numeric( buffer_val ) ) );
+      glSelectBuffer( GLsizei( to_numeric( kind_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8835,18 +9718,23 @@ procedure ParsePenglDrawRangeElements is
   kind_val  : unbounded_string;
   kind_type : identifier;
   indices_val  : unbounded_string;
-  indices_type : identifier;
+--  indices_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gldrawrangeelements_t );
   ParseFirstNumericParameter( mode_val, mode_type, pen_glprimitives_t ); -- mode : GLprimitives
   ParseNextNumericParameter( start_val, start_type, pen_gluint_t ); -- start : GLuint
   ParseNextNumericParameter( done_val, done_type, pen_gluint_t ); -- done : GLuint
   ParseNextNumericParameter( count_val, count_type, pen_glsizei_t ); -- count : GLsizei
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( indices_val, indices_type, pen_system.address_t ); -- indices : System.address
+  -- TODO: takes a multivalue C multitype array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( indices_val, indices_type, pen_system.address_t ); -- indices : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glDrawRangeElements( GLprimitives( to_numeric( mode_val ) ), GLuint( to_numeric( start_val ) ), GLuint( to_numeric( done_val ) ), GLsizei( to_numeric( count_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( indices_val ) ) );
+      glDrawRangeElements( GLprimitives( to_numeric( mode_val ) ), GLuint( to_numeric( start_val ) ), GLuint( to_numeric( done_val ) ), GLsizei( to_numeric( count_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8875,8 +9763,9 @@ procedure ParsePenglTexImage3D is
   kind_val  : unbounded_string;
   kind_type : identifier;
   pixels_val  : unbounded_string;
-  pixels_type : identifier;
+--  pixels_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glteximage3d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
@@ -8887,10 +9776,14 @@ begin
   ParseNextNumericParameter( border_val, border_type, pen_glint_t ); -- border : GLint
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  -- TODO: takes a multivalue C multitype array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glTexImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLint( to_numeric( border_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+      glTexImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLint( to_numeric( border_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8921,8 +9814,9 @@ procedure ParsePenglTexSubImage3D is
   kind_val  : unbounded_string;
   kind_type : identifier;
   pixels_val  : unbounded_string;
-  pixels_type : identifier;
+--  pixels_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gltexsubimage3d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
@@ -8934,10 +9828,14 @@ begin
   ParseNextNumericParameter( depth_val, depth_type, pen_glsizei_t ); -- depth : GLsizei
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
+  -- TODO: takes a multivalue C multitype array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( pixels_val, pixels_type, pen_system.address_t ); -- pixels : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glTexSubImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLint( to_numeric( zoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( pixels_val ) ) );
+      glTexSubImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLint( to_numeric( zoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -8999,18 +9897,23 @@ procedure ParsePenglColorTable is
   kind_val  : unbounded_string;
   kind_type : identifier;
   table_val  : unbounded_string;
-  table_type : identifier;
+--  table_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glcolortable_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glenum_t ); -- internalformat : GLenum
   ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
   ParseNextNumericParameter( format_val, format_type, pen_glenum_t ); -- format : GLenum
   ParseNextNumericParameter( kind_val, kind_type, pen_glenum_t ); -- kind : GLenum
-  ParseLastNumericParameter( table_val, table_type, pen_system.address_t ); -- table : System.address
+  -- TODO: takes a multivalue C multitype array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( table_val, table_type, pen_system.address_t ); -- table : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glColorTable( GLenum( to_numeric( target_val ) ), GLenum( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLenum( to_numeric( format_val ) ), GLenum( to_numeric( kind_val ) ), System.address( to_numeric( table_val ) ) );
+      glColorTable( GLenum( to_numeric( target_val ) ), GLenum( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLenum( to_numeric( format_val ) ), GLenum( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9031,18 +9934,23 @@ procedure ParsePenglColorSubTable is
   kind_val  : unbounded_string;
   kind_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glcolorsubtable_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( start_val, start_type, pen_glsizei_t ); -- start : GLsizei
   ParseNextNumericParameter( count_val, count_type, pen_glsizei_t ); -- count : GLsizei
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  -- TODO: takes a multivalue C multitype array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glColorSubTable( GLarbmapping( to_numeric( target_val ) ), GLsizei( to_numeric( start_val ) ), GLsizei( to_numeric( count_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( data_val ) ) );
+      glColorSubTable( GLarbmapping( to_numeric( target_val ) ), GLsizei( to_numeric( start_val ) ), GLsizei( to_numeric( count_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9057,15 +9965,21 @@ procedure ParsePenglColorTableParameteriv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+  --params_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glcolortableparameteriv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
-  ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glColorTableParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( params_val ) ) );
+      glColorTableParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9080,15 +9994,21 @@ procedure ParsePenglColorTableParameterfv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glcolortableparameterfv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
-  ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  -- ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glColorTableParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( params_val ) ) );
+      glColorTableParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9163,16 +10083,21 @@ procedure ParsePenglGetColorTable is
   kind_val  : unbounded_string;
   kind_type : identifier;
   table_val  : unbounded_string;
-  table_type : identifier;
+--  table_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgetcolortable_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( table_val, table_type, pen_system.address_t ); -- table : System.address
+  -- TODO: takes a multivalue C multitype array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( table_val, table_type, pen_system.address_t ); -- table : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glGetColorTable( GLarbmapping( to_numeric( target_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( table_val ) ) );
+      glGetColorTable( GLarbmapping( to_numeric( target_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9187,15 +10112,21 @@ procedure ParsePenglGetColorTableParameterfv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgetcolortableparameterfv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
-  ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
+  -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glGetColorTableParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( params_val ) ) );
+      glGetColorTableParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9210,15 +10141,21 @@ procedure ParsePenglGetColorTableParameteriv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgetcolortableparameteriv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
-  ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
+  -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glGetColorTableParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( params_val ) ) );
+      glGetColorTableParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9323,24 +10260,29 @@ procedure ParsePenglGetHistogram is
   kind_val  : unbounded_string;
   kind_type : identifier;
   values_val  : unbounded_string;
-  values_type : identifier;
+--  values_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgethistogram_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( reset_val, reset_type, pen_glboolean_t ); -- reset : GLboolean
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( values_val, values_type, pen_system.address_t ); -- values : System.address
+  -- TODO: takes a multivalue C multitype array of parameters, but we don't support that in SparForte
+--  ParseLastNumericParameter( values_val, values_type, pen_system.address_t ); -- values : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glGetHistogram( GLarbmapping( to_numeric( target_val ) ), GLboolean( to_numeric( reset_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( values_val ) ) );
+      glGetHistogram( GLarbmapping( to_numeric( target_val ) ), GLboolean( to_numeric( reset_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePenglGetHistogram;
 
-procedure ParsePenglGetHistogramParameterfv is
+procedure ParsePenglGetHistogramParameterfv( result : out unbounded_string ) is
   -- Syntax: glGetHistogramParameterfv( target : GLarbmapping; pname : GLarbmapping; params : in out GLfloat );
   -- Source: bush_os.opengl.glGetHistogramParameterfv
   target_val  : unbounded_string;
@@ -9355,15 +10297,18 @@ begin
   ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
   ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
   if isExecutingCommand then
+    declare
+      param : GLFloat := 0.0;
     begin
-      glGetHistogramParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+      glGetHistogramParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param );
+      result := to_unbounded_string( GLFloat'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePenglGetHistogramParameterfv;
 
-procedure ParsePenglGetHistogramParameteriv is
+procedure ParsePenglGetHistogramParameteriv( result : out unbounded_string ) is
   -- Syntax: glGetHistogramParameteriv( target : GLarbmapping; pname : GLarbmapping; params : in out GLint );
   -- Source: bush_os.opengl.glGetHistogramParameteriv
   target_val  : unbounded_string;
@@ -9378,8 +10323,11 @@ begin
   ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
   ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
   if isExecutingCommand then
+    declare
+      param : GLInt := 0;
     begin
-      glGetHistogramParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+      glGetHistogramParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param );
+      result := to_unbounded_string( GLInt'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9438,17 +10386,22 @@ procedure ParsePenglGetMinmax is
   kind_val  : unbounded_string;
   kind_type : identifier;
   values_val  : unbounded_string;
-  values_type : identifier;
+--  values_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgetminmax_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( reset_val, reset_type, pen_glboolean_t ); -- reset : GLboolean
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( values_val, values_type, pen_system.address_t ); -- values : System.address
+  -- TODO: takes a multivalue C multitypes array of parameters, but we don't support that in SparForte
+  -- ParseLastNumericParameter( values_val, values_type, pen_system.address_t ); -- values : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glGetMinmax( GLarbmapping( to_numeric( target_val ) ), GLboolean( to_numeric( reset_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( values_val ) ) );
+      glGetMinmax( GLarbmapping( to_numeric( target_val ) ), GLboolean( to_numeric( reset_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9463,15 +10416,21 @@ procedure ParsePenglGetMinmaxParameterfv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgetminmaxparameterfv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
-  ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
+  -- TODO: returns two different sizes of arrays
+  --ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
     begin
-      glGetMinmaxParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+      glGetMinmaxParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9486,15 +10445,21 @@ procedure ParsePenglGetMinmaxParameteriv is
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
-  params_type : identifier;
+--  params_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgetminmaxparameteriv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
-  ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
+  -- TODO: returns two different sizes of arrays
+  --ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      param_array : GL_Int_Array_Access := new int_array( 0..0 );
+      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
     begin
-      glGetMinmaxParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+      glGetMinmaxParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9515,18 +10480,23 @@ procedure ParsePenglConvolutionFilter1D is
   kind_val  : unbounded_string;
   kind_type : identifier;
   image_val  : unbounded_string;
-  image_type : identifier;
+--  image_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glconvolutionfilter1d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glbuffers_t ); -- target : GLbuffers
   ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glbuffers_t ); -- internalformat : GLbuffers
   ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( image_val, image_type, pen_system.address_t ); -- image : System.address
+  -- TODO: takes a multivalue C multitype array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( image_val, image_type, pen_system.address_t ); -- image : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glConvolutionFilter1D( GLbuffers( to_numeric( target_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( image_val ) ) );
+      glConvolutionFilter1D( GLbuffers( to_numeric( target_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9549,8 +10519,9 @@ procedure ParsePenglConvolutionFilter2D is
   kind_val  : unbounded_string;
   kind_type : identifier;
   image_val  : unbounded_string;
-  image_type : identifier;
+--  image_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glconvolutionfilter2d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glbuffers_t ); -- target : GLbuffers
   ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glbuffers_t ); -- internalformat : GLbuffers
@@ -9558,10 +10529,14 @@ begin
   ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( image_val, image_type, pen_system.address_t ); -- image : System.address
+  -- TODO: takes a multivalue C multitype array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( image_val, image_type, pen_system.address_t ); -- image : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glConvolutionFilter2D( GLbuffers( to_numeric( target_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( image_val ) ) );
+      glConvolutionFilter2D( GLbuffers( to_numeric( target_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9591,7 +10566,7 @@ begin
   end if;
 end ParsePenglConvolutionParameterf;
 
-procedure ParsePenglConvolutionParameterfv is
+procedure ParsePenglConvolutionParameterfv( result : out unbounded_string ) is
   -- Syntax: glConvolutionParameterfv( target : GLarbmapping; pname : GLarbmapping; params : in out GLfloat );
   -- Source: bush_os.opengl.glConvolutionParameterfv
   target_val  : unbounded_string;
@@ -9606,38 +10581,19 @@ begin
   ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
   ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
   if isExecutingCommand then
+    declare
+      param : GLFloat := 0.0;
     begin
-      glConvolutionParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+      -- TODO: two different variations in the opengl binding
+      glConvolutionParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param );
+      result := to_unbounded_string( GLfloat'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePenglConvolutionParameterfv;
 
-procedure ParsePenglConvolutionParameterfv is
-  -- Syntax: glConvolutionParameterfv( target : GLarbmapping; pname : GLarbmapping; params : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glConvolutionParameterfv
-  target_val  : unbounded_string;
-  target_type : identifier;
-  pname_val  : unbounded_string;
-  pname_type : identifier;
-  params_val  : unbounded_string;
-  params_type : identifier;
-begin
-  expect( pen_glconvolutionparameterfv_t );
-  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
-  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
-  ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
-  if isExecutingCommand then
-    begin
-      glConvolutionParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GL_Float_Array_Ptr( to_numeric( params_val ) ) );
-    exception when others =>
-      err( "exception raised" );
-    end;
-  end if;
-end ParsePenglConvolutionParameterfv;
-
-procedure ParsePenglConvolutionParameteri is
+procedure ParsePenglConvolutionParameteri( result : out unbounded_string ) is
   -- Syntax: glConvolutionParameteri( target : GLarbmapping; pname : GLarbmapping; params : GLint );
   -- Source: bush_os.opengl.glConvolutionParameteri
   target_val  : unbounded_string;
@@ -9652,36 +10608,17 @@ begin
   ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
   ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
   if isExecutingCommand then
+    declare
+      param : GLInt := 0;
     begin
-      glConvolutionParameteri( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+      -- TODO: two different variations in the opengl binding
+      glConvolutionParameteri( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param );
+      result := to_unbounded_string( GLint'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePenglConvolutionParameteri;
-
-procedure ParsePenglConvolutionParameteriv is
-  -- Syntax: glConvolutionParameteriv( target : GLarbmapping; pname : GLarbmapping; params : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glConvolutionParameteriv
-  target_val  : unbounded_string;
-  target_type : identifier;
-  pname_val  : unbounded_string;
-  pname_type : identifier;
-  params_val  : unbounded_string;
-  params_type : identifier;
-begin
-  expect( pen_glconvolutionparameteriv_t );
-  ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
-  ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
-  ParseLastNumericParameter( params_val, params_type, pen_gl_int_array_ptr_t ); -- params : GL_Int_Array_Ptr
-  if isExecutingCommand then
-    begin
-      glConvolutionParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GL_Int_Array_Ptr( to_numeric( params_val ) ) );
-    exception when others =>
-      err( "exception raised" );
-    end;
-  end if;
-end ParsePenglConvolutionParameteriv;
 
 procedure ParsePenglCopyConvolutionFilter1D is
   -- Syntax: glCopyConvolutionFilter1D( target : GLarbmapping; internalformat : GLarbmapping; x, y : GLint; width : GLsizei );
@@ -9754,23 +10691,28 @@ procedure ParsePenglGetConvolutionFilter is
   kind_val  : unbounded_string;
   kind_type : identifier;
   image_val  : unbounded_string;
-  image_type : identifier;
+--  image_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgetconvolutionfilter_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( image_val, image_type, pen_system.address_t ); -- image : System.address
+  -- TODO: takes a multivalue C multitype array of parameters, but we don't support that in SparForte
+  --ParseLastNumericParameter( image_val, image_type, pen_system.address_t ); -- image : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      glGetConvolutionFilter( GLarbmapping( to_numeric( target_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( image_val ) ) );
+      glGetConvolutionFilter( GLarbmapping( to_numeric( target_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePenglGetConvolutionFilter;
 
-procedure ParsePenglGetConvolutionParameterfv is
+procedure ParsePenglGetConvolutionParameterfv( result : out unbounded_string ) is
   -- Syntax: glGetConvolutionParameterfv( target : GLarbmapping; pname : GLarbmapping; params : in out GLfloat );
   -- Source: bush_os.opengl.glGetConvolutionParameterfv
   target_val  : unbounded_string;
@@ -9785,15 +10727,18 @@ begin
   ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
   ParseLastNumericParameter( params_val, params_type, pen_glfloat_t ); -- params : GLfloat
   if isExecutingCommand then
+    declare
+      param : GLFloat := 0.0;
     begin
-      glGetConvolutionParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
+      glGetConvolutionParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param );
+      result := to_unbounded_string( GLFloat'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePenglGetConvolutionParameterfv;
 
-procedure ParsePenglGetConvolutionParameteriv is
+procedure ParsePenglGetConvolutionParameteriv( result : out unbounded_string ) is
   -- Syntax: glGetConvolutionParameteriv( target : GLarbmapping; pname : GLarbmapping; params : in out GLint );
   -- Source: bush_os.opengl.glGetConvolutionParameteriv
   target_val  : unbounded_string;
@@ -9808,8 +10753,11 @@ begin
   ParseNextNumericParameter( pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
   ParseLastNumericParameter( params_val, params_type, pen_glint_t ); -- params : GLint
   if isExecutingCommand then
+    declare
+      param : GLInt := 0;
     begin
-      glGetConvolutionParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
+      glGetConvolutionParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param );
+      result := to_unbounded_string( GLInt'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9832,10 +10780,11 @@ procedure ParsePenglSeparableFilter2D is
   kind_val  : unbounded_string;
   kind_type : identifier;
   row_val  : unbounded_string;
-  row_type : identifier;
+--  row_type : identifier;
   column_val  : unbounded_string;
-  column_type : identifier;
+--  column_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glseparablefilter2d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( internalformat_val, internalformat_type, pen_glbuffers_t ); -- internalformat : GLbuffers
@@ -9843,11 +10792,18 @@ begin
   ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseNextNumericParameter( row_val, row_type, pen_system.address_t ); -- row : System.address
-  ParseLastNumericParameter( column_val, column_type, pen_system.address_t ); -- column : System.address
+  -- TODO: takes a multivalue C multitype array of parameters, but we don't support that in SparForte
+--  ParseNextNumericParameter( row_val, row_type, pen_system.address_t ); -- row : System.address
+--  ParseLastNumericParameter( column_val, column_type, pen_system.address_t ); -- column : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
+      dummy2 : boolean;
+      dummy2_ptr : system.address := dummy2'address;
     begin
-      glSeparableFilter2D( GLarbmapping( to_numeric( target_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( row_val ) ), System.address( to_numeric( column_val ) ) );
+      -- TODO: two parameters are single dimensional arrays
+      glSeparableFilter2D( GLarbmapping( to_numeric( target_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr, dummy2_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9864,22 +10820,32 @@ procedure ParsePenglGetSeparableFilter is
   kind_val  : unbounded_string;
   kind_type : identifier;
   row_val  : unbounded_string;
-  row_type : identifier;
+  -- row_type : identifier;
   column_val  : unbounded_string;
-  column_type : identifier;
+  -- column_type : identifier;
   span_val  : unbounded_string;
-  span_type : identifier;
+  -- span_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgetseparablefilter_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseNextNumericParameter( row_val, row_type, pen_system.address_t ); -- row : System.address
-  ParseNextNumericParameter( column_val, column_type, pen_system.address_t ); -- column : System.address
-  ParseLastNumericParameter( span_val, span_type, pen_system.address_t ); -- span : System.address
+  -- TODO: takes a multivalue C multitype array of parameters, but we don't support that in SparForte
+  -- ParseNextNumericParameter( row_val, row_type, pen_system.address_t ); -- row : System.address
+  -- ParseNextNumericParameter( column_val, column_type, pen_system.address_t ); -- column : System.address
+  -- ParseLastNumericParameter( span_val, span_type, pen_system.address_t ); -- span : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
+      dummy2 : boolean;
+      dummy2_ptr : system.address := dummy2'address;
+      dummy3 : boolean;
+      dummy3_ptr : system.address := dummy3'address;
     begin
-      glGetSeparableFilter( GLarbmapping( to_numeric( target_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( row_val ) ), System.address( to_numeric( column_val ) ), System.address( to_numeric( span_val ) ) );
+      -- TODO: two one dimensional arrays
+      glGetSeparableFilter( GLarbmapping( to_numeric( target_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr, dummy2_ptr, dummy3_ptr );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9936,8 +10902,9 @@ procedure ParsePenglCompressedTexImage1D is
   imageSize_val  : unbounded_string;
   imageSize_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glcompressedteximage1d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
@@ -9945,10 +10912,11 @@ begin
   ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
   ParseNextNumericParameter( border_val, border_type, pen_glint_t ); -- border : GLint
   ParseNextNumericParameter( imageSize_val, imageSize_type, pen_glsizei_t ); -- imageSize : GLsizei
-  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  -- TODO: no man page for this?
+  --ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
   if isExecutingCommand then
     begin
-      glCompressedTexImage1D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLint( to_numeric( border_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
+      null; --glCompressedTexImage1D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLint( to_numeric( border_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -9973,8 +10941,9 @@ procedure ParsePenglCompressedTexImage2D is
   imageSize_val  : unbounded_string;
   imageSize_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+ -- data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glcompressedteximage2d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
@@ -9983,10 +10952,11 @@ begin
   ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
   ParseNextNumericParameter( border_val, border_type, pen_glint_t ); -- border : GLint
   ParseNextNumericParameter( imageSize_val, imageSize_type, pen_glsizei_t ); -- imageSize : GLsizei
-  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  -- TODO: no man page for this?
+  --ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
   if isExecutingCommand then
     begin
-      glCompressedTexImage2D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLint( to_numeric( border_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
+      null; --glCompressedTexImage2D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLint( to_numeric( border_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10013,8 +10983,9 @@ procedure ParsePenglCompressedTexImage3D is
   imageSize_val  : unbounded_string;
   imageSize_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glcompressedteximage3d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
@@ -10024,10 +10995,11 @@ begin
   ParseNextNumericParameter( depth_val, depth_type, pen_glsizei_t ); -- depth : GLsizei
   ParseNextNumericParameter( border_val, border_type, pen_glint_t ); -- border : GLint
   ParseNextNumericParameter( imageSize_val, imageSize_type, pen_glsizei_t ); -- imageSize : GLsizei
-  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  -- TODO: no man page for this?
+  --ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
   if isExecutingCommand then
     begin
-      glCompressedTexImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLint( to_numeric( border_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
+      null; -- glCompressedTexImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLint( to_numeric( border_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10050,8 +11022,9 @@ procedure ParsePenglCompressedTexSubImage1D is
   imageSize_val  : unbounded_string;
   imageSize_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glcompressedtexsubimage1d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
@@ -10059,10 +11032,11 @@ begin
   ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( imageSize_val, imageSize_type, pen_glsizei_t ); -- imageSize : GLsizei
-  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  --ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
   if isExecutingCommand then
     begin
-      glCompressedTexSubImage1D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
+      -- TODO: no man page?
+      null; -- glCompressedTexSubImage1D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10089,8 +11063,9 @@ procedure ParsePenglCompressedTexSubImage2D is
   imageSize_val  : unbounded_string;
   imageSize_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glcompressedtexsubimage2d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
@@ -10100,10 +11075,10 @@ begin
   ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( imageSize_val, imageSize_type, pen_glsizei_t ); -- imageSize : GLsizei
-  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  --ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
   if isExecutingCommand then
     begin
-      glCompressedTexSubImage2D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
+      null; -- glCompressedTexSubImage2D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10134,8 +11109,9 @@ procedure ParsePenglCompressedTexSubImage3D is
   imageSize_val  : unbounded_string;
   imageSize_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glcompressedtexsubimage3d_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
@@ -10147,10 +11123,11 @@ begin
   ParseNextNumericParameter( depth_val, depth_type, pen_glsizei_t ); -- depth : GLsizei
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( imageSize_val, imageSize_type, pen_glsizei_t ); -- imageSize : GLsizei
-  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  --ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
   if isExecutingCommand then
     begin
-      glCompressedTexSubImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLint( to_numeric( zoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
+      -- TODO: no man page?
+      null; --glCompressedTexSubImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLint( to_numeric( zoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10165,15 +11142,17 @@ procedure ParsePenglGetCompressedTexImage is
   lod_val  : unbounded_string;
   lod_type : identifier;
   img_val  : unbounded_string;
-  img_type : identifier;
+--  img_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgetcompressedteximage_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( lod_val, lod_type, pen_glint_t ); -- lod : GLint
-  ParseLastNumericParameter( img_val, img_type, pen_system.address_t ); -- img : System.address
+  --ParseLastNumericParameter( img_val, img_type, pen_system.address_t ); -- img : System.address
   if isExecutingCommand then
     begin
-      glGetCompressedTexImage( GLenum( to_numeric( target_val ) ), GLint( to_numeric( lod_val ) ), System.address( to_numeric( img_val ) ) );
+      -- TODO: no man page?
+      null; -- glGetCompressedTexImage( GLenum( to_numeric( target_val ) ), GLint( to_numeric( lod_val ) ), System.address( to_numeric( img_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10200,7 +11179,7 @@ begin
   end if;
 end ParsePenglMultiTexCoord1d;
 
-procedure ParsePenglMultiTexCoord1dv is
+procedure ParsePenglMultiTexCoord1dv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord1dv( target : GLenum; v : in out GLdouble );
   -- Source: bush_os.opengl.glMultiTexCoord1dv
   target_val  : unbounded_string;
@@ -10208,12 +11187,17 @@ procedure ParsePenglMultiTexCoord1dv is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord1dv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
   if isExecutingCommand then
+    declare
+      param : GLdouble := 0.0;
     begin
-      glMultiTexCoord1dv( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
+      -- TODO: no man page? do we need to assign the value before calling?
+      glMultiTexCoord1dv( GLenum( to_numeric( target_val ) ), param );
+      result := to_unbounded_string( GLdouble'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10240,7 +11224,7 @@ begin
   end if;
 end ParsePenglMultiTexCoord1f;
 
-procedure ParsePenglMultiTexCoord1fv is
+procedure ParsePenglMultiTexCoord1fv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord1fv( target : GLenum; v : in out GLfloat );
   -- Source: bush_os.opengl.glMultiTexCoord1fv
   target_val  : unbounded_string;
@@ -10248,12 +11232,17 @@ procedure ParsePenglMultiTexCoord1fv is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord1fv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
   if isExecutingCommand then
+    declare
+      param : GLfloat := 0.0;
     begin
-      glMultiTexCoord1fv( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
+      -- TODO: no man page? do we need to assign the value before calling?
+      glMultiTexCoord1fv( GLenum( to_numeric( target_val ) ), param );
+      result := to_unbounded_string( GLfloat'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10280,7 +11269,7 @@ begin
   end if;
 end ParsePenglMultiTexCoord1i;
 
-procedure ParsePenglMultiTexCoord1iv is
+procedure ParsePenglMultiTexCoord1iv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord1iv( target : GLenum; v : in out GLint );
   -- Source: bush_os.opengl.glMultiTexCoord1iv
   target_val  : unbounded_string;
@@ -10288,12 +11277,17 @@ procedure ParsePenglMultiTexCoord1iv is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord1iv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glint_t ); -- v : GLint
   if isExecutingCommand then
+    declare
+      param : GLint := 0;
     begin
-      glMultiTexCoord1iv( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
+      -- TODO: no man page? do we need to assign the value before calling?
+      glMultiTexCoord1iv( GLenum( to_numeric( target_val ) ), param );
+      result := to_unbounded_string( GLint'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10320,7 +11314,7 @@ begin
   end if;
 end ParsePenglMultiTexCoord1s;
 
-procedure ParsePenglMultiTexCoord1sv is
+procedure ParsePenglMultiTexCoord1sv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord1sv( target : GLenum; v : in out GLshort );
   -- Source: bush_os.opengl.glMultiTexCoord1sv
   target_val  : unbounded_string;
@@ -10328,12 +11322,17 @@ procedure ParsePenglMultiTexCoord1sv is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord1sv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glshort_t ); -- v : GLshort
   if isExecutingCommand then
+    declare
+      param : GLshort := 0;
     begin
-      glMultiTexCoord1sv( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
+      -- TODO: no man page? do we need to assign the value before calling?
+      glMultiTexCoord1sv( GLenum( to_numeric( target_val ) ),  param );
+      result := to_unbounded_string( GLshort'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10363,7 +11362,7 @@ begin
   end if;
 end ParsePenglMultiTexCoord2d;
 
-procedure ParsePenglMultiTexCoord2dv is
+procedure ParsePenglMultiTexCoord2dv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord2dv( target : GLenum; v : in out GLdouble );
   -- Source: bush_os.opengl.glMultiTexCoord2dv
   target_val  : unbounded_string;
@@ -10371,12 +11370,18 @@ procedure ParsePenglMultiTexCoord2dv is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord2dv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
   if isExecutingCommand then
+    declare
+      param : GLdouble := 0.0;
     begin
-      glMultiTexCoord2dv( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
+      -- TODO: no man page? do we need to assign the value before calling?
+      -- TODO: pointer to two doubles?
+      glMultiTexCoord2dv( GLenum( to_numeric( target_val ) ), param );
+      result := to_unbounded_string( GLdouble'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10406,7 +11411,7 @@ begin
   end if;
 end ParsePenglMultiTexCoord2f;
 
-procedure ParsePenglMultiTexCoord2fv is
+procedure ParsePenglMultiTexCoord2fv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord2fv( target : GLenum; v : in out GLfloat );
   -- Source: bush_os.opengl.glMultiTexCoord2fv
   target_val  : unbounded_string;
@@ -10414,12 +11419,18 @@ procedure ParsePenglMultiTexCoord2fv is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord2fv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
   if isExecutingCommand then
+    declare
+      param : GLfloat := 0.0;
     begin
-      glMultiTexCoord2fv( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
+      -- TODO: no man page? do we need to assign the value before calling?
+      -- TODO: pointer to two floats?
+      glMultiTexCoord2fv( GLenum( to_numeric( target_val ) ), param );
+      result := to_unbounded_string( GLfloat'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10449,7 +11460,7 @@ begin
   end if;
 end ParsePenglMultiTexCoord2i;
 
-procedure ParsePenglMultiTexCoord2iv is
+procedure ParsePenglMultiTexCoord2iv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord2iv( target : GLenum; v : in out GLint );
   -- Source: bush_os.opengl.glMultiTexCoord2iv
   target_val  : unbounded_string;
@@ -10457,12 +11468,18 @@ procedure ParsePenglMultiTexCoord2iv is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord2iv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glint_t ); -- v : GLint
   if isExecutingCommand then
+    declare
+      param : GLint := 0;
     begin
-      glMultiTexCoord2iv( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
+      -- TODO: no man page? do we need to assign the value before calling?
+      -- TODO: pointer to two ints?
+      glMultiTexCoord2iv( GLenum( to_numeric( target_val ) ), param );
+      result := to_unbounded_string( GLint'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10492,7 +11509,7 @@ begin
   end if;
 end ParsePenglMultiTexCoord2s;
 
-procedure ParsePenglMultiTexCoord2sv is
+procedure ParsePenglMultiTexCoord2sv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord2sv( target : GLenum; v : in out GLshort );
   -- Source: bush_os.opengl.glMultiTexCoord2sv
   target_val  : unbounded_string;
@@ -10500,12 +11517,18 @@ procedure ParsePenglMultiTexCoord2sv is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord2sv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glshort_t ); -- v : GLshort
   if isExecutingCommand then
+    declare
+      param : GLshort := 0;
     begin
-      glMultiTexCoord2sv( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
+      -- TODO: no man page? do we need to assign the value before calling?
+      -- TODO: pointer to two shorts?
+      glMultiTexCoord2sv( GLenum( to_numeric( target_val ) ), param );
+      result := to_unbounded_string( GLshort'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10538,7 +11561,7 @@ begin
   end if;
 end ParsePenglMultiTexCoord3d;
 
-procedure ParsePenglMultiTexCoord3dv is
+procedure ParsePenglMultiTexCoord3dv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord3dv( target : GLenum; v : in out GLdouble );
   -- Source: bush_os.opengl.glMultiTexCoord3dv
   target_val  : unbounded_string;
@@ -10546,12 +11569,18 @@ procedure ParsePenglMultiTexCoord3dv is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord3dv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
   if isExecutingCommand then
+    declare
+      param : GLdouble := 0.0;
     begin
-      glMultiTexCoord3dv( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
+      -- TODO: no man page? do we need to assign the value before calling?
+      -- TODO: pointer to three doubles?
+      glMultiTexCoord3dv( GLenum( to_numeric( target_val ) ), param );
+      result := to_unbounded_string( GLdouble'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10584,7 +11613,7 @@ begin
   end if;
 end ParsePenglMultiTexCoord3f;
 
-procedure ParsePenglMultiTexCoord3fv is
+procedure ParsePenglMultiTexCoord3fv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord3fv( target : GLenum; v : in out GLfloat );
   -- Source: bush_os.opengl.glMultiTexCoord3fv
   target_val  : unbounded_string;
@@ -10592,12 +11621,18 @@ procedure ParsePenglMultiTexCoord3fv is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord3fv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
   if isExecutingCommand then
+    declare
+      param : GLfloat := 0.0;
     begin
-      glMultiTexCoord3fv( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
+      -- TODO: no man page? do we need to assign the value before calling?
+      -- TODO: pointer to three float?
+      glMultiTexCoord3fv( GLenum( to_numeric( target_val ) ), param );
+      result := to_unbounded_string( GLfloat'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10623,14 +11658,14 @@ begin
   ParseLastNumericParameter( r_val, r_type, pen_glint_t ); -- r : GLint
   if isExecutingCommand then
     begin
-      glMultiTexCoord3i( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ), GLint( to_numeric( r_val ) ) );
+      glMultiTexCoord3i( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ), GLint( to_numeric( r_val ) )  );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePenglMultiTexCoord3i;
 
-procedure ParsePenglMultiTexCoord3iv is
+procedure ParsePenglMultiTexCoord3iv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord3iv( target : GLenum; v : in out GLint );
   -- Source: bush_os.opengl.glMultiTexCoord3iv
   target_val  : unbounded_string;
@@ -10638,12 +11673,18 @@ procedure ParsePenglMultiTexCoord3iv is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord3iv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glint_t ); -- v : GLint
   if isExecutingCommand then
+    declare
+      param : GLint := 0;
     begin
-      glMultiTexCoord3iv( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
+      -- TODO: no man page? do we need to assign the value before calling?
+      -- TODO: pointer to three float?
+      glMultiTexCoord3iv( GLenum( to_numeric( target_val ) ), param );
+      result := to_unbounded_string( GLint'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10676,7 +11717,7 @@ begin
   end if;
 end ParsePenglMultiTexCoord3s;
 
-procedure ParsePenglMultiTexCoord3sv is
+procedure ParsePenglMultiTexCoord3sv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord3sv( target : GLenum; v : in out GLshort );
   -- Source: bush_os.opengl.glMultiTexCoord3sv
   target_val  : unbounded_string;
@@ -10684,12 +11725,18 @@ procedure ParsePenglMultiTexCoord3sv is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord3sv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glshort_t ); -- v : GLshort
   if isExecutingCommand then
+    declare
+      param : GLshort := 0;
     begin
-      glMultiTexCoord3sv( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
+      -- TODO: no man page? do we need to assign the value before calling?
+      -- TODO: pointer to three float?
+      glMultiTexCoord3sv( GLenum( to_numeric( target_val ) ), param );
+      result := to_unbounded_string( GLshort'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10725,7 +11772,7 @@ begin
   end if;
 end ParsePenglMultiTexCoord4d;
 
-procedure ParsePenglMultiTexCoord4dv is
+procedure ParsePenglMultiTexCoord4dv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord4dv( target : GLenum; v : in out GLdouble );
   -- Source: bush_os.opengl.glMultiTexCoord4dv
   target_val  : unbounded_string;
@@ -10733,12 +11780,18 @@ procedure ParsePenglMultiTexCoord4dv is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord4dv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
   if isExecutingCommand then
+    declare
+      param : GLdouble := 0.0;
     begin
-      glMultiTexCoord4dv( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
+      -- TODO: no man page? do we need to assign the value before calling?
+      -- TODO: pointer to four double?
+      glMultiTexCoord4dv( GLenum( to_numeric( target_val ) ), param );
+      result := to_unbounded_string( GLdouble'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10774,7 +11827,7 @@ begin
   end if;
 end ParsePenglMultiTexCoord4f;
 
-procedure ParsePenglMultiTexCoord4fv is
+procedure ParsePenglMultiTexCoord4fv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord4fv( target : GLenum; v : in out GLfloat );
   -- Source: bush_os.opengl.glMultiTexCoord4fv
   target_val  : unbounded_string;
@@ -10782,12 +11835,18 @@ procedure ParsePenglMultiTexCoord4fv is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord4fv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
   if isExecutingCommand then
+    declare
+      param : GLfloat := 0.0;
     begin
-      glMultiTexCoord4fv( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
+      -- TODO: no man page? do we need to assign the value before calling?
+      -- TODO: pointer to four float?
+      glMultiTexCoord4fv( GLenum( to_numeric( target_val ) ), param );
+      result := to_unbounded_string( GLfloat'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10823,7 +11882,7 @@ begin
   end if;
 end ParsePenglMultiTexCoord4i;
 
-procedure ParsePenglMultiTexCoord4iv is
+procedure ParsePenglMultiTexCoord4iv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord4iv( target : GLenum; v : in out GLint );
   -- Source: bush_os.opengl.glMultiTexCoord4iv
   target_val  : unbounded_string;
@@ -10831,12 +11890,18 @@ procedure ParsePenglMultiTexCoord4iv is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord4iv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glint_t ); -- v : GLint
   if isExecutingCommand then
+    declare
+      param : GLint := 0;
     begin
-      glMultiTexCoord4iv( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
+      -- TODO: no man page? do we need to assign the value before calling?
+      -- TODO: pointer to four int?
+      glMultiTexCoord4iv( GLenum( to_numeric( target_val ) ), param );
+      result := to_unbounded_string( GLint'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10872,7 +11937,7 @@ begin
   end if;
 end ParsePenglMultiTexCoord4s;
 
-procedure ParsePenglMultiTexCoord4sv is
+procedure ParsePenglMultiTexCoord4sv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord4sv( target : GLenum; v : in out GLshort );
   -- Source: bush_os.opengl.glMultiTexCoord4sv
   target_val  : unbounded_string;
@@ -10880,12 +11945,18 @@ procedure ParsePenglMultiTexCoord4sv is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord4sv_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glshort_t ); -- v : GLshort
   if isExecutingCommand then
+    declare
+      param : GLshort := 0;
     begin
-      glMultiTexCoord4sv( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
+      -- TODO: no man page? do we need to assign the value before calling?
+      -- TODO: pointer to four short?
+      glMultiTexCoord4sv( GLenum( to_numeric( target_val ) ), param );
+      result := to_unbounded_string( GLshort'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -10899,6 +11970,7 @@ procedure ParsePenglLoadTransposeMatrixd is
   --GLdoublem[16]_val  : unbounded_string;
   --GLdoublem[16]_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glloadtransposematrixd_t );
   null; --ParseSingleNumericParameter( GLdoublem[16]_val, GLdoublem[16]_type, pen_gldoublem[16]_t ); -- GLdoublem[16] : GLdoublem[16]
   if isExecutingCommand then
@@ -10917,6 +11989,7 @@ procedure ParsePenglLoadTransposeMatrixf is
   --GLfloatm[16]_val  : unbounded_string;
   --GLfloatm[16]_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glloadtransposematrixf_t );
   null; --ParseSingleNumericParameter( GLfloatm[16]_val, GLfloatm[16]_type, pen_glfloatm[16]_t ); -- GLfloatm[16] : GLfloatm[16]
   if isExecutingCommand then
@@ -10935,6 +12008,7 @@ procedure ParsePenglMultTransposeMatrixd is
   --GLdoublem[16]_val  : unbounded_string;
   --GLdoublem[16]_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glmulttransposematrixd_t );
   null; --ParseSingleNumericParameter( GLdoublem[16]_val, GLdoublem[16]_type, pen_gldoublem[16]_t ); -- GLdoublem[16] : GLdoublem[16]
   if isExecutingCommand then
@@ -10953,6 +12027,7 @@ procedure ParsePenglMultTransposeMatrixf is
   --GLfloatm[16]_val  : unbounded_string;
   --GLfloatm[16]_type : identifier;
 begin
+  err( "Not yet implemented" );
   expect( pen_glmulttransposematrixf_t );
   --ParseSingleNumericParameter( GLfloatm[16]_val, GLfloatm[16]_type, pen_glfloatm[16]_t ); -- GLfloatm[16] : GLfloatm[16]
   if isExecutingCommand then
@@ -11046,12 +12121,14 @@ procedure ParsePenglMultiTexCoord1dvARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord1dvarb_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
   if isExecutingCommand then
     begin
-      glMultiTexCoord1dvARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
+      -- TODO: no man page for this
+      null; -- glMultiTexCoord1dvARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11086,12 +12163,14 @@ procedure ParsePenglMultiTexCoord1fvARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord1fvarb_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
   if isExecutingCommand then
     begin
-      glMultiTexCoord1fvARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
+      -- TODO: no man page for this
+      null; -- glMultiTexCoord1fvARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11126,12 +12205,14 @@ procedure ParsePenglMultiTexCoord1ivARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord1ivarb_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glint_t ); -- v : GLint
   if isExecutingCommand then
     begin
-      glMultiTexCoord1ivARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
+      -- TODO: no man page for this
+      null; -- glMultiTexCoord1ivARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11166,12 +12247,14 @@ procedure ParsePenglMultiTexCoord1svARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord1svarb_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glshort_t ); -- v : GLshort
   if isExecutingCommand then
     begin
-      glMultiTexCoord1svARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
+      -- TODO: no man page for this
+      null; -- glMultiTexCoord1svARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11209,12 +12292,14 @@ procedure ParsePenglMultiTexCoord2dvARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord2dvarb_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
   if isExecutingCommand then
     begin
-      glMultiTexCoord2dvARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
+      -- TODO: no man page for this
+      null; -- glMultiTexCoord2dvARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11252,12 +12337,14 @@ procedure ParsePenglMultiTexCoord2fvARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord2fvarb_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
   if isExecutingCommand then
     begin
-      glMultiTexCoord2fvARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
+      -- TODO: no man page for this
+      null; -- glMultiTexCoord2fvARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11295,12 +12382,14 @@ procedure ParsePenglMultiTexCoord2ivARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord2ivarb_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glint_t ); -- v : GLint
   if isExecutingCommand then
     begin
-      glMultiTexCoord2ivARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
+      -- TODO: no man page for this
+      null; -- glMultiTexCoord2ivARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11338,12 +12427,14 @@ procedure ParsePenglMultiTexCoord2svARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord2svarb_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glshort_t ); -- v : GLshort
   if isExecutingCommand then
     begin
-      glMultiTexCoord2svARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
+      -- TODO: no man page for this
+      null; -- glMultiTexCoord2svARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11384,12 +12475,14 @@ procedure ParsePenglMultiTexCoord3dvARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord3dvarb_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
   if isExecutingCommand then
     begin
-      glMultiTexCoord3dvARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
+      -- TODO: no man page for this
+      null; -- glMultiTexCoord3dvARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11430,12 +12523,14 @@ procedure ParsePenglMultiTexCoord3fvARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord3fvarb_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
   if isExecutingCommand then
     begin
-      glMultiTexCoord3fvARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
+      -- TODO: no man page for this
+      null; -- glMultiTexCoord3fvARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11476,12 +12571,14 @@ procedure ParsePenglMultiTexCoord3ivARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord3ivarb_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glint_t ); -- v : GLint
   if isExecutingCommand then
     begin
-      glMultiTexCoord3ivARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
+      -- TODO: no man page for this
+      null; -- glMultiTexCoord3ivARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11522,12 +12619,14 @@ procedure ParsePenglMultiTexCoord3svARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord3svarb_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glshort_t ); -- v : GLshort
   if isExecutingCommand then
     begin
-      glMultiTexCoord3svARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
+      -- TODO: no man page for this
+      null; -- glMultiTexCoord3svARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11571,12 +12670,14 @@ procedure ParsePenglMultiTexCoord4dvARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord4dvarb_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_gldouble_t ); -- v : GLdouble
   if isExecutingCommand then
     begin
-      glMultiTexCoord4dvARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
+      -- TODO: no man page for this
+      null; -- glMultiTexCoord4dvARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11620,12 +12721,14 @@ procedure ParsePenglMultiTexCoord4fvARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord4fvarb_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
   if isExecutingCommand then
     begin
-      glMultiTexCoord4fvARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
+      -- TODO: no man page for this
+      null; -- glMultiTexCoord4fvARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11669,12 +12772,14 @@ procedure ParsePenglMultiTexCoord4ivARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord4ivarb_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glint_t ); -- v : GLint
   if isExecutingCommand then
     begin
-      glMultiTexCoord4ivARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
+      -- TODO: no man page for this
+      null; -- glMultiTexCoord4ivARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11718,26 +12823,31 @@ procedure ParsePenglMultiTexCoord4svARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glmultitexcoord4svarb_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( v_val, v_type, pen_glshort_t ); -- v : GLshort
   if isExecutingCommand then
     begin
-      glMultiTexCoord4svARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
+      -- TODO: no man page for this
+      null; -- glMultiTexCoord4svARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePenglMultiTexCoord4svARB;
 
-procedure ParsePenglCreateDebugObjectMESA( result : out unbounded_string ) is
+procedure ParsePenglCreateDebugObjectMESA is
+-- ParsePenglCreateDebugObjectMESA( result : out unbounded_string ) is
   -- Syntax: --glCreateDebugObjectMESA return GLhandleARB;
   -- Source: bush_os.opengl.glCreateDebugObjectMESA
 begin
+  err( "not yet complete" );
   expect( pen_glcreatedebugobjectmesa_t );
   if isExecutingCommand then
     begin
-      result := to_unbounded_string( long_float( glCreateDebugObjectMESA ) );
+      -- TODO: MESA specific
+      null; -- esult := to_unbounded_string( long_float( glCreateDebugObjectMESA ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11748,19 +12858,22 @@ procedure ParsePenglClearDebugLogMESA is
   -- Syntax: --glClearDebugLogMESA( obj : GLhandleARB; logType : GLenum; shaderType : GLenum);
   -- Source: bush_os.opengl.glClearDebugLogMESA
   obj_val  : unbounded_string;
-  obj_type : identifier;
+--  obj_type : identifier;
   logType_val  : unbounded_string;
   logType_type : identifier;
   shaderType_val  : unbounded_string;
   shaderType_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glcleardebuglogmesa_t );
-  ParseFirstNumericParameter( obj_val, obj_type, pen_glhandlearb_t ); -- obj : GLhandleARB
+  -- TODO: GLhandleARB not defined
+  -- ParseFirstNumericParameter( obj_val, obj_type, pen_glhandlearb_t ); -- obj : GLhandleARB
   ParseNextNumericParameter( logType_val, logType_type, pen_glenum_t ); -- logType : GLenum
   ParseLastNumericParameter( shaderType_val, shaderType_type, pen_glenum_t ); -- shaderType : GLenum
   if isExecutingCommand then
     begin
-      glClearDebugLogMESA( GLhandleARB( to_numeric( obj_val ) ), GLenum( to_numeric( logType_val ) ), GLenum( to_numeric( shaderType_val ) ) );
+-- TODO: MESA specific
+      null; -- glClearDebugLogMESA( GLhandleARB( to_numeric( obj_val ) ), GLenum( to_numeric( logType_val ) ), GLenum( to_numeric( shaderType_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11771,7 +12884,7 @@ procedure ParsePenglGetDebugLogMESA is
   -- Syntax: --glGetDebugLogMESA( obj : GLhandleARB; logType : GLenum; shaderType : GLenum; maxLength : GLsizei; length : in out GLsizei; debugLog : in out GLcharARB );
   -- Source: bush_os.opengl.glGetDebugLogMESA
   obj_val  : unbounded_string;
-  obj_type : identifier;
+--  obj_type : identifier;
   logType_val  : unbounded_string;
   logType_type : identifier;
   shaderType_val  : unbounded_string;
@@ -11781,41 +12894,49 @@ procedure ParsePenglGetDebugLogMESA is
   length_val  : unbounded_string;
   length_type : identifier;
   debugLog_val  : unbounded_string;
-  debugLog_type : identifier;
+--  debugLog_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgetdebuglogmesa_t );
-  ParseFirstNumericParameter( obj_val, obj_type, pen_glhandlearb_t ); -- obj : GLhandleARB
+  -- TODO: GLhandleARB not defined
+  -- ParseFirstNumericParameter( obj_val, obj_type, pen_glhandlearb_t ); -- obj : GLhandleARB
   ParseNextNumericParameter( logType_val, logType_type, pen_glenum_t ); -- logType : GLenum
   ParseNextNumericParameter( shaderType_val, shaderType_type, pen_glenum_t ); -- shaderType : GLenum
   ParseNextNumericParameter( maxLength_val, maxLength_type, pen_glsizei_t ); -- maxLength : GLsizei
   ParseNextNumericParameter( length_val, length_type, pen_glsizei_t ); -- length : GLsizei
-  ParseLastNumericParameter( debugLog_val, debugLog_type, pen_glchararb_t ); -- debugLog : GLcharARB
+  -- TODO: GLhandleARB not defined
+  -- ParseLastNumericParameter( debugLog_val, debugLog_type, pen_glchararb_t ); -- debugLog : GLcharARB
   if isExecutingCommand then
     begin
-      glGetDebugLogMESA( GLhandleARB( to_numeric( obj_val ) ), GLenum( to_numeric( logType_val ) ), GLenum( to_numeric( shaderType_val ) ), GLsizei( to_numeric( maxLength_val ) ), GLsizei( to_numeric( length_val ) ), GLcharARB( to_numeric( debugLog_val ) ) );
+-- TODO: MESA specific
+      null; -- glGetDebugLogMESA( GLhandleARB( to_numeric( obj_val ) ), GLenum( to_numeric( logType_val ) ), GLenum( to_numeric( shaderType_val ) ), GLsizei( to_numeric( maxLength_val ) ), GLsizei( to_numeric( length_val ) ), GLcharARB( to_numeric( debugLog_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePenglGetDebugLogMESA;
 
-procedure ParsePenglGetDebugLogLengthMESA( result : out unbounded_string ) is
+procedure ParsePenglGetDebugLogLengthMESA is
+--procedure ParsePenglGetDebugLogLengthMESA( result : out unbounded_string ) is
   -- Syntax: --glGetDebugLogLengthMESA ( obj : GLhandleARB; logType : GLenum; shaderType : GLenum ) return GLsizei;
   -- Source: bush_os.opengl.glGetDebugLogLengthMESA
   obj_val  : unbounded_string;
-  obj_type : identifier;
+--  obj_type : identifier;
   logType_val  : unbounded_string;
   logType_type : identifier;
   shaderType_val  : unbounded_string;
   shaderType_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgetdebugloglengthmesa_t );
-  ParseFirstNumericParameter( obj_val, obj_type, pen_glhandlearb_t ); -- obj : GLhandleARB
+  -- TODO: GLhandleARB not defined
+  -- ParseFirstNumericParameter( obj_val, obj_type, pen_glhandlearb_t ); -- obj : GLhandleARB
   ParseNextNumericParameter( logType_val, logType_type, pen_glenum_t ); -- logType : GLenum
   ParseLastNumericParameter( shaderType_val, shaderType_type, pen_glenum_t ); -- shaderType : GLenum
   if isExecutingCommand then
     begin
-      result := to_unbounded_string( long_float( glGetDebugLogLengthMESA( GLhandleARB( to_numeric( obj_val ) ), GLenum( to_numeric( logType_val ) ), GLenum( to_numeric( shaderType_val ) ) ) ) );
+-- TODO: MESA specific
+      null; -- result := to_unbounded_string( long_float( glGetDebugLogLengthMESA( GLhandleARB( to_numeric( obj_val ) ), GLenum( to_numeric( logType_val ) ), GLenum( to_numeric( shaderType_val ) ) ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11830,15 +12951,18 @@ procedure ParsePenglProgramCallbackMESA is
   callback_val  : unbounded_string;
   callback_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glprogramcallbackmesa_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( callback_val, callback_type, pen_glprogramcallbackmesa_t ); -- callback : GLprogramcallbackMESA
-  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  -- TODO: system.address not defined
+  -- ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
   if isExecutingCommand then
     begin
-      glProgramCallbackMESA( GLenum( to_numeric( target_val ) ), GLprogramcallbackMESA( to_numeric( callback_val ) ), System.address( to_numeric( data_val ) ) );
+-- TODO: MESA specific
+      null; -- glProgramCallbackMESA( GLenum( to_numeric( target_val ) ), GLprogramcallbackMESA( to_numeric( callback_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11857,6 +12981,7 @@ procedure ParsePenglGetProgramRegisterfvMESA is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glgetprogramregisterfvmesa_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( len_val, len_type, pen_glsizei_t ); -- len : GLsizei
@@ -11864,7 +12989,8 @@ begin
   ParseLastNumericParameter( v_val, v_type, pen_glfloat_t ); -- v : GLfloat
   if isExecutingCommand then
     begin
-      glGetProgramRegisterfvMESA( GLenum( to_numeric( target_val ) ), GLsizei( to_numeric( len_val ) ), GLubyte( to_numeric( name_val ) ), GLfloat( to_numeric( v_val ) ) );
+-- TODO: MESA specific
+      null; -- glGetProgramRegisterfvMESA( GLenum( to_numeric( target_val ) ), GLsizei( to_numeric( len_val ) ), GLubyte( to_numeric( name_val ) ), GLfloat( to_numeric( v_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11885,6 +13011,7 @@ procedure ParsePenglFramebufferTextureLayerEXT is
   layer_val  : unbounded_string;
   layer_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glframebuffertexturelayerext_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( attachment_val, attachment_type, pen_glenum_t ); -- attachment : GLenum
@@ -11893,7 +13020,8 @@ begin
   ParseLastNumericParameter( layer_val, layer_type, pen_glint_t ); -- layer : GLint
   if isExecutingCommand then
     begin
-      glFramebufferTextureLayerEXT( GLenum( to_numeric( target_val ) ), GLenum( to_numeric( attachment_val ) ), GLuint( to_numeric( texture_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( layer_val ) ) );
+-- TODO: MESA specific
+      null; -- glFramebufferTextureLayerEXT( GLenum( to_numeric( target_val ) ), GLenum( to_numeric( attachment_val ) ), GLuint( to_numeric( texture_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( layer_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11908,12 +13036,14 @@ procedure ParsePenglBlendEquationSeparateATI is
   modeA_val  : unbounded_string;
   modeA_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glblendequationseparateati_t );
   ParseFirstNumericParameter( modeRGB_val, modeRGB_type, pen_glenum_t ); -- modeRGB : GLenum
   ParseLastNumericParameter( modeA_val, modeA_type, pen_glenum_t ); -- modeA : GLenum
   if isExecutingCommand then
     begin
-      glBlendEquationSeparateATI( GLenum( to_numeric( modeRGB_val ) ), GLenum( to_numeric( modeA_val ) ) );
+-- TODO: MESA specific
+      null; -- glBlendEquationSeparateATI( GLenum( to_numeric( modeRGB_val ) ), GLenum( to_numeric( modeA_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11926,14 +13056,17 @@ procedure ParsePenglEGLImageTargetTexture2DOES is
   target_val  : unbounded_string;
   target_type : identifier;
   image_val  : unbounded_string;
-  image_type : identifier;
+--  image_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gleglimagetargettexture2does_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
-  ParseLastNumericParameter( image_val, image_type, pen_gleglimageoes_t ); -- image : GLeglImageOES
+  -- TODO: gleglimagesoes not defined
+  -- ParseLastNumericParameter( image_val, image_type, pen_gleglimageoes_t ); -- image : GLeglImageOES
   if isExecutingCommand then
     begin
-      glEGLImageTargetTexture2DOES( GLenum( to_numeric( target_val ) ), GLeglImageOES( to_numeric( image_val ) ) );
+-- TODO: MESA specific
+      null; -- glEGLImageTargetTexture2DOES( GLenum( to_numeric( target_val ) ), GLeglImageOES( to_numeric( image_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11946,14 +13079,17 @@ procedure ParsePenglEGLImageTargetRenderbufferStorageOES is
   target_val  : unbounded_string;
   target_type : identifier;
   image_val  : unbounded_string;
-  image_type : identifier;
+--  image_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gleglimagetargetrenderbufferstorageoes_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
-  ParseLastNumericParameter( image_val, image_type, pen_gleglimageoes_t ); -- image : GLeglImageOES
+  -- TODO: gleglimagesoes not defined
+  -- ParseLastNumericParameter( image_val, image_type, pen_gleglimageoes_t ); -- image : GLeglImageOES
   if isExecutingCommand then
     begin
-      glEGLImageTargetRenderbufferStorageOES( GLenum( to_numeric( target_val ) ), GLeglImageOES( to_numeric( image_val ) ) );
+-- TODO: MESA specific
+      null; -- glEGLImageTargetRenderbufferStorageOES( GLenum( to_numeric( target_val ) ), GLeglImageOES( to_numeric( image_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11964,13 +13100,15 @@ procedure ParsePengluBeginCurve is
   -- Syntax: gluBeginCurve ( nurb : GLUnurbs_Ptr );
   -- Source: bush_os.opengl.gluBeginCurve
   nurb_val  : unbounded_string;
-  nurb_type : identifier;
+--  nurb_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glubegincurve_t );
-  ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  -- TODO: we don't have a NURBS object yet in SparForte
+  -- ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
   if isExecutingCommand then
     begin
-      gluBeginCurve( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
+      null; -- gluBeginCurve( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11981,13 +13119,15 @@ procedure ParsePengluBeginPolygon is
   -- Syntax: gluBeginPolygon ( tess : GLUtessellator_Ptr);
   -- Source: bush_os.opengl.gluBeginPolygon
   tess_val  : unbounded_string;
-  tess_type : identifier;
+--  tess_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glubeginpolygon_t );
-  ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  -- TODO: we don't have a  tessellation yet in SparForte
+  --ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
   if isExecutingCommand then
     begin
-      gluBeginPolygon( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
+     null; -- gluBeginPolygon( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -11998,13 +13138,15 @@ procedure ParsePengluBeginSurface is
   -- Syntax: gluBeginSurface ( nurb : GLUnurbs_Ptr );
   -- Source: bush_os.opengl.gluBeginSurface
   nurb_val  : unbounded_string;
-  nurb_type : identifier;
+--  nurb_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glubeginsurface_t );
-  ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  -- TODO: we don't have a NURBS object yet in SparForte
+  --ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
   if isExecutingCommand then
     begin
-      gluBeginSurface( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
+      null; -- gluBeginSurface( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12015,13 +13157,15 @@ procedure ParsePengluBeginTrim is
   -- Syntax: gluBeginTrim ( nurb : GLUnurbs_Ptr);
   -- Source: bush_os.opengl.gluBeginTrim
   nurb_val  : unbounded_string;
-  nurb_type : identifier;
+--  nurb_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glubegintrim_t );
-  ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  -- TODO: we don't have a NURBS object yet in SparForte
+  --ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
   if isExecutingCommand then
     begin
-      gluBeginTrim( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
+      null; -- gluBeginTrim( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12048,8 +13192,9 @@ procedure ParsePengluBuild1DMipmapLevels( result : out unbounded_string ) is
   max_val  : unbounded_string;
   max_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glubuild1dmipmaplevels_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
@@ -12059,10 +13204,15 @@ begin
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
   ParseNextNumericParameter( base_val, base_type, pen_glint_t ); -- base : GLint
   ParseNextNumericParameter( max_val, max_type, pen_glint_t ); -- max : GLint
-  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  -- TODO: no man page?
+  -- ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      result := to_unbounded_string( long_float( gluBuild1DMipmapLevels( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), System.address( to_numeric( data_val ) ) ) ) );
+      -- TODO: no man page?
+      result := to_unbounded_string( long_float( gluBuild1DMipmapLevels( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), dummy_ptr ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12083,18 +13233,23 @@ procedure ParsePengluBuild1DMipmaps( result : out unbounded_string ) is
   kind_val  : unbounded_string;
   kind_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glubuild1dmipmaps_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
   ParseNextNumericParameter( width_val, width_type, pen_glsizei_t ); -- width : GLsizei
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  -- TODO: the map is multiple values in different possible types
+  -- ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      result := to_unbounded_string( long_float( gluBuild1DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( data_val ) ) ) ) );
+      result := to_unbounded_string( long_float( gluBuild1DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12123,8 +13278,9 @@ procedure ParsePengluBuild2DMipmapLevels( result : out unbounded_string ) is
   max_val  : unbounded_string;
   max_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glubuild2dmipmaplevels_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
@@ -12135,10 +13291,14 @@ begin
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
   ParseNextNumericParameter( base_val, base_type, pen_glint_t ); -- base : GLint
   ParseNextNumericParameter( max_val, max_type, pen_glint_t ); -- max : GLint
-  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  -- TODO: the map is multiple values in different possible types
+  -- ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      result := to_unbounded_string( long_float( gluBuild2DMipmapLevels( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), System.address( to_numeric( data_val ) ) ) ) );
+      result := to_unbounded_string( long_float( gluBuild2DMipmapLevels( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), dummy_ptr ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12161,8 +13321,9 @@ procedure ParsePengluBuild2DMipmaps( result : out unbounded_string ) is
   kind_val  : unbounded_string;
   kind_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glubuild2dmipmaps_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
@@ -12170,10 +13331,14 @@ begin
   ParseNextNumericParameter( height_val, height_type, pen_glsizei_t ); -- height : GLsizei
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  -- TODO: the map is multiple values in different possible types
+  -- ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      result := to_unbounded_string( long_float( gluBuild2DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( data_val ) ) ) ) );
+      result := to_unbounded_string( long_float( gluBuild2DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12204,8 +13369,9 @@ procedure ParsePengluBuild3DMipmapLevels( result : out unbounded_string ) is
   max_val  : unbounded_string;
   max_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glubuild3dmipmaplevels_t );
   ParseFirstNumericParameter( taraget_val, taraget_type, pen_glenum_t ); -- taraget : GLenum
   ParseNextNumericParameter( internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
@@ -12217,10 +13383,14 @@ begin
   ParseNextNumericParameter( level_val, level_type, pen_glint_t ); -- level : GLint
   ParseNextNumericParameter( base_val, base_type, pen_glint_t ); -- base : GLint
   ParseNextNumericParameter( max_val, max_type, pen_glint_t ); -- max : GLint
-  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  -- TODO: the map is multiple values in different possible types
+  --ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      result := to_unbounded_string( long_float( gluBuild3DMipmapLevels( GLenum( to_numeric( taraget_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), System.address( to_numeric( data_val ) ) ) ) );
+      result := to_unbounded_string( long_float( gluBuild3DMipmapLevels( GLenum( to_numeric( taraget_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), dummy_ptr ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12245,8 +13415,9 @@ procedure ParsePengluBuild3DMipmaps( result : out unbounded_string ) is
   kind_val  : unbounded_string;
   kind_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glubuild3dmipmaps_t );
   ParseFirstNumericParameter( target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
@@ -12255,30 +13426,37 @@ begin
   ParseNextNumericParameter( depth_val, depth_type, pen_glsizei_t ); -- depth : GLsizei
   ParseNextNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
-  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  -- TODO: the map is multiple values in different possible types
+  -- ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
     begin
-      result := to_unbounded_string( long_float( gluBuild3DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), System.address( to_numeric( data_val ) ) ) ) );
+      result := to_unbounded_string( long_float( gluBuild3DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr ) ) );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePengluBuild3DMipmaps;
 
-procedure ParsePengluCheckExtension( result : out unbounded_string ) is
+procedure ParsePengluCheckExtension  is
+--procedure ParsePengluCheckExtension( result : out unbounded_string ) is
   -- Syntax: gluCheckExtension ( extName, extString : char_array) return GLboolean;
   -- Source: bush_os.opengl.gluCheckExtension
   extName_val  : unbounded_string;
-  extName_type : identifier;
+--  extName_type : identifier;
   extString_val  : unbounded_string;
-  extString_type : identifier;
+--  extString_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glucheckextension_t );
-  ParseFirstNumericParameter( extName_val, extName_type, pen_char_array_t ); -- extName : char_array
-  ParseLastNumericParameter( extString_val, extString_type, pen_char_array_t ); -- extString : char_array
+  -- TODO: no man page?
+  -- ParseFirstNumericParameter( extName_val, extName_type, pen_char_array_t ); -- extName : char_array
+  -- ParseLastNumericParameter( extString_val, extString_type, pen_char_array_t ); -- extString : char_array
   if isExecutingCommand then
     begin
-      result := to_unbounded_string( long_float( gluCheckExtension( char_array( to_numeric( extName_val ) ), char_array( to_numeric( extString_val ) ) ) ) );
+      null; -- result := to_unbounded_string( long_float( gluCheckExtension( char_array( to_numeric( extName_val ) ), char_array( to_numeric( extString_val ) ) ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12289,7 +13467,7 @@ procedure ParsePengluCylinder is
   -- Syntax: gluCylinder (quad : GLUquadratic_Ptr; base, top, height : GLdouble; slices : GLint; stacks : GLint);
   -- Source: bush_os.opengl.gluCylinder
   quad_val  : unbounded_string;
-  quad_type : identifier;
+--  quad_type : identifier;
   base_val  : unbounded_string;
   base_type : identifier;
   top_val  : unbounded_string;
@@ -12301,8 +13479,10 @@ procedure ParsePengluCylinder is
   stacks_val  : unbounded_string;
   stacks_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glucylinder_t );
-  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  -- TODO: no gluCylinder in Sparforte
+  --ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
   ParseNextNumericParameter( base_val, base_type, pen_gldouble_t ); -- base : GLdouble
   ParseNextNumericParameter( top_val, top_type, pen_gldouble_t ); -- top : GLdouble
   ParseNextNumericParameter( height_val, height_type, pen_gldouble_t ); -- height : GLdouble
@@ -12310,7 +13490,7 @@ begin
   ParseLastNumericParameter( stacks_val, stacks_type, pen_glint_t ); -- stacks : GLint
   if isExecutingCommand then
     begin
-      gluCylinder( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLdouble( to_numeric( base_val ) ), GLdouble( to_numeric( top_val ) ), GLdouble( to_numeric( height_val ) ), GLint( to_numeric( slices_val ) ), GLint( to_numeric( stacks_val ) ) );
+      null; -- gluCylinder( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLdouble( to_numeric( base_val ) ), GLdouble( to_numeric( top_val ) ), GLdouble( to_numeric( height_val ) ), GLint( to_numeric( slices_val ) ), GLint( to_numeric( stacks_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12321,13 +13501,15 @@ procedure ParsePengluDeleteNurbsRenderer is
   -- Syntax: gluDeleteNurbsRenderer ( nurb : GLUnurbs_Ptr );
   -- Source: bush_os.opengl.gluDeleteNurbsRenderer
   nurb_val  : unbounded_string;
-  nurb_type : identifier;
+--  nurb_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gludeletenurbsrenderer_t );
-  ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  -- TODO: no NURBS object in SparForte yet
+  -- ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
   if isExecutingCommand then
     begin
-      gluDeleteNurbsRenderer( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
+      null; -- gluDeleteNurbsRenderer( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12338,13 +13520,15 @@ procedure ParsePengluDeleteQuadric is
   -- Syntax: gluDeleteQuadric ( quad : GLUquadratic_Ptr );
   -- Source: bush_os.opengl.gluDeleteQuadric
   quad_val  : unbounded_string;
-  quad_type : identifier;
+--  quad_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gludeletequadric_t );
-  ParseSingleNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  -- TODO: no quadratic object in SparForte yet
+  -- ParseSingleNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
   if isExecutingCommand then
     begin
-      gluDeleteQuadric( GLUquadratic_Ptr( to_numeric( quad_val ) ) );
+      null; -- gluDeleteQuadric( GLUquadratic_Ptr( to_numeric( quad_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12355,13 +13539,15 @@ procedure ParsePengluDeleteTess is
   -- Syntax: gluDeleteTess ( tess : GLUtessellator_Ptr );
   -- Source: bush_os.opengl.gluDeleteTess
   tess_val  : unbounded_string;
-  tess_type : identifier;
+--  tess_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gludeletetess_t );
-  ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  -- TODO: no tessellation object in SparForte yet
+  -- ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
   if isExecutingCommand then
     begin
-      gluDeleteTess( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
+      null; -- gluDeleteTess( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12372,7 +13558,7 @@ procedure ParsePengluDisk is
   -- Syntax: gluDisk ( quad : GLUquadratic_Ptr; inner, outer : GLdouble; slices : GLint; loops : GLint );
   -- Source: bush_os.opengl.gluDisk
   quad_val  : unbounded_string;
-  quad_type : identifier;
+--  quad_type : identifier;
   inner_val  : unbounded_string;
   inner_type : identifier;
   outer_val  : unbounded_string;
@@ -12382,15 +13568,17 @@ procedure ParsePengluDisk is
   loops_val  : unbounded_string;
   loops_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gludisk_t );
-  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  -- TODO: no quadrics object yet in SparForte
+  -- ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
   ParseNextNumericParameter( inner_val, inner_type, pen_gldouble_t ); -- inner : GLdouble
   ParseNextNumericParameter( outer_val, outer_type, pen_gldouble_t ); -- outer : GLdouble
   ParseNextNumericParameter( slices_val, slices_type, pen_glint_t ); -- slices : GLint
   ParseLastNumericParameter( loops_val, loops_type, pen_glint_t ); -- loops : GLint
   if isExecutingCommand then
     begin
-      gluDisk( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLdouble( to_numeric( inner_val ) ), GLdouble( to_numeric( outer_val ) ), GLint( to_numeric( slices_val ) ), GLint( to_numeric( loops_val ) ) );
+      null; -- gluDisk( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLdouble( to_numeric( inner_val ) ), GLdouble( to_numeric( outer_val ) ), GLint( to_numeric( slices_val ) ), GLint( to_numeric( loops_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12401,13 +13589,15 @@ procedure ParsePengluEndCurve is
   -- Syntax: gluEndCurve ( nurb : GLUnurbs_Ptr );
   -- Source: bush_os.opengl.gluEndCurve
   nurb_val  : unbounded_string;
-  nurb_type : identifier;
+--  nurb_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gluendcurve_t );
-  ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  -- TODO: no NURBS object yet in SparForte
+  -- ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
   if isExecutingCommand then
     begin
-      gluEndCurve( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
+      null; -- gluEndCurve( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12418,13 +13608,15 @@ procedure ParsePengluEndPolygon is
   -- Syntax: gluEndPolygon ( tess : GLUtessellator_Ptr );
   -- Source: bush_os.opengl.gluEndPolygon
   tess_val  : unbounded_string;
-  tess_type : identifier;
+--  tess_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gluendpolygon_t );
-  ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  -- TODO: no tessellation object yet in SparForte
+  -- ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
   if isExecutingCommand then
     begin
-      gluEndPolygon( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
+      null; -- gluEndPolygon( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12435,13 +13627,15 @@ procedure ParsePengluEndSurface is
   -- Syntax: gluEndSurface ( nurb : GLUnurbs_Ptr );
   -- Source: bush_os.opengl.gluEndSurface
   nurb_val  : unbounded_string;
-  nurb_type : identifier;
+--  nurb_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gluendsurface_t );
-  ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  -- TODO: no NURBS object yet in SparForte
+  -- ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
   if isExecutingCommand then
     begin
-      gluEndSurface( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
+      null; -- gluEndSurface( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12452,30 +13646,36 @@ procedure ParsePengluEndTrim is
   -- Syntax: gluEndTrim ( nurb : GLUnurbs_Ptr );
   -- Source: bush_os.opengl.gluEndTrim
   nurb_val  : unbounded_string;
-  nurb_type : identifier;
+--  nurb_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gluendtrim_t );
-  ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  -- TODO: no NURBS object yet in SparForte
+  -- ParseSingleNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
   if isExecutingCommand then
     begin
-      gluEndTrim( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
+      null; -- gluEndTrim( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePengluEndTrim;
 
-procedure ParsePengluErrorString( result : out unbounded_string ) is
+procedure ParsePengluErrorString is
+--procedure ParsePengluErrorString( result : out unbounded_string ) is
   -- Syntax: gluErrorString ( error : GLenum ) return char_array_ptr;
   -- Source: bush_os.opengl.gluErrorString
   error_val  : unbounded_string;
   error_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gluerrorstring_t );
   ParseSingleNumericParameter( error_val, error_type, pen_glenum_t ); -- error : GLenum
   if isExecutingCommand then
     begin
-      result := to_unbounded_string( long_float( gluErrorString( GLenum( to_numeric( error_val ) ) ) ) );
+      -- TODO: char_array_ptr is an address to a C string that must be converted to an
+      -- unbounded string.
+      null; -- result := to_unbounded_string( gluErrorString( GLenum( to_numeric( error_val ) ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12486,36 +13686,43 @@ procedure ParsePengluGetNurbsProperty is
   -- Syntax: gluGetNurbsProperty ( nurb : GLUnurbs_Ptr; property : GLUnurbsproperties; data : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.gluGetNurbsProperty
   nurb_val  : unbounded_string;
-  nurb_type : identifier;
+--  nurb_type : identifier;
   property_val  : unbounded_string;
   property_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glugetnurbsproperty_t );
-  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  -- TODO: no NURBS object yet in SparForte
+  -- ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
   ParseNextNumericParameter( property_val, property_type, pen_glunurbsproperties_t ); -- property : GLUnurbsproperties
-  ParseLastNumericParameter( data_val, data_type, pen_gl_float_array_ptr_t ); -- data : GL_Float_Array_Ptr
+ -- TODO: find out the size of returned data
+ -- ParseLastNumericParameter( data_val, data_type, pen_gl_float_array_ptr_t ); -- data : GL_Float_Array_Ptr
   if isExecutingCommand then
     begin
-      gluGetNurbsProperty( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLUnurbsproperties( to_numeric( property_val ) ), GL_Float_Array_Ptr( to_numeric( data_val ) ) );
+      null; -- gluGetNurbsProperty( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLUnurbsproperties( to_numeric( property_val ) ), GL_Float_Array_Ptr( to_numeric( data_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePengluGetNurbsProperty;
 
-procedure ParsePengluGetString( result : out unbounded_string ) is
+procedure ParsePengluGetString is
+--procedure ParsePengluGetString( result : out unbounded_string ) is
   -- Syntax: gluGetString ( name : GLenum ) return char_array_ptr;
   -- Source: bush_os.opengl.gluGetString
   name_val  : unbounded_string;
   name_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glugetstring_t );
   ParseSingleNumericParameter( name_val, name_type, pen_glenum_t ); -- name : GLenum
   if isExecutingCommand then
     begin
-      result := to_unbounded_string( long_float( gluGetString( GLenum( to_numeric( name_val ) ) ) ) );
+      -- TODO: char_array_ptr is a system.address but we need to convert the C array to an
+      -- unbounded_string
+      null; -- result := to_unbounded_string( long_float( gluGetString( GLenum( to_numeric( name_val ) ) ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12526,19 +13733,22 @@ procedure ParsePengluGetTessProperty is
   -- Syntax: gluGetTessProperty (tess : GLUtessellator_Ptr; which : GLUtessproperties; data : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.gluGetTessProperty
   tess_val  : unbounded_string;
-  tess_type : identifier;
+--  tess_type : identifier;
   which_val  : unbounded_string;
   which_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glugettessproperty_t );
-  ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  -- TODO: no tessellation object yet for SparForte
+  -- ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
   ParseNextNumericParameter( which_val, which_type, pen_glutessproperties_t ); -- which : GLUtessproperties
-  ParseLastNumericParameter( data_val, data_type, pen_gl_float_array_ptr_t ); -- data : GL_Float_Array_Ptr
+  -- TODO: determine how many values may be returned
+  -- ParseLastNumericParameter( data_val, data_type, pen_gl_float_array_ptr_t ); -- data : GL_Float_Array_Ptr
   if isExecutingCommand then
     begin
-      gluGetTessProperty( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLUtessproperties( to_numeric( which_val ) ), GL_Float_Array_Ptr( to_numeric( data_val ) ) );
+      null; -- gluGetTessProperty( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLUtessproperties( to_numeric( which_val ) ), GL_Float_Array_Ptr( to_numeric( data_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12549,22 +13759,25 @@ procedure ParsePengluLoadSamplingMatrices is
   -- Syntax: gluLoadSamplingMatrices ( nurb : GLUnurbs_Ptr; model : GL_Float_Array_Ptr; perspective : GL_Float_Array_Ptr; view : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.gluLoadSamplingMatrices
   nurb_val  : unbounded_string;
-  nurb_type : identifier;
+--  nurb_type : identifier;
   model_val  : unbounded_string;
-  model_type : identifier;
+--  model_type : identifier;
   perspective_val  : unbounded_string;
-  perspective_type : identifier;
+--  perspective_type : identifier;
   view_val  : unbounded_string;
-  view_type : identifier;
+--  view_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gluloadsamplingmatrices_t );
-  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
-  ParseNextNumericParameter( model_val, model_type, pen_gl_float_array_ptr_t ); -- model : GL_Float_Array_Ptr
-  ParseNextNumericParameter( perspective_val, perspective_type, pen_gl_float_array_ptr_t ); -- perspective : GL_Float_Array_Ptr
-  ParseLastNumericParameter( view_val, view_type, pen_gl_int_array_ptr_t ); -- view : GL_Int_Array_Ptr
+  -- TODO: no NURBS object yet in SparForte
+  -- ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  -- ParseNextNumericParameter( model_val, model_type, pen_gl_float_array_ptr_t ); -- model : GL_Float_Array_Ptr
+  -- ParseNextNumericParameter( perspective_val, perspective_type, pen_gl_float_array_ptr_t ); -- perspective : GL_Float_Array_Ptr
+  -- ParseLastNumericParameter( view_val, view_type, pen_gl_int_array_ptr_t ); -- view : GL_Int_Array_Ptr
   if isExecutingCommand then
     begin
-      gluLoadSamplingMatrices( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GL_Float_Array_Ptr( to_numeric( model_val ) ), GL_Float_Array_Ptr( to_numeric( perspective_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ) );
+      -- TODO: determine size of matrixes
+      null; -- gluLoadSamplingMatrices( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GL_Float_Array_Ptr( to_numeric( model_val ) ), GL_Float_Array_Ptr( to_numeric( perspective_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12612,42 +13825,51 @@ begin
   end if;
 end ParsePengluLookAt;
 
-procedure ParsePengluNewNurbsRenderer( result : out unbounded_string ) is
+procedure ParsePengluNewNurbsRenderer is
+--procedure ParsePengluNewNurbsRenderer( result : out unbounded_string ) is
   -- Syntax: gluNewNurbsRenderer return GLUnurbs_Ptr;
   -- Source: bush_os.opengl.gluNewNurbsRenderer
 begin
+  err( "not yet complete" );
   expect( pen_glunewnurbsrenderer_t );
   if isExecutingCommand then
     begin
-      result := to_unbounded_string( long_float( gluNewNurbsRenderer ) );
+      -- TODO: returns a system.address but SparForte doesn't handle this yet
+      null; -- result := to_unbounded_string( long_float( gluNewNurbsRenderer ) );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePengluNewNurbsRenderer;
 
-procedure ParsePengluNewQuadric( result : out unbounded_string ) is
+procedure ParsePengluNewQuadric is
+--procedure ParsePengluNewQuadric( result : out unbounded_string ) is
   -- Syntax: gluNewQuadric return GLUquadratic_Ptr;
   -- Source: bush_os.opengl.gluNewQuadric
 begin
+  err( "not yet complete" );
   expect( pen_glunewquadric_t );
   if isExecutingCommand then
     begin
-      result := to_unbounded_string( long_float( gluNewQuadric ) );
+      -- TODO: returns a system.address but SparForte doesn't handle this yet
+      null; -- result := to_unbounded_string( long_float( gluNewQuadric ) );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePengluNewQuadric;
 
-procedure ParsePengluNewTess( result : out unbounded_string ) is
+procedure ParsePengluNewTess is
+--procedure ParsePengluNewTess( result : out unbounded_string ) is
   -- Syntax: gluNewTess return GLUtessellator_Ptr;
   -- Source: bush_os.opengl.gluNewTess
 begin
+  err( "not yet complete" );
   expect( pen_glunewtess_t );
   if isExecutingCommand then
     begin
-      result := to_unbounded_string( long_float( gluNewTess ) );
+      -- TODO: returns a system.address but SparForte doesn't handle this yet
+      null; -- result := to_unbounded_string( long_float( gluNewTess ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12658,16 +13880,18 @@ procedure ParsePengluNextContour is
   -- Syntax: gluNextContour ( tess : GLUtessellator_Ptr; kind : GLUtesscontour );
   -- Source: bush_os.opengl.gluNextContour
   tess_val  : unbounded_string;
-  tess_type : identifier;
+--  tess_type : identifier;
   kind_val  : unbounded_string;
   kind_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glunextcontour_t );
-  ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  -- TODO: no tessellation object in SparForte yet
+  -- ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
   ParseLastNumericParameter( kind_val, kind_type, pen_glutesscontour_t ); -- kind : GLUtesscontour
   if isExecutingCommand then
     begin
-      gluNextContour( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLUtesscontour( to_numeric( kind_val ) ) );
+      null; -- gluNextContour( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLUtesscontour( to_numeric( kind_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12678,19 +13902,22 @@ procedure ParsePengluNurbsCallback is
   -- Syntax: gluNurbsCallback ( nurb : GLUnurbs_Ptr; which : GLUnurbscallbacks; CallBackFunc : System.address );
   -- Source: bush_os.opengl.gluNurbsCallback
   nurb_val  : unbounded_string;
-  nurb_type : identifier;
+--  nurb_type : identifier;
   which_val  : unbounded_string;
   which_type : identifier;
   CallBackFunc_val  : unbounded_string;
-  CallBackFunc_type : identifier;
+--  CallBackFunc_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glunurbscallback_t );
-  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  -- TODO: no NURBS object yet in SparForte
+  -- ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
   ParseNextNumericParameter( which_val, which_type, pen_glunurbscallbacks_t ); -- which : GLUnurbscallbacks
-  ParseLastNumericParameter( CallBackFunc_val, CallBackFunc_type, pen_system.address_t ); -- CallBackFunc : System.address
+  -- TODO: no callbacks yet in SparForte
+  -- ParseLastNumericParameter( CallBackFunc_val, CallBackFunc_type, pen_system.address_t ); -- CallBackFunc : System.address
   if isExecutingCommand then
     begin
-      gluNurbsCallback( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLUnurbscallbacks( to_numeric( which_val ) ), System.address( to_numeric( CallBackFunc_val ) ) );
+      null; -- gluNurbsCallback( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLUnurbscallbacks( to_numeric( which_val ) ), System.address( to_numeric( CallBackFunc_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12701,16 +13928,19 @@ procedure ParsePengluNurbsCallbackData is
   -- Syntax: gluNurbsCallbackData ( nurb : GLUnurbs_Ptr; userData : System.address );
   -- Source: bush_os.opengl.gluNurbsCallbackData
   nurb_val  : unbounded_string;
-  nurb_type : identifier;
+--  nurb_type : identifier;
   userData_val  : unbounded_string;
-  userData_type : identifier;
+--  userData_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glunurbscallbackdata_t );
-  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
-  ParseLastNumericParameter( userData_val, userData_type, pen_system.address_t ); -- userData : System.address
+  -- TODO: no NURBS object yet in SparForte
+  -- ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  -- TODO: no callbacks yet in SparForte
+  -- ParseLastNumericParameter( userData_val, userData_type, pen_system.address_t ); -- userData : System.address
   if isExecutingCommand then
     begin
-      gluNurbsCallbackData( GLUnurbs_Ptr( to_numeric( nurb_val ) ), System.address( to_numeric( userData_val ) ) );
+      null; -- gluNurbsCallbackData( GLUnurbs_Ptr( to_numeric( nurb_val ) ), System.address( to_numeric( userData_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12721,16 +13951,19 @@ procedure ParsePengluNurbsCallbackDataEXT is
   -- Syntax: gluNurbsCallbackDataEXT ( nurb : GLUnurbs_Ptr; userData : System.address );
   -- Source: bush_os.opengl.gluNurbsCallbackDataEXT
   nurb_val  : unbounded_string;
-  nurb_type : identifier;
+--  nurb_type : identifier;
   userData_val  : unbounded_string;
-  userData_type : identifier;
+--  userData_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glunurbscallbackdataext_t );
-  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
-  ParseLastNumericParameter( userData_val, userData_type, pen_system.address_t ); -- userData : System.address
+  -- TODO: no NURBS object yet in SparForte
+  --ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  -- TODO: no callbacks yet in SparForte
+  -- ParseLastNumericParameter( userData_val, userData_type, pen_system.address_t ); -- userData : System.address
   if isExecutingCommand then
     begin
-      gluNurbsCallbackDataEXT( GLUnurbs_Ptr( to_numeric( nurb_val ) ), System.address( to_numeric( userData_val ) ) );
+      null; -- gluNurbsCallbackDataEXT( GLUnurbs_Ptr( to_numeric( nurb_val ) ), System.address( to_numeric( userData_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12741,31 +13974,33 @@ procedure ParsePengluNurbsCurve is
   -- Syntax: gluNurbsCurve ( nurb : GLUnurbs_Ptr; knotCount : GLint; knots : GL_Float_Array_Ptr; stride : GLint; control : GL_Float_Array_Ptr; order : GLint; kind : GLevaluators );
   -- Source: bush_os.opengl.gluNurbsCurve
   nurb_val  : unbounded_string;
-  nurb_type : identifier;
+--  nurb_type : identifier;
   knotCount_val  : unbounded_string;
-  knotCount_type : identifier;
+--  knotCount_type : identifier;
   knots_val  : unbounded_string;
-  knots_type : identifier;
+--  knots_type : identifier;
   stride_val  : unbounded_string;
-  stride_type : identifier;
+--  stride_type : identifier;
   control_val  : unbounded_string;
-  control_type : identifier;
+--  control_type : identifier;
   order_val  : unbounded_string;
   order_type : identifier;
   kind_val  : unbounded_string;
   kind_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glunurbscurve_t );
-  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
-  ParseNextNumericParameter( knotCount_val, knotCount_type, pen_glint_t ); -- knotCount : GLint
-  ParseNextNumericParameter( knots_val, knots_type, pen_gl_float_array_ptr_t ); -- knots : GL_Float_Array_Ptr
-  ParseNextNumericParameter( stride_val, stride_type, pen_glint_t ); -- stride : GLint
-  ParseNextNumericParameter( control_val, control_type, pen_gl_float_array_ptr_t ); -- control : GL_Float_Array_Ptr
+  -- TODO: no NURBS objecdt yet in SparFOrte
+  -- ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  -- ParseNextNumericParameter( knotCount_val, knotCount_type, pen_glint_t ); -- knotCount : GLint
+  -- ParseNextNumericParameter( knots_val, knots_type, pen_gl_float_array_ptr_t ); -- knots : GL_Float_Array_Ptr
+  -- ParseNextNumericParameter( stride_val, stride_type, pen_glint_t ); -- stride : GLint
+  -- ParseNextNumericParameter( control_val, control_type, pen_gl_float_array_ptr_t ); -- control : GL_Float_Array_Ptr
   ParseNextNumericParameter( order_val, order_type, pen_glint_t ); -- order : GLint
   ParseLastNumericParameter( kind_val, kind_type, pen_glevaluators_t ); -- kind : GLevaluators
   if isExecutingCommand then
     begin
-      gluNurbsCurve( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLint( to_numeric( knotCount_val ) ), GL_Float_Array_Ptr( to_numeric( knots_val ) ), GLint( to_numeric( stride_val ) ), GL_Float_Array_Ptr( to_numeric( control_val ) ), GLint( to_numeric( order_val ) ), GLevaluators( to_numeric( kind_val ) ) );
+      null; -- gluNurbsCurve( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLint( to_numeric( knotCount_val ) ), GL_Float_Array_Ptr( to_numeric( knots_val ) ), GLint( to_numeric( stride_val ) ), GL_Float_Array_Ptr( to_numeric( control_val ) ), GLint( to_numeric( order_val ) ), GLevaluators( to_numeric( kind_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12776,19 +14011,21 @@ procedure ParsePengluNurbsProperty is
   -- Syntax: gluNurbsProperty ( nurb : GLUnurbs_Ptr; property : GLUnurbsproperties; value : GLfloat );
   -- Source: bush_os.opengl.gluNurbsProperty
   nurb_val  : unbounded_string;
-  nurb_type : identifier;
+--  nurb_type : identifier;
   property_val  : unbounded_string;
   property_type : identifier;
   value_val  : unbounded_string;
   value_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glunurbsproperty_t );
-  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  -- TODO: no NURBS object yet in SparForte
+  -- ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
   ParseNextNumericParameter( property_val, property_type, pen_glunurbsproperties_t ); -- property : GLUnurbsproperties
   ParseLastNumericParameter( value_val, value_type, pen_glfloat_t ); -- value : GLfloat
   if isExecutingCommand then
     begin
-      gluNurbsProperty( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLUnurbsproperties( to_numeric( property_val ) ), GLfloat( to_numeric( value_val ) ) );
+      null; -- gluNurbsProperty( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLUnurbsproperties( to_numeric( property_val ) ), GLfloat( to_numeric( value_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12799,21 +14036,21 @@ procedure ParsePengluNurbsSurface is
   -- Syntax: gluNurbsSurface ( nurb : GLUnurbs_Ptr; sKnotCount : GLint; sKnots : GL_Float_Array_Ptr; tKnotCount : GLint; tKnots : GL_Float_Array_Ptr; sStride, tStride : GLint; control : GL_Float_Array_Ptr; sOrder, tOrder : GLint; kind : GLenum );
   -- Source: bush_os.opengl.gluNurbsSurface
   nurb_val  : unbounded_string;
-  nurb_type : identifier;
+--  nurb_type : identifier;
   sKnotCount_val  : unbounded_string;
   sKnotCount_type : identifier;
   sKnots_val  : unbounded_string;
-  sKnots_type : identifier;
+--  sKnots_type : identifier;
   tKnotCount_val  : unbounded_string;
   tKnotCount_type : identifier;
   tKnots_val  : unbounded_string;
-  tKnots_type : identifier;
+--  tKnots_type : identifier;
   sStride_val  : unbounded_string;
   sStride_type : identifier;
   tStride_val  : unbounded_string;
   tStride_type : identifier;
   control_val  : unbounded_string;
-  control_type : identifier;
+--  control_type : identifier;
   sOrder_val  : unbounded_string;
   sOrder_type : identifier;
   tOrder_val  : unbounded_string;
@@ -12821,21 +14058,23 @@ procedure ParsePengluNurbsSurface is
   kind_val  : unbounded_string;
   kind_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glunurbssurface_t );
-  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  -- TODO: no NURBS object yet in SparForte
+  -- ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
   ParseNextNumericParameter( sKnotCount_val, sKnotCount_type, pen_glint_t ); -- sKnotCount : GLint
-  ParseNextNumericParameter( sKnots_val, sKnots_type, pen_gl_float_array_ptr_t ); -- sKnots : GL_Float_Array_Ptr
+  --ParseNextNumericParameter( sKnots_val, sKnots_type, pen_gl_float_array_ptr_t ); -- sKnots : GL_Float_Array_Ptr
   ParseNextNumericParameter( tKnotCount_val, tKnotCount_type, pen_glint_t ); -- tKnotCount : GLint
-  ParseNextNumericParameter( tKnots_val, tKnots_type, pen_gl_float_array_ptr_t ); -- tKnots : GL_Float_Array_Ptr
+  -- ParseNextNumericParameter( tKnots_val, tKnots_type, pen_gl_float_array_ptr_t ); -- tKnots : GL_Float_Array_Ptr
   ParseNextNumericParameter( sStride_val, sStride_type, pen_glint_t ); -- sStride : GLint
   ParseNextNumericParameter( tStride_val, tStride_type, pen_glint_t ); -- tStride : GLint
-  ParseNextNumericParameter( control_val, control_type, pen_gl_float_array_ptr_t ); -- control : GL_Float_Array_Ptr
+  -- ParseNextNumericParameter( control_val, control_type, pen_gl_float_array_ptr_t ); -- control : GL_Float_Array_Ptr
   ParseNextNumericParameter( sOrder_val, sOrder_type, pen_glint_t ); -- sOrder : GLint
   ParseNextNumericParameter( tOrder_val, tOrder_type, pen_glint_t ); -- tOrder : GLint
   ParseLastNumericParameter( kind_val, kind_type, pen_glenum_t ); -- kind : GLenum
   if isExecutingCommand then
     begin
-      gluNurbsSurface( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLint( to_numeric( sKnotCount_val ) ), GL_Float_Array_Ptr( to_numeric( sKnots_val ) ), GLint( to_numeric( tKnotCount_val ) ), GL_Float_Array_Ptr( to_numeric( tKnots_val ) ), GLint( to_numeric( sStride_val ) ), GLint( to_numeric( tStride_val ) ), GL_Float_Array_Ptr( to_numeric( control_val ) ), GLint( to_numeric( sOrder_val ) ), GLint( to_numeric( tOrder_val ) ), GLenum( to_numeric( kind_val ) ) );
+      null; -- gluNurbsSurface( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLint( to_numeric( sKnotCount_val ) ), GL_Float_Array_Ptr( to_numeric( sKnots_val ) ), GLint( to_numeric( tKnotCount_val ) ), GL_Float_Array_Ptr( to_numeric( tKnots_val ) ), GLint( to_numeric( sStride_val ) ), GLint( to_numeric( tStride_val ) ), GL_Float_Array_Ptr( to_numeric( control_val ) ), GLint( to_numeric( sOrder_val ) ), GLint( to_numeric( tOrder_val ) ), GLenum( to_numeric( kind_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12872,7 +14111,7 @@ procedure ParsePengluPartialDisk is
   -- Syntax: gluPartialDisk ( quad : GLUquadratic_Ptr; inner, outer : GLdouble; slices : GLint; loops : GLint; start : GLdouble; sweep : GLdouble );
   -- Source: bush_os.opengl.gluPartialDisk
   quad_val  : unbounded_string;
-  quad_type : identifier;
+--  quad_type : identifier;
   inner_val  : unbounded_string;
   inner_type : identifier;
   outer_val  : unbounded_string;
@@ -12886,8 +14125,10 @@ procedure ParsePengluPartialDisk is
   sweep_val  : unbounded_string;
   sweep_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glupartialdisk_t );
-  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  -- TODO: no quadrics object yet in SparForte
+  -- ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
   ParseNextNumericParameter( inner_val, inner_type, pen_gldouble_t ); -- inner : GLdouble
   ParseNextNumericParameter( outer_val, outer_type, pen_gldouble_t ); -- outer : GLdouble
   ParseNextNumericParameter( slices_val, slices_type, pen_glint_t ); -- slices : GLint
@@ -12896,7 +14137,7 @@ begin
   ParseLastNumericParameter( sweep_val, sweep_type, pen_gldouble_t ); -- sweep : GLdouble
   if isExecutingCommand then
     begin
-      gluPartialDisk( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLdouble( to_numeric( inner_val ) ), GLdouble( to_numeric( outer_val ) ), GLint( to_numeric( slices_val ) ), GLint( to_numeric( loops_val ) ), GLdouble( to_numeric( start_val ) ), GLdouble( to_numeric( sweep_val ) ) );
+      null; -- gluPartialDisk( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLdouble( to_numeric( inner_val ) ), GLdouble( to_numeric( outer_val ) ), GLint( to_numeric( slices_val ) ), GLint( to_numeric( loops_val ) ), GLdouble( to_numeric( start_val ) ), GLdouble( to_numeric( sweep_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -12929,7 +14170,7 @@ begin
   end if;
 end ParsePengluPerspective;
 
-procedure ParsePengluPickMatrix is
+procedure ParsePengluPickMatrix( result : out unbounded_string ) is
   -- Syntax: gluPickMatrix ( x, y : GLdouble; delX, delY : GLdouble; viewport : in out GLint );
   -- Source: bush_os.opengl.gluPickMatrix
   x_val  : unbounded_string;
@@ -12950,15 +14191,19 @@ begin
   ParseNextNumericParameter( delY_val, delY_type, pen_gldouble_t ); -- delY : GLdouble
   ParseLastNumericParameter( viewport_val, viewport_type, pen_glint_t ); -- viewport : GLint
   if isExecutingCommand then
+    declare
+      param : GLint := 0;
     begin
-      gluPickMatrix( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( delX_val ) ), GLdouble( to_numeric( delY_val ) ), GLint( to_numeric( viewport_val ) ) );
+      gluPickMatrix( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( delX_val ) ), GLdouble( to_numeric( delY_val ) ), param );
+      result := to_unbounded_string( GLint'image( param ) );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePengluPickMatrix;
 
-procedure ParsePengluProject( result : out unbounded_string ) is
+procedure ParsePengluProject is
+--procedure ParsePengluProject( result : out unbounded_string ) is
   -- Syntax: gluProject ( objX, objY, objZ : GLdouble; model, proj : GL_Double_Array_Ptr; view : GL_Int_Array_Ptr; winX, winY, winZ : GL_Double_Array_Ptr ) return GLint;
   -- Source: bush_os.opengl.gluProject
   objX_val  : unbounded_string;
@@ -12968,31 +14213,47 @@ procedure ParsePengluProject( result : out unbounded_string ) is
   objZ_val  : unbounded_string;
   objZ_type : identifier;
   model_val  : unbounded_string;
-  model_type : identifier;
+--  model_type : identifier;
   proj_val  : unbounded_string;
-  proj_type : identifier;
+--  proj_type : identifier;
   view_val  : unbounded_string;
-  view_type : identifier;
+--  view_type : identifier;
   winX_val  : unbounded_string;
-  winX_type : identifier;
+--  winX_type : identifier;
   winY_val  : unbounded_string;
-  winY_type : identifier;
+--  winY_type : identifier;
   winZ_val  : unbounded_string;
-  winZ_type : identifier;
+--  winZ_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gluproject_t );
   ParseFirstNumericParameter( objX_val, objX_type, pen_gldouble_t ); -- objX : GLdouble
   ParseNextNumericParameter( objY_val, objY_type, pen_gldouble_t ); -- objY : GLdouble
   ParseNextNumericParameter( objZ_val, objZ_type, pen_gldouble_t ); -- objZ : GLdouble
-  ParseNextNumericParameter( model_val, model_type, pen_gl_double_array_ptr_t ); -- model : GL_Double_Array_Ptr
-  ParseNextNumericParameter( proj_val, proj_type, pen_gl_double_array_ptr_t ); -- proj : GL_Double_Array_Ptr
-  ParseNextNumericParameter( view_val, view_type, pen_gl_int_array_ptr_t ); -- view : GL_Int_Array_Ptr
-  ParseNextNumericParameter( winX_val, winX_type, pen_gl_double_array_ptr_t ); -- winX : GL_Double_Array_Ptr
-  ParseNextNumericParameter( winY_val, winY_type, pen_gl_double_array_ptr_t ); -- winY : GL_Double_Array_Ptr
-  ParseLastNumericParameter( winZ_val, winZ_type, pen_gl_double_array_ptr_t ); -- winZ : GL_Double_Array_Ptr
+  -- TODO: this is the model matrix: how bit?  4 doubles?? need to check.
+  -- ParseNextNumericParameter( model_val, model_type, pen_gl_double_array_ptr_t ); -- model : GL_Double_Array_Ptr
+  -- TODO: this is the projection matrix: how bit?  4 doubles?? need to check.
+  -- ParseNextNumericParameter( proj_val, proj_type, pen_gl_double_array_ptr_t ); -- proj : GL_Double_Array_Ptr
+  -- TODO: how big? need to check
+  -- ParseNextNumericParameter( view_val, view_type, pen_gl_int_array_ptr_t ); -- view : GL_Int_Array_Ptr
+  --ParseNextNumericParameter( winX_val, winX_type, pen_gl_double_array_ptr_t ); -- winX : GL_Double_Array_Ptr
+  --ParseNextNumericParameter( winY_val, winY_type, pen_gl_double_array_ptr_t ); -- winY : GL_Double_Array_Ptr
+  --ParseLastNumericParameter( winZ_val, winZ_type, pen_gl_double_array_ptr_t ); -- winZ : GL_Double_Array_Ptr
   if isExecutingCommand then
+    declare
+      -- TODO: determine the size
+      model_array : GL_Double_Array_Access := new double_array( 0..0 );
+      model_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( model_array );
+      proj_array  : GL_Double_Array_Access := new double_array( 0..0 );
+      proj_ptr    : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( proj_array );
+      view_array  : GL_Int_Array_Access := new int_array( 0..0 );
+      view_ptr    : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( view_array );
+      -- winX : GLdouble;
+      -- winY : GLdouble;
+      -- winZ : GLdouble;
     begin
-      result := to_unbounded_string( long_float( gluProject( GLdouble( to_numeric( objX_val ) ), GLdouble( to_numeric( objY_val ) ), GLdouble( to_numeric( objZ_val ) ), GL_Double_Array_Ptr( to_numeric( model_val ) ), GL_Double_Array_Ptr( to_numeric( proj_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ), GL_Double_Array_Ptr( to_numeric( winX_val ) ), GL_Double_Array_Ptr( to_numeric( winY_val ) ), GL_Double_Array_Ptr( to_numeric( winZ_val ) ) ) ) );
+      -- TODO: in SparForte, functions cannot return values
+      null; -- result := to_unbounded_string( long_float( gluProject( GLdouble( to_numeric( objX_val ) ), GLdouble( to_numeric( objY_val ) ), GLdouble( to_numeric( objZ_val ) ), model_ptr, proj_ptr, view_ptr, winX, winY, winZ ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -13003,25 +14264,27 @@ procedure ParsePengluPwlCurve is
   -- Syntax: gluPwlCurve ( nurb : GLUnurbs_Ptr; count : GLint; data : GL_Float_Array_Ptr; stride : GLint; kind : GLevaluators );
   -- Source: bush_os.opengl.gluPwlCurve
   nurb_val  : unbounded_string;
-  nurb_type : identifier;
+--  nurb_type : identifier;
   count_val  : unbounded_string;
   count_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
   stride_val  : unbounded_string;
   stride_type : identifier;
   kind_val  : unbounded_string;
   kind_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glupwlcurve_t );
-  ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
+  -- TODO: no NURBS object yet in SparForte
+  -- ParseFirstNumericParameter( nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
   ParseNextNumericParameter( count_val, count_type, pen_glint_t ); -- count : GLint
-  ParseNextNumericParameter( data_val, data_type, pen_gl_float_array_ptr_t ); -- data : GL_Float_Array_Ptr
+  --ParseNextNumericParameter( data_val, data_type, pen_gl_float_array_ptr_t ); -- data : GL_Float_Array_Ptr
   ParseNextNumericParameter( stride_val, stride_type, pen_glint_t ); -- stride : GLint
   ParseLastNumericParameter( kind_val, kind_type, pen_glevaluators_t ); -- kind : GLevaluators
   if isExecutingCommand then
     begin
-      gluPwlCurve( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLint( to_numeric( count_val ) ), GL_Float_Array_Ptr( to_numeric( data_val ) ), GLint( to_numeric( stride_val ) ), GLevaluators( to_numeric( kind_val ) ) );
+      null;-- gluPwlCurve( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLint( to_numeric( count_val ) ), GL_Float_Array_Ptr( to_numeric( data_val ) ), GLint( to_numeric( stride_val ) ), GLevaluators( to_numeric( kind_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -13032,19 +14295,22 @@ procedure ParsePengluQuadricCallback is
   -- Syntax: gluQuadricCallback ( quad : GLUquadratic_Ptr; which : GLUnurbscallbacks; CallBackFunc : System.address );
   -- Source: bush_os.opengl.gluQuadricCallback
   quad_val  : unbounded_string;
-  quad_type : identifier;
+--  quad_type : identifier;
   which_val  : unbounded_string;
   which_type : identifier;
   CallBackFunc_val  : unbounded_string;
-  CallBackFunc_type : identifier;
+--  CallBackFunc_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gluquadriccallback_t );
-  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  -- TODO: no quad object in SparForte
+  --ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
   ParseNextNumericParameter( which_val, which_type, pen_glunurbscallbacks_t ); -- which : GLUnurbscallbacks
-  ParseLastNumericParameter( CallBackFunc_val, CallBackFunc_type, pen_system.address_t ); -- CallBackFunc : System.address
+  -- ParseLastNumericParameter( CallBackFunc_val, CallBackFunc_type, pen_system.address_t ); -- CallBackFunc : System.address
   if isExecutingCommand then
     begin
-      gluQuadricCallback( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLUnurbscallbacks( to_numeric( which_val ) ), System.address( to_numeric( CallBackFunc_val ) ) );
+      -- TODO: no callbacks in SparForte
+      null; -- gluQuadricCallback( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLUnurbscallbacks( to_numeric( which_val ) ), System.address( to_numeric( CallBackFunc_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -13055,16 +14321,18 @@ procedure ParsePengluQuadricDrawStyle is
   -- Syntax: gluQuadricDrawStyle ( quad : GLUquadratic_Ptr; draw : GLUquaddrawstyle );
   -- Source: bush_os.opengl.gluQuadricDrawStyle
   quad_val  : unbounded_string;
-  quad_type : identifier;
+--  quad_type : identifier;
   draw_val  : unbounded_string;
   draw_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gluquadricdrawstyle_t );
-  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  -- TODO: no quad object in SparForte
+  -- ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
   ParseLastNumericParameter( draw_val, draw_type, pen_gluquaddrawstyle_t ); -- draw : GLUquaddrawstyle
   if isExecutingCommand then
     begin
-      gluQuadricDrawStyle( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLUquaddrawstyle( to_numeric( draw_val ) ) );
+      null; -- gluQuadricDrawStyle( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLUquaddrawstyle( to_numeric( draw_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -13075,16 +14343,18 @@ procedure ParsePengluQuadricNormals is
   -- Syntax: gluQuadricNormals ( quad : GLUquadratic_Ptr; normal : GLUquadricnormal );
   -- Source: bush_os.opengl.gluQuadricNormals
   quad_val  : unbounded_string;
-  quad_type : identifier;
+--  quad_type : identifier;
   normal_val  : unbounded_string;
   normal_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gluquadricnormals_t );
-  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  -- TODO: no quad object in SparForte yet
+  -- ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
   ParseLastNumericParameter( normal_val, normal_type, pen_gluquadricnormal_t ); -- normal : GLUquadricnormal
   if isExecutingCommand then
     begin
-      gluQuadricNormals( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLUquadricnormal( to_numeric( normal_val ) ) );
+      null; -- gluQuadricNormals( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLUquadricnormal( to_numeric( normal_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -13095,16 +14365,18 @@ procedure ParsePengluQuadricOrientation is
   -- Syntax: gluQuadricOrientation ( quad : GLUquadratic_Ptr; orientation : GLUquadorientation );
   -- Source: bush_os.opengl.gluQuadricOrientation
   quad_val  : unbounded_string;
-  quad_type : identifier;
+--  quad_type : identifier;
   orientation_val  : unbounded_string;
   orientation_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gluquadricorientation_t );
-  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  -- TODO: no quadrics object in SparForte yet
+  -- ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
   ParseLastNumericParameter( orientation_val, orientation_type, pen_gluquadorientation_t ); -- orientation : GLUquadorientation
   if isExecutingCommand then
     begin
-      gluQuadricOrientation( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLUquadorientation( to_numeric( orientation_val ) ) );
+      null; -- gluQuadricOrientation( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLUquadorientation( to_numeric( orientation_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -13115,16 +14387,18 @@ procedure ParsePengluQuadricTexture is
   -- Syntax: gluQuadricTexture ( quad : GLUquadratic_Ptr; texture : GLboolean );
   -- Source: bush_os.opengl.gluQuadricTexture
   quad_val  : unbounded_string;
-  quad_type : identifier;
+--  quad_type : identifier;
   texture_val  : unbounded_string;
   texture_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gluquadrictexture_t );
-  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  -- TODO: no quadrics object yet in SparForte
+  -- ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
   ParseLastNumericParameter( texture_val, texture_type, pen_glboolean_t ); -- texture : GLboolean
   if isExecutingCommand then
     begin
-      gluQuadricTexture( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLboolean( to_numeric( texture_val ) ) );
+      null; -- gluQuadricTexture( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLboolean( to_numeric( texture_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -13143,7 +14417,7 @@ procedure ParsePengluScaleImage( result : out unbounded_string ) is
   typeIn_val  : unbounded_string;
   typeIn_type : identifier;
   dataIn_val  : unbounded_string;
-  dataIn_type : identifier;
+--  dataIn_type : identifier;
   wOut_val  : unbounded_string;
   wOut_type : identifier;
   hOut_val  : unbounded_string;
@@ -13151,21 +14425,29 @@ procedure ParsePengluScaleImage( result : out unbounded_string ) is
   typeOut_val  : unbounded_string;
   typeOut_type : identifier;
   dataOut_val  : unbounded_string;
-  dataOut_type : identifier;
+--  dataOut_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gluscaleimage_t );
   ParseFirstNumericParameter( format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( wIn_val, wIn_type, pen_glsizei_t ); -- wIn : GLsizei
   ParseNextNumericParameter( hIn_val, hIn_type, pen_glsizei_t ); -- hIn : GLsizei
   ParseNextNumericParameter( typeIn_val, typeIn_type, pen_gltypes_t ); -- typeIn : GLtypes
-  ParseNextNumericParameter( dataIn_val, dataIn_type, pen_system.address_t ); -- dataIn : System.address
+  -- TODO: system address means variable array
+  -- ParseNextNumericParameter( dataIn_val, dataIn_type, pen_system.address_t ); -- dataIn : System.address
   ParseNextNumericParameter( wOut_val, wOut_type, pen_glsizei_t ); -- wOut : GLsizei
   ParseNextNumericParameter( hOut_val, hOut_type, pen_glsizei_t ); -- hOut : GLsizei
   ParseNextNumericParameter( typeOut_val, typeOut_type, pen_gltypes_t ); -- typeOut : GLtypes
-  ParseLastNumericParameter( dataOut_val, dataOut_type, pen_system.address_t ); -- dataOut : System.address
+  -- TODO: system address means variable array
+  -- ParseLastNumericParameter( dataOut_val, dataOut_type, pen_system.address_t ); -- dataOut : System.address
   if isExecutingCommand then
+    declare
+      dummy : boolean;
+      dummy_ptr : system.address := dummy'address;
+      dummy2 : boolean;
+      dummy2_ptr : system.address := dummy2'address;
     begin
-      result := to_unbounded_string( long_float( gluScaleImage( GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( wIn_val ) ), GLsizei( to_numeric( hIn_val ) ), GLtypes( to_numeric( typeIn_val ) ), System.address( to_numeric( dataIn_val ) ), GLsizei( to_numeric( wOut_val ) ), GLsizei( to_numeric( hOut_val ) ), GLtypes( to_numeric( typeOut_val ) ), System.address( to_numeric( dataOut_val ) ) ) ) );
+      result := to_unbounded_string( long_float( gluScaleImage( GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( wIn_val ) ), GLsizei( to_numeric( hIn_val ) ), GLtypes( to_numeric( typeIn_val ) ), dummy_ptr, GLsizei( to_numeric( wOut_val ) ), GLsizei( to_numeric( hOut_val ) ), GLtypes( to_numeric( typeOut_val ) ), dummy2_ptr ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -13176,7 +14458,7 @@ procedure ParsePengluSphere is
   -- Syntax: gluSphere ( quad : GLUquadratic_Ptr; radius : GLdouble; slices : GLint; stacks : GLint );
   -- Source: bush_os.opengl.gluSphere
   quad_val  : unbounded_string;
-  quad_type : identifier;
+--  quad_type : identifier;
   radius_val  : unbounded_string;
   radius_type : identifier;
   slices_val  : unbounded_string;
@@ -13184,14 +14466,16 @@ procedure ParsePengluSphere is
   stacks_val  : unbounded_string;
   stacks_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glusphere_t );
-  ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
+  -- TODO: no quadrics object yet in SparForte
+  --ParseFirstNumericParameter( quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
   ParseNextNumericParameter( radius_val, radius_type, pen_gldouble_t ); -- radius : GLdouble
   ParseNextNumericParameter( slices_val, slices_type, pen_glint_t ); -- slices : GLint
   ParseLastNumericParameter( stacks_val, stacks_type, pen_glint_t ); -- stacks : GLint
   if isExecutingCommand then
     begin
-      gluSphere( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLdouble( to_numeric( radius_val ) ), GLint( to_numeric( slices_val ) ), GLint( to_numeric( stacks_val ) ) );
+      null; -- gluSphere( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLdouble( to_numeric( radius_val ) ), GLint( to_numeric( slices_val ) ), GLint( to_numeric( stacks_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -13202,13 +14486,15 @@ procedure ParsePengluTessBeginContour is
   -- Syntax: gluTessBeginContour ( tess : GLUtessellator_Ptr );
   -- Source: bush_os.opengl.gluTessBeginContour
   tess_val  : unbounded_string;
-  tess_type : identifier;
+--  tess_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glutessbegincontour_t );
-  ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  -- TODO: no tessellation object yet in SparForte
+  -- ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
   if isExecutingCommand then
     begin
-      gluTessBeginContour( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
+      null; -- gluTessBeginContour( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -13219,16 +14505,18 @@ procedure ParsePengluTessBeginPolygon is
   -- Syntax: gluTessBeginPolygon ( tess : GLUtessellator_Ptr; data : System.address );
   -- Source: bush_os.opengl.gluTessBeginPolygon
   tess_val  : unbounded_string;
-  tess_type : identifier;
+--  tess_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+--  data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glutessbeginpolygon_t );
-  ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
-  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  -- TODO: no tessellation object yet in SparForte
+  -- ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  -- ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
   if isExecutingCommand then
     begin
-      gluTessBeginPolygon( GLUtessellator_Ptr( to_numeric( tess_val ) ), System.address( to_numeric( data_val ) ) );
+      null;-- gluTessBeginPolygon( GLUtessellator_Ptr( to_numeric( tess_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -13239,19 +14527,21 @@ procedure ParsePengluTessCallback is
   -- Syntax: gluTessCallback (tess : GLUtessellator_Ptr; which : GLUtesscallbacks; CallBackFunc : System.address );
   -- Source: bush_os.opengl.gluTessCallback
   tess_val  : unbounded_string;
-  tess_type : identifier;
+--  tess_type : identifier;
   which_val  : unbounded_string;
   which_type : identifier;
   CallBackFunc_val  : unbounded_string;
-  CallBackFunc_type : identifier;
+--  CallBackFunc_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glutesscallback_t );
-  ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  -- TODO: no tessellation object yet in SparForte
+  -- ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
   ParseNextNumericParameter( which_val, which_type, pen_glutesscallbacks_t ); -- which : GLUtesscallbacks
-  ParseLastNumericParameter( CallBackFunc_val, CallBackFunc_type, pen_system.address_t ); -- CallBackFunc : System.address
+  -- ParseLastNumericParameter( CallBackFunc_val, CallBackFunc_type, pen_system.address_t ); -- CallBackFunc : System.address
   if isExecutingCommand then
     begin
-      gluTessCallback( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLUtesscallbacks( to_numeric( which_val ) ), System.address( to_numeric( CallBackFunc_val ) ) );
+      null; -- gluTessCallback( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLUtesscallbacks( to_numeric( which_val ) ), System.address( to_numeric( CallBackFunc_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -13262,13 +14552,15 @@ procedure ParsePengluTessEndContour is
   -- Syntax: gluTessEndContour ( tess : GLUtessellator_Ptr );
   -- Source: bush_os.opengl.gluTessEndContour
   tess_val  : unbounded_string;
-  tess_type : identifier;
+--  tess_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glutessendcontour_t );
-  ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  -- TODO: no tessellation object yet in SparForte
+  -- ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
   if isExecutingCommand then
     begin
-      gluTessEndContour( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
+      null; -- gluTessEndContour( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -13279,13 +14571,15 @@ procedure ParsePengluTessEndPolygon is
   -- Syntax: gluTessEndPolygon ( tess : GLUtessellator_Ptr );
   -- Source: bush_os.opengl.gluTessEndPolygon
   tess_val  : unbounded_string;
-  tess_type : identifier;
+--  tess_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glutessendpolygon_t );
-  ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  -- TODO: no tessellation object yet in SparForte
+  -- ParseSingleNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
   if isExecutingCommand then
     begin
-      gluTessEndPolygon( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
+      null; -- gluTessEndPolygon( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -13296,7 +14590,7 @@ procedure ParsePengluTessNormal is
   -- Syntax: gluTessNormal ( tess : GLUtessellator_Ptr; valueX, valueY, valueZ : GLdouble );
   -- Source: bush_os.opengl.gluTessNormal
   tess_val  : unbounded_string;
-  tess_type : identifier;
+--  tess_type : identifier;
   valueX_val  : unbounded_string;
   valueX_type : identifier;
   valueY_val  : unbounded_string;
@@ -13304,14 +14598,16 @@ procedure ParsePengluTessNormal is
   valueZ_val  : unbounded_string;
   valueZ_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glutessnormal_t );
-  ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  -- TODO: no tessellation object yet in SparForte
+  --ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
   ParseNextNumericParameter( valueX_val, valueX_type, pen_gldouble_t ); -- valueX : GLdouble
   ParseNextNumericParameter( valueY_val, valueY_type, pen_gldouble_t ); -- valueY : GLdouble
   ParseLastNumericParameter( valueZ_val, valueZ_type, pen_gldouble_t ); -- valueZ : GLdouble
   if isExecutingCommand then
     begin
-      gluTessNormal( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLdouble( to_numeric( valueX_val ) ), GLdouble( to_numeric( valueY_val ) ), GLdouble( to_numeric( valueZ_val ) ) );
+      null; -- gluTessNormal( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLdouble( to_numeric( valueX_val ) ), GLdouble( to_numeric( valueY_val ) ), GLdouble( to_numeric( valueZ_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -13322,19 +14618,21 @@ procedure ParsePengluTessProperty is
   -- Syntax: gluTessProperty ( tess : GLUtessellator_Ptr; which : GLUtessproperties; data : GLdouble );
   -- Source: bush_os.opengl.gluTessProperty
   tess_val  : unbounded_string;
-  tess_type : identifier;
+  -- tess_type : identifier;
   which_val  : unbounded_string;
   which_type : identifier;
   data_val  : unbounded_string;
   data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glutessproperty_t );
-  ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  -- TODO: no tessellation object yet in SparForte
+  --ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
   ParseNextNumericParameter( which_val, which_type, pen_glutessproperties_t ); -- which : GLUtessproperties
   ParseLastNumericParameter( data_val, data_type, pen_gldouble_t ); -- data : GLdouble
   if isExecutingCommand then
     begin
-      gluTessProperty( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLUtessproperties( to_numeric( which_val ) ), GLdouble( to_numeric( data_val ) ) );
+      null; -- gluTessProperty( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLUtessproperties( to_numeric( which_val ) ), GLdouble( to_numeric( data_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
@@ -13345,26 +14643,29 @@ procedure ParsePengluTessVertex is
   -- Syntax: gluTessVertex ( tess : GLUtessellator_Ptr; location : in out GLdouble; data : System.address );
   -- Source: bush_os.opengl.gluTessVertex
   tess_val  : unbounded_string;
-  tess_type : identifier;
+  -- tess_type : identifier;
   location_val  : unbounded_string;
   location_type : identifier;
   data_val  : unbounded_string;
-  data_type : identifier;
+  --data_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_glutessvertex_t );
-  ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
+  -- TODO: no tessellation object yet in SparForte
+  -- ParseFirstNumericParameter( tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
   ParseNextNumericParameter( location_val, location_type, pen_gldouble_t ); -- location : GLdouble
-  ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
+  -- ParseLastNumericParameter( data_val, data_type, pen_system.address_t ); -- data : System.address
   if isExecutingCommand then
     begin
-      gluTessVertex( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLdouble( to_numeric( location_val ) ), System.address( to_numeric( data_val ) ) );
+      null; -- gluTessVertex( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLdouble( to_numeric( location_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePengluTessVertex;
 
-procedure ParsePengluUnProject( result : out unbounded_string ) is
+procedure ParsePengluUnProject is
+-- procedure ParsePengluUnProject( result : out unbounded_string ) is
   -- Syntax: gluUnProject ( winX, winY, winZ : GLdouble; model : GL_Double_Array_Ptr; proj : GL_Double_Array_Ptr; view : GL_Int_Array_Ptr; objX, objY, objZ : GL_Double_Array_Ptr) return GLint;
   -- Source: bush_os.opengl.gluUnProject
   winX_val  : unbounded_string;
@@ -13374,38 +14675,41 @@ procedure ParsePengluUnProject( result : out unbounded_string ) is
   winZ_val  : unbounded_string;
   winZ_type : identifier;
   model_val  : unbounded_string;
-  model_type : identifier;
+--  model_type : identifier;
   proj_val  : unbounded_string;
-  proj_type : identifier;
+--  proj_type : identifier;
   view_val  : unbounded_string;
-  view_type : identifier;
+--  view_type : identifier;
   objX_val  : unbounded_string;
-  objX_type : identifier;
+--  objX_type : identifier;
   objY_val  : unbounded_string;
-  objY_type : identifier;
+--  objY_type : identifier;
   objZ_val  : unbounded_string;
-  objZ_type : identifier;
+--  objZ_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gluunproject_t );
   ParseFirstNumericParameter( winX_val, winX_type, pen_gldouble_t ); -- winX : GLdouble
   ParseNextNumericParameter( winY_val, winY_type, pen_gldouble_t ); -- winY : GLdouble
   ParseNextNumericParameter( winZ_val, winZ_type, pen_gldouble_t ); -- winZ : GLdouble
-  ParseNextNumericParameter( model_val, model_type, pen_gl_double_array_ptr_t ); -- model : GL_Double_Array_Ptr
-  ParseNextNumericParameter( proj_val, proj_type, pen_gl_double_array_ptr_t ); -- proj : GL_Double_Array_Ptr
-  ParseNextNumericParameter( view_val, view_type, pen_gl_int_array_ptr_t ); -- view : GL_Int_Array_Ptr
-  ParseNextNumericParameter( objX_val, objX_type, pen_gl_double_array_ptr_t ); -- objX : GL_Double_Array_Ptr
-  ParseNextNumericParameter( objY_val, objY_type, pen_gl_double_array_ptr_t ); -- objY : GL_Double_Array_Ptr
-  ParseLastNumericParameter( objZ_val, objZ_type, pen_gl_double_array_ptr_t ); -- objZ : GL_Double_Array_Ptr
+  -- TODO: figure out sizes for these
+  --ParseNextNumericParameter( model_val, model_type, pen_gl_double_array_ptr_t ); -- model : GL_Double_Array_Ptr
+  --ParseNextNumericParameter( proj_val, proj_type, pen_gl_double_array_ptr_t ); -- proj : GL_Double_Array_Ptr
+  --ParseNextNumericParameter( view_val, view_type, pen_gl_int_array_ptr_t ); -- view : GL_Int_Array_Ptr
+  --ParseNextNumericParameter( objX_val, objX_type, pen_gl_double_array_ptr_t ); -- objX : GL_Double_Array_Ptr
+  --ParseNextNumericParameter( objY_val, objY_type, pen_gl_double_array_ptr_t ); -- objY : GL_Double_Array_Ptr
+  --ParseLastNumericParameter( objZ_val, objZ_type, pen_gl_double_array_ptr_t ); -- objZ : GL_Double_Array_Ptr
   if isExecutingCommand then
     begin
-      result := to_unbounded_string( long_float( gluUnProject( GLdouble( to_numeric( winX_val ) ), GLdouble( to_numeric( winY_val ) ), GLdouble( to_numeric( winZ_val ) ), GL_Double_Array_Ptr( to_numeric( model_val ) ), GL_Double_Array_Ptr( to_numeric( proj_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ), GL_Double_Array_Ptr( to_numeric( objX_val ) ), GL_Double_Array_Ptr( to_numeric( objY_val ) ), GL_Double_Array_Ptr( to_numeric( objZ_val ) ) ) ) );
+      null; -- result := to_unbounded_string( long_float( gluUnProject( GLdouble( to_numeric( winX_val ) ), GLdouble( to_numeric( winY_val ) ), GLdouble( to_numeric( winZ_val ) ), GL_Double_Array_Ptr( to_numeric( model_val ) ), GL_Double_Array_Ptr( to_numeric( proj_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ), GL_Double_Array_Ptr( to_numeric( objX_val ) ), GL_Double_Array_Ptr( to_numeric( objY_val ) ), GL_Double_Array_Ptr( to_numeric( objZ_val ) ) ) ) );
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePengluUnProject;
 
-procedure ParsePengluUnProject4( result : out unbounded_string ) is
+procedure ParsePengluUnProject4 is
+-- procedure ParsePengluUnProject4( result : out unbounded_string ) is
   -- Syntax: gluUnProject4 ( winX, winY, winZ : GLdouble; clipW : GLdouble; model : GL_Double_Array_Ptr; proj : GL_Double_Array_Ptr; view : GL_Int_Array_Ptr; nearVal, farVal : GLdouble; objX, objY, objZ, objW : GL_Double_Array_Ptr ) return GLint;
   -- Source: bush_os.opengl.gluUnProject4
   winX_val  : unbounded_string;
@@ -13417,41 +14721,42 @@ procedure ParsePengluUnProject4( result : out unbounded_string ) is
   clipW_val  : unbounded_string;
   clipW_type : identifier;
   model_val  : unbounded_string;
-  model_type : identifier;
+ -- model_type : identifier;
   proj_val  : unbounded_string;
-  proj_type : identifier;
+  --proj_type : identifier;
   view_val  : unbounded_string;
-  view_type : identifier;
+  --view_type : identifier;
   nearVal_val  : unbounded_string;
   nearVal_type : identifier;
   farVal_val  : unbounded_string;
   farVal_type : identifier;
   objX_val  : unbounded_string;
-  objX_type : identifier;
+  --objX_type : identifier;
   objY_val  : unbounded_string;
-  objY_type : identifier;
+  --objY_type : identifier;
   objZ_val  : unbounded_string;
-  objZ_type : identifier;
+  --objZ_type : identifier;
   objW_val  : unbounded_string;
-  objW_type : identifier;
+  --objW_type : identifier;
 begin
+  err( "not yet complete" );
   expect( pen_gluunproject4_t );
   ParseFirstNumericParameter( winX_val, winX_type, pen_gldouble_t ); -- winX : GLdouble
   ParseNextNumericParameter( winY_val, winY_type, pen_gldouble_t ); -- winY : GLdouble
   ParseNextNumericParameter( winZ_val, winZ_type, pen_gldouble_t ); -- winZ : GLdouble
   ParseNextNumericParameter( clipW_val, clipW_type, pen_gldouble_t ); -- clipW : GLdouble
-  ParseNextNumericParameter( model_val, model_type, pen_gl_double_array_ptr_t ); -- model : GL_Double_Array_Ptr
-  ParseNextNumericParameter( proj_val, proj_type, pen_gl_double_array_ptr_t ); -- proj : GL_Double_Array_Ptr
-  ParseNextNumericParameter( view_val, view_type, pen_gl_int_array_ptr_t ); -- view : GL_Int_Array_Ptr
+  --ParseNextNumericParameter( model_val, model_type, pen_gl_double_array_ptr_t ); -- model : GL_Double_Array_Ptr
+  --ParseNextNumericParameter( proj_val, proj_type, pen_gl_double_array_ptr_t ); -- proj : GL_Double_Array_Ptr
+  --ParseNextNumericParameter( view_val, view_type, pen_gl_int_array_ptr_t ); -- view : GL_Int_Array_Ptr
   ParseNextNumericParameter( nearVal_val, nearVal_type, pen_gldouble_t ); -- nearVal : GLdouble
   ParseNextNumericParameter( farVal_val, farVal_type, pen_gldouble_t ); -- farVal : GLdouble
-  ParseNextNumericParameter( objX_val, objX_type, pen_gl_double_array_ptr_t ); -- objX : GL_Double_Array_Ptr
-  ParseNextNumericParameter( objY_val, objY_type, pen_gl_double_array_ptr_t ); -- objY : GL_Double_Array_Ptr
-  ParseNextNumericParameter( objZ_val, objZ_type, pen_gl_double_array_ptr_t ); -- objZ : GL_Double_Array_Ptr
-  ParseLastNumericParameter( objW_val, objW_type, pen_gl_double_array_ptr_t ); -- objW : GL_Double_Array_Ptr
+  --ParseNextNumericParameter( objX_val, objX_type, pen_gl_double_array_ptr_t ); -- objX : GL_Double_Array_Ptr
+  --ParseNextNumericParameter( objY_val, objY_type, pen_gl_double_array_ptr_t ); -- objY : GL_Double_Array_Ptr
+  --ParseNextNumericParameter( objZ_val, objZ_type, pen_gl_double_array_ptr_t ); -- objZ : GL_Double_Array_Ptr
+  --ParseLastNumericParameter( objW_val, objW_type, pen_gl_double_array_ptr_t ); -- objW : GL_Double_Array_Ptr
   if isExecutingCommand then
     begin
-      result := to_unbounded_string( long_float( gluUnProject4( GLdouble( to_numeric( winX_val ) ), GLdouble( to_numeric( winY_val ) ), GLdouble( to_numeric( winZ_val ) ), GLdouble( to_numeric( clipW_val ) ), GL_Double_Array_Ptr( to_numeric( model_val ) ), GL_Double_Array_Ptr( to_numeric( proj_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ), GLdouble( to_numeric( nearVal_val ) ), GLdouble( to_numeric( farVal_val ) ), GL_Double_Array_Ptr( to_numeric( objX_val ) ), GL_Double_Array_Ptr( to_numeric( objY_val ) ), GL_Double_Array_Ptr( to_numeric( objZ_val ) ), GL_Double_Array_Ptr( to_numeric( objW_val ) ) ) ) );
+      null; -- result := to_unbounded_string( long_float( gluUnProject4( GLdouble( to_numeric( winX_val ) ), GLdouble( to_numeric( winY_val ) ), GLdouble( to_numeric( winZ_val ) ), GLdouble( to_numeric( clipW_val ) ), GL_Double_Array_Ptr( to_numeric( model_val ) ), GL_Double_Array_Ptr( to_numeric( proj_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ), GLdouble( to_numeric( nearVal_val ) ), GLdouble( to_numeric( farVal_val ) ), GL_Double_Array_Ptr( to_numeric( objX_val ) ), GL_Double_Array_Ptr( to_numeric( objY_val ) ), GL_Double_Array_Ptr( to_numeric( objZ_val ) ), GL_Double_Array_Ptr( to_numeric( objW_val ) ) ) ) );
     exception when others =>
       err( "exception raised" );
     end;

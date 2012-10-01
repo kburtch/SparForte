@@ -224,7 +224,6 @@ procedure draco_ii is
     when serpent =>
          creature_description := "Something lurks in the shadows.";
          creature_name := "giant serpent";
-         creature_evade := "It dodges you attack.";
          creature_evade := "It slithers away.";
          creature_attack1 := "It coils around you and squeezes!";
          creature_damage1 := 5;
@@ -497,6 +496,7 @@ begin
                     put_line( "for help!  A strong hero is required!  What will you do?" );
                     put_line( "1) Check it out    2) Keep going" );
                     ch := inkey;
+                    put_line( ch );
                     if ch /= "1" then
                        put_line( "Fine, you gutless swine." );
                     else
@@ -574,7 +574,10 @@ begin
                    put_line( "*** Your spear seems weaker." );
                 end if;
                 if has_item( staff ) then
-                   staff_charge := integer(numerics.rnd(5)-numerics.rnd(positive(staff_charge)));
+                   if staff_charge > 0 then
+                      staff_charge := integer(numerics.rnd(positive(staff_charge)));
+                   end if;
+                   staff_charge := integer(numerics.rnd(5))-staff_charge;
                    put_line( "*** Your staff glows faintly." );
                 end if;
              when 3 =>

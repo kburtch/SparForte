@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2012 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,8 +21,12 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Strings.Unbounded, Interfaces.C, System.Address_To_Access_Conversions;
-use  Ada.Strings.Unbounded, Interfaces.C;
+with Ada.Strings.Unbounded,
+     Ada.Unchecked_Deallocation,
+     Interfaces.C,
+     System.Address_To_Access_Conversions;
+use  Ada.Strings.Unbounded,
+     Interfaces.C;
 
 package bush_os.opengl is
 
@@ -67,7 +71,9 @@ type double_array_matrix is new double_array( 0..15 );
 pragma warnings( off );
 package GL_Double_Array_Conv is new
      system.address_to_access_conversions( double_array );
-     subtype GL_Double_Array_Ptr is GL_Double_Array_Conv.object_pointer;
+subtype GL_Double_Array_Ptr is System.Address;
+subtype GL_Double_Array_Access is GL_Double_Array_Conv.object_pointer;
+procedure free is new Ada.Unchecked_Deallocation( double_array, GL_Double_Array_Access );
 pragma warnings( on );
 
 type double_vertex_2d is new double_array( 0..1 );
@@ -86,7 +92,9 @@ type float_array_matrix is new float_array( 0..15 );
 pragma warnings( off );
 package GL_Float_Array_Conv is new
      system.address_to_access_conversions( float_array );
-     subtype GL_Float_Array_Ptr is GL_Float_Array_Conv.object_pointer;
+subtype GL_Float_Array_Ptr is System.Address;
+subtype GL_Float_Array_Access is GL_Float_Array_Conv.object_pointer;
+procedure free is new Ada.Unchecked_Deallocation( float_array, GL_Float_Array_Access );
 pragma warnings( on );
 
 type float_vertex_2d is new float_array( 0..1 );
@@ -98,7 +106,9 @@ type int_array_matrix is new double_array( 0..15 );
 pragma warnings( off );
 package GL_Int_Array_Conv is new
      system.address_to_access_conversions( int_array );
-     subtype GL_Int_Array_Ptr is GL_Int_Array_Conv.object_pointer;
+subtype GL_Int_Array_Ptr is System.Address;
+subtype GL_Int_Array_Access is GL_Int_Array_Conv.object_pointer;
+procedure free is new Ada.Unchecked_Deallocation( int_array, GL_Int_Array_Access );
 pragma warnings( on );
 
 type int_vertex_2d is new int_array( 0..1 );
@@ -110,7 +120,8 @@ type short_array_matrix is new short_array( 0..15 );
 pragma warnings( off );
 package GL_Short_Array_Conv is new
      system.address_to_access_conversions( short_array );
-     subtype GL_Short_Array_Ptr is GL_Short_Array_Conv.object_pointer;
+subtype GL_Short_Array_Ptr is System.Address;
+subtype GL_Short_Array_Access is GL_Short_Array_Conv.object_pointer;
 pragma warnings( on );
 
 type short_vertex_2d is new short_array( 0..1 );
@@ -121,7 +132,9 @@ type byte_array is array( size_t range <> ) of aliased GLbyte;
 pragma warnings( off );
 package GL_Byte_Array_Conv is new
      system.address_to_access_conversions( byte_array );
-     subtype GL_Byte_Array_Ptr is GL_Byte_Array_Conv.object_pointer;
+subtype GL_Byte_Array_Ptr is System.Address;
+subtype GL_Byte_Array_Access is GL_Byte_Array_Conv.object_pointer;
+procedure free is new Ada.Unchecked_Deallocation( byte_array, GL_Byte_Array_Access );
 pragma warnings( on );
 
 type byte_vertex_2d is new byte_array( 0..1 );
@@ -132,28 +145,36 @@ type uint_array is array( size_t range <> ) of aliased GLuint;
 pragma warnings( off );
 package GL_UInt_Array_Conv is new
      system.address_to_access_conversions( uint_array );
-     subtype GL_UInt_Array_Ptr is GL_UInt_Array_Conv.object_pointer;
+subtype GL_UInt_Array_Ptr is System.Address;
+subtype GL_UInt_Array_Access is GL_UInt_Array_Conv.object_pointer;
+procedure free is new Ada.Unchecked_Deallocation( uint_array, GL_UInt_Array_Access );
 pragma warnings( on );
 
 type ushort_array is array( size_t range <> ) of aliased GLushort;
 pragma warnings( off );
 package GL_UShort_Array_Conv is new
      system.address_to_access_conversions( ushort_array );
-     subtype GL_UShort_Array_Ptr is GL_UShort_Array_Conv.object_pointer;
+subtype GL_UShort_Array_Ptr is System.Address;
+subtype GL_UShort_Array_Access is GL_UShort_Array_Conv.object_pointer;
+procedure free is new Ada.Unchecked_Deallocation( ushort_array, GL_UShort_Array_Access );
 pragma warnings( on );
 
 type ubyte_array is array( size_t range <> ) of aliased GLubyte;
 pragma warnings( off );
 package GL_UByte_Array_Conv is new
      system.address_to_access_conversions( ubyte_array );
-     subtype GL_UByte_Array_Ptr is GL_UByte_Array_Conv.object_pointer;
+subtype GL_UByte_Array_Ptr is System.Address;
+subtype GL_UByte_Array_Access is GL_UByte_Array_Conv.object_pointer;
+procedure free is new Ada.Unchecked_Deallocation( ubyte_array, GL_UByte_Array_Access );
 pragma warnings( on );
 
 type bool_array is array( size_t range <> ) of aliased GLboolean;
 pragma warnings( off );
 package GL_Boolean_Array_Conv is new
      system.address_to_access_conversions( bool_array );
-     subtype GL_Boolean_Array_Ptr is GL_Boolean_Array_Conv.object_pointer;
+subtype GL_Boolean_Array_Ptr is System.Address;
+subtype GL_Boolean_Array_Access is GL_Boolean_Array_Conv.object_pointer;
+procedure free is new Ada.Unchecked_Deallocation( bool_array, GL_Boolean_Array_Access );
 pragma warnings( on );
 
 ------------------------------------------------------------------------------
@@ -1523,17 +1544,17 @@ procedure glMaterialf( face : GLbuffers; pname : GLlighting; param : GLfloat );
 procedure glMateriali( face : GLbuffers; pname : GLlighting; param : GLint );
 procedure glMaterialfv( face : GLbuffers; pname : GLlighting; param : GL_Float_Array_Ptr );
 procedure glMaterialiv( face : GLbuffers; pname : GLlighting; param : GL_Int_Array_Ptr );
-procedure glGetMaterialfv( face : GLbuffers; pname : GLlighting; param : in out GLfloat );
-procedure glGetMaterialiv( face : GLbuffers; pname : GLlighting; param : in out GLint );
+procedure glGetMaterialfv( face : GLbuffers; pname : GLlighting; param : GL_Float_Array_Ptr );
+procedure glGetMaterialiv( face : GLbuffers; pname : GLlighting; param : GL_Int_Array_Ptr );
 procedure glColorMaterial( face : GLbuffers; mode : GLlighting );
 procedure glPixelZoom( xfactor, yfactor : GLfloat );
 procedure glPixelStoref( pname : GLpixelmode; param : GLfloat );
 procedure glPixelStorei( pname : GLpixelmode; param : GLint );
 procedure glPixelTransferf( pname : GLpixelmode; param : GLfloat );
 procedure glPixelTransferi( pname : GLpixelmode; param : GLint );
-procedure glPixelMapfv( map : GLpixelmode; mapsize : GLsizei; values : in out GLfloat );
-procedure glPixelMapuiv( map : GLpixelmode; mapsize : GLsizei; values : in out GLuint );
-procedure glPixelMapusv( map : GLpixelmode; mapsize : GLsizei; values : in out GLushort );
+procedure glPixelMapfv( map : GLpixelmode; mapsize : GLsizei; values : GL_Float_Array_Ptr );
+procedure glPixelMapuiv( map : GLpixelmode; mapsize : GLsizei; values : GL_UInt_Array_Ptr );
+procedure glPixelMapusv( map : GLpixelmode; mapsize : GLsizei; values : GL_UShort_Array_Ptr );
 procedure glGetPixelMapfv( map : GLpixelmode; values : GL_Float_Array_Ptr );
 procedure glGetPixelMapuiv( map : GLpixelmode; values : GL_UInt_Array_Ptr );
 procedure glGetPixelMapusv( map : GLpixelmode; values : GL_UShort_Array_Ptr );
@@ -1551,23 +1572,23 @@ procedure glTexGeni( coord : GLtexturemapping; pname : GLtexturemapping; param :
 procedure glTexGendv( coord : GLtexturemapping; pname : GLtexturemapping; params : GL_Double_Array_Ptr );
 procedure glTexGenfv( coord : GLtexturemapping; pname : GLtexturemapping; params : GL_Float_Array_Ptr );
 procedure glTexGeniv( coord : GLtexturemapping; pname : GLtexturemapping; params : GL_Int_Array_Ptr );
-procedure glGetTexGendv( coord : GLtexturemapping; pname : GLtexturemapping; params : in out GLdouble );
-procedure glGetTexGenfv( coord : GLtexturemapping; pname : GLtexturemapping; params : in out GLfloat );
-procedure glGetTexGeniv( coord : GLtexturemapping; pname : GLtexturemapping; params : in out GLint );
+procedure glGetTexGendv( coord : GLtexturemapping; pname : GLtexturemapping; params : GL_Double_Array_Ptr );
+procedure glGetTexGenfv( coord : GLtexturemapping; pname : GLtexturemapping; params : GL_Float_Array_Ptr );
+procedure glGetTexGeniv( coord : GLtexturemapping; pname : GLtexturemapping; params : in out GL_Int_Array_Ptr );
 procedure glTexEnvf( target : GLtexturemapping; pname : GLtexturemapping; param : GLfloat );
 procedure glTexEnvi( target : GLtexturemapping; pname : GLtexturemapping; param : GLint );
 procedure glTexEnvfv( target : GLtexturemapping; pname : GLtexturemapping; param : GL_Float_Array_Ptr );
 procedure glTexEnviv( target : GLtexturemapping; pname : GLtexturemapping; param : GL_Int_Array_Ptr );
-procedure glGetTexEnvfv( target : GLtexturemapping; pname : GLtexturemapping; param : in out GLfloat );
-procedure glGetTexEnviv( target : GLtexturemapping; pname : GLtexturemapping; param : in out GLint );
+procedure glGetTexEnvfv( target : GLtexturemapping; pname : GLtexturemapping; param : GL_Float_Array_Ptr );
+procedure glGetTexEnviv( target : GLtexturemapping; pname : GLtexturemapping; param : GL_Int_Array_Ptr );
 procedure glTexParameterf( target : GLtexturemapping; pname : GLtexturemapping; param : GLfloat );
 procedure glTexParameteri( target : GLtexturemapping; pname : GLtexturemapping; param : GLint );
-procedure glTexParameterfv( target : GLtexturemapping; pname : GLtexturemapping; params : in out GLfloat );
-procedure glTexParameteriv( target : GLtexturemapping; pname : GLtexturemapping; params : in out GLint );
-procedure glGetTexParameterfv( target : GLtexturemapping; pname : GLtexturemapping; params : in out GLfloat );
-procedure glGetTexParameteriv( target : GLtexturemapping; pname : GLtexturemapping; params : in out GLint );
-procedure glGetTexLevelParameterfv( target : GLtexturemapping; level : GLint; pname : GLenum; params : in out GLfloat );
-procedure glGetTexLevelParameteriv( target : GLtexturemapping; level : GLint; pname : GLenum; params : in out GLint );
+procedure glTexParameterfv( target : GLtexturemapping; pname : GLtexturemapping; params : GL_Float_Array_Ptr );
+procedure glTexParameteriv( target : GLtexturemapping; pname : GLtexturemapping; params : GL_Int_Array_Ptr );
+procedure glGetTexParameterfv( target : GLtexturemapping; pname : GLtexturemapping; params : GL_Float_Array_Ptr );
+procedure glGetTexParameteriv( target : GLtexturemapping; pname : GLtexturemapping; params : GL_Int_Array_Ptr );
+procedure glGetTexLevelParameterfv( target : GLtexturemapping; level : GLint; pname : GLenum; params : GL_Float_Array_Ptr );
+procedure glGetTexLevelParameteriv( target : GLtexturemapping; level : GLint; pname : GLenum; params : GL_Int_Array_Ptr );
 procedure glTexImage1D( target : GLtexturemapping; level : GLint; internalFormat : GLint; width : GLsizei; border : GLint; format : GLbuffers; kind : GLtypes; pixels : System.address );
 procedure glTexImage2D( target : GLenum; level : GLint; internalFormat : GLint; width : GLsizei; height : GLsizei; border : GLint; format : GLenum; kind : GLenum; pixels : System.address );
 procedure glGetTexImage( target : GLtexturemapping; level : GLint; format : GLbuffers; kind : GLtypes; pixels : System.address );
@@ -1576,7 +1597,7 @@ procedure glDeleteTextures( n : GLsizei; textures : GL_UInt_Array_Ptr );
 procedure glBindTexture( target : GLtexturemapping; texture : GLuint );
 procedure glPrioritizeTextures( n : GLsizei; textures : GL_UInt_Array_Ptr; priorities : GL_Clampf_Array_Ptr );
 function  glAreTexturesResident( n : GLsizei; textures : GL_UInt_Array_Ptr; residences : GL_Boolean_Array_Ptr ) return GLboolean;
-function  glIsTexture( texture : GL_UInt_Array_Ptr ) return GLboolean;
+function  glIsTexture( texture : GLuint ) return GLboolean;
 procedure glTexSubImage1D( target : GLtexturemapping; level : GLint; xoffset : GLint; width : GLsizei; format : GLbuffers; kind : GLtypes; pixels : System.address );
 procedure glTexSubImage2D( target : GLtexturemapping; level : GLint; xoffset, yoffset : GLint; width, height : GLsizei; format : GLbuffers; kind : GLtypes; pixels : System.address );
 procedure glCopyTexImage1D( target : GLtexturemapping; level : GLint; internalformat : GLenum; x, y : GLint; width : GLsizei; border : GLint );
@@ -1640,8 +1661,8 @@ procedure glGetHistogramParameteriv( target : GLarbmapping; pname : GLarbmapping
 procedure glMinmax( target : GLarbmapping; internalformat : GLenum; sink : GLboolean );
 procedure glResetMinmax( target : GLarbmapping );
 procedure glGetMinmax( target : GLarbmapping; reset : GLboolean; format : GLbuffers; kind : GLtypes; values : System.address );
-procedure glGetMinmaxParameterfv( target : GLarbmapping; pname : GLarbmapping; params : in out GLfloat );
-procedure glGetMinmaxParameteriv( target : GLarbmapping; pname : GLarbmapping; params : in out GLint );
+procedure glGetMinmaxParameterfv( target : GLarbmapping; pname : GLarbmapping; params : GL_Float_Array_Ptr );
+procedure glGetMinmaxParameteriv( target : GLarbmapping; pname : GLarbmapping; params : GL_Int_Array_Ptr );
 procedure glConvolutionFilter1D( target : GLbuffers; internalformat : GLbuffers; width : GLsizei; format : GLbuffers; kind : GLtypes; image : System.address );
 procedure glConvolutionFilter2D( target : GLbuffers; internalformat : GLbuffers; width, height : GLsizei; format : GLbuffers; kind : GLtypes; image : System.address );
 procedure glConvolutionParameterf( target : GLarbmapping; pname : GLarbmapping; params : GLfloat );

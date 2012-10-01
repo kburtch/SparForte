@@ -7315,7 +7315,9 @@ begin
            if onlyAda95 then
               err( "use " & optional_bold( ":= true " ) & " with " & optional_bold( "pragma ada_95" ) );
            end if;
-           identifiers( startToken ).value := to_unbounded_string( "1" );
+           if isExecutingCommand then
+              identifiers( startToken ).value := to_unbounded_string( "1" );
+           end if;
            --if Token = symbol_t and to_string( identifiers( token ).value ) = ";" then
            --end if;
         else

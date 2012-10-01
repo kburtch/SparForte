@@ -106,9 +106,28 @@ The following software packages are required for SparForte:
   $ ln -s /usr/lib/libSDL_image-1.2.so.0.1.3 (or similar) /usr/lib/libSDL_image.so
   $ ldconfig
 
+  Example: FreeBSD
 
+  $ pkg_add -r gmake
+  $ pkg_add -r glocate
+  $ pkg_add -r gcc
+  $ pkg_add -r gnat
+  $ pkg_add -r sdl
+  $ pkg_add -r sdl_image
+  $ pkg_add -r mysql55-server
+  $ pkg_add -r postgresql91-server
+  $ gupdatedb
+  $ sh configure
+  $ make
 
 INSTALLATION
+
+SparForte has a language test suite to verify builds and the sample
+programs are validated before a release.  While we try to build SparForte on
+a variety of platforms, we cannot guarantee that the source code will build
+successfully on every platform nor can we guarantee that third paries will
+not introduce changes that will break build dependencies.  Please report
+any issues you find.
 
 The latest version of SparForte is always located at the PegaSoft web site,
 http://www.pegasoft.ca.

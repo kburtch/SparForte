@@ -263,7 +263,6 @@ What will you do? *
     <b>when</b> serpent =&gt;
          creature_description := "Something lurks in the shadows.";
          creature_name := "giant serpent";
-         creature_evade := "It dodges you attack.";
          creature_evade := "It slithers away.";
          creature_attack1 := "It coils around you and squeezes!";
          creature_damage1 := 5;
@@ -536,6 +535,7 @@ What will you do? *
                     put_line( "for help!  A strong hero is required!  What will you do?" );
                     put_line( "1) Check it out    2) Keep going" );
                     ch := inkey;
+                    put_line( ch );
                     <b>if</b> ch /= "1" <b>then</b>
                        put_line( "Fine, you gutless swine." );
                     <b>else</b>
@@ -613,7 +613,10 @@ What will you do? *
                    put_line( "*** Your spear seems weaker." );
                 <b>end</b> <b>if</b>;
                 <b>if</b> has_item( staff ) <b>then</b>
-                   staff_charge := integer(numerics.rnd(5)-numerics.rnd(positive(staff_charge)));
+                   <b>if</b> staff_charge &gt; 0 <b>then</b>
+                      staff_charge := integer(numerics.rnd(positive(staff_charge)));
+                   <b>end</b> <b>if</b>;
+                   staff_charge := integer(numerics.rnd(5))-staff_charge;
                    put_line( "*** Your staff glows faintly." );
                 <b>end</b> <b>if</b>;
              <b>when</b> 3 =&gt;

@@ -18,7 +18,7 @@ package WC.Tree_Nodes is
 
    type Traversal_Type is ( Depth_First );
    type Tree_Context_Type is private;
-   type Tree_Type(Free_Proc : Free_Item := null) is limited private;
+   type Tree_Type(Free_Proc : Free_Item) is limited private;
    type Tree_Type_Ptr is access all Tree_Type;
 
    type Trav_Proc is access procedure(Item : in out Item_Type; Level : Natural);
@@ -100,7 +100,7 @@ private
    --------------------------------------------------
    -- The Tree Type :
    --------------------------------------------------
-   type Tree_Type(Free_Proc : Free_Item := null) is new controlled with
+   type Tree_Type(Free_Proc : Free_Item) is new controlled with
       record
          Root :       Tree_Node_Ptr := null;      -- The root node of the tree
       end record;
