@@ -61,7 +61,7 @@ type anInputMode is ( interactive, breakout, fromScriptFile );
 -- interactive - user is typing commands from the prompt
 -- fromScriptFile - commands are executing from a script file
 
-type identifier is new integer range 1..2750;
+type identifier is new integer range 1..30_000; -- 1..2750;
 -- identifiers are identified by a unique number.  The upper bound indicates
 -- the number of identifiers that can be declared.
 

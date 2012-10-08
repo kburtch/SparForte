@@ -2104,20 +2104,37 @@ begin
                     term := null_unbounded_string;
                  end;
              elsif operator = "/" then
+                declare
+                  t : long_float;
+                  p : long_float;
+                  z : long_float := 0.0;
                 begin
                   if isExecutingCommand then
-                     term := castToType(
-                        to_numeric( term ) /
-                        to_numeric( pterm2 ),
-                     term_type );
+                     -- GCC Ada 4.7.1 doesn't catch divide by zero (returns
+                     -- infinity for the following division:
+                     -- term := castToType(
+                     --   to_numeric( term ) /
+                     --   to_numeric( pterm2 ),
+                     --term_type );
+                     -- As a kludge, we'll break up this function call into
+                     -- its parts and explicitly test for division by zero.
+                     -- this could likely be improved.
+                     t := to_numeric( term );
+                     p := to_numeric( pterm2 );
+                     if p = 0.0 then
+                        err( "division by zero" );
+                     else
+                        z := t / p;
+                        term := castToType( z, term_type );
+                     end if;
                   end if;
-                 exception when program_error =>
-                    err( "program_error exception raised" );
-                    term := null_unbounded_string;
-                 when others =>
-                    err( "exception raised" );
-                    term := null_unbounded_string;
-                 end;
+                exception when program_error =>
+                   err( "program_error exception raised" );
+                   term := null_unbounded_string;
+                when others =>
+                   err( "exception raised" );
+                   term := null_unbounded_string;
+                end;
              elsif operator = "mod" then
                 begin
                   if isExecutingCommand then

@@ -58,7 +58,7 @@ type GLclampf is new float;            -- typedef float           GLclampf;
                                        --   /* single precision float in [0,1] */
 subtype GLdouble is double;            -- typedef double          GLdouble;
                                        --   /* double precision float */
-type GLclampd is new double;           -- typedef double          GLclampd; 
+type GLclampd is new double;           -- typedef double          GLclampd;
 
 ------------------------------------------------------------------------------
 -- C arrays and their Pointers
@@ -1520,7 +1520,7 @@ procedure glRectiv( v1, v2 : GL_Int_Array_Ptr );
 procedure glRectsv( v1, v2 : GL_Short_Array_Ptr );
 procedure glVertexPointer( size : GLint; kind : GLtypes; stride : GLsizei; ptr : System.address );
 procedure glNormalPointer( kind : GLtypes; stride : GLsizei; ptr : System.address );
-procedure glColorPointer( size : GLint; kind : GLtypes; stride : GLsizei; ptr : System.address ); 
+procedure glColorPointer( size : GLint; kind : GLtypes; stride : GLsizei; ptr : System.address );
 procedure glIndexPointer( kind : GLtypes; stride : GLsizei; ptr : System.address );
 procedure glTexCoordPointer( size : GLint; kind : GLtypes; stride : GLsizei; ptr : System.address );
 procedure glEdgeFlagPointer( stride : GLsizei; ptr : System.address );
