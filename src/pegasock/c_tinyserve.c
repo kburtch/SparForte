@@ -414,7 +414,13 @@ void abortClient( SocketData *socket_data, int socket_client ) {
   so_linger.l_onoff = 1;
   so_linger.l_linger = 0;
   z = setsockopt( socket_client, SOL_SOCKET, SO_LINGER, &so_linger, sizeof( so_linger ) );
-  if ( z ) printf( "setsockopt( linger ) failed - %d\n", errno );
+  if ( z ) {
+     if (errno == EBADF ) {
+        printf( "setsockopt( linger ) failed - bad socket or socket already closed?\n" );
+     } else {
+        printf( "setsockopt( linger ) failed - %d\n", errno );
+     }
+  }
   closeClient( socket_data, socket_client );
 } // abort_client
 
@@ -431,36 +437,80 @@ void shutdown_server( SocketData *socket_data ) {
              shutdown( c, SHUT_RDWR );
              close( c );
           }
-          abortClient( socket_data, c );
+          //abortClient( socket_data, c );
       }
   }
+  // close the listener socket
+  close( socket_data->socket_listener );
+  // free the server description
   free( socket_data );
   socket_data = NULL;
 } // shutdown_server
 
 
-// GET CLIENT MESSAGE
+//  GET CLIENT MESSAGE
+//
+// Receive a string from the client.  If a socket is closed, an empty string
+// is returned.
+// Note: if buffer becomes full, there will be no \0 at the end.
+// --------------------------------------------------------------------------
 
 void get_client_message( int socket_client ) {
-  int bytes = 0;
+  int bytes_read = 0;
 
+  // clear the Ada error code
   socket_error = 0;
-  bytes = recv( socket_client, socket_buffer, SOCKET_BUFFER_MAX+1, 0 );
-  if ( bytes <= SOCKET_BUFFER_MAX ) {
-     socket_buffer[bytes] = '\0';
+
+retry:
+  bytes_read = recv( socket_client, socket_buffer, SOCKET_BUFFER_MAX+1, 0 );
+  if ( bytes_read < 0 ) {
+     // handle errors.  If EINTR, retrun so that, as much as possible, the
+     // data is read.  Other errors, set the Ada error code.
+     if ( errno == EINTR ) goto retry;
+     socket_error = errno;
+     socket_buffer[0] = '\0';                 // no message
+  } else if ( bytes_read < SOCKET_BUFFER_MAX ) {
+     // mark end of string but only if buffer is not completely full
+     socket_buffer[bytes_read] = '\0';
   }
 
 } // get_client_message
 
 
-// SEND CLIENT MESSAGE
+//  SEND CLIENT MESSAGE
+//
+// Transmit a string to the client. chars must not be zero or an infinite loop
+// may occur.
+// This could be more efficient if control was returned to Ada on errors or
+// partial writes.
+// --------------------------------------------------------------------------
 
 void send_client_message( int socket_client, int chars ) {
-  int bytes = 0;
+  int bytes_sent = 0;
+  int bytes_left = chars;
+  char *buffer   = socket_buffer;
 
+  // clear the Ada error code
   socket_error = 0;
-  bytes = send( socket_client, socket_buffer, chars, 0 );
-  // should really loop to send more bytes...
+
+retry:
+  // MSG_NOSIGNAL suppresses the broken pipe signal but an error is still
+  // returned
+  bytes_sent = send( socket_client, buffer, chars, MSG_NOSIGNAL );
+
+  if ( bytes_sent < 0 ) {
+     // handle errors.  If EINTR, retrun so that, as much as possible, the
+     // data is sent.  Other errors, set the Ada error code.
+     if ( errno == EINTR ) goto retry;
+     socket_error = errno;
+  } else if ( bytes_left - bytes_sent > 0 ) {
+    // if there is more to send, repeat for remainder.  move the buffer ptr
+    // forward and decrease the send count
+    buffer += bytes_sent;
+    bytes_left -= bytes_sent;
+    goto retry;
+  }
+
 
 } // send_client_message
 
