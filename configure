@@ -70,6 +70,7 @@ while [ $# -gt 0 ] ; do
  --libexecdir) echo "--libexecdir not used" ;;
  --localstatedir) echo "--localdatedir not used" ;;
  --sharedstatedir) echo "--sharedstatedir not used" ;;
+ --disable-dependency-tracking) echo "--disable-dependency-tracking not used" ;;
  --mandir) 
       MANPREFIX=`echo "$1" | cut -d= -f2`
       ;;
@@ -135,13 +136,12 @@ echo "yes"
 echo -n "checking for architecture (\$ARCH)... "
 if [ -z "$ARCH" ] ; then
    echo "no"
-   echo -n "checking for architecture (uname -p)... "
+   echo -n "checking for architecture (uname -p and -m)... "
    ARCH=`uname -p 2>/dev/null`
    if [ $? -ne 0 ] ; then   # Cygwin runs but says unknown
       ARCH="unknown"
    fi
    if [ "$ARCH" = "unknown" ] ; then
-
       ARCH=`uname -m 2>/dev/null`
       if [ $? -ne 0 ] ; then
          echo "failed"
@@ -173,7 +173,20 @@ else
    CPU_ARCH="$ARCH"
 fi
 CPU_FLAG="-march"
-if [ "$OS" = "Linux" -a "$CPU_ARCH" = "i386" ] ; then
+if [ "$OS" = "Linux" -a "$CPU_ARCH" = "armv6l" ] ; then
+   echo -n "ARM / Raspberry Pi"
+   if test -r bush_os.ads ; then
+      echo " (cached, make distclean to remove)";
+   else
+      echo
+      # The standard linux file works with the Pi
+      cp bush_linux.ads bush_os.ads
+      if [ $? -ne 0 ] ; then
+         echo "Unable to find appropriate bush_os source files"
+         exit 1
+      fi
+   fi
+elif [ "$OS" = "Linux" -a "$CPU_ARCH" = "i386" ] ; then
    echo -n "Linux/Intel/AMD"
    if test -r bush_os.ads ; then
       echo " (cached, make distclean to remove)";
@@ -497,17 +510,17 @@ TMP=`(exec $SDL_CONFIG --version 2>/dev/null)`
 if [ -z "$TMP" ] ; then
    # Cannot find SDL_config?  Use these defaults for makefile sed...
    if [ "$OS" = "FreeBSD" ] ; then
-      SDLLIBSTYPE="-L\/usr\/local\/lib -lSDL-1.1\ -lSDL_image -lpthread -lGL -lGLU"
+      SDLLIBSTYPE="-L\/usr\/local\/lib -lSDL-1.1\ -lSDL_image -lpthread"
       SDLINCLTYPE="-I\/usr\/local\/include\/SDL11"
    else
-      SDLLIBSTYPE="-l\ SDL\ -l\ SDL_image -lGL -lGLU"
+      SDLLIBSTYPE="-l\ SDL\ -l\ SDL_image"
       SDLINCLTYPE="-I\/usr\/include\/SDL"
    fi
    echo "no"
 else
    # Remove -D_REENTRANT (not recognized by GCC Ada) and escape special
    # sed characters (space and slash)
-   SDLLIBSTYPE=`$SDL_CONFIG --libs`" -lSDL_image -lGL -lGLU"
+   SDLLIBSTYPE=`$SDL_CONFIG --libs`" -lSDL_image"
    SDLLIBSTYPE=`echo "$SDLLIBSTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
    SDLINCLTYPE=`$SDL_CONFIG --cflags | sed "s/\ -D_REENTRANT//g"`
    SDLINCLTYPE=`echo "$SDLINCLTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
