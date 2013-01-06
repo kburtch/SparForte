@@ -90,10 +90,10 @@ all: c_os.o c_scanner.o
 	@echo
 
 c_os.o:	c_os.c
-	$(CC) $(CFLAGS) $(INCLUDE) -Wall -c c_os.c
+	$(CC) $(CFLAGS) $(INCLUDE) --finline-functions -Wall -c c_os.c
 
 c_scanner.o: c_scanner.c
-	        $(CC) $(CFLAGS) $(INCLUDE) $(SDLINCL) -c c_scanner.c
+	$(CC) $(CFLAGS) $(INCLUDE) --finline-functions  $(SDLINCL) -c c_scanner.c
 
 #apq-2.1/Makeincl:
 #	@echo "---------------------------------------------------------------"
@@ -179,7 +179,7 @@ srctar: distclean
 	chmod 440 bush_hp.adb
 	chmod 440 bush_os-sdl-32bit.ads
 	chmod 440 bush_os-sdl-64bit.ads
-	(cd ..;  tar cfvz spar.tgz *; cd src)
+	(cd ..;  GZIP="-n" tar cfvz spar.tgz *; cd src)
 	@echo "Don't forget to unpack and repack under a descriptive directory"
 
 rpm:	all
@@ -187,7 +187,7 @@ rpm:	all
 bintar: c_os.o all
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali ${ADAVOXLIBS} c_os.o c_scanner.o $(LIBS)
-	(cd ..; rm -f spar.tgz; tar cfvz spar.tgz src/spar src/spar.1 README COPYING INSTALL examples doc GNUmakefile sparforte_icon.xpm; rm -f spar )
+	(cd ..; rm -f spar.tgz; GZIP="-n" tar cfvz spar.tgz src/spar src/spar.1 README COPYING INSTALL examples doc GNUmakefile sparforte_icon.xpm; rm -f spar )
 	@echo "Don't forget to unpack and repack under a descriptive directory"
 
 install:

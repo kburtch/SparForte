@@ -27,3 +27,7 @@ throw an exception on a number instead of a string as the first parameter.
 8. Fix: boolean shortcut no longer runs on lines that are not executing
 [check].
 
+9. Fix: Kudge for division by zero bug found in GCC Ada 4.7.1.  Dividing by zero now throws an exception again.
+
+10. New: Raspberry Pi / ARM6l support in configure script.
+

@@ -10,7 +10,7 @@ Version:	%{version}
 Release:	%{release}
 Summary:	SparForte programming language
 Group:		Development/Languages/Other
-License:	GPL
+License:	GPL-2.0+
 Url:		http://www.pegasoft.ca/sparforte.html
 Source:		http://www.pegasoft.ca/downloads/%{name}-%{version}.tar.gz
 BuildRoot:      %{buildroot}
@@ -27,7 +27,7 @@ project website
 %setup -q
 
 %build
-%configure
+%configure --without-postgres
 make max
 strip src/spar
 

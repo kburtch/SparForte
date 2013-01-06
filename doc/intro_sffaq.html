@@ -40,7 +40,7 @@
 	<!-- Content Area -->
 	<h2>Frequently Asked Questions</h2>
 
-<p>This section contains answers to frequently asked questions on SparForte.</p>
+<p>This section contains answers to frequently asked questions on Sparforte.</p>
 
 <p>See also: Git-Hub Wiki at
 <a href="https://github.com/kburtch/SparForte/wiki">https://github.com/kburtch/SparForte/wiki</a>.</p>
@@ -113,26 +113,26 @@ package names but may not be identical.</li>
 
 <p>This is an advanced protoptype for upcoming features.  The prototype
 is prerelease and unstable: it may not compile or function.  It is
-intended for use by SparForte developers.  Periodic snapshots are put
-on the SparForte home page.</p>
+intended for use by Sparforte developers.  Periodic snapshots are put
+on the Sparforte home page.</p>
 
-<h4>Is SparForte a "cloud" language or an "agile" language?  Is there a
+<h4>Is Sparforte a "cloud" language or an "agile" language?  Is there a
 single thing it excells at?  What is it's "killer app"?</h4>
 
-<p>SparForte is designed to improve speed and quality in development over
+<p>Sparforte is designed to improve speed and quality in development over
 rival tools while managing the SDLC, scaling and code aging better.  These, of
 course, are not things that will excite your coworkers or management.
 These are general things that impact many aspects of development.  I'm not
-a marketer and I don't have trendy buzzwords word attach to SparForte.</p>
+a marketer and I don't have trendy buzzwords word attach to Sparforte.</p>
 
-<h3>Using SparForte</h3>
+<h3>Using Sparforte</h3>
 
 <h4>How Do I Use Vim with Sparforte?</h4>
 
 <p>Even with many popular IDE's available, vi continues to be the most
 commonly used editor for writing programs on Linux/UNIX systems.</p>
 
-<p>The SparForte download page has a file called "spar.vim".  If you have
+<p>The Sparforte download page has a file called "spar.vim".  If you have
 access to the vim syntax folder (usually /usr/share/vim/.../syntax),
 you can copy this file to that folder.
 
@@ -163,8 +163,8 @@ program like this:</p>
 -- vim: ft=spar
 </pre>
 
-<p><img src="pictures/spar_on_vim.png" width="616" height="433" alt="[Screenshot of SparForte script on vim]"><br>
-<b>Screenshot</b>: camel.sp script in Vim 7.3 using SparForte mode</p>
+<p><img src="pictures/spar_on_vim.png" width="616" height="433" alt="[Screenshot of Sparforte script on vim]"><br>
+<b>Screenshot</b>: camel.sp script in Vim 7.3 using Sparforte mode</p>
 
 <h4>How Do I Use kdevelop with Sparforte?</h4>
 
@@ -172,7 +172,7 @@ program like this:</p>
 highlighting and other features you are looking for.  This is located
 under Editor / Tools / Highlighting / Source menu.</p>
 
-<p><img src="pictures/spar_on_kdevelop.png" width="724" height="500" alt="[Screenshot of SparForte script on kdevelop]"><br>
+<p><img src="pictures/spar_on_kdevelop.png" width="724" height="500" alt="[Screenshot of Sparforte script on kdevelop]"><br>
 <b>Screenshot</b>: camel.sp script in KDevelop 4.2 using Ada mode</p>
 
 <h4>How Do I Use Eclipse with Sparforte?</h4>
@@ -180,7 +180,7 @@ under Editor / Tools / Highlighting / Source menu.</p>
 <p>Eclipse has support for Ada (though I've never tried it).  There is
 a AdaCore's GNATBench plug-in for GCC Ada, AonixADT for the Aonix Ada
 compiler, and an Ada Developer Tools project.  There may be others.  See
-if you can configure one of these plug-ins to recognize SparForte scripts
+if you can configure one of these plug-ins to recognize Sparforte scripts
 as Ada.  This may give you 90% of the hilighting and other features you are
 looking for.</p>
 
@@ -188,7 +188,7 @@ looking for.</p>
 
 <p>NetBeans has support for Ada (though I've never tried it).  There is
 an Ada Plug-in.  See if you can configure the plug-in to recognize
-SparForte scripts as Ada.  This may give you 90% of the hilighting and
+Sparforte scripts as Ada.  This may give you 90% of the hilighting and
 other features you are looking for.</p>
 
 <h4>Why are the documentation colours wrong in Firefox on Linux?</h4>
@@ -209,9 +209,9 @@ yourself out when exiting several shells quickly using Control-D.</p>
 <p>Follow the instructions in the INSTALL text file included with
 your download.</p>
 
-<h4>Are there any Linux distributions that carry SparForte?</h4>
+<h4>Are there any Linux distributions that carry Sparforte?</h4>
 
-<p>At the last time I checked, SparForte is available on ArchLinux.</p>
+<p>At the last time I checked, Sparforte is available on ArchLinux.</p>
 
 <h4>How Do I Report a Sparforte Bug?</h4>
 
@@ -222,14 +222,14 @@ documentation.</p>
 
 <h4>Why do I get an error when I run commands in backquotes?</h4>
 
-<p>SparForte requires all commands to be terminated with a semi-colon.  This
+<p>Sparforte requires all commands to be terminated with a semi-colon.  This
 includes commands in backquotes.  For example,</p>
 
 <p><tt>files : string := `ls;`;</tt></p>
 
 <h4>Why do I get an error when I run a command with a long option on the command prompt?</h4>
 
-<p>In a command like "ls --help", SparForte appends a semi-colon before
+<p>In a command like "ls --help", Sparforte appends a semi-colon before
 running the command.  But "--" is the comment symbol and the semi-colon
 is hidden as part of the comment, producing a "shell word or semi-colon
 expected" or "End of File" error.  The solution is to escape the
@@ -303,7 +303,7 @@ section.</p>
 statement.  It can still be used in paramters.  Typically a limited
 type is used to protect against "shallow copying" of data structures.
 Although Sparforte has no pointers and thus no shallow copying issues,
-some times are treated as limited
+some types are treated as limited
 for compatibility with GCC Ada. An example is the
 <tt>file_type</tt> type.</p>
 
@@ -338,7 +338,7 @@ reference section.</p>
 
 <h4>How do I write a shell command over multiple lines?</h4>
 
-<p>SparForte supports shell commands over multiple lines.  You do not use
+<p>Sparforte supports shell commands over multiple lines.  You do not use
 a backslash at the end of a line as in a Bourne Shell.  For example,
 these commands are the same:</p>
 
@@ -365,33 +365,33 @@ is a common trick on web servers to move /tmp to a ramdisk.</p>
 
 <h4>Why can I only import and export string variables?</h4>
 
-<p>Variables in SparForte may be of many different types and
+<p>Variables in Sparforte may be of many different types and
 the values are represented in ways specific to the language.
 When Ken designed pragma import/export, strings were believed
 to be the most fundamental way of transferring information
-between SparForte and other languages.  In addition,
+between Sparforte and other languages.  In addition,
 environment variables are actually strings.</p>
 
 <p>However, passing a numeric variable through import and
-export between SparForte scripts means converting the variable
+export between Sparforte scripts means converting the variable
 to/from a string, which is inconvenient.  It is possible that
 the importing/exporting other types of variables will be done in the
 future.</p>
 
-<h4>Can you do Continuous Integration with SparForte?</h4>
+<h4>Can you do Continuous Integration with Sparforte?</h4>
 
 <p>CI is a technique were tests are automatically run on a regular basis to
 detect errors as quickly as possible.  This requires a set of test programs
 that can perform tests without human intervention.  Most CI frameworks
 will run a shell command or script to start the tests.  As long as you can
 create a start script and a set of test programs, you can use CI with
-SparForte.</p>
+Sparforte.</p>
 
-<p>SparForte includes a test mode that can run unit tests and report on
+<p>Sparforte includes a test mode that can run unit tests and report on
 the success of the tests.  The tests can be embedded in the source
 code.</p>
 
-<p>You can get a rough idea of test coverage by running SparForte with
+<p>You can get a rough idea of test coverage by running Sparforte with
 the trace feature turned on.  This displays the lines the language reads,
 not the lines it executes, but it will give you and idea a script is
 doing during a test.</p>
@@ -404,7 +404,7 @@ to run a program.</p>
 
 <p>Business Shell 2.0 had a "libbush" that could be called to run
 scripts from C.  Expect this feature to be backported eventually
-into SparForte 1.x.</p>
+into Sparforte 1.x.</p>
 
 <h4>Is there something like "use" or "static with" so I can use "length" instead of "strings.length"?</h4>
 
@@ -412,9 +412,9 @@ into SparForte 1.x.</p>
 
 <h3>Design Questions</h3>
 
-<h4>Is SparForte a real shell?</h4>
+<h4>Is Sparforte a real shell?</h4>
 
-<p>Yes.  SparForte implements its command line features natively.  It is not
+<p>Yes.  Sparforte implements its command line features natively.  It is not
 a preprocessor for another shell.</p>
 
 <h4>Isn't Sparforte just another "my favourite language" shell?</h4>
@@ -443,7 +443,7 @@ could mean different things.  See my article on The Lone Coder site on the
 myth of agile languages, "What is an Agile Language?".</p>
 
 <h4>Many popular languages are "mash-ups" of other languages.  Isn't
-SparForte just another example?</h4>
+Sparforte just another example?</h4>
 
 <p>The Bourne shell features in AdaScript are a compatibility layer
 provided for command line and scripting convenience.  It is a
@@ -459,13 +459,13 @@ of "mode errors" (right command typed in the wrong interpeter or
 <p>There is no strict definition of an enterprise language.  However, if you
 consider "enterprise" to mean large applications with code reuse and features
 such as strong typing to support quality programming, then you could consider
-SparForte an enterprise language.</p>
+Sparforte an enterprise language.</p>
 
 <h4>Is AdaScript a cloud language?</h4>
 
 <p>There is no strict definition of an cloud language.  However, if you
 consider "cloud" to mean to ability to create networked applications and to
-access shared services like memcached, then you could consider SparForte to
+access shared services like memcached, then you could consider Sparforte to
 be a cloud language.</p>
 
 <h4>Can strong typing be used successfully in a shell?</h4>
@@ -527,7 +527,7 @@ believe that goto statements can improve performance as a result.</p>
 
 <p>The goto statement may be implemented in the future.</p>
 
-<h4>Is SparForte innovative?</h4>
+<h4>Is Sparforte innovative?</h4>
 
 <p>For many years Ken has had many ideas for programming languages.  Some have
 started appearing in popular languages.  Some have not.</p>
@@ -540,11 +540,11 @@ that other languages may find difficult.</p>
 
 <h4>Won't big project features slow development of small nimble project?</h4>
 
-<p>While reducing keystrokes is not a goal of SparForte, it does have
+<p>While reducing keystrokes is not a goal of Sparforte, it does have
 several convenience features for the command prompt.  However, outside of
 the command prompt, the number of keystokes has little to do with the
 speed of project development.  Projects are dominated by reading,
-debugging, maintenance, etc. and these are managed by SparForte's
+debugging, maintenance, etc. and these are managed by Sparforte's
 design.</p>
 
 <h4>Why target code reading, debugging and maintenance?  A programming
@@ -558,7 +558,7 @@ a measurable impact on these tasks.</p>
 
 <p>This is a false dichotomy.  A language doesn't have to be completely
 general or completely incompatible with another language.  Part of
-SparForte's design uses domain-specific features, aspects of the
+Sparforte's design uses domain-specific features, aspects of the
 language that target specific environments such as the command prompt.
 These features may be disallowed outside of their intended
 environment.</p>
@@ -571,7 +571,7 @@ If shells standardized the if statement, it wouldn't mean that the
 shell was less effective at doing "shell stuff".</p>
 
 <h4>Doesn't a web framework like Rails make a bigger difference than
-SparForte?</h4>
+Sparforte?</h4>
 
 <p>Web frameworks only work while you use them the way the designers
 intended.  If you try to add advanced features, you end up working
@@ -588,49 +588,49 @@ language doesn't have a significant impact on the product.  Fred Brooks'
 impact on a project.</p>
 
 <p>Most programming languages focus on the initial implementation phase
-of a project, which is a small percentage of a developer's time.  SparForte
-(and Ada, the language SparForte is modelled on) includes features
+of a project, which is a small percentage of a developer's time.  Sparforte
+(and Ada, the language Sparforte is modelled on) includes features
 that improve other stages of software building and facilliate team communication.
 Ada has been shown in large studies to have productivity improvements as much as
-double other programming languages.  Expect SparForte to address more of these
+double other programming languages.  Expect Sparforte to address more of these
 kind of time-consuming issues that other languages neglect.</p>
 
-<h4>How fast is SparForte?</h4>
+<h4>How fast is Sparforte?</h4>
 
-<p>SparForte programs will likely run slower than other languages you are
+<p>Sparforte programs will likely run slower than other languages you are
 used to.  There are several reasons for this.</p>
 
-<p>First, SparForte version 1.x is focused on implementing core features,
+<p>First, Sparforte version 1.x is focused on implementing core features,
 not on optimizing performance.  Some features are not optmized for speed.
 Arrays, for example, are very slow compared to other languages.</p>
 
-<p>Second, SparForte is built with the maximum error checking possible.
+<p>Second, Sparforte is built with the maximum error checking possible.
 This included checks done by GCC Ada (which does more compile time and run
-time checking compared to most langauges), as well as SparForte's own
+time checking compared to most langauges), as well as Sparforte's own
 extensive error checking.</p>
 
 <p>Third, it is has more powerful features than other languages, and these
 features may require more setup to use.  As a general rule, the simpler
-the language, the faster the interpreter will run.  SparForte is more
+the language, the faster the interpreter will run.  Sparforte is more
 high level than many languages.</p>
 
 <p>These things mean that your scripts will probably run slower.  For example,
-SparForte takes around twice as long as PHP 5.3 to initialize prior to running
+Sparforte takes around twice as long as PHP 5.3 to initialize prior to running
 a program.  A simple test of a palindrome checker took about twice as long as
 PHP to run.</p>
 
 <p>When evaluating performance, consider the trade-offs for loss of
-execution speed compared to SparForte's other benefits.</p>
+execution speed compared to Sparforte's other benefits.</p>
 
 <p>Expect performance improvements as the language continues to evolve.</p>
 
-<h4>What do you see as the biggest barriers to adopting SparForte?</h4>
+<h4>What do you see as the biggest barriers to adopting Sparforte?</h4>
 
-<p>SparForte is designed to save time and money: most businesses don't
-know how to evaluate the risk of trying SparForte with the money and
+<p>Sparforte is designed to save time and money: most businesses don't
+know how to evaluate the risk of trying Sparforte with the money and
 time they will save.  Most programmers are concerned about immediate
 gratification, performance and what language will help them get their
-next job: SparForte does not deliver these things.  Most architects
+next job: Sparforte does not deliver these things.  Most architects
 are afraid of trying something new because it could damage their
 reputation: as the expression goes, no one got fired for recommending
 the status quo.</p>
