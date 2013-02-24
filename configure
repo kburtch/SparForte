@@ -154,7 +154,6 @@ if [ -z "$ARCH" ] ; then
 fi
 echo "yes"
 echo -n "making for... "
-
 # A rose by any other name...any AMD/Intel x86 is a 386 for testing purposes
 if [ "$ARCH" = "i486" ] ; then
    CPU_ARCH="i386"
@@ -173,8 +172,13 @@ else
    CPU_ARCH="$ARCH"
 fi
 CPU_FLAG="-march"
+# Determine the correct OS binding to use and the correct -march
+# compiler flag.  Newer versions of Linux
+# support -march=native but this is not yet supported on the Raspberry
+# Pi.  Apparently there are several different Debian flavours for the
+# Pi.  I've only tested it on the one using armv6l.
 if [ "$OS" = "Linux" -a "$CPU_ARCH" = "armv6l" ] ; then
-   echo -n "ARM / Raspberry Pi"
+   echo -n "Raspberry Pi / ARM 6L"
    if test -r bush_os.ads ; then
       echo " (cached, make distclean to remove)";
    else
@@ -186,6 +190,7 @@ if [ "$OS" = "Linux" -a "$CPU_ARCH" = "armv6l" ] ; then
          exit 1
       fi
    fi
+   ARCH="armv6" # workaround: ARM 6L is not an option
 elif [ "$OS" = "Linux" -a "$CPU_ARCH" = "i386" ] ; then
    echo -n "Linux/Intel/AMD"
    if test -r bush_os.ads ; then
