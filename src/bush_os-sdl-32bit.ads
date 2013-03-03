@@ -104,7 +104,7 @@ type SDL_Rect is record
      w, h : Uint16;
 end record;
 pragma pack( SDL_Rect );
- 
+
 package SDL_Rect_Conv is new
      system.address_to_access_conversions( SDL_Rect );
 subtype SDL_Rect_Ptr is SDL_Rect_Conv.object_pointer;
@@ -381,7 +381,7 @@ pragma import( C, SDL_SetColorKey, "SDL_SetColorKey" );
 
 function SDL_SetAlpha( surface : System.Address; flag : SDL_Surface_Flag; alpha : SDL_RGB_Component ) return SDL_Success;
 pragma import( C, SDL_SetAlpha, "SDL_SetAlpha" );
-                                                                                
+
 --procedure SDL_SetClipRect( res : out SDL_Bool; surface : System.Address; rect : in out SDL_Rect );
 procedure SDL_SetClipRect( surface : System.Address; rect : in out SDL_Rect );
 pragma import( C, SDL_SetClipRect, "SDL_SetClipRect" );
@@ -612,7 +612,7 @@ pragma import( C, SDL_EXT_plot, "SDL_EXT_plot" );    -- in c_os.c
 -- be locked.
 -----------------------------------------------------------------------------
 
-function SDL_EXT_Raw_Pixel( 
+function SDL_EXT_Raw_Pixel(
    screen,                                           -- source SDL surface
    target : in system.address;                       -- target (for format)
    x : SDL_HCoordinate;                              -- horizontal
@@ -639,7 +639,7 @@ procedure SDL_EXT_Plot_Pattern( screen : in system.address;
 -- clipping.  Surface must be locked.
 -----------------------------------------------------------------------------
 
-procedure SDL_EXT_Pixel( 
+procedure SDL_EXT_Pixel(
    screen : in system.address;                       -- target SDL surface
    x      : SDL_HCoordinate;                         -- horizontal
    y      : SDL_VCoordinate;                         -- vertical
