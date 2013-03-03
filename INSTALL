@@ -203,6 +203,11 @@ By default, SparForte will install under /usr/local.
    Use GNU make to build SparForte.  Linux users can just type "make" or "make all".
    If GNU make is not your native make (e.g. FreeBSD), use "gmake".
 
+   On Raspberry Pi/Linux, you may need to increase your swap space in order to
+   build SparForte successfully.  You can do this by (1) creating an empty
+   file with "dd"; (2) "mkswap" to configure it as swap space; (3) "swapon"
+   to activate it.  You can check your swap space with "free".
+
    If you see "ld: cannot find -lx" where x is a library name:
 
    This means the linker cannot find a library file (usually libx.so where

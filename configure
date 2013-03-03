@@ -21,16 +21,23 @@ while [ $# -gt 0 ] ; do
   fi
   case "$TMP" in
   -h|--help)
-      echo "--arch=ARCH"
-      echo "--make=MAKE"
-      echo "--prefix=PREFIX"
-      echo "--manprefix=MANPREFIX"
-      echo "--without-mysql"
-      echo "--without-postgres"
-#      echo "--without-sdl"
-      echo "--without-sound"
+      echo "SparForte configuration script"
       echo
-      echo "Read INSTALL for complete information"
+      echo "Additional options:"
+      echo "  --arch=ARCH           hardware architecture"
+      echo "                        Examples: alpha, armv6l (Pi), athlon, i386"
+      echo "                        (base Intel 32-bit), x86_64 (base Intel"
+      echo "                        64-bit), core2, corei7, nocona, etc."
+      echo "  --make=MAKE           name of GNU make"
+      echo "  --prefix=PREFIX       root installation directory"
+      echo "  --manprefix=MANPREFIX man page install directory"
+      echo "  --without-mysql       disable MySQL support"
+      echo "  --without-postgres    disable PostgreSQL support"
+#      echo "  --without-sdl"
+      echo "  --without-sound       disable OSS sound support"
+      echo
+      echo "Read INSTALL for further information on these options"
+      exit 0
       ;;
   --arch)
       ARCH=`echo "$1" | cut -d= -f2`
@@ -56,7 +63,7 @@ while [ $# -gt 0 ] ; do
 # Unused RPM options
 # When building an RPM on OpenSUSE, many unnecesssary options were passed
 # to configure.  I'm not sure what they all mean.  Silently ignore them,
-# with the of mandir which we treat as manprefix.
+# with the exception of mandir which we treat as manprefix.
  --host) echo "--host not used" ;;
  --build) echo "--build not used" ;;
  --program-prefix) echo "--program-prefix not used" ;;
@@ -146,15 +153,19 @@ if [ -z "$ARCH" ] ; then
       if [ $? -ne 0 ] ; then
          echo "failed"
          echo
-         echo "Could not run uname -p or -m. Use \$ARCH to specify your architecture."
-         echo "For example, export ARCH=i386"
+         echo "Could not run uname -p or -m. Use --arch to specify your architecture."
+         echo "For example, export --arch=core2"
          exit 1
       fi
    fi
 fi
 echo "yes"
 echo -n "making for... "
-# A rose by any other name...any AMD/Intel x86 is a 386 for testing purposes
+# The ARCH comes from uname and indicates the version of Linux, not the
+# actual processor being used.  There's a lot of aliases for Intel
+# Pentium-4-ish processors.  Not all appear here.  CPU_ARCH is used to
+# determine the bush_os binding file.
+# Intel 32-bit Pentium
 if [ "$ARCH" = "i486" ] ; then
    CPU_ARCH="i386"
 elif [ "$ARCH" = "i586" ] ; then
@@ -163,11 +174,34 @@ elif [ "$ARCH" = "i686" ] ; then
    CPU_ARCH="i386"
 elif [ "$ARCH" = "athlon" ] ; then # Intel-ish
    CPU_ARCH="i386"
-elif [ "$ARCH" = "x86_64" ] ; then # Fedora: Intel-ish, just use 32-bit
+# Intel 64-bit Pentium
+elif [ "$ARCH" = "x86_64" ] ; then
+   # There is no "x86_64" CPU option.  However, Athlon 64 is an early
+   # 64-bit CPU that has instructions also supported by Intel processors.
+   # so "athlon64" is generic 64-bit Intel/AMD CPU.
    export ARCH="athlon64" # Fedora: x86_64 isn't valid gcc option
    CPU_ARCH="i386"
+elif [ "$ARCH" = "nocona" ] ; then
+   # Original Pentium 64-bit with MMX, SSE...SSE3 extensions
+   # Should only appear if --arch is used
+   CPU_ARCH="i386"
+elif [ "$ARCH" = "core2" ] ; then
+   # Intel Core 2 64-bit with MMX, SSE...SSSE3 extensions
+   # Should only appear if --arch is used
+   CPU_ARCH="i386"
+elif [ "$ARCH" = "corei7" ] ; then
+   # Intel Core i7 Version 1 64-bit with MMX, SSE...SSE4.2 extensions
+   # Should only appear if --arch is used
+   CPU_ARCH="i386"
+# Other processors
 elif [ "$ARCH" = "alpha" ] ; then
    CPU_ARCH="alpha"
+elif [ "$ARCH" = "armv6l" ] ; then
+   # Rasp Pi: First, ARM 6L not a GCC option.  Second, not all Debian
+   # packages build with an CPU march flag more specific than generic
+   # v6.
+   CPU_ARCH="armv6"
+   ARCH="armv6"
 else
    CPU_ARCH="$ARCH"
 fi
@@ -177,8 +211,8 @@ CPU_FLAG="-march"
 # support -march=native but this is not yet supported on the Raspberry
 # Pi.  Apparently there are several different Debian flavours for the
 # Pi.  I've only tested it on the one using armv6l.
-if [ "$OS" = "Linux" -a "$CPU_ARCH" = "armv6l" ] ; then
-   echo -n "Raspberry Pi / ARM 6L"
+if [ "$OS" = "Linux" -a "$CPU_ARCH" = "armv6" ] ; then
+   echo -n "Linux/ARM6 (assuming Raspberry Pi)"
    if test -r bush_os.ads ; then
       echo " (cached, make distclean to remove)";
    else
@@ -190,7 +224,12 @@ if [ "$OS" = "Linux" -a "$CPU_ARCH" = "armv6l" ] ; then
          exit 1
       fi
    fi
-   ARCH="armv6" # workaround: ARM 6L is not an option
+   # Rasp Pi FAQ: these C flags should be used.  However, they must be applied
+   # to the entire application and I don't have a way to pass them to the
+   # third-party libraries.  However, I document them here.
+   #CFLAGSTYPE="-mfpu=vfp -mfloat-abi=hard"
+   # GCC Ada 4.6's Gnatmake crashes on GCC -m switches on cargs
+   #GMCARGSSUB="-mfpu=vfp -mfloat-abi=hard"
 elif [ "$OS" = "Linux" -a "$CPU_ARCH" = "i386" ] ; then
    echo -n "Linux/Intel/AMD"
    if test -r bush_os.ads ; then
@@ -689,9 +728,9 @@ else
             echo "SparForte requires GNU make.  GNU make normally has a gmake alias"
             echo "but some systems (like Debian/Linux, Cygwin) do not include the"
             echo "alias.  If your system calls gmake by another name (such as"
-            echo "'make') use the GMAKE shell variable to specify the name."
+            echo "'make') use the --make option."
             echo
-            echo "For example, 'GMAKE=make; export GMAKE"
+            echo "For example, 'configure --make=make'"
             exit 1
          fi
       else
@@ -700,8 +739,9 @@ else
          echo "SparForte requires GNU make.  GNU make normally has a gmake alias"
          echo "but some systems (like Debian/Linux, Cygwin) do not include the"
          echo "alias.  If your system calls gmake by another name (such as"
-         echo "'make') use the GMAKE shell variable to specify the name."
-         echo "For example, 'GMAKE=make; export GMAKE"
+         echo "'make') use the --make option."
+         echo
+         echo "For example, 'configure --make=make'"
          exit 1
       fi
    fi
@@ -798,7 +838,7 @@ echo "Returning to SparForte..."
 # Update the source files, disabling optional libraries, using the gnatprep
 # preprocessor.
 
-echo "Updating source files..."
+echo "Updating SparForte source files for this configuration..."
 
 NEEDS_APQ=
 if [ ! -z "$HAS_POSTGRES" ] ; then
@@ -879,8 +919,10 @@ else
    PGLIBSSUB="`pg_config --libdir` `pg_config --libs`"
    # There is a known bug with pg_config in that it reports the compiling
    # libraries for the PostgreSQL server, not libpg.  So it reports more
-   # libraries than we need.
+   # libraries than we need.  Strip out any libraries we don't need.
    PGLIBSSUB=`echo "$PGLIBSSUB" | sed 's/\ \-lxslt//g;s/\ \-lxml2//g;s/\ \-lkrb5//g;s/\ \-lgssapi_krb5//g;s/\ \-lcom_err//g;s/\ \-lcrypto//g;s/\ \-lcrypt//g'`
+   # On Raspberry Pi, I confirmed pam and edit weren't necessary to link
+   PGLIBSSUB=`echo "$PGLIBSSUB" | sed 's/\ \-lpam//g;s/\ \-ledit//g'`
    PGLIBSSUB=`echo "-L""$PGLIBSSUB" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 fi
 if [ -z "$HAS_MYSQL" ] ; then
@@ -913,12 +955,12 @@ fi
 PREFIX=`echo "$PREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 MANPREFIX=`echo "$MANPREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 
-echo "Creating src/GNUmakefile..."
+echo "Creating...src/GNUmakefile"
 
 sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/ADAVOXINCLSSUB/$ADAVOXINCLSSUB/g;s/ADAVOXLIBSSUB/$ADAVOXLIBSSUB/g;s/ADAVOXMAKESUB/$ADAVOXMAKESUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g" < GNUmakefile.orig > GNUmakefile
 
 cd ..
-echo "Creating GNUmakefile..."
+echo "Creating...GNUmakefile"
 sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/GMAKETYPE/$GMAKETYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g" < GNUmakefile.orig > GNUmakefile
 
 # Done
