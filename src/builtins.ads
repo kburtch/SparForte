@@ -40,6 +40,9 @@ package builtins is
 current_working_directory : unbounded_string := null_unbounded_string;
 -- NULL if not known
 
+procedure findpwd;
+-- run this on startup to initialize current_working_directory
+
 procedure alter( ap : argumentListPtr );
 -- alter : SQL alter
 

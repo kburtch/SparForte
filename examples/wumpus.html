@@ -21,9 +21,6 @@
 
 <b>procedure</b> wumpus <b>is</b>
 
-LOGNAME : string := "&lt;undefined&gt;";
-<b>pragma</b> unchecked_import( shell, LOGNAME );
-
 <b>type</b> player_status <b>is</b> ( alive, won, lost );
 status : player_status := alive;     <FONT COLOR=green><EM>-- playing, winner, loser (was "f")</EM></FONT>
 
@@ -49,14 +46,10 @@ soundfx : boolean := false;
 
 put_line( "HUNT THE WUMPUS" );
 
-<b>if</b> LOGNAME = "root" <b>then</b>
-   put( "SOUND EFFECTS (Y-N)? " );
-   i := get_line;
-   <b>if</b> i = "Y" <b>or</b> i = "y" <b>then</b>
-      soundfx := true;
-   <b>end</b> <b>if</b>;
-<b>else</b>
-   put_line( "For sound effects, run as the superuser" );
+put( "SOUND EFFECTS (Y-N)? " );
+i := get_line;
+<b>if</b> i = "Y" <b>or</b> i = "y" <b>then</b>
+   soundfx := true;
 <b>end</b> <b>if</b>;
 
 put( "INSTRUCTIONS (Y-N)? " );

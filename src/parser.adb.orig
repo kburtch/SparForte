@@ -34,11 +34,6 @@ with system,
     gnat.directory_operations,
     cgi,
     bush_os.exec,
-#if SOUND
-    bush_os.sound,
-#else
-    -- sound disabled
-#end if;
     pegasock.memcache,
     string_util,
     user_io,
@@ -66,6 +61,7 @@ with system,
     parser_pen,
     parser_os,
     parser_gnat_crc,
+    parser_sound,
     parser_dirops,
     parser_memcache;
 use ada.text_io,
@@ -79,11 +75,6 @@ use ada.text_io,
     gnat.directory_operations,
     bush_os,
     bush_os.exec,
-#if SOUND
-    bush_os.sound,
-#else
-    -- sound disabled
-#end if;
     pegasock.memcache,
     user_io,
     script_io,
@@ -111,6 +102,7 @@ use ada.text_io,
     parser_pen,
     parser_os,
     parser_gnat_crc,
+    parser_sound,
     parser_dirops,
     parser_memcache;
 
@@ -636,102 +628,6 @@ begin
      ref.kind := identifiers( ref.id ).kind;
   end if;
 end ParseInOutParameter;
-
-
------------------------------------
--- Sound
------------------------------------
-
-procedure ParsePlay is
-  expr_val  : unbounded_string;
-  expr_type : identifier;
-  pri_val   : unbounded_string := to_unbounded_string( integer'image( integer'last ) );
-  pri_type  : identifier;
-begin
-  expect( sound_play_t );
-  expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
-  if uniTypesOK( expr_type, uni_string_t ) then
-     if token = symbol_t and identifiers( token ).value = "," then
-        expect( symbol_t, "," );
-        ParseExpression( pri_val, pri_type );
-        if uniTypesOK( pri_type, uni_numeric_t ) then
-           null;
-        end if;
-     end if;
-  end if;
-  expect( symbol_t, ")" );
-  if isExecutingCommand then
-#if SOUND
-     begin
-       Play( expr_val, integer( to_numeric( pri_val ) ) );
-     exception when others =>
-       err( "exception raised" );
-     end;
-#else
-      err( "sound support not installed" );
-#end if;
-  end if;
-end ParsePlay;
-
-procedure ParsePlayCD is
-  dev_name : unbounded_string := null_unbounded_string;
-  dev_kind : identifier;
-begin
-  expect( sound_playcd_t );
-  if token = symbol_t and identifiers( token ).value = "(" then
-     expect( symbol_t, "(" );
-     ParseExpression( dev_name, dev_kind );
-     if baseTypesOK( dev_kind, string_t ) then
-        expect( symbol_t, ")" );
-     end if;
-  end if;
-  if isExecutingCommand then
-#if SOUND
-     PlayCD( dev_name );
-#else
-      err( "sound support not installed" );
-#end if;
-  end if;
-end ParsePlayCD;
-
-procedure ParseStopCD is
-begin
-  expect( sound_stopcd_t );
-  if isExecutingCommand then
-#if SOUND
-     StopCD;
-#else
-      err( "sound support not installed" );
-#end if;
-  end if;
-end ParseStopCD;
-
-procedure ParseMute is
-begin
-  expect( sound_mute_t );
-  if isExecutingCommand then
-#if SOUND
-     Mute;
-#else
-      err( "sound support not installed" );
-#end if;
-  end if;
-end ParseMute;
-
-procedure ParseUnmute is
-begin
-  expect( sound_unmute_t );
-  if isExecutingCommand then
-#if SOUND
-     Unmute;
-#else
-      err( "sound support not installed" );
-#end if;
-  end if;
-end ParseUnmute;
--- this stuff should be in parser_sound.
-
 
 -----------------------------------
 -- Expressions
@@ -6736,10 +6632,10 @@ begin
      ParsePlayCD;
   elsif Token = sound_stopcd_t then
      ParseStopCD;
-  elsif Token = sound_mute_t then
-     ParseMute;
-  elsif Token = sound_unmute_t then
-     ParseUnmute;
+  --elsif Token = sound_mute_t then
+  --   ParseMute;
+  --elsif Token = sound_unmute_t then
+  --   ParseUnmute;
   elsif Token = replace_t then
      ParseStringsReplace;
   elsif Token = csv_replace_t then
@@ -8038,6 +7934,8 @@ begin
   SetStandardVariables;                               -- built-in elaboration
   Ada.Numerics.Float_Random.Reset( random_generator );-- reset RND generator
   clearCommandHash;                                   -- initialize cmd table
+
+  findPwd;                            -- initialize current_working_directory
 end startParser;
 
 

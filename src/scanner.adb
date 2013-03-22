@@ -59,6 +59,7 @@ with system,
     parser_stats,
     parser_tio,
     parser_pen,
+    parser_sound,
     parser_dirops,
     parser_memcache,
     parser_gnat_crc;
@@ -95,6 +96,7 @@ use ada.text_io,
     parser_stats,
     parser_tio,
     parser_pen,
+    parser_sound,
     parser_dirops,
     parser_memcache,
     parser_gnat_crc;
@@ -894,6 +896,7 @@ end dumpSymbolTable;
 procedure shutdownScanner is
 begin
 
+  ShutdownSound;
   ShutdownGnatCrc;
   ShutdownMemcache;
   ShutdownDirOps;
@@ -1576,12 +1579,7 @@ begin
   StartupDirOps;
   StartupMemcache;
   StartupGnatCrc;
-
-  declareProcedure( sound_play_t, "sound.play" );
-  declareProcedure( sound_playcd_t, "sound.playcd" );
-  declareProcedure( sound_stopcd_t, "sound.stopcd" );
-  declareProcedure( sound_mute_t, "sound.mute" );
-  declareProcedure( sound_unmute_t, "sound.unmute" );
+  StartupSound;
 
   -- Declare all Environment Variables
   --

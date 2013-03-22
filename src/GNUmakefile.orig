@@ -22,9 +22,11 @@ MYSQLLIBS=MYSQLLIBSSUB
 APQLIBS=APQLIBSSUB
 APQINCL=APQINCLSSUB
 APQMAKE=APQMAKESUB
-ADAVOXINCL=ADAVOXINCLSSUB
-ADAVOXLIBS=ADAVOXLIBSSUB
-ADAVOXMAKE=ADAVOXMAKESUB
+#ADAVOXINCL=ADAVOXINCLSSUB
+#ADAVOXLIBS=ADAVOXLIBSSUB
+#ADAVOXMAKE=ADAVOXMAKESUB
+GSTREAMERLIBS=GSTREAMERLIBSSUB
+GSTREAMERFLAG=GSTREAMERFLAGSUB
 
 # Libraries and Paths
 
@@ -41,7 +43,7 @@ LIBS=-L ${PGLIBS} ${MYSQLLIBS} ${APQLIBS} -L./pegasock/ ./pegasock/c_tinyserve.o
 
 # Make Rules Start
 
-all: c_os.o c_scanner.o
+all: c_os.o c_scanner.o c_gstreamer.o
 	@echo
 	@echo "==============================================================="
 	@echo "  SparForte - Business Shell"
@@ -82,7 +84,7 @@ all: c_os.o c_scanner.o
 	@echo
 	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -gnat05 -gnatfaon -gnatybdh -fstack-check -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
-	gnatlink spar.ali ${ADAVOXLIBS} c_os.o c_scanner.o $(LIBS)
+	gnatlink spar.ali ${ADAVOXLIBS} ${GSTREAMERLIBS} c_os.o c_scanner.o c_gstreamer.o $(LIBS)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "  Thanks for choosing SparForte"
@@ -90,10 +92,19 @@ all: c_os.o c_scanner.o
 	@echo
 
 c_os.o:	c_os.c
+	@echo
+	@echo "---------------------------------------------------------------"
+	@echo "  Compiling C Wrappers on Kernel and OS Library Functions"
+	@echo "  To Make SparForte Portable"
+	@echo "---------------------------------------------------------------"
+	@echo
 	$(CC) $(CFLAGS) $(INCLUDE) -Wall -c c_os.c
 
 c_scanner.o: c_scanner.c
 	$(CC) $(CFLAGS) $(INCLUDE) $(SDLINCL) -c c_scanner.c
+
+c_gstreamer.o: c_gstreamer.c
+	$(CC) $(CFLAGS) $(GSTREAMERFLAG) $(GSTREAMERLIBS) -Wall -c c_gstreamer.c
 
 #apq-2.1/Makeincl:
 #	@echo "---------------------------------------------------------------"
@@ -135,7 +146,7 @@ max: clean c_os.o c_scanner.o
 	@echo
 	$(GNATMAKE) -j2 -c -i -O3 $(CPU_FLAG)=$(CPU) -gnatf -gnatn -gnatp -ffast-math -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
-	gnatlink spar.ali ${ADAVOXLIBS} c_os.o c_scanner.o $(LIBS)
+	gnatlink spar.ali ${ADAVOXLIBS} ${GSTREAMERLIBS} c_os.o c_scanner.o c_gstreamer.o $(LIBS)
 
 clean:
 	$(MAKE) -C adacgi-1.6 clean
@@ -150,7 +161,7 @@ distclean:
 	$(MAKE) -C apq-2.1 clobber
 	$(MAKE) -C pegasock clean
 	-rm -f *.o *.ali *~ t.t t.spar core spar.zip spar testsuite/write_only.txt testsuite/exec_only.txt
-	-rm -f bush_os.ads bush_os.adb bush_os-sdl.ads parser.adb parser_db.ads parser_db.adb parser_mysql.ads parser_mysql.adb world.ads builtins.adb
+	-rm -f bush_os.ads bush_os.adb bush_os-sdl.ads parser.adb parser_db.ads parser_db.adb parser_mysql.ads parser_mysql.adb parser_sound.adb world.ads builtins.adb
 
 test:	all
 	@echo "---------------------------------------------------------------"
@@ -186,7 +197,7 @@ rpm:	all
 
 bintar: c_os.o all
 	gnatbind -x $(INCLUDE_BIND) spar.ali
-	gnatlink spar.ali ${ADAVOXLIBS} c_os.o c_scanner.o $(LIBS)
+	gnatlink spar.ali ${ADAVOXLIBS} ${GSTREAMERLIBS} c_os.o c_scanner.o c_gstreamer.o $(LIBS)
 	(cd ..; rm -f spar.tgz; tar cfvz spar.tgz src/spar src/spar.1 README COPYING INSTALL examples doc GNUmakefile sparforte_icon.xpm; rm -f spar )
 	@echo "Don't forget to unpack and repack under a descriptive directory"
 

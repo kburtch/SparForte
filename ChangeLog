@@ -31,3 +31,5 @@ throw an exception on a number instead of a string as the first parameter.
 
 10. New: Raspberry Pi / ARM6l support in configure script.
 
+11. Change: gstreamer replaces ADAVOX OSS for sound package.
+

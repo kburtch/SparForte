@@ -168,8 +168,7 @@ By default, SparForte will install under /usr/local.
     --without-postgres (NO_POSTGRES variable): disable PostgreSQL database
             support
 
-    --without-sound (NO_SOUND variable): disable ADAVOX sound support.  The
-            ADAVOX library is based on the obsolete OSS sound.
+    --without-sound (NO_SOUND variable): disable gstreamer sound support.
 
     Common Problems
 
@@ -177,26 +176,6 @@ By default, SparForte will install under /usr/local.
 
       You'll need to install the postgresql development packages (or equivalent
       for your O/S) if you want to add support for this database.
-
-    - /dev/dsp not found.
-
-      /dev/dsp is the main playback device for the OSS sound system (e.g. the
-      one used on FreeBSD).  Linux originally used OSS then switched to ALSA,
-      Linux-specific sound system.  The ADAVOX library used by SparForte is
-      based on OSS, not ALSA.  It was written during the time Linux still used
-      OSS.
-
-      /dev/dsp support under ALSA can be provided using compatibility
-      libraries / emulation mode / wrappers (with names such as oss-compat,
-      snd-pcm-oss, alsa-oss).  Some of these are kernel support (that is, they
-      provide /dev/dsp) and some are software-based solution (providing a
-      command called "aoss").  The aoss command will run an OSS program and
-      make it appear to the program that /dev/dsp exists.
-
-      If you are compiling SparForte from sources, you can turn sound support
-      off using --no-sound with the configure command.  If you choose to do
-      this, you can build SparForte on a system without /dev/dsp but
-      attempting to play sound will throw an exception.
 
 2. make
 

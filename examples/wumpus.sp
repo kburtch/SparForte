@@ -16,9 +16,6 @@ pragma restriction( no_external_commands ); -- O/S independent
 
 procedure wumpus is
 
-LOGNAME : string := "<undefined>";
-pragma unchecked_import( shell, LOGNAME );
-
 type player_status is ( alive, won, lost );
 status : player_status := alive;     -- playing, winner, loser (was "f")
 
@@ -44,14 +41,10 @@ begin
 
 put_line( "HUNT THE WUMPUS" );
 
-if LOGNAME = "root" then
-   put( "SOUND EFFECTS (Y-N)? " );
-   i := get_line;
-   if i = "Y" or i = "y" then
-      soundfx := true;
-   end if;
-else
-   put_line( "For sound effects, run as the superuser" );
+put( "SOUND EFFECTS (Y-N)? " );
+i := get_line;
+if i = "Y" or i = "y" then
+   soundfx := true;
 end if;
 
 put( "INSTRUCTIONS (Y-N)? " );

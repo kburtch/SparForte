@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- AdaVox interface file                                                    --
+-- Sound Package Parser                                                     --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
@@ -24,40 +24,17 @@
 with ada.strings.unbounded;
 use  ada.strings.unbounded;
 
-package bush_os.sound is
+package parser_sound is
 
-   -- GSTREAMER interface
-   --
-   -- g_streamer.c contains basic C function to start gstreamer
-   -- and play sounds.  Errors are returned in the gst_error
-   -- array.
+procedure StartupSound;
+procedure ShutdownSound;
 
-   -- initialize gstreamer
-   procedure startup_gstreamer;
-   pragma import( C, startup_gstreamer );
+---------------------------------------------------------
+-- PARSE THE SOUND PACKAGE
+---------------------------------------------------------
 
-   -- shutdown gstreamer
-   procedure shutdown_gstreamer;
-   pragma import( C, shutdown_gstreamer );
+procedure ParsePlay;
+procedure ParsePlayCD;
+procedure ParseStopCD;
 
-   -- play the sound file referenced by the uri, 1 = success
-   -- and 0 = fail (see gst_error)
-   function play_uri( uri : string ) return integer;
-   pragma import( C, play_uri );
-
-   -- last error message from gst_error
-   gst_error : array(0..255) of character;
-   pragma import( C, gst_error );
-
-------------------------------------------------------------------------------
-
-  --procedure Play( soundFile : unbounded_string; priority : integer := 0 );
-  -- Play a WAV or AU sound using AdaVox
-
-  procedure PlayCD( altCdPath : unbounded_string );
-  -- Play a music CD
-
-  procedure StopCD;
-  -- Stop music CD
-
-end bush_os.sound;
+end parser_sound;

@@ -747,43 +747,67 @@ else
    fi
 fi
 
+# Check for the libgstreamer
+
+if [ -z "$NO_SOUND" ] ; then
+   echo -n "checking for gstreamer (ldconfig -p, Linux)... "
+   GSTREAMERFLAG=
+   TMP=`/sbin/ldconfig -p 2>/dev/null | grep libgstreamer`
+   if [ -z "$TMP" ] ; then
+      echo "no"
+      echo -n "checking for gstreamer (ldconfig -r, FreeBSD)... "
+      TMP=`/sbin/ldconfig -r 2>/dev/null | grep libgstreamer`
+      if [ -z "$TMP" ] ; then
+         echo "no"
+       else
+          GSTREAMERFLAG=-DGSTREAMER
+          echo "yes"
+       fi
+    else
+       GSTREAMERFLAG=-DGSTREAMER
+       echo "yes"
+    fi
+else
+  GSTREAMERFLAG=
+fi
+
 echo "SparForte is configured"
 
 # ADAVOX library
 
-echo
-sleep 3
-echo "Configuring third-party ADAVOX (AU/WAV Sound Library)..."
-sleep 1
-
+#echo
+#sleep 3
+#echo "Configuring third-party ADAVOX (AU/WAV Sound Library)..."
+#sleep 1
+#
 # /dev/dsp
-
-echo
-echo -n "adavox library: checking for OSS /dev/dsp... "
-if [ -z "$NO_SOUND" ] ; then
-   if test ! -z "$BASH" ; then
-      test -a /dev/dsp
-   else
-      test -r /dev/dsp
-   fi
-   if [ $? -eq 0 ] ; then
-      echo "yes"
-   else
-         echo "no"
-         echo
-         echo "ADAVOX requires /dev/dsp.  Create a /dev/dsp symlink to your real audio device"
-         echo "(If you don't care about audio support, try ln -s /dev/null /dev/dsp) or use"
-         echo "--without-sound)."
-         exit 1
-   fi
-else
-   echo "no"
-fi
-if [ -z "$NO_SOUND" ] ; then
-   echo "ADAVOX library is configured"
-else
-   echo "ADAVOX library will not be used"
-fi
+#
+#echo
+#echo -n "adavox library: checking for OSS /dev/dsp... "
+#if [ -z "$NO_SOUND" ] ; then
+#   if test ! -z "$BASH" ; then
+#      test -a /dev/dsp
+#   else
+#      test -r /dev/dsp
+#   fi
+#   if [ $? -eq 0 ] ; then
+#      echo "yes"
+#   else
+#         echo "no"
+#         echo
+#         echo "ADAVOX requires /dev/dsp.  Create a /dev/dsp symlink to your real audio device"
+#         echo "(If you don't care about audio support, try ln -s /dev/null /dev/dsp) or use"
+#         echo "--without-sound)."
+#         exit 1
+#   fi
+#else
+#   echo "no"
+#fi
+#if [ -z "$NO_SOUND" ] ; then
+#   echo "ADAVOX library is configured"
+#else
+#   echo "ADAVOX library will not be used"
+#fi
 
 # APQ library
 
@@ -905,6 +929,15 @@ cp parser_mysql.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb parser_mysql.adb
 chmod 444 parser_mysql.adb
 
+echo "Updating...parser_sound.adb"
+test -f parser_sound.adb && chmod 666 parser_sound.adb
+cp parser_sound.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb parser_sound.adb
+chmod 444 parser_sound.adb
+
+test -f temp.ads && rm temp.ads
+test -f temp.adb && rm temp.adb
+
 # Create a new makefile by substituting optional libraries and configuration
 # options into the file with sed.
 
@@ -943,21 +976,29 @@ if [ -z "$HAS_POSTGRES" ] ; then
    fi
 fi
 if [ -z "$NO_SOUND" ] ; then
-   ADAVOXINCLSSUB='-I.\/ADAVOX-0.51\/bc -I.\/ADAVOX-0.51\/wc -I.\/ADAVOX-0.51\/main'
-   ADAVOXLIBSSUB='.\/ADAVOX-0.51\/wc\/cglue.o'
-   ADAVOXMAKESUB='$(MAKE) CPU=$(CPU) -C ADAVOX-0.51'
-else
-   ADAVOXINCLSSUB=""
-   ADAVOXLIBSSUB=""
-   ADAVOXMAKESUB="@echo \"Disabled\""
+   #if [ -z "$GSTREAMERFLAG" ] ; then
+   #   ADAVOXINCLSSUB='-I.\/ADAVOX-0.51\/bc -I.\/ADAVOX-0.51\/wc -I.\/ADAVOX-0.51\/main'
+   #   ADAVOXLIBSSUB='.\/ADAVOX-0.51\/wc\/cglue.o'
+   #   ADAVOXMAKESUB='$(MAKE) CPU=$(CPU) -C ADAVOX-0.51'
+   #else
+      GSTREAMERLIBS=`pkg-config --cflags --libs gstreamer-0.10`
+      GSTREAMERLIBS=`echo "$GSTREAMERLIBS" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+   #fi
+#else
+#   ADAVOXINCLSSUB=""
+#   ADAVOXLIBSSUB=""
+#   ADAVOXMAKESUB="@echo \"Disabled\""
 fi
+ADAVOXINCLSSUB=""
+ADAVOXLIBSSUB=""
+ADAVOXMAKESUB="@echo \"Disabled\""
 
 PREFIX=`echo "$PREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 MANPREFIX=`echo "$MANPREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 
 echo "Creating...src/GNUmakefile"
 
-sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/ADAVOXINCLSSUB/$ADAVOXINCLSSUB/g;s/ADAVOXLIBSSUB/$ADAVOXLIBSSUB/g;s/ADAVOXMAKESUB/$ADAVOXMAKESUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g" < GNUmakefile.orig > GNUmakefile
+sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/ADAVOXINCLSSUB/$ADAVOXINCLSSUB/g;s/ADAVOXLIBSSUB/$ADAVOXLIBSSUB/g;s/ADAVOXMAKESUB/$ADAVOXMAKESUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g" < GNUmakefile.orig > GNUmakefile
 
 cd ..
 echo "Creating...GNUmakefile"
