@@ -1,0 +1,6 @@
+# this should fail
+
+pragma is
+   annotate( description, "me"  );
+end;
+

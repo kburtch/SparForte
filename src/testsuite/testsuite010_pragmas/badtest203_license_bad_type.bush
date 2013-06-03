@@ -1,0 +1,4 @@
+# this should fail
+
+pragma license( foobar  ); -- no such license
+

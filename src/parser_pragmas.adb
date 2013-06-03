@@ -90,7 +90,10 @@ function parsePragmaKind return aPragmaKind is
   name : string := to_string( identifiers( token ).name );
   pragmaKind : aPragmaKind := unknown_pragma;
 begin
-  if name = "ada_95" then
+   -- just an error message...if ( with no name
+   if token = symbol_t and identifiers( symbol_t ).value = to_unbounded_string( "(" ) then
+      err( "pragma name missing" );
+  elsif name = "ada_95" then
      pragmaKind := ada_95;
   elsif name = "assert" then
      pragmaKind :=  asserting;
@@ -439,13 +442,13 @@ begin
 end ParseSoftwareModelName;
 
 
---  PARSE PRAGMA
+--  PARSE PRAGMA STATEMENT
 --
--- Syntax: pragma kind [params]
+-- Syntax: ... kind [params]
 -----------------------------------------------------------------------------
 
-procedure ParsePragma is
-  pragmaKind  : aPragmaKind;
+procedure ParsePragmaStatement( thePragmaKind : aPragmaKind ) is
+  pragmaKind  : aPragmaKind := thePragmaKind; -- TODO: Hack
   expr_val    : unbounded_string;
   expr_val2   : unbounded_string;
   results     : unbounded_string;
@@ -454,12 +457,6 @@ procedure ParsePragma is
   importType  : unbounded_string;
   newValue    : unbounded_string;
 begin
-  expect( pragma_t );
-
-  -- examine the name of the pragma and return a pragma kind matching the name
-
-  pragmaKind := parsePragmaKind;
--- DEBUG returns
 
   -- Parse the pragma parameters (if any)
 
@@ -1093,6 +1090,64 @@ begin
      when others =>
         err( "Internal error: unable to execute pragma" );
      end case;
+  end if;
+end ParsePragmaStatement;
+
+
+--  PARSE PRAGMA
+--
+-- Syntax: pragma kind pragma-params [@ pragma-params]..; |
+-- pragma is kind pragma-params [@ pragma-params]...; ... end pragma
+-----------------------------------------------------------------------------
+
+procedure ParsePragma is
+  pragmaKind : aPragmaKind;
+begin
+  expect( pragma_t );
+  if token = is_t then
+     -- a pragma block
+     expect( is_t );
+     -- empty block?
+     if token = end_t then
+        err( "pragma name missing" );
+     elsif token = pragma_t then
+        err( "single pragma in a pragma block" );
+     end if;
+     -- examine the name of the pragma and return a pragma kind matching the
+     -- name
+     pragmaKind := parsePragmaKind;
+     while token /= eof_t and token /= end_t loop
+        -- an error check
+        ParsePragmaStatement( pragmaKind );
+        if token = symbol_t and identifiers( symbol_t ).value = to_unbounded_string( "@" ) then
+           expect( symbol_t, "@" );
+        elsif token = symbol_t and identifiers( symbol_t ).value = to_unbounded_string( ";" ) then
+           expect( symbol_t, ";" );
+           if token = pragma_t then
+              err( "single pragma in a pragma block" );
+           end if;
+           if token /= end_t then
+              pragmaKind := parsePragmaKind;
+           end if;
+        else
+           -- bit of a more descriptive error
+           err( "'@' or ';' expected" );
+        end if;
+     end loop;
+     expect( end_t );
+     expect( pragma_t );
+  else
+     -- A single pragma
+     pragmaKind := parsePragmaKind;
+     loop
+        ParsePragmaStatement( pragmaKind );
+        -- bit of a more descriptive error
+        if token = symbol_t and identifiers( symbol_t ).value = to_unbounded_string( "(" ) then
+           err( "'@' or ';' expected" );
+        end if;
+        exit when done or token = eof_t or (token = symbol_t and identifiers( symbol_t ).value /= to_unbounded_string( "@" ) );
+        expect( symbol_t, "@" );
+     end loop;
   end if;
 end ParsePragma;
 

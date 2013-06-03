@@ -70,6 +70,10 @@ use  interfaces.c,
 
 package body builtins is
 
+-- for help commadn
+  HTMLOutput : boolean := false;
+  MANOutput  : boolean := false;
+  LicenseOutput  : boolean := false;
 
 -----------------------------------------------------------------------------
 --  FIND PWD
@@ -790,6 +794,396 @@ begin
   end if;
 end vm;
 
+-- Scan and script and provide help
+
+     procedure DoScriptHelp( helpTopic : unbounded_string ) is
+       scriptState : aScriptState;
+       firstLine   : aliased unbounded_string;
+       exprVal     : unbounded_string;
+       info        : unbounded_string;
+       genDate     : unbounded_string;
+       -- not really in another script but we'll be safe...
+       last_tag    : unbounded_string;
+       closeResult : int;
+
+       function ParsePragmaKindAsHelp return unbounded_string is
+          pragmaKind : unbounded_string;
+       begin
+          pragmaKind := identifiers( token ).name;
+          discardUnusedIdentifier( token );
+          getNextToken;
+          return pragmaKind;
+       end ParsePragmaKindAsHelp;
+
+       procedure ParsePragmaStatementAsHelp( pragmaKind : unbounded_string ) is
+       begin
+         if pragmaKind = to_unbounded_string( "license" ) then
+            if token = symbol_t and identifiers( token ).value = "(" then
+               getNextToken;
+               info := identifiers( token ).name;
+               discardUnusedIdentifier( token );
+               getNextToken;
+               if token = symbol_t and identifiers( token ).value = "," then
+                  expect( symbol_t, "," );
+                  info := info & ": " & identifiers( token ).value;
+                  expect( strlit_t );
+               end if;
+               expect( symbol_t, ")" );
+               if LicenseOutput then
+                  put_line( to_string( info ) );
+               end if;
+            end if;
+         elsif pragmaKind = to_unbounded_string( "annotate" ) then
+            if token = symbol_t and identifiers( token ).value = "(" then
+               getNextToken;
+               if identifiers( token ).name = to_unbounded_string( "author" ) then
+                  if last_tag = "author" then
+                     info := null_unbounded_string;
+                  elsif HTMLOutput then
+                     info := to_unbounded_string( "</p><p><b>Author</b>: " );
+                  elsif MANOutput then
+                     info := to_unbounded_string( ".SH AUTHOR" );
+                  else
+                     info := to_unbounded_string( "Author: " );
+                  end if;
+                  last_tag := identifiers( token ).name;
+                  discardUnusedIdentifier( token );
+                  getNextToken;
+                  expect( symbol_t, "," );
+               elsif identifiers( token ).name = to_unbounded_string( "bugs" ) then
+                  if last_tag = "bugs" then
+                     info := null_unbounded_string;
+                  elsif HTMLOutput then
+                     info := to_unbounded_string( "</p><p><b>Bugs</b>: " );
+                  elsif MANOutput then
+                     info := to_unbounded_string( ".SH BUGS" );
+                  else
+                     info := to_unbounded_string( "Bugs: " );
+                  end if;
+                  last_tag := identifiers( token ).name;
+                  discardUnusedIdentifier( token );
+                  getNextToken;
+                  expect( symbol_t, "," );
+               elsif identifiers( token ).name = to_unbounded_string( "created" ) then
+                  if last_tag = "created" then
+                      info := null_unbounded_string;
+                  elsif HTMLOutput then
+                      info := to_unbounded_string( "</p><p><b>Created</b>: " );
+                  elsif MANOutput then
+                      info := to_unbounded_string( ".SH CREATED" );
+                  else
+                      info := to_unbounded_string( "Created: " );
+                  end if;
+                  last_tag := identifiers( token ).name;
+                  discardUnusedIdentifier( token );
+                  getNextToken;
+                  expect( symbol_t, "," );
+               elsif identifiers( token ).name = to_unbounded_string( "description" ) then
+                  if last_tag = "description" then
+                     info := null_unbounded_string;
+                  elsif HTMLOutput then
+                     info := to_unbounded_string( "</p><p><b>Description</b>: " );
+                  elsif MANOutput then
+                     info := to_unbounded_string( ".SH DESCRIPTION" );
+                  else
+                     info := to_unbounded_string( "Description: " );
+                  end if;
+                  last_tag := identifiers( token ).name;
+                  discardUnusedIdentifier( token );
+                  getNextToken;
+                  expect( symbol_t, "," );
+               elsif identifiers( token ).name = to_unbounded_string( "errors" ) then
+                  if last_tag = "errors" then
+                     info := null_unbounded_string;
+                  elsif HTMLOutput then
+                     info := to_unbounded_string( "</p><p><b>Errors</b>: " );
+                  elsif MANOutput then
+                     info := to_unbounded_string( ".SH ERRORS" );
+                  else
+                     info := to_unbounded_string( "Errors: " );
+                  end if;
+                  last_tag := identifiers( token ).name;
+                  discardUnusedIdentifier( token );
+                  getNextToken;
+                  expect( symbol_t, "," );
+               elsif identifiers( token ).name = to_unbounded_string( "modified" ) then
+                  if last_tag = "modified" then
+                     info := null_unbounded_string;
+                  elsif HTMLOutput then
+                     info := to_unbounded_string( "</p><p><b>Modified</b>: " );
+                  elsif MANOutput then
+                     info := to_unbounded_string( ".SH MODIFIED" );
+                  else
+                     info := to_unbounded_string( "Modified: " );
+                  end if;
+                  last_tag := identifiers( token ).name;
+                  discardUnusedIdentifier( token );
+                  getNextToken;
+                  expect( symbol_t, "," );
+               elsif identifiers( token ).name = to_unbounded_string( "param" ) then
+                  if last_tag = "param" then
+                     info := null_unbounded_string;
+                  elsif HTMLOutput then
+                     info := to_unbounded_string( "</p><p><b>Param</b>: " );
+                  elsif MANOutput then
+                     info := to_unbounded_string( ".SH PARAM" );
+                  else
+                     info := to_unbounded_string( "Param: " );
+                  end if;
+                  last_tag := identifiers( token ).name;
+                  discardUnusedIdentifier( token );
+                  getNextToken;
+                  expect( symbol_t, "," );
+               elsif identifiers( token ).name = to_unbounded_string( "return" ) then
+                  if last_tag = "return" then
+                     info := null_unbounded_string;
+                  elsif HTMLOutput then
+                     info := to_unbounded_string( "</p><p><b>Return</b>: " );
+                  elsif MANOutput then
+                     info := to_unbounded_string( ".SH RETURN" );
+                  else
+                     info := to_unbounded_string( "Return: " );
+                  end if;
+                  last_tag := identifiers( token ).name;
+                  discardUnusedIdentifier( token );
+                  getNextToken;
+                  expect( symbol_t, "," );
+               elsif identifiers( token ).name = to_unbounded_string( "see_also" ) then
+                  if last_tag = "see also" then
+                     info := null_unbounded_string;
+                  elsif HTMLOutput then
+                     info := to_unbounded_string( "</p><p><b>See Also</b>: " );
+                  elsif MANOutput then
+                     info := to_unbounded_string( ".SH SEE ALSO" );
+                  else
+                     info := to_unbounded_string( "See Also: " );
+                  end if;
+                  last_tag := identifiers( token ).name;
+                  discardUnusedIdentifier( token );
+                  getNextToken;
+                  expect( symbol_t, "," );
+               elsif identifiers( token ).name = to_unbounded_string( "summary" ) then
+                  if last_tag = "summary" then
+                     info := null_unbounded_string;
+                  elsif HTMLOutput then
+                     info := to_unbounded_string( "</p><p><b>Summary</b>: " );
+                  elsif MANOutput then
+                     info := to_unbounded_string( ".SH SUMMARY" );
+                  else
+                     info := to_unbounded_string( "Summary: " );
+                  end if;
+                  last_tag := identifiers( token ).name;
+                  discardUnusedIdentifier( token );
+                  getNextToken;
+                  expect( symbol_t, "," );
+               elsif identifiers( token ).name = to_unbounded_string( "todo" ) then
+                  if last_tag = "todo" then
+                      info := null_unbounded_string;
+                  elsif HTMLOutput then
+                      info := to_unbounded_string( "</p><p><b>To Do</b>: " );
+                  elsif MANOutput then
+                      info := to_unbounded_string( ".SH TODO" );
+                  else
+                      info := to_unbounded_string( "To Do: " );
+                  end if;
+                  last_tag := identifiers( token ).name;
+                  discardUnusedIdentifier( token );
+                  getNextToken;
+                  expect( symbol_t, "," );
+               elsif identifiers( token ).name = to_unbounded_string( "version" ) then
+                  if last_tag = "version" then
+                     info := null_unbounded_string;
+                  elsif HTMLOutput then
+                     info := to_unbounded_string( "</p><p><b>Version</b>: " );
+                  elsif MANOutput then
+                     info := to_unbounded_string( ".SH VERSION" );
+                  else
+                     info := to_unbounded_string( "Version: " );
+                  end if;
+                  last_tag := identifiers( token ).name;
+                  discardUnusedIdentifier( token );
+                  getNextToken;
+                  expect( symbol_t, "," );
+               else
+                  info := null_unbounded_string;
+               end if;
+               if HTMLoutput then
+                  if length( identifiers( token ).value ) = 0 then
+                     info := info & "<br>&nbsp;";
+                  end if;
+                  info := info & identifiers( token ).value & "<br>";
+               elsif MANoutput then
+                  if length( identifiers( token ).value ) = 0 then
+                     info := info & ASCII.LF & ".PP";
+                  end if;
+                  if length( info ) > 0 then
+                      -- if it's not a license, output the annotations
+                      if not LicenseOutput then
+                         put_line( info );
+                      end if;
+                  end if;
+                  info := identifiers( token ).value;
+               else
+                  info := info & identifiers( token ).value;
+               end if;
+               expect( strlit_t );
+               -- if it's not a license, output the annotations
+               if not LicenseOutput then
+                  put_line( to_string( info ) );
+               end if;
+               expect( symbol_t, ")" ); -- getNextToken;
+            end if;
+         else
+            -- Any other pragma skip to the ; or @ at the end
+            loop
+              exit when token = symbol_t and identifiers( token ).value = to_unbounded_string( ";" );
+              exit when token = symbol_t and identifiers( token ).value = to_unbounded_string( "@" );
+              exit when error_found or done or token = eof_t;
+              getNextToken;
+            end loop;
+         end if;
+       end ParsePragmaStatementAsHelp;
+
+       procedure ParsePragmaAsHelp is
+         pragmaKind : unbounded_string;
+       begin
+         expect( pragma_t );
+         if token = is_t then
+            -- a pragma block
+            expect( is_t );
+            -- examine the name of the pragma and return a pragma kind matching the
+            -- name
+            pragmaKind := parsePragmaKindAsHelp;
+            while token /= eof_t and token /= end_t loop
+               -- an error check
+               ParsePragmaStatementAsHelp( pragmaKind );
+               if token = symbol_t and identifiers( symbol_t ).value = to_unbounded_string( "@" ) then
+                  expect( symbol_t, "@" );
+               elsif token = symbol_t and identifiers( symbol_t ).value = to_unbounded_string( ";" ) then
+                  expect( symbol_t, ";" );
+                  if token /= end_t then
+                     pragmaKind := parsePragmaKindAsHelp;
+                  end if;
+               else
+                  err( "'@' or ';' expected" );
+               end if;
+            end loop;
+            expect( end_t );
+            expect( pragma_t );
+         else
+            -- A single pragma
+            pragmaKind := parsePragmaKindAsHelp;
+            loop
+               ParsePragmaStatementAsHelp( pragmaKind );
+               exit when done or token = eof_t or (token = symbol_t and identifiers( symbol_t ).value /= to_unbounded_string( "@" ) );
+               expect( symbol_t, "@" );
+            end loop;
+         end if;
+       end ParsePragmaAsHelp;
+
+     begin
+       saveScript( scriptState );
+       if isExecutingCommand or Syntax_Check then
+          scriptFilePath := helpTopic;                     -- script name
+<<retry1>> scriptFile := open( to_string( scriptFilePath ) & ASCII.NUL, 0, 660 ); -- open script
+          if scriptFile < 1 then                           -- error?
+             if C_errno = EINTR then
+                goto retry1;
+             end if;
+<<retry2>>   scriptFile := open( to_string( scriptFilePath ) & ".sp" & ASCII.NUL, 0, 660 );
+             if scriptFile > 0 then
+                if C_errno = EINTR then
+                   goto retry2;
+                end if;
+                scriptFilePath := scriptFilePath & ".sp"  ;
+             end if;
+          end if;
+          if scriptFile < 1 then                           -- error?
+<<retry3>>   scriptFile := open( to_string( scriptFilePath ) & ".bush" & ASCII.NUL, 0, 660 );
+             if scriptFile > 0 then
+                if C_errno = EINTR then
+                   goto retry3;
+                end if;
+                scriptFilePath := scriptFilePath & ".bush"  ;
+             end if;
+          end if;
+          if scriptFile > 0 then                           -- good?
+             error_found := false;                         -- no error found
+             exit_block := false;                          -- not exit-ing a block
+             if not LineRead( firstLine'access ) then        -- read first line
+                put_line( standard_error, "unable to read first line of script" );
+                error_found := true;
+             end if;
+             if script = null then
+                if verboseOpt then
+                   Put_Trace( "Compiling Byte Code" );
+                end if;
+                compileScript( firstline );
+            end if;
+          else
+           -- try manual entries
+            Put_Line( "Not a SparForte command or script...trying manual entries" );
+            delay 2.0;
+            declare
+              status : integer;
+            begin
+              status := linux_system( "man "& to_string( helpTopic ) & ASCII.NUL );
+            end;
+          end if;
+       end if;
+       if scriptFile > 0 then                      -- file open
+          genDate := to_unbounded_string( integer'image( day( ada.calendar.clock ) ) );
+          delete( genDate, 1, 1 );
+          genDate := integer'image( month( ada.calendar.clock ) )& "-" & genDate;
+          delete( genDate, 1, 1 );
+          genDate := integer'image( ada.calendar.year( clock ) ) & "-" & genDate;
+          delete( genDate, 1, 1 );
+          if HTMLoutput then
+             put_line( "<p><u><b>File</b>: " & to_string( scriptFilePath ) & "</u></p><p>" );
+          elsif MANOutput then
+             put_line( "./" & ASCII.Quotation & "man page " & to_string( scriptFilePath ) & ".9" );
+             put_line( ".TH " & ASCII.Quotation & to_string( scriptFilePath ) & ASCII.Quotation &
+                 " 9 " &
+                 ASCII.Quotation & to_string( genDate ) & ASCII.Quotation & " " &
+                 ASCII.Quotation & "Company" & ASCII.Quotation & " " &
+                 ASCII.Quotation & "Manual" & ASCII.Quotation );
+          elsif LicenseOutput then
+             null;
+          else
+             Put_Line( "Help for script " & bold( to_string( scriptFilePath ) ) & ":" );
+             New_Line;
+          end if;
+          -- lineno := 1;                             -- prepare to read it
+          inputMode := fromScriptFile;             -- running a script
+          error_found := false;                    -- no error found
+          exit_block := false;                     -- not exit-ing a block
+          cmdpos := firstScriptCommandOffset;
+          token := identifiers'first;                -- dummy, replaced by g_n_t
+
+          -- search the script for pragmas, interpreting the results
+          -- as necessary for the help command
+
+          while (not error_found and not done and token /= eof_t) loop
+             getNextToken;                            -- load first token
+             if token = pragma_t then
+                ParsePragmaAsHelp;
+             end if;
+          end loop;
+
+          if HTMLoutput then
+             put_line( "</p><p><i>Generated " & to_string( genDate ) & "</i><br></p>" );
+          end if;
+        end if;
+<<retryclose>> closeResult := close( scriptFile );
+        if closeResult < 0 then
+           if C_errno = EINTR then
+              goto retryclose;
+           end if;
+        end if;
+        restoreScript( scriptState );
+        discardUnusedIdentifier( token );
+     end DoScriptHelp;
+
 -----------------------------------------------------------------------------
 --   HELP (POSIX SHELL COMMAND)
 -- Syntax: help = help [ ident ]
@@ -1022,9 +1416,6 @@ end helpPragma;
 
 procedure help( ap : argumentListPtr ) is
   helpTopic : unbounded_string;
-  HTMLOutput : boolean := false;
-  MANOutput  : boolean := false;
-  LicenseOutput  : boolean := false;
 begin
   if ap'length = 0 then
      helpTopic := null_unbounded_string;
@@ -1546,328 +1937,7 @@ begin
      Put_Line( "? - put_line to standard output" );
      Put_Line( "  ? expression" );
   else
-
-     declare
-       scriptState : aScriptState;
-       firstLine   : aliased unbounded_string;
-       exprVal     : unbounded_string;
-       info        : unbounded_string;
-       genDate     : unbounded_string;
-       -- not really in another script but we'll be safe...
-       last_tag    : unbounded_string;
-       closeResult : int;
-     begin
-       saveScript( scriptState );
-       if isExecutingCommand or Syntax_Check then
-          scriptFilePath := helpTopic;                     -- script name
-<<retry1>> scriptFile := open( to_string( scriptFilePath ) & ASCII.NUL, 0, 660 ); -- open script
-          if scriptFile < 1 then                           -- error?
-             if C_errno = EINTR then
-                goto retry1;
-             end if;
-<<retry2>>   scriptFile := open( to_string( scriptFilePath ) & ".sp" & ASCII.NUL, 0, 660 );
-             if scriptFile > 0 then
-                if C_errno = EINTR then
-                   goto retry2;
-                end if;
-                scriptFilePath := scriptFilePath & ".sp"  ;
-             end if;
-          end if;
-          if scriptFile < 1 then                           -- error?
-<<retry3>>   scriptFile := open( to_string( scriptFilePath ) & ".bush" & ASCII.NUL, 0, 660 );
-             if scriptFile > 0 then
-                if C_errno = EINTR then
-                   goto retry3;
-                end if;
-                scriptFilePath := scriptFilePath & ".bush"  ;
-             end if;
-          end if;
-          if scriptFile > 0 then                           -- good?
-             error_found := false;                         -- no error found
-             exit_block := false;                          -- not exit-ing a block
-             if not LineRead( firstLine'access ) then        -- read first line
-                put_line( standard_error, "unable to read first line of script" );
-                error_found := true;
-             end if;
-             if script = null then
-                if verboseOpt then
-                   Put_Trace( "Compiling Byte Code" );
-                end if;
-                compileScript( firstline );
-            end if;
-          else
-           -- try manual entries
-            Put_Line( "Not a SparForte command or script...trying manual entries" );
-            delay 2.0;
-            declare
-              status : integer;
-            begin
-              status := linux_system( "man "& to_string( helpTopic ) & ASCII.NUL );
-            end;
-          end if;
-       end if;
-       if scriptFile > 0 then                      -- file open
-          genDate := to_unbounded_string( integer'image( day( ada.calendar.clock ) ) );
-          delete( genDate, 1, 1 );
-          genDate := integer'image( month( ada.calendar.clock ) )& "-" & genDate;
-          delete( genDate, 1, 1 );
-          genDate := integer'image( ada.calendar.year( clock ) ) & "-" & genDate;
-          delete( genDate, 1, 1 );
-          if HTMLoutput then
-             put_line( "<p><u><b>File</b>: " & to_string( scriptFilePath ) & "</u></p><p>" );
-          elsif MANOutput then
-             put_line( "./" & ASCII.Quotation & "man page " & to_string( scriptFilePath ) & ".9" );
-             put_line( ".TH " & ASCII.Quotation & to_string( scriptFilePath ) & ASCII.Quotation &
-                 " 9 " &
-                 ASCII.Quotation & to_string( genDate ) & ASCII.Quotation & " " &
-                 ASCII.Quotation & "Company" & ASCII.Quotation & " " &
-                 ASCII.Quotation & "Manual" & ASCII.Quotation );
-          elsif LicenseOutput then
-             null;
-          else
-             Put_Line( "Help for script " & bold( to_string( scriptFilePath ) ) & ":" );
-             New_Line;
-          end if;
-          -- lineno := 1;                             -- prepare to read it
-          inputMode := fromScriptFile;             -- running a script
-          error_found := false;                    -- no error found
-          exit_block := false;                     -- not exit-ing a block
-          cmdpos := firstScriptCommandOffset;
-          token := identifiers'first;                -- dummy, replaced by g_n_t
-          while (not error_found and not done and token /= eof_t) loop
-             getNextToken;                            -- load first token
-             if token = pragma_t then
-                getNextToken;
-                if identifiers( token ).name = "license" then
-                   if LicenseOutput then
-                      discardUnusedIdentifier( token );
-                      getNextToken;
-                      if token = symbol_t and identifiers( token ).value = "(" then
-                         getNextToken;
-                         info := identifiers( token ).name;
-                         discardUnusedIdentifier( token );
-                         getNextToken;
-                         if token = symbol_t and identifiers( token ).value = "," then
-                           expect( symbol_t, "," );
-                           info := info & ": " & identifiers( token ).value;
-                           expect( strlit_t );
-                         end if;
-                         put_line( to_string( info ) );
-                      end if;
-                   end if;
-                elsif identifiers( token ).name = "annotate" then
-                   discardUnusedIdentifier( token );
-                   getNextToken;
-                   if token = symbol_t and identifiers( token ).value = "(" then
-                      getNextToken;
-                      if identifiers( token ).name = to_unbounded_string( "author" ) then
-                         if last_tag = "author" then
-                            info := null_unbounded_string;
-                         elsif HTMLOutput then
-                            info := to_unbounded_string( "</p><p><b>Author</b>: " );
-                         elsif MANOutput then
-                            info := to_unbounded_string( ".SH AUTHOR" );
-                         else
-                            info := to_unbounded_string( "Author: " );
-                         end if;
-                         last_tag := identifiers( token ).name;
-                         discardUnusedIdentifier( token );
-                         getNextToken;
-                         expect( symbol_t, "," );
-                      elsif identifiers( token ).name = to_unbounded_string( "bugs" ) then
-                         if last_tag = "bugs" then
-                            info := null_unbounded_string;
-                         elsif HTMLOutput then
-                            info := to_unbounded_string( "</p><p><b>Bugs</b>: " );
-                         elsif MANOutput then
-                            info := to_unbounded_string( ".SH BUGS" );
-                         else
-                            info := to_unbounded_string( "Bugs: " );
-                         end if;
-                         last_tag := identifiers( token ).name;
-                         discardUnusedIdentifier( token );
-                         getNextToken;
-                         expect( symbol_t, "," );
-                      elsif identifiers( token ).name = to_unbounded_string( "created" ) then
-                         if last_tag = "created" then
-                            info := null_unbounded_string;
-                         elsif HTMLOutput then
-                            info := to_unbounded_string( "</p><p><b>Created</b>: " );
-                         elsif MANOutput then
-                            info := to_unbounded_string( ".SH CREATED" );
-                         else
-                            info := to_unbounded_string( "Created: " );
-                         end if;
-                         last_tag := identifiers( token ).name;
-                         discardUnusedIdentifier( token );
-                         getNextToken;
-                         expect( symbol_t, "," );
-                      elsif identifiers( token ).name = to_unbounded_string( "description" ) then
-                         if last_tag = "description" then
-                            info := null_unbounded_string;
-                         elsif HTMLOutput then
-                            info := to_unbounded_string( "</p><p><b>Description</b>: " );
-                         elsif MANOutput then
-                            info := to_unbounded_string( ".SH DESCRIPTION" );
-                         else
-                            info := to_unbounded_string( "Description: " );
-                         end if;
-                         last_tag := identifiers( token ).name;
-                         discardUnusedIdentifier( token );
-                         getNextToken;
-                         expect( symbol_t, "," );
-                      elsif identifiers( token ).name = to_unbounded_string( "errors" ) then
-                         if last_tag = "errors" then
-                            info := null_unbounded_string;
-                         elsif HTMLOutput then
-                            info := to_unbounded_string( "</p><p><b>Errors</b>: " );
-                         elsif MANOutput then
-                            info := to_unbounded_string( ".SH ERRORS" );
-                         else
-                            info := to_unbounded_string( "Errors: " );
-                        end if;
-                         last_tag := identifiers( token ).name;
-                         discardUnusedIdentifier( token );
-                         getNextToken;
-                         expect( symbol_t, "," );
-                      elsif identifiers( token ).name = to_unbounded_string( "modified" ) then
-                         if last_tag = "modified" then
-                            info := null_unbounded_string;
-                         elsif HTMLOutput then
-                            info := to_unbounded_string( "</p><p><b>Modified</b>: " );
-                         elsif MANOutput then
-                            info := to_unbounded_string( ".SH MODIFIED" );
-                         else
-                            info := to_unbounded_string( "Modified: " );
-                         end if;
-                         last_tag := identifiers( token ).name;
-                         discardUnusedIdentifier( token );
-                         getNextToken;
-                         expect( symbol_t, "," );
-                      elsif identifiers( token ).name = to_unbounded_string( "param" ) then
-                         if last_tag = "param" then
-                            info := null_unbounded_string;
-                         elsif HTMLOutput then
-                            info := to_unbounded_string( "</p><p><b>Param</b>: " );
-                         elsif MANOutput then
-                            info := to_unbounded_string( ".SH PARAM" );
-                         else
-                            info := to_unbounded_string( "Param: " );
-                         end if;
-                         last_tag := identifiers( token ).name;
-                         discardUnusedIdentifier( token );
-                         getNextToken;
-                         expect( symbol_t, "," );
-                      elsif identifiers( token ).name = to_unbounded_string( "return" ) then
-                         if last_tag = "return" then
-                            info := null_unbounded_string;
-                         elsif HTMLOutput then
-                            info := to_unbounded_string( "</p><p><b>Return</b>: " );
-                         elsif MANOutput then
-                            info := to_unbounded_string( ".SH RETURN" );
-                         else
-                            info := to_unbounded_string( "Return: " );
-                         end if;
-                         last_tag := identifiers( token ).name;
-                         discardUnusedIdentifier( token );
-                         getNextToken;
-                         expect( symbol_t, "," );
-                      elsif identifiers( token ).name = to_unbounded_string( "see_also" ) then
-                         if last_tag = "see also" then
-                            info := null_unbounded_string;
-                         elsif HTMLOutput then
-                            info := to_unbounded_string( "</p><p><b>See Also</b>: " );
-                         elsif MANOutput then
-                            info := to_unbounded_string( ".SH SEE ALSO" );
-                         else
-                            info := to_unbounded_string( "See Also: " );
-                         end if;
-                         last_tag := identifiers( token ).name;
-                         discardUnusedIdentifier( token );
-                         getNextToken;
-                         expect( symbol_t, "," );
-                      elsif identifiers( token ).name = to_unbounded_string( "summary" ) then
-                         if last_tag = "summary" then
-                            info := null_unbounded_string;
-                         elsif HTMLOutput then
-                            info := to_unbounded_string( "</p><p><b>Summary</b>: " );
-                         elsif MANOutput then
-                            info := to_unbounded_string( ".SH SUMMARY" );
-                         else
-                            info := to_unbounded_string( "Summary: " );
-                         end if;
-                         last_tag := identifiers( token ).name;
-                         discardUnusedIdentifier( token );
-                         getNextToken;
-                         expect( symbol_t, "," );
-                      elsif identifiers( token ).name = to_unbounded_string( "todo" ) then
-                         if last_tag = "todo" then
-                            info := null_unbounded_string;
-                         elsif HTMLOutput then
-                            info := to_unbounded_string( "</p><p><b>To Do</b>: " );
-                         elsif MANOutput then
-                            info := to_unbounded_string( ".SH TODO" );
-                         else
-                            info := to_unbounded_string( "To Do: " );
-                         end if;
-                         last_tag := identifiers( token ).name;
-                         discardUnusedIdentifier( token );
-                         getNextToken;
-                         expect( symbol_t, "," );
-                      elsif identifiers( token ).name = to_unbounded_string( "version" ) then
-                         if last_tag = "version" then
-                            info := null_unbounded_string;
-                         elsif HTMLOutput then
-                            info := to_unbounded_string( "</p><p><b>Version</b>: " );
-                         elsif MANOutput then
-                            info := to_unbounded_string( ".SH VERSION" );
-                         else
-                            info := to_unbounded_string( "Version: " );
-                         end if;
-                         last_tag := identifiers( token ).name;
-                         discardUnusedIdentifier( token );
-                         getNextToken;
-                         expect( symbol_t, "," );
-                      else
-                         info := null_unbounded_string;
-                      end if;
-                      if HTMLoutput then
-                         if length( identifiers( token ).value ) = 0 then
-                            info := info & "<br>&nbsp;";
-                         end if;
-                         info := info & identifiers( token ).value & "<br>";
-                      elsif MANoutput then
-                         if length( identifiers( token ).value ) = 0 then
-                            info := info & ASCII.LF & ".PP";
-                         end if;
-                         if length( info ) > 0 then
-                            put_line( info );
-                         end if;
-                         info := identifiers( token ).value;
-                      else
-                         info := info & identifiers( token ).value;
-                      end if;
-                      expect( strlit_t );
-                      put_line( to_string( info ) );
-                      expect( symbol_t, ")" ); -- getNextToken;
-                   end if;
-                end if;
-             end if;
-             discardUnusedIdentifier( token );
-          end loop;
-          if HTMLoutput then
-             put_line( "</p><p><i>Generated " & to_string( genDate ) & "</i><br></p>" );
-          end if;
-        end if;
-<<retryclose>> closeResult := close( scriptFile );
-        if closeResult < 0 then
-           if C_errno = EINTR then
-              goto retryclose;
-           end if;
-        end if;
-        restoreScript( scriptState );
-     end;
-     discardUnusedIdentifier( token );
+     DoScriptHelp( helpTopic );
   end if;
 -- getNextToken;
 end help;

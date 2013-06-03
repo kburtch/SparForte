@@ -1,0 +1,4 @@
+# this should fail
+
+pragma license( unrestricted, 2232 ); -- wrong type
+

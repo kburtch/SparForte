@@ -1,0 +1,6 @@
+# this should fail
+
+pragma is
+  pragma annotate ( author, "me" ); -- single pragma in pragma block
+end pragma;
+

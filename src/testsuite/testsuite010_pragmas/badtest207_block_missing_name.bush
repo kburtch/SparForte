@@ -1,0 +1,6 @@
+# this should fail
+
+pragma is
+  ( foobar ); -- missing name
+end pragma;
+

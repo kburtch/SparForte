@@ -1,0 +1,5 @@
+# this should fail
+
+pragma license( unrestricted );
+pragma license( unrestricted ); -- second license
+

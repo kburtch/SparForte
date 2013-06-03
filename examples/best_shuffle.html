@@ -1,0 +1,100 @@
+<HEAD><TITLE>best_shuffle.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : best_shuffle.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar best_shuffle
+abracadabra
+abracadabra, caadrbabaar, ( 0 )
+seesaw
+seesaw, ewaess, ( 0 )
+elk
+elk, kel, ( 0 )
+grrrrrr
+grrrrrr, rgrrrrr, ( 5 )
+up
+up, pu, ( 0 )
+a
+a, a, ( 1 )
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "best_shuffle" );
+<b>pragma</b> annotate( description, "Shuffle the characters of a string in such a" );
+<b>pragma</b> annotate( description, "way that as many of the character values are" );
+<b>pragma</b> annotate( description, "in a different position as possible. Print" );
+<b>pragma</b> annotate( description, "the result as follows: original string," );
+<b>pragma</b> annotate( description, "shuffled string, (score). The score gives the" );
+<b>pragma</b> annotate( description, "number of positions whose character value" );
+<b>pragma</b> annotate( description, "did not change." );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Best_shuffle" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> best_shuffle <b>is</b>
+
+  <FONT COLOR=green><EM>-- Shuffle the characters in a string.  Do not swap identical characters</EM></FONT>
+
+  <b>function</b> shuffle( s : string ) <b>return</b> string <b>is</b>
+    t : string := s;
+    tmp : character;
+  <b>begin</b>
+    <b>for</b> i <b>in</b> 1..strings.length(s) <b>loop</b>
+       <b>for</b> j <b>in</b> 1..strings.length(s) <b>loop</b>
+         <b>if</b> i /= j <b>and</b> strings.element( s, i ) /= strings.element( t, j ) <b>and</b> strings.element( s, j ) /= strings.element( t, i ) <b>then</b>
+            tmp := strings.element( t, i );
+            t := strings.overwrite( t, i, strings.element( t, j ) &amp; "" );
+            t := strings.overwrite( t, j, tmp &amp; "" );
+         <b>end</b> <b>if</b>;
+       <b>end</b> <b>loop</b>;
+    <b>end</b> <b>loop</b>;
+    <b>return</b> t;
+  <b>end</b> shuffle;
+
+  stop : boolean := false;
+
+<b>begin</b>
+
+  <b>while</b> <b>not</b> stop <b>loop</b>
+    <b>declare</b>
+      original : string := get_line;
+      shuffled : string := shuffle( original );
+      score : natural := 0;
+   <b>begin</b>
+      <b>if</b> original = "" <b>then</b>
+         stop;
+      <b>end</b> <b>if</b>;
+
+      <FONT COLOR=green><EM>-- determine the score for the shuffled string</EM></FONT>
+
+      <b>for</b> i <b>in</b> 1..strings.length( original ) <b>loop</b>
+         <b>if</b> strings.element( original, i ) = strings.element( shuffled, i ) <b>then</b>
+            score := @+1;
+         <b>end</b> <b>if</b>;
+      <b>end</b> <b>loop</b>;
+      put_line( original &amp; ", " &amp; shuffled &amp; ", (" &amp;
+          strings.image( score ) &amp; " )" );
+
+   <b>end</b>;
+  <b>end</b> <b>loop</b>;
+
+<b>end</b> best_shuffle;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>

@@ -1,0 +1,5 @@
+# this should fail
+
+pragma is
+end pragma; -- empty block
+

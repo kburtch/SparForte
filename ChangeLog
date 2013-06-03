@@ -33,3 +33,9 @@ throw an exception on a number instead of a string as the first parameter.
 
 11. Change: gstreamer replaces ADAVOX OSS for sound package.
 
+12. New: Pragma block. Pragma is...end pragma.
+
+13. New: Pragma chains.  Pragmas may be chained using @, both stand-alone pragmas and pragma blocks.
+
+14. New: Example program: weave.sp
+

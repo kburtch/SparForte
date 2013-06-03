@@ -1,0 +1,4 @@
+# this should fail
+
+pragma annotate( description, 212  ); -- string expected
+

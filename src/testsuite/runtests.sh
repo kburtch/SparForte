@@ -23,6 +23,10 @@ setup() {
   chmod 755 cdtest
 
   export FOOBAR="foobar"
+  export FOOBAR1="foobar"
+  export FOOBAR2="foobar"
+  export FOOBAR3="foobar"
+  export FOOBAR4="foobar"
   export FOOBAR_INT="98"
   export FOOBAR_STRING="\"foobar\""
   export FOOBAR_INT_ARRAY="[32]"

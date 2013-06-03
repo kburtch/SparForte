@@ -1,0 +1,194 @@
+<HEAD><TITLE>weave.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : weave.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD align="center" BGCOLOR="#000040"><SPAN STYLE="color: #00CC00">
+<img src="weave.png" alt="[Weave Lines image]">
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "weave" );
+<b>pragma</b> annotate( description, "Draw a weave pattern and erase it using inverse pen mode" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> weave <b>is</b>
+
+  max_iterations : <b>constant</b> integer := 500;
+  tail_length : <b>constant</b> integer := 15;
+
+  c : pen.canvas_id;
+
+  <FONT COLOR=green><EM>-- draw four sets of reflected lines, different colours for each of</EM></FONT>
+  <FONT COLOR=green><EM>-- the lines</EM></FONT>
+
+  <b>procedure</b> draw_reflected_lines( x1 : float; y1 : float; x2 : float; y2 : float ) <b>is</b>
+  <b>begin</b>
+    pen.set_pen_ink( c, 100, 0, 0 );
+    pen.move_to( c, pen.coordinate( x1 ), pen.coordinate( y1 ) );
+    pen.line_to( c, pen.coordinate( x2 ), pen.coordinate( y2 ) );
+    pen.set_pen_ink( c, 0, 100, 0 );
+    pen.move_to( c, 100 - pen.coordinate( x1 ), pen.coordinate( y1 ) );
+    pen.line_to( c, 100 - pen.coordinate( x2 ), pen.coordinate( y2 ) );
+    pen.set_pen_ink( c, 0, 0, 100 );
+    pen.move_to( c, pen.coordinate( x1 ), 100 - pen.coordinate( y1 ) );
+    pen.line_to( c, pen.coordinate( x2 ), 100 - pen.coordinate( y2 ) );
+    pen.set_pen_ink( c, 100, 100, 0 );
+    pen.move_to( c, 100 - pen.coordinate( x1 ), 100 - pen.coordinate( y1 ) );
+    pen.line_to( c, 100 - pen.coordinate( x2 ), 100 - pen.coordinate( y2 ) );
+  <b>end</b> draw_reflected_lines;
+
+  <FONT COLOR=green><EM>-- reverse direction at a speed of 0.5 to 1.5 pixels</EM></FONT>
+
+  <b>function</b> bounce( direction_delta : float ) <b>return</b> float <b>is</b>
+  <b>begin</b>
+    <b>return</b> numerics.copy_sign( numerics.random+0.5, -direction_delta );
+  <b>end</b> bounce;
+
+  <FONT COLOR=green><EM>-- These arrays contain the coordinates of the lines that have been</EM></FONT>
+  <FONT COLOR=green><EM>-- drawn.  pos is the position where the next values will be saved</EM></FONT>
+
+  <b>type</b> line_array <b>is</b> <b>array</b>( 1..tail_length ) <b>of</b> float;
+  x1_array : line_array;
+  y1_array : line_array;
+  x2_array : line_array;
+  y2_array : line_array;
+  pos      : integer := 1;
+
+  <FONT COLOR=green><EM>-- current coordinates of the latest line and direction deltas</EM></FONT>
+
+  x1   : float;
+  y1   : float;
+  x2   : float;
+  y2   : float;
+  dx1  : float;
+  dy1  : float;
+  dx2  : float;
+  dy2  : float;
+
+  <FONT COLOR=green><EM>-- iteration counter</EM></FONT>
+
+  cnt  : integer := 0;
+
+  s    : string;
+
+<b>begin</b>
+
+  <FONT COLOR=green><EM>-- create a drawing canvas and set the pen mode to invert so that</EM></FONT>
+  <FONT COLOR=green><EM>-- drawing a line twice will erase it</EM></FONT>
+
+  pen.new_window_canvas( 200,200,32,c);
+  pen.set_title( c, "Weave" );
+  pen.set_pen_mode( c, pen_mode.invert );
+
+  <FONT COLOR=green><EM>-- set the initial location and speed of the lines</EM></FONT>
+
+  x1 := 10.0;
+  y1 := 10.0;
+  x2 := 30.0;
+  y2 := 30.0;
+  dx1:= 1.0;
+  dy1:= 1.0;
+  dx2:= -1.0;
+  dy2:= 1.0;
+
+  <FONT COLOR=green><EM>-- use x1 = -1 to represent no data at that position</EM></FONT>
+
+  <b>for</b> i <b>in</b> arrays.first( x1_array ) .. arrays.last( x1_array ) <b>loop</b>
+     x1_array(i) := -1;
+  <b>end</b> <b>loop</b>;
+
+  <FONT COLOR=green><EM>-- draw the very first lines</EM></FONT>
+
+  pen.wait_to_reveal( c );
+  draw_reflected_lines( x1, y1, x2, y2 );
+  pen.reveal( c );
+  <b>delay</b> 0.03; <FONT COLOR=green><EM>-- about 30 frames/second</EM></FONT>
+
+  <b>loop</b>
+     pen.wait_to_reveal( c );
+
+     <FONT COLOR=green><EM>-- something to erase? then erase it by redrawing it</EM></FONT>
+
+     <b>if</b> x1_array( pos ) &gt; 0 <b>then</b>
+<FONT COLOR=green><EM>--put( "Erase: " ) @ ( head ) @ ( ":" ) @ ( x1_array(head) ) @ ( "," ) @ ( y1_array(head) ) @ ( " " ) @ ( x2_array(head) ) @ ( "," ) @ ( y2_array(head) ); new_line;</EM></FONT>
+        draw_reflected_lines( x1_array( pos ), y1_array( pos ),
+           x2_array( pos ), y2_array( pos ) );
+     <b>end</b> <b>if</b>;
+
+     <FONT COLOR=green><EM>-- remember the position of the latest lines</EM></FONT>
+
+     x1_array( pos ) := x1;
+     y1_array( pos ) := y1;
+     x2_array( pos ) := x2;
+     y2_array( pos ) := y2;
+
+     <FONT COLOR=green><EM>-- for each coordiate, move forward.  if a coordinate encounters</EM></FONT>
+     <FONT COLOR=green><EM>-- the side of the window, reverse the direction for horizontal,</EM></FONT>
+     <FONT COLOR=green><EM>-- vertical or both</EM></FONT>
+
+     <b>if</b> x1 + dx1 &lt; 1 <b>then</b>
+        dx1 := bounce( @ );
+     <b>elsif</b> x1 + dx1 &gt; 99 <b>then</b>
+        dx1 := bounce( @ );
+     <b>end</b> <b>if</b>;
+     x1 := @ + dx1;
+     <b>if</b> y1 + dy1 &lt; 1 <b>then</b>
+        dy1 := bounce( @ );
+     <b>elsif</b> y1 + dy1 &gt; 99 <b>then</b>
+        dy1 := bounce( @ );
+     <b>end</b> <b>if</b>;
+     y1 := @ + dy1;
+     <b>if</b> x2 + dx2 &lt; 1 <b>then</b>
+        dx2 := bounce( @ );
+     <b>elsif</b> x2 + dx2 &gt; 99 <b>then</b>
+        dx2 := bounce( @ );
+     <b>end</b> <b>if</b>;
+     x2 := @ + dx2;
+     <b>if</b> y2 + dy2 &lt; 1 <b>then</b>
+        dy2 := bounce( @ );
+     <b>elsif</b> y2 + dy2 &gt; 99 <b>then</b>
+        dy2 := bounce( @ );
+     <b>end</b> <b>if</b>;
+     y2 := @ + dy2;
+
+     <FONT COLOR=green><EM>-- draw the new lines and update the display</EM></FONT>
+
+     draw_reflected_lines( x1, y1, x2, y2 );
+     pen.reveal( c );
+     <b>delay</b> 0.03;
+
+     <FONT COLOR=green><EM>-- count the iterations.  quit when max iterations is reached</EM></FONT>
+
+     cnt := @ + 1;
+     <b>exit</b> <b>when</b> cnt &gt; max_iterations;
+
+     <FONT COLOR=green><EM>-- advance the save position.  Rollover back to first position</EM></FONT>
+     <FONT COLOR=green><EM>-- if the end of the array is reached.</EM></FONT>
+
+     <b>if</b> pos = arrays.last( x1_array ) <b>then</b>
+        pos := 1;
+     <b>else</b>
+        pos := @+1;
+     <b>end</b> <b>if</b>;
+  <b>end</b> <b>loop</b>;
+
+  ? "Press return";
+  s := get_line;
+
+<b>end</b> weave;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>

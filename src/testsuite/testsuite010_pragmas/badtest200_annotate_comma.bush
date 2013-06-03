@@ -1,0 +1,4 @@
+# this should fail
+
+pragma annotate( author "me"  );
+

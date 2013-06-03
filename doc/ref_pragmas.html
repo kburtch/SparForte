@@ -115,6 +115,36 @@ The arguments are specific to the pragmas they refer to.</p>
         </div>
         </center>
 
+<h4>Pragma Blocks</h4>
+
+<p>A group of consecutive pragmas can be declared in a pragma block.  A
+pragma block starts with "pragma is" and ends with "end pragma".</p>
+
+<h4>Pragma Chains</h4>
+
+<p>Pragmas can be repeated by chaining them together using @.  Chains can
+be used with both standalone pragmas and pragma blocks.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>pragma</b> <b>is</b><br>
+&nbsp;&nbsp;annotate<br>
+&nbsp;&nbsp;&nbsp;&nbsp;( summary, "arraysum" ) @<br>
+&nbsp;&nbsp;&nbsp;&nbsp;( description, "Compute the sum and product of an array of integers." )@<br>
+&nbsp;&nbsp;&nbsp;&nbsp;( see_also, "http://rosettacode.org/wiki/Sum_and_product_of_an_array" )@<br>
+&nbsp;&nbsp;&nbsp;&nbsp;( author, "Ken O. Burtch" );<br>
+<br>
+&nbsp;&nbsp;license( unrestricted );<br>
+<br>
+&nbsp;&nbsp;software_model( shell_script );<br>
+&nbsp;&nbsp;restriction( no_external_commands );<br>
+<b>end</b> <b>pragma</b>;<br>&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: An example of pragma block with pragma chains</span>
+        </div>
+        </div>
+        </center>
 
 <h4>Architectural Pragmas</h4>
 

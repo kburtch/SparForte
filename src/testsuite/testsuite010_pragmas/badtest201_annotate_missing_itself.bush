@@ -1,0 +1,4 @@
+# this should fail
+
+pragma annotate( description, "me"  ) ( description, "me" ); -- missing @
+
