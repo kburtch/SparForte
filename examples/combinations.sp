@@ -11,7 +11,6 @@ pragma annotate( author, "Ken O. Burtch" );
 pragma restriction( no_external_commands );
 
 procedure combinations is
-  combinations_found : string := "";
   number_of_items : constant natural := 3;
   max_item_value  : constant natural := 5;
 

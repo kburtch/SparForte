@@ -128,6 +128,15 @@ commandLineSource : constant string := "Command";
 err_message : unbounded_string;         -- last error message
 
 ------------------------------------------------------------------------------
+-- Unbounded String Constants
+------------------------------------------------------------------------------
+
+system_script_software_model_name : unbounded_string
+   := to_unbounded_string( "System.Script_Software_Model" );
+shell_script_model_name : unbounded_string
+   := to_unbounded_string( "shell_script" );
+
+------------------------------------------------------------------------------
 -- Pragma Flags
 ------------------------------------------------------------------------------
 
@@ -135,6 +144,7 @@ onlyAda95                        : boolean := false; -- pragma ada_95
 restriction_annotations_not_optional : boolean := false; -- pragma restriction
 restriction_no_annotate_todos    : boolean := false; -- pragma restriction
 restriction_no_auto_declarations : boolean := false; -- pragma restriction
+restriction_no_unused_identifiers: boolean := false; -- pragma restriction
 restriction_no_external_commands : boolean := false; -- pragma restriction
 restriction_no_memcache          : boolean := false; -- pragma restriction
 restriction_no_mysql_database    : boolean := false; -- pragma restriction
@@ -251,9 +261,12 @@ type declaration is record
      volatile : boolean := false;               -- marked by pragma volatile
      limit    : boolean := false;               -- limited type
      list     : boolean := false;               -- array or array type
+     resource : boolean := false;               -- resource type
      field_of : identifier;                     -- record superclass
      inspect  : boolean := false;               -- show value on breakout
      deleted  : boolean := false;               -- marked for deletion
+     wasReferenced : boolean := false;          -- true if ref'd in syn chk
+     --pcall    : aBuiltinProcedureCallback := null;
 end record;
 
 
@@ -266,8 +279,10 @@ type identifiersArray is array ( identifier ) of declaration;
 
 identifiers     : identifiersArray;
 identifiers_top : identifier := identifier'first;
-keywords_top    : identifier := identifier'last;
-reserved_top    : identifier := identifier'last;
+keywords_top    : identifier := identifier'last; -- last Ada keyword (xor)
+reserved_top    : identifier := identifier'last; -- last keyword any kind
+predefined_top  : identifier := identifier'last; -- last predefined ident
+                                                 -- (like last built-in fn)
 -- this arrangement means the last array element is never accessed
 
 -- "Captain, the ship can't take any more!"

@@ -75,7 +75,7 @@ command_line.set_exit_status( 0 );                            <FONT COLOR=green>
 
   compress : <b>constant</b> string := "/usr/bin/compress";
   zip      : <b>constant</b> string := "/usr/bin/zip";
-  zoo      : <b>constant</b> string := "/bin/zoo";
+  --zoo    : <b>constant</b> string := "/bin/zoo";
   gzip     : <b>constant</b> string := "/bin/gzip";
   bzip     : <b>constant</b> string := "/usr/bin/bzip2";
 
@@ -192,7 +192,7 @@ command_line.set_exit_status( 0 );                            <FONT COLOR=green>
        $gzip "$source_path";
   <b>when</b> c_bzip =&gt;
        put_line( source_info.file &amp; ": using bzip" );
-       $bzip2 "$source_path";
+       $bzip "$source_path";
   <b>when</b> <b>others</b> =&gt;
      put( standard_error, source_info.file )
          @( standard_error, ": unknown compression method" );

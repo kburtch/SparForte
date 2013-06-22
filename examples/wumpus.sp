@@ -19,7 +19,6 @@ procedure wumpus is
 type player_status is ( alive, won, lost );
 status : player_status := alive;     -- playing, winner, loser (was "f")
 
-type tunnel_list is array(1..20) of string;
 t_delim : constant character := ",";
 tunnels : array(1..20) of string;    -- adjacent room list
 

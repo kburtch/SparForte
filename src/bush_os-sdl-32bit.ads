@@ -857,5 +857,31 @@ pragma import( C, SDL_EXT_Get_Pixel_Masks, "SDL_EXT_get_pixel_masks" );
 function SDL_EXT_Save_BMP( s : system.address; path : string ) return SDL_Success;
 pragma import( C, SDL_EXT_Save_BMP, "SDL_EXT_save_bmp" );
 
+
+-----------------------------------------------------------------------------
+-- SDL TTF
+-----------------------------------------------------------------------------
+
+
+type TTF_STYLE is new int;
+TTF_STYLE_NORMAL    : TTF_STYLE := 0;
+TTF_STYLE_BOLD      : TTF_STYLE := 1;
+TTF_STYLE_ITALIC    : TTF_STYLE := 2;
+TTF_STYLE_UNDERLINE : TTF_STYLE := 4;
+
+type TTF_font is new system.address;
+
+function TTF_Init return SDL_success;
+pragma import( C, TTF_Init, "TTF_Init" );
+
+function TTF_OpenFont( path : string; point_size : int ) return TTF_Font;
+pragma import( C, TTF_OpenFont, "TTF_OpenFont" );
+
+procedure TTF_CloseFont( font : TTF_Font );
+pragma import( C, TTF_CloseFont, "TTF_CloseFont" );
+
+function TTF_RenderText_Solid(font : TTF_Font; text : string; fg : SDL_Generic_Pixel ) return system.address; -- returns a surface
+pragma import( C, TTF_RenderText_Solid, "TTF_RenderText_Solid" );
+
 end bush_os.sdl;
 

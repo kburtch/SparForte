@@ -448,6 +448,12 @@ begin
      --   discardUnusedIdentifier( token );
      --end if;
   else
+     if syntax_check then
+           -- for declared but not used checking, assign a value of "REF" to
+           -- the value (during syntax check only because value is otherwise
+           -- unused).  When blocks are pulled, this will be checked.
+           identifiers( token ).wasReferenced := true;
+     end if;
      id := token;
   end if;
   getNextToken;
@@ -466,7 +472,12 @@ procedure ParseOutParameter( ref : out reference; defaultType : identifier ) is
   expr_value : unbounded_string;
   array_id2 : arrayID;
   arrayIndex: long_integer;
+  isNew     : boolean := false;
 begin
+  -- If the identifier is undeclared (new_t) and we're in an an interactive
+  -- mode with no restrictions and no errors, declare the identifier as
+  -- an identifier of the default type.  Otherwise, just accept an existing
+  -- identifer as normal.
   if identifiers( token ).kind = new_t and not onlyAda95 and not restriction_no_auto_declarations and not error_found and (inputMode = interactive or inputMode = breakout) then
      ParseNewIdentifier( ref.id );
      if index( identifiers( ref.id ).name, "." ) /= 0 then
@@ -478,9 +489,14 @@ begin
             " is a new " & to_string( identifiers( defaultType ).name ) &
             " variable" );
      end if;
+     isNew := true;
   else
      ParseIdentifier( ref.id );
   end if;
+
+  -- If this is an array reference, read the index value.  Check that
+  -- the index value is within the index bounds for the array.
+
   ref.index := 0;
   if identifiers( ref.id ).list then        -- array variable?
      ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
@@ -507,6 +523,11 @@ begin
          end if;
       end if;
       expect( symbol_t, ")" );
+
+      -- If this is a record type, and it is new, create the record's fields
+      -- Only do this if we created a new record variable on behalf of the
+      -- user: an existing record already has its fields declared.
+
   elsif identifiers( getBaseType( identifiers( ref.id ).kind ) ).kind = root_record_t then
   --      getBaseType( ref.kind ) = root_record_t then        -- record variable?
   -- To do this, search for the i-th field in the formal record declaration
@@ -517,29 +538,31 @@ begin
 
      -- ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
      ref.kind := identifiers( ref.id ).kind;
-     for i in 1..integer'value( to_string( identifiers( ref.kind ).value ) ) loop
-         for j in 1..identifiers_top-1 loop
-             if identifiers( j ).field_of = ref.kind then
-                if integer'value( to_string( identifiers( j ).value )) = i then
-                   declare
-                      fieldName   : unbounded_string;
-                      dont_care_t : identifier;
-                      dotPos      : natural;
-                   begin
-                      fieldName := identifiers( j ).name;
-                      dotPos := length( fieldName );
-                      while dotPos > 1 loop
-                         exit when element( fieldName, dotPos ) = '.';
-                         dotPos := dotPos - 1;
-                      end loop;
-                      fieldName := delete( fieldName, 1, dotPos );
-                      fieldName := identifiers( ref.id ).name & "." & fieldName;
-                      declareIdent( dont_care_t, fieldName, identifiers( j ).kind, otherClass );
-                   end;
+     if isNew then
+        for i in 1..integer'value( to_string( identifiers( ref.kind ).value ) ) loop
+            for j in 1..identifiers_top-1 loop
+                if identifiers( j ).field_of = ref.kind then
+                   if integer'value( to_string( identifiers( j ).value )) = i then
+                      declare
+                         fieldName   : unbounded_string;
+                         dont_care_t : identifier;
+                         dotPos      : natural;
+                      begin
+                         fieldName := identifiers( j ).name;
+                         dotPos := length( fieldName );
+                         while dotPos > 1 loop
+                            exit when element( fieldName, dotPos ) = '.';
+                            dotPos := dotPos - 1;
+                         end loop;
+                         fieldName := delete( fieldName, 1, dotPos );
+                         fieldName := identifiers( ref.id ).name & "." & fieldName;
+                         declareIdent( dont_care_t, fieldName, identifiers( j ).kind, otherClass );
+                      end;
+                   end if;
                 end if;
-             end if;
-         end loop;
-     end loop;
+            end loop;
+        end loop;
+     end if;
   else
     -- If it's a regular identifier, if it's new, assign the type.  Otherwise
     -- if it already exists it must match the default type.
@@ -763,7 +786,7 @@ begin
         getNextToken;
      elsif token = backlit_t then           -- `cmds`
         kind := identifiers( token ).kind;
-        CompileRunAndCaptureOutput( identifiers( token ).value, f );
+        CompileRunAndCaptureOutput( identifiers( token ).value, f, getLineNo );
         getNextToken;
      elsif token = get_line_t then                        -- get line function
         ParseGetLine( f );
@@ -2669,6 +2692,7 @@ begin
         declareIdent( anonType, to_unbounded_string( "an anonymous array" ),
            elementType, typeClass );
         identifiers( anonType ).list := true;
+        identifiers( anonType ).wasReferenced := true; -- only referenced when declared
         if class_ok( elementType, typeClass, subClass ) then     -- item type OK?
            --if isExecutingCommand then
            if isExecutingCommand and not syntax_check then
@@ -2691,7 +2715,7 @@ begin
 
   if isExecutingCommand then
      declareArray( id => array_id,
-                   name => identifiers( id ).value,
+                   name => identifiers( id ).name,
                    first => long_integer( to_numeric( ab1 ) ),
                    last => long_integer( to_numeric( ab2 ) ),
                    ind => kind1,
@@ -2910,6 +2934,12 @@ begin
                       fieldName := delete( fieldName, 1, dotPos );
                       fieldName := identifiers( id ).name & "." & fieldName;
                       declareIdent( dont_care_t, fieldName, identifiers( j ).kind, otherClass );
+                      -- at least, for now, don't worry if record fields are
+                      -- declared but not accessed.  We'll just check the
+                      -- main record identifier.
+                      if syntax_check then
+                         identifiers( dont_care_t ).wasReferenced := true;
+                      end if;
                    end;
                 end if;
              end if;
@@ -3245,6 +3275,18 @@ begin
          -- other statements
          if isExecutingCommand or syntax_check then        -- OK to do it?
             identifiers( newtype_id ).class := constClass; -- it's a type
+            -- The enum type name may not be referenced as much
+            -- as items are mentioned.  (e.g. draco_ii doesn't
+            -- use the type name anywhere).
+            if syntax_check and not restriction_no_unused_identifiers then
+               identifiers( parent_id ).wasReferenced := true;
+            end if;
+            -- normally, treat them as values and thus we don't care
+            -- if they are used or not.  Unless user explicitly requests
+            -- that they are tested.
+            if syntax_check and not restriction_no_unused_identifiers then
+               identifiers( newtype_id ).wasReferenced := true;
+            end if;
             declare
               s : string := enum_index'img;
             begin
@@ -3656,6 +3698,11 @@ begin
      -- declare for var down here in case older var with same name
      -- used in for loop range (so that for k in k..k+1 is legit)
      declareIdent( for_var, for_name, uni_numeric_t);   -- declare for var
+     -- the for index is not covered by unused identifiers because it
+     -- might not be used within the loop...might just be a repeat loop
+     if syntax_check then
+        identifiers( for_var ).wasReferenced := true;
+     end if;
      if baseTypesOk( expr1_type, expr2_type ) then      -- check types
         if getUniType( expr1_type ) = uni_numeric_t then
            null;
@@ -3956,41 +4003,56 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
     -- put_line( "dollarExpansion for var """ & expansionVar & """" ); -- DEBUG
     -- Handle Special Substitutions ($#, $? $$, $0...$9 )
     if expansionVar = "#" then
-       subword := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
-       delete( subword, 1, 1 );
+       if isExecutingCommand then
+          subword := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
+          delete( subword, 1, 1 );
+       end if;
     elsif expansionVar = "?" then
-       subword := to_unbounded_string( last_status'img );
-       delete( subword, 1, 1 );
+       if isExecutingCommand then
+          subword := to_unbounded_string( last_status'img );
+          delete( subword, 1, 1 );
+       end if;
     elsif expansionVar = "$" then
-       subword := to_unbounded_string( aPID'image( getpid ) );
-       delete( subword, 1, 1 );
+       if isExecutingCommand then
+          subword := to_unbounded_string( aPID'image( getpid ) );
+          delete( subword, 1, 1 );
+       end if;
     elsif expansionVar = "0" then
-       subword := to_unbounded_string( Ada.Command_Line.Command_Name );
+       if isExecutingCommand then
+          subword := to_unbounded_string( Ada.Command_Line.Command_Name );
+       end if;
     elsif length( expansionVar ) = 1 and (expansionVar >= "1" and expansionVar <= "9" ) then
-       begin
-          subword := to_unbounded_string(
+       if isExecutingCommand then
+          begin
+             subword := to_unbounded_string(
                  Argument(
                    integer'value(
                      to_string( " " & expansionVar ) )+optionOffset ) );
-       exception when program_error =>
-          err( "program_error exception raised" );
-       when others =>
-          err( "no such argument" );
-       end;
+          exception when program_error =>
+             err( "program_error exception raised" );
+          when others =>
+             err( "no such argument" );
+          end;
+       end if;
     else
        -- Regular variable substitution
        findIdent( expansionVar, id );
        if id = eof_t then
           err( optional_bold( to_string( expansionVar ) ) & " not declared" );
        else
-          subword := identifiers( id ).value;              -- word to substit.
-          if not inDQuote then                             -- strip spaces
-             subword := Ada.Strings.Unbounded.Trim(        -- unless double
-                subword, Ada.Strings.Both );               -- quotes;
-          elsif getUniType( id ) = uni_numeric_t then      -- a number?
-             if length( subword ) > 0 then                 -- something there?
-                if element( subword, 1 ) = ' ' then        -- leading space
-                   delete( subword, 1, 1 );                -- we don't want it
+          if syntax_check then
+             identifiers( id ).wasReferenced := true;
+             subword := to_unbounded_string( "undefined" );
+          else
+             subword := identifiers( id ).value;           -- word to substit.
+             if not inDQuote then                          -- strip spaces
+                subword := Ada.Strings.Unbounded.Trim(     -- unless double
+                   subword, Ada.Strings.Both );            -- quotes;
+             elsif getUniType( id ) = uni_numeric_t then   -- a number?
+                if length( subword ) > 0 then              -- something there?
+                   if element( subword, 1 ) = ' ' then     -- leading space
+                      delete( subword, 1, 1 );             -- we don't want it
+                   end if;
                 end if;
              end if;
           end if;
@@ -4048,6 +4110,12 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
   begin
     --put_line( "pathnameExpansion for original pattern """ & pattern & """" ); -- DEBUG
     --put_line( "pathnameExpansion for expanded word """ & word & """" ); -- DEBUG
+    -- In the case of a syntax check, return the word as-is as a place holder.
+    -- Don't try to glob it.
+    if syntax_check then
+       shellWordList.Queue( wordList, aShellWord'( normalWord, pattern, shell_word ) );
+       return;
+    end if;
     -- word is an empty string? it still counts: param is a null string
     if length( pattern ) = 0 or length( word ) = 0 then
        shellWordList.Queue( list, aShellWord'( normalWord, pattern, null_unbounded_string ) );
@@ -4243,12 +4311,13 @@ begin
   -- a syntax check, return the word as-is as a place holder (not sure if
   -- it's necessary but "> $path" becomes ">" with no path otherwise...at
   -- least, it's easier for the programmer to debug.
+  --  However, to trace whether variables are referenced.
 
   if error_found then                                 -- error:
      return;                                          -- no expansions
-  elsif syntax_check then                             -- chk?
-     shellWordList.Queue( wordList, aShellWord'( normalWord, pattern, shell_word ) );
-     return;                                          -- just the word
+  --elsif syntax_check then                             -- chk?
+  --   shellWordList.Queue( wordList, aShellWord'( normalWord, pattern, shell_word ) );
+  --   return;                                          -- just the word
   end if;                                             -- as a place holder
 
   ---------------------------------------------------------------------------
@@ -4448,10 +4517,14 @@ begin
 
   end loop;
 
-  -- Don't expand pathname during syntax check
+  -- Perform pathname expansion.  This also queues the words in the word
+  -- list.  If a syntax check, we don't want to actually scan the disk
+  -- and expand paths--instead, a dummy word will be queued and no other
+  -- action is taken.
+
+  pathnameExpansion( word, pattern, wordList );
 
   if isExecutingCommand then
-     pathnameExpansion( word, pattern, wordList );
 
      if trace then
         declare
@@ -4731,6 +4804,9 @@ begin
 
   -- Create the parameter
 
+  if syntax_check then
+     identifiers( formal_param_id ).wasReferenced := true;
+  end if;
   updateFormalParameter( formal_param_id, type_token, proc_id, param_no );
 
   -- Check for further parameters
@@ -4776,6 +4852,9 @@ begin
   -- Create the parameter
 
   declareIdent( formal_param_id, to_unbounded_string( "return value" ), type_token, otherClass );
+  if syntax_check then
+     identifiers( formal_param_id ).wasReferenced := true;
+  end if;
   updateFormalParameter( formal_param_id, type_token, func_id, 0 );
 
   -- Blow away on error
@@ -4800,6 +4879,9 @@ begin
          declareReturnResult(
             actual_param_t,
             proc_id );
+         if syntax_check then
+            identifiers( actual_param_t ).wasReferenced := true;
+         end if;
      end if;
 
      param_no := 1;
@@ -5151,6 +5233,11 @@ procedure DoUserDefinedProcedure( s : unbounded_string ) is
 begin
   -- Interpret parameters
   proc_id := token;
+  if syntax_check then
+     -- for declared but not used checking
+     --When blocks are pulled, this will be checked.
+     identifiers( proc_id ).wasReferenced := true;
+  end if;
   getNextToken;
   pushBlock( newScope => true,
      newName => to_string (identifiers( proc_id ).name ) );
@@ -5205,6 +5292,11 @@ procedure DoUserDefinedFunction( s : unbounded_string; result : out unbounded_st
 begin
   -- Get the name of the function being called
   func_id := token;
+  if syntax_check then
+     -- for declared but not used checking
+     --When blocks are pulled, this will be checked.
+     identifiers( func_id ).wasReferenced := true;
+  end if;
   getNextToken;
   -- Parameters will be in the new scope block
   pushBlock( newScope => true,
@@ -6013,6 +6105,42 @@ end ParseShellCommand;
 
 
 -----------------------------------------------------------------------------
+--  COMPILE AND RUN
+--
+-- Compile and run the byte code.  Do not capture the output.
+-- Set fragmement to false if the byte code is a complete script rather than
+-- extracted from as a subscript.  You usually want to use
+-- CompileRunAndCaptureOutput.  The only thing that uses this procedure
+--  directly is the pragma debug because we don't want to capture the output.
+-----------------------------------------------------------------------------
+
+procedure CompileAndRun( commands : unbounded_string; firstLineNo : natural := 1; fragment : boolean := true ) is
+  scriptState : aScriptState;
+  --command     : unbounded_string := s;
+  resultName  : unbounded_string;
+  byteCode    : unbounded_string;
+begin
+-- TODO: set the line number from the enclosing script
+  saveScript( scriptState );                            -- save current script
+  compileCommand( commands, firstLineNo );              -- compile subscript
+  byteCode := to_unbounded_string( script.all );        -- grab the byte code
+  restoreScript( scriptState );                         -- restore original script
+  if not error_found then                               -- no errors?
+     if isExecutingCommand or Syntax_Check then            -- for real or check
+        parseNewCommands( scriptState, byteCode, fragment ); -- setup byte code
+        loop                                               -- run commands
+           ParseGeneralStatement;                          -- general stmts
+        exit when done or error_found or token = eof_t;    -- until done, error
+        end loop;                                          --  or reached eof
+        if not done then                                   -- not done?
+           expect( eof_t );                                -- should be eof
+       end if;
+       restoreScript( scriptState );                 -- restore original script
+     end if;
+  end if;
+end CompileAndRun;
+
+-----------------------------------------------------------------------------
 -- RUN AND CAPTURE OUTPUT
 --
 -- Run the byte code and return the results.  Set fragmement to false if the
@@ -6028,7 +6156,7 @@ end ParseShellCommand;
 procedure RunAndCaptureOutput( s : unbounded_string; results : out
   unbounded_string; fragment : boolean := true ) is
   scriptState : aScriptState;
-  command     : unbounded_string := s;
+  --command     : unbounded_string := s;
   oldStandardOutput : aFileDescriptor;
   resultFile  : aFileDescriptor := -1;
   resultName  : unbounded_string;
@@ -6143,16 +6271,18 @@ end RunAndCaptureOutput;
 -----------------------------------------------------------------------------
 -- COMPILE RUN AND CAPTURE OUTPUT
 --
--- Compile commands, run the commands and return the results.
+-- Compile commands, run the commands and return the results.  If first
+-- line number is supplied, it will be used for the first line number of
+-- the commands (as opposed to line 1).
 -----------------------------------------------------------------------------
 
 procedure CompileRunAndCaptureOutput( commands : unbounded_string; results : out
-  unbounded_string ) is
+  unbounded_string; firstLineNo : natural := 1  ) is
   byteCode : unbounded_string;
   scriptState : aScriptState;
 begin
   saveScript( scriptState );               -- save current script
-  compileCommand( commands );
+  compileCommand( commands, firstLineNo );
   byteCode := to_unbounded_string( script.all );
   if not error_found then
      RunAndCaptureOutput( byteCode, results, fragment => false );
@@ -6956,6 +7086,18 @@ begin
 #else
      err( "mysql support not configured" );
 #end if;
+  elsif token = mysql_new_connection_t then         -- MYSQL.New_Connection
+#if MYSQL
+     ParseMySQLNewConnection;
+#else
+    err( "mysql support not configured" );
+#end if;
+  elsif token = mysql_new_query_t then              -- MYSQL.New_Query
+#if MYSQL
+     ParseMySQLNewQuery;
+#else
+    err( "mysql support not configured" );
+#end if;
   elsif token = numerics_set_re_t then              -- Set_Re (complex)
      ParseNumericsSetRe;
   elsif token = numerics_set_im_t then              -- Set_Im (complex)
@@ -7062,6 +7204,10 @@ begin
      ParsePenPlot;
   elsif token = pen_close_canvas_t then            -- Pen.Close_Canvas
      ParsePenCloseCanvas;
+  elsif token = pen_set_font_t then                -- Pen.Set_Font
+     ParsePenSetFont;
+  elsif token = pen_put_t then                     -- Pen.Put
+     ParsePenPut;
   elsif token = dirops_change_dir_t then           -- Dir_Ops.Change_Dir
      ParseDirOpsChangeDir;
   elsif token = dirops_make_dir_t then             -- Dir_Ops.Make_Dir
@@ -7317,7 +7463,9 @@ begin
   ParseNewIdentifier( program_id );
   identifiers( program_id ).kind := identifiers'first;
   identifiers( program_id ).class := mainProgramClass;
-  --identifiers( program_id ).kind := keyword_t; -- not really, but will do for now!
+  if syntax_check then
+     identifiers( program_id ).wasReferenced := true;
+  end if;
   pushBlock( newScope => true,
     newName => to_string (identifiers( program_id ).name ) );
   -- Note: pushBlock must be before "is" (single symbol look-ahead)
@@ -7360,6 +7508,9 @@ begin
            expectSemicolon;
         end if;
      end loop;
+     -- TODO: if there was a main program, none of this is done
+     -- so I should clean this up to make that obvious.  This also allows
+     -- simple scripts to follow the main program??
      if not done or token = eof_t then
         loop
           ParseGeneralStatement;                   -- process the first statement
@@ -7367,6 +7518,10 @@ begin
         end loop;                                  --  or eof hit
         if not done then                           -- not exiting?
            expect( eof_t );                        -- should be nothing else
+        end if;
+        -- no blocks to pull, but we can still check requirements
+        if syntax_check then
+           checkSoftwareModelRequirementsForSimpleScripts;
         end if;
      end if;
   end if;
@@ -7381,15 +7536,15 @@ end parse;
 -- scanner state.
 ------------------------------------------------------------------------------
 
-procedure parseNewCommands( scriptState : out aScriptState; commands : unbounded_string; fragment : boolean := true ) is
+procedure parseNewCommands( scriptState : out aScriptState; byteCode : unbounded_string; fragment : boolean := true ) is
 begin
   saveScript( scriptState );                -- save current script
   if fragment then                          -- a fragment of byte code?
-     replaceScriptWithFragment( commands ); -- install proc as script
+     replaceScriptWithFragment( byteCode ); -- install proc as script
   else                                      -- otherwise a complete script?
-     replaceScript( commands );             -- install proc as script
+     replaceScript( byteCode );             -- install proc as script
   end if;
-  -- put_line( toEscaped( to_unbounded_string( script.all ) ) ); -- DEBUG
+  --put_line( toEscaped( to_unbounded_string( script.all ) ) ); -- DEBUG
   inputMode := fromScriptFile;             -- running a script
   error_found := false;                    -- no error found
   exit_block := false;                     -- not exit-ing a block

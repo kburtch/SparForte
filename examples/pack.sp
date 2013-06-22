@@ -48,7 +48,7 @@ declare
 
   compress : constant string := "/usr/bin/compress";
   zip      : constant string := "/usr/bin/zip";
-  zoo      : constant string := "/bin/zoo";
+  --zoo      : constant string := "/bin/zoo";
   gzip     : constant string := "/bin/gzip";
   bzip     : constant string := "/usr/bin/bzip2";
 
@@ -165,7 +165,7 @@ begin
        $gzip "$source_path";
   when c_bzip =>
        put_line( source_info.file & ": using bzip" );
-       $bzip2 "$source_path";
+       $bzip "$source_path";
   when others =>
      put( standard_error, source_info.file )
          @( standard_error, ": unknown compression method" );

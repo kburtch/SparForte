@@ -54,7 +54,7 @@ begin
    else
       Err := DY / 2.0;
       while Y /= Stop_Y loop
-         Picture (X + width*(Y-1)) := Color;
+         Picture (X + height*(Y-1)) := Color;
          Err := @ - DX;
          if Err < 0.0 then
             X := positive( integer(@) + Step_X );

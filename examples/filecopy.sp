@@ -27,7 +27,6 @@ begin
   declare
     input : file_type;
     output : file_type;
-    line : string;
   begin
     create( output, out_file, "output.txt" );
     open( input, in_file, "input.txt" );

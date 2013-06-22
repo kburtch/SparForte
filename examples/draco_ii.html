@@ -363,9 +363,9 @@ What will you do? *
 
   put( "Press any key to begin *" &amp; ASCII.BS );
   <b>declare</b>
-    ch : character := inkey;
+    ch : character;
   <b>begin</b>
-    <b>null</b>;
+    <b>ch := inkey</b>;
   <b>end</b>;
 
   <FONT COLOR=green><EM>-- Game loop: loop for each level</EM></FONT>

@@ -49,9 +49,9 @@ $ spar sieve
    a : bool_array;
  
    test_num : positive;  
-   limit    : positive := positive(numerics.sqrt(float(arrays.last(a))));
+   -- limit    : positive := positive(numerics.sqrt(float(arrays.last(a))));
 
-   n : positive := 2;  
+   -- n : positive := 2;  
 <b>begin</b>
    <b>for</b> i <b>in</b> arrays.first(a)..last_bool <b>loop</b>
      a(i) := true;

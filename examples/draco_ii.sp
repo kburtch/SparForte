@@ -324,9 +324,9 @@ begin
 
   put( "Press any key to begin *" & ASCII.BS );
   declare
-    ch : character := inkey;
+    ch : character;
   begin
-    null;
+    ch := inkey;
   end;
 
   -- Game loop: loop for each level

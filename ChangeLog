@@ -39,3 +39,20 @@ throw an exception on a number instead of a string as the first parameter.
 
 14. New: Example program: weave.sp
 
+15. Change: pragma debug no longer strips a final end-of-line.  put_line and put now work normally, not as they would in a backquote literal.
+
+16. Fix: pragma debug - source_info and error messages now use the enclosing script's line number, rather than the backquotes script line number (e.g. line 1).  This makes source_info useful in pragma debug.  The character count in errors is still counted from the first backquote.
+
+17. Fix: backquote literals - source_info and error messages now use the enclosing script's line number, rather than the backquotes script line number (e.g. line 1).  The character count in errors is still counted from the first backquote.
+
+18. Fix: Bourne shell command immediately following 'else' are no longer treated as Ada format.
+
+19. New: In --test mode, unused variables are not permitted.  Does not affect unused record fields or enumerated types and their items (see next item).
+
+20. New: pragma restriction( no_unused_identifiers );  In --test mode, require that all enumerated items and type names are explicitly used.
+
+21. Fix: out record parameters no longer allocate a new record for an existing record.
+
+- pen.set_font( c, f, p ) and pen.put( c, s ) added but drawing text on a canvas not working yet.  Not yet documented.
+-- InOut params can't be arrays...give an appropriate error
+

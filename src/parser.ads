@@ -69,15 +69,16 @@ procedure ParseBlock( termid1, termid2 : identifier := keyword_t );
 procedure ParseShellCommand;
 procedure ParseGeneralStatement;
 
+procedure CompileAndRun( commands : unbounded_string; firstLineNo : natural := 1; fragment : boolean := true );
 procedure RunAndCaptureOutput( s : unbounded_string; results : out
   unbounded_string; fragment : boolean := true );
 procedure CompileRunAndCaptureOutput( commands : unbounded_string; results : out
-  unbounded_string );
+  unbounded_string; firstLineNo : natural := 1  );
 
 -- procedure parse;
 -- parse is never executed directly: use an interpret procedure
 
-procedure parseNewCommands( scriptState : out aScriptState; commands : unbounded_string; fragment : boolean := true );
+procedure parseNewCommands( scriptState : out aScriptState; byteCode : unbounded_string; fragment : boolean := true );
 -- for user-defined procedures, functions and backquoted literals
 
 

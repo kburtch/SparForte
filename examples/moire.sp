@@ -11,7 +11,6 @@ procedure moire is
   c    : pen.canvas_id;
   r    : pen.rect;
   s    : string;
-  fill : boolean;
 begin
   pen.new_window_canvas( 200,200,32,c);
   pen.set_pen_mode( c, pen_mode.invert );

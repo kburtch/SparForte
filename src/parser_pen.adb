@@ -20,6 +20,8 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
+    with interfaces.C;
+    use  interfaces.C;
 
 with text_io;use text_io;
 with system,
@@ -1747,6 +1749,68 @@ begin
      end;
   end if;
 end ParsePenPlot;
+
+procedure ParsePenSetFont is
+  -- Syntax: pen.set_font( c, f, p );
+  -- Source: Pen.SetFont
+  canvas_id : identifier;
+  font_val : unbounded_string;
+  font_type: identifier;
+  points_val : unbounded_string;
+  points_type: identifier;
+begin
+  expect( pen_set_font_t );
+  expect( symbol_t, "(" );
+  ParseIdentifier( canvas_id );
+  if baseTypesOk( identifiers( canvas_id ).kind, pen_canvas_id_t ) then
+     ParseExpression( font_val, font_type );
+     if baseTypesOk( font_type, string_t ) then
+        expect( symbol_t, "," );
+        ParseExpression( points_val, points_type );
+        if baseTypesOk( points_type, natural_t ) then
+           expect( symbol_t, ")" );
+        end if;
+     end if;
+  end if;
+  if isExecutingCommand then
+     begin
+        setFont(
+           aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+           font_val,
+           natural( to_numeric( points_val ) ) );
+     exception when others =>
+        err( "exception raised" );
+     end;
+  end if;
+end ParsePenSetFont;
+
+procedure ParsePenPut is
+  -- Syntax: pen.put( c, s );
+  -- Source: Pen.Put
+  canvas_id : identifier;
+  msg_val : unbounded_string;
+  msg_type: identifier;
+begin
+  expect( pen_put_t );
+  expect( symbol_t, "(" );
+  ParseIdentifier( canvas_id );
+  if baseTypesOk( identifiers( canvas_id ).kind, pen_canvas_id_t ) then
+     ParseExpression( msg_val, msg_type );
+     if baseTypesOk( msg_type, natural_t ) then
+        expect( symbol_t, ")" );
+     end if;
+  end if;
+  if isExecutingCommand then
+     begin
+        put(
+           aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+           msg_val ) ;
+     exception when others =>
+        err( "exception raised" );
+     end;
+  end if;
+end ParsePenPut;
+
 
 -- OpenGL
 
@@ -16774,6 +16838,9 @@ begin
   declareProcedure( pen_fade_t, "pen.fade" );
 
   declareProcedure( pen_plot_t, "pen.plot" );
+
+  declareProcedure( pen_set_font_t, "pen.sent_font" );
+  declareProcedure( pen_put_t, "pen.put" );
 
   -- the declarations of pen color names have been broken out into separate
   -- procedures in order to reduce the frame size.  some machines give a

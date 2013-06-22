@@ -24,7 +24,6 @@
 <b>type</b> player_status <b>is</b> ( alive, won, lost );
 status : player_status := alive;     <FONT COLOR=green><EM>-- playing, winner, loser (was "f")</EM></FONT>
 
-<b>type</b> tunnel_list <b>is</b> <b>array</b>(1..20) <b>of</b> string;
 t_delim : <b>constant</b> character := ",";
 tunnels : <b>array</b>(1..20) <b>of</b> string;    <FONT COLOR=green><EM>-- adjacent room list</EM></FONT>
 

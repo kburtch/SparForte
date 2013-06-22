@@ -73,6 +73,7 @@ environment.</p>
   <b>pragma</b> restriction( no_memcache )
   <b>pragma</b> restriction( no_mysql_database )
   <b>pragma</b> restriction( no_postgresql_database )
+  <b>pragma</b> restriction( no_unused_enumerated_items )
   <b>pragma</b> software_model( model_name )
   <b>pragma</b> template( css|html|js|json|text|wml|xml [, path] )
   <b>pragma</b> test( `commands` )
@@ -217,6 +218,12 @@ other programs from using MySQL.</li>
   <li> <b>pragma restriction( no_postgresql_database )</b> - disable
 connections to a PostgreSQL database.  Doesn't prevent the psql client or
 other programs from using PostgreSQL.</li>
+  <li> <b>pragma restriction( no_unused_identifiers )</b> - normally in
+--test mode,
+SparForte will not check enumerated types to see if they are mentioned
+as often the type name is not used, or not all item names are explicitly
+used.  However, using this pragma will check to ensure every enumerated
+type and item is used at least one time.</li>
   <li> <b>pragma software_model( model_name )</b> - declare the general
 software pattern or model best describing this script. model_name can
 be:<br>

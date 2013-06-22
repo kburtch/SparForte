@@ -1,0 +1,10 @@
+# this should fail
+
+pragma restriction( no_unused_identifiers );
+
+type enum is ( enum1, enum2, enum3 );
+
+for e in enum1..enum3 loop
+  null;
+end loop; -- enum2 not mentioned
+

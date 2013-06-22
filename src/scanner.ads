@@ -29,11 +29,13 @@ with system,
   ada.strings.unbounded,
   script_io,
   world,
-  scanner_arrays;
+  scanner_arrays,
+  scanner_res;
 use ada.strings.unbounded,
   script_io,
   world,
-  scanner_arrays;
+  scanner_arrays,
+  scanner_res;
 
 package scanner is
 
@@ -219,6 +221,12 @@ procedure pushBlock( newScope : boolean := false;
 -- multi-line statement (eg. an "if"); if true, the new
 -- block is a nested declaration scope (eg. a "declare")
 
+procedure checkSoftwareModelRequirementsForSimpleScripts;
+-- check for unused variables and tally presence of software model req's
+-- this is normally called automatically by pullBlock but is exposed
+-- here for cases where pullBlock doesn't get run, such as simple scripts
+-- with no blocks.
+
 procedure pullBlock;
 -- restore the previous identifier scope
 
@@ -393,7 +401,7 @@ procedure getCommandLine ( cmdline : out unbounded_string;
 procedure compileTemplate( command : unbounded_string; lineno : natural );
 -- compile the template tag command(s) into byte code
 
-procedure compileCommand( command : unbounded_string );
+procedure compileCommand( command : unbounded_string;  firstLineNo : natural := 1 );
 -- compile the command into byte code
 
 procedure compileScript( firstLine : unbounded_string );

@@ -146,16 +146,11 @@ else
    -- look for keyword(s)
 
    declare
-      looking_for_start : constant positive := 99999;
       remains : string := "";
 
       eliza_reply : string := "";
-      word_start  : positive := 1;
       testword    : string := "";
-      first_pos   : natural := 0;
       response_pos: natural := 0;
-      reading_word: boolean := false;
-      ch : character;
    begin
 
       -- look for single keywords

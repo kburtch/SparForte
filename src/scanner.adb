@@ -359,8 +359,6 @@ begin
               put( kind.name );
            end if;
         elsif ident.kind = root_record_t then -- base record type
--- or identifiers( getBaseType( ident.kind ) ).kind = root_record_t then  -- record type?
-
            put( "record with " & ident.value & " fields" );
         elsif ident.kind = procedure_t then -- procedure's "kind" is procedure
            null;
@@ -414,10 +412,15 @@ begin
      if ident.kind /= keyword_t then
         put( ident.name );
         if not ident.list and ident.kind /= root_record_t then
-        -- if not ident.list and ident.kind /= root_record_t and identifiers( getBaseType( ident.kind ) ).kind /= root_record_t then
             put( " := " );
-            -- (should really used root type to determine quoting)
-            if identifiers( getBaseType( ident.kind ) ).kind = root_record_t then
+            if ident.class = userProcClass then
+                -- this appears first because getBaseType will fail on a
+                -- procedure
+                put( '"' );
+                put( ToEscaped( ident.value ) );
+                put( '"' );
+                -- (should really used root type to determine quoting)
+            elsif identifiers( getBaseType( ident.kind ) ).kind = root_record_t then
                 put( "(" );
                 declare
                    field_id  : identifier;
@@ -435,10 +438,6 @@ begin
                    end loop;
                 end;
                 put( ")" );
-            elsif ident.class = userProcClass then
-                put( '"' );
-                put( ToEscaped( ident.value ) );
-                put( '"' );
             elsif ident.class = userFuncClass then
                 put( '"' );
                 put( ToEscaped( ident.value ) );
@@ -663,15 +662,9 @@ begin
      -- Normal: Draw Error Pointer
 
      outLine := outLine & to_string( (firstPos-1) * " " );               -- indent
-     --for i in 1..firstpos-1 loop                                -- move to token
-     --   put( standard_error, " " );
-     --end loop;
      outLine := outLine & '^';                                  -- token start
      if lastpos > firstpos then                                 -- multi chars?
         outLine := outLine & to_string( (lastpos-firstPos-1) * "-" );
-        --for i in 1..lastpos-firstpos-1 loop
-        --   put( standard_error, "-" );
-        --end loop;
         outLine := outLine & '^';                               -- token end
      end if;
      outLine := outLine & ' ';                                  -- token start
@@ -723,6 +716,86 @@ end err_previous;
 -- Scope
 -----------------------------------------------------------------------------
 
+-----------------------------------------------------------------------------
+-- RECORD SOFTWARE MODEL REQUIREMENTS
+--
+-- Checked the referenced identifier and update the requirements for the
+-- selected software model.
+-----------------------------------------------------------------------------
+
+procedure recordSoftwareModelRequirements( id : identifier ) is
+  model_id : identifier;
+  model    : unbounded_string;
+begin
+-- TODO: ensure software model is set during syntax_check
+  if softwareModelSet then
+     -- TODO: this is slow...should cache it somehow
+     findIdent( system_script_software_model_name, model_id );
+     model := identifiers( model_id ).value;
+  end if;
+  if model = shell_script_model_name then
+     if id = standard_error_t then
+        null; -- record that standard_error was used (not yet written)
+     end if;
+  end if;
+end recordSoftwareModelRequirements;
+
+
+-----------------------------------------------------------------------------
+-- CHECK SOFTWARE MODEL REQUIREMENTS
+--
+-- During a syntax check, before a block is pulled, do two things:
+-- 1. check for identifiers that were declared but not used (referenced)
+-- 2. collect information for software model requirements (if used)
+-- Note: GNAT only checks variables.
+-----------------------------------------------------------------------------
+
+procedure checkSoftwareModelRequirements is
+begin
+--if blocks_top > 1 then
+   --put_line( "checkSoftwareModelRequirements: " & to_string( blocks( blocks_top-1 ).blockName ) ); -- DEBUG
+--else
+   --put_line( "checkSoftwareModelRequirements: no block" ); -- DEBUG
+--end if;
+  for i in reverse blocks(blocks_top-1).identifiers_top..identifiers_top-1 loop
+--put( " id:" ); put( i'img ); -- DEBUG
+--put_line( " " & to_string( identifiers( i ).name ) ); -- DEBUG
+      if identifiers( i ).wasReferenced then
+--put( " REF'D: " ); put_identifier( i ); -- DEBUG
+         -- TODO: Refactor out
+         if softwareModelSet then
+            recordSoftwareModelRequirements( i );
+         end if;
+      elsif testOpt then
+-- TODO declaration line would be helpful if two identifiers have the same
+-- name.
+          err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+      end if;
+  end loop;
+end checkSoftwareModelRequirements;
+
+
+-- Same, but for scripts without blocks.  Called for simple scripts,
+-- or at the end of a main program.
+
+procedure checkSoftwareModelRequirementsForSimpleScripts is
+begin
+   --put_line( "checkSoftwareModelRequirementsForSimpleScripts: no block" ); -- DEBUG
+  for i in reverse predefined_top..identifiers_top-1 loop
+--put( " id:" ); put( i'img ); -- DEBUG
+--put_line( " " & to_string( identifiers( i ).name ) ); -- DEBUG
+      if identifiers( i ).wasReferenced then
+--put( " REF'D: " ); put_identifier( i ); -- DEBUG
+         -- TODO: Refactor out
+         if softwareModelSet then
+            recordSoftwareModelRequirements( i );
+         end if;
+-- TODO: should this be dropped altogether?
+      elsif testOpt then
+          err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+      end if;
+  end loop;
+end checkSoftwareModelRequirementsForSimpleScripts;
 
 -----------------------------------------------------------------------------
 -- PUSH BLOCK
@@ -770,7 +843,11 @@ begin
   if blocks_top = block'first then                              -- no blocks?
      raise block_table_overflow;                                -- raise err
   else
+     if syntax_check and not error_found and not done then
+        checkSoftwareModelRequirements;
+     end if;
      pullArrayBlock( blocks_top );                              -- do any a's
+     pullResourceBlock( blocks_top );                           -- do any r's
      blocks_top := blocks_top - 1;                              -- pop stack
      identifiers_top := blocks( blocks_top ).identifiers_top;   -- pop decl's
   end if;
@@ -917,6 +994,12 @@ begin
   ShutdownMySQL;
   ShutdownDB;
   ShutdownSparOS;
+
+  -- Deallocate arrays and resources before the symbol and block tables
+  -- is cleared
+
+  pullArrayBlock( 1 );
+  pullResourceBlock( 1 );
 
   -- Clear the block and identifier symbol table, just in case the
   -- scanner should be started again later.
@@ -1405,42 +1488,6 @@ end shutdownScanner;
 
 procedure resetScanner is
 
-  --procedure importEnvironment is
-  --  -- Declare all Environment Variables.  If --import_all is not used,
-  --  -- still declare PATH, PWD, OLDPWD, HOME, TERM if they exist.
-  --  path_key   : unbounded_string := to_unbounded_string( "PATH=" );
-  --  pwd_key    : unbounded_string := to_unbounded_string( "PWD=" );
-  --  oldpwd_key : unbounded_string := to_unbounded_string( "OLDPWD=" );
-  --  home_key   : unbounded_string := to_unbounded_string( "HOME=" );
-  --  term_key   : unbounded_string := to_unbounded_string( "TERM=" );
-  --  shell_key  : unbounded_string := to_unbounded_string( "SHELL=" );
-  --  ev  : unbounded_string;                                     -- an env var
-  --begin
---put_line( "IMPORTING ENVIRONMENT" ); -- DEBUG
---put( "ENV COUNT = " ); put_line( Environment_Count'img ); -- DEBUG
-  --   for i in 1..Environment_Count loop
-  --      ev := to_unbounded_string( Environment_Value( i ) );
---put( "ENV = " ); put_line( ev ); -- DEBUG
-  --      if Head( ev, 5 ) = path_key then
-  --         init_env_ident( Environment_Value( i ) );
-  --      elsif Head( ev, 4 ) = pwd_key then
-  --         init_env_ident( Environment_Value( i ) );
-  --      elsif Head( ev, 7 ) = oldpwd_key then
-  --         init_env_ident( Environment_Value( i ) );
-  --      elsif Head( ev, 5 ) = home_key then
-  --         init_env_ident( Environment_Value( i ) );
-  --      elsif Head( ev, 5 ) = term_key then
-  --         init_env_ident( Environment_Value( i ) );
-  --         identifiers( identifiers_top-1).export := true;
---put_line( "  TERM FOUND" ); -- DEBUG
-  --      elsif Head( ev, 6 ) = shell_key then
-  --         init_env_ident( Environment_Value( i ) );
-  --      elsif importOpt then
-  --         init_env_ident( Environment_Value( i ) );
-  --      end if;
-  --   end loop;
-  --end importEnvironment;
-
   procedure importEnvironment is
     -- Declare all Environment Variables.  If --import_all is not used,
     -- still declare PATH, PWD, OLDPWD, HOME, TERM if they exist.
@@ -1816,6 +1863,9 @@ begin
 
   resetScanner;
 
+  -- last predefind thing
+  predefined_top := identifiers_top;
+
 end startScanner;
 
 
@@ -1851,7 +1901,6 @@ begin
      Get( localMemcacheCluster,
           identifiers( id ).name,
           importedStringValue );
-          --identifiers( id ).value );
   elsif identifiers( id ).method = memcache then
      Get( distributedMemcacheCluster,
           identifiers( id ).name,
@@ -1862,7 +1911,6 @@ begin
          ev := to_unbounded_string( Environment_Value( i ) );    -- get next one
          if Head( ev, length( key ) ) = key then                 -- match?
             importedStringValue :=                               -- get value
-            --identifiers( id ).value :=                           -- get value
                 Tail( ev, length( ev ) - length( key ) );        -- and assign
             refreshed := true;
             exit;                                                -- we're done
@@ -1896,7 +1944,6 @@ begin
         DoJsonToRecord( id, importedStringValue );
      elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then -- number
         DoJsonToNumber( importedStringValue, identifiers( id ).value );
-        --identifiers( id ).value := importedStringValue;
      elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_enumerated_t then -- enum
         DoJsonToNumber( importedStringValue, identifiers( id ).value );
      --else
@@ -2406,6 +2453,11 @@ begin
   end if;                                                       -- else
   if identifiers( id ).list and identifiers( id ).class = otherClass then
      clearArray( arrayID( to_numeric( identifiers( id ).value ) ) );
+  elsif identifiers( id ).resource and identifiers( id ).class = otherClass then
+     null;
+     -- deleting a single resource is not allowed because the id is the index
+     -- into the list of reousrces.
+     -- clearResource( resHandleID( long_integer( to_numeric( identifiers( id ).value ) ) ) );
   elsif identifiers( id ).export then
      tempStr := identifiers( id ).value;
      if identifiers( id ).method = local_memcache or identifiers( id ).method = memcache then
@@ -2764,7 +2816,6 @@ begin
      elsif kind = uni_string_t then
         result := to_unbounded_string( "[" );
         for arrayElementPos in source_first..source_last loop
-           --data := arrayElement( sourceArrayId, arrayElementPos+offsetArrayBeingSorted );
            data := arrayElement( sourceArrayId, arrayElementPos );
            if elementKind = json_string_t then
               -- if it's a JSON string, just copy the data
@@ -2772,28 +2823,6 @@ begin
            else
               item := to_unbounded_string( """" );
               item := item & toJSONEscaped( data );
-              --for i in 1..length( data ) loop
-              --    ch := element( data, i );
-              --    if ch = '"' then
-              --       item := item & "\""";
-              --    elsif ch = '\' then
-              --       item := item & "\\";
-              --    elsif ch = '/' then
-              --       item := item & "\/";
-              --    elsif ch = ASCII.BS then
-              --       item := item & "\b";
-              --    elsif ch = ASCII.FF then
-              --       item := item & "\f";
-              --    elsif ch = ASCII.LF then
-              --       item := item & "\n";
-              --    elsif ch = ASCII.CR then
-              --       item := item & "\r";
-              --    elsif ch = ASCII.HT then
-              --       item := item & "\t";
-              --    else
-              --       item := item & ch;
-              --    end if;
-              --end loop;
               item := item & '"';
            end if;
            if arrayElementPos /= source_last then
@@ -2805,7 +2834,6 @@ begin
 
         result := to_unbounded_string( "[" );
         for arrayElementPos in source_first..source_last loop
-           --data := arrayElement( sourceArrayId, arrayElementPos+offsetArrayBeingSorted );
            data := arrayElement( sourceArrayId, arrayElementPos );
            if element( data, 1 ) = ' ' then
               delete( data, 1, 1 );
@@ -2915,29 +2943,8 @@ begin
        end if;
      end;
 
-     --sourceLen := 0;
      inBackslash := false;
      inQuotes := false;
-
-     --if length( source_val ) > 2 then -- length zero for []
-     --   for i in 2..length( source_val )-1 loop
-     --       ch := element( source_val, i );
-     --       if inBackslash then
-     --          inBackslash := false;
-     --       else
-     --          if ch = '\' then
-     --             inBackslash := true;
-     --          else
-     --             if not inBackslash and ch = '"' then
-     --                inQuotes := not inQuotes;
-     --             elsif not inQuotes and ch = ',' then
-     --                sourceLen := sourceLen + 1;
-     --             end if;
-     --          end if;
-     --       end if;
-     --   end loop;
-     --   sourceLen := sourceLen + 1;
-    --end if;
 
     -- Check to see if the length matches that of the array we are assigning
     -- to.  Null array is a special case.
@@ -3164,25 +3171,6 @@ begin
              err( "JSON parse error on character" & i'img );
           end if;
         end;
-
---        -- some kind of numeric items
---        arrayElement := target_first;
---        for i in 2..length( source_val ) loop
---            ch := element( source_val, i );
---            if ch = ',' or ch = ']' then
---               -- if first character is a quote, it's a string value not number
---               ch := element( item, 1 );
---               if ch = '"' then
---                  err( "JSON number value expected" );
---               end if;
---               assignElement( targetArrayId, arrayElement, item );
---               arrayElement := arrayElement + 1;
---               item := null_unbounded_string;
---            else
---               item := item & ch;
---            end if;
---        end loop;
-
      else
         -- this should not happen
         err( "unsupported array type" );
@@ -3341,30 +3329,6 @@ begin
        end if;
      end;
 --put_line( "new length = " & sourceLen'img ); -- DEBUG
--- If this works, delete the old one below
---
-     -- Count the number of items in the JSON string
-     --sourceLen := 0;
-     --
-     --if length( item ) > 2 then -- length zero for {}
-     --   for i in 2..length( item )-1 loop
-     --       ch := element( item, i );
-     --       if inBackslash then
-     --          inBackslash := false;
-     --       else
-     --          if ch = '\' then
-     --             inBackslash := true;
-     --          else
-     --             if not inBackslash and ch = '"' then
-     --                inQuotes := not inQuotes;
-     --             elsif not inQuotes and ch = ',' then
-     --                sourceLen := sourceLen + 1;
-     --             end if;
-     --          end if;
-     --       end if;
-     --   end loop;
-     --   sourceLen := sourceLen + 1;
-    --end if;
 
     -- The number of items in the JSON string should equal the size of the
     -- record.
@@ -3934,7 +3898,6 @@ begin
      token := sql_word_t;                                     -- word literal
      return;
 
-  -- elsif is_letter( ch ) or ch = high_ascii_escape then        -- identifier?
   elsif (ch >= 'a' and ch <='z') or
         (ch >= 'A' and ch <='Z') or ch = high_ascii_escape then  -- identifier?
 
@@ -4101,7 +4064,6 @@ begin
           script( lastpos );
         lastpos := lastpos + 1;
      end loop;
-     -- lastpos := lastpos+1;
      cmdpos := lastpos+1;                                     -- skip last "
      token := strlit_t;                                       -- string literal
      return;
@@ -4772,7 +4734,6 @@ begin
      end if;
      id := eof_t;
      lastpos := lastpos - 1;
-     -- word := To_Unbounded_string( slice( command, cmdpos, lastpos ) );
      cmdpos := lastpos+1;
      for i in reverse 1..reserved_top-1 loop -- was identifiers top
          if identifiers( i ).name = word and not identifiers( i ).deleted then
@@ -4802,8 +4763,6 @@ begin
           ci.compressedScript := ci.compressedScript & word &
              immediate_word_delimiter;
        end if;
-       -- ci.compressedScript := ci.compressedScript &
-       --    slice( command, firstpos, lastpos ) & immediate_word_delimiter;
     exception when others =>
        err_tokenize( "interal error: byte code generator: exception thrown", to_string( command) );
        raise;
@@ -4847,7 +4806,6 @@ begin
   -- the high-bit set.
 
 <<next>> if cmdpos > length( command ) then                   -- end of line?
-     -- ci.compressedScript := ci.compressedScript & ASCII.NUL;  -- add ASCII 0
      return;                                                  -- and quit
   end if;
 
@@ -4925,7 +4883,6 @@ begin
      end if;
      id := eof_t;
      lastpos := lastpos - 1;
-     -- word := To_Unbounded_string( slice( command, cmdpos, lastpos ) );
      cmdpos := lastpos+1;
      for i in reverse 1..reserved_top-1 loop -- was identifiers top
          if identifiers( i ).name = word and not identifiers( i ).deleted then
@@ -4955,8 +4912,6 @@ begin
           ci.compressedScript := ci.compressedScript & word &
              immediate_word_delimiter;
        end if;
-       -- ci.compressedScript := ci.compressedScript &
-       --    slice( command, firstpos, lastpos ) & immediate_word_delimiter;
        goto next;
     exception when others =>
        err_tokenize( "interal error: byte code generator: exception thrown", to_string( command) );
@@ -5135,11 +5090,6 @@ begin
              cmdpos := cmdpos + 1;
           end if;
      when '?' =>
-          -- special case: switch to shell context and don't check parameters
-          -- ci.context := shellStatement;
-          -- ci.compressedScript := ci.compressedScript & "?";
-          -- cmdpos := cmdpos + 1;
-          -- return;
           null;
      when '#' =>
            -- shell comments used to be supported but not any more
@@ -5504,10 +5454,6 @@ begin
      ci.compressedScript := ci.compressedScript & slice( command, firstpos, lastpos );
      cmdpos := cmdpos + 1;
      return;
-  --elsif ch = '|' then
-  --   ci.compressedScript := ci.compressedScript & slice( command, firstpos, lastpos );
-  --   cmdpos := cmdpos + 1;
-  --   goto next;
   end if;
 
   -- Loop through word
@@ -5561,15 +5507,6 @@ begin
     -- Third, look for word terminators
 
        if not (inSingleQuotes or inDoubleQuotes or inBackQuotes or inBackslash) then
-          --if ch = ' ' then
-          --   ci.context := startOfStatement;
-          --   lastpos := cmdpos - 1;
-          --   exit;
-          --elsif ch = ASCII.HT then
-          --if ch = ASCII.HT then
-          --   ci.context := startOfStatement;
-          --   lastpos := cmdpos - 1;
-          --   exit;
           if ch = ';' then
              ci.context := startOfStatement;
              lastpos := cmdpos - 1;
@@ -5583,10 +5520,6 @@ begin
              lastpos := cmdpos - 1;
              exit;
           end if;
-          --if ch = ';' then
-          --   ci.context := startOfStatement;
-          --   lastpos := cmdpos - 1;
-          --   exit;
        end if; -- escaped
 
        -- Got here? Character is good.  Backslashing?  Turn it off.
@@ -5880,7 +5813,6 @@ begin
      end if;
      id := eof_t;
      lastpos := lastpos - 1;
-     --word := To_Unbounded_string( slice( command, cmdpos, lastpos ) );
      cmdpos := lastpos+1;
      for i in reverse 1..reserved_top-1 loop -- SHOULD "keyword_top" BE ALL?
          if identifiers( i ).name = word and not identifiers( i ).deleted then
@@ -5888,7 +5820,6 @@ begin
             exit;
          end if;
      end loop;
-  -- end if;
 
   -- If a keyword was found compress it and change the context
 
@@ -5937,20 +5868,18 @@ begin
           ci.context := StartOfParameters;                 -- Shell or Ada
        elsif id = step_t then                              -- step?
           ci.context := StartOfParameters;                 -- Shell or Ada
-       -- elsif id = template_t then                          -- template?
-       --    ci.context := StartOfParameters;                 -- Shell or Ada
        elsif id = begin_t then                             -- begin?
           ci.context := startOfStatement;                  -- don't know
        elsif id = is_t then                                -- is?
           ci.context := isPart;
-          -- ci.context := startOfStatement;                  -- don't know
+       elsif id = else_t then                              -- else?
+          ci.context := startOfStatement;                  -- don't know
        elsif id = then_t then                              -- then?
           ci.context := startOfStatement;                  -- don't know
        elsif id = record_t then                            -- record?
           ci.context := startOfStatement;                  -- don't know
        elsif id = loop_t then                              -- loop?
           ci.context := startOfStatement;                  -- don't know
--- THIS MAY BREAK LOOP LOOPS
        else                                                -- otherwise
           ci.context := adaScriptStatement;                -- assume Ada
        end if;
@@ -6045,15 +5974,14 @@ begin
   -- Use the appropriate compiler for the context.
 
 <<next>> if wasSIGINT then
-            wasSIGINT := false;
-  done := true;                             -- stop parsing
-  exit_block := true;                       -- exit any block
-  done_sub := false;                        -- only leaving subprogram
-  if trace then                             -- tracing? explain
-     put_trace( "Terminating" );
-  end if;
-
-            return;
+      wasSIGINT := false;
+      done := true;                             -- stop parsing
+      exit_block := true;                       -- exit any block
+      done_sub := false;                        -- only leaving subprogram
+      if trace then                             -- tracing? explain
+         put_trace( "Terminating" );
+      end if;
+      return;
   end if;
   case ci.context is
   when startOfStatement =>
@@ -6164,14 +6092,14 @@ begin
           if i /= length( ci.compressedScript ) then
              new_line;
              if wasSIGINT then
-                 wasSIGINT := false;
-  done := true;                             -- stop parsing
-  exit_block := true;                       -- exit any block
-  done_sub := false;                        -- only leaving subprogram
-  if trace then                             -- tracing? explain
-     put_trace( "Terminating" );
-  end if;
-                 exit;
+                wasSIGINT := false;
+                done := true;                          -- stop parsing
+                exit_block := true;                    -- exit any block
+                done_sub := false;                     -- only leaving subprogram
+                if trace then                          -- tracing? explain
+                   put_trace( "Terminating" );
+                end if;
+                exit;
              end if;
              put( line, width => 3 );
              put( ":" );
@@ -6345,10 +6273,11 @@ end compileTemplate;
 -- or backquotes or templates.
 -----------------------------------------------------------------------------
 
-procedure compileCommand( command : unbounded_string ) is
+procedure compileCommand( command : unbounded_string; firstLineNo : natural := 1 ) is
 begin
-  SourceLineNoLo := 0;
-  SourceLineNoHi := 0;
+  setByteCodeLine( firstLineNo-1 );
+  --SourceLineNoLo := 0;
+  --SourceLineNoHi := 0;
   compileCommandOrTemplate( command );
 end compileCommand;
 
@@ -6521,7 +6450,6 @@ begin
   --end if;
   script := new string( 1..length( ci.compressedScript ) );  -- alloc script
   script.all := to_string( ci.compressedScript );            -- and copy
-  -- identifiers( source_info_script_size_t ).value := delete( to_unbounded_string( script.all'length'img), 1, 1 );
 end replaceScriptWithFragment;
 
 
@@ -6543,7 +6471,6 @@ begin
   --end if;
   script := new string( 1..length( ci.compressedScript ) );  -- alloc script
   script.all := to_string( ci.compressedScript );            -- and copy
-  -- identifiers( source_info_script_size_t ).value := delete( to_unbounded_string( script.all'length'img), 1, 1 );
 end replaceScript;
 
 -----------------------------------------------------------------------------

@@ -180,16 +180,11 @@ i := ' ' &amp; i &amp; ' ';
    <FONT COLOR=green><EM>-- look for keyword(s)</EM></FONT>
 
    <b>declare</b>
-      looking_for_start : <b>constant</b> positive := 99999;
       remains : string := "";
 
       eliza_reply : string := "";
-      word_start  : positive := 1;
       testword    : string := "";
-      first_pos   : natural := 0;
       response_pos: natural := 0;
-      reading_word: boolean := false;
-      ch : character;
    <b>begin</b>
 
       <FONT COLOR=green><EM>-- look for single keywords</EM></FONT>

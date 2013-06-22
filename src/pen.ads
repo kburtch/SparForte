@@ -187,6 +187,8 @@ type aCanvas is record
     hardware    : system.address;                      -- same as a C pointer
     name        : unbounded_string;                    -- name of canvas
     kind        : aCanvasType := unknown;
+    hasFont     : boolean := false;                    -- true if font loaded
+    font_ptr     : TTF_font;                           -- TTF font
 end record;
 
 function ">="( left, right : aCanvas ) return boolean;
@@ -1134,6 +1136,19 @@ procedure vline( theCanvas : in out aCanvas; x, y1, y2 : aCoordinate );
 procedure vline( canvas_id : aCanvasID; x, y1, y2 : aCoordinate );
 
 procedure Stretch( sourceCanvas : aCanvas; targetCanvas : in out aCanvas; target_x, target_y : aCoordinate; newWidth, newHeight : aCoordinate );
+
+---> Truetype Fonts TEXT
+--
+-- Drawing strings.
+-----------------------------------------------------------------------------
+
+procedure SetFont( canvas_id : aCanvasID; path : unbounded_string; points : natural );
+-- assign a true type font to a canvas
+
+procedure Put( canvas_id : aCanvasID; str : unbounded_string );
+
+procedure CloseFont( canvas_id : aCanvasID );
+-- TODO: make cleaner to use
 
 ---> GRAPHING
 --

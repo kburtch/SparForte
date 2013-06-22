@@ -636,13 +636,20 @@ moduleIsRunning : boolean := false;
 
 procedure startupPen is
   res_int : integer;
+  res     : SDL_success;
 begin
 
   res_int := SDL_Init( SDL_INIT_VIDEO );
   if res_int < 0 then
      put_line( standard_error, "startupPen: sdl_init failed, SDL error = " & to_string( get_sdl_error ) );
   else
-     moduleIsRunning := true;
+    res := TTF_Init;
+    if res = SDL_Failed then
+       put_line( standard_error, "startupPen: TTF_init failed, SDL error = " & to_string( get_sdl_error ) );
+       SDL_Quit;
+    else
+      moduleIsRunning := true;
+    end if;
   end if;
 
   -- LastButtons := 0; -- assume all mouse buttons up
@@ -1972,6 +1979,9 @@ begin
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      SDL_FreeSurface( theCanvas.surface );
+     if theCanvas.hasFont then
+        TTF_CloseFont( theCanvas.font_ptr  );
+     end if;
      canvasList.Clear( canvas, canvasIndex );
   end if;
 end closeCanvas;
@@ -2404,6 +2414,155 @@ SDL_EXT_Frame_Rect( targetcanvas.surface, target_range.x, target_range.y, target
      end if;
 
 end Stretch;
+
+
+---> SET FONT
+--
+-- Assign a true type font to a canvas
+-----------------------------------------------------------------------------
+
+procedure SetFont( canvas_id : aCanvasID; path : unbounded_string; points : natural ) is
+  theCanvas : aCanvas;
+  canvasIndex : canvasList.aListIndex := 0;
+  path_str : string := to_string( path );
+begin
+  theCanvas.id := canvas_id;
+  canvasList.Find( canvas, theCanvas, 1, canvasIndex );
+  if canvasIndex = 0 then
+     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+  else
+    canvasList.Find( canvas, canvasIndex, theCanvas );
+    declare
+      f : file_type;
+    begin
+      open( f, in_file, path_str );
+      close( f );
+      -- TODO: check result for null, handle bad path (though this
+      -- should be mitigated by the open above
+      if theCanvas.hasFont then
+         TTF_CloseFont( theCanvas.font_ptr  );
+      end if;
+      theCanvas.font_ptr := TTF_OpenFont( path_str & ASCII.NUL, interfaces.c.int( points ) );
+      -- TTF_SetFontStyle(font, renderstyle);
+      -- TTF_SetFontOutline(font, outline);
+      -- TTF_SetFontKerning(font, kerning);
+      -- TTF_SetFontHinting(font, hinting);
+      theCanvas.hasFont := true;
+      canvasList.Replace( canvas, canvasIndex, theCanvas );
+    end;
+  end if;
+end SetFont;
+
+
+---> PUT
+--
+-- Print a message in the current font.
+-----------------------------------------------------------------------------
+-- TODO: this is not working
+
+procedure Put( canvas_id : aCanvasID; str : unbounded_string ) is
+  theCanvas : aCanvas;
+  canvasIndex : canvasList.aListIndex := 0;
+  textSurface : system.address;
+  svga_x1 : SDL_HCoordinate;
+  svga_y1 : SDL_VCoordinate;
+  svga_x2 : SDL_HCoordinate;
+  svga_y2 : SDL_VCoordinate;
+  r : aRect;
+  textSurface_ptr : SDL_Surface_Ptr;
+begin
+put_line( "Put on canvas " & canvas_id'img );
+  theCanvas.id := canvas_id;
+  canvasList.Find( canvas, theCanvas, 1, canvasIndex );
+  if canvasIndex = 0 then
+     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+  else
+     canvasList.Find( canvas, canvasIndex, theCanvas );
+     if theCanvas.hasFont then
+put_line( "has font" );
+
+       -- render the text on a separate off-screen surface.  (Alpha blending not yet implemented)
+
+       clear( theCanvas, blue );
+       setPenInk( theCanvas, white ); -- no effect?
+
+       textSurface := TTF_RenderText_Solid( theCanvas.font_ptr, to_string( str ) & ASCII.NUL, theCanvas.pen.pixel );
+       textSurface_ptr := SDL_Surface_Conv.To_Pointer( textSurface );
+put_line( "rendered: " & textSurface_ptr.W'img & " x" & textSurface_ptr.H'img );
+
+       -- TODO: handle null
+
+       -- determine the current pen location (x1, y1).  Determine the number of pixels for
+       -- ( x2, y2 ) in order to hold the text (based on the text surface).
+
+       r.left := theCanvas.pen.X;
+       r.top  := theCanvas.pen.Y;
+       r.right := 100.0;
+       r.bottom := 100.0;
+       svgaEffectiveRectangle( theCanvas, r, svga_x1, svga_y1, svga_x2, svga_y2 );
+       if svga_x1 + svga_x2 = 0 then
+          return;
+       end if;
+       -- TODO: clipping not implemented
+       svga_x1 := 10;
+       svga_y1 := 10;
+       svga_x2 := svga_x1 + SDL_HCoordinate( textSurface_ptr.w );
+       svga_y2 := svga_y1 + SDL_VCoordinate( textSurface_ptr.h );
+put_line( "(" & svga_x1'img & "," & svga_y1'img & ") (" & svga_x2'img & "," & svga_y2'img & ")" );
+       -- draw the text as any other.  lock the surface if waitToReveal is not used.  Free
+       -- the text surface when done.
+
+put_line( "text" );
+       setPenInk( theCanvas, grey );
+       SDL_EXT_Copy_Fill_Rect_Pattern( theCanvas.surface, svga_x1, svga_y1, svga_x2, svga_y2, textSurface );
+       -- SDL_BlitSurface(
+       SDL_FreeSurface( textSurface );
+
+       if theCanvas.pen.revealCount = 0 then
+put_line( "lock" );
+          if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
+             put_line( standard_error, "unable to lock SDL surface" );
+          end if;
+       end if;
+put_line( "rect" );
+       --SDL_Ext_Line( theCanvas.surface, svga_x1, svga_y1, svga_x2, svga_y1, theCanvas.pen.pixel, copy, true );
+       --SDL_Ext_Line( theCanvas.surface, svga_x1, svga_y1, svga_x1, svga_y2, theCanvas.pen.pixel, copy, true );
+       --SDL_Ext_Line( theCanvas.surface, svga_x1, svga_y2, svga_x2, svga_y1, theCanvas.pen.pixel, copy, true );
+       --SDL_Ext_Line( theCanvas.surface, svga_x2, svga_y1, svga_x2, svga_y2, theCanvas.pen.pixel, copy, true );
+
+       if theCanvas.pen.revealCount = 0 then
+put_line( "unlock" );
+          SDL_UnlockSurface( theCanvas.surface  );
+       end if;
+
+    end if;
+    canvasList.Replace( canvas, canvasIndex, theCanvas );
+  end if;
+end Put;
+
+
+---> CLOSE FONT
+--
+-- Close a font opened with set font.
+-----------------------------------------------------------------------------
+
+procedure CloseFont( canvas_id : aCanvasID ) is
+  theCanvas : aCanvas;
+  canvasIndex : canvasList.aListIndex := 0;
+begin
+  theCanvas.id := canvas_id;
+  canvasList.Find( canvas, theCanvas, 1, canvasIndex );
+  if canvasIndex = 0 then
+     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+  else
+    canvasList.Find( canvas, canvasIndex, theCanvas );
+    if theCanvas.hasFont then
+      TTF_CloseFont( theCanvas.font_ptr );
+      theCanvas.hasFont := false;
+    end if;
+    canvasList.Replace( canvas, canvasIndex, theCanvas );
+  end if;
+end CloseFont;
 
 end pen;
 

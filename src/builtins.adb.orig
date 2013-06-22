@@ -1397,6 +1397,9 @@ begin
        "restriction( no_postgresql_database ) - " &
          "disable connections to postgresql" );
      Put_Line( "  " & bold( "pragma" ) & " " &
+       "restriction( no_unused_identifiers ) - " &
+         "stricter unused tests" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
        "software_model( model_name )" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "template( css|html|js|json|text|wml|xml [, path] ) - script is acting as a template processor" );
@@ -1895,7 +1898,7 @@ begin
      New_Line;
      Put_Line( "  get_pen_mode( id )        get_pen_brush( id )      set_pen_ink(id,r,g,b)    " );
      Put_Line( "  set_pen_ink(id,cn)        set_pen_mode( id, m)     set_pen_pattern( id,pid) " );
-     Put_Line( "  set_pen_brush( id,brush )                                                   ");
+     Put_Line( "  set_pen_brush( id,brush ) set_font( c, f, p )*     put( c, s )*             ");
      Put_Line( "  p := greyscale( r,g,b) blend(r1,g1,b1,r2,g2,b2,r,g,b) fade(r1,g1,b1,p,r,g,b)");
      New_Line;
      Put_Line( "  new_canvas(h,v,c,id) new_screen_canvas(h,v,c,id) new_window_canvas(h,v,c,id)");

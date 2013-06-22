@@ -1,0 +1,11 @@
+# this should fail
+
+pragma restriction( no_unused_identifiers );
+
+type enum is ( enum1, enum2 );
+
+e : enum := enum2;
+
+e := e; -- enum1 not used
+
+

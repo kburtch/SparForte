@@ -108,6 +108,9 @@ pen_fade_t           : identifier;
 
 pen_plot_t           : identifier;
 
+pen_set_font_t       : identifier;
+pen_put_t            : identifier;
+
 pen_pen_color_name_t : identifier;
 color_name_aliceblue_t : identifier;
 color_name_antiquewhite_t : identifier;
@@ -2185,6 +2188,9 @@ procedure ParsePenRevealNow;
 procedure ParsePenGreyscale( result : out unbounded_string );
 procedure ParsePenBlend;
 procedure ParsePenFade;
+
+procedure ParsePenSetFont;
+procedure ParsePenPut;
 
 procedure ParsePenPlot;
 

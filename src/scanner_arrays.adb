@@ -76,7 +76,11 @@ begin
       stringList.Queue( arrayElements, Null_Unbounded_String );
   end loop;
   if trace then
-     put_trace( to_string( name ) & " declared as array #" & id'img );
+     if length( b.name ) = 0 then
+        put_trace( "unnamed array declared as array #" & id'img );
+     else
+        put_trace( to_string( name ) & " declared as array #" & id'img );
+     end if;
      put_trace( "There are" & stringList.length( arrayElements )'img & " array elements declared by all arrays" );
   end if;
   exception when storage_error =>
@@ -238,7 +242,11 @@ begin
       end if;
       arrayList.Clear( bushArrays, i );                    -- destroy array rec
       if trace then
-         put_trace( to_string( b.name ) & " array deallocated" );
+         if length( b.name ) = 0 then
+            put_trace( "unnamed array #" & i'img & " deallocated" );
+         else
+            put_trace( to_string( b.name ) & " array deallocated" );
+         end if;
       end if;
   end loop;
   if best.offset > 0 then                                  -- dealloc elements

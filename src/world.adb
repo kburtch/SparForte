@@ -157,9 +157,11 @@ begin
        volatile => false,
        limit    => false,
        list     => false,
+       resource => false,
        field_of => eof_t,
        inspect  => false,
-       deleted  => false
+       deleted  => false,
+       wasReferenced => false
      );
      identifiers_top := identifiers_top + 1;                    -- push stack
   end if;
@@ -187,9 +189,11 @@ begin
        volatile => false,
        limit    => false,
        list     => false,
+       resource => false,
        field_of => eof_t,
        inspect  => false,
-       deleted  => false
+       deleted  => false,
+       wasReferenced => false
      );
   end if;
 end declareIdent;
@@ -286,9 +290,11 @@ begin
                  volatile => false,
                  limit    => false,
                  list     => false,
+                 resource => false,
                  field_of => eof_t,
                  inspect  => false,
-                 deleted  => false
+                 deleted  => false,
+                 wasReferenced => false
                );
             end if;
          end if;
@@ -320,9 +326,11 @@ begin
        volatile => false,
        limit    => false,
        list     => false,
+       resource => false,
        field_of => eof_t,
        inspect  => false,
-       deleted  => false
+       deleted  => false,
+       wasReferenced => false
      );
   end if;
 end declareReturnResult;

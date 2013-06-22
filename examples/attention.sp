@@ -12,7 +12,6 @@ pragma license( unrestricted );
 sound_path : constant string := "/usr/share/doc/packages/sox/monkey.au";
 devdsp     : constant string := "/dev/dsp";
 devaudio   : constant string := "/dev/audio";
-tty        : constant string := `tty;`;
 played     : boolean := false;
 
 procedure usage is

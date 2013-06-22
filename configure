@@ -99,6 +99,16 @@ done
 echo "Configuring SparForte..."
 sleep 1
 echo
+
+PKGCONFIG="pkg-config"
+echo -n "checking for pkg_config... "
+(exec $PKGCONFIG --version >/dev/null 2>/dev/null)
+if [ $? -ne 0 ] ; then
+   echo "no"
+else
+   echo "yes"
+fi
+
 LOCATE="glocate"
 echo -n "checking for locate ($LOCATE)... "
 "$LOCATE" --help >/dev/null 2>/dev/null
@@ -549,18 +559,36 @@ fi
 if [ -z "$SDL_CONFIG" ] ; then
    SDL_CONFIG="sdl-config"
 fi
-echo -n "checking for SDL_config... "
+echo -n "configuring SDL (SDL_config)... "
 TMP=`(exec $SDL_CONFIG --version 2>/dev/null)`
 if [ -z "$TMP" ] ; then
-   # Cannot find SDL_config?  Use these defaults for makefile sed...
-   if [ "$OS" = "FreeBSD" ] ; then
-      SDLLIBSTYPE="-L\/usr\/local\/lib -lSDL-1.1\ -lSDL_image -lpthread"
-      SDLINCLTYPE="-I\/usr\/local\/include\/SDL11"
-   else
-      SDLLIBSTYPE="-l\ SDL\ -l\ SDL_image"
-      SDLINCLTYPE="-I\/usr\/include\/SDL"
-   fi
    echo "no"
+   if [ -n "$PKGCONFIG" ] ; then
+      echo -n "configuring SDL (pkg-config)... "
+      # bundled SDL here
+      SDLLIBSTYPE=`(exec $PKGCONFIG --libs sdl 2>/dev/null)`
+      SDLLIBSTYPE=`echo "$SDLLIBSTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+      SDLINCLTYPE=`(exec $PKGCONFIG --cflags sdl 2>/dev/null)`
+      SDLINCLTYPE=`echo "$SDLINCLTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+      if [ $? -ne 0 ] ; then
+         SDLLIBSTYPE=""
+         SDLINCLTYPE=""
+         echo "no"
+      else
+         echo "yes"
+      fi
+   fi
+   if [ -z "$SDLLIBSTYPE" ] ; then
+      echo "guessing at SDL configation (may be incorrect)... "
+      # Cannot find SDL_config?  Use these defaults for makefile sed...
+      if [ "$OS" = "FreeBSD" ] ; then
+         SDLLIBSTYPE="-L\/usr\/local\/lib -lSDL-1.1\ -lSDL_image -lpthread"
+         SDLINCLTYPE="-I\/usr\/local\/include\/SDL11"
+      else
+         SDLLIBSTYPE="-l\ SDL\ -l\ SDL_image"
+         SDLINCLTYPE="-I\/usr\/include\/SDL"
+      fi
+   fi
 else
    # Remove -D_REENTRANT (not recognized by GCC Ada) and escape special
    # sed characters (space and slash)
@@ -571,8 +599,34 @@ else
    echo "yes"
 fi
 
+#if [ -z "$SDL_CONFIG" ] ; then
+#   SDL_CONFIG="sdl-config"
+#fi
+#echo -n "checking for SDL_config... "
+#TMP=`(exec $SDL_CONFIG --version 2>/dev/null)`
+#if [ -z "$TMP" ] ; then
+#   # Cannot find SDL_config?  Use these defaults for makefile sed...
+#   if [ "$OS" = "FreeBSD" ] ; then
+#      SDLLIBSTYPE="-L\/usr\/local\/lib -lSDL-1.1\ -lSDL_image -lpthread"
+#      SDLINCLTYPE="-I\/usr\/local\/include\/SDL11"
+#   else
+#      SDLLIBSTYPE="-l\ SDL\ -l\ SDL_image"
+#      SDLINCLTYPE="-I\/usr\/include\/SDL"
+#   fi
+#   echo "no"
+#else
+#   # Remove -D_REENTRANT (not recognized by GCC Ada) and escape special
+#   # sed characters (space and slash)
+#   SDLLIBSTYPE=`$SDL_CONFIG --libs`" -lSDL_image"
+#   SDLLIBSTYPE=`echo "$SDLLIBSTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+#   SDLINCLTYPE=`$SDL_CONFIG --cflags | sed "s/\ -D_REENTRANT//g"`
+#   SDLINCLTYPE=`echo "$SDLINCLTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+#   echo "yes"
+#fi
+
 # Bytes are aligned differently between 32-bit and 64-bit SDL data structures.
 # Default to 64-bit else use 32-bit.
+
 echo -n "selecting SDL binding... "
 if test -r bush_os-sdl.ads ; then
    echo " (cached, make distclean to remove)";
@@ -620,37 +674,62 @@ if [ -z "$TMP" ] ; then
       echo "libSDL_image is used by SparForte to load image files (JPEGs, GIFs, etc.)"
       exit 1
     else
+       SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_ttf\ "
+       echo "yes"
+    fi
+ else
+  SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_ttf\ "
+  echo "yes"
+fi
+
+# Check for the libSDL_ttf (Simple DirectMedia Layer truetype font) Library
+
+echo -n "checking for libSDL_ttf (ldconfig -p, Linux)... "
+TMP=`/sbin/ldconfig -p 2>/dev/null | grep libSDL_ttf`
+if [ -z "$TMP" ] ; then
+   echo "no"
+   echo -n "checking for libSDL_image (ldconfig -r, FreeBSD)... "
+   TMP=`/sbin/ldconfig -r 2>/dev/null | grep libSDL_ttf`
+   if [ -z "$TMP" ] ; then
+      echo "no"
+      echo "No version of the Simple DirectMedia Layer truetype font library (libSDL_Image) was found"
+      echo "This is a third-party  library not normally included with libSDL."
+      echo "Fedora users can install it using this command: yum install SDL_ttf"
+      echo "If you have installed libSDL_ttf, you may need to use ldconfig (as"
+      echo "root) to update the shared library search paths for libSDL_ttf"
+      echo
+      echo "libSDL_ttf is not currently used.  It will be used by the pen package to"
+      echo "to display text."
+      exit 1
+    else
        echo "yes"
     fi
  else
   echo "yes"
 fi
 
-# Check for the libSDL_ttf (Simple DirectMedia Layer truetype font) Library
-
-#echo -n "checking for libSDL_ttf (ldconfig -p, Linux)... "
-#TMP=`/sbin/ldconfig -p 2>/dev/null | grep libSDL_ttf`
-#if [ -z "$TMP" ] ; then
-#   echo "no"
-#   echo -n "checking for libSDL_image (ldconfig -r, FreeBSD)... "
-#   TMP=`/sbin/ldconfig -r 2>/dev/null | grep libSDL_ttf`
-#   if [ -z "$TMP" ] ; then
-#      echo "no"
-#      echo "No version of the Simple DirectMedia Layer truetype font library (libSDL_Image) was found"
-#      echo "This is a third-party  library not normally included with libSDL."
-#      echo "Fedora users can install it using this command: yum install SDL_ttf"
-#      echo "If you have installed libSDL_ttf, you may need to use ldconfig (as"
-#      echo "root) to update the shared library search paths for libSDL_ttf"
-#      echo
-#      echo "libSDL_ttf is not currently used.  It will be used by the pen package to"
-#      echo "to display text."
-#      exit 1
-#    else
-#       echo "yes"
-#    fi
-# else
-#  echo "yes"
-#fi
+echo -n "configuring OpenGL (pkg-config)... "
+if [ -n "PKGCONFIG" ] ; then
+   #TODO: these aren't implemented yet
+   MESALIBSTYPE=`(exec $PKGCONFIG --libs gl glu 2>/dev/null)`
+   MESALIBSTYPE=`echo "$MESALIBSTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+   MESAINCLTYPE=`(exec $PKGCONFIG --cflags gl glu 2>/dev/null)`
+   MESAINCLTYPE=`echo "$MESAINCLTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+   if [ $? -ne 0 ] ; then
+      MESALIBSTYPE=""
+      MESAINCLTYPE=""
+      echo "no"
+      echo "guessing at OpenGL configation (may be incorrect)... "
+      MESALIBSTYPE="-lGLU\ -lGL\ \ "
+      MESAINCLTYPE="-I\/usr\/include\/libdrm\ \ "
+   else
+      echo "yes"
+   fi
+else
+   echo "no"
+   echo
+   echo "Unable to configure OpenGL"
+fi
 
 # Databases
 
@@ -981,7 +1060,11 @@ if [ -z "$NO_SOUND" ] ; then
    #   ADAVOXLIBSSUB='.\/ADAVOX-0.51\/wc\/cglue.o'
    #   ADAVOXMAKESUB='$(MAKE) CPU=$(CPU) -C ADAVOX-0.51'
    #else
-      GSTREAMERLIBS=`pkg-config --cflags --libs gstreamer-0.10`
+# TODO: detect pkg-config
+      GSTREAMERLIBS=`pkg-config --cflags --libs gstreamer-0.10 2>/dev/null`
+      if [ $? -ne 0 ] ; then
+         GSTREAMERLIBS=`pkg-config --cflags --libs gstreamer-1.0 2>/dev/null`
+      fi
       GSTREAMERLIBS=`echo "$GSTREAMERLIBS" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
    #fi
 #else
@@ -995,6 +1078,13 @@ ADAVOXMAKESUB="@echo \"Disabled\""
 
 PREFIX=`echo "$PREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 MANPREFIX=`echo "$MANPREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+
+# configure can set constants which affect gstreamer.  Mark it for rebuild
+# after a configure.
+
+touch c_gstreamer.c
+
+# Create the makefiles
 
 echo "Creating...src/GNUmakefile"
 

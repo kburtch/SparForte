@@ -75,6 +75,7 @@ type aPragmaKind is ( ada_95, asserting, annotate, debug, debug_on,
      inspection, inspect_var, license, noCommandHash, peek, promptChange,
      register_memcache_server,
      restriction, restriction_annotations, restriction_auto,
+     restriction_unused,
      restriction_external, restriction_memcache, restriction_mysql,
      restriction_postgresql, restriction_todos, software_model,
      template, test, test_result,
@@ -535,6 +536,10 @@ begin
         discardUnusedIdentifier( token );
         getNextToken;
         pragmaKind := restriction_postgresql;
+     elsif identifiers( token ).name = "no_unused_identifiers" then
+        discardUnusedIdentifier( token );
+        getNextToken;
+        pragmaKind := restriction_unused;
      else
         discardUnusedIdentifier( token );
         err( "unknown restriction" );
@@ -596,6 +601,13 @@ begin
 
   -- Execute the pragma
 
+  -- this pragma only affects syntax checking
+  if syntax_check then
+     if pragmaKind = restriction_unused then
+        restriction_no_unused_identifiers := true;
+     end if;
+  end if;
+
   if isExecutingCommand then
      case pragmaKind is
      when ada_95 =>
@@ -617,11 +629,12 @@ begin
            if not syntax_check then
               declare
                  savershOpt : commandLineOption := rshOpt;
+                 lineNo      : natural;
               begin
+                 lineNo := getLineNo;
                  rshOpt := true;            -- force restricted shell mode
-                 CompileRunAndCaptureOutput( expr_val, results );
+                 CompileAndRun( commands => expr_val, firstLineNo => lineNo, fragment => false );
                  rshOpt := savershOpt;
-                 put( results );
               end;
            end if;
         end if;
@@ -837,6 +850,8 @@ begin
         restriction_no_auto_declarations := true;
      when restriction_annotations =>
         restriction_annotations_not_optional := true;
+     when restriction_unused =>
+        null; -- only applies in syntax check
      when restriction_external =>
         restriction_no_external_commands := true;
      when restriction_memcache =>

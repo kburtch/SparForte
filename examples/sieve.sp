@@ -23,9 +23,9 @@ procedure sieve is
    a : bool_array;
  
    test_num : positive;  
-   limit    : positive := positive(numerics.sqrt(float(arrays.last(a))));
+   -- limit    : positive := positive(numerics.sqrt(float(arrays.last(a))));
 
-   n : positive := 2;  
+   --n : positive := 2;  
 begin
    for i in arrays.first(a)..last_bool loop
      a(i) := true;
