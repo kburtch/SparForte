@@ -1008,6 +1008,18 @@ cp parser_mysql.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb parser_mysql.adb
 chmod 444 parser_mysql.adb
 
+echo "Updating...parser_mysql.ads"
+test -f parser_mysqlm.ads && chmod 666 parser_mysqlm.ads
+cp parser_mysql.ads.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb parser_mysqlm.ads
+chmod 444 parser_mysqlm.ads
+
+echo "Updating...parser_mysqlm.adb"
+test -f parser_mysqlm.adb && chmod 666 parser_mysqlm.adb
+cp parser_mysqlm.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb parser_mysqlm.adb
+chmod 444 parser_mysqlm.adb
+
 echo "Updating...parser_sound.adb"
 test -f parser_sound.adb && chmod 666 parser_sound.adb
 cp parser_sound.adb.orig temp.adb
