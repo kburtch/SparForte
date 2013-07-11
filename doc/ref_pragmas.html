@@ -75,6 +75,7 @@ environment.</p>
   <b>pragma</b> restriction( no_postgresql_database )
   <b>pragma</b> restriction( no_unused_enumerated_items )
   <b>pragma</b> software_model( model_name )
+  <b>pragma</b> suppress( word_quoting )
   <b>pragma</b> template( css|html|js|json|text|wml|xml [, path] )
   <b>pragma</b> test( `commands` )
   <b>pragma</b> test_result( condition )
@@ -83,7 +84,7 @@ environment.</p>
   <b>pragma</b> unrestricted_template( css|html|js|json|text|wml|xml [, path] )
   <b>pragma</b> volatile( var )
 </pre>
-                <br>&nbsp;<br>
+                <br>
         <div class="code_caption">
                 <b>Help Command</b>: The List of Pragmas</span>
         </div>
@@ -142,7 +143,7 @@ be used with both standalone pragmas and pragma blocks.</p>
 &nbsp;&nbsp;restriction( no_external_commands );<br>
 <b>end</b> <b>pragma</b>;<br>&nbsp;<br></p>
         <div class="code_caption">
-                <b>Example</b>: An example of pragma block with pragma chains</span>
+                <b>Example</b>: An example of pragma block with a pragma chain</span>
         </div>
         </div>
         </center>
@@ -219,9 +220,9 @@ other programs from using MySQL.</li>
 connections to a PostgreSQL database.  Doesn't prevent the psql client or
 other programs from using PostgreSQL.</li>
   <li> <b>pragma restriction( no_unused_identifiers )</b> - normally in
---test mode,
-SparForte will not check enumerated types to see if they are mentioned
-as often the type name is not used, or not all item names are explicitly
+testing mode,
+SparForte will not check enumerated types to see if they are mentioned.
+Often the type name is not used, or not all item names are explicitly
 used.  However, using this pragma will check to ensure every enumerated
 type and item is used at least one time.</li>
   <li> <b>pragma software_model( model_name )</b> - declare the general
@@ -251,13 +252,15 @@ be:<br>
 <li><b>monitor</b> - a service that monitors activity</li>
 <li><b>driver</b> - a device driver</li>
 </ul>
-</ul>
 Only one software model is permitted.  The name can be read from the
-System package.<br>
+System package.</li>
+</ul><br>
+
 <h4>Debugging Pragmas</h4>
 
 <p>Interpreter directives used to investigate problems in the source
-code or used with SparForte's breakout prompt.</p>
+code or used with SparForte's breakout prompt, or directives to
+suppress certain error messages.</p>
 
 <ul>
   <li> <b>pragma assert( expression )</b> - evaluates the expression.
@@ -284,6 +287,13 @@ inspect variables, except it doesn't break to a command prompt.</li>
 SIGINT (control-C) was received, displaying the call stack and any
 variables marked for inspection with pragma inspect. Has no effect if
 --break option isn't used. A "breakpoint".</li>
+<li><b>pragma suppress( word_quoting )</b> - disable style errors when
+dollar variables expansions are not double-quoted.  Dollar expansions
+should almost always be quoted to prevent whitespace from creating
+extra shell words.  However, when porting shell scripts, it can be helpful
+to allow unquoted expansions. (e.g. "echo $HOME" will no longer be
+reported as an error.)
+</li>
   <li> <b>pragma test( `commands` )</b> -
 these are a set of testing commands to run when test mode (the --test
 option) is used.  For example, this can be used to help with unit testing.
@@ -353,8 +363,8 @@ the SparForte will report an error (see unchecked_import).</li>
 import a JSON string, converting it to a string, numeric, enumerated item,
 array or record variable.</li>
   <li><span style="font-weight: bold;">pragma no_command_hash</span> -
-Bush normally remembers the location of a command once it has found
-it.&nbsp; This pragma forces Bush to search for the location of the
+SparForte normally remembers the location of a command once it has found
+it.&nbsp; This pragma forces SparForte to search for the location of the
 command, ignoring the previous location.<br>
   <li> <b>pragma register_memcache_server( host, port )</b> - add a
 memcache server which will be used with memcache method imports/exports</li>

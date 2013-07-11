@@ -40,7 +40,7 @@
 	<!-- Content Area -->
 <h2><a name="3.23"></a>Block Statements and Subprograms</h2>
 
-<p>Bush scripts can be organized using declare blocks, procedures and
+<p>SparForte scripts can be organized using declare blocks, procedures and
 functions.  This enables pieces of a program to be easily reused.
 A procedure is a routine that can be called but returns no value.
 For example, <tt>put_line</tt> is a procedure.  A function always
@@ -349,7 +349,77 @@ with a string literal.</p>
 <p><b>Rationale</b>: Subscripts are intended as a simple mechanism to
 break up large scripts until loadable user-defined packages are completed.</p>
 
+<h3>Exceptions</h3>
+
+<p>Procedures, functions, declare blocks or main programs can have an
+exception handler.  If an error occurs, you can trap the error and perform
+remedial action in the exception handler.</p>
+
+<h4>Exception Handlers</h4>
+
+<p>Exception handlers are created using <b>exception when others =&gt;</b>:</p>
+
+        <center>
+        <div class="code">
+        <p class="code">
+        <b>procedure</b> divide( x : integer; y : integer ) <b>is</b><br />
+        <b>begin</b><br />
+        &nbsp;&nbsp;put_line( x / y );<br />
+        <b>exception</b> <b>when</b> <b>others</b> =&gt;<br />
+        &nbsp;&nbsp;put_line( "undefined" );<br />
+        <b>end</b> divide;<br />&nbsp;<br />
+        <div class="code_caption">
+                <b>Example</b>: Math errors like dividing by zero display "undefined"
+        </div>
+        </div>
+        </center>
+
+<p><b>Implementation Note</b>: When an error occurs, the error message is
+still displayed on standard error before the handler is executed.
+SparForte reports the error, then searches for a handler (if one exists).
+This behaviour may change in the future.</p>
+
+<p>Only run-time errors can be handled.  Errors that occur during the
+syntax check when a program starts cannot be handled.</p>
+
+<p>If an exception handler occurs in a function, a function return can
+be placed in the handler.</p>
+
+<p>If a block has no exception handler, the enclosing blocks will be
+searched for an handler.</p>
+
+<p><b>Ada</b>: Catching particular exceptions and user exceptions
+is not yet implemented.</p>
+
+<h4>Re-raising Exceptions</h4>
+
+<p>The <b>raise</b> command will propogate the exception.  That is, it will
+reinstate the error to exception handlers in the surrounding blocks, just
+as if the exception was not handled.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">
+        <b>procedure</b> main_prog <b>is</b><br />&nbsp;<br />
+        &nbsp;&nbsp;<b>procedure</b> divide( x : integer; y : integer ) <b>is</b><br />
+        &nbsp;&nbsp;<b>begin</b><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;put_line( x / y );<br />
+        &nbsp;&nbsp;<b>exception</b> <b>when</b> <b>others</b> =&gt;<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;put_line( "undefined" );<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;<b>raise</b>;<br />
+        &nbsp;&nbsp;<b>end</b> divide;<br />&nbsp;<br />
+        <b>begin</b><br />
+        &nbsp;&nbsp;? divide( 2, 0 );<br />
+        <b>exception</b> <b>when</b> <b>others</b> =&gt;<br />
+        &nbsp;&nbsp;put_line( "an exception occurred" );<br />
+        <b>end</b> main_prog;<br />&nbsp;<br />
+        <div class="code_caption">
+                <b>Example</b>: Both exception handlers will run
+        </div>
+        </div>
+        </center>
 <br>&nbsp;
+
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
                                 <p class="rmt"><a class="rightmenutext" href="ref_adascript.html">&nbsp;AdaScript versus GCC</a></p>

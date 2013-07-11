@@ -276,8 +276,12 @@ positive number.</p>
 
 <h4>How do I read in a number like scanf, readln, etc?</h4>
 
-<p><tt>get_line</tt> only reads strings but you can convert the
-string using <tt>numerics.value</tt> like this:</p>
+<p><tt>get_line</tt> returns a universal type, not a string,
+so it can save to a string or numeric variable.
+
+<p><tt>n : integer := get_line</tt></p>
+
+<p>You can also cast the result using <tt>numerics.value</tt> like this:</p>
 
 <p><tt>n := numerics.value( get_line );</tt></p>
 
@@ -409,6 +413,14 @@ into Sparforte 1.x.</p>
 <h4>Is there something like "use" or "static with" so I can use "length" instead of "strings.length"?</h4>
 
 <p>Not yet.  There will be more information on this in future versions.</p>
+
+<h4>What is a "style issue"?</h4>
+
+<p>A style issue is an error caused by something that is technically
+allowed by the language but may cause debugging or maintenance problems.
+These can rules of common sense based on the human nature.  For example,
+lowercase L cannot be used as a variable name (it looks like a one),
+nor can the name "NULL" (it looks like a reserved word).</p>
 
 <h3>Design Questions</h3>
 

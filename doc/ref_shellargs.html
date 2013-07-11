@@ -170,13 +170,18 @@ the POSIX standard.</p>
 
 <h3>Spaces and Dollar Expansions</h3>
 
-<p>Dollar expansions are affected by quotation and the data type of
+<p>Variable expansions are affected by quotation and the data type of
 expansion variable.  If no quotes are used, the leading and trailing
-spaces are discarded.  If in single quotes, no dollar expansion
+spaces are discarded.  If in single quotes, no variable expansion
 occurs at all.  If double quotes are used, the affect on spaces
 depends on the data type.  If the value is numeric, the leading space
 for a positive variable is discarded (to mimic shell behaviour) but
 other variable types maintain any leading or trailing spaces.</p>
+
+<p>To prevent unexpected word splitting, most dollar variable expansions
+are expected to be quoted.  This excludes the special variables $?, $#,
+and $$ and on the command line.  This check can be disabled with
+<b>pragma suppress( word_quoting )</b>.</p>
 
         <center>
         <div class="code">
@@ -212,7 +217,6 @@ t := " hello "; -- identifier of the type string<br>
         </div>
         </div>
         </center>
-
 
 <br>&nbsp;
 

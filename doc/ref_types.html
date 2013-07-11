@@ -53,6 +53,47 @@ In scripts, all variables must be declared.</p>
 <b>Figure</b>: SparForte Predefined Scalar Data Types and their Relationships</p>
 <hr>
 
+<h3>Identifier Names</h3>
+
+<p>Identifiers must begin with a letter and may contain letters, numbers
+and underscores.  There is no minimum or maximum length to identifiers.</p>
+
+<h4>Style Restrictions on Identifier Names</h4>
+
+<p>SparForte imposes style restrictions on identifier names.  These
+restrictions are for names that are technically acceptable but
+are not practical in real scripts.  Some of these restrictions only
+apply to certain contexts.</p>
+
+<ul>
+<li>The lowercase <b>"l"</b> and uppercase <b>"o"</b> cannot be used as identifier
+names because they can be confused with the numbers zero and one.  This
+only applies to scripts: they are permitted on the command line.</li>
+<li>Identifier names that are equivalent to reserved words except
+for the letter case are not permitted.  For example, <b>"IF"</b> is
+not permitted.  This is done to prevent
+confusion, as well as to improve Ada compatibility.</li>
+<li>Variables or constants with ambiguous, meaningless names in
+English like <b>"stuff"</b>, <b>"data</b> or <b>"thing"</b> are not allowed.  This is done to
+promote descriptive names.  This only applies to scripts: they are
+permitted on the command line.</li>
+<li>Subprogram names contain at least 3 characters.  This is to
+make the names descriptive.</li>
+<li>Program names that may conflict with built-in Bourne shell
+commands are not allowed, such as <b>"eval"</b>, <b>"exec"</b> or <b>"test"</b>.
+For example, if you name a program "test" and try to run it in
+a Bourne shell by typing "test", you'll run the built-in shell
+command instead of your program.  This prevents such confusion.</li>
+</ul>
+
+<p><b>Implementation Rationale</b>:  As much as possible, only
+"common sense" style issues are implemented.  Some issues
+enforced by other languages or tools do not have evidence that
+they are effective: for example, single letter variables are
+often prohibited, but variables like "x" and "y" are commonly
+used in computer graphics.  Usually the restrictions are
+removed for the command prompt, where style is less important.</p>
+
 <h3>Universal Types</h3>
 
 <p>There are three "universal types":</p>

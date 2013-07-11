@@ -349,8 +349,25 @@ for more info</p>
 
 <h3>Automated Testing</h3>
 
-<p>Similar to the debugging mode, testing
-mode runs any <b>pragma assert</b>'s found in your
+<p>SparForte has a testing mode which can be turned on with with the
+command line option "--test".</p>
+
+<h4>Source Code Analysis</h4>
+
+<p>In testing mode, SparForte performs an analysis of your script.
+If there are any unused identifiers, they will be reported as errors.
+While unused variables are always reported, if you are testing, it
+is assumed that your design work is complete: testing mode also
+report things like unused types, procedures or functions.</p>
+
+<p>If you have specified a software model for your script, SparForte
+will check the model's requirements and inform you of any requirements
+missing from your script.  See the <b>pragma software_model</b> in the
+reference for more information.</p>
+
+<h4>Embedded Tests</h4>
+
+<p>Testing mode runs any <b>pragma assert</b>'s found in your
 script.  It also runs any instructions found in <b>pragma test</b>.  These
 tests instructions can be used to set up, tear down or run unit tests.
 Check the results of your tests with <b>pragma test_result</b>.
