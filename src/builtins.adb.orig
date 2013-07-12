@@ -1195,24 +1195,24 @@ procedure helpMain is
 begin
      Put_Line( "The following topics are available:" );
      New_Line;
-     Put_Line( "  arrays            exit            mode                sound            " );
-     Put_Line( "  calendar          expressions     mysql               source_info      " );
-     Put_Line( "  case              files           name                stats            " );
-     Put_Line( "  cd                for             new_line            step             " );
-     Put_Line( "  cgi               function        null                strings          " );
-     Put_Line( "  clear             get             numerics            strings.match    " );
-     Put_Line( "  close             get_line        open                subttype         " );
-     Put_Line( "  command_line      gnat.crc32      os                  System           " );
-     Put_Line( "  create            history         pen                 trace            " );
-     Put_Line( "  db                if              pragma              type             " );
-     Put_Line( "  declare           inkey           procedure           typeset          " );
-     Put_Line( "  delay             is_open         put                 units            " );
-     Put_Line( "  delete            jobs            put_line            unset            " );
-     Put_Line( "  directory_operations keys         reset               variables            " );
-     Put_Line( "  end_of_file       line            records             wait             " );
-     Put_Line( "  end_of_line       logout          return              while            " );
-     Put_Line( "  enums             loop            set_input           ""?""            " );
-     Put_Line( "  env               memcache        skip_line                            " );
+     Put_Line( "  arrays            exit            mode                skip_line        " );
+     Put_Line( "  calendar          expressions     mysql               sound            " );
+     Put_Line( "  case              files           mysqlm              source_info      " );
+     Put_Line( "  cd                for             name                stats            " );
+     Put_Line( "  cgi               function        new_line            step             " );
+     Put_Line( "  clear             get             null                strings          " );
+     Put_Line( "  close             get_line        numerics            strings.match    " );
+     Put_Line( "  command_line      gnat.crc32      open                subtype          " );
+     Put_Line( "  create            history         os                  System           " );
+     Put_Line( "  db                if              pen                 trace            " );
+     Put_Line( "  declare           inkey           pragma              type             " );
+     Put_Line( "  delay             is_open         procedure           typeset          " );
+     Put_Line( "  delete            jobs            put                 units            " );
+     Put_Line( "  directory_operations keys         put_line            unset                " );
+     Put_Line( "  end_of_file       line            reset               variables        " );
+     Put_Line( "  end_of_line       logout          records             wait             " );
+     Put_Line( "  enums             loop            return              while            " );
+     Put_Line( "  env               memcache        set_input           ""?""            " );
      New_Line;
      Put_Line( "You can also type an O/S word or a SparForte script name." );
 end helpMain;
@@ -1271,6 +1271,34 @@ begin
      Put_Line( "  show                        list" );
      Put_Line( "  schema( t )                 users" );
 end helpMySQL;
+
+procedure helpMySQLM is
+begin
+     Put_Line( "mysqlm (package) - APQ MySQL database package - multiple connections interface" );
+     New_Line;
+     Put_Line( "  connect( c, d [, u, w ][, h][, p] )" );
+     Put_Line( "  append( q, s [, a] )         prepare( q, s [, a] )" );
+     Put_Line( "  append_line( q, s )          append_quoted( q, c, s )" );
+     Put_Line( "  execute( q, c )              execute_checked( q, c [, s ] )" );
+     Put_Line( "  disconnect( c )              is_connected( c )" );
+     Put_Line( "  reset( c )                   s := error_message( c )" );
+     Put_Line( "  databases( c )               b := in_abort_state( c )" );
+     Put_Line( "  s := options( c )            set_rollback_on_finalize( c, b )" );
+     Put_Line( "  open_db_trace( c, f [, m] )  b := will_rollback_on_finalize( c )" );
+     Put_Line( "  close_db_trace( c )          set_trace( c, b )" );
+     Put_Line( "  b := is_trace( c )           clear( q )" );
+     Put_Line( "  raise_exceptions( q [, b ] ) report_errors( q, b )" );
+     Put_Line( "  begin_work( q, c )           rollback_work( q, c )" );
+     Put_Line( "  commit_work( q, c )          rewind( q )" );
+     Put_Line( "  fetch( q [, i] )             b := end_of_query( q )" );
+     Put_Line( "  n := tuple( q, t )           n := tuples( q )" );
+     Put_Line( "  n := columns( q )            s := column_name( q, i )" );
+     Put_Line( "  i := column_index( q, s )    b := is_null( q, i )" );
+     Put_Line( "  s := value( q, i )           b := engine_of( c ) " );
+     Put_Line( "  show( q, c )                 list( c )" );
+     Put_Line( "  schema( c, t )               users( c )" );
+     Put_Line( "  new_connection( c )          new_query( q )" );
+end helpMySQLM;
 
 procedure helpUnits is
 begin
@@ -1401,6 +1429,8 @@ begin
          "stricter unused tests" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "software_model( model_name )" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
+       "suppress( word_quoting )" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "template( css|html|js|json|text|wml|xml [, path] ) - script is acting as a template processor" );
      Put_Line( "  " & bold( "pragma" ) & " " &
@@ -1680,6 +1710,8 @@ begin
      Put_Line( "Regular expressions are described in ""man 5 regexp""" );
   elsif helpTopic = "mysql" then
      helpMySQL;
+  elsif helpTopic = "mysqlm" then
+     helpMySQLM;
   elsif helpTopic = "declare" then
      Put_Line( "declare - begin a new block" );
      Put_Line( "  [" & bold( "declare") & " declarations] " &

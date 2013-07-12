@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2013 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -80,7 +80,7 @@ begin
   -- temporary limitation: only one database open at a time...
   expect( mysql_connect_t );
   if engineOpen then
-     err( "only one database connection may be open (a limitation of this verison of bush)" );
+     err( "only one database connection may be open" );
      return;
   end if;
   expect( symbol_t, "(" );
@@ -160,16 +160,21 @@ begin
         end if;
      when already_connected =>
         err( "already connected to database" );
+     when STORAGE_ERROR =>
+        err( "out-of-memory or bad pointer" );
+     when CONSTRAINT_ERROR =>
+        err( "constraint error exception" );
      when others =>
         err( "exception raised" );
      end;
   end if;
 end ParseMySQLConnect;
 
-procedure ParseMySQLEngineOf( result : out unbounded_string ) is
+procedure ParseMySQLEngineOf( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := mysql.engine_of;
   -- Source: APQ.Engine_Of
 begin
+  kind := db_database_type_t;
   expect( mysql_engine_of_t );
   if isExecutingCommand then
      begin
@@ -415,6 +420,7 @@ begin
   if isExecutingCommand then
      begin
         Disconnect( C );
+        engineOpen := false;
      exception when not_connected =>
         err( "no database connection" );
      when already_connected =>
@@ -425,9 +431,10 @@ begin
   end if;
 end ParseMySQLDisconnect;
 
-procedure ParseMySQLIsConnected( result : out unbounded_string ) is
+procedure ParseMySQLIsConnected( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysql.is_connected
 begin
+  kind := boolean_t;
   expect( mysql_is_connected_t );
   if isExecutingCommand then
      begin
@@ -452,10 +459,11 @@ begin
   end if;
 end ParseMySQLReset;
 
-procedure ParseMySQLErrorMessage( result : out unbounded_string ) is
+procedure ParseMySQLErrorMessage( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysql.error_message
   -- Source: APQ.Error_Message
 begin
+  kind := string_t;
   expect( mysql_error_message_t );
   if isExecutingCommand then
      begin
@@ -480,10 +488,11 @@ end ParseMySQLErrorMessage;
 --   end if;
 -- end ParseMySQLNoticeMessage;
 
-procedure ParseMySQLInAbortState( result : out unbounded_string ) is
+procedure ParseMySQLInAbortState( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysql.in_abort_state
   -- Source: APQ.In_Abort_State
 begin
+  kind := boolean_t;
   expect( mysql_in_abort_state_t );
   if isExecutingCommand then
      begin
@@ -496,10 +505,11 @@ begin
   end if;
 end ParseMySQLInAbortState;
 
-procedure ParseMySQLOptions( result : out unbounded_string ) is
+procedure ParseMySQLOptions( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysql.options
   -- Source: APQ.Options
 begin
+  kind := string_t;
   expect( mysql_options_t );
   if isExecutingCommand then
      begin
@@ -533,16 +543,19 @@ begin
   end if;
 end ParseMySQLSetRollbackOnFinalize;
 
-procedure ParseMySQLWillRollbackOnFinalize( result : out unbounded_string ) is
+procedure ParseMySQLWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysql.will_rollback_on_finalize( b );
   -- Source: APQ.Will_Rollback_On_Finalize
 begin
+  kind := boolean_t;
   expect( mysql_will_rollback_on_finalize_t );
-  begin
-    result := to_bush_boolean( Will_Rollback_On_Finalize( C ) );
-  exception when others =>
-    err( "exception was raised" );
-  end;
+  if isExecutingCommand then
+    begin
+      result := to_bush_boolean( Will_Rollback_On_Finalize( C ) );
+    exception when others =>
+      err( "exception was raised" );
+    end;
+  end if;
 end ParseMySQLWillRollbackOnFinalize;
 
 procedure ParseMySQLOpenDBTrace is
@@ -625,16 +638,19 @@ begin
   end if;
 end ParseMySQLSetTrace;
 
-procedure ParseMySQLIsTrace( result : out unbounded_string ) is
+procedure ParseMySQLIsTrace( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysql.is_trace( b );
   -- Source: APQ.Is_Trace
 begin
+  kind := boolean_t;
   expect( mysql_is_trace_t );
-  begin
-    result := to_bush_boolean( Is_Trace( C ) );
-  exception when others =>
-    err( "exception was raised" );
-  end;
+  if isExecutingCommand then
+    begin
+      result := to_bush_boolean( Is_Trace( C ) );
+    exception when others =>
+      err( "exception was raised" );
+    end;
+  end if;
 end ParseMySQLIsTrace;
 
 procedure ParseMySQLClear is
@@ -642,11 +658,15 @@ procedure ParseMySQLClear is
   -- Source: APQ.Clear
 begin
   expect( mysql_clear_t );
-  begin
-    Clear( Q );
-  exception when others =>
-    err( "exception was raised" );
-  end;
+  if isExecutingCommand then
+    begin
+      Clear( Q );
+    exception when CONSTRAINT_ERROR =>
+      err( "constraint error exception" );
+    when others =>
+      err( "exception was raised" );
+    end;
+  end if;
 end ParseMySQLClear;
 
 procedure ParseMySQLRaiseExceptions is
@@ -713,6 +733,8 @@ begin
        Begin_Work( Q, C );
      exception when abort_state =>
        err( "in abort state" );
+     when not_connected =>
+       err( "not connected" );
      when others =>
        err( "exception was raised" );
      end;
@@ -729,6 +751,8 @@ begin
        Rollback_Work( Q, C );
      exception when abort_state =>
        err( "in abort state" );
+     when not_connected =>
+       err( "not connected" );
      when others =>
        err( "exception was raised" );
      end;
@@ -745,6 +769,8 @@ begin
        Commit_Work( Q, C );
      exception when abort_state =>
        err( "in abort state" );
+     when not_connected =>
+       err( "not connected" );
      when others =>
        err( "exception was raised" );
      end;
@@ -798,10 +824,11 @@ begin
   end if;
 end ParseMySQLFetch;
 
-procedure ParseMySQLEndOfQuery( result : out unbounded_string ) is
+procedure ParseMySQLEndOfQuery( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := mysql.end_of_query;
   -- Source: APQ.End_Of_Query
 begin
+  kind := boolean_t;
   expect( mysql_end_of_query_t );
   if isExecutingCommand then
      begin
@@ -812,10 +839,11 @@ begin
   end if;
 end ParseMySQLEndOfQuery;
 
-procedure ParseMySQLTuple( result : out unbounded_string ) is
+procedure ParseMySQLTuple( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: t := mysql.tuple;
   -- Source: APQ.Tuple
 begin
+  kind := mysql_tuple_index_type_t;
   expect( mysql_tuple_t );
   if isExecutingCommand then
      begin
@@ -828,10 +856,11 @@ begin
   end if;
 end ParseMySQLTuple;
 
-procedure ParseMySQLTuples( result : out unbounded_string ) is
+procedure ParseMySQLTuples( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysql.tuples;
   -- Source: APQ.Tuples
 begin
+  kind := mysql_tuple_count_type_t;
   expect( mysql_tuples_t );
   if isExecutingCommand then
      begin
@@ -844,10 +873,11 @@ begin
   end if;
 end ParseMySQLTuples;
 
-procedure ParseMySQLColumns( result : out unbounded_string ) is
+procedure ParseMySQLColumns( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysql.columns;
   -- Source: APQ.Columns
 begin
+  kind := natural_t;
   expect( mysql_columns_t );
   if isExecutingCommand then
      begin
@@ -860,12 +890,13 @@ begin
   end if;
 end ParseMySQLColumns;
 
-procedure ParseMySQLColumnName( result : out unbounded_string ) is
+procedure ParseMySQLColumnName( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysql.column_Name;
   -- Source: APQ.Column_Name;
   exprVal : unbounded_string;
   exprType : identifier;
 begin
+  kind := string_t;
   expect( mysql_column_name_t );
   expect( symbol_t, "(" );
   ParseExpression( exprVal, exprType );
@@ -885,12 +916,13 @@ begin
   end if;
 end ParseMySQLColumnName;
 
-procedure ParseMySQLColumnIndex( result : out unbounded_string ) is
+procedure ParseMySQLColumnIndex( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysql.column_index;
   -- Source: APQ.Column_Index
   exprVal : unbounded_string;
   exprType : identifier;
 begin
+  kind := mysql_column_index_type_t;
   expect( mysql_column_index_t );
   expect( symbol_t, "(" );
   ParseExpression( exprVal, exprType );
@@ -938,12 +970,13 @@ end ParseMySQLColumnIndex;
   --end if;
 --end ParseDBColumnType;
 
-procedure ParseMySQLIsNull( result : out unbounded_string ) is
+procedure ParseMySQLIsNull( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysql.is_null;
   -- Source: APQ.Is_Null;
   exprVal : unbounded_string;
   exprType : identifier;
 begin
+  kind := boolean_t;
   expect( mysql_is_null_t );
   expect( symbol_t, "(" );
   ParseExpression( exprVal, exprType );
@@ -966,12 +999,13 @@ begin
   end if;
 end ParseMySQLIsNull;
 
-procedure ParseMySQLValue( result : out unbounded_string ) is
+procedure ParseMySQLValue( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysql.value;
   -- Source: APQ.Value;
   exprVal  : unbounded_string;
   exprType : identifier;
 begin
+  kind := universal_t;
   expect( mysql_value_t );
   expect( symbol_t, "(" );
   ParseExpression( exprVal, exprType );
@@ -1168,9 +1202,10 @@ begin
   MySQLShowIt;
 end ParseMySQLShow;
 
-function pg_kind_to_string( kind : string ) return string is
+function mysql_kind_to_string( kind : string ) return string is
 -- convert the pg_class table's pg_relkind code to a readable string
 begin
+  -- older mysql
   if kind = "r" then
      return "table";
   elsif kind = "i" then
@@ -1185,12 +1220,37 @@ begin
      return "special";
   elsif kind = "t" then
      return "TOAST table";
+  -- new mysql
+  elsif kind = "SYSTEM VIEW" then
+     return "view";
+  elsif kind = "BASE TABLE" then
+     return "table";
   end if;
   return "kind code " & kind;
-end pg_kind_to_string;
+end mysql_kind_to_string;
 
-function pg_column_type_to_string( kind, len : string ) return string is
+function mysql_engine_to_string( kind : string ) return string is
+begin
+  -- common types
+  if kind = "MyISAM" then
+     return "MyISAM";
+  elsif kind = "Aria" then -- MariaDB alternative to MyISAM
+     return "Aria";
+  elsif kind = "Maria" then -- old name for Aria
+     return "Maria";
+  elsif kind = "InnoDB" then
+     return "InnoDB";
+  elsif kind = "MEMORY" then
+     return "Memory";
+  elsif kind = "CSV" then
+     return "CSV";
+  end if;
+  return "engine code " & kind;
+end mysql_engine_to_string;
+
+function mysql_column_type_to_string( kind, len : string ) return string is
 -- convert the pg_class table's pg_relkind code to a readable string
+-- adapted from postgresql support
 begin
   -- if kind = "bpchar" then              -- blank-padded character array
   --    return "character(" & len & ")";  -- is char(n)
@@ -1256,28 +1316,30 @@ begin
   --    return "timestamp with time zone";
   -- end if;
   return kind;
-end pg_column_type_to_string;
+end mysql_column_type_to_string;
 
-function pg_not_null_to_string( val : string ) return string is
+function mysql_not_null_to_string( val : string ) return string is
 -- convert a t/f value to "not null" like psql client
+-- adapted from postgresql support
 begin
   if val = "t" then
      return "not null";
   end if;
   return "";
-end pg_not_null_to_string;
+end mysql_not_null_to_string;
 
-function pg_default_to_string( val : string ) return string is
+function mysql_default_to_string( val : string ) return string is
 -- convert a t/f value to "not null" like psql client
 begin
   if val = "t" then
      return "default";
   end if;
   return "";
-end pg_default_to_string;
+end mysql_default_to_string;
 
-function pg_userattributes_to_string( super, create : string ) return string is
+function mysql_userattributes_to_string( super, create : string ) return string is
 -- convert t/f values to "superuser, create database" like psql client
+-- adapted from postgresql support
 begin
   if super = "t" and create = "t" then
      return "superuser, create database";
@@ -1287,7 +1349,7 @@ begin
      return "create database";
   end if;
   return "";
-end pg_userattributes_to_string;
+end mysql_userattributes_to_string;
 
 procedure ParseMySQLList is
   -- Syntax: mysql.list
@@ -1307,7 +1369,8 @@ begin
 -- Owner not implemented yet - DEBUG
 
         prepare( Q, "select table_name, table_type, engine from " &
-                    "information_schema.tables order by table_name desc" );
+                    "information_schema.tables where table_schema = '" &
+                    DB_Name( C ) & "' order by table_name desc" );
 
         -- This is the PostgreSQL query...
         -- prepare( Q, "select n.nspname as " & '"' & "Schema" & '"' &
@@ -1349,8 +1412,10 @@ begin
               fetch( Q );
               for i in 1..columns( Q ) loop
                  if not is_null( Q, Column_Index_Type( i ) ) then
-                    if i = 3 then -- column 2 is table type
-                       width := length( to_unbounded_string( pg_kind_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
+                    if i = 2 then -- column 2 is table type
+                       width := length( to_unbounded_string( mysql_kind_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
+                    elsif i = 3 then -- column 3 is engine type
+                       width := length( to_unbounded_string( mysql_engine_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
                     else
                        width := length( to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
                     end if;
@@ -1426,8 +1491,10 @@ begin
                    if is_null( Q, Column_Index_Type( i ) ) then
                       put( inverse( to_string( Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
                       wasNull := true;
-                   elsif i = 3 then -- column 2 is table type
-                      put( to_string( Head( ToEscaped( to_unbounded_string( pg_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
+                   elsif i = 2 then -- column 2 is table type
+                      put( to_string( Head( ToEscaped( to_unbounded_string( mysql_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
+                   elsif i = 3 then -- column 3 is engine type
+                      put( to_string( Head( ToEscaped( to_unbounded_string( mysql_engine_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
                    else
                       put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
                    end if;
@@ -1440,8 +1507,10 @@ begin
                    if is_null( Q, Column_Index_Type( i ) ) then
                       put( inverse( "NULL" ) );
                       wasNull := true;
+                   elsif i = 2 then
+                      put( bold( to_string( ToEscaped( to_unbounded_string( mysql_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
                    elsif i = 3 then
-                      put( bold( to_string( ToEscaped( to_unbounded_string( pg_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
+                      put( bold( to_string( ToEscaped( to_unbounded_string( mysql_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
                    else
                       put( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
                    end if;
@@ -1568,14 +1637,14 @@ begin
                     if not is_null( Q, Column_Index_Type( i ) ) then
                        if i = 2 then -- column 2 is column type
                           width := length( to_unbounded_string(
-                                    pg_column_type_to_string( Value( Q, Column_Index_Type( i ) ),
+                                    mysql_column_type_to_string( Value( Q, Column_Index_Type( i ) ),
                                                               Value( Q, Column_Index_Type( i+1 ) ) ) ) );
                        elsif i = 4 then
                           width := length( to_unbounded_string(
-                                   pg_not_null_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
+                                   mysql_not_null_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
                        elsif i = 5 then
                           width := length( to_unbounded_string(
-                                   pg_default_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
+                                   mysql_default_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
                        else
                           width := length( to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
                        end if;
@@ -1659,11 +1728,11 @@ begin
                          put( inverse( to_string( Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
                          wasNull := true;
                       elsif i = 2 then -- column 2 is column type
-                         put( to_string( Head( ToEscaped( to_unbounded_string( pg_column_type_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i+1 ) ) ) ) ), columnWidths( i ) ) ) );
+                         put( to_string( Head( ToEscaped( to_unbounded_string( mysql_column_type_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i+1 ) ) ) ) ), columnWidths( i ) ) ) );
                       elsif i = 4 then
-                         put( to_string( Head( ToEscaped( to_unbounded_string( pg_not_null_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
+                         put( to_string( Head( ToEscaped( to_unbounded_string( mysql_not_null_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
                       elsif i = 5 then
-                         put( to_string( Head( ToEscaped( to_unbounded_string( pg_default_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
+                         put( to_string( Head( ToEscaped( to_unbounded_string( mysql_default_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
                       else
                          put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
                       end if;
@@ -1677,11 +1746,11 @@ begin
                          put( inverse( "NULL" ) );
                          wasNull := true;
                       elsif i = 2 then
-                         put( bold( to_string( ToEscaped( to_unbounded_string( pg_column_type_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i+1 ) ) ) ) ) ) ) );
+                         put( bold( to_string( ToEscaped( to_unbounded_string( mysql_column_type_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i+1 ) ) ) ) ) ) ) );
                       elsif i = 4 then
-                         put( bold( to_string( ToEscaped( to_unbounded_string( pg_not_null_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
+                         put( bold( to_string( ToEscaped( to_unbounded_string( mysql_not_null_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
                       elsif i = 5 then
-                         put( bold( to_string( ToEscaped( to_unbounded_string( pg_default_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
+                         put( bold( to_string( ToEscaped( to_unbounded_string( mysql_default_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
                       else
                          put( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
                       end if;
@@ -1811,7 +1880,7 @@ begin
               for i in 1..columns( Q ) loop
                  if not is_null( Q, Column_Index_Type( i ) ) then
                     if i = 3 then -- column 3 and 4 are attributes
-                       width := length( to_unbounded_string( pg_userattributes_to_string( Value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i ) ) ) ) );
+                       width := length( to_unbounded_string( mysql_userattributes_to_string( Value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i ) ) ) ) );
                     elsif i = 4 then
                        null;
                     else
@@ -1896,7 +1965,7 @@ begin
                       elsif i = 2 then -- right-aligned
                          put( to_string( Tail( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
                       elsif i = 3 then -- column 3 and 4 are attributes
-                         put( to_string( Head( ToEscaped( to_unbounded_string( pg_userattributes_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
+                         put( to_string( Head( ToEscaped( to_unbounded_string( mysql_userattributes_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
                       else
                          put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
                       end if;
@@ -1910,7 +1979,7 @@ begin
                          put( inverse( "NULL" ) );
                          wasNull := true;
                       elsif i = 3 then -- column 3 and 4 are attributes
-                         put( bold( to_string( ToEscaped( to_unbounded_string( pg_userattributes_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
+                         put( bold( to_string( ToEscaped( to_unbounded_string( mysql_userattributes_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
                       else
                          put( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
                       end if;
@@ -2014,7 +2083,7 @@ begin
               for i in 1..columns( Q ) loop
                  if not is_null( Q, Column_Index_Type( i ) ) then
                     if i = 3 then -- column 2 is table type
-                       width := length( to_unbounded_string( pg_kind_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
+                       width := length( to_unbounded_string( mysql_kind_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
                     else
                        width := length( to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
                     end if;
@@ -2090,7 +2159,7 @@ begin
                       put( inverse( to_string( Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
                       wasNull := true;
                    elsif i = 3 then -- column 2 is table type
-                      put( to_string( Head( ToEscaped( to_unbounded_string( pg_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
+                      put( to_string( Head( ToEscaped( to_unbounded_string( mysql_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
                    else
                       put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
                    end if;
@@ -2104,7 +2173,7 @@ begin
                       put( inverse( "NULL" ) );
                       wasNull := true;
                    elsif i = 3 then
-                      put( bold( to_string( ToEscaped( to_unbounded_string( pg_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
+                      put( bold( to_string( ToEscaped( to_unbounded_string( mysql_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
                    else
                       put( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
                    end if;
@@ -2229,49 +2298,49 @@ begin
 --  declareStandardConstant( mysql_engine_db2_t, "mysql.engine_db2",
 --    mysql_database_type_t, "4" );
 
-  declareProcedure( mysql_connect_t, "mysql.connect" );
-  declareProcedure( mysql_disconnect_t, "mysql.disconnect" );
-  declareFunction( mysql_is_connected_t, "mysql.is_connected" );
-  declareProcedure( mysql_reset_t, "mysql.reset" );
-  declareFunction( mysql_error_message_t, "mysql.error_message" );
-  declareFunction( mysql_notice_message_t, "mysql.notice_message" );
-  declareFunction( mysql_in_abort_state_t, "mysql.in_abort_state" );
-  declareFunction( mysql_options_t, "mysql.options" );
-  declareFunction( mysql_will_rollback_on_finalize_t, "mysql.will_rollback_on_finalize" );
-  declareProcedure( mysql_set_rollback_on_finalize_t, "mysql.set_rollback_on_finalize" );
-  declareProcedure( mysql_open_db_trace_t, "mysql.open_db_trace" );
-  declareProcedure( mysql_close_db_trace_t, "mysql.close_db_trace" );
-  declareProcedure( mysql_set_trace_t, "mysql.set_trace" );
-  declareFunction( mysql_is_trace_t, "mysql.is_trace" );
-  declareProcedure( mysql_clear_t, "mysql.clear" );
-  declareProcedure( mysql_prepare_t, "mysql.prepare" );
-  declareProcedure( mysql_append_t, "mysql.append" );
-  declareProcedure( mysql_append_line_t, "mysql.append_line" );
-  declareProcedure( mysql_append_quoted_t, "mysql.append_quoted" );
-  declareProcedure( mysql_execute_t, "mysql.execute" );
-  declareProcedure( mysql_execute_checked_t, "mysql.execute_checked" );
-  declareProcedure( mysql_raise_exceptions_t, "mysql.raise_exceptions" );
-  declareProcedure( mysql_report_errors_t, "mysql.report_errors" );
-  declareProcedure( mysql_begin_work_t, "mysql.begin_work" );
-  declareProcedure( mysql_commit_work_t, "mysql.commit_work" );
-  declareProcedure( mysql_rollback_work_t, "mysql.rollback_work" );
-  declareProcedure( mysql_rewind_t, "mysql.rewind" );
-  declareProcedure( mysql_fetch_t, "mysql.fetch" );
-  declareFunction( mysql_end_of_query_t, "mysql.end_of_query" );
-  declareFunction( mysql_tuple_t, "mysql.tuple" );
-  declareFunction( mysql_tuples_t, "mysql.tuples" );
-  declareFunction( mysql_columns_t, "mysql.columns" );
-  declareFunction( mysql_column_name_t, "mysql.column_name" );
-  declareFunction( mysql_column_index_t, "mysql.column_index" );
-  declareFunction( mysql_column_type_t, "mysql.column_type" );
-  declareFunction( mysql_is_null_t, "mysql.is_null" );
-  declareFunction( mysql_value_t, "mysql.value" );
-  declareFunction( mysql_engine_of_t, "mysql.engine_of" );
-  declareProcedure( mysql_show_t, "mysql.show" );
-  declareProcedure( mysql_list_t, "mysql.list" );
-  declareProcedure( mysql_schema_t, "mysql.schema" );
-  declareProcedure( mysql_users_t, "mysql.users" );
-  declareProcedure( mysql_databases_t, "mysql.databases" );
+  declareProcedure( mysql_connect_t, "mysql.connect", ParseMySQLConnect'access );
+  declareProcedure( mysql_disconnect_t, "mysql.disconnect", ParseMySQLDisconnect'access );
+  declareFunction( mysql_is_connected_t, "mysql.is_connected", ParseMySQLIsConnected'access );
+  declareProcedure( mysql_reset_t, "mysql.reset", ParseMySQLReset'access );
+  declareFunction( mysql_error_message_t, "mysql.error_message", ParseMySQLErrorMessage'access );
+  --declareFunction( mysql_notice_message_t, "mysql.notice_message",  );
+  declareFunction( mysql_in_abort_state_t, "mysql.in_abort_state", ParseMySQLInAbortState'access );
+  declareFunction( mysql_options_t, "mysql.options", ParseMySQLOptions'access );
+  declareFunction( mysql_will_rollback_on_finalize_t, "mysql.will_rollback_on_finalize", ParseMySQLWillRollbackOnFinalize'access );
+  declareProcedure( mysql_set_rollback_on_finalize_t, "mysql.set_rollback_on_finalize", ParseMySQLSetRollbackOnFinalize'access );
+  declareProcedure( mysql_open_db_trace_t, "mysql.open_db_trace", ParseMySQLOpenDBTrace'access );
+  declareProcedure( mysql_close_db_trace_t, "mysql.close_db_trace", ParseMySQLCloseDBTrace'access );
+  declareProcedure( mysql_set_trace_t, "mysql.set_trace", ParseMySQLSetTrace'access );
+  declareFunction( mysql_is_trace_t, "mysql.is_trace", ParseMySQLIsTrace'access );
+  declareProcedure( mysql_clear_t, "mysql.clear", ParseMySQLClear'access );
+  declareProcedure( mysql_prepare_t, "mysql.prepare", ParseMySQLPrepare'access );
+  declareProcedure( mysql_append_t, "mysql.append", ParseMySQLAppend'access );
+  declareProcedure( mysql_append_line_t, "mysql.append_line", ParseMySQLAppendLine'access );
+  declareProcedure( mysql_append_quoted_t, "mysql.append_quoted", ParseMySQLAppendQuoted'access );
+  declareProcedure( mysql_execute_t, "mysql.execute", ParseMySQLExecute'access );
+  declareProcedure( mysql_execute_checked_t, "mysql.execute_checked", ParseMySQLExecuteChecked'access );
+  declareProcedure( mysql_raise_exceptions_t, "mysql.raise_exceptions", ParseMySQLRaiseExceptions'access );
+  declareProcedure( mysql_report_errors_t, "mysql.report_errors", ParseMySQLReportErrors'access );
+  declareProcedure( mysql_begin_work_t, "mysql.begin_work", ParseMySQLBeginWork'access );
+  declareProcedure( mysql_commit_work_t, "mysql.commit_work", ParseMySQLCommitWork'access );
+  declareProcedure( mysql_rollback_work_t, "mysql.rollback_work", ParseMySQLRollbackWork'access );
+  declareProcedure( mysql_rewind_t, "mysql.rewind", ParseMySQLRewind'access );
+  declareProcedure( mysql_fetch_t, "mysql.fetch", ParseMySQLFetch'access );
+  declareFunction( mysql_end_of_query_t, "mysql.end_of_query", ParseMySQLEndOfQuery'access );
+  declareFunction( mysql_tuple_t, "mysql.tuple", ParseMySQLTuple'access );
+  declareFunction( mysql_tuples_t, "mysql.tuples", ParseMySQLTuples'access );
+  declareFunction( mysql_columns_t, "mysql.columns", ParseMySQLColumns'access );
+  declareFunction( mysql_column_name_t, "mysql.column_name", ParseMySQLColumnName'access );
+  declareFunction( mysql_column_index_t, "mysql.column_index", ParseMySQLColumnIndex'access );
+  --declareFunction( mysql_column_type_t, "mysql.column_type",  );
+  declareFunction( mysql_is_null_t, "mysql.is_null", ParseMySQLIsNull'access );
+  declareFunction( mysql_value_t, "mysql.value", ParseMySQLValue'access );
+  declareFunction( mysql_engine_of_t, "mysql.engine_of", ParseMySQLEngineOf'access );
+  declareProcedure( mysql_show_t, "mysql.show", ParseMySQLShow'access );
+  declareProcedure( mysql_list_t, "mysql.list", ParseMySQLList'access );
+  declareProcedure( mysql_schema_t, "mysql.schema", ParseMySQLSchema'access );
+  declareProcedure( mysql_users_t, "mysql.users", ParseMySQLUsers'access );
+  declareProcedure( mysql_databases_t, "mysql.databases", ParseMySQLDatabases'access );
 
   --declareFunction( db_do_t, "db.do" );
   --declareFunction( db_fetchrow_t, "dbi.fetchrow" );

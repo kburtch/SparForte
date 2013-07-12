@@ -258,7 +258,7 @@ binding.  For full details on these routines, consult the APQ documentation.</p>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Start a database transaction, marking the position of a possible rollback.</p></td>
+<td><p>Start a database transaction, marking the position of a possible rollback.  The query will be erased.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">db.begin_work;</span></td>
@@ -470,7 +470,7 @@ binding.  For full details on these routines, consult the APQ documentation.</p>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Complete a database transaction.</p></td>
+<td><p>Complete a database transaction.  The query will be erased.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">db.commit_work;</span></td>
@@ -1352,7 +1352,7 @@ not_connected, file already open, file not found exceptions may be raised</p></t
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Rollback a database transaction, undoing all work since begin_work.</p></td>
+<td><p>Rollback a database transaction, undoing all work since begin_work.  The query will be erased.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">db.rollback_work;</span></td>

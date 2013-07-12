@@ -446,6 +446,13 @@ package body APQ.MySQL.Client is
             C_String(C.Port_Name,C_Unix,A_Unix);
       end case;
 
+      -- Patch from APQ 3.0
+      --
+      -- Must re-establish a C.Connection after a Disconnect/Reset (object reuse)
+      --
+      if C.Connection = Null_Connection then
+         C.Connection := mysql_init;      -- Needed after disconnects
+      end if;
       C.Connected := mysql_connect(
          conn           => C.Connection,  -- Connection object
          host           => A_Host,        -- host or IP #
@@ -557,12 +564,18 @@ package body APQ.MySQL.Client is
             Clear_Abort_State(C);
             if C.Rollback_Finalize or In_Abort_State(C) then
                if C.Trace_On and then C.Trace_Filename /= null and then In_Finalize = True then
-                  Ada.Text_IO.Put_Line(C.Trace_Ada,"-- ROLLBACK ON FINALIZE");
+                  -- KB: trace can be on even though file is not open
+                  if is_open( C.Trace_Ada ) then
+                     Ada.Text_IO.Put_Line(C.Trace_Ada,"-- ROLLBACK ON FINALIZE");
+                  end if;
                end if;
                Rollback_Work(Q,C);
             else
                if C.Trace_On and then C.Trace_Filename /= null and then In_Finalize = True then
-                  Ada.Text_IO.Put_Line(C.Trace_Ada,"-- COMMIT ON FINALIZE");
+                  -- KB: trace can be on even though file is not open
+                  if is_open( C.Trace_Ada ) then
+                     Ada.Text_IO.Put_Line(C.Trace_Ada,"-- COMMIT ON FINALIZE");
+                  end if;
                end if;
                Commit_Work(Q,C);
             end if;
@@ -608,6 +621,13 @@ package body APQ.MySQL.Client is
    begin
       if C.Connection /= Null_Connection then
          C.Connection := mysql_close(C.Connection);
+         if C.Trace_Mode = Trace_APQ or else C.Trace_Mode = Trace_Full then
+            -- KB: trace can be on even though file is not open
+            if is_open( C.Trace_Ada ) then
+               Ada.Text_IO.Put_Line(C.Trace_Ada,"-- DISCONNECT");
+            end if;
+         end if;
+         C.Connection := Null_Connection; -- From APQ 3.0
       end if;
       C.Connected := False;
    end Disconnect;
@@ -670,9 +690,12 @@ package body APQ.MySQL.Client is
          if Connection_Type(Connection).Trace_On then
             if Connection_Type(Connection).Trace_Mode = Trace_APQ
             or Connection_Type(Connection).Trace_Mode = Trace_Full then
-               Ada.Text_IO.Put_Line(Connection.Trace_Ada,"-- SQL QUERY:");
-               Ada.Text_IO.Put_Line(Connection.Trace_Ada,A_Query);
-               Ada.Text_IO.Put_Line(Connection.Trace_Ada,";");
+               -- KB: trace can be on even though file is not open
+               if is_open( Connection.Trace_Ada ) then
+                  Ada.Text_IO.Put_Line(Connection.Trace_Ada,"-- SQL QUERY:");
+                  Ada.Text_IO.Put_Line(Connection.Trace_Ada,A_Query);
+                  Ada.Text_IO.Put_Line(Connection.Trace_Ada,";");
+               end if;
             end if;
          end if;
 
@@ -698,14 +721,20 @@ package body APQ.MySQL.Client is
                -- The query should return data, hence an error :
                Post_Error(Query,Connection_Type(Connection));
                if Connection.Trace_On then
-                  Ada.Text_IO.Put_Line(Connection_Type(Connection).Trace_Ada,"-- Error " & 
-                     Result_Type'Image(Query.Error_Code) & " : " & Error_Message(Query));
-                  Ada.Text_IO.New_Line(Connection_Type(Connection).Trace_Ada);
+                  -- KB: trace can be on even though file is not open
+                  if is_open( Connection_Type(Connection).Trace_Ada ) then
+                     Ada.Text_IO.Put_Line(Connection_Type(Connection).Trace_Ada,"-- Error " & 
+                        Result_Type'Image(Query.Error_Code) & " : " & Error_Message(Query));
+                     Ada.Text_IO.New_Line(Connection_Type(Connection).Trace_Ada);
+                  end if;
                end if;
                raise SQL_Error;
             else
                if Connection_Type(Connection).Trace_On then
-                  Ada.Text_IO.New_Line(Connection_Type(Connection).Trace_Ada);
+                  -- KB: trace can be on even though file is not open
+                  if is_open( Connection_Type(Connection).Trace_Ada ) then
+                     Ada.Text_IO.New_Line(Connection_Type(Connection).Trace_Ada);
+                  end if;
                end if;
             end if;
          else
@@ -713,16 +742,22 @@ package body APQ.MySQL.Client is
             if Connection.Trace_On then
                if Connection_Type(Connection).Trace_Mode = Trace_APQ
                or Connection_Type(Connection).Trace_Mode = Trace_Full then
-                  Ada.Text_IO.New_Line(Connection_Type(Connection).Trace_Ada);
+                  -- KB: trace can be on even though file is not open
+                  if is_open( Connection_Type(Connection).Trace_Ada ) then
+                     Ada.Text_IO.New_Line(Connection_Type(Connection).Trace_Ada);
+                  end if;
                end if;
             end if;
          end if;
       else
          -- Query failed :
          if Connection_Type(Connection).Trace_On then
-            Ada.Text_IO.Put_Line(Connection_Type(Connection).Trace_Ada,"-- Error " & 
-               Result_Type'Image(Query.Error_Code) & " : " & Error_Message(Query));
-            Ada.Text_IO.New_Line(Connection_Type(Connection).Trace_Ada);
+            -- KB: trace can be on even though file is not open
+            if is_open( Connection_Type(Connection).Trace_Ada ) then
+               Ada.Text_IO.Put_Line(Connection_Type(Connection).Trace_Ada,"-- Error " & 
+                  Result_Type'Image(Query.Error_Code) & " : " & Error_Message(Query));
+               Ada.Text_IO.New_Line(Connection_Type(Connection).Trace_Ada);
+            end if;
          end if;
          raise SQL_Error;
       end if;
@@ -907,20 +942,26 @@ package body APQ.MySQL.Client is
 
    procedure Begin_Work(Query : in out Query_Type; Connection : in out Root_Connection_Type'Class) is
    begin
+      Clear(Query); -- APQ 3.0 patch
       Prepare(Query,"BEGIN WORK");
       Execute(Query,Connection_Type(Connection));
+      Clear(Query); -- APQ 3.0 patch
    end Begin_Work;
 
    procedure Commit_Work(Query : in out Query_Type; Connection : in out Root_Connection_Type'Class) is
    begin
+      Clear(Query); -- APQ 3.0 patch
       Prepare(Query,"COMMIT");
       Execute(Query,Connection_Type(Connection));
+      Clear(Query); -- APQ 3.0 patch
    end Commit_Work;
    
    procedure Rollback_Work(Query : in out Query_Type; Connection : in out Root_Connection_Type'Class) is
    begin
+      Clear(Query); -- APQ 3.0 patch
       Prepare(Query,"ROLLBACK");
       Execute(Query,Connection_Type(Connection));
+      Clear(Query); -- APQ 3.0 patch
    end Rollback_Work;
 
    procedure Open_DB_Trace(C : in out Connection_Type; Filename : String; Mode : Trace_Mode_Type := Trace_APQ) is

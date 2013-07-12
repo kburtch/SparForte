@@ -1008,9 +1008,9 @@ cp parser_mysql.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb parser_mysql.adb
 chmod 444 parser_mysql.adb
 
-echo "Updating...parser_mysql.ads"
+echo "Updating...parser_mysqlm.ads"
 test -f parser_mysqlm.ads && chmod 666 parser_mysqlm.ads
-cp parser_mysql.ads.orig temp.adb
+cp parser_mysqlm.ads.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb parser_mysqlm.ads
 chmod 444 parser_mysqlm.ads
 

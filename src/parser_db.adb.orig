@@ -537,11 +537,13 @@ procedure ParseDBWillRollbackOnFinalize( result : out unbounded_string ) is
   -- Source: APQ.Will_Rollback_On_Finalize
 begin
   expect( db_will_rollback_on_finalize_t );
-  begin
-    result := to_bush_boolean( Will_Rollback_On_Finalize( C ) );
-  exception when others =>
-    err( "exception was raised" );
-  end;
+  if isExecutingCommand then
+     begin
+       result := to_bush_boolean( Will_Rollback_On_Finalize( C ) );
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
 end ParseDBWillRollbackOnFinalize;
 
 procedure ParseDBOpenDBTrace is
@@ -629,11 +631,13 @@ procedure ParseDBIsTrace( result : out unbounded_string ) is
   -- Source: APQ.Is_Trace
 begin
   expect( db_is_trace_t );
-  begin
-    result := to_bush_boolean( Is_Trace( C ) );
-  exception when others =>
-    err( "exception was raised" );
-  end;
+  if isExecutingCommand then
+     begin
+       result := to_bush_boolean( Is_Trace( C ) );
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
 end ParseDBIsTrace;
 
 procedure ParseDBClear is
@@ -641,11 +645,13 @@ procedure ParseDBClear is
   -- Source: APQ.Clear
 begin
   expect( db_clear_t );
-  begin
-    Clear( Q );
-  exception when others =>
-    err( "exception was raised" );
-  end;
+  if isExecutingCommand then
+     begin
+       Clear( Q );
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
 end ParseDBClear;
 
 procedure ParseDBRaiseExceptions is
@@ -712,6 +718,8 @@ begin
        Begin_Work( Q, C );
      exception when abort_state =>
        err( "in abort state" );
+     when not_connected =>
+       err( "not connected" );
      when others =>
        err( "exception was raised" );
      end;
@@ -728,6 +736,8 @@ begin
        Rollback_Work( Q, C );
      exception when abort_state =>
        err( "in abort state" );
+     when not_connected =>
+       err( "not connected" );
      when others =>
        err( "exception was raised" );
      end;
@@ -744,6 +754,8 @@ begin
        Commit_Work( Q, C );
      exception when abort_state =>
        err( "in abort state" );
+     when not_connected =>
+       err( "not connected" );
      when others =>
        err( "exception was raised" );
      end;

@@ -553,12 +553,19 @@ package body APQ.PostgreSQL.Client is
             Clear_Abort_State(C);
             if C.Rollback_Finalize or In_Abort_State(C) then
                if C.Trace_On and then C.Trace_Filename /= null and then In_Finalize = True then
-                  Ada.Text_IO.Put_Line(C.Trace_Ada,"-- ROLLBACK ON FINALIZE");
+                  -- KB: trace can be on even though file is not open
+                  if is_open( C.Trace_Ada ) then
+
+                     Ada.Text_IO.Put_Line(C.Trace_Ada,"-- ROLLBACK ON FINALIZE");
+                  end if;
                end if;
                Rollback_Work(Q,C);
             else
                if C.Trace_On and then C.Trace_Filename /= null and then In_Finalize = True then
-                  Ada.Text_IO.Put_Line(C.Trace_Ada,"-- COMMIT ON FINALIZE");
+                  -- KB: trace can be on even though file is not open
+                  if is_open( C.Trace_Ada ) then
+                     Ada.Text_IO.Put_Line(C.Trace_Ada,"-- COMMIT ON FINALIZE");
+                  end if;
                end if;
                Commit_Work(Q,C);
             end if;
@@ -771,9 +778,12 @@ package body APQ.PostgreSQL.Client is
       begin
          if Connection.Trace_On then
             if Connection.Trace_Mode = Trace_APQ or Connection.Trace_Mode = Trace_Full then
-               Ada.Text_IO.Put_Line(Connection.Trace_Ada,"-- SQL QUERY:");
-               Ada.Text_IO.Put_Line(Connection.Trace_Ada,A_Query);
-               Ada.Text_IO.Put_Line(Connection.Trace_Ada,";");
+               -- KB: trace can be on even though file is not open
+               if is_open( Connection.Trace_Ada ) then
+                  Ada.Text_IO.Put_Line(Connection.Trace_Ada,"-- SQL QUERY:");
+                  Ada.Text_IO.Put_Line(Connection.Trace_Ada,A_Query);
+                  Ada.Text_IO.Put_Line(Connection.Trace_Ada,";");
+               end if;
             end if;
          end if;
 
@@ -781,8 +791,12 @@ package body APQ.PostgreSQL.Client is
 
          if Connection.Trace_On then
             if Connection.Trace_Mode = Trace_APQ or Connection.Trace_Mode = Trace_Full then
-               Ada.Text_IO.Put_Line(Connection.Trace_Ada,"-- Result: '" & Command_Status(Query) & "'");
-               Ada.Text_IO.New_Line(Connection.Trace_Ada);
+               -- KB: trace can be on even though file is not open
+               if is_open( Connection.Trace_Ada ) then
+
+                  Ada.Text_IO.Put_Line(Connection.Trace_Ada,"-- Result: '" & Command_Status(Query) & "'");
+                  Ada.Text_IO.New_Line(Connection.Trace_Ada);
+               end if;
             end if;
          end if;
       end;
@@ -935,6 +949,7 @@ package body APQ.PostgreSQL.Client is
          raise No_Column;
       end if;
       declare
+         use Ada.Strings.Fixed;
          C_Val : chars_ptr := PQgetvalue(Query.Result,C_TX,C_CX);
       begin
          if C_Val = Null_Ptr then
@@ -942,7 +957,8 @@ package body APQ.PostgreSQL.Client is
          elsif PQgetisnull(Query.Result,C_TX,C_CX) /= 0 then
             raise Null_Value;
          else
-            return Value_Of(C_Val);
+            --return Value_Of(C_Val);
+            return Trim(Value_Of(C_Val),Right); -- APQ 3.0
          end if;
       end;
 
@@ -1021,8 +1037,10 @@ package body APQ.PostgreSQL.Client is
       if In_Abort_State(Connection) then
          raise Abort_State;
       end if;
+      Clear(Query); -- APQ 3.0 patch
       Prepare(Query,"BEGIN WORK");
       Execute(Query,Connection);
+      Clear(Query); -- APQ 3.0 patch
    end Begin_Work;
 
    procedure Commit_Work(Query : in out Query_Type; Connection : in out Root_Connection_Type'Class) is
@@ -1030,14 +1048,18 @@ package body APQ.PostgreSQL.Client is
       if In_Abort_State(Connection) then
          raise Abort_State;
       end if;
+      Clear(Query); -- APQ 3.0 patch
       Prepare(Query,"COMMIT WORK");
       Execute(Query,Connection);
+      Clear(Query); -- APQ 3.0 patch
    end Commit_Work;
 
    procedure Rollback_Work(Query : in out Query_Type; Connection : in out Root_Connection_Type'Class) is
    begin
+      Clear(Query); -- APQ 3.0 patch
       Prepare(Query,"ROLLBACK WORK");
       Execute(Query,Connection);
+      Clear(Query); -- APQ 3.0 patch
       Clear_Abort_State(Connection);
    end Rollback_Work;
 
