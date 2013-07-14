@@ -41,6 +41,7 @@ with system,
     script_io,
     user_io,
     string_util,
+    software_models,
     scanner_arrays,
     parser_os,
     parser_arrays,
@@ -54,6 +55,7 @@ with system,
     parser_cal,
     parser_db,
     parser_mysql,
+    parser_mysqlm,
     parser_numerics,
     parser_strings,
     parser_stats,
@@ -78,6 +80,7 @@ use ada.text_io,
     script_io,
     user_io,
     string_util,
+    software_models,
     scanner_arrays,
     parser_os,
     parser_arrays,
@@ -91,6 +94,7 @@ use ada.text_io,
     parser_cal,
     parser_db,
     parser_mysql,
+    parser_mysqlm,
     parser_numerics,
     parser_strings,
     parser_stats,
@@ -248,6 +252,9 @@ begin
      end if;
      if ident.inspect then
         put( "inspected " );
+     end if;
+     if ident.resource then
+        put( "resource " );
      end if;
 
      -- if imported or exported, show the method
@@ -691,7 +698,7 @@ begin
      new_line;
   end if;
   error_found := true;                                          -- flag error
-  token := eof_t;                                               -- stop parser
+  --token := eof_t;                                             -- stop parser
 end err;
 
 
@@ -716,7 +723,6 @@ end err_previous;
 -- Scope
 -----------------------------------------------------------------------------
 
------------------------------------------------------------------------------
 -- RECORD SOFTWARE MODEL REQUIREMENTS
 --
 -- Checked the referenced identifier and update the requirements for the
@@ -741,16 +747,15 @@ begin
 end recordSoftwareModelRequirements;
 
 
------------------------------------------------------------------------------
--- CHECK SOFTWARE MODEL REQUIREMENTS
+-- CHECK IDENTIFIERS IN CURRENT BLOCK
 --
--- During a syntax check, before a block is pulled, do two things:
--- 1. check for identifiers that were declared but not used (referenced)
--- 2. collect information for software model requirements (if used)
--- Note: GNAT only checks variables.
+-- check for unused variables and tally presence of software model req's
+-- this is normally called automatically by pullBlock but is exposed
+-- here for cases where pullBlock doesn't get run, such as simple scripts
+-- with no blocks.  This should only be run during a syntax check.
 -----------------------------------------------------------------------------
 
-procedure checkSoftwareModelRequirements is
+procedure checkIdentifiersInCurrentBlock is
 begin
 --if blocks_top > 1 then
    --put_line( "checkSoftwareModelRequirements: " & to_string( blocks( blocks_top-1 ).blockName ) ); -- DEBUG
@@ -766,19 +771,29 @@ begin
          if softwareModelSet then
             recordSoftwareModelRequirements( i );
          end if;
-      elsif testOpt then
+      elsif boolean( testOpt ) or identifiers( i ).class = otherClass then
+         -- variables are always checked.  Other identifiers are only checked
+         -- when testing
 -- TODO declaration line would be helpful if two identifiers have the same
 -- name.
           err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
       end if;
   end loop;
-end checkSoftwareModelRequirements;
+end checkIdentifiersInCurrentBlock;
 
 
--- Same, but for scripts without blocks.  Called for simple scripts,
--- or at the end of a main program.
+--  CHECK IDENTIFIERS FOR SIMPLE SCRIPTS
+--
+-- Check the identifiers in a simple script to see if they were used.  It
+-- is also run after a well-formed script to confirm any identifiers declared
+-- outside of the main program.
+-- Variables are always checked.  Other identifiers are checked if SparForte
+-- is in testing mode.  If a software model is set, check the used
+-- identifiers against the software model and record requirments that were
+-- met.  This should only be run during the syntax check.
+-----------------------------------------------------------------------------
 
-procedure checkSoftwareModelRequirementsForSimpleScripts is
+procedure checkIdentifiersForSimpleScripts is
 begin
    --put_line( "checkSoftwareModelRequirementsForSimpleScripts: no block" ); -- DEBUG
   for i in reverse predefined_top..identifiers_top-1 loop
@@ -791,11 +806,31 @@ begin
             recordSoftwareModelRequirements( i );
          end if;
 -- TODO: should this be dropped altogether?
-      elsif testOpt then
+      elsif boolean( testOpt ) or identifiers( i ).class = otherClass then
           err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
       end if;
   end loop;
-end checkSoftwareModelRequirementsForSimpleScripts;
+end checkIdentifiersForSimpleScripts;
+
+
+--  COMPLETE SOFTWARE MODEL REQUIREMENTS
+--
+-- Check pre-defined identifiers for software requirements.  Then evaluate
+-- if the requirements were met for the software model.  This should only be
+-- run during the syntax check.
+-----------------------------------------------------------------------------
+
+procedure completeSoftwareModelRequirements is
+begin
+  for i in reverse reserved_top..predefined_top-1 loop
+      if identifiers( i ).wasReferenced then
+--put( " REF'D: " ); put_identifier( i ); -- DEBUG
+         if softwareModelSet then
+            recordSoftwareModelRequirements( i );
+         end if;
+      end if;
+  end loop;
+end completeSoftwareModelRequirements;
 
 -----------------------------------------------------------------------------
 -- PUSH BLOCK
@@ -844,7 +879,7 @@ begin
      raise block_table_overflow;                                -- raise err
   else
      if syntax_check and not error_found and not done then
-        checkSoftwareModelRequirements;
+        checkIdentifiersInCurrentBlock;
      end if;
      pullArrayBlock( blocks_top );                              -- do any a's
      pullResourceBlock( blocks_top );                           -- do any r's
@@ -1609,6 +1644,7 @@ begin
   StartupSparOS;
   StartupDB;
   StartupMySQL;
+  StartupMySQLM;
   StartupArrays;
   StartupEnums;
   StartupRecords;
@@ -4691,6 +4727,7 @@ begin
   -- Leading underscores
 
   if Element( command, cmdpos ) = '_' or
+
      -- identifiers with underscores not allowed, but we can't check for
      -- that here since we don't know yet if the identifier is part of a
      -- shell command or an AdaScript command (underscores in a shell
@@ -4749,6 +4786,7 @@ begin
         ci.context := adaScriptStatement;
      else
         ci.context := adaScriptStatement;
+        --ci.context := startOfStatement;
      end if;
      -- add compressed token to compressed script
      declare
@@ -4896,7 +4934,7 @@ begin
         ci.context := shellStatement;
      elsif id = is_t then
         ci.context := isPart;
-     elsif id=then_t or id=loop_t then
+     elsif id=then_t or id=loop_t or id=begin_t then
         ci.context := startOfStatement;
      end if;
      -- add compressed token to compressed script
@@ -5874,11 +5912,11 @@ begin
           ci.context := isPart;
        elsif id = else_t then                              -- else?
           ci.context := startOfStatement;                  -- don't know
-       elsif id = then_t then                              -- then?
+       elsif id = loop_t then                              -- loop?
           ci.context := startOfStatement;                  -- don't know
        elsif id = record_t then                            -- record?
           ci.context := startOfStatement;                  -- don't know
-       elsif id = loop_t then                              -- loop?
+       elsif id = then_t then                              -- then?
           ci.context := startOfStatement;                  -- don't know
        else                                                -- otherwise
           ci.context := adaScriptStatement;                -- assume Ada
@@ -5893,7 +5931,6 @@ begin
   else
     ci.context := StartOfParameters;
   end if;
-
 end startOfStatementByteCode;
 
 -----------------------------------------------------------------------------

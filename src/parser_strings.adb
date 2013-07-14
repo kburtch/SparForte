@@ -68,7 +68,7 @@ begin
   end if;
 end ParseSingleStringExpression;
 
-procedure ParseStringsGlob( result : out unbounded_string ) is
+procedure ParseStringsGlob( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: glob( expr, string )
   -- Source: GNAT.RegExp.Match
   expr_val  : unbounded_string;
@@ -78,6 +78,7 @@ procedure ParseStringsGlob( result : out unbounded_string ) is
   re        : regexp;
   b         : boolean;
 begin
+  kind := boolean_t;
   result := null_unbounded_string;
   expect( glob_t );
   expect( symbol_t, "(" );
@@ -114,7 +115,7 @@ begin
   end if;
 end ParseStringsGlob;
 
-procedure ParseStringsMatch( result : out unbounded_string ) is
+procedure ParseStringsMatch( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: match( file )
   -- Source: GNAT.RegPat.Match
   expr_val  : unbounded_string;
@@ -123,6 +124,7 @@ procedure ParseStringsMatch( result : out unbounded_string ) is
   pat_type  : identifier;
   b         : boolean;
 begin
+  kind := boolean_t;
   result := null_unbounded_string;
   getNextToken;
   expect( symbol_t, "(" );
@@ -173,7 +175,7 @@ begin
   end if;
 end ParseStringsMatch;
 
-procedure ParseStringsElement( result : in out unbounded_string ) is
+procedure ParseStringsElement( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: element( s, i )
   -- Source: Ada.Strings.Unbounded.Element
   str_val : unbounded_string;
@@ -181,6 +183,7 @@ procedure ParseStringsElement( result : in out unbounded_string ) is
   index_val : unbounded_string;
   index_type : identifier;
 begin
+  kind := character_t;
   expect( element_t );
   expect( symbol_t, "(" );
   ParseExpression( str_val, str_type );
@@ -201,7 +204,7 @@ begin
   end;
 end ParseStringsElement;
 
-procedure ParseStringsSlice( result : in out unbounded_string ) is
+procedure ParseStringsSlice( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: slice( s, l, h )
   -- Source: Ada.Strings.Unbounded.Slice
   str_val  : unbounded_string;
@@ -211,6 +214,7 @@ procedure ParseStringsSlice( result : in out unbounded_string ) is
   hi_val   : unbounded_string;
   hi_type  : identifier;
 begin
+  kind := string_t;
   expect( slice_t );
   expect( symbol_t, "(" );
   ParseExpression( str_val, str_type );
@@ -238,7 +242,7 @@ begin
   end;
 end ParseStringsSlice;
 
-procedure ParseStringsIndex( result : in out unbounded_string ) is
+procedure ParseStringsIndex( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.index( s, p )
   -- Source: Ada.Strings.Unbounded.Index
   use ada.strings;
@@ -250,6 +254,7 @@ procedure ParseStringsIndex( result : in out unbounded_string ) is
   dir_type : identifier;
   dir    : direction := forward;
 begin
+  kind := natural_t;
   expect( index_t );
   expect( symbol_t, "(" );
   ParseExpression( str_val, str_type );
@@ -283,7 +288,7 @@ begin
   end;
 end ParseStringsIndex;
 
-procedure ParseStringsIndexNonBlank( result : in out unbounded_string ) is
+procedure ParseStringsIndexNonBlank( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.index_non_blank( s [, d] )
   -- Source: Ada.Strings.Unbounded.Index_Non_Blank
   use ada.strings;
@@ -293,6 +298,7 @@ procedure ParseStringsIndexNonBlank( result : in out unbounded_string ) is
   dir_type : identifier;
   dir    : direction := forward;
 begin
+  kind := natural_t;
   expect( index_non_blank_t );
   expect( symbol_t, "(" );
   ParseExpression( str_val, str_type );
@@ -322,7 +328,7 @@ begin
   end;
 end ParseStringsIndexNonBlank;
 
-procedure ParseStringsCount( result : in out unbounded_string ) is
+procedure ParseStringsCount( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.count( s, p )
   -- Source: Ada.Strings.Unbounded.Count
   str_val : unbounded_string;
@@ -330,6 +336,7 @@ procedure ParseStringsCount( result : in out unbounded_string ) is
   pat_val : unbounded_string;
   pat_type : identifier;
 begin
+  kind := natural_t;
   expect( count_t );
   expect( symbol_t, "(" );
   ParseExpression( str_val, str_type );
@@ -350,7 +357,7 @@ begin
   end;
 end ParseStringsCount;
 
-procedure ParseStringsReplaceSlice( result : in out unbounded_string ) is
+procedure ParseStringsReplaceSlice( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.replace_slice( s, l, h, b )
   -- Source: Ada.Strings.Unbounded.Replace_Slice
   str_val : unbounded_string;
@@ -362,6 +369,7 @@ procedure ParseStringsReplaceSlice( result : in out unbounded_string ) is
   by_val : unbounded_string;
   by_type : identifier;
 begin
+  kind := string_t;
   expect( replace_slice_t );
   expect( symbol_t, "(" );
   ParseExpression( str_val, str_type );
@@ -393,7 +401,7 @@ begin
   end;
 end ParseStringsReplaceSlice;
 
-procedure ParseStringsInsert( result : in out unbounded_string ) is
+procedure ParseStringsInsert( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.insert( s, b, n )
   -- Source: Ada.Strings.Unbounded.Replace_Slice
   str_val : unbounded_string;
@@ -403,6 +411,7 @@ procedure ParseStringsInsert( result : in out unbounded_string ) is
   new_val : unbounded_string;
   new_type : identifier;
 begin
+  kind := string_t;
   expect( strings_insert_t );
   expect( symbol_t, "(" );
   ParseExpression( str_val, str_type );
@@ -429,7 +438,7 @@ begin
   end;
 end ParseStringsInsert;
 
-procedure ParseStringsOverwrite( result : in out unbounded_string ) is
+procedure ParseStringsOverwrite( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.overwrite( s, p, n )
   -- Source: Ada.Strings.Unbounded.Overwrite
   str_val  : unbounded_string;
@@ -439,6 +448,7 @@ procedure ParseStringsOverwrite( result : in out unbounded_string ) is
   new_val  : unbounded_string;
   new_type : identifier;
 begin
+  kind := string_t;
   expect( overwrite_t );
   expect( symbol_t, "(" );
   ParseExpression( str_val, str_type );
@@ -465,7 +475,7 @@ begin
   end;
 end ParseStringsOverwrite;
 
-procedure ParseStringsDelete( result : in out unbounded_string ) is
+procedure ParseStringsDelete( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.delete( s, l, h )
   -- Source: Ada.Strings.Unbounded.Delete
   str_val  : unbounded_string;
@@ -475,6 +485,7 @@ procedure ParseStringsDelete( result : in out unbounded_string ) is
   hi_val   : unbounded_string;
   hi_type  : identifier;
 begin
+  kind := string_t;
   expect( sdelete_t );
   expect( symbol_t, "(" );
   ParseExpression( str_val, str_type );
@@ -501,7 +512,7 @@ begin
   end;
 end ParseStringsDelete;
 
-procedure ParseStringsTrim( result : in out unbounded_string ) is
+procedure ParseStringsTrim( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.trim( s , e )
   -- Source: Ada.Strings.Unbounded.Trim
   use ada.strings;
@@ -511,6 +522,7 @@ procedure ParseStringsTrim( result : in out unbounded_string ) is
   trim_end_type : identifier;
   the_trim_end : trim_end := both;
 begin
+  kind := string_t;
   expect( trim_t );
   expect( symbol_t, "(" );
   ParseExpression( str_val, str_type );
@@ -539,12 +551,13 @@ begin
   end;
 end ParseStringsTrim;
 
-procedure ParseStringsLength( result : in out unbounded_string ) is
+procedure ParseStringsLength( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.trim( s )
   -- Source: Ada.Strings.Unbounded.Trim
   str_val : unbounded_string;
   str_type : identifier;
 begin
+  kind := natural_t;
   expect( length_t );
   ParseSingleUniStringExpression( str_val, str_type );
   begin
@@ -556,7 +569,7 @@ begin
   end;
 end ParseStringsLength;
 
-procedure ParseStringsHead( result : in out unbounded_string ) is
+procedure ParseStringsHead( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.head( s, c [,p] )
   -- Source: Ada.Strings.Unbounded.Head
   str_val  : unbounded_string;
@@ -567,6 +580,7 @@ procedure ParseStringsHead( result : in out unbounded_string ) is
   pad_type : identifier;
   pad_char : character := ' ';
 begin
+  kind := string_t;
   expect( head_t );
   expect( symbol_t, "(" );
   ParseExpression( str_val, str_type );
@@ -598,7 +612,7 @@ begin
   end;
 end ParseStringsHead;
 
-procedure ParseStringsTail( result : in out unbounded_string ) is
+procedure ParseStringsTail( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.tail( s, c [, p] )
   -- Source: Ada.Strings.Unbounded.Tail
   str_val  : unbounded_string;
@@ -609,6 +623,7 @@ procedure ParseStringsTail( result : in out unbounded_string ) is
   pad_type : identifier;
   pad_char : character := ' ';
 begin
+  kind := string_t;
   expect( tail_t );
   expect( symbol_t, "(" );
   ParseExpression( str_val, str_type );
@@ -640,7 +655,7 @@ begin
   end;
 end ParseStringsTail;
 
-procedure ParseStringsField( result : in out unbounded_string ) is
+procedure ParseStringsField( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.field( s, c [, d] )
   -- Source: N/A
   str_val  : unbounded_string;
@@ -651,6 +666,7 @@ procedure ParseStringsField( result : in out unbounded_string ) is
   del_type : identifier;
   delim    : character := defaultDelimiter;
 begin
+  kind := string_t;
   expect( field_t );
   expect( symbol_t, "(" );
   ParseExpression( str_val, str_type );
@@ -683,7 +699,7 @@ begin
   end;
 end ParseStringsField;
 
-procedure ParseStringsCSVField( result : in out unbounded_string ) is
+procedure ParseStringsCSVField( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.csv_field( s, c [, d] )
   -- Source: N/A
   str_val  : unbounded_string;
@@ -694,6 +710,7 @@ procedure ParseStringsCSVField( result : in out unbounded_string ) is
   del_type : identifier;
   delim    : character := ',';
 begin
+  kind := string_t;
   expect( csv_field_t );
   expect( symbol_t, "(" );
   ParseExpression( str_val, str_type );
@@ -726,14 +743,15 @@ begin
   end;
 end ParseStringsCSVField;
 
-procedure ParseStringsMkTemp( result : in out unbounded_string ) is
+procedure ParseStringsMkTemp( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.mktemp
-  -- Source: BUSH builtin
+  -- Source: SparForte builtin
   str_val : unbounded_string;
   str_type : identifier;
   mkstemp_result : aFileDescriptor;
   closeResult : int;
 begin
+  kind := string_t;
   expect( mktemp_t );
   ParseSingleStringExpression( str_val, str_type );
   if isExecutingCommand then
@@ -762,12 +780,13 @@ begin
   end if;
 end ParseStringsMkTemp;
 
-procedure ParseStringsVal( result : in out unbounded_string ) is
+procedure ParseStringsVal( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.val( natural );
   -- Source: Ada 'val attribute
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := character_t;
   expect( val_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -783,12 +802,13 @@ begin
   end;
 end ParseStringsVal;
 
-procedure ParseStringsImage( result : in out unbounded_string ) is
+procedure ParseStringsImage( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.image( x );
   -- Source: Ada 'image attribute
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := string_t;
   expect( image_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -804,13 +824,14 @@ begin
   end;
 end ParseStringsImage;
 
-procedure ParseStringsToString( result : in out unbounded_string ) is
+procedure ParseStringsToString( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.to_string( x );
   -- Source: Ada.Strings.Unbounded.To_String
   expr_val   : unbounded_string;
   expr_type  : identifier;
   baseType   : identifier;
 begin
+  kind := string_t;
   expect( to_string_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -832,12 +853,13 @@ begin
   end;
 end ParseStringsToString;
 
-procedure ParseStringsToUString( result : in out unbounded_string ) is
+procedure ParseStringsToUString( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.to_unbounded_string( x );
   -- Source: Ada.Strings.Unbounded.To_Unbounded_String
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := unbounded_string_t;
   expect( to_u_string_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -853,7 +875,7 @@ begin
   end;
 end ParseStringsToUString;
 
-procedure ParseStringsLookup( result : in out unbounded_string ) is
+procedure ParseStringsLookup( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.lookup( s, t [, d] );
   -- Source: N/A
   src_val  : unbounded_string;
@@ -864,6 +886,7 @@ procedure ParseStringsLookup( result : in out unbounded_string ) is
   del_type : identifier;
   delim    : character := defaultDelimiter;
 begin
+  kind := string_t;
   expect( lookup_t );
   expect( symbol_t, "(" );
   ParseExpression( src_val, src_type );
@@ -1004,12 +1027,13 @@ begin
   end;
 end ParseStringsCSVReplace;
 
-procedure ParseStringsToUpper( result : in out unbounded_string; kind : out identifier ) is
+procedure ParseStringsToUpper( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.to_upper( s );
   -- Source: Ada.Characters.Handling.To_Upper
   src_val  : unbounded_string;
   src_type : identifier;
 begin
+  kind := string_t;
   expect( to_upper_t );
   ParseSingleUniStringExpression( src_val, src_type );
   kind := src_type;
@@ -1018,12 +1042,13 @@ begin
   end if;
 end ParseStringsToUpper;
 
-procedure ParseStringsToLower( result : in out unbounded_string; kind : out identifier ) is
+procedure ParseStringsToLower( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.to_lower( s );
   -- Source: Ada.Characters.Handling.To_Lower
   src_val  : unbounded_string;
   src_type : identifier;
 begin
+  kind := string_t;
   expect( to_lower_t );
   ParseSingleUniStringExpression( src_val, src_type );
   kind := src_type;
@@ -1032,12 +1057,13 @@ begin
   end if;
 end ParseStringsToLower;
 
-procedure ParseStringsToProper( result : in out unbounded_string; kind : out identifier ) is
+procedure ParseStringsToProper( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.to_proper( s );
   -- Source: N/A
   src_val  : unbounded_string;
   src_type : identifier;
 begin
+  kind := string_t;
   expect( to_proper_t );
   ParseSingleUniStringExpression( src_val, src_type );
   kind := src_type;
@@ -1046,7 +1072,7 @@ begin
   end if;
 end ParseStringsToProper;
 
-procedure ParseStringsToBasic( result : in out unbounded_string; kind : out identifier ) is
+procedure ParseStringsToBasic( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.to_basic( s );
   -- Source: Ada.Characters.Handling.To_Basic
   src_val  : unbounded_string;
@@ -1060,7 +1086,7 @@ begin
   end if;
 end ParseStringsToBasic;
 
-procedure ParseStringsToEscaped( result : in out unbounded_string; kind : out identifier ) is
+procedure ParseStringsToEscaped( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.to_escaped( s );
   -- Source: N/A
   src_val  : unbounded_string;
@@ -1117,12 +1143,13 @@ begin
   end;
 end ParseStringsSplit;
 
-procedure ParseStringsIsControl( result : in out unbounded_string) is
+procedure ParseStringsIsControl( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.is_control( x );
   -- Source: Ada.Characters.Handling.Is_Control (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := boolean_t;
   expect( is_control_t );
   ParseSingleUniStringExpression( expr_val, expr_type );
   begin
@@ -1134,12 +1161,13 @@ begin
   end;
 end ParseStringsIsControl;
 
-procedure ParseStringsIsGraphic( result : in out unbounded_string) is
+procedure ParseStringsIsGraphic( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.is_graphic( x );
   -- Source: Ada.Characters.Handling.Is_Graphic (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := boolean_t;
   expect( is_graphic_t );
   ParseSingleUniStringExpression( expr_val, expr_type );
   begin
@@ -1151,12 +1179,13 @@ begin
   end;
 end ParseStringsIsGraphic;
 
-procedure ParseStringsIsLetter( result : in out unbounded_string) is
+procedure ParseStringsIsLetter( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.is_letter( x );
   -- Source: Ada.Characters.Handling.Is_Letter (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := boolean_t;
   expect( is_letter_t );
   ParseSingleUniStringExpression( expr_val, expr_type );
   begin
@@ -1168,12 +1197,13 @@ begin
   end;
 end ParseStringsIsLetter;
 
-procedure ParseStringsIsLower( result : in out unbounded_string) is
+procedure ParseStringsIsLower( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.is_lower( x );
   -- Source: Ada.Characters.Handling.Is_Lower (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := boolean_t;
   expect( is_lower_t );
   ParseSingleUniStringExpression( expr_val, expr_type );
   begin
@@ -1185,12 +1215,13 @@ begin
   end;
 end ParseStringsIsLower;
 
-procedure ParseStringsIsUpper( result : in out unbounded_string) is
+procedure ParseStringsIsUpper( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.is_upper( x );
   -- Source: Ada.Characters.Handling.Is_Upper (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := boolean_t;
   expect( is_upper_t );
   ParseSingleUniStringExpression( expr_val, expr_type );
   begin
@@ -1202,12 +1233,13 @@ begin
   end;
 end ParseStringsIsUpper;
 
-procedure ParseStringsIsBasic( result : in out unbounded_string) is
+procedure ParseStringsIsBasic( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.is_basic( x );
   -- Source: Ada.Characters.Handling.Is_Basic (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := boolean_t;
   expect( is_basic_t );
   ParseSingleUniStringExpression( expr_val, expr_type );
   begin
@@ -1219,12 +1251,13 @@ begin
   end;
 end ParseStringsIsBasic;
 
-procedure ParseStringsIsDigit( result : in out unbounded_string) is
+procedure ParseStringsIsDigit( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.is_digit( x );
   -- Source: Ada.Characters.Handling.Is_Digit (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := boolean_t;
   expect( is_digit_t );
   ParseSingleUniStringExpression( expr_val, expr_type );
   begin
@@ -1236,12 +1269,13 @@ begin
   end;
 end ParseStringsIsDigit;
 
-procedure ParseStringsIsHexDigit( result : in out unbounded_string) is
+procedure ParseStringsIsHexDigit( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.is_hexadecimal_digit( x );
   -- Source: Ada.Characters.Handling.Is_Hexadecimal_Digit (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := boolean_t;
   expect( is_hex_digit_t );
   ParseSingleUniStringExpression( expr_val, expr_type );
   begin
@@ -1253,12 +1287,13 @@ begin
   end;
 end ParseStringsIsHexDigit;
 
-procedure ParseStringsIsAlphanumeric( result : in out unbounded_string) is
+procedure ParseStringsIsAlphanumeric( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.is_alphanumeric( x );
   -- Source: Ada.Characters.Handling.Is_Alphanumeric (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := boolean_t;
   expect( is_alphanumeric_t );
   ParseSingleUniStringExpression( expr_val, expr_type );
   begin
@@ -1270,12 +1305,13 @@ begin
   end;
 end ParseStringsIsAlphanumeric;
 
-procedure ParseStringsIsSpecial( result : in out unbounded_string) is
+procedure ParseStringsIsSpecial( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.is_special( x );
   -- Source: Ada.Characters.Handling.Is_Special (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := boolean_t;
   expect( is_special_t );
   ParseSingleUniStringExpression( expr_val, expr_type );
   begin
@@ -1287,12 +1323,13 @@ begin
   end;
 end ParseStringsIsSpecial;
 
-procedure ParseStringsIsSlashedDate( result : in out unbounded_string) is
+procedure ParseStringsIsSlashedDate( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.is_slashed_date( x );
   -- Source: N/A
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := boolean_t;
   expect( is_slashed_date_t );
   ParseSingleUniStringExpression( expr_val, expr_type );
   begin
@@ -1304,12 +1341,13 @@ begin
   end;
 end ParseStringsIsSlashedDate;
 
-procedure ParseStringsIsFixed( result : in out unbounded_string) is
+procedure ParseStringsIsFixed( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.is_fixed( x );
   -- Source: N/A
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := boolean_t;
   expect( is_fixed_t );
   ParseSingleUniStringExpression( expr_val, expr_type );
   begin
@@ -1349,7 +1387,7 @@ end ParseStringsIsFixed;
 --   end;
 -- end ParseStringsFromBase64;
 
-procedure ParseStringsIsTypoOf( result : in out unbounded_string) is
+procedure ParseStringsIsTypoOf( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.is_typo_of( x, y );
   -- Source: N/A
   expr1_val   : unbounded_string;
@@ -1357,6 +1395,7 @@ procedure ParseStringsIsTypoOf( result : in out unbounded_string) is
   expr2_val   : unbounded_string;
   expr2_type  : identifier;
 begin
+  kind := boolean_t;
   expect( is_typo_of_t );
   expect( symbol_t, "(" );
   ParseExpression( expr1_val, expr1_type );
@@ -1376,7 +1415,7 @@ begin
   end;
 end ParseStringsIsTypoOf;
 
-procedure ParseStringsUnboundedSlice( result : in out unbounded_string ) is
+procedure ParseStringsUnboundedSlice( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: unbounded_slice( s, l, h )
   -- Source: Ada.Strings.Unbounded.Unbounded_Slice
   str_val  : unbounded_string;
@@ -1386,6 +1425,7 @@ procedure ParseStringsUnboundedSlice( result : in out unbounded_string ) is
   hi_val   : unbounded_string;
   hi_type  : identifier;
 begin
+  kind := unbounded_string_t;
   expect( unbounded_slice_t );
   expect( symbol_t, "(" );
   ParseExpression( str_val, str_type );
@@ -1439,12 +1479,13 @@ begin
   end;
 end ParseStringsSetUnboundedString;
 
-procedure ParseStringsToJSON( result : in out unbounded_string) is
+procedure ParseStringsToJSON( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.to_json( x );
   -- Source: N/A
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := json_string_t;
   expect( strings_to_json_t );
   ParseSingleUniStringExpression( expr_val, expr_type );
   begin
@@ -1499,53 +1540,53 @@ begin
   declareStandardConstant( strings_trim_end_both_t, "trim_end.both",
     strings_trim_end_t, "2" );
 
-  declareFunction( glob_t, "strings.glob" );
-  declareFunction( match_t, "strings.match" );
-  declareFunction( element_t, "strings.element" );
-  declareFunction( slice_t, "strings.slice" );
-  declareFunction( index_t, "strings.index" );
-  declareFunction( index_non_blank_t, "strings.index_non_blank" );
-  declareFunction( count_t, "strings.count" );
-  declareFunction( replace_slice_t, "strings.replace_slice" );
-  declareFunction( strings_insert_t, "strings.insert" );
-  declareFunction( overwrite_t, "strings.overwrite" );
-  declareFunction( sdelete_t, "strings.delete" );
-  declareFunction( trim_t, "strings.trim" );
-  declareFunction( length_t, "strings.length" );
-  declareFunction( head_t, "strings.head" );
-  declareFunction( tail_t, "strings.tail" );
-  declareFunction( val_t, "strings.val" );
-  declareFunction( image_t, "strings.image" );
-  declareFunction( field_t, "strings.field" );
-  declareFunction( csv_field_t, "strings.csv_field" );
-  declareFunction( lookup_t, "strings.lookup" );
-  declareProcedure( replace_t, "strings.replace" );
-  declareProcedure( csv_replace_t, "strings.csv_replace" );
-  declareFunction( to_upper_t, "strings.to_upper" );
-  declareFunction( to_lower_t, "strings.to_lower" );
-  declareFunction( to_proper_t, "strings.to_proper" );
-  declareFunction( to_basic_t, "strings.to_basic" );
-  declareFunction( to_escaped_t, "strings.to_escaped" );
-  declareFunction( is_control_t, "strings.is_control" );
-  declareFunction( is_graphic_t, "strings.is_graphic" );
-  declareFunction( is_letter_t, "strings.is_letter" );
-  declareFunction( is_lower_t, "strings.is_lower" );
-  declareFunction( is_upper_t, "strings.is_upper" );
-  declareFunction( is_basic_t, "strings.is_basic" );
-  declareFunction( is_digit_t, "strings.is_digit" );
-  declareFunction( is_hex_digit_t, "strings.is_hexadecimal_digit" );
-  declareFunction( is_alphanumeric_t, "strings.is_alphanumeric" );
-  declareFunction( is_special_t, "strings.is_special" );
-  declareFunction( is_slashed_date_t, "strings.is_slashed_date" );
-  declareFunction( is_fixed_t, "strings.is_fixed" );
-  declareFunction( split_t, "strings.split" );
-  declareFunction( mktemp_t, "strings.mktemp" );
-  declareFunction( to_string_t, "strings.to_string" );
-  declareFunction( to_u_string_t, "strings.to_unbounded_string" );
+  declareFunction( glob_t, "strings.glob", ParseStringsGlob'access );
+  declareFunction( match_t, "strings.match", ParseStringsMatch'access );
+  declareFunction( element_t, "strings.element", ParseStringsElement'access );
+  declareFunction( slice_t, "strings.slice", ParseStringsSlice'access );
+  declareFunction( index_t, "strings.index", ParseStringsIndex'access );
+  declareFunction( index_non_blank_t, "strings.index_non_blank", ParseStringsIndexNonBlank'access );
+  declareFunction( count_t, "strings.count", ParseStringsCount'access );
+  declareFunction( replace_slice_t, "strings.replace_slice", ParseStringsReplaceSlice'access );
+  declareFunction( strings_insert_t, "strings.insert", ParseStringsInsert'access );
+  declareFunction( overwrite_t, "strings.overwrite", ParseStringsOverwrite'access );
+  declareFunction( sdelete_t, "strings.delete", ParseStringsDelete'access );
+  declareFunction( trim_t, "strings.trim", ParseStringsTrim'access );
+  declareFunction( length_t, "strings.length", ParseStringsLength'access );
+  declareFunction( head_t, "strings.head", ParseStringsHead'access );
+  declareFunction( tail_t, "strings.tail", ParseStringsTail'access );
+  declareFunction( val_t, "strings.val", ParseStringsVal'access );
+  declareFunction( image_t, "strings.image", ParseStringsImage'access );
+  declareFunction( field_t, "strings.field", ParseStringsField'access );
+  declareFunction( csv_field_t, "strings.csv_field", ParseStringsCSVField'access );
+  declareFunction( lookup_t, "strings.lookup", ParseStringsLookup'access );
+  declareProcedure( replace_t, "strings.replace", ParseStringsReplace'access );
+  declareProcedure( csv_replace_t, "strings.csv_replace", ParseStringsCSVReplace'access );
+  declareFunction( to_upper_t, "strings.to_upper", ParseStringsToUpper'access );
+  declareFunction( to_lower_t, "strings.to_lower", ParseStringsToLower'access );
+  declareFunction( to_proper_t, "strings.to_proper", ParseStringsToProper'access );
+  declareFunction( to_basic_t, "strings.to_basic", ParseStringsToBasic'access );
+  declareFunction( to_escaped_t, "strings.to_escaped", ParseStringsToEscaped'access );
+  declareFunction( is_control_t, "strings.is_control", ParseStringsIsControl'access );
+  declareFunction( is_graphic_t, "strings.is_graphic", ParseStringsIsGraphic'access );
+  declareFunction( is_letter_t, "strings.is_letter", ParseStringsIsLetter'access );
+  declareFunction( is_lower_t, "strings.is_lower", ParseStringsIsLower'access );
+  declareFunction( is_upper_t, "strings.is_upper", ParseStringsIsUpper'access );
+  declareFunction( is_basic_t, "strings.is_basic", ParseStringsIsBasic'access );
+  declareFunction( is_digit_t, "strings.is_digit", ParseStringsIsDigit'access );
+  declareFunction( is_hex_digit_t, "strings.is_hexadecimal_digit", ParseStringsIsHexDigit'access );
+  declareFunction( is_alphanumeric_t, "strings.is_alphanumeric", ParseStringsIsAlphanumeric'access  );
+  declareFunction( is_special_t, "strings.is_special", ParseStringsIsSpecial'access );
+  declareFunction( is_slashed_date_t, "strings.is_slashed_date", ParseStringsIsSlashedDate'access );
+  declareFunction( is_fixed_t, "strings.is_fixed", ParseStringsIsFixed'access );
+  declareProcedure( split_t, "strings.split", ParseStringsSplit'access );
+  declareFunction( mktemp_t, "strings.mktemp", ParseStringsMkTemp'access );
+  declareFunction( to_string_t, "strings.to_string", ParseStringsToString'access );
+  declareFunction( to_u_string_t, "strings.to_unbounded_string", ParseStringsToUString'access );
   declareFunction( is_typo_of_t, "strings.is_typo_of" );
-  declareProcedure( set_unbounded_string_t, "strings.set_unbounded_string" );
-  declareFunction( unbounded_slice_t, "strings.unbounded_slice" );
-  declareFunction( strings_to_json_t, "strings.to_json" );
+  declareProcedure( set_unbounded_string_t, "strings.set_unbounded_string", ParseStringsSetUnboundedString'access );
+  declareFunction( unbounded_slice_t, "strings.unbounded_slice", ParseStringsUnboundedSlice'access );
+  declareFunction( strings_to_json_t, "strings.to_json", ParseStringsToJSON'access );
 end StartupStrings;
 
 procedure ShutdownStrings is

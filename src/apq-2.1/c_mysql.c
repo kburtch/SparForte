@@ -99,7 +99,7 @@ c_mysql_init() {
 EXPORT int
 c_mysql_connect(MYSQL *conn,char *host,char *user,char *passwd,char *db,unsigned port,char *local_socket) {
 	int z;
-	
+
 	z = mysql_real_connect(conn,host,user,passwd,db,port,local_socket,0) == NULL;
 	return IS_OK(z);
 }

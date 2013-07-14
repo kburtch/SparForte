@@ -28,8 +28,10 @@ with system,
   ada.unchecked_deallocation,
   ada.strings.unbounded,
   gen_list,
+  software_models,
   pegasock.memcache;
 use ada.strings.unbounded,
+  software_models,
   pegasock.memcache;
 #if APQ
   with APQ;
@@ -128,15 +130,6 @@ commandLineSource : constant string := "Command";
 err_message : unbounded_string;         -- last error message
 
 ------------------------------------------------------------------------------
--- Unbounded String Constants
-------------------------------------------------------------------------------
-
-system_script_software_model_name : unbounded_string
-   := to_unbounded_string( "System.Script_Software_Model" );
-shell_script_model_name : unbounded_string
-   := to_unbounded_string( "shell_script" );
-
-------------------------------------------------------------------------------
 -- Pragma Flags
 ------------------------------------------------------------------------------
 
@@ -150,6 +143,7 @@ restriction_no_memcache          : boolean := false; -- pragma restriction
 restriction_no_mysql_database    : boolean := false; -- pragma restriction
 restriction_no_postgresql_database: boolean := false; -- pragma restriction
 no_command_hash                  : boolean := false; -- pragma restriction
+suppress_word_quoting            : boolean := false; -- pragma suppress
 
 type templateTypes is (noTemplate, htmlTemplate, textTemplate,
 cssTemplate, jsTemplate, jsonTemplate, wmlTemplate, xmlTemplate );
@@ -164,6 +158,7 @@ annotationsFound : boolean := false; -- pragma annotations_not_optional
 annotationTodoFound : boolean := false; -- pragma annotations_no_todo
 licenseSet       : boolean := false;
 softwareModelSet : boolean := false;
+softwareModelReq : softwareModelPtr := null;
 
 ------------------------------------------------------------------------------
 -- Command Line Options
@@ -238,7 +233,7 @@ type anImportMapping is ( none, json );
 -- Callbacks to execute a build-in procedure or function (such as put_line).
 
 type aBuiltinProcedureCallback is access procedure;
-type aBuiltinFunctionCallback is access procedure( value : out unbounded_string );
+type aBuiltinFunctionCallback is access procedure( value : out unbounded_string; kind : out identifier );
 
 
 ------------------------------------------------------------------------------
@@ -266,7 +261,8 @@ type declaration is record
      inspect  : boolean := false;               -- show value on breakout
      deleted  : boolean := false;               -- marked for deletion
      wasReferenced : boolean := false;          -- true if ref'd in syn chk
-     --pcall    : aBuiltinProcedureCallback := null;
+     procCB   : aBuiltinProcedureCallback := null;
+     funcCB   : aBuiltinFunctionCallback := null;
 end record;
 
 
@@ -531,10 +527,10 @@ last_output_type : identifier;    -- type of last output
 procedure declareKeyword( id : out identifier; s : string );
 -- initialize a new keyword / internal identifier
 
-procedure declareFunction( id : out identifier; s : string );
+procedure declareFunction( id : out identifier; s : string; cb : aBuiltinFunctionCallback := null );
 -- Initialize a built-in function identifier in the symbol table
 
-procedure declareProcedure( id : out identifier; s : string );
+procedure declareProcedure( id : out identifier; s : string; cb : aBuiltinProcedureCallback := null );
 -- Initialize a built-in procedure identifier in the symbol table
 
 --function deleteIdent( id : identifier ) return boolean;

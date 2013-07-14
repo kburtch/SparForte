@@ -26,14 +26,15 @@ with bush_os,
      world,
      scanner,
      parser,
-     parser_aux;
+     parser_aux,
+     parser_params;
 use  bush_os,
      string_util,
      world,
      scanner,
      parser,
-     parser_aux;
-with ada.text_io; use ada.text_io;
+     parser_aux,
+     parser_params;
 
 package body parser_records is
 
@@ -93,8 +94,8 @@ end ParseRecordsToRecord;
 
 procedure StartupRecords is
 begin
-  declareProcedure( records_to_json_t, "records.to_json" );
-  declareProcedure( records_to_record_t, "records.to_record" );
+  declareProcedure( records_to_json_t, "records.to_json", ParseRecordsToJSON'access );
+  declareProcedure( records_to_record_t, "records.to_record", ParseRecordsToRecord'access );
 end StartupRecords;
 
 procedure ShutdownRecords is

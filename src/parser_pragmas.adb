@@ -78,7 +78,7 @@ type aPragmaKind is ( ada_95, asserting, annotate, debug, debug_on,
      restriction_unused,
      restriction_external, restriction_memcache, restriction_mysql,
      restriction_postgresql, restriction_todos, software_model,
-     template, test, test_result,
+     suppress, suppress_word_quoting, template, test, test_result,
      unchecked_import, unchecked_import_json,
      uninspect_var, unrestricted_template, volatile, unknown_pragma );
 
@@ -137,6 +137,8 @@ begin
      err( "pragma restriction not restrictions" );
   elsif name = "software_model" then
      pragmaKind := software_model;
+  elsif name = "suppress" then
+     pragmaKind := suppress;
   elsif name = "template" then
      pragmaKind := template;
   elsif name = "test" then
@@ -551,6 +553,16 @@ begin
      ParseLicenseKind( expr_val );
   when software_model =>                     -- pragma software_model
      ParseSoftwareModelName( expr_val );
+  when suppress =>                        -- pragma restriction
+     if identifiers( token ).name = "word_quoting" then
+        discardUnusedIdentifier( token );
+        getNextToken;
+        pragmaKind := suppress_word_quoting;
+     else
+        discardUnusedIdentifier( token );
+        err( "unknown error type" );
+        return;
+     end if;
   when template | unrestricted_template =>   -- pragma (unrestricted) template
      if rshOpt then
         err( "templates are not allowed in a restricted shell" );
@@ -605,6 +617,9 @@ begin
   if syntax_check then
      if pragmaKind = restriction_unused then
         restriction_no_unused_identifiers := true;
+     end if;
+     if pragmaKind = suppress_word_quoting then
+        world.suppress_word_quoting := true;
      end if;
   end if;
 
@@ -880,6 +895,8 @@ begin
             err( "exception raised" );
           end;
         end if;
+     when suppress_word_quoting =>
+        null; -- only applies in syntax check
      when template | unrestricted_template =>
         templateType := noTemplate;
         -- http://www.webmaster-toolkit.com/mime-types.shtml

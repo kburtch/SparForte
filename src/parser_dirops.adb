@@ -334,10 +334,10 @@ procedure StartupDirOps is
 begin
   declareIdent( dirops_dir_name_str_t, "directory_operations.dir_name_dir",
      string_t, subClass );
-  declareProcedure( dirops_dir_separator_t, "directory_operations.dir_separator" );
-  declareProcedure( dirops_change_dir_t, "directory_operations.change_dir" );
-  declareProcedure( dirops_make_dir_t, "directory_operations.make_dir" );
-  declareProcedure( dirops_remove_dir_t, "directory_operations.remove_dir" );
+  declareFunction( dirops_dir_separator_t, "directory_operations.dir_separator" );
+  declareProcedure( dirops_change_dir_t, "directory_operations.change_dir", ParseDirOpsChangeDir'access );
+  declareProcedure( dirops_make_dir_t, "directory_operations.make_dir", ParseDirOpsMakeDir'access );
+  declareProcedure( dirops_remove_dir_t, "directory_operations.remove_dir", ParseDirOpsRemoveDir'access );
   declareFunction( dirops_get_current_dir_t, "directory_operations.get_current_dir" );
   declareIdent( dirops_path_name_t, "directory_operations.path_name",
      string_t, subClass );

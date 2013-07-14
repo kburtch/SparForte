@@ -39,8 +39,6 @@ package parser is
 
 procedure ParseNewIdentifier( id : out identifier );
 procedure ParseIdentifier( id : out identifier );
-procedure ParseOutParameter( ref:out reference; defaultType : identifier );
-procedure ParseInOutParameter( ref : out reference );
 
 procedure ParseFactor( f : out unbounded_string; kind : out identifier );
 procedure ParsePowerTermOperator( op : out unbounded_string );

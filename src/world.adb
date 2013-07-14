@@ -77,7 +77,7 @@ begin
   end if;
 end declareKeyword;
 
-procedure declareFunction( id : out identifier; s : string ) is
+procedure declareFunction( id : out identifier; s : string; cb : aBuiltinFunctionCallback := null ) is
 -- Initialize a built-in function identifier in the symbol table
 begin
   if identifiers_top = identifier'last then                     -- no room?
@@ -92,11 +92,13 @@ begin
        kw.kind := identifier'first;
        kw.value := Null_Unbounded_String;
        kw.class := funcClass;
+       kw.procCB := null;
+       kw.funcCB := cb;
      end;
   end if;
 end declareFunction;
 
-procedure declareProcedure( id : out identifier; s : string ) is
+procedure declareProcedure( id : out identifier; s : string; cb : aBuiltinProcedureCallback := null ) is
 -- Initialize a built-in procedure identifier in the symbol table
 begin
   if identifiers_top = identifier'last then                     -- no room?
@@ -111,6 +113,8 @@ begin
        kw.kind := identifier'first;
        kw.value := Null_Unbounded_String;
        kw.class := procClass;
+       kw.procCB := cb;
+       kw.funcCB := null;
      end;
   end if;
 end declareProcedure;
@@ -161,7 +165,9 @@ begin
        field_of => eof_t,
        inspect  => false,
        deleted  => false,
-       wasReferenced => false
+       wasReferenced => false,
+       procCB => null,
+       funcCB => null
      );
      identifiers_top := identifiers_top + 1;                    -- push stack
   end if;
@@ -193,7 +199,9 @@ begin
        field_of => eof_t,
        inspect  => false,
        deleted  => false,
-       wasReferenced => false
+       wasReferenced => false,
+       procCB => null,
+       funcCB => null
      );
   end if;
 end declareIdent;
@@ -294,7 +302,9 @@ begin
                  field_of => eof_t,
                  inspect  => false,
                  deleted  => false,
-                 wasReferenced => false
+                 wasReferenced => false,
+                 procCB => null,
+                 funcCB => null
                );
             end if;
          end if;
@@ -330,7 +340,9 @@ begin
        field_of => eof_t,
        inspect  => false,
        deleted  => false,
-       wasReferenced => false
+       wasReferenced => false,
+       procCB => null,
+       funcCB => null
      );
   end if;
 end declareReturnResult;

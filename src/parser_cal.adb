@@ -365,7 +365,7 @@ begin
   declareFunction( cal_month_t, "calendar.month" );
   declareFunction( cal_day_t, "calendar.day" );
   declareFunction( cal_seconds_t, "calendar.seconds" );
-  declareProcedure( cal_split_t, "calendar.split" );
+  declareProcedure( cal_split_t, "calendar.split", ParseCalSplit'access );
   declareFunction( cal_time_of_t, "calendar.time_of" );
   declareFunction( cal_to_julian_t, "calendar.to_julian" );
   declareFunction( cal_to_time_t, "calendar.to_time" );

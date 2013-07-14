@@ -95,7 +95,7 @@ begin
            ParseNextStringParameter( hostExpr, hostType, string_t );
            hasHost := true;
            if token = symbol_t and identifiers( token ).value = "," then
-              ParseNextStringParameter( portExpr, portType, integer_t );
+              ParseNextNumericParameter( portExpr, portType, integer_t );
               hasPort := true;
            end if;
         end if;
@@ -495,7 +495,7 @@ procedure ParseMySQLSetRollbackOnFinalize is
   rollType : identifier;
 begin
   expect( mysql_set_rollback_on_finalize_t );
-  ParseSingleStringParameter( rollExpr, rollType, boolean_t );
+  ParseSingleEnumParameter( rollExpr, rollType, boolean_t );
   if isExecutingCommand then
      declare
        rollback : boolean := rollExpr = to_unbounded_string( "1" );
@@ -581,7 +581,7 @@ procedure ParseMySQLSetTrace is
   traceType : identifier;
 begin
   expect( mysql_set_trace_t );
-  ParseSingleStringParameter( traceExpr, traceType, boolean_t );
+  ParseSingleEnumParameter( traceExpr, traceType, boolean_t );
   if isExecutingCommand then
      declare
        traceback : boolean := traceExpr = to_unbounded_string( "1" );
@@ -632,7 +632,7 @@ procedure ParseMySQLRaiseExceptions is
 begin
   expect( mysql_raise_exceptions_t );
   if token = symbol_t and identifiers( token ).value = "(" then
-     ParseSingleStringParameter( raiseExpr, raiseType, boolean_t );
+     ParseSingleEnumParameter( raiseExpr, raiseType, boolean_t );
   else
      raiseExpr := to_unbounded_string( "1" );
   end if;
@@ -747,7 +747,7 @@ procedure ParseMySQLFetch is
 begin
   expect( mysql_fetch_t );
   if token = symbol_t and identifiers( token ).value = "(" then
-     ParseSingleStringParameter( expr_val, expr_type, mysql_tuple_index_type_t );
+     ParseSingleNumericParameter( expr_val, expr_type, mysql_tuple_index_type_t );
      haveIndex := true;
   end if;
   if isExecutingCommand then
@@ -841,7 +841,7 @@ procedure ParseMySQLColumnName( result : out unbounded_string; kind : out identi
 begin
   kind := string_t;
   expect( mysql_column_name_t );
-  ParseSingleStringParameter( exprVal, exprType, mysql_column_index_type_t );
+  ParseSingleNumericParameter( exprVal, exprType, mysql_column_index_type_t );
   if isExecutingCommand then
      begin
        result := to_unbounded_string(
@@ -906,14 +906,14 @@ end ParseMySQLColumnIndex;
 --end ParseDBColumnType;
 
 procedure ParseMySQLIsNull( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := mysql.is_null;
+  -- Syntax: n := mysql.is_null( c );
   -- Source: APQ.Is_Null;
   exprVal : unbounded_string;
   exprType : identifier;
 begin
   kind := boolean_t;
   expect( mysql_is_null_t );
-  ParseSingleStringParameter( exprVal, exprType, mysql_column_index_type_t );
+  ParseSingleNumericParameter( exprVal, exprType, mysql_column_index_type_t );
   if isExecutingCommand then
      begin
        result := to_bush_boolean(
@@ -938,7 +938,7 @@ procedure ParseMySQLValue( result : out unbounded_string; kind : out identifier 
 begin
   kind := universal_t;
   expect( mysql_value_t );
-  ParseSingleStringParameter( exprVal, exprType, mysql_column_index_type_t );
+  ParseSingleNumericParameter( exprVal, exprType, mysql_column_index_type_t );
   if isExecutingCommand then
      begin
        result := Value( Q, Column_Index_Type( to_numeric( exprVal ) ) );
@@ -1147,7 +1147,7 @@ begin
      return "special";
   elsif kind = "t" then
      return "TOAST table";
-  -- new mysql
+  -- newer mysql
   elsif kind = "SYSTEM VIEW" then
      return "view";
   elsif kind = "BASE TABLE" then
@@ -1257,6 +1257,7 @@ end mysql_not_null_to_string;
 
 function mysql_default_to_string( val : string ) return string is
 -- convert a t/f value to "not null" like psql client
+-- adapted from postgresql support
 begin
   if val = "t" then
      return "default";
@@ -1437,7 +1438,7 @@ begin
                    elsif i = 2 then
                       put( bold( to_string( ToEscaped( to_unbounded_string( mysql_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
                    elsif i = 3 then
-                      put( bold( to_string( ToEscaped( to_unbounded_string( mysql_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
+                      put( bold( to_string( ToEscaped( to_unbounded_string( mysql_engine_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
                    else
                       put( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
                    end if;

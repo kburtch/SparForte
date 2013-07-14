@@ -31,7 +31,8 @@ with gnat.bubble_sort_a,
      scanner,
      scanner_arrays,
      parser,
-     parser_aux;
+     parser_aux,
+     parser_params;
 use  bush_os,
      string_util,
      user_io,
@@ -39,7 +40,8 @@ use  bush_os,
      scanner,
      scanner_arrays,
      parser,
-     parser_aux;
+     parser_aux,
+     parser_params;
 
 with ada.text_io;
 use  ada.text_io;
@@ -634,18 +636,18 @@ begin
   declareFunction( arrays_first_t, "arrays.first" );
   declareFunction( arrays_last_t, "arrays.last" );
   declareFunction( arrays_length_t, "arrays.length" );
-  declareProcedure( arrays_bubble_sort_t, "arrays.bubble_sort" );
-  declareProcedure( arrays_bubble_sort_descending_t, "arrays.bubble_sort_descending" );
-  declareProcedure( arrays_heap_sort_t, "arrays.heap_sort" );
-  declareProcedure( arrays_heap_sort_descending_t, "arrays.heap_sort_descending" );
-  declareProcedure( arrays_shuffle_t, "arrays.shuffle" );
-  declareProcedure( arrays_flip_t, "arrays.flip" );
-  declareProcedure( arrays_rotate_left_t, "arrays.rotate_left" );
-  declareProcedure( arrays_rotate_right_t, "arrays.rotate_right" );
-  declareProcedure( arrays_shift_left_t, "arrays.shift_left" );
-  declareProcedure( arrays_shift_right_t, "arrays.shift_right" );
-  declareProcedure( arrays_to_array_t, "arrays.to_array" );
-  declareProcedure( arrays_to_json_t, "arrays.to_json" );
+  declareProcedure( arrays_bubble_sort_t, "arrays.bubble_sort", ParseArraysBubbleSort'access );
+  declareProcedure( arrays_bubble_sort_descending_t, "arrays.bubble_sort_descending",ParseArraysBubbleSortDescending'access );
+  declareProcedure( arrays_heap_sort_t, "arrays.heap_sort", ParseArraysHeapSort'access );
+  declareProcedure( arrays_heap_sort_descending_t, "arrays.heap_sort_descending", ParseArraysHeapSortDescending'access );
+  declareProcedure( arrays_shuffle_t, "arrays.shuffle", ParseArraysShuffle'access );
+  declareProcedure( arrays_flip_t, "arrays.flip", ParseArraysFlip'access );
+  declareProcedure( arrays_rotate_left_t, "arrays.rotate_left", ParseArraysRotateLeft'access );
+  declareProcedure( arrays_rotate_right_t, "arrays.rotate_right", ParseArraysRotateRight'access );
+  declareProcedure( arrays_shift_left_t, "arrays.shift_left", ParseArraysShiftLeft'access );
+  declareProcedure( arrays_shift_right_t, "arrays.shift_right", ParseArraysShiftRight'access );
+  declareProcedure( arrays_to_array_t, "arrays.to_array", ParseArraysToArray'access );
+  declareProcedure( arrays_to_json_t, "arrays.to_json", ParseArraysToJSON'access );
 end StartupArrays;
 
 procedure ShutdownArrays is

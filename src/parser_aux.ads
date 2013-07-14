@@ -21,8 +21,18 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.strings.unbounded, bush_os, world, scanner, scanner_arrays;
-use ada.strings.unbounded, bush_os, world, scanner, scanner_arrays;
+with ada.strings.unbounded,
+     bush_os,
+     world,
+     scanner,
+     scanner_arrays,
+     parser_params;
+use  ada.strings.unbounded,
+     bush_os,
+     world,
+     scanner,
+     scanner_arrays,
+     parser_params;
 
 package parser_aux is
 
@@ -43,23 +53,6 @@ procedure makeTempFile( s : out unbounded_string );
 
 --function isEOF( fd : aFileDescriptor ) return boolean;
 -- true if the file descriptor is at the end of file
-
--- Parameter references
-
-type reference is record
-     id    : identifier;   -- the identifier
-     a_id  : arrayID;      -- the array (if an array)
-     index : long_integer := 0; -- the array index (if an array)
-     kind  : identifier;   -- the type name
-end record;
-
-procedure AssignParameter( ref : in reference; value : unbounded_string );
-pragma inline( AssignParameter );
--- assign a value to the variable or array indicated by ref
-
-procedure GetParameterValue( ref : in reference; value : out unbounded_string );
-pragma inline( GetParameterValue );
--- return the value of the variable or array indicated by ref
 
 function stringField( i : identifier; f : natural ) return unbounded_string;
 -- same as string_util.stringField except users an identifier's value

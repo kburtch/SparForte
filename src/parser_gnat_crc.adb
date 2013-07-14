@@ -29,31 +29,16 @@ with interfaces,
     world,
     scanner,
     parser,
-    parser_aux;
-use world,
+    parser_aux,
+    parser_params;
+use interfaces,
+    world,
     scanner,
     parser,
     parser_aux,
-    interfaces;
+    parser_params;
 
 package body parser_gnat_crc is
-
-------------------------------------------------------------------------------
--- HOUSEKEEPING
-------------------------------------------------------------------------------
-
-procedure StartupGnatCRC is
-begin
-  declareIdent( gnat_crc32_crc32_t, "gnat.crc32.crc32", uni_numeric_t, typeClass );
-  declareProcedure( gnat_crc32_initialize_t, "gnat.crc32.initialize" );
-  declareProcedure( gnat_crc32_update_t, "gnat.crc32.update" );
-  declareFunction( gnat_crc32_get_value_t, "gnat.crc32.get_value" );
-end StartupGnatCRC;
-
-procedure ShutdownGnatCRC is
-begin
-  null;
-end ShutdownGnatCRC;
 
 ------------------------------------------------------------------------------
 -- PARSE THE CGI PACKAGE
@@ -135,5 +120,23 @@ begin
      end;
   end if;
 end ParseGnatCRC32GetValue;
+
+
+------------------------------------------------------------------------------
+-- HOUSEKEEPING
+------------------------------------------------------------------------------
+
+procedure StartupGnatCRC is
+begin
+  declareIdent( gnat_crc32_crc32_t, "gnat.crc32.crc32", uni_numeric_t, typeClass );
+  declareProcedure( gnat_crc32_initialize_t, "gnat.crc32.initialize", ParseGnatCRC32Initialize'access );
+  declareProcedure( gnat_crc32_update_t, "gnat.crc32.update", ParseGnatCRC32Update'access );
+  declareFunction( gnat_crc32_get_value_t, "gnat.crc32.get_value" );
+end StartupGnatCRC;
+
+procedure ShutdownGnatCRC is
+begin
+  null;
+end ShutdownGnatCRC;
 
 end parser_gnat_crc;

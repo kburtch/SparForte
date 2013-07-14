@@ -16786,58 +16786,58 @@ begin
 
   -- declare pen package procedures and functions
 
-  declareProcedure( pen_set_rect_t, "pen.set_rect" );
+  declareProcedure( pen_set_rect_t, "pen.set_rect", ParsePenSetRect'access );
   declareFunction( pen_is_empty_rect_t, "pen.is_empty_rect" );
-  declareProcedure( pen_offset_rect_t, "pen.offset_rect" );
-  declareProcedure( pen_inset_rect_t, "pen.inset_rect" );
-  declareProcedure( pen_intersect_rect_t, "pen.intersect_rect" );
-  declareProcedure( pen_inside_rect_t, "pen.inside_rect" );
-  declareProcedure( pen_in_rect_t, "pen.in_rect" );
+  declareProcedure( pen_offset_rect_t, "pen.offset_rect", ParsePenOffsetRect'access );
+  declareProcedure( pen_inset_rect_t, "pen.inset_rect", ParsePenInsetRect'access );
+  declareProcedure( pen_intersect_rect_t, "pen.intersect_rect", ParsePenIntersectRect'access );
+  declareFunction( pen_inside_rect_t, "pen.inside_rect" );
+  declareFunction( pen_in_rect_t, "pen.in_rect" );
 
-  declareProcedure( pen_set_pen_mode_t, "pen.set_pen_mode" );
-  declareProcedure( pen_set_pen_ink_t, "pen.set_pen_ink" );
-  declareProcedure( pen_set_pen_brush_t, "pen.set_pen_brush" );
-  declareProcedure( pen_set_pen_pattern_t, "pen.set_pen_pattern" );
+  declareProcedure( pen_set_pen_mode_t, "pen.set_pen_mode", ParsePenSetPenMode'access );
+  declareProcedure( pen_set_pen_ink_t, "pen.set_pen_ink", ParsePenSetPenInk'access );
+  declareProcedure( pen_set_pen_brush_t, "pen.set_pen_brush", ParsePenSetPenBrush'access );
+  declareProcedure( pen_set_pen_pattern_t, "pen.set_pen_pattern", ParsePenSetPenPattern'access );
   declareFunction( pen_get_pen_mode_t, "pen.get_pen_mode" );
-  declareProcedure( pen_get_pen_ink_t, "pen.get_pen_ink" );
+  declareProcedure( pen_get_pen_ink_t, "pen.get_pen_ink", ParsePenGetPenInk'access );
   declareFunction( pen_get_pen_brush_t, "pen.get_pen_brush" );
 --  declareFunction( pen_get_pen_pattern_t, "pen.get_pen_pattern" );
 
-  declareProcedure( pen_move_to_t, "pen.move_to" );
-  declareProcedure( pen_move_t, "pen.move" );
-  declareProcedure( pen_line_to_t, "pen.line_to" );
-  declareProcedure( pen_line_t, "pen.line" );
-  declareProcedure( pen_hline_t, "pen.hline" );
-  declareProcedure( pen_vline_t, "pen.vline" );
+  declareProcedure( pen_move_to_t, "pen.move_to", ParsePenMoveTo'access );
+  declareProcedure( pen_move_t, "pen.move", ParsePenMove'access );
+  declareProcedure( pen_line_to_t, "pen.line_to", ParsePenLineTo'access );
+  declareProcedure( pen_line_t, "pen.line", ParsePenLine'access );
+  declareProcedure( pen_hline_t, "pen.hline", ParsePenHLine'access );
+  declareProcedure( pen_vline_t, "pen.vline", ParsePenVLine'access );
 
-  declareProcedure( pen_frame_rect_t, "pen.frame_rect" );
-  declareProcedure( pen_paint_rect_t, "pen.paint_rect" );
-  declareProcedure( pen_fill_rect_t, "pen.fill_rect" );
-  declareProcedure( pen_frame_ellipse_t, "pen.frame_ellipse" );
-  declareProcedure( pen_paint_ellipse_t, "pen.paint_ellipse" );
-  declareProcedure( pen_fill_ellipse_t, "pen.fill_ellipse" );
+  declareProcedure( pen_frame_rect_t, "pen.frame_rect", ParsePenFrameRect'access );
+  declareProcedure( pen_paint_rect_t, "pen.paint_rect", ParsePenPaintRect'access );
+  declareProcedure( pen_fill_rect_t, "pen.fill_rect", ParsePenFillRect'access );
+  declareProcedure( pen_frame_ellipse_t, "pen.frame_ellipse", ParsePenFrameEllipse'access );
+  declareProcedure( pen_paint_ellipse_t, "pen.paint_ellipse", ParsePenPaintEllipse'access );
+  declareProcedure( pen_fill_ellipse_t, "pen.fill_ellipse", ParsePenFillEllipse'access );
 
-  declareProcedure( pen_clear_t, "pen.clear" );
+  declareProcedure( pen_clear_t, "pen.clear", ParsePenClear'access );
 
-  declareProcedure( pen_new_screen_canvas_t, "pen.new_screen_canvas" );
-  declareProcedure( pen_new_window_canvas_t, "pen.new_window_canvas" );
-  declareProcedure( pen_new_gl_window_canvas_t, "pen.new_gl_window_canvas" );
-  declareProcedure( pen_new_canvas_t, "pen.new_canvas" );
-  declareProcedure( pen_save_canvas_t, "pen.save_canvas" );
-  declareProcedure( pen_set_title_t, "pen.set_title" );
-  declareProcedure( pen_close_canvas_t, "pen.close_canvas" );
+  declareProcedure( pen_new_screen_canvas_t, "pen.new_screen_canvas", ParsePenNewScreenCanvas'access );
+  declareProcedure( pen_new_window_canvas_t, "pen.new_window_canvas", ParsePenNewWindowCanvas'access );
+  declareProcedure( pen_new_gl_window_canvas_t, "pen.new_gl_window_canvas", ParsePenNewGLWindowCanvas'access );
+  declareProcedure( pen_new_canvas_t, "pen.new_canvas", ParsePenNewCanvas'access );
+  declareProcedure( pen_save_canvas_t, "pen.save_canvas", ParsePenSaveCanvas'access );
+  declareProcedure( pen_set_title_t, "pen.set_title", ParsePenSetTitle'access );
+  declareProcedure( pen_close_canvas_t, "pen.close_canvas", ParsePenCloseCanvas'access );
 
-  declareProcedure( pen_wait_to_reveal_t, "pen.wait_to_reveal" );
-  declareProcedure( pen_reveal_t, "pen.reveal" );
-  declareProcedure( pen_reveal_now_t, "pen.reveal_now" );
+  declareProcedure( pen_wait_to_reveal_t, "pen.wait_to_reveal", ParsePenWaitToReveal'access );
+  declareProcedure( pen_reveal_t, "pen.reveal", ParsePenReveal'access );
+  declareProcedure( pen_reveal_now_t, "pen.reveal_now", ParsePenRevealNow'access );
 
-  declareProcedure( pen_clip_rect_t, "pen.clip_rect" );
+  -- declareProcedure( pen_clip_rect_t, "pen.clip_rect" );
 
-  declareProcedure( pen_greyscale_t, "pen.greyscale" );
-  declareProcedure( pen_blend_t, "pen.blend" );
-  declareProcedure( pen_fade_t, "pen.fade" );
+  declareFunction( pen_greyscale_t, "pen.greyscale" );
+  declareProcedure( pen_blend_t, "pen.blend", ParsePenBlend'access );
+  declareProcedure( pen_fade_t, "pen.fade", ParsePenFade'access );
 
-  declareProcedure( pen_plot_t, "pen.plot" );
+  declareProcedure( pen_plot_t, "pen.plot", ParsePenPlot'access );
 
   declareProcedure( pen_set_font_t, "pen.sent_font" );
   declareProcedure( pen_put_t, "pen.put" );

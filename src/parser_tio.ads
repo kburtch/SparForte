@@ -26,14 +26,14 @@ with ada.text_io.editing,
     bush_os,
     world,
     scanner,
-    parser_aux;
+    parser_params;
 use ada.text_io.editing,
     ada.strings.unbounded,
     ada.strings.unbounded,
     bush_os,
     world,
     scanner,
-    parser_aux;
+    parser_params;
 
 package parser_tio is
 
@@ -151,12 +151,12 @@ procedure ShutdownTextIO;
 ------------------------------------------------------------------------------
 
 procedure ParseIsOpen( b : out identifier );
-procedure ParseEndOfFile( result : out unbounded_string );
-procedure ParseEndOfLine( result : out unbounded_string );
-procedure ParseLine( result : out unbounded_string );
-procedure ParseName( result : out unbounded_string );
-procedure ParseMode( result : out unbounded_string );
-procedure ParseGetLine( str : out unbounded_string );
+procedure ParseEndOfFile( result : out unbounded_string; kind : out identifier );
+procedure ParseEndOfLine( result : out unbounded_string; kind : out identifier );
+procedure ParseLine( result : out unbounded_string; kind : out identifier );
+procedure ParseName( result : out unbounded_string; kind : out identifier );
+procedure ParseMode( result : out unbounded_string; kind : out identifier );
+procedure ParseGetLine( str : out unbounded_string; kind : out identifier );
 procedure ParseOpen( create : boolean := false );
 procedure ParseReset;
 procedure ParseClose;
@@ -171,11 +171,11 @@ procedure ParseSetOutput;
 procedure ParseSetError;
 
 ------------------------------------------------------------------------------
--- BUSH EXTENSIONS
+-- ADASCRIPT EXTENSIONS
 ------------------------------------------------------------------------------
 
 procedure ParseQuestion;
-procedure ParseInkey( str : out unbounded_string );
+procedure ParseInkey( str : out unbounded_string; kind : out identifier );
 
 end parser_tio;
 

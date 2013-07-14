@@ -21,11 +21,36 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.strings.unbounded, ada.numerics.float_random, world;
-use ada.strings.unbounded, world;
+with ada.strings.unbounded,
+     ada.numerics.float_random,
+     world,
+     scanner_arrays;
+     -- parser_aux;
+use  ada.strings.unbounded,
+     world,
+     scanner_arrays;
+     -- parser_aux;
 
 package parser_params is
 
+------------------------------------------------------------------------------
+-- Parameter references
+------------------------------------------------------------------------------
+
+type reference is record
+     id    : identifier;             -- the identifier
+     a_id  : arrayID;                -- the array (if an array)
+     index : long_integer := 0;      -- the array index (if an array)
+     kind  : identifier;             -- the type name
+end record;
+
+procedure AssignParameter( ref : in reference; value : unbounded_string );
+pragma inline( AssignParameter );
+-- assign a value to the variable or array indicated by ref
+
+procedure GetParameterValue( ref : in reference; value : out unbounded_string );
+pragma inline( GetParameterValue );
+-- return the value of the variable or array indicated by ref
 
 ------------------------------------------------------------------------------
 -- String Parameters
@@ -46,6 +71,15 @@ procedure ParseLastStringParameter( expr_val : out unbounded_string;
 ------------------------------------------------------------------------------
 -- Enumerated Parameters
 ------------------------------------------------------------------------------
+
+procedure ParseSingleEnumParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier );
+
+procedure ParseFirstEnumParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier );
+
+procedure ParseNextEnumParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier );
 
 procedure ParseLastEnumParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier );
@@ -76,9 +110,22 @@ procedure ParseFirstInOutParameter( param_id : out identifier; expected_type : i
 
 procedure ParseLastInOutParameter( param_id : out identifier; expected_type : identifier  );
 
+procedure ParseInOutParameter( ref : out reference );
+-- TODO: should modify others to also use a reference
+
 ------------------------------------------------------------------------------
 -- Out Parameters
 ------------------------------------------------------------------------------
+
+procedure ParseOutParameter( ref : out reference; defaultType : identifier );
+
+procedure ParseSingleOutParameter( ref : out reference; defaultType : identifier );
+
+procedure ParseFirstOutParameter( ref : out reference; defaultType : identifier );
+
+procedure ParseNextOutParameter( ref : out reference; defaultType : identifier );
+
+procedure ParseLastOutParameter( ref : out reference; defaultType : identifier );
 
 end parser_params;
 

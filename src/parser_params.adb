@@ -42,7 +42,33 @@ package body parser_params is
 
 discard_result : boolean;
 
--- parser has Out/InOut Param and should be moved here
+------------------------------------------------------------------------------
+-- Parameter references
+------------------------------------------------------------------------------
+
+procedure AssignParameter( ref : in reference; value : unbounded_string ) is
+  -- assign a value to the variable or array indicated by ref
+  -- assign value to an out or in out parameter
+begin
+   if ref.index = 0 then
+      identifiers( ref.id ).value := value;
+   else
+      assignElement( ref.a_id, ref.index, value );
+   end if;
+end AssignParameter;
+pragma inline( AssignParameter );
+
+procedure GetParameterValue( ref : in reference; value : out unbounded_string ) is
+-- return the value of the variable or array indicated by ref
+begin
+   if ref.index = 0 then
+      value := identifiers( ref.id ).value;
+   else
+      value := arrayElement( ref.a_id, ref.index );
+   end if;
+end GetParameterValue;
+pragma inline( GetParameterValue );
+
 
 --  PARSE SINGLE STRING PARAMETER
 --
@@ -165,6 +191,45 @@ begin
 end ParseLastStringParameter;
 
 
+--  PARSE SINGLE ENUM PARAMETER
+
+procedure ParseSingleEnumParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier ) is
+begin
+  expect( symbol_t, "(" );
+  ParseExpression( expr_val, expr_type );
+  -- no cast to type
+  discard_result := baseTypesOk( expr_type, expected_type );
+  expect( symbol_t, ")" );
+end ParseSingleEnumParameter;
+
+
+--  PARSE FIRST ENUM PARAMETER
+
+procedure ParseFirstEnumParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier ) is
+begin
+  expect( symbol_t, "(" );
+  ParseExpression( expr_val, expr_type );
+  -- no cast to type
+  discard_result := baseTypesOk( expr_type, expected_type );
+end ParseFirstEnumParameter;
+
+
+--  PARSE NEXT ENUM PARAMETER
+--
+-- Expect another parameter that is an enum expression.
+
+procedure ParseNextEnumParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier ) is
+begin
+  expect( symbol_t, "," );
+  ParseExpression( expr_val, expr_type );
+  -- no cast to type
+  discard_result := baseTypesOk( expr_type, expected_type );
+end ParseNextEnumParameter;
+
+
 --  PARSE LAST ENUM PARAMETER
 --
 -- Expect another parameter that is an enum expression.
@@ -240,5 +305,231 @@ begin
   end if;
   expect( symbol_t, ")" );
 end ParseLastNumericParameter;
+
+
+------------------------------------------------------------------------------
+-- Out Parameters
+------------------------------------------------------------------------------
+
+
+--  PARSE OUT PARAMETER
+--
+-- Parse an "out" parameter for a procedure call.  Return a reference
+-- to it.  If the variable being referenced doesn't exist, declare it
+-- (if the pragmas allow it).
+
+procedure ParseOutParameter( ref : out reference; defaultType : identifier ) is
+  -- syntax: identifier [ (index) ]
+  expr_kind  : identifier;
+  expr_value : unbounded_string;
+  array_id2  : arrayID;
+  arrayIndex : long_integer;
+  isNew      : boolean := false;
+begin
+  -- If the identifier is undeclared (new_t) and we're in an an interactive
+  -- mode with no restrictions and no errors, declare the identifier as
+  -- an identifier of the default type.  Otherwise, just accept an existing
+  -- identifer as normal.
+  if identifiers( token ).kind = new_t and not onlyAda95 and not restriction_no_auto_declarations and not error_found and (inputMode = interactive or inputMode = breakout) then
+     ParseNewIdentifier( ref.id );
+     if index( identifiers( ref.id ).name, "." ) /= 0 then
+        err( "Identifier not declared.  Cannot auto-declare a record field" );
+     else
+        identifiers( ref.id ).kind := defaultType;
+        identifiers( ref.id ).class := otherClass;
+        put_trace( "Assuming " & to_string( identifiers( ref.id ).name ) &
+            " is a new " & to_string( identifiers( defaultType ).name ) &
+            " variable" );
+     end if;
+     isNew := true;
+  else
+     ParseIdentifier( ref.id );
+  end if;
+
+  -- If this is an array reference, read the index value.  Check that
+  -- the index value is within the index bounds for the array.
+
+  ref.index := 0;
+  if identifiers( ref.id ).list then        -- array variable?
+     ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
+     expect( symbol_t, "(" );
+     ParseExpression( expr_value, expr_kind );
+     if getUniType( expr_kind ) = uni_string_t or   -- index must be scalar
+        identifiers( getBaseType( expr_kind ) ).list then
+        err( "array index must be a scalar type" );
+     end if;                                   -- variables are not
+     if isExecutingCommand then                -- declared in syntax chk
+         begin
+            arrayIndex := long_integer(to_numeric(expr_value));-- convert to number
+         exception when others =>
+            err( "exception raised" );
+            arrayIndex := 0;
+         end;
+         array_id2 := arrayID( to_numeric(      -- array_id2=reference
+           identifiers( ref.id ).value ) );     -- to the array table
+         if indexTypeOK( array_id2, expr_kind ) then -- check and access array
+            if inBounds( array_id2, arrayIndex ) then
+                ref.a_id  := array_id2;
+                ref.index := arrayIndex;
+            end if;
+         end if;
+      end if;
+      expect( symbol_t, ")" );
+      -- If this is a record type, and it is new, create the record's fields
+      -- Only do this if we created a new record variable on behalf of the
+      -- user: an existing record already has its fields declared.
+
+  elsif identifiers( getBaseType( identifiers( ref.id ).kind ) ).kind = root_record_t then
+  --      getBaseType( ref.kind ) = root_record_t then        -- record variable?
+  -- To do this, search for the i-th field in the formal record declaration
+  -- (the identifier value for the field has the field number).  The field name
+  -- contains the full dot qualified name.  Get the base field name by removing
+  -- everything except the name after the final dot.  Then prefix the name of
+  -- the record being declared (so that "rec_type.f" becomes "my_rec.f").
+
+     -- ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
+     ref.kind := identifiers( ref.id ).kind;
+     if isNew then
+        for i in 1..integer'value( to_string( identifiers( ref.kind ).value ) ) loop
+            for j in 1..identifiers_top-1 loop
+                if identifiers( j ).field_of = ref.kind then
+                   if integer'value( to_string( identifiers( j ).value )) = i then
+                      declare
+                         fieldName   : unbounded_string;
+                         dont_care_t : identifier;
+                         dotPos      : natural;
+                      begin
+                         fieldName := identifiers( j ).name;
+                         dotPos := length( fieldName );
+                         while dotPos > 1 loop
+                            exit when element( fieldName, dotPos ) = '.';
+                            dotPos := dotPos - 1;
+                         end loop;
+                         fieldName := delete( fieldName, 1, dotPos );
+                         fieldName := identifiers( ref.id ).name & "." & fieldName;
+                         declareIdent( dont_care_t, fieldName, identifiers( j ).kind, otherClass );
+                      end;
+                   end if;
+                end if;
+            end loop;
+        end loop;
+     end if;
+  else
+    -- If it's a regular identifier, if it's new, assign the type.  Otherwise
+    -- if it already exists it must match the default type.
+    if identifiers( ref.id ).kind = new_t then
+       ref.kind := new_t; -- identifiers( ref.id ).kind;
+    elsif baseTypesOK( identifiers( ref.id ).kind, defaultType ) then
+       ref.kind := identifiers( ref.id ).kind;
+    end if;
+  end if;
+end ParseOutParameter;
+
+procedure ParseSingleOutParameter( ref : out reference; defaultType : identifier ) is
+begin
+  expect( symbol_t, "(" );
+  ParseOutParameter( ref, defaultType );
+  expect( symbol_t, ")" );
+end ParseSingleOutParameter;
+
+procedure ParseFirstOutParameter( ref : out reference; defaultType : identifier ) is
+begin
+  expect( symbol_t, "(" );
+  ParseOutParameter( ref, defaultType );
+end ParseFirstOutParameter;
+
+procedure ParseNextOutParameter( ref : out reference; defaultType : identifier ) is
+begin
+  expect( symbol_t, "," );
+  ParseOutParameter( ref, defaultType );
+end ParseNextOutParameter;
+
+procedure ParseLastOutParameter( ref : out reference; defaultType : identifier ) is
+begin
+  ParseOutParameter( ref, defaultType );
+  expect( symbol_t, ")" );
+end ParseLastOutParameter;
+
+
+--  PARSE IN OUT PARAMETER
+--
+-- Parse an "in out" parameter for a procedure call.  Return a reference
+-- to it.  The variable being referenced must already exist.
+
+procedure ParseInOutParameter( ref : out reference ) is
+  -- syntax: identifier [ (index) ]
+  expr_kind : identifier;
+  expr_value : unbounded_string;
+  array_id2 : arrayID;
+  arrayIndex: long_integer;
+begin
+  ParseIdentifier( ref.id );
+  ref.index := 0;
+  if identifiers( token ).list then        -- array variable?
+     expect( symbol_t, "(" );
+     ParseExpression( expr_value, expr_kind );
+     expect( symbol_t, ")");
+  end if;
+  ref.index := 0;
+  if identifiers( ref.id ).list then        -- array variable?
+     ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
+     expect( symbol_t, "(" );
+     ParseExpression( expr_value, expr_kind );
+     if getUniType( expr_kind ) = uni_string_t or   -- index must be scalar
+        identifiers( getBaseType( expr_kind ) ).list then
+        err( "array index must be a scalar type" );
+     end if;                                   -- variables are not
+     if isExecutingCommand then                -- declared in syntax chk
+         begin
+            arrayIndex := long_integer(to_numeric(expr_value));-- convert to number
+         exception when others =>
+            err( "exception raised" );
+            arrayIndex := 0;
+         end;
+         array_id2 := arrayID( to_numeric(      -- array_id2=reference
+           identifiers( ref.id ).value ) );     -- to the array table
+         if indexTypeOK( array_id2, expr_kind ) then -- check and access array
+            if inBounds( array_id2, arrayIndex ) then
+                ref.a_id  := array_id2;
+                ref.index := arrayIndex;
+            end if;
+         end if;
+      end if;
+      expect( symbol_t, ")");
+  elsif identifiers( getBaseType( identifiers( ref.id ).kind ) ).kind = root_record_t then
+  -- To do this, search for the i-th field in the formal record declaration
+  -- (the identifier value for the field has the field number).  The field name
+  -- contains the full dot qualified name.  Get the base field name by removing
+  -- everything except the name after the final dot.  Then prefix the name of
+  -- the record being declared (so that "rec_type.f" becomes "my_rec.f").
+
+     -- ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
+     ref.kind := identifiers( ref.id ).kind;
+     for i in 1..integer'value( to_string( identifiers( ref.kind ).value ) ) loop         for j in 1..identifiers_top-1 loop
+             if identifiers( j ).field_of = ref.kind then
+                if integer'value( to_string( identifiers( j ).value )) = i then
+                   declare
+                      fieldName   : unbounded_string;
+                      dont_care_t : identifier;
+                      dotPos      : natural;
+                   begin
+                      fieldName := identifiers( j ).name;
+                      dotPos := length( fieldName );
+                      while dotPos > 1 loop
+                         exit when element( fieldName, dotPos ) = '.';
+                         dotPos := dotPos - 1;
+                      end loop;
+                      fieldName := delete( fieldName, 1, dotPos );
+                      fieldName := identifiers( ref.id ).name & "." & fieldName;
+                      declareIdent( dont_care_t, fieldName, identifiers( j ).kind, otherClass );
+                   end;
+                end if;
+             end if;
+         end loop;
+     end loop;
+  else
+     ref.kind := identifiers( ref.id ).kind;
+  end if;
+end ParseInOutParameter;
 
 end parser_params;

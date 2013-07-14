@@ -148,8 +148,8 @@ end ParseLockUnlockFile;
 
 procedure StartupLockFiles is
 begin
-  declareProcedure( locks_lock_t, "lock_files.lock_file" );
-  declareProcedure( locks_unlock_t, "lock_files.unlock_file" );
+  declareProcedure( locks_lock_t, "lock_files.lock_file", ParseLockLockFile'access );
+  declareProcedure( locks_unlock_t, "lock_files.unlock_file", ParseLockUnlockFile'access );
 end StartupLockFiles;
 
 procedure ShutdownLockFiles is

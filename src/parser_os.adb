@@ -66,7 +66,7 @@ end ParseOSStatus;
 
 procedure StartupSparOS is
 begin
-  declareProcedure( os_system_t, "os.system" );
+  declareProcedure( os_system_t, "os.system", ParseOSSystem'access );
   declareFunction( os_status_t, "os.status" );
 end StartupSparOS;
 

@@ -762,12 +762,12 @@ begin
   declareFunction( cgi_key_t, "cgi.key" );
   declareFunction( cgi_key_value_t, "cgi.key_value" );
   declareFunction( cgi_key_value_exists_t, "cgi.key_value_exists" );
-  declareProcedure( cgi_put_cgi_header_t, "cgi.put_cgi_header" );
-  declareProcedure( cgi_put_html_head_t, "cgi.put_html_head" );
-  declareProcedure( cgi_put_html_heading_t, "cgi.put_html_heading" );
-  declareProcedure( cgi_put_html_tail_t, "cgi.put_html_tail" );
-  declareProcedure( cgi_put_error_message_t, "cgi.put_error_message" );
-  declareProcedure( cgi_put_variables_t, "cgi.put_variables" );
+  declareProcedure( cgi_put_cgi_header_t, "cgi.put_cgi_header", ParsePut_CGI_Header'access );
+  declareProcedure( cgi_put_html_head_t, "cgi.put_html_head", ParsePut_HTML_Head'access );
+  declareProcedure( cgi_put_html_heading_t, "cgi.put_html_heading", ParsePut_HTML_Heading'access );
+  declareProcedure( cgi_put_html_tail_t, "cgi.put_html_tail", ParsePut_HTML_Tail'access );
+  declareProcedure( cgi_put_error_message_t, "cgi.put_error_message", ParsePut_Error_Message'access );
+  declareProcedure( cgi_put_variables_t, "cgi.put_variables", ParsePut_Variables'access );
   declareFunction( cgi_my_url_t, "cgi.my_url" );
   declareFunction( cgi_get_environment_t, "cgi.get_environment" );
   declareFunction( cgi_line_count_t, "cgi.line_count" );
@@ -777,9 +777,10 @@ begin
   declareFunction( cgi_url_decode_t, "cgi.url_decode" );
   declareFunction( cgi_url_encode_t, "cgi.url_encode" );
   declareFunction( cgi_html_encode_t, "cgi.html_encode" );
-  declareProcedure( cgi_set_cookie_t, "cgi.set_cookie" );
+  declareProcedure( cgi_set_cookie_t, "cgi.set_cookie", ParseSet_Cookie'access );
   declareFunction( cgi_cookie_value_t, "cgi.cookie_value" );
   declareFunction( cgi_cookie_count_t, "cgi.cookie_count" );
+
 end StartupCGI;
 
 procedure ShutdownCGI is

@@ -221,11 +221,16 @@ procedure pushBlock( newScope : boolean := false;
 -- multi-line statement (eg. an "if"); if true, the new
 -- block is a nested declaration scope (eg. a "declare")
 
-procedure checkSoftwareModelRequirementsForSimpleScripts;
+procedure checkIdentifiersForSimpleScripts;
 -- check for unused variables and tally presence of software model req's
 -- this is normally called automatically by pullBlock but is exposed
 -- here for cases where pullBlock doesn't get run, such as simple scripts
 -- with no blocks.
+
+procedure completeSoftwareModelRequirements;
+-- Check pre-defined identifiers for software requirements.  Then evaluate
+-- if the requirements were met for the software model.  This should only be
+-- run during the syntax check.
 
 procedure pullBlock;
 -- restore the previous identifier scope

@@ -98,28 +98,6 @@ end makeTempFile;
 --  return result < 1;                         -- return if read reported EOF
 --end isEOF;
 
-procedure AssignParameter( ref : in reference; value : unbounded_string ) is
-  -- assign value to an out or in out parameter
-begin
-   if ref.index = 0 then
-      identifiers( ref.id ).value := value;
-   else
-      assignElement( ref.a_id, ref.index, value );
-   end if;
-end AssignParameter;
-pragma inline( AssignParameter );
-
-procedure GetParameterValue( ref : in reference; value : out unbounded_string )
-is
-begin
-   if ref.index = 0 then
-      value := identifiers( ref.id ).value;
-   else
-      value := arrayElement( ref.a_id, ref.index );
-   end if;
-end GetParameterValue;
-pragma inline( GetParameterValue );
-
 function stringField( i : identifier; f : natural ) return unbounded_string is
 -- same as string_util.stringField except uses an identifier's value
 begin

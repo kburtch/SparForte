@@ -60,10 +60,11 @@ serialNumber : long_float := 0.0;
 
 -----------------------------------------------------------------------------
 
-procedure ParseNumericsRandom( result : out unbounded_string ) is
+procedure ParseNumericsRandom( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: random
   -- Source: Ada.Numerics.Float_Random.Random
 begin
+  kind := float_t;
   result := null_unbounded_string;
   expect( random_t );
   if isExecutingCommand then
@@ -72,7 +73,7 @@ begin
   end if;
 end ParseNumericsRandom;
 
-procedure ParseNumericsShiftLeft( result : out unbounded_string ) is
+procedure ParseNumericsShiftLeft( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.shift_left( x, b )
   -- Source: Interfaces
   expr_val  : unbounded_string;
@@ -80,6 +81,7 @@ procedure ParseNumericsShiftLeft( result : out unbounded_string ) is
   amt_val   : unbounded_string;
   amt_type  : identifier := eof_t;
 begin
+  kind := uni_numeric_t;
   expect( shift_left_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   ParseLastNumericParameter( amt_val, amt_type, natural_t );
@@ -95,7 +97,7 @@ begin
   end;
 end ParseNumericsShiftLeft;
 
-procedure ParseNumericsShiftRight( result : out unbounded_string ) is
+procedure ParseNumericsShiftRight( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.shift_right( x, b )
   -- Source: Interfaces
   expr_val  : unbounded_string;
@@ -103,6 +105,7 @@ procedure ParseNumericsShiftRight( result : out unbounded_string ) is
   amt_val   : unbounded_string;
   amt_type  : identifier := eof_t;
 begin
+  kind := uni_numeric_t;
   expect( shift_right_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   ParseLastNumericParameter( amt_val, amt_type, natural_t );
@@ -118,7 +121,7 @@ begin
   end;
 end ParseNumericsShiftRight;
 
-procedure ParseNumericsRotateLeft( result : out unbounded_string ) is
+procedure ParseNumericsRotateLeft( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.rotate_left( x, b )
   -- Source: Interfaces
   expr_val  : unbounded_string;
@@ -126,6 +129,7 @@ procedure ParseNumericsRotateLeft( result : out unbounded_string ) is
   amt_val   : unbounded_string;
   amt_type  : identifier := eof_t;
 begin
+  kind := uni_numeric_t;
   expect( rotate_left_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   ParseLastNumericParameter( amt_val, amt_type, natural_t );
@@ -141,7 +145,7 @@ begin
   end;
 end ParseNumericsRotateLeft;
 
-procedure ParseNumericsRotateRight( result : out unbounded_string ) is
+procedure ParseNumericsRotateRight( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.rotate_right( x, b )
   -- Source: Interfaces
   expr_val  : unbounded_string;
@@ -149,6 +153,7 @@ procedure ParseNumericsRotateRight( result : out unbounded_string ) is
   amt_val   : unbounded_string;
   amt_type  : identifier := eof_t;
 begin
+  kind := uni_numeric_t;
   expect( rotate_right_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   ParseLastNumericParameter( amt_val, amt_type, natural_t );
@@ -164,7 +169,7 @@ begin
   end;
 end ParseNumericsRotateRight;
 
-procedure ParseNumericsASR( result : out unbounded_string ) is
+procedure ParseNumericsASR( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.shift_right_arithmetic( x, b )
   -- Source: Interfaces
   expr_val  : unbounded_string;
@@ -172,6 +177,7 @@ procedure ParseNumericsASR( result : out unbounded_string ) is
   amt_val   : unbounded_string;
   amt_type  : identifier := eof_t;
 begin
+  kind := uni_numeric_t;
   expect( shift_right_arith_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   ParseLastNumericParameter( amt_val, amt_type, natural_t );
@@ -187,12 +193,13 @@ begin
   end;
 end ParseNumericsASR;
 
-procedure ParseNumericsSqrt( result : out unbounded_string ) is
+procedure ParseNumericsSqrt( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.sqrt( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Sqrt
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( sqrt_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -204,7 +211,7 @@ begin
   end;
 end ParseNumericsSqrt;
 
-procedure ParseNumericsLog( result : out unbounded_string ) is
+procedure ParseNumericsLog( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.log( expr [,base] )
   -- Source: Ada.Numerics.Long_Elementary_Functions.Log
   expr_val  : unbounded_string;
@@ -212,6 +219,7 @@ procedure ParseNumericsLog( result : out unbounded_string ) is
   base_val  : unbounded_string;
   base_type : identifier := eof_t;
 begin
+  kind := uni_numeric_t;
   expect( log_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   if token = symbol_t and identifiers( token ).value = "," then
@@ -233,12 +241,13 @@ begin
   end;
 end ParseNumericsLog;
 
-procedure ParseNumericsExp( result : out unbounded_string ) is
+procedure ParseNumericsExp( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.exp( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Exp
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( exp_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -250,7 +259,7 @@ begin
   end;
 end ParseNumericsExp;
 
-procedure ParseNumericsSin( result : out unbounded_string ) is
+procedure ParseNumericsSin( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.sin( expr, [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Sin
   expr_val : unbounded_string;
@@ -258,6 +267,7 @@ procedure ParseNumericsSin( result : out unbounded_string ) is
   cycle_val  : unbounded_string;
   cycle_type : identifier := eof_t;
 begin
+  kind := uni_numeric_t;
   expect( sin_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   if token = symbol_t and identifiers( token ).value = "," then
@@ -279,7 +289,7 @@ begin
   end;
 end ParseNumericsSin;
 
-procedure ParseNumericsCos( result : out unbounded_string ) is
+procedure ParseNumericsCos( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.cos( expr, [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Cos
   expr_val : unbounded_string;
@@ -287,6 +297,7 @@ procedure ParseNumericsCos( result : out unbounded_string ) is
   cycle_val  : unbounded_string;
   cycle_type : identifier := eof_t;
 begin
+  kind := uni_numeric_t;
   expect( cos_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   if token = symbol_t and identifiers( token ).value = "," then
@@ -309,7 +320,7 @@ begin
   end;
 end ParseNumericsCos;
 
-procedure ParseNumericsTan( result : out unbounded_string ) is
+procedure ParseNumericsTan( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.tan( expr, [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Tan
   expr_val : unbounded_string;
@@ -317,6 +328,7 @@ procedure ParseNumericsTan( result : out unbounded_string ) is
   cycle_val  : unbounded_string;
   cycle_type : identifier := eof_t;
 begin
+  kind := uni_numeric_t;
   expect( tan_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   if token = symbol_t and identifiers( token ).value = "," then
@@ -338,7 +350,7 @@ begin
   end;
 end ParseNumericsTan;
 
-procedure ParseNumericsCot( result : out unbounded_string ) is
+procedure ParseNumericsCot( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.cot( expr, [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Cot
   expr_val : unbounded_string;
@@ -346,6 +358,7 @@ procedure ParseNumericsCot( result : out unbounded_string ) is
   cycle_val  : unbounded_string;
   cycle_type : identifier := eof_t;
 begin
+  kind := uni_numeric_t;
   expect( cot_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   if token = symbol_t and identifiers( token ).value = "," then
@@ -367,7 +380,7 @@ begin
   end;
 end ParseNumericsCot;
 
-procedure ParseNumericsArcSin( result : out unbounded_string ) is
+procedure ParseNumericsArcSin( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.ArcSin( expr, [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.ArcSin
   expr_val : unbounded_string;
@@ -375,6 +388,7 @@ procedure ParseNumericsArcSin( result : out unbounded_string ) is
   cycle_val  : unbounded_string;
   cycle_type : identifier := eof_t;
 begin
+  kind := uni_numeric_t;
   expect( arcsin_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   if token = symbol_t and identifiers( token ).value = "," then
@@ -396,7 +410,7 @@ begin
   end;
 end ParseNumericsArcSin;
 
-procedure ParseNumericsArcCos( result : out unbounded_string ) is
+procedure ParseNumericsArcCos( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.ArcCos( expr, [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.ArcCos
   expr_val : unbounded_string;
@@ -404,6 +418,7 @@ procedure ParseNumericsArcCos( result : out unbounded_string ) is
   cycle_val  : unbounded_string;
   cycle_type : identifier := eof_t;
 begin
+  kind := uni_numeric_t;
   expect( arccos_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   if token = symbol_t and identifiers( token ).value = "," then
@@ -425,7 +440,7 @@ begin
   end;
 end ParseNumericsArcCos;
 
-procedure ParseNumericsArcTan( result : out unbounded_string ) is
+procedure ParseNumericsArcTan( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.ArcTan( expr, expr2, [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.ArcTan
   -- note: second parameter is not optional in mine but is in Ada
@@ -436,6 +451,7 @@ procedure ParseNumericsArcTan( result : out unbounded_string ) is
   cycle_val  : unbounded_string;
   cycle_type : identifier := eof_t;
 begin
+  kind := uni_numeric_t;
   expect( arctan_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   ParseNextNumericParameter( expr2_val, expr2_type );
@@ -459,7 +475,7 @@ begin
   end;
 end ParseNumericsArcTan;
 
-procedure ParseNumericsArcCot( result : out unbounded_string ) is
+procedure ParseNumericsArcCot( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.ArcCot( expr, expr2, [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.ArcCot
   -- note: second parameter is not optional in mine but is in Ada
@@ -470,6 +486,7 @@ procedure ParseNumericsArcCot( result : out unbounded_string ) is
   cycle_val  : unbounded_string;
   cycle_type : identifier := eof_t;
 begin
+  kind := uni_numeric_t;
   expect( arccot_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   ParseNextNumericParameter( expr2_val, expr2_type );
@@ -493,12 +510,13 @@ begin
   end;
 end ParseNumericsArcCot;
 
-procedure ParseNumericsSinH( result : out unbounded_string ) is
+procedure ParseNumericsSinH( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.Sinh( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Sinh
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( sinh_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -510,12 +528,13 @@ begin
   end;
 end ParseNumericsSinH;
 
-procedure ParseNumericsCosH( result : out unbounded_string ) is
+procedure ParseNumericsCosH( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.Cosh( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Cosh
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( cosh_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -527,12 +546,13 @@ begin
   end;
 end ParseNumericsCosH;
 
-procedure ParseNumericsTanH( result : out unbounded_string ) is
+procedure ParseNumericsTanH( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.Tanh( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Tanh
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( tanh_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -544,12 +564,13 @@ begin
   end;
 end ParseNumericsTanH;
 
-procedure ParseNumericsCoth( result : out unbounded_string ) is
+procedure ParseNumericsCoth( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.Coth( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Coth
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( coth_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -561,12 +582,13 @@ begin
   end;
 end ParseNumericsCotH;
 
-procedure ParseNumericsArcSinH( result : out unbounded_string ) is
+procedure ParseNumericsArcSinH( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.arcsinh( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Arcsinh
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( arcsinh_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -1499,28 +1521,28 @@ begin
 
   -- Numerics Package identifiers
 
-  declareFunction( random_t, "numerics.random" );
-  declareFunction( shift_left_t, "numerics.shift_left" );
-  declareFunction( shift_right_t, "numerics.shift_right" );
-  declareFunction( rotate_left_t, "numerics.rotate_left" );
-  declareFunction( rotate_right_t, "numerics.rotate_right" );
-  declareFunction( shift_right_arith_t, "numerics.shift_right_arithmetic" );
-  declareFunction( sqrt_t, "numerics.sqrt" );
-  declareFunction( log_t, "numerics.log" );
-  declareFunction( exp_t, "numerics.exp" );
-  declareFunction( sin_t, "numerics.sin" );
-  declareFunction( cos_t, "numerics.cos" );
-  declareFunction( tan_t, "numerics.tan" );
-  declareFunction( cot_t, "numerics.cot" );
-  declareFunction( arcsin_t, "numerics.arcsin" );
-  declareFunction( arccos_t, "numerics.arccos" );
-  declareFunction( arctan_t, "numerics.arctan" );
-  declareFunction( arccot_t, "numerics.arccot" );
-  declareFunction( sinh_t, "numerics.sinh" );
-  declareFunction( cosh_t, "numerics.cosh" );
-  declareFunction( tanh_t, "numerics.tanh" );
-  declareFunction( coth_t, "numerics.coth" );
-  declareFunction( arcsinh_t, "numerics.arcsinh" );
+  declareFunction( random_t, "numerics.random", ParseNumericsRandom'access );
+  declareFunction( shift_left_t, "numerics.shift_left", ParseNumericsShiftLeft'access );
+  declareFunction( shift_right_t, "numerics.shift_right", ParseNumericsShiftRight'access );
+  declareFunction( rotate_left_t, "numerics.rotate_left", ParseNumericsRotateLeft'access );
+  declareFunction( rotate_right_t, "numerics.rotate_right", ParseNumericsRotateRight'access );
+  declareFunction( shift_right_arith_t, "numerics.shift_right_arithmetic", ParseNumericsASR'access );
+  declareFunction( sqrt_t, "numerics.sqrt", ParseNumericsSqrt'access );
+  declareFunction( log_t, "numerics.log", ParseNumericsLog'access );
+  declareFunction( exp_t, "numerics.exp", ParseNumericsExp'access );
+  declareFunction( sin_t, "numerics.sin", ParseNumericsSin'access );
+  declareFunction( cos_t, "numerics.cos", ParseNumericsCos'access );
+  declareFunction( tan_t, "numerics.tan", ParseNumericsTan'access );
+  declareFunction( cot_t, "numerics.cot", ParseNumericsCot'access );
+  declareFunction( arcsin_t, "numerics.arcsin", ParseNumericsArcSin'access );
+  declareFunction( arccos_t, "numerics.arccos", ParseNumericsArcCos'access );
+  declareFunction( arctan_t, "numerics.arctan", ParseNumericsArcTan'access );
+  declareFunction( arccot_t, "numerics.arccot", ParseNumericsArcCot'access );
+  declareFunction( sinh_t, "numerics.sinh", ParseNumericsSinH'access );
+  declareFunction( cosh_t, "numerics.cosh", ParseNumericsCosH'access );
+  declareFunction( tanh_t, "numerics.tanh", ParseNumericsTanH'access );
+  declareFunction( coth_t, "numerics.coth", ParseNumericsCotH'access );
+  declareFunction( arcsinh_t, "numerics.arcsinh", ParseNumericsArcSinH'access );
   declareFunction( arccosh_t, "numerics.arccosh" );
   declareFunction( arctanh_t, "numerics.arctanh" );
   declareFunction( arccoth_t, "numerics.arccoth" );
@@ -1548,8 +1570,8 @@ begin
   declareFunction( even_t, "numerics.even" );
   declareFunction( numerics_re_t, "numerics.re" );
   declareFunction( numerics_im_t, "numerics.im" );
-  declareFunction( numerics_set_re_t, "numerics.set_re" );
-  declareFunction( numerics_set_im_t, "numerics.set_im" );
+  declareProcedure( numerics_set_re_t, "numerics.set_re", ParseNumericsSetRe'access );
+  declareProcedure( numerics_set_im_t, "numerics.set_im", ParseNumericsSetIm'access );
   declareFunction( numerics_argument_t, "numerics.argument" );
   declareFunction( numerics_modulus_t, "numerics.modulus" );
   declareFunction( hash_of_t, "numerics.hash_of" );

@@ -31,7 +31,8 @@ with interfaces.c,
     signal_flags,
     scanner.calendar,
     parser_cal,
-    parser;
+    parser,
+    parser_aux;
 use interfaces.c,
     ada.text_io,
     ada.text_io.editing,
@@ -43,7 +44,8 @@ use interfaces.c,
     signal_flags,
     scanner.calendar,
     parser_cal,
-    parser;
+    parser,
+    parser_aux;
 
 package body parser_tio is
 
@@ -68,18 +70,19 @@ begin
   end if;
 end ParseIsOpen;
 
-procedure ParseEndOfFile( result : out unbounded_string ) is
+procedure ParseEndOfFile( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: End_of_file( f )
   -- Source: Ada.Text_IO.End_Of_File
   file_ref : reference;
-  kind : identifier;
+  file_kind : identifier;
 begin
+  kind := boolean_t;
   result := to_unbounded_string( boolean'image( false ) );
   getNextToken;
   expect( symbol_t, "(" );
-  ParseOpenFileOrSocket( file_ref, kind );
+  ParseOpenFileOrSocket( file_ref, file_kind );
   if isExecutingCommand then
-     if kind = file_type_t then
+     if file_kind = file_type_t then
         if identifier'value( to_string( stringField( file_ref, mode_field ) ) ) /= in_file_t then
            err( "end_of_file only applies to " & optional_bold( "in_mode" ) & " files" );
         end if;
@@ -91,11 +94,12 @@ begin
   end if;
 end ParseEndOfFile;
 
-procedure ParseEndOfLine( result : out unbounded_string ) is
+procedure ParseEndOfLine( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: end_of_line( open-file )
   -- Source: Ada.Text_IO.End_Of_Line
   file_ref : reference;
 begin
+  kind := boolean_t;
   result := to_unbounded_string( integer'image( 0 ) );
   getNextToken;
   expect( symbol_t, "(" );
@@ -106,11 +110,12 @@ begin
   end if;
 end ParseEndOfLine;
 
-procedure ParseLine( result : out unbounded_string ) is
+procedure ParseLine( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: line( open-file )
   -- Source: Ada.Text_IO.Line
   file_ref : reference;
 begin
+  kind := integer_t;   -- TODO: probably should be something more specific
   result := to_unbounded_string( integer'image( 0 ) );
   getNextToken;
   expect( symbol_t, "(" );
@@ -121,11 +126,12 @@ begin
   end if;
 end ParseLine;
 
-procedure ParseName( result : out unbounded_string ) is
+procedure ParseName( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: name( open-file )
   -- Source: Ada.Text_IO.Name
   file_ref : reference;
 begin
+  kind := uni_string_t;
   result := null_unbounded_string;
   getNextToken;
   expect( symbol_t, "(" );
@@ -136,13 +142,14 @@ begin
   end if;
 end ParseName;
 
-procedure ParseMode( result : out unbounded_string ) is
+procedure ParseMode( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mode( open-file )
   -- Source: Ada.Text_IO.Mode
   file_ref : reference;
 begin
+  kind := file_mode_t;
   result := null_unbounded_string;
-  getNextToken;
+  expect( mode_t ); -- getNextToken;
   expect( symbol_t, "(" );
   ParseOpenFile( file_ref );
   expect( symbol_t, ")" );
@@ -160,11 +167,12 @@ begin
   end if;
 end ParseMode;
 
-procedure ParseInkey( str : out unbounded_string ) is
+procedure ParseInkey( str : out unbounded_string; kind : out identifier ) is
   -- Syntax: inkey
   -- Source: Ada.Text_IO.Inkey
   ch : character;
 begin
+  kind := character_t;
   expect( inkey_t );
   if isExecutingCommand then
      getKey( ch );
@@ -175,24 +183,25 @@ begin
   end if;
 end ParseInkey;
 
-procedure ParseGetLine( str : out unbounded_string ) is
+procedure ParseGetLine( str : out unbounded_string; kind : out identifier ) is
   -- Syntax: get_line [ (open-file) ]
   -- Source: Ada.Text_IO.Get_Line
   -- Note: Gnat get_line can't be used here because it does something
   -- odd with file descriptor 0
   file_ref : reference;
-  kind : identifier;
+  file_kind : identifier;
   --fd   : aFileDescriptor;
   ch   : character;
   --result : long_integer;
   fileInfo : unbounded_string;
 begin
+  kind := universal_t;
   file_ref.id := eof_t;
   str := null_unbounded_string;
   getNextToken;
   if token = symbol_t and then identifiers( Token ).value = "(" then
       expect( symbol_t, "(" );
-      ParseOpenFileOrSocket( file_ref, kind );
+      ParseOpenFileOrSocket( file_ref, file_kind );
       expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
@@ -201,7 +210,7 @@ begin
            put_trace( "Input from file descriptor" & to_string(
               stringField( file_ref, fd_field ) ) );
         end if;
-        if kind = socket_type_t and then stringField( file_ref, doget_field ) = "1" then
+        if file_kind = socket_type_t and then stringField( file_ref, doget_field ) = "1" then
            DoGet( file_ref );
            replaceField( file_ref, doget_field, boolean'image( false ) );
         end if;
@@ -1532,24 +1541,25 @@ begin
 
   declareProcedure( create_t, "create" );
   declareProcedure( open_t, "open" );
-  declareProcedure( close_t, "close" );
-  declareProcedure( get_t, "get" );
-  declareFunction( get_line_t, "get_line" );
-  declareFunction( inkey_t, "inkey" );
-  declareProcedure( put_t, "put" );
-  declareProcedure( put_line_t, "put_line" );
-  declareProcedure( new_line_t, "new_line" );
+  declareProcedure( close_t, "close", ParseClose'access );
+  declareProcedure( get_t, "get", ParseGet'access );
+  declareFunction( get_line_t, "get_line", ParseGetLine'access );
+  declareFunction( inkey_t, "inkey", ParseInkey'access );
+  declareProcedure( put_t, "put", ParsePut'access );
+  declareProcedure( put_line_t, "put_line", ParsePutLine'access );
+  declareProcedure( new_line_t, "new_line", ParseNewLine'access );
   declareFunction( is_open_t, "is_open" );
-  declareFunction( end_of_file_t, "end_of_file" );
-  declareFunction( end_of_line_t, "end_of_line" );
-  declareFunction( name_t, "name" );
-  declareFunction( mode_t, "mode" );
-  declareProcedure( skip_line_t, "skip_line" );
-  declareFunction( line_t, "line" );
-  declareProcedure( set_input_t, "set_input" );
-  declareProcedure( set_output_t, "set_output" );
-  declareProcedure( set_error_t, "set_error" );
-  declareProcedure( reset_t, "reset" );
+  declareFunction( end_of_file_t, "end_of_file", ParseEndOfFile'access );
+  declareFunction( end_of_line_t, "end_of_line", ParseEndOfLine'access );
+  declareFunction( name_t, "name", ParseName'access );
+  declareFunction( mode_t, "mode", ParseMode'access );
+  declareProcedure( skip_line_t, "skip_line", ParseSkipLine'access );
+  declareFunction( line_t, "line", ParseLine'access );
+  declareProcedure( set_input_t, "set_input", ParseSetInput'access );
+  declareProcedure( set_output_t, "set_output", ParseSetOutput'access );
+  declareProcedure( set_error_t, "set_error", ParseSetError'access );
+  declareProcedure( reset_t, "reset", ParseReset'access );
+
   -- declareProcedure( delete_t, "delete" );
   -- delete declared in scanner since it's also a SQL command
 
