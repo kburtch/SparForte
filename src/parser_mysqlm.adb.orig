@@ -156,6 +156,19 @@ begin
   end if;
 end ParseMySQLMConnect;
 
+#else
+
+pragma warnings( off );
+-- Hide unused parameters warnings
+
+procedure ParseMySQLMConnect is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMConnect;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMEngineOf( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: t := mysqlm.engine_of( C );
   -- Source: APQ.Engine_Of
@@ -180,6 +193,16 @@ begin
      end;
   end if;
 end ParseMySQLMEngineOf;
+
+#else
+
+procedure ParseMySQLMEngineOf( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMEngineOf;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLMPrepare( result : out unbounded_string ) is
 -- TODO: this not implemented
@@ -222,6 +245,16 @@ begin
   end if;
 end ParseMySQLMPrepare;
 
+#else
+
+procedure ParseMySQLMPrepare( result : out unbounded_string ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMPrepare;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMPrepare is
   -- Syntax: mysqlm.prepare( Q, sqlstmt [,after] );
   sqlExpr   : unbounded_string;
@@ -254,6 +287,16 @@ begin
      end;
   end if;
 end ParseMySQLMPrepare;
+
+#else
+
+procedure ParseMySQLMPrepare is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMPrepare;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLMAppend is
   -- Syntax: mysqlm.append( query, sqlstmt [,after] );
@@ -288,6 +331,16 @@ begin
   end if;
 end ParseMySQLMAppend;
 
+#else
+
+procedure ParseMySQLMAppend is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMAppend;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMAppendLine is
   -- Syntax: mysqlm.append_line( query, sqlstmt );
   sqlExpr   : unbounded_string;
@@ -308,6 +361,16 @@ begin
      end;
   end if;
 end ParseMySQLMAppendLine;
+
+#else
+
+procedure ParseMySQLMAppendLine is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMAppendLine;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLMAppendQuoted is
   -- Syntax: mysqlm.append_quoted( query, connect, sqlstmt [,after] );
@@ -347,6 +410,16 @@ begin
   end if;
 end ParseMySQLMAppendQuoted;
 
+#else
+
+procedure ParseMySQLMAppendQuoted is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMAppendQuoted;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMExecute is
   -- execute( Q, C );
   queryExpr : unbounded_string;
@@ -375,6 +448,16 @@ begin
      end;
   end if;
 end ParseMySQLMExecute;
+
+#else
+
+procedure ParseMySQLMExecute is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMExecute;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLMExecuteChecked is
   -- Syntax: mysqlm.execute_checked( Q, C [, msg ] );
@@ -417,6 +500,15 @@ begin
   end if;
 end ParseMySQLMExecuteChecked;
 
+#else
+
+procedure ParseMySQLMExecuteChecked is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMExecuteChecked;
+
+#end if;
+
 --procedure ParseDBDo( result : out unbounded_string ) is
 --begin
 --  expect( db_do_t );
@@ -428,6 +520,7 @@ end ParseMySQLMExecuteChecked;
 --  expect( db_fetchrow_t );
 --  result := null_unbounded_string;
 --end ParseDBFetchrow;
+#if MYSQL
 
 procedure ParseMySQLMDisconnect is
   -- Syntax: mysqlm.disconnect;
@@ -451,6 +544,16 @@ begin
   end if;
 end ParseMySQLMDisconnect;
 
+#else
+
+procedure ParseMySQLMDisconnect is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMDisconnect;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMIsConnected( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysqlm.is_connected
   connectExpr : unbounded_string;
@@ -470,6 +573,16 @@ begin
   end if;
 end ParseMySQLMIsConnected;
 
+#else
+
+procedure ParseMySQLMIsConnected( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMIsConnected;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMReset is
   -- Syntax: mysqlm.reset( c )
   -- Source: APQ.Reset
@@ -488,6 +601,16 @@ begin
      end;
   end if;
 end ParseMySQLMReset;
+
+#else
+
+procedure ParseMySQLMReset is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMReset;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLMErrorMessage( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysqlm.error_message
@@ -523,6 +646,16 @@ end ParseMySQLMErrorMessage;
 --   end if;
 -- end ParseMySQLNoticeMessage;
 
+#else
+
+procedure ParseMySQLMErrorMessage( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMErrorMessage;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMInAbortState( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysqlm.in_abort_state( c )
   -- Source: APQ.In_Abort_State
@@ -545,6 +678,16 @@ begin
   end if;
 end ParseMySQLMInAbortState;
 
+#else
+
+procedure ParseMySQLMInAbortState( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMInAbortState;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMOptions( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysqlm.options( c )
   -- Source: APQ.Options
@@ -564,6 +707,16 @@ begin
      end;
   end if;
 end ParseMySQLMOptions;
+
+#else
+
+procedure ParseMySQLMOptions( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMOptions;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLMSetRollbackOnFinalize is
   -- Syntax: mysqlm.set_rollback_on_finalize( C, b );
@@ -589,6 +742,16 @@ begin
   end if;
 end ParseMySQLMSetRollbackOnFinalize;
 
+#else
+
+procedure ParseMySQLMSetRollbackOnFinalize is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMSetRollbackOnFinalize;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := mysqlm.will_rollback_on_finalize( C );
   -- Source: APQ.Will_Rollback_On_Finalize
@@ -608,6 +771,16 @@ begin
      end;
   end if;
 end ParseMySQLMWillRollbackOnFinalize;
+
+#else
+
+procedure ParseMySQLMWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMWillRollbackOnFinalize;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLMOpenDBTrace is
   -- Syntax: mysqlm.open_db_trace( C, f [,m] );
@@ -651,6 +824,16 @@ begin
   end if;
 end ParseMySQLMOpenDBTrace;
 
+#else
+
+procedure ParseMySQLMOpenDBTrace is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMOpenDBTrace;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMCloseDBTrace is
   -- Syntax: mysqlm.close_db_trace( C );
   -- Source: APQ.Close_DB_Trace
@@ -669,6 +852,16 @@ begin
      end;
   end if;
 end ParseMySQLMCloseDBTrace;
+
+#else
+
+procedure ParseMySQLMCloseDBTrace is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMCloseDBTrace;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLMSetTrace is
   -- Syntax: mysqlm.set_trace( C, b );
@@ -694,6 +887,16 @@ begin
   end if;
 end ParseMySQLMSetTrace;
 
+#else
+
+procedure ParseMySQLMSetTrace is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMSetTrace;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMIsTrace( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := mysqlm.is_trace( C );
   -- Source: APQ.Is_Trace
@@ -713,6 +916,16 @@ begin
      end;
   end if;
 end ParseMySQLMIsTrace;
+
+#else
+
+procedure ParseMySQLMIsTrace( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMIsTrace;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLMClear is
   -- Syntax: mysql.clear( Q );
@@ -734,6 +947,16 @@ begin
      end;
   end if;
 end ParseMySQLMClear;
+
+#else
+
+procedure ParseMySQLMClear is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMClear;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLMRaiseExceptions is
   -- Syntax: mysqlm.raise_exceptions( Q, [ b ] );
@@ -764,6 +987,16 @@ begin
   end if;
 end ParseMySQLMRaiseExceptions;
 
+#else
+
+procedure ParseMySQLMRaiseExceptions is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMRaiseExceptions;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMReportErrors is
   -- Syntax: mysqlm.report_errors( Q, b );
   -- Source: APQ.Report_Errors
@@ -793,6 +1026,16 @@ begin
   end if;
 end ParseMySQLMReportErrors;
 
+#else
+
+procedure ParseMySQLMReportErrors is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMReportErrors;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMBeginWork is
   -- Syntax: mysqlm.begin_work(Q, C );
   -- Source: APQ.Begin_Work
@@ -820,6 +1063,16 @@ begin
      end;
   end if;
 end ParseMySQLMBeginWork;
+
+#else
+
+procedure ParseMySQLMBeginWork is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMBeginWork;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLMRollbackWork is
   -- Syntax: mysqlm.rollback_work( Q, C );
@@ -849,6 +1102,16 @@ begin
   end if;
 end ParseMySQLMRollbackWork;
 
+#else
+
+procedure ParseMySQLMRollbackWork is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMRollbackWork;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMCommitWork is
   -- Syntax: mysqlm.commit_work( Q, C );
   -- Source: APQ.Commit_Work
@@ -877,6 +1140,16 @@ begin
   end if;
 end ParseMySQLMCommitWork;
 
+#else
+
+procedure ParseMySQLMCommitWork is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMCommitWork;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMRewind is
   -- Syntax: mysqlm.rewind( Q );
   -- Source: APQ.Rewind
@@ -895,6 +1168,16 @@ begin
      end;
   end if;
 end ParseMySQLMRewind;
+
+#else
+
+procedure ParseMySQLMRewind is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMRewind;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLMFetch is
   -- Syntax: mysqlm.fetch( q [,i] )
@@ -931,6 +1214,16 @@ begin
   end if;
 end ParseMySQLMFetch;
 
+#else
+
+procedure ParseMySQLMFetch is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMFetch;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMEndOfQuery( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := mysqlm.end_of_query( Q );
   -- Source: APQ.End_Of_Query
@@ -950,6 +1243,16 @@ begin
      end;
   end if;
 end ParseMySQLMEndOfQuery;
+
+#else
+
+procedure ParseMySQLMEndOfQuery( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMEndOfQuery;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLMTuple( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: t := mysql.tuple( Q );
@@ -973,6 +1276,16 @@ begin
   end if;
 end ParseMySQLMTuple;
 
+#else
+
+procedure ParseMySQLMTuple( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMTuple;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMTuples( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysqlm.tuples( Q );
   -- Source: APQ.Tuples
@@ -995,6 +1308,16 @@ begin
   end if;
 end ParseMySQLMTuples;
 
+#else
+
+procedure ParseMySQLMTuples( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMTuples;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMColumns( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysqlm.columns( Q );
   -- Source: APQ.Columns
@@ -1016,6 +1339,16 @@ begin
      end;
   end if;
 end ParseMySQLMColumns;
+
+#else
+
+procedure ParseMySQLMColumns( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMColumns;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLMColumnName( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysqlm.column_Name( Q, c );
@@ -1044,6 +1377,16 @@ begin
   end if;
 end ParseMySQLMColumnName;
 
+#else
+
+procedure ParseMySQLMColumnName( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMColumnName;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMColumnIndex( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysqlm.column_index( Q, s );
   -- Source: APQ.Column_Index
@@ -1070,6 +1413,16 @@ begin
      end;
   end if;
 end ParseMySQLMColumnIndex;
+
+#else
+
+procedure ParseMySQLMColumnIndex( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMColumnIndex;
+
+#end if;
+#if MYSQL
 
 --procedure ParseDBColumnType( result : out unbounded_string ) is
   -- Syntax: n := db.column_type;
@@ -1129,6 +1482,16 @@ begin
   end if;
 end ParseMySQLMIsNull;
 
+#else
+
+procedure ParseMySQLMIsNull( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMIsNull;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMValue( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysqlm.value( Q );
   -- Source: APQ.Value;
@@ -1159,6 +1522,17 @@ begin
      end;
   end if;
 end ParseMySQLMValue;
+
+#else
+
+procedure ParseMySQLMValue( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMValue;
+
+#end if;
+
+#if MYSQL
 
 procedure MySQLMShowIt( Q : in out APQ.MySQL.Client.Query_Type; C : resPtr ) is
 -- run SQL command and display results in tabular format
@@ -1344,6 +1718,16 @@ begin
      MySQLMShowIt( Q => query.Q, C => connection );
   end if;
 end ParseMySQLMShow;
+
+#else
+
+procedure ParseMySQLMShow is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMShow;
+
+#end if;
+#if MYSQL
 
 function mysql_kind_to_string( kind : string ) return string is
 begin
@@ -1708,6 +2092,16 @@ begin
   end if;
 end ParseMySQLMList;
 
+#else
+
+procedure ParseMySQLMList is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMList;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMSchema is
   -- Syntax: mysqlm.schema( C, "table" );
   -- Source: N/A
@@ -1986,6 +2380,16 @@ begin
   end if;
 end ParseMySQLMSchema;
 
+#else
+
+procedure ParseMySQLMSchema is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMSchema;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMUsers is
   -- Syntax: mysqlm.users( c )
   -- Source: N/A
@@ -2184,6 +2588,16 @@ begin
      end;
   end if;
 end ParseMySQLMUsers;
+
+#else
+
+procedure ParseMySQLMUsers is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMUsers;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLMDatabases is
   -- Syntax: mysqlm.databases( c )
@@ -2384,6 +2798,16 @@ begin
   end if;
 end ParseMySQLMDatabases;
 
+#else
+
+procedure ParseMySQLMDatabases is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMDatabases;
+
+#end if;
+#if MYSQL
+
 --procedure DoMySQLMSQLSelect( sqlcmd : unbounded_string ) is
 --  Q : APQ.MySQL.Client.Query_Type;
 --begin
@@ -2433,6 +2857,16 @@ begin
   end if;
 end ParseMySQLMNewConnection;
 
+#else
+
+procedure ParseMySQLMNewConnection is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMNewConnection;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLMNewQuery is
   -- Syntax: mysqlm.new_connection( q )
   -- Source: N/A
@@ -2450,6 +2884,154 @@ begin
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParseMySQLMNewQuery;
+
+#else
+
+procedure ParseMySQLMNewQuery is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMNewQuery;
+
+#end if;
+#if MYSQL
+
+procedure ParseMySQLMFetchValues is
+-- mysqlm.fetch_values( Q, C, r );
+-- Fetch a row, reading all values into record r.  The column names must match
+-- the fields in the record (the record fields need not be in the same order
+-- as the query results).
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+  connectionExpr : unbounded_string;
+  connectionType : identifier;
+  connection : resPtr;
+  --ref : reference;
+  id : identifier;
+begin
+  expect( mysqlm_fetch_values_t );
+  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseNextNumericParameter( connectionExpr, connectionType, mysqlm_connection_t );
+  -- TODO: ref type is meaningless here since you can't autodeclare
+  ParseLastInOutRecordParameter( id  );
+-- TODO: is kind in the reference?
+  if identifiers( getBaseType( identifiers( id ).kind ) ).kind /= root_record_t then
+     err( "Record type expected" );
+  end if;
+  if isExecutingCommand then
+     declare
+       fieldsInRecord : long_integer;
+       searchName : unbounded_string;
+       found : boolean;
+       field : unbounded_string;
+       elementKind : identifier;
+     begin
+       -- get the resources
+       findResource( to_resource_id( connectionExpr ), connection );
+       findResource( to_resource_id( queryExpr ), query );
+
+       -- fetch the next row
+       Fetch( query.q );
+
+       -- confirm the length
+-- TODO: is kind in the reference?
+       fieldsInRecord := long_integer'value( to_string( identifiers( identifiers( id ).kind ).value ) );
+--put_line( "fields in record = " &fieldsInRecord'img ); -- DEBUG
+--put_line( "fields in query = " & integer'image( columns( query.Q ) ) ); -- DEBUG
+       if long_integer( columns( query.Q ) ) /= fieldsInRecord then
+          err( "record has" & fieldsInRecord'img & " field(s) but the query returns" & integer'image( columns( query.Q ) ) );
+       else
+          for fieldNumber in 1..fieldsInRecord loop
+
+          -- we have a label and a value.  the record field is stored in the
+          -- symbol table as rec.field.  Prepend the record name and search
+          -- the symbol table for the record field.  When found, cast the
+          -- value and assign it.  Otherwise, if the field is not found, it
+          -- is an error.
+             found := false;
+
+             searchName := identifiers( id ).name & "." & column_name( query.Q, column_index_type( fieldNumber ) );
+             for j in reverse 1..identifiers_top-1 loop
+                 if identifiers( j ).name = searchName then
+                    found := true;
+                    if not error_found then
+                       field := to_unbounded_string( value( query.Q, Column_Index_Type( fieldNumber ) ) );
+                       elementKind := getBaseType( identifiers( j ).kind );
+                       if elementKind = boolean_t then
+                          -- a MySQL boolean isn't exactly the same as an Ada boolean
+                          -- Its boolean is a tiny int, non-zero is true
+                          declare
+                            lf : long_float;
+                          begin
+                            lf := to_numeric( field );
+                            if lf = 0.0 then
+                               identifiers( j ).value := identifiers( false_t ).value;
+                            else
+                               identifiers( j ).value := identifiers( true_t ).value;
+                            end if;
+                          exception when constraint_error =>
+                            err( to_string( searchName ) & " is boolean but query value is not numeric" );
+                          end;
+                       --elsif getUniType( elementKind ) = root_enumerated_t then
+                       -- TODO: non-boolean enumerated.  See scanner.adb
+                       -- for how to search for an enumerated item.
+                       -- MySQL has no enumerated types (we could try mapping
+                       -- a number or string but is that wise?)
+                       elsif getUniType( elementKind ) = uni_string_t then
+-- TODO: shouldn't catToType be used here to guarantee character values are
+-- only one letter long (probably doesn't matter for JSON, but matters here)
+                          -- identifiers( j ).value := field;
+                          identifiers( j ).value := castToType( field,
+                            identifiers( j ).kind );
+                       elsif getUniType( elementKind ) = uni_numeric_t then
+                          declare
+                            lf : long_float;
+                          begin
+                            lf := to_numeric( field );
+                            identifiers( j ).value := castToType( field,
+                              identifiers( j ).kind );
+                          exception when constraint_error =>
+                            err( to_string( searchName ) & " is numeric but query value is not numeric" );
+                          end;
+                       elsif getUniType( elementKind ) = universal_t then
+                            identifiers( j ).value := field;
+                       else
+                          err( "unsupported data type" );
+                       end if;
+                    end if;
+                 end if;
+             end loop;
+             if not found then
+                err( optional_bold( to_string( searchName ) ) & " does not exist" );
+             end if;
+          end loop;
+       end if;
+
+     exception when no_tuple =>
+       err( "no tuple" );
+     when null_value =>
+       err( "null value" );
+     when no_column =>
+       err( "no column" );
+     when no_result =>
+       err( "no result" );
+     --when sql_error =>
+     --  err( Error_Message( Q ) );
+     when others =>
+       err( "exception was raised" );
+       --if sourceLen = long_integer'value( to_string( identifiers( identifiers( target_var_id ).kind ).value ) ) then
+-- TODO: no_coumn, no_result, null_value, no_tuple, etc exception handling
+     end;
+null;
+  end if;
+end ParseMySQLMFetchValues;
+
+#else
+
+procedure ParseMySQLMFetchValues is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLMFetchValues;
 
 #end if;
 
@@ -2529,6 +3111,8 @@ begin
   declareProcedure( mysqlm_schema_t, "mysqlm.schema", ParseMySQLMSchema'access );
   declareProcedure( mysqlm_users_t, "mysqlm.users", ParseMySQLMUsers'access );
   declareProcedure( mysqlm_databases_t, "mysqlm.databases", ParseMySQLMDatabases'access );
+
+  declareProcedure( mysqlm_fetch_values_t, "mysqlm.fetch_values", ParseMySQLMFetchValues'access );
 
   --declareFunction( db_do_t, "db.do" );
   --declareFunction( db_fetchrow_t, "dbi.fetchrow" );

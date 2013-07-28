@@ -160,6 +160,19 @@ begin
   end if;
 end ParseMySQLConnect;
 
+#else
+
+pragma warnings( off );
+-- Hide unused parameters warnings
+
+procedure ParseMySQLConnect is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLConnect;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLEngineOf( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := mysql.engine_of;
   -- Source: APQ.Engine_Of
@@ -179,6 +192,16 @@ begin
      end;
   end if;
 end ParseMySQLEngineOf;
+
+#else
+
+procedure ParseMySQLEngineOf( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLEngineOf;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLPrepare( result : out unbounded_string ) is
   -- Syntax: mysql.prepare( sqlstmt [,after] );
@@ -216,6 +239,16 @@ begin
   end if;
 end ParseMySQLPrepare;
 
+#else
+
+procedure ParseMySQLPrepare( result : out unbounded_string ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLPrepare;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLPrepare is
   -- Syntax: mysql.prepare( sqlstmt [,after] );
   sqlExpr   : unbounded_string;
@@ -244,6 +277,16 @@ begin
      end;
   end if;
 end ParseMySQLPrepare;
+
+#else
+
+procedure ParseMySQLPrepare is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLPrepare;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLAppend is
   -- Syntax: mysql.append( sqlstmt [,after] );
@@ -274,6 +317,16 @@ begin
   end if;
 end ParseMySQLAppend;
 
+#else
+
+procedure ParseMySQLAppend is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLAppend;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLAppendLine is
   -- Syntax: mysql.append_line( sqlstmt );
   sqlExpr   : unbounded_string;
@@ -290,6 +343,16 @@ begin
      end;
   end if;
 end ParseMySQLAppendLine;
+
+#else
+
+procedure ParseMySQLAppendLine is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLAppendLine;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLAppendQuoted is
   -- Syntax: mysql.append_quoted( sqlstmt [,after] );
@@ -320,6 +383,16 @@ begin
   end if;
 end ParseMySQLAppendQuoted;
 
+#else
+
+procedure ParseMySQLAppendQuoted is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLAppendQuoted;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLExecute is
 begin
   expect( mysql_execute_t );
@@ -337,6 +410,16 @@ begin
      end;
   end if;
 end ParseMySQLExecute;
+
+#else
+
+procedure ParseMySQLExecute is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLExecute;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLExecuteChecked is
   -- Syntax: mysql.execute_checked( [ msg ] );
@@ -369,6 +452,15 @@ begin
   end if;
 end ParseMySQLExecuteChecked;
 
+#else
+
+procedure ParseMySQLExecuteChecked is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLExecuteChecked;
+
+#end if;
+
 --procedure ParseDBDo( result : out unbounded_string ) is
 --begin
 --  expect( db_do_t );
@@ -380,6 +472,8 @@ end ParseMySQLExecuteChecked;
 --  expect( db_fetchrow_t );
 --  result := null_unbounded_string;
 --end ParseDBFetchrow;
+
+#if MYSQL
 
 procedure ParseMySQLDisconnect is
   -- Syntax: mysql.disconnect;
@@ -399,6 +493,16 @@ begin
   end if;
 end ParseMySQLDisconnect;
 
+#else
+
+procedure ParseMySQLDisconnect is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLDisconnect;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLIsConnected( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysql.is_connected
 begin
@@ -413,6 +517,16 @@ begin
   end if;
 end ParseMySQLIsConnected;
 
+#else
+
+procedure ParseMySQLIsConnected( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLIsConnected;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLReset is
   -- Syntax: mysql.reset
   -- Source: APQ.Reset
@@ -426,6 +540,16 @@ begin
      end;
   end if;
 end ParseMySQLReset;
+
+#else
+
+procedure ParseMySQLReset is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLReset;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLErrorMessage( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysql.error_message
@@ -442,6 +566,15 @@ begin
   end if;
 end ParseMySQLErrorMessage;
 
+#else
+
+procedure ParseMySQLErrorMessage( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLErrorMessage;
+
+#end if;
+
 -- procedure ParseMySQLNoticeMessage( result : out unbounded_string ) is
 --   -- Syntax: mysql.notice_message
 --   -- Source: APQ.Notice_Message
@@ -455,6 +588,8 @@ end ParseMySQLErrorMessage;
 --      end;
 --   end if;
 -- end ParseMySQLNoticeMessage;
+
+#if MYSQL
 
 procedure ParseMySQLInAbortState( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysql.in_abort_state
@@ -473,6 +608,16 @@ begin
   end if;
 end ParseMySQLInAbortState;
 
+#else
+
+procedure ParseMySQLInAbortState( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLInAbortState;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLOptions( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysql.options
   -- Source: APQ.Options
@@ -487,6 +632,16 @@ begin
      end;
   end if;
 end ParseMySQLOptions;
+
+#else
+
+procedure ParseMySQLOptions( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLOptions;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLSetRollbackOnFinalize is
   -- Syntax: mysql.set_rollback_on_finalize( b );
@@ -507,6 +662,16 @@ begin
   end if;
 end ParseMySQLSetRollbackOnFinalize;
 
+#else
+
+procedure ParseMySQLSetRollbackOnFinalize is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLSetRollbackOnFinalize;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysql.will_rollback_on_finalize( b );
   -- Source: APQ.Will_Rollback_On_Finalize
@@ -521,6 +686,16 @@ begin
     end;
   end if;
 end ParseMySQLWillRollbackOnFinalize;
+
+#else
+
+procedure ParseMySQLWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLWillRollbackOnFinalize;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLOpenDBTrace is
   -- Syntax: mysql.open_db_trace( f [,m] );
@@ -560,6 +735,16 @@ begin
   end if;
 end ParseMySQLOpenDBTrace;
 
+#else
+
+procedure ParseMySQLOpenDBTrace is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLOpenDBTrace;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLCloseDBTrace is
   -- Syntax: mysql.close_db_trace( f );
   -- Source: APQ.Close_DB_Trace
@@ -573,6 +758,16 @@ begin
      end;
   end if;
 end ParseMySQLCloseDBTrace;
+
+#else
+
+procedure ParseMySQLCloseDBTrace is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLCloseDBTrace;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLSetTrace is
   -- Syntax: mysql.set_trace( b );
@@ -593,6 +788,16 @@ begin
   end if;
 end ParseMySQLSetTrace;
 
+#else
+
+procedure ParseMySQLSetTrace is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLSetTrace;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLIsTrace( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysql.is_trace( b );
   -- Source: APQ.Is_Trace
@@ -607,6 +812,16 @@ begin
     end;
   end if;
 end ParseMySQLIsTrace;
+
+#else
+
+procedure ParseMySQLIsTrace( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLIsTrace;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLClear is
   -- Syntax: mysql.clear;
@@ -623,6 +838,16 @@ begin
     end;
   end if;
 end ParseMySQLClear;
+
+#else
+
+procedure ParseMySQLClear is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLClear;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLRaiseExceptions is
   -- Syntax: mysql.raise_exceptions( [ b ] );
@@ -647,6 +872,16 @@ begin
   end if;
 end ParseMySQLRaiseExceptions;
 
+#else
+
+procedure ParseMySQLRaiseExceptions is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLRaiseExceptions;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLReportErrors is
   -- Syntax: mysql.report_errors( b );
   -- Source: APQ.Report_Errors
@@ -670,6 +905,16 @@ begin
   end if;
 end ParseMySQLReportErrors;
 
+#else
+
+procedure ParseMySQLReportErrors is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLReportErrors;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLBeginWork is
   -- Syntax: mysql.begin_work;
   -- Source: APQ.Begin_Work
@@ -687,6 +932,16 @@ begin
      end;
   end if;
 end ParseMySQLBeginWork;
+
+#else
+
+procedure ParseMySQLBeginWork is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLBeginWork;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLRollbackWork is
   -- Syntax: mysql.rollback_work;
@@ -706,6 +961,16 @@ begin
   end if;
 end ParseMySQLRollbackWork;
 
+#else
+
+procedure ParseMySQLRollbackWork is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLRollbackWork;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLCommitWork is
   -- Syntax: mysql.commit_work;
   -- Source: APQ.Commit_Work
@@ -724,6 +989,16 @@ begin
   end if;
 end ParseMySQLCommitWork;
 
+#else
+
+procedure ParseMySQLCommitWork is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLCommitWork;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLRewind is
   -- Syntax: mysql.rewind;
   -- Source: APQ.Rewind
@@ -737,6 +1012,16 @@ begin
      end;
   end if;
 end ParseMySQLRewind;
+
+#else
+
+procedure ParseMySQLRewind is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLRewind;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLFetch is
   -- Syntax: mysql.fetch;
@@ -767,6 +1052,16 @@ begin
   end if;
 end ParseMySQLFetch;
 
+#else
+
+procedure ParseMySQLFetch is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLFetch;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLEndOfQuery( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := mysql.end_of_query;
   -- Source: APQ.End_Of_Query
@@ -781,6 +1076,16 @@ begin
      end;
   end if;
 end ParseMySQLEndOfQuery;
+
+#else
+
+procedure ParseMySQLEndOfQuery( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLEndOfQuery;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLTuple( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: t := mysql.tuple;
@@ -799,6 +1104,16 @@ begin
   end if;
 end ParseMySQLTuple;
 
+#else
+
+procedure ParseMySQLTuple( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLTuple;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLTuples( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysql.tuples;
   -- Source: APQ.Tuples
@@ -816,6 +1131,16 @@ begin
   end if;
 end ParseMySQLTuples;
 
+#else
+
+procedure ParseMySQLTuples( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLTuples;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLColumns( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysql.columns;
   -- Source: APQ.Columns
@@ -832,6 +1157,16 @@ begin
      end;
   end if;
 end ParseMySQLColumns;
+
+#else
+
+procedure ParseMySQLColumns( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLColumns;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLColumnName( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysql.column_Name;
@@ -855,6 +1190,16 @@ begin
   end if;
 end ParseMySQLColumnName;
 
+#else
+
+procedure ParseMySQLColumnName( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLColumnName;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLColumnIndex( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysql.column_index;
   -- Source: APQ.Column_Index
@@ -876,6 +1221,15 @@ begin
      end;
   end if;
 end ParseMySQLColumnIndex;
+
+#else
+
+procedure ParseMySQLColumnIndex( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLColumnIndex;
+
+#end if;
 
 --procedure ParseDBColumnType( result : out unbounded_string ) is
   -- Syntax: n := db.column_type;
@@ -905,6 +1259,8 @@ end ParseMySQLColumnIndex;
   --end if;
 --end ParseDBColumnType;
 
+#if MYSQL
+
 procedure ParseMySQLIsNull( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysql.is_null( c );
   -- Source: APQ.Is_Null;
@@ -929,6 +1285,16 @@ begin
      end;
   end if;
 end ParseMySQLIsNull;
+
+#else
+
+procedure ParseMySQLIsNull( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLIsNull;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLValue( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysql.value;
@@ -955,6 +1321,16 @@ begin
      end;
   end if;
 end ParseMySQLValue;
+
+#else
+
+procedure ParseMySQLValue( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLValue;
+
+#end if;
+#if MYSQL
 
 procedure MySQLShowIt is
 -- run SQL command and display results in tabular format
@@ -1128,6 +1504,16 @@ begin
   expect( mysql_show_t );
   MySQLShowIt;
 end ParseMySQLShow;
+
+#else
+
+procedure ParseMySQLShow is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLShow;
+
+#end if;
+#if MYSQL
 
 function mysql_kind_to_string( kind : string ) return string is
 -- convert the pg_class table's pg_relkind code to a readable string
@@ -1485,6 +1871,16 @@ begin
   end if;
 end ParseMySQLList;
 
+#else
+
+procedure ParseMySQLList is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLList;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLSchema is
   -- Syntax: mysql.schema( "table" );
   -- Source: N/A
@@ -1761,6 +2157,16 @@ begin
   end if;
 end ParseMySQLSchema;
 
+#else
+
+procedure ParseMySQLSchema is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLSchema;
+
+#end if;
+#if MYSQL
+
 procedure ParseMySQLUsers is
   -- Syntax: mysql.users
   -- Source: N/A
@@ -1953,6 +2359,16 @@ begin
      end;
   end if;
 end ParseMySQLUsers;
+
+#else
+
+procedure ParseMySQLUsers is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLUsers;
+
+#end if;
+#if MYSQL
 
 procedure ParseMySQLDatabases is
   -- Syntax: mysql.databases
@@ -2147,6 +2563,16 @@ begin
   end if;
 end ParseMySQLDatabases;
 
+#else
+
+procedure ParseMySQLDatabases is
+begin
+  err( "mysql support not configured" );
+end ParseMySQLDatabases;
+
+#end if;
+#if MYSQL
+
 procedure DoMySQLSQLSelect( sqlcmd : unbounded_string ) is
 begin
   if isExecutingCommand then
@@ -2154,6 +2580,16 @@ begin
      MySQLShowIt;
   end if;
 end DoMySQLSQLSelect;
+
+#else
+
+procedure DoMySQLSQLSelect( sqlcmd : unbounded_string ) is
+begin
+  err( "mysql support not configured" );
+end DoMySQLSQLSelect;
+
+#end if;
+#if MYSQL
 
 procedure DoMySQLSQLStatement( sqlcmd : unbounded_string ) is
 begin
@@ -2171,6 +2607,13 @@ begin
        err( "exception raised" );
      end;
   end if;
+end DoMySQLSQLStatement;
+
+#else
+
+procedure DoMySQLSQLStatement( sqlcmd : unbounded_string ) is
+begin
+  err( "mysql support not configured" );
 end DoMySQLSQLStatement;
 
 #end if;

@@ -853,106 +853,105 @@ begin
      --elsif token = arcsinh_t then                         -- arcsinh function
      --   ParseNumericsArcSinH( f );
      --   kind := uni_numeric_t;
-     -- TODO: more to do
-     elsif token = arccosh_t then                         -- arccosh function
-        ParseNumericsArcCosH( f );
-        kind := uni_numeric_t;
-     elsif token = arctanh_t then                         -- arctanh function
-        ParseNumericsArcTanH( f );
-        kind := uni_numeric_t;
-     elsif token = arccoth_t then                         -- arccoth function
-        ParseNumericsArcCotH( f );
-        kind := uni_numeric_t;
-     elsif token = floor_t then                           -- floor function
-        ParseNumericsFloor( f );
-        kind := uni_numeric_t;
-     elsif token = ceiling_t then                         -- ceiling function
-        ParseNumericsCeiling( f );
-        kind := uni_numeric_t;
-     elsif token = rounding_t then                        -- rounding function
-        ParseNumericsRounding( f );
-        kind := uni_numeric_t;
-     elsif token = unbiased_rounding_t then               -- unbiased rounding function
-        ParseNumericsUnbiasedRounding( f );
-        kind := uni_numeric_t;
-     elsif token = truncation_t then                      -- truncation function
-        ParseNumericsTruncation( f );
-        kind := uni_numeric_t;
-     elsif token = Remainder_t then                       -- remainder function
-        ParseNumericsRemainder( f );
-        kind := uni_numeric_t;
-     elsif token = Exponent_t then                        -- exponent function
-        ParseNumericsExponent( f );
-        kind := uni_numeric_t;
-     elsif token = Fraction_t then                        -- fraction function
-        ParseNumericsFraction( f );
-        kind := uni_numeric_t;
-     elsif token = leading_part_t then                    -- leading part function
-        ParseNumericsLeadingPart( f );
-        kind := uni_numeric_t;
-     elsif token = copy_sign_t then                       -- copy sign function
-        ParseNumericsCopySign( f );
-        kind := uni_numeric_t;
-     elsif token = sturges_t then                         -- sturges function
-        ParseNumericsSturges( f );
-        kind := uni_numeric_t;
-     elsif token = max_t then                             -- max function
-        ParseNumericsMax( f );
-        kind := uni_numeric_t;
-     elsif token = min_t then                             -- min function
-        ParseNumericsMin( f );
-        kind := uni_numeric_t;
-     elsif token = machine_t then                         -- machine function
-        ParseNumericsMachine( f );
-        kind := uni_numeric_t;
-     elsif token = scaling_t then                         -- scaling function
-        ParseNumericsScaling( f );
-        kind := uni_numeric_t;
-     elsif token = value_t then                           -- value function
-        ParseNumericsValue( f );
-        kind := uni_numeric_t;
-     elsif token = pos_t then                             -- pos function
-        ParseNumericsPos( f );
-        kind := positive_t;
-     elsif token = numerics_md5_t then                    -- md5 function
-        ParseNumericsMd5( f );
-        kind := string_t;
-     elsif token = serial_t then                          -- serial function
-        ParseNumericsSerial( f );
-        kind := natural_t;
-     elsif token = rnd_t then                             -- rnd function
-        ParseNumericsRnd( f );
-        kind := positive_t;
-     elsif token = odd_t then                             -- odd function
-        ParseNumericsOdd( f );
-        kind := boolean_t;
-     elsif token = even_t then                            -- even function
-        ParseNumericsEven( f );
-        kind := boolean_t;
-     elsif token = numerics_re_t then                     -- complex re
-        ParseNumericsRe( f );
-        kind := long_float_t;
-     elsif token = numerics_im_t then                     -- complex im
-        ParseNumericsIm( f );
-        kind := long_float_t;
-     elsif token = numerics_modulus_t then                -- complex modulus
-        ParseNumericsModulus( f );
-        kind := long_float_t;
-     elsif token = numerics_argument_t then               -- complex argument
-        ParseNumericsArgument( f );
-        kind := long_float_t;
-     elsif token = hash_of_t then                         -- hash_of
-        ParseNumericsHashOf( f );
-        kind := natural_t;
-     elsif token = sdbm_hash_of_t then                    -- sdbm_hash_of
-        ParseNumericsSdbmHashOf( f );
-        kind := natural_t;
-     elsif token = fnv_hash_of_t then                     -- fnv_hash_of
-        ParseNumericsFnvHashOf( f );
-        kind := natural_t;
-     elsif token = murmur_hash_of_t then                  -- murmur_hash_of
-        ParseNumericsMurmurHashOf( f );
-        kind := natural_t;
+     --elsif token = arccosh_t then                         -- arccosh function
+     --   ParseNumericsArcCosH( f );
+     --   kind := uni_numeric_t;
+     --elsif token = arctanh_t then                         -- arctanh function
+     --   ParseNumericsArcTanH( f );
+     --   kind := uni_numeric_t;
+     --elsif token = arccoth_t then                         -- arccoth function
+     --   ParseNumericsArcCotH( f );
+     --   kind := uni_numeric_t;
+     --elsif token = floor_t then                           -- floor function
+     --   ParseNumericsFloor( f );
+     --   kind := uni_numeric_t;
+     --elsif token = ceiling_t then                         -- ceiling function
+     --   ParseNumericsCeiling( f );
+     --   kind := uni_numeric_t;
+     --elsif token = rounding_t then                        -- rounding function
+     --   ParseNumericsRounding( f );
+     --   kind := uni_numeric_t;
+     --elsif token = unbiased_rounding_t then               -- unbiased rounding function
+     --   ParseNumericsUnbiasedRounding( f );
+     --   kind := uni_numeric_t;
+     --elsif token = truncation_t then                      -- truncation function
+     --   ParseNumericsTruncation( f );
+     --   kind := uni_numeric_t;
+     --elsif token = Remainder_t then                       -- remainder function
+     --   ParseNumericsRemainder( f );
+     --   kind := uni_numeric_t;
+     --elsif token = Exponent_t then                        -- exponent function
+     --   ParseNumericsExponent( f );
+     --   kind := uni_numeric_t;
+     --elsif token = Fraction_t then                        -- fraction function
+     --   ParseNumericsFraction( f );
+     --   kind := uni_numeric_t;
+     --elsif token = leading_part_t then                    -- leading part function
+     --   ParseNumericsLeadingPart( f );
+     --   kind := uni_numeric_t;
+     --elsif token = copy_sign_t then                       -- copy sign function
+     --   ParseNumericsCopySign( f );
+     --   kind := uni_numeric_t;
+     --elsif token = sturges_t then                         -- sturges function
+     --   ParseNumericsSturges( f );
+     --   kind := uni_numeric_t;
+     --elsif token = max_t then                             -- max function
+     --   ParseNumericsMax( f );
+     --   kind := uni_numeric_t;
+     --elsif token = min_t then                             -- min function
+     --   ParseNumericsMin( f );
+     --   kind := uni_numeric_t;
+     --elsif token = machine_t then                         -- machine function
+     --   ParseNumericsMachine( f );
+     --   kind := uni_numeric_t;
+     --elsif token = scaling_t then                         -- scaling function
+     --   ParseNumericsScaling( f );
+     --   kind := uni_numeric_t;
+     --elsif token = value_t then                           -- value function
+     --   ParseNumericsValue( f );
+     --   kind := uni_numeric_t;
+     --elsif token = pos_t then                             -- pos function
+     --   ParseNumericsPos( f );
+     --   kind := positive_t;
+     --elsif token = numerics_md5_t then                    -- md5 function
+     --   ParseNumericsMd5( f );
+     --   kind := string_t;
+     --elsif token = serial_t then                          -- serial function
+     --   ParseNumericsSerial( f );
+     --   kind := natural_t;
+     --elsif token = rnd_t then                             -- rnd function
+     --   ParseNumericsRnd( f );
+     --   kind := positive_t;
+     --elsif token = odd_t then                             -- odd function
+     --   ParseNumericsOdd( f );
+     --   kind := boolean_t;
+     --elsif token = even_t then                            -- even function
+     --   ParseNumericsEven( f );
+     --   kind := boolean_t;
+     --elsif token = numerics_re_t then                     -- complex re
+     --   ParseNumericsRe( f );
+     --   kind := long_float_t;
+     --elsif token = numerics_im_t then                     -- complex im
+     --   ParseNumericsIm( f );
+     --   kind := long_float_t;
+     --elsif token = numerics_modulus_t then                -- complex modulus
+     --   ParseNumericsModulus( f );
+     --   kind := long_float_t;
+     --elsif token = numerics_argument_t then               -- complex argument
+     --   ParseNumericsArgument( f );
+     --   kind := long_float_t;
+     --elsif token = hash_of_t then                         -- hash_of
+     --   ParseNumericsHashOf( f );
+     --   kind := natural_t;
+     --elsif token = sdbm_hash_of_t then                    -- sdbm_hash_of
+     --   ParseNumericsSdbmHashOf( f );
+     --   kind := natural_t;
+     --elsif token = fnv_hash_of_t then                     -- fnv_hash_of
+     --   ParseNumericsFnvHashOf( f );
+     --   kind := natural_t;
+     --elsif token = murmur_hash_of_t then                  -- murmur_hash_of
+     --   ParseNumericsMurmurHashOf( f );
+     --   kind := natural_t;
      elsif token = source_info_symbol_table_size_t then   -- Symbol_Table_Sz
         getNextToken;
         if onlyAda95 then
@@ -984,111 +983,112 @@ begin
        end if;
        kind := string_t;
         getNextToken;
-     elsif token = cmd_argcount_t then
-        ParseArgument_Count( f );
-        kind := uni_numeric_t;
-     elsif token = cmd_argument_t then
-        ParseArgument( f );
-        kind := uni_string_t;
-     elsif token = cmd_commandname_t then
-        ParseCommand_Name( f );
-        kind := uni_string_t;
-     elsif token = cmd_envcnt_t then
-        ParseEnvironment_Count( f );
-        kind := natural_t;
-     elsif token = cmd_envval_t then
-        ParseEnvironment_Value( f );
-        kind := uni_string_t;
-     elsif token = cgi_parsing_errors_t then               -- CGI package
-        ParseParsing_Errors( f );
-        kind := boolean_t;
-     elsif token = cgi_input_received_t then               -- input_received
-        ParseInput_Received( f );
-        kind := boolean_t;
-     elsif token = cgi_is_index_t then                     -- is_index
-        ParseIs_Index( f );
-        kind := boolean_t;
-     elsif token = cgi_cgi_method_t then                   -- cgi_method
-        ParseCGI_Method( f );
-        kind := cgi_cgi_method_type_t;
-     elsif token = cgi_value_t then                        -- value
-        ParseValue( f );
-        kind := string_t;
-     elsif token = cgi_key_exists_t then                   -- key_exists
-        ParseKey_Exists( f );
-        kind := boolean_t;
-     elsif token = cgi_key_count_t then                    -- key_count
-        ParseKey_Count( f );
-        kind := natural_t;
-     elsif token = cgi_argument_count_t then               -- CGI.argument_cnt
-        ParseCGIArgument_Count( f );
-        kind := natural_t;
-     elsif token = cgi_key_t then                          -- CGI.key
-        ParseKey( f );
-        kind := string_t;
-     elsif token = cgi_key_value_t then                    -- CGI.key
-        ParseKeyValue( f );
-        kind := string_t;
-     elsif token = cgi_key_value_exists_t then             -- CGI.key_val_exist
-        ParseKey_Value_Exists( f );
-        kind := boolean_t;
-     elsif token = cgi_my_url_t then                       -- CGI.my_url
-        ParseMy_URL( f );
-        kind := string_t;
-     elsif token = cgi_line_count_t then                   -- CGI.line_count
-        ParseLine_Count( f );
-        kind := natural_t;
-     elsif token = cgi_line_count_of_value_t then          -- CGI.line_cnt_val
-        ParseLine_Count_Of_Value( f );
-        kind := natural_t;
-     elsif token = cgi_line_t then                         -- CGI.line
-        ParseCGILine( f );
-        kind := string_t;
-     elsif token = cgi_value_of_line_t then                -- CGI.Value_Of_Line
-        ParseValue_Of_Line( f );
-        kind := string_t;
-     elsif token = cgi_url_decode_t then                   -- CGI.URL_Decode
-        ParseURL_Decode( f );
-        kind := string_t;
-     elsif token = cgi_url_encode_t then                   -- CGI.URL_Encode
-        ParseURL_Encode( f );
-        kind := string_t;
-     elsif token = cgi_html_encode_t then                  -- CGI.HTML_Encode
-        ParseHTML_Encode( f );
-        kind := string_t;
-     elsif token = cgi_cookie_value_t then              -- CGI.Cooke_Value
-        ParseCookie_Value( f );
-        kind := string_t;
-     elsif token = cgi_cookie_count_t then              -- CGI.Cooke_Count
-        ParseCookie_Count( f );
-        kind := natural_t;
-     elsif token = cal_clock_t then                     -- Calendar.Clock
-        ParseCalClock( f );
-        kind := cal_time_t;
-     elsif token = cal_year_t then                      -- Calendar.Year
-        ParseCalYear( f );
-        kind := cal_year_number_t;
-     elsif token = cal_month_t then                     -- Calendar.Month
-        ParseCalMonth( f );
-        kind := cal_month_number_t;
-     elsif token = cal_day_t then                       -- Calendar.Day
-        ParseCalDay( f );
-        kind := cal_day_number_t;
-     elsif token = cal_seconds_t then                   -- Calendar.Seconds
-        ParseCalSeconds( f );
-        kind := cal_day_duration_t;
-     elsif token = cal_time_of_t then                   -- Calendar.Time_Of
-        ParseCalTimeOf( f );
-        kind := cal_time_t;
-     elsif token = cal_to_julian_t then                 -- Calendar.To_Julian
-        ParseCalToJulian( f );
-        kind := long_integer_t;
-     elsif token = cal_to_time_t then                   -- Calendar.To_Time
-        ParseCalToTime( f );
-        kind := cal_time_t;
-     elsif token = cal_day_of_week_t then               -- Calendar.Day_Of_Week
-        ParseCalDayOfWeek( f );
-        kind := integer_t;
+     --elsif token = cmd_argcount_t then
+     --   ParseArgument_Count( f );
+     --   kind := uni_numeric_t;
+     --elsif token = cmd_argument_t then
+     --   ParseArgument( f );
+     --   kind := uni_string_t;
+     --elsif token = cmd_commandname_t then
+     --   ParseCommand_Name( f );
+     --   kind := uni_string_t;
+     --elsif token = cmd_envcnt_t then
+     --   ParseEnvironment_Count( f );
+     --   kind := natural_t;
+     --elsif token = cmd_envval_t then
+     --   ParseEnvironment_Value( f );
+     --   kind := uni_string_t;
+     --elsif token = cgi_parsing_errors_t then               -- CGI package
+     --   ParseParsing_Errors( f );
+     --   kind := boolean_t;
+     --elsif token = cgi_input_received_t then               -- input_received
+     --   ParseInput_Received( f );
+     --   kind := boolean_t;
+     --elsif token = cgi_is_index_t then                     -- is_index
+     --   ParseIs_Index( f );
+     --   kind := boolean_t;
+     --elsif token = cgi_cgi_method_t then                   -- cgi_method
+     --   ParseCGI_Method( f );
+     --   kind := cgi_cgi_method_type_t;
+     --elsif token = cgi_value_t then                        -- value
+     --   ParseValue( f );
+     --   kind := string_t;
+     --elsif token = cgi_key_exists_t then                   -- key_exists
+     --   ParseKey_Exists( f );
+     --   kind := boolean_t;
+     --elsif token = cgi_key_count_t then                    -- key_count
+     --   ParseKey_Count( f );
+     --   kind := natural_t;
+     --elsif token = cgi_argument_count_t then               -- CGI.argument_cnt
+     --   ParseCGIArgument_Count( f );
+     --   kind := natural_t;
+     --elsif token = cgi_key_t then                          -- CGI.key
+     --   ParseKey( f );
+     --   kind := string_t;
+     --elsif token = cgi_key_value_t then                    -- CGI.key
+     --   ParseKeyValue( f );
+     --   kind := string_t;
+     --elsif token = cgi_key_value_exists_t then             -- CGI.key_val_exist
+     --   ParseKey_Value_Exists( f );
+     --   kind := boolean_t;
+     --elsif token = cgi_my_url_t then                       -- CGI.my_url
+     --   ParseMy_URL( f );
+     --   kind := string_t;
+     --elsif token = cgi_line_count_t then                   -- CGI.line_count
+     --   ParseLine_Count( f );
+     --   kind := natural_t;
+     --elsif token = cgi_line_count_of_value_t then          -- CGI.line_cnt_val
+     --   ParseLine_Count_Of_Value( f );
+     --   kind := natural_t;
+     --elsif token = cgi_line_t then                         -- CGI.line
+     --   ParseCGILine( f );
+     --   kind := string_t;
+     --elsif token = cgi_value_of_line_t then                -- CGI.Value_Of_Line
+     --   ParseValue_Of_Line( f );
+     --   kind := string_t;
+     --elsif token = cgi_url_decode_t then                   -- CGI.URL_Decode
+     --   ParseURL_Decode( f );
+     --   kind := string_t;
+     --elsif token = cgi_url_encode_t then                   -- CGI.URL_Encode
+     --   ParseURL_Encode( f );
+     --   kind := string_t;
+     --elsif token = cgi_html_encode_t then                  -- CGI.HTML_Encode
+     --   ParseHTML_Encode( f );
+     --   kind := string_t;
+     --elsif token = cgi_cookie_value_t then              -- CGI.Cooke_Value
+     --   ParseCookie_Value( f );
+     --   kind := string_t;
+     --elsif token = cgi_cookie_count_t then              -- CGI.Cooke_Count
+     --   ParseCookie_Count( f );
+     --   kind := natural_t;
+     --elsif token = cal_clock_t then                     -- Calendar.Clock
+     --   ParseCalClock( f );
+     --   kind := cal_time_t;
+     --elsif token = cal_year_t then                      -- Calendar.Year
+     --   ParseCalYear( f );
+     --   kind := cal_year_number_t;
+     --elsif token = cal_month_t then                     -- Calendar.Month
+     --   ParseCalMonth( f );
+     --   kind := cal_month_number_t;
+     --elsif token = cal_day_t then                       -- Calendar.Day
+     --   ParseCalDay( f );
+     --   kind := cal_day_number_t;
+     --elsif token = cal_seconds_t then                   -- Calendar.Seconds
+     --   ParseCalSeconds( f );
+     --   kind := cal_day_duration_t;
+     --elsif token = cal_time_of_t then                   -- Calendar.Time_Of
+     --   ParseCalTimeOf( f );
+     --   kind := cal_time_t;
+     --elsif token = cal_to_julian_t then                 -- Calendar.To_Julian
+     --   ParseCalToJulian( f );
+     --   kind := long_integer_t;
+     --elsif token = cal_to_time_t then                   -- Calendar.To_Time
+     --   ParseCalToTime( f );
+     --   kind := cal_time_t;
+     --elsif token = cal_day_of_week_t then               -- Calendar.Day_Of_Week
+     --   ParseCalDayOfWeek( f );
+     --   kind := integer_t;
+     -- TODO: more to convert to use callbacks
      --elsif token = dbi_prepare_t then                  -- DB.Prepare
      --   ParseDBIPrepare( f );
      --   kind := boolean_t;
@@ -6582,8 +6582,8 @@ begin
   --   ParseSetOutput;
   --elsif Token = set_error_t then
   --   ParseSetError;
-  elsif Token = cmd_setexit_t then
-     ParseSetExitStatus;
+  --elsif Token = cmd_setexit_t then
+  --   ParseSetExitStatus;
   elsif Token = reset_t then
      ParseReset;
   elsif Token = delete_t then                     -- special case
@@ -6796,162 +6796,162 @@ begin
 #else
      err( "postgresql support not configured" );
 #end if;
-  elsif token = mysql_connect_t then                -- MYSQL.Connect
-#if MYSQL
-     ParseMySQLConnect;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_disconnect_t then             -- MYSQL.Disconnect
-#if MYSQL
-     ParseMySQLDisconnect;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_reset_t then                  -- MYSQL.Reset
-#if MYSQL
-     ParseMySQLReset;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_set_rollback_on_finalize_t then  -- MYSQL.SetRollbackOnFinalize
-#if MYSQL
-     ParseMySQLSetRollbackOnFinalize;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_open_db_trace_t then          -- MYSQL.OpenDBTrace
-#if MYSQL
-     ParseMySQLOpenDBTrace;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_close_db_trace_t then         -- MYSQL.CloseDBTrace
-#if MYSQL
-     ParseMySQLCloseDBTrace;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_set_trace_t then              -- MYSQL.SetTrace
-#if MYSQL
-     ParseMySQLSetTrace;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_clear_t then                  -- MYSQL.Clear
-#if MYSQL
-     ParseMySQLClear;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_prepare_t then                -- MYSQL.Prepare
-#if MYSQL
-     ParseMySQLPrepare;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_append_t then                 -- MYSQL.Append
-#if MYSQL
-     ParseMySQLAppend;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_append_line_t then            -- MYSQL.Append_Line
-#if MYSQL
-     ParseMySQLAppendLine;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_append_quoted_t then          -- MYSQL.Append_Quoted
-#if MYSQL
-     ParseMySQLAppendQuoted;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_execute_t then                -- MYSQL.Execute
-#if MYSQL
-     ParseMySQLExecute;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_execute_checked_t then        -- MYSQL.Execute_Checked
-#if MYSQL
-     ParseMySQLExecuteChecked;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_raise_exceptions_t then       -- MYSQL.Raise_Exceptions
-#if MYSQL
-     ParseMySQLRaiseExceptions;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_report_errors_t then          -- MYSQL.Report_Errors
-#if MYSQL
-     ParseMySQLReportErrors;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_begin_work_t then             -- MYSQL.Begin_Work
-#if MYSQL
-     ParseMySQLBeginWork;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_rollback_work_t then          -- MYSQL.Rollback_Work
-#if MYSQL
-     ParseMySQLRollbackWork;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_commit_work_t then            -- MYSQL.Commit_Work
-#if MYSQL
-     ParseMySQLCommitWork;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_rewind_t then                 -- MYSQL.Rewind
-#if MYSQL
-     ParseMySQLRewind;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_fetch_t then                  -- MYSQL.Fetch
-#if MYSQL
-     ParseMySQLFetch;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_show_t then                   -- MYSQL.Show
-#if MYSQL
-     ParseMySQLShow;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_list_t then                   -- MYSQL.List
-#if MYSQL
-     ParseMySQLList;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_schema_t then                 -- MYSQL.Schema
-#if MYSQL
-     ParseMySQLSchema;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_users_t then                  -- MYSQL.Users
-#if MYSQL
-     ParseMySQLUsers;
-#else
-     err( "mysql support not configured" );
-#end if;
-  elsif token = mysql_databases_t then               -- MYSQL.Databases
-#if MYSQL
-     ParseMySQLDatabases;
-#else
-     err( "mysql support not configured" );
-#end if;
+  --elsif token = mysql_connect_t then                -- MYSQL.Connect
+--#if MYSQL
+     --ParseMySQLConnect;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_disconnect_t then             -- MYSQL.Disconnect
+--#if MYSQL
+     --ParseMySQLDisconnect;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_reset_t then                  -- MYSQL.Reset
+--#if MYSQL
+     --ParseMySQLReset;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_set_rollback_on_finalize_t then  -- MYSQL.SetRollbackOnFinalize
+--#if MYSQL
+     --ParseMySQLSetRollbackOnFinalize;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_open_db_trace_t then          -- MYSQL.OpenDBTrace
+--#if MYSQL
+     --ParseMySQLOpenDBTrace;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_close_db_trace_t then         -- MYSQL.CloseDBTrace
+--#if MYSQL
+     --ParseMySQLCloseDBTrace;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_set_trace_t then              -- MYSQL.SetTrace
+--#if MYSQL
+     --ParseMySQLSetTrace;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_clear_t then                  -- MYSQL.Clear
+--#if MYSQL
+     --ParseMySQLClear;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_prepare_t then                -- MYSQL.Prepare
+--#if MYSQL
+     --ParseMySQLPrepare;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_append_t then                 -- MYSQL.Append
+--#if MYSQL
+     --ParseMySQLAppend;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_append_line_t then            -- MYSQL.Append_Line
+--#if MYSQL
+     --ParseMySQLAppendLine;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_append_quoted_t then          -- MYSQL.Append_Quoted
+--#if MYSQL
+     --ParseMySQLAppendQuoted;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_execute_t then                -- MYSQL.Execute
+--#if MYSQL
+     --ParseMySQLExecute;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_execute_checked_t then        -- MYSQL.Execute_Checked
+--#if MYSQL
+     --ParseMySQLExecuteChecked;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_raise_exceptions_t then       -- MYSQL.Raise_Exceptions
+--#if MYSQL
+     --ParseMySQLRaiseExceptions;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_report_errors_t then          -- MYSQL.Report_Errors
+--#if MYSQL
+     --ParseMySQLReportErrors;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_begin_work_t then             -- MYSQL.Begin_Work
+--#if MYSQL
+     --ParseMySQLBeginWork;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_rollback_work_t then          -- MYSQL.Rollback_Work
+--#if MYSQL
+     --ParseMySQLRollbackWork;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_commit_work_t then            -- MYSQL.Commit_Work
+--#if MYSQL
+     --ParseMySQLCommitWork;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_rewind_t then                 -- MYSQL.Rewind
+--#if MYSQL
+     --ParseMySQLRewind;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_fetch_t then                  -- MYSQL.Fetch
+--#if MYSQL
+     --ParseMySQLFetch;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_show_t then                   -- MYSQL.Show
+--#if MYSQL
+     --ParseMySQLShow;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_list_t then                   -- MYSQL.List
+--#if MYSQL
+     --ParseMySQLList;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_schema_t then                 -- MYSQL.Schema
+--#if MYSQL
+     --ParseMySQLSchema;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_users_t then                  -- MYSQL.Users
+--#if MYSQL
+     --ParseMySQLUsers;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
+  --elsif token = mysql_databases_t then               -- MYSQL.Databases
+--#if MYSQL
+     --ParseMySQLDatabases;
+--#else
+     --err( "mysql support not configured" );
+--#end if;
   --elsif token = numerics_set_re_t then              -- Set_Re (complex)
   --   ParseNumericsSetRe;
   --elsif token = numerics_set_im_t then              -- Set_Im (complex)
@@ -7562,6 +7562,8 @@ begin
 end BUSH_interpretScript;
 
 procedure interpretScript( scriptPath : string ) is
+  alreadyCompiled : boolean := false;
+  oldScriptFilePath : unbounded_string;
   firstLine : aliased unbounded_string;
   res : int;
 begin
@@ -7586,6 +7588,7 @@ begin
      compileCommand( to_unbounded_string( ScriptPath ) ); -- path is really script
   else                                             -- else path is a path
     --put( ASCII.ESC & "]2;" & scriptPath & ASCII.BEL  ); -- xterm window title
+    oldScriptFilePath := scriptFilePath;
     scriptFilePath := to_unbounded_string( scriptPath ); -- script name
     if syntax_check then
        -- only register source files during the syntax check, when files
@@ -7593,6 +7596,10 @@ begin
        sourceFilesList.Clear( SourceFiles );
        sourceFilesList.Queue( SourceFiles, aSourceFile'(pos => 0, name => scriptFilePath) );
     end if;
+    -- TODO: The script file must be opened to determine the ending.  But
+    -- the file doesn't need to be read if already compiled.  It would be
+    -- better if the suffix was determined in such a way that the file
+    -- doesn't need to be opened a second time.
     scriptFile := open( scriptPath & ASCII.NUL, 0, 660 ); -- open script
     if scriptFile < 1 then                           -- error?
        scriptFilePath := scriptFilePath & ".sp";   -- try name with ".sp"
@@ -7602,6 +7609,12 @@ begin
           scriptFile := open( scriptPath & ".bush" & ASCII.NUL, 0, 660 );
        end if;
     end if;
+    -- This procedure is called twice during a regular script run: once
+    -- for the syntax check and once to execute.  If the script name
+    -- is the same, don't compile it a second time: assume that the
+    -- byte code is good and proceed to parsing.
+    alreadyCompiled := scriptFilePath = oldScriptFilePath;
+
     if scriptFile > 0 then                           -- good?
        error_found := false;                         -- no error found
        exit_block := false;                          -- not exit-ing a block
@@ -7610,11 +7623,15 @@ begin
           error_found := true;
           goto error;                                -- and interpreting
        end if;
-       if script = null then
+       if not alreadyCompiled then
+       -- This was script = null but that breaks code if this procedure
+       -- is called twice with different files (e.g. loading profiles).
+       --if script = null then
           if verboseOpt then
              Put_Trace( "Compiling Byte Code" );
           end if;
           compileScript( firstline );
+       --end if;
        end if;
     end if;
   end if;
@@ -7752,10 +7769,12 @@ procedure doGlobalProfile is
   save_rshOpt  : commandLineOption;              -- for executing profile
   save_execOpt : commandLineOption;              -- for executing profile
   res : int;
+  path : string := "/etc/sparforte_profile";
 begin
   save_rshOpt := rshOpt;                         -- if restricted shell
   save_execOpt := execOpt;                       -- if cmd line script
   rshOpt := false;                               -- turn off for profile
+  scriptFile := open( path & ASCII.NUL, 0, 660 ); -- open script
   if scriptFile > 0 then                         -- good?
 <<retry>> res := close( scriptFile );            -- close test fd
      if res < 0 then
@@ -7763,30 +7782,37 @@ begin
            goto retry;
         end if;
      end if;
-     interpretScript( "/etc/sparforte_profile" ); -- run login script
+  end if;
+  if C_errno /= ENOENT then
+     if C_errno = 0 and C_is_includable_file( path & ASCII.NUL ) then
+        interpretScript( path ); -- run login script
+     else
+        err( "include file " & optional_bold( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
+        raise BAD_PROFILE;
+     end if;
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
 end doGlobalProfile;
-
 
 procedure doLocalProfile is
   save_rshOpt  : commandLineOption;              -- for executing profile
   save_execOpt : commandLineOption;              -- for executing profile
   home_id      : identifier;                     -- HOME variable
   res          : int;
+  profilePath  : unbounded_string;
 begin
   save_rshOpt := rshOpt;                   -- if restricted shell
   save_execOpt := execOpt;                 -- if cmd line script
   rshOpt := false;                         -- turn off for profile
   findIdent( to_unbounded_string( "HOME" ), home_id );
   if home_id /= eof_t then                     -- HOME defined?
-     scriptFilePath := identifiers( home_id ).value;
-     if Element( scriptFilePath, length( scriptFilePath ) ) /= '/' then
-        scriptFilePath := scriptFilePath & "/";
+     profilePath := identifiers( home_id ).value;
+     if Element( profilePath, length( profilePath ) ) /= '/' then
+        profilePath := profilePath & "/";
      end if;
-     scriptFilePath := scriptFilePath & ".sparforte_profile";
-     scriptFile := open( to_string( scriptFilePath ) & ASCII.NUL, 0, 660 ); -- open script
+     profilePath := profilePath & ".sparforte_profile";
+     scriptFile := open( to_string( profilePath ) & ASCII.NUL, 0, 660 ); -- open script
      if scriptFile > 0 then                       -- profile opened OK?
 <<retry>> res := close( scriptFile );               -- close test fd
         if res < 0 then
@@ -7794,7 +7820,14 @@ begin
               goto retry;
            end if;
         end if;
-        interpretScript( to_string( scriptFilePath ) ); -- do profile
+     end if;
+     if C_errno /= ENOENT then
+        if C_errno = 0 and C_is_includable_file( to_string( profilePath ) & ASCII.NUL ) then
+           interpretScript( to_string( profilePath ) ); -- do profile
+        else
+           err( "include file " & optional_bold( to_string( profilePath ) ) & " is either not readable, is world writable, is not a regular file or is empty" );
+           raise BAD_PROFILE;
+        end if;
      end if;
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
