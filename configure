@@ -972,6 +972,18 @@ cp world.ads.orig temp.ads
 gnatprep $GNATPREP_OPTS temp.ads world.ads
 chmod 444 world.ads
 
+echo "Updating...scanner_res.ads"
+test -f scanner_res.ads && chmod 666 scanner_res.ads
+cp scanner_res.ads.orig temp.ads
+gnatprep $GNATPREP_OPTS temp.ads scanner_res.ads
+chmod 444 scanner_res.ads
+
+echo "Updating...scanner_res.adb"
+test -f scanner_res.adb && chmod 666 scanner_res.adb
+cp scanner_res.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb scanner_res.adb
+chmod 444 scanner_res.adb
+
 echo "Updating...parser.adb"
 test -f parser.adb && chmod 666 parser.adb
 cp parser.adb.orig temp.adb

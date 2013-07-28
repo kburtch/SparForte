@@ -177,12 +177,16 @@ begin
   -- TODO: free handle
   resHandleList.find( resHandles, resHandleList.aListIndex( id ), rp );
   if rp.rt = mysql_connection then
+#if MYSQL
      if APQ.MySQL.Client.is_trace( rp.C ) then
         APQ.MySQL.Client.close_Db_Trace( rp.C );
      end if;
      if APQ.MySQL.Client.is_connected( rp.C ) then
         APQ.MySQL.Client.disconnect( rp.C );
      end if;
+#else
+     null;
+#end if;
   elsif rp.rt = mysql_query then
      Free( rp );
   end if;

@@ -24,10 +24,10 @@
 with gen_list,
      ada.strings.unbounded,
      unchecked_deallocation,
-     world,
---#if MYSQL
-     APQ.MySQL.Client;
---#endif
+#if MYSQL
+     APQ.MySQL.Client,
+#end if;
+     world;
 use  world,
      ada.strings.unbounded;
 
@@ -47,13 +47,12 @@ package scanner_res is
 -- Resource Types
 --
 -- An enumerated list of all the types of resources handled here.
+-- These are defined even when support has been disabled.
 
 type aResourceType is (
    none,
---#if MYSQL
    mysql_connection,
    mysql_query,
---#endif
    postgresql_connection,
    postgresql_query,
    memcache_connection,
@@ -71,14 +70,30 @@ type resHandle( rt : aResourceType ) is record
      blocklvl   : block;                      -- declaration block
 
      case rt is
---#if MYSQL
      when mysql_connection =>
+#if MYSQL
           c : APQ.MySQL.Client.Connection_Type;
+#else
+          null; -- MySQL support not enabled
+#end if;
      when mysql_query =>
+#if MYSQL
           q : APQ.MySQL.Client.Query_Type;
---#endif
-     when postgresql_connection => null;
-     when postgresql_query => null;
+#else
+          null; -- MySQL support not enabled
+#end if;
+     when postgresql_connection =>
+#if POSTGRES
+          null; -- c : APQ.PostgreSQL.Client.Connection_Type;
+#else
+          null; -- PostgreSQL support not enabled
+#end if;
+     when postgresql_query =>
+#if POSTGRES
+          null; -- q : APQ.PostgreSQL.Client.Query_Type;
+#else
+          null; -- PostgreSQL support not enabled
+#end if;
      when memcache_connection => null;
      when pen_canvas => null;
      when none => null;
