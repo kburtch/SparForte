@@ -129,6 +129,8 @@ commandLineSource : constant string := "Command";
 -- error_type    : anExceptionType;          -- type of exception
 err_message : unbounded_string;         -- last error message
 
+BAD_PROFILE : exception;
+
 ------------------------------------------------------------------------------
 -- Pragma Flags
 ------------------------------------------------------------------------------

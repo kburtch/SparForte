@@ -53,8 +53,7 @@ accept that they also require a connection, query or both.</p>
 <li><b>mysqlm.query</b> - a database id query</li>
 </ul>
 
-<p>The database package is based on Warren Gay's APQ 2.1 MySQL binding.  For full
-details on these routines, consult the APQ documentation.</p>
+<p>The database package is based on a modified version of Warren Gay's APQ MySQL binding.  For full details on these routines, consult the APQ documentation.</p>
 
         <center>
         <div class="code">
@@ -81,6 +80,7 @@ details on these routines, consult the APQ documentation.</p>
   <a href="#mysqlm.show">show( q, c )</a>                 <a href="#mysqlm.list">list( c )</a>
   <a href="#mysqlm.schema">schema( c, t )</a>               <a href="#mysqlm.users">users( c )</a>
   <a href="#mysqlm.new_connection">new_connection( c )</a>          <a href="#mysqlm.new_query">new_query( q )</a>
+  <a href="#mysqlm.fetch_values">mysqlm.fetch_values( q, c, r )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -1004,7 +1004,7 @@ exception.</p></td>
 </tr>
 </table>
 
-<a name="mysqlm.fetch["></a><h3>mysqlm.fetch( q, [, i] )</h3>
+<a name="mysqlm.fetch"></a><h3>mysqlm.fetch( q, [, i] )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -1043,10 +1043,79 @@ exception.</p></td>
 <td><p>Not allowed in a restricted shell<br>Not allowed with no_mysql_database restriction</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
+<td><p><a href="#mysqlm.fetch_values">mysqlm.fetch_values</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: APQ.Fetch<br>PHP: mysql_fetch_array</p></td>
+</tr>
+</table>
+
+<a name="mysqlm.fetch_values"></a><h3>mysqlm.fetch_values( q, c, r )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Fetch the next query result tuple row into a record.</p>
+<p>The record's
+fields may be boolean, numeric, string or typeless types and the names of
+the record's fields must be the same as the column names returned by the
+query.  The number of fields must match the number of columns, though the
+order may be different.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">
+type row is record<br />
+&nbsp;&nbsp;b : boolean;<br />
+&nbsp;&nbsp;i : integer;<br />
+&nbsp;&nbsp;s : string;<br />
+end record;<br />
+r : row;<br />
+...<br />
+mysqlm.prepare( Q, "SELECT b, i, s FROM sometable" );<br />
+mysqlm.execute( Q, C );<br />
+if not mysqlm.end_of_query( q ) then<br />
+&nbsp;&nbsp;mysqlm.fetch_values( q, c, r );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>mysqlm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>mysqlm.connection</span></td>
+<td><span>required</span></td>
+<td><span>MySQL connection id</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>in</span></td>
+<td><span>a record</span></td>
+<td><span>required</span></td>
+<td><span>a result row</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_result, no_column exceptions may be raised.<br />no_tuple may be raised if there's no more data.<br />Assigning a
+string to a numeric or boolean field may raise an exception.<br />A field that is not in the query raises an exception.<br />A column that is not in the record raises an exception.<br />The wrong number of fields raises an exception.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_mysql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#mysqlm.fetch">mysqlm.fetch</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A<br />PHP: mysql_fetch_array</p></td>
 </tr>
 </table>
 
@@ -1606,7 +1675,9 @@ not_connected, file already open, file not found exceptions may be raised</p></t
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Reset the database connection.</p></td>
+<td><p>Reset the database connection: close open files, rollback query (if
+necessary) and disconnect.  Use disconnect instead unless you know what
+you are doing.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">mysqlm.reset( c );</span></td>

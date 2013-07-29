@@ -33,28 +33,24 @@ begin
   dbname := get_line;
 
   mysqlm.new_query( Q );
+  mysqlm.new_connection( C );
 
-  -- TODO: APQ bug: can't use a connection twice
   -- TODO: drop no mysql on restricted shell?  mysql has its own security
 
-  mysqlm.new_connection( C ); -- TODO: kludge
   mysqlm.connect( C, dbname, user, pass, "localhost" );
   mysqlm.disconnect( C );
   b := mysqlm.is_connected( C );
 
-  mysqlm.new_connection( C ); -- TODO: kludge
   mysqlm.connect( C, dbname, user, pass, "localhost" );
   mysqlm.disconnect( C );
   b := mysqlm.is_connected( C );
 
-  mysqlm.new_connection( C ); -- TODO: kludge
   e := mysqlm.engine_of( C );
 
   mysqlm.connect( C, dbname, user, pass, "localhost" );
   b := mysqlm.is_connected( C );
   mysqlm.disconnect( C );
 
-  mysqlm.new_connection( C ); -- TODO: kludge
   mysqlm.connect( C, dbname, user, pass, "localhost" );
   mysqlm.prepare( Q, "select 1" );
   mysqlm.clear( Q );
@@ -71,14 +67,14 @@ begin
   mysqlm.execute_checked( Q, C, "a message" );
 
   s := mysqlm.error_message( C ); -- s should be blank
-  mysqlm.reset( C );
+  -- reset has weird semantics.  use disconnect instead.
+  -- mysqlm.reset( C );
   b := mysqlm.in_abort_state( C );
   s := mysqlm.options( C ); -- s should be blank
   mysqlm.set_rollback_on_finalize( C, true );
   b := mysqlm.will_rollback_on_finalize( C );
   mysqlm.disconnect( C );
 
-  mysqlm.new_connection( C ); -- TODO: kludge
   mysqlm.connect( C, dbname, user, pass, "localhost" );
   mysqlm.open_db_trace( C, "/tmp/trace.txt" );
   mysqlm.set_trace( C, true );
@@ -88,7 +84,6 @@ begin
   mysqlm.report_errors( Q, true );
   mysqlm.disconnect( C );
 
-  mysqlm.new_connection( C ); -- TODO: kludge
   mysqlm.connect( C, dbname, user, pass, "localhost" );
   mysqlm.begin_work( Q, C );
   mysqlm.rollback_work( Q, C );
@@ -131,6 +126,30 @@ begin
   mysqlm.prepare( Q, "select 1+1 as total" );
   mysqlm.execute( Q, C );
   mysqlm.show( Q, C ); -- exception thrown
+
+  mysqlm.prepare( Q, "create table foobar ( b integer not null, i integer not null, s varchar(256) not null )" );
+  mysqlm.execute( Q, C );
+
+  mysqlm.prepare( Q, "insert into foobar (b, i, s) values (0, 15, " & ASCII.Quotation & "hello" & ASCII.Quotation & ")" );
+  mysqlm.execute( Q, C );
+
+  declare
+     type foobar_row is record
+         b : boolean;
+         i : integer;
+         s : string;
+     end record;
+     r : foobar_row;
+  begin
+     mysqlm.prepare( Q, "select b, i, s from foobar" );
+     mysqlm.execute( Q, C );
+     mysqlm.fetch_values( Q, C, r );
+
+     pragma assert( r.b = false );
+     pragma assert( r.i = 15 );
+     pragma assert( r.s = "hello" );
+  end;
+  mysqlm.disconnect( C );
 
   -- REGULAR MYSQL
 
@@ -191,17 +210,17 @@ begin
   mysql.rewind;
   mysql.fetch;
   t1 := mysql.tuples;
-  pragma assert( t = 1 );
+  pragma assert( t1 = 1 );
   b := mysql.end_of_query;
   pragma assert( b = true );
   i1 := mysql.tuple;
-  pragma assert( i = 1 );
+  pragma assert( i1 = 1 );
   n := mysql.columns;
   pragma assert( n = 1 );
   s := mysql.column_name( 1 );
   pragma assert( s = "total" );
   c1 := mysql.column_index( "total" );
-  pragma assert( c = 1 );
+  pragma assert( c1 = 1 );
   b := mysql.is_null( 1 );
   pragma assert( b = false );
   n := mysql.value( 1 );
@@ -209,6 +228,9 @@ begin
 
   -- user commands
   mysql.databases;
+
+  mysql.prepare( "drop table foobar" );
+  mysql.execute;
 
   -- must add a table in order to see the schema
   mysql.prepare( "create table foobar ( i integer not null )" );

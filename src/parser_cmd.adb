@@ -48,10 +48,11 @@ pragma warnings( on );
 package body parser_cmd is
 
 
-procedure ParseArgument( result : out unbounded_string ) is
+procedure ParseArgument( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_string_t;
   result := null_unbounded_string;
   expect( cmd_argument_t );
   expect( symbol_t, "(" );
@@ -69,16 +70,18 @@ begin
   end if;
 end ParseArgument;
 
-procedure ParseArgument_Count( result : out unbounded_string ) is
+procedure ParseArgument_Count( result : out unbounded_string; kind : out identifier ) is
 begin
+  kind := natural_t;
   expect( cmd_argcount_t );
   if isExecutingCommand then
      result := to_unbounded_string( integer'image( Argument_Count-optionOffset ));
   end if;
 end ParseArgument_Count;
 
-procedure ParseCommand_Name( result : in out unbounded_string ) is
+procedure ParseCommand_Name( result : out unbounded_string; kind : out identifier ) is
 begin
+  kind := string_t;
   expect( cmd_commandname_t );
   if isExecutingCommand then
      result := to_unbounded_string( Command_Name );
@@ -104,18 +107,20 @@ begin
   end if;
 end ParseSetExitStatus;
 
-procedure ParseEnvironment_Count( result : out unbounded_string ) is
+procedure ParseEnvironment_Count( result : out unbounded_string; kind : out identifier ) is
 begin
+  kind := natural_t;
   expect( cmd_envcnt_t );
   if isExecutingCommand then
      result := to_unbounded_string( integer'image( Environment_Count ));
   end if;
 end ParseEnvironment_Count;
 
-procedure ParseEnvironment_Value( result : out unbounded_string ) is
+procedure ParseEnvironment_Value( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_string_t;
   result := null_unbounded_string;
   expect( cmd_envval_t );
   expect( symbol_t, "(" );
@@ -135,12 +140,12 @@ end ParseEnvironment_Value;
 
 procedure StartupCommandLine is
 begin
-  declareFunction( cmd_argument_t, "command_line.argument" );
-  declareFunction( cmd_argcount_t, "command_line.argument_count" );
-  declareFunction( cmd_commandname_t, "command_line.command_name" );
-  declareProcedure( cmd_setexit_t, "command_line.set_exit_status" );
-  declareFunction( cmd_envcnt_t, "command_line.environment.environment_count" );
-  declareFunction( cmd_envval_t, "command_line.environment.environment_value" );
+  declareFunction( cmd_argument_t, "command_line.argument", ParseArgument'access );
+  declareFunction( cmd_argcount_t, "command_line.argument_count", ParseArgument_Count'access );
+  declareFunction( cmd_commandname_t, "command_line.command_name", ParseCommand_Name'access );
+  declareProcedure( cmd_setexit_t, "command_line.set_exit_status", ParseSetExitStatus'access );
+  declareFunction( cmd_envcnt_t, "command_line.environment.environment_count", ParseEnvironment_Count'access );
+  declareFunction( cmd_envval_t, "command_line.environment.environment_value", ParseEnvironment_Value'access );
 end StartupCommandLine;
 
 procedure ShutdownCommandLine is

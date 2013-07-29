@@ -113,6 +113,8 @@ procedure ParseLastInOutParameter( param_id : out identifier; expected_type : id
 procedure ParseInOutParameter( ref : out reference );
 -- TODO: should modify others to also use a reference
 
+procedure ParseLastInOutRecordParameter( param_id : out identifier );
+
 ------------------------------------------------------------------------------
 -- Out Parameters
 ------------------------------------------------------------------------------

@@ -600,12 +600,13 @@ begin
   end;
 end ParseNumericsArcSinH;
 
-procedure ParseNumericsArcCosH( result : out unbounded_string ) is
+procedure ParseNumericsArcCosH( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.arccosh( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Arccosh
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( arccosh_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -617,12 +618,13 @@ begin
   end;
 end ParseNumericsArcCosH;
 
-procedure ParseNumericsArcTanH( result : out unbounded_string ) is
+procedure ParseNumericsArcTanH( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.arctanh( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Arctanh
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( arctanh_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -634,12 +636,13 @@ begin
   end;
 end ParseNumericsArcTanH;
 
-procedure ParseNumericsArcCotH( result : out unbounded_string ) is
+procedure ParseNumericsArcCotH( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.arccoth( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Arccosh
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( arccoth_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -651,12 +654,13 @@ begin
   end;
 end ParseNumericsArcCotH;
 
-procedure ParseNumericsFloor( result : out unbounded_string ) is
+procedure ParseNumericsFloor( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.floor( expr );
   -- Source: Ada 'floor attribute
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( floor_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -668,12 +672,13 @@ begin
   end;
 end ParseNumericsFloor;
 
-procedure ParseNumericsCeiling( result : out unbounded_string ) is
+procedure ParseNumericsCeiling( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.ceiling( expr );
   -- Source: Ada 'ceiling attribute
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( ceiling_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -685,12 +690,13 @@ begin
   end;
 end ParseNumericsCeiling;
 
-procedure ParseNumericsRounding( result : out unbounded_string ) is
+procedure ParseNumericsRounding( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.rounding( expr );
   -- Source: Ada 'rounding attribute
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( rounding_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -702,12 +708,13 @@ begin
   end;
 end ParseNumericsRounding;
 
-procedure ParseNumericsUnbiasedRounding( result : out unbounded_string ) is
+procedure ParseNumericsUnbiasedRounding( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.unbiased_rounding( expr );
   -- Source: Ada 'unbiased_rounding attribute
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( unbiased_rounding_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -719,12 +726,13 @@ begin
   end;
 end ParseNumericsUnbiasedRounding;
 
-procedure ParseNumericsTruncation( result : out unbounded_string ) is
+procedure ParseNumericsTruncation( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.truncation( expr );
   -- Source: Ada 'truncation attribute
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( truncation_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -736,7 +744,7 @@ begin
   end;
 end ParseNumericsTruncation;
 
-procedure ParseNumericsRemainder( result : out unbounded_string ) is
+procedure ParseNumericsRemainder( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.remainder( expr, expr2 );
   -- Source: Ada 'remainder attribute
   expr_val : unbounded_string;
@@ -744,6 +752,7 @@ procedure ParseNumericsRemainder( result : out unbounded_string ) is
   expr2_val : unbounded_string;
   expr2_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( remainder_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   ParseLastNumericParameter( expr2_val, expr2_type );
@@ -757,12 +766,13 @@ begin
   end;
 end ParseNumericsRemainder;
 
-procedure ParseNumericsExponent( result : out unbounded_string ) is
+procedure ParseNumericsExponent( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.exponent( expr );
   -- Source: Ada 'exponent attribute
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( exponent_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -774,12 +784,13 @@ begin
   end;
 end ParseNumericsExponent;
 
-procedure ParseNumericsFraction( result : out unbounded_string ) is
+procedure ParseNumericsFraction( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.fraction( expr );
   -- Source: Ada 'fraction attribute
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( fraction_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -791,7 +802,7 @@ begin
   end;
 end ParseNumericsFraction;
 
-procedure ParseNumericsLeadingPart( result : out unbounded_string ) is
+procedure ParseNumericsLeadingPart( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.leading_part( expr, expr2 );
   -- Source: Ada 'leading_part attribute
   expr_val : unbounded_string;
@@ -799,6 +810,7 @@ procedure ParseNumericsLeadingPart( result : out unbounded_string ) is
   expr2_val : unbounded_string;
   expr2_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( leading_part_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   ParseLastNumericParameter( expr2_val, expr2_type );
@@ -812,7 +824,7 @@ begin
   end;
 end ParseNumericsLeadingPart;
 
-procedure ParseNumericsCopySign( result : out unbounded_string ) is
+procedure ParseNumericsCopySign( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.copy_sign( expr, expr2 );
   -- Source: Ada 'copy_sign attribute
   expr_val : unbounded_string;
@@ -820,6 +832,7 @@ procedure ParseNumericsCopySign( result : out unbounded_string ) is
   expr2_val : unbounded_string;
   expr2_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( copy_sign_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   ParseLastNumericParameter( expr2_val, expr2_type );
@@ -833,7 +846,7 @@ begin
   end;
 end ParseNumericsCopySign;
 
-procedure ParseNumericsSturges( result : out unbounded_string ) is
+procedure ParseNumericsSturges( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.sturges( low, high, total );
   -- Source: BUSH builtin, Sturge's method
   lo_val : unbounded_string;
@@ -844,6 +857,7 @@ procedure ParseNumericsSturges( result : out unbounded_string ) is
   total_type : identifier;
   lo, hi, total : long_float;
 begin
+  kind := uni_numeric_t;
   expect( sturges_t );
   ParseFirstNumericParameter( lo_val, lo_type );
   ParseNextNumericParameter( hi_val, hi_type );
@@ -873,7 +887,7 @@ begin
   end;
 end ParseNumericsSturges;
 
-procedure ParseNumericsMax( result : out unbounded_string ) is
+procedure ParseNumericsMax( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.max( expr, expr2 );
   -- Source: Ada 'max attribute
   expr_val : unbounded_string;
@@ -881,6 +895,7 @@ procedure ParseNumericsMax( result : out unbounded_string ) is
   expr2_val : unbounded_string;
   expr2_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( max_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   ParseLastNumericParameter( expr2_val, expr2_type );
@@ -894,7 +909,7 @@ begin
   end;
 end ParseNumericsMax;
 
-procedure ParseNumericsMin( result : out unbounded_string ) is
+procedure ParseNumericsMin( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.max( expr, expr2 );
   -- Source: Ada 'max attribute
   expr_val : unbounded_string;
@@ -902,6 +917,7 @@ procedure ParseNumericsMin( result : out unbounded_string ) is
   expr2_val : unbounded_string;
   expr2_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( min_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   ParseLastNumericParameter( expr2_val, expr2_type );
@@ -915,12 +931,13 @@ begin
   end;
 end ParseNumericsMin;
 
-procedure ParseNumericsMachine( result : out unbounded_string ) is
+procedure ParseNumericsMachine( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.machine( expr, expr2 );
   -- Source: Ada 'machine attribute
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := uni_numeric_t;
   expect( machine_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -932,7 +949,7 @@ begin
   end;
 end ParseNumericsMachine;
 
-procedure ParseNumericsScaling( result : out unbounded_string ) is
+procedure ParseNumericsScaling( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.scaling( expr, expr2 );
   -- Source: Ada 'scaling attribute
   expr_val   : unbounded_string;
@@ -940,6 +957,7 @@ procedure ParseNumericsScaling( result : out unbounded_string ) is
   expr2_val  : unbounded_string;
   expr2_type : identifier;
 begin
+  kind := uni_numeric_t;
   expect( scaling_t );
   ParseFirstNumericParameter( expr_val, expr_type );
   ParseLastNumericParameter( expr2_val, expr2_type, integer_t );
@@ -953,12 +971,13 @@ begin
   end;
 end ParseNumericsScaling;
 
-procedure ParseNumericsValue( result : out unbounded_string ) is
+procedure ParseNumericsValue( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.value( expr, expr2 );
   -- Source: Ada 'value attribute
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := uni_numeric_t;
   expect( value_t );
   ParseSingleStringParameter( expr_val, expr_type, string_t );
   begin
@@ -971,12 +990,13 @@ begin
   end;
 end ParseNumericsValue;
 
-procedure ParseNumericsPos( result : out unbounded_string ) is
+procedure ParseNumericsPos( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.pos( character );
   -- Source: Ada 'pos attribute
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := positive_t;
   expect( pos_t );
   ParseSingleStringParameter( expr_val, expr_type, character_t );
   begin
@@ -1007,7 +1027,7 @@ begin
   end;
 end ParseNumericsAbs;
 
-procedure ParseNumericsMd5( result : out unbounded_string ) is
+procedure ParseNumericsMd5( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.md5( s );
   -- Source: MD5.Disgest_To_Text
   expr_val   : unbounded_string;
@@ -1015,6 +1035,7 @@ procedure ParseNumericsMd5( result : out unbounded_string ) is
   C          : Context;
   FP         : Fingerprint;
 begin
+  kind := string_t;
   expect( numerics_md5_t );
   ParseSingleStringParameter( expr_val, expr_type, string_t );
   begin
@@ -1029,10 +1050,11 @@ begin
   end;
 end ParseNumericsMd5;
 
-procedure ParseNumericsSerial( result : out unbounded_string ) is
+procedure ParseNumericsSerial( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: serial
   -- Source: N/A
 begin
+  kind := natural_t;
   result := null_unbounded_string;
   expect( serial_t );
   if isExecutingCommand then
@@ -1046,12 +1068,13 @@ begin
   end if;
 end ParseNumericsSerial;
 
-procedure ParseNumericsRnd( result : out unbounded_string ) is
+procedure ParseNumericsRnd( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.rnd( n );
   -- Source: N/A
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := positive_t;
   expect( rnd_t );
   ParseSingleNumericParameter( expr_val, expr_type, positive_t );
   begin
@@ -1065,12 +1088,13 @@ begin
   end;
 end ParseNumericsRnd;
 
-procedure ParseNumericsOdd( result : out unbounded_string ) is
+procedure ParseNumericsOdd( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.odd( n );
   -- Source: N/A
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := boolean_t;
   expect( odd_t );
   ParseSingleNumericParameter( expr_val, expr_type, integer_t );
   begin
@@ -1082,12 +1106,13 @@ begin
   end;
 end ParseNumericsOdd;
 
-procedure ParseNumericsEven( result : out unbounded_string ) is
+procedure ParseNumericsEven( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.even( n );
   -- Source: N/A
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
+  kind := boolean_t;
   expect( even_t );
   ParseSingleNumericParameter( expr_val, expr_type, integer_t );
   begin
@@ -1099,7 +1124,7 @@ begin
   end;
 end ParseNumericsEven;
 
-procedure ParseNumericsRe( result : out unbounded_string ) is
+procedure ParseNumericsRe( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: r := numerics.re( n );
   -- Source: N/A
   record_id : identifier;
@@ -1107,6 +1132,7 @@ procedure ParseNumericsRe( result : out unbounded_string ) is
   real_t      : identifier;
   img_t       : identifier;
 begin
+  kind := long_float_t;
   expect( numerics_re_t );
   expect( symbol_t, "(" );
   ParseIdentifier( record_id );
@@ -1126,7 +1152,7 @@ begin
   end;
 end ParseNumericsRe;
 
-procedure ParseNumericsIm( result : out unbounded_string ) is
+procedure ParseNumericsIm( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: r := numerics.im( n );
   -- Source: N/A
   record_id : identifier;
@@ -1134,6 +1160,7 @@ procedure ParseNumericsIm( result : out unbounded_string ) is
   real_t      : identifier;
   img_t       : identifier;
 begin
+  kind := long_float_t;
   expect( numerics_im_t );
   expect( symbol_t, "(" );
   ParseIdentifier( record_id );
@@ -1244,7 +1271,7 @@ end ParseNumericsSetIm;
   --end;
 --end ParseNumericsComposeFromCartisian;
 
-procedure ParseNumericsModulus( result : out unbounded_string ) is
+procedure ParseNumericsModulus( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: r := numerics.modulus( n );
   -- Source: N/A
   record_id   : identifier;
@@ -1252,6 +1279,7 @@ procedure ParseNumericsModulus( result : out unbounded_string ) is
   real_t      : identifier;
   img_t       : identifier;
 begin
+  kind := long_float_t;
   expect( numerics_modulus_t );
   expect( symbol_t, "(" );
   ParseIdentifier( record_id );
@@ -1273,7 +1301,7 @@ end ParseNumericsModulus;
 
 -- abs is a renaming of modulus
 
-procedure ParseNumericsArgument( result : out unbounded_string ) is
+procedure ParseNumericsArgument( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: r := numerics.argument( n [,c] );
   -- Source: N/A
   record_id   : identifier;
@@ -1284,6 +1312,7 @@ procedure ParseNumericsArgument( result : out unbounded_string ) is
   real_t      : identifier;
   img_t       : identifier;
 begin
+  kind := long_float_t;
   expect( numerics_argument_t );
   expect( symbol_t, "(" );
   ParseIdentifier( record_id );
@@ -1356,13 +1385,14 @@ end ParseNumericsArgument;
   --end;
 --end ParseNumericsConjugate;
 
-procedure ParseNumericsHashOf( result : in out unbounded_string) is
+procedure ParseNumericsHashOf( result : out unbounded_string; kind : out identifier) is
   -- Syntax: numerics.hash_of( s, l )
   expr1_val   : unbounded_string;
   expr1_type  : identifier;
   expr2_val   : unbounded_string;
   expr2_type  : identifier;
 begin
+  kind := natural_t;
   expect( hash_of_t );
   ParseFirstNumericParameter( expr1_val, expr1_type, string_t );
   ParseLastNumericParameter( expr2_val, expr2_type, natural_t );
@@ -1383,13 +1413,14 @@ begin
   end;
 end ParseNumericsHashOf;
 
-procedure ParseNumericsSdbmHashOf( result : in out unbounded_string) is
+procedure ParseNumericsSdbmHashOf( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.sdbm_hash_of( s, l )
   expr1_val   : unbounded_string;
   expr1_type  : identifier;
   expr2_val   : unbounded_string;
   expr2_type  : identifier;
 begin
+  kind := natural_t;
   expect( sdbm_hash_of_t );
   ParseFirstNumericParameter( expr1_val, expr1_type, string_t );
   ParseLastNumericParameter( expr2_val, expr2_type, natural_t );
@@ -1411,13 +1442,14 @@ begin
   end;
 end ParseNumericsSdbmHashOf;
 
-procedure ParseNumericsFnvHashOf( result : in out unbounded_string) is
+procedure ParseNumericsFnvHashOf( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.fnv_hash_of( s, l )
   expr1_val   : unbounded_string;
   expr1_type  : identifier;
   expr2_val   : unbounded_string;
   expr2_type  : identifier;
 begin
+  kind := natural_t;
   expect( fnv_hash_of_t );
   ParseFirstNumericParameter( expr1_val, expr1_type, string_t );
   ParseLastNumericParameter( expr2_val, expr2_type, natural_t );
@@ -1444,13 +1476,14 @@ begin
   end;
 end ParseNumericsFnvHashOf;
 
-procedure ParseNumericsMurmurHashOf( result : in out unbounded_string) is
+procedure ParseNumericsMurmurHashOf( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.murmur_hash_of( s, l )
   expr1_val   : unbounded_string;
   expr1_type  : identifier;
   expr2_val   : unbounded_string;
   expr2_type  : identifier;
 begin
+  kind := natural_t;
   expect( murmur_hash_of_t );
   ParseFirstNumericParameter( expr1_val, expr1_type, string_t );
   ParseLastNumericParameter( expr2_val, expr2_type, natural_t );
@@ -1543,41 +1576,41 @@ begin
   declareFunction( tanh_t, "numerics.tanh", ParseNumericsTanH'access );
   declareFunction( coth_t, "numerics.coth", ParseNumericsCotH'access );
   declareFunction( arcsinh_t, "numerics.arcsinh", ParseNumericsArcSinH'access );
-  declareFunction( arccosh_t, "numerics.arccosh" );
-  declareFunction( arctanh_t, "numerics.arctanh" );
-  declareFunction( arccoth_t, "numerics.arccoth" );
-  declareFunction( floor_t, "numerics.floor" );
-  declareFunction( ceiling_t, "numerics.ceiling" );
-  declareFunction( rounding_t, "numerics.rounding" );
-  declareFunction( unbiased_rounding_t, "numerics.unbiased_rounding" );
-  declareFunction( truncation_t, "numerics.truncation" );
-  declareFunction( remainder_t, "numerics.remainder" );
-  declareFunction( exponent_t, "numerics.exponent" );
-  declareFunction( fraction_t, "numerics.fraction" );
-  declareFunction( leading_part_t, "numerics.leading_part" );
-  declareFunction( copy_sign_t, "numerics.copy_sign" );
-  declareFunction( sturges_t, "numerics.sturges" );
-  declareFunction( max_t, "numerics.max" );
-  declareFunction( min_t, "numerics.min" );
-  declareFunction( machine_t, "numerics.machine" );
-  declareFunction( scaling_t, "numerics.scaling" );
-  declareFunction( value_t, "numerics.value" );
-  declareFunction( pos_t, "numerics.pos" );
-  declareFunction( numerics_md5_t, "numerics.md5" );
-  declareFunction( serial_t, "numerics.serial" );
-  declareFunction( rnd_t, "numerics.rnd" );
-  declareFunction( odd_t, "numerics.odd" );
-  declareFunction( even_t, "numerics.even" );
-  declareFunction( numerics_re_t, "numerics.re" );
-  declareFunction( numerics_im_t, "numerics.im" );
+  declareFunction( arccosh_t, "numerics.arccosh", ParseNumericsArcCosH'access );
+  declareFunction( arctanh_t, "numerics.arctanh", ParseNumericsArcTanH'access );
+  declareFunction( arccoth_t, "numerics.arccoth", ParseNumericsArcCotH'access );
+  declareFunction( floor_t, "numerics.floor", ParseNumericsFloor'access );
+  declareFunction( ceiling_t, "numerics.ceiling", ParseNumericsCeiling'access );
+  declareFunction( rounding_t, "numerics.rounding", ParseNumericsRounding'access );
+  declareFunction( unbiased_rounding_t, "numerics.unbiased_rounding", ParseNumericsUnbiasedRounding'access );
+  declareFunction( truncation_t, "numerics.truncation", ParseNumericsTruncation'access );
+  declareFunction( remainder_t, "numerics.remainder", ParseNumericsRemainder'access );
+  declareFunction( exponent_t, "numerics.exponent", ParseNumericsExponent'access );
+  declareFunction( fraction_t, "numerics.fraction", ParseNumericsFraction'access );
+  declareFunction( leading_part_t, "numerics.leading_part", ParseNumericsLeadingPart'access );
+  declareFunction( copy_sign_t, "numerics.copy_sign", ParseNumericsCopySign'access );
+  declareFunction( sturges_t, "numerics.sturges", ParseNumericsSturges'access );
+  declareFunction( max_t, "numerics.max", ParseNumericsMax'access );
+  declareFunction( min_t, "numerics.min", ParseNumericsMin'access );
+  declareFunction( machine_t, "numerics.machine", ParseNumericsMachine'access );
+  declareFunction( scaling_t, "numerics.scaling", ParseNumericsScaling'access );
+  declareFunction( value_t, "numerics.value", ParseNumericsValue'access );
+  declareFunction( pos_t, "numerics.pos", ParseNumericsPos'access );
+  declareFunction( numerics_md5_t, "numerics.md5", ParseNumericsMd5'access );
+  declareFunction( serial_t, "numerics.serial", ParseNumericsSerial'access );
+  declareFunction( rnd_t, "numerics.rnd", ParseNumericsRnd'access );
+  declareFunction( odd_t, "numerics.odd", ParseNumericsOdd'access );
+  declareFunction( even_t, "numerics.even", ParseNumericsEven'access );
+  declareFunction( numerics_re_t, "numerics.re", ParseNumericsRe'access );
+  declareFunction( numerics_im_t, "numerics.im", ParseNumericsIm'access );
   declareProcedure( numerics_set_re_t, "numerics.set_re", ParseNumericsSetRe'access );
   declareProcedure( numerics_set_im_t, "numerics.set_im", ParseNumericsSetIm'access );
-  declareFunction( numerics_argument_t, "numerics.argument" );
+  declareFunction( numerics_argument_t, "numerics.argument", ParseNumericsArgument'access );
   declareFunction( numerics_modulus_t, "numerics.modulus" );
-  declareFunction( hash_of_t, "numerics.hash_of" );
-  declareFunction( sdbm_hash_of_t, "numerics.sdbm_hash_of" );
-  declareFunction( fnv_hash_of_t, "numerics.fnv_hash_of" );
-  declareFunction( murmur_hash_of_t, "numerics.murmur_hash_of" );
+  declareFunction( hash_of_t, "numerics.hash_of", ParseNumericsHashOf'access );
+  declareFunction( sdbm_hash_of_t, "numerics.sdbm_hash_of", ParseNumericsSdbmHashOf'access );
+  declareFunction( fnv_hash_of_t, "numerics.fnv_hash_of", ParseNumericsFnvHashOf'access );
+  declareFunction( murmur_hash_of_t, "numerics.murmur_hash_of", ParseNumericsMurmurHashOf'access );
 
   -- Numerics package constants
   -- There's are derived from the GNU standard C library math constants

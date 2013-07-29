@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2013 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -44,32 +44,35 @@ use gnat.regexp,
 package body parser_cgi is
 
 
-procedure ParseParsing_Errors( result : out unbounded_string ) is
+procedure ParseParsing_Errors( result : out unbounded_string; kind : out identifier ) is
   -- cgi.parsing_errors return boolean
   -- True if Error on Parse.
 begin
+  kind := boolean_t;
   expect( cgi_parsing_errors_t );
   if isExecutingCommand then
      result := to_bush_boolean( cgi.parsing_errors );
   end if;
 end ParseParsing_Errors;
 
-procedure ParseInput_Received( result : out unbounded_string ) is
+procedure ParseInput_Received( result : out unbounded_string; kind : out identifier ) is
   -- cgi.input_received return boolean
   -- True if Input Received.
 begin
+  kind := boolean_t;
   expect( cgi_input_received_t );
   if isExecutingCommand then
      result := to_bush_boolean( cgi.input_received );
   end if;
 end ParseInput_Received;
 
-procedure ParseIs_Index( result : out unbounded_string ) is
+procedure ParseIs_Index( result : out unbounded_string; kind : out identifier ) is
   -- cgi.is_index return boolean
   -- True if an Isindex request made. An "Isindex" request is turned
   -- into a Key of "isindex" at position 1, with Value(1) as the actual
   -- query.
 begin
+  kind := boolean_t;
   expect( cgi_is_index_t );
   if isExecutingCommand then
      result := to_bush_boolean( cgi.is_index );
@@ -79,18 +82,19 @@ end ParseIs_Index;
 -- Report the CGI Method; where possible, don't depend on this.
 -- type CGI_Method_Type is (Get, Post, Unknown);
 
-procedure ParseCGI_Method( result : out unbounded_string ) is
+procedure ParseCGI_Method( result : out unbounded_string; kind : out identifier ) is
 -- cgi.cgi_method return CGI_Method_Type
 -- Report the CGI Method; where possible, don't depend on this.
 -- type CGI_Method_Type is (Get, Post, Unknown);
 begin
+  kind := cgi_cgi_method_type_t;
   expect( cgi_cgi_method_t );
   if isExecutingCommand then
      result := To_Unbounded_String( integer'image( cgi.cgi_method_type'pos( cgi.CGI_Method ) )(2)&"" );
   end if;
 end ParseCGI_Method;
 
-procedure ParseValue( result : out unbounded_string ) is
+procedure ParseValue( result : out unbounded_string; kind : out identifier ) is
 --function ParseValue(Key : in Unbounded_String; Index : in Positive := 1;
 --               Required : in Boolean := False) return Unbounded_String is
 -- Access data as an associative array - given a key, return its value.
@@ -105,6 +109,7 @@ procedure ParseValue( result : out unbounded_string ) is
   expr_val3 : unbounded_string := identifiers( false_t ).value;
   expr_type3: identifier;
 begin
+  kind := string_t;
   expect( cgi_value_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -135,7 +140,7 @@ begin
   end if;
 end ParseValue;
 
-procedure ParseKey_Exists( result : out unbounded_string ) is
+procedure ParseKey_Exists( result : out unbounded_string; kind : out identifier ) is
 --function ParseKey_Exists(Key : in Unbounded_String; Index : in Positive := 1
 --         return Boolean is
 -- Was a given key provided?
@@ -144,6 +149,7 @@ procedure ParseKey_Exists( result : out unbounded_string ) is
   expr_val2 : unbounded_string;
   expr_type2: identifier;
 begin
+  kind := boolean_t;
   expect( cgi_key_exists_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -162,12 +168,13 @@ begin
   end if;
 end ParseKey_Exists;
 
-procedure ParseKey_Count( result : out unbounded_string ) is
+procedure ParseKey_Count( result : out unbounded_string; kind : out identifier ) is
 --function ParseKey_Count(Key : in Unbounded_String) return Natural is
 -- How many of a given key were provided?
   expr_val  : unbounded_string;
   expr_type : identifier;
 begin
+  kind := natural_t;
   expect( cgi_key_count_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -183,21 +190,23 @@ end ParseKey_Count;
 -- Keys and Values may be retrieved from Position (1 .. Argument_Count).
 -- Constraint_Error will be raised if Position<1 or Position>Argument_Count
 
-procedure ParseCGIArgument_Count( result : out unbounded_string ) is
+procedure ParseCGIArgument_Count( result : out unbounded_string; kind : out identifier ) is
  --function ParseArgument_Count return Natural is
  -- 0 means no data sent.
 begin
+   kind := natural_t;
   expect( cgi_argument_count_t );
   if isExecutingCommand then
      result := to_unbounded_string( natural'image( Argument_Count ));
   end if;
 end ParseCGIArgument_Count;
 
-procedure ParseKey( result : out unbounded_string ) is
+procedure ParseKey( result : out unbounded_string; kind : out identifier ) is
 --function ParseKey(Position : in Positive) return Unbounded_String is
   expr_val  : unbounded_string;
   expr_type : identifier;
 begin
+  kind := string_t;
   expect( cgi_key_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -215,11 +224,12 @@ begin
   end if;
 end ParseKey;
 
-procedure ParseKeyValue( result : out unbounded_string ) is
+procedure ParseKeyValue( result : out unbounded_string; kind : out identifier ) is
 --function ParseKeyValue(Position : in Positive) return Unbounded_String is
   expr_val  : unbounded_string;
   expr_type : identifier;
 begin
+  kind := string_t;
   expect( cgi_key_value_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -239,7 +249,7 @@ end ParseKeyValue;
 
 -- The following are helpful subprograms to simplify use of CGI.
 
-procedure ParseKey_Value_Exists( result : out unbounded_string ) is
+procedure ParseKey_Value_Exists( result : out unbounded_string; kind : out identifier ) is
 --function ParseKey_Value_Exists(Key : in Unbounded_String;
 --                          Value : in Unbounded_String) return Boolean is
 -- Returns True if a given Key has exactly Value as one of its values.
@@ -248,6 +258,7 @@ procedure ParseKey_Value_Exists( result : out unbounded_string ) is
   expr2_val  : unbounded_string := to_unbounded_string( "1" );
   expr2_type : identifier;
 begin
+  kind := boolean_t;
   expect( cgi_key_value_exists_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -390,10 +401,11 @@ end ParsePut_Variables;
 
 -- Miscellaneous Routines:
 
-procedure ParseMy_URL( result : out unbounded_string ) is
+procedure ParseMy_URL( result : out unbounded_string; kind : out identifier ) is
 --function ParseMy_URL return String is
 -- Returns the URL of this script.
 begin
+  kind := string_t;
   expect( cgi_my_url_t );
   result := to_unbounded_string( cgi.my_url );
 end ParseMy_URL;
@@ -405,13 +417,14 @@ end ParseMy_URL;
 
 -- Multi-Line data support:
 
-procedure ParseLine_Count( result : out unbounded_string ) is
+procedure ParseLine_Count( result : out unbounded_string; kind : out identifier ) is
 --function ParseLine_Count (Value : in String) return Natural is
 -- Given a value that may have multiple lines, count the lines.
 -- Returns 0 if Value is the empty/null string (i.e., length=0)
   expr_val  : unbounded_string;
   expr_type : identifier;
 begin
+  kind := natural_t;
   expect( cgi_line_count_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -424,7 +437,7 @@ begin
   end if;
 end ParseLine_Count;
 
-procedure ParseLine_Count_Of_Value( result : out unbounded_string ) is
+procedure ParseLine_Count_Of_Value( result : out unbounded_string; kind : out identifier ) is
 --function ParseLine_Count_of_Value (Key : String) return Natural is
 -- Given a Key which has a Value that may have multiple lines,
 -- count the lines.  Returns 0 if Key's Value is the empty/null
@@ -433,6 +446,7 @@ procedure ParseLine_Count_Of_Value( result : out unbounded_string ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
 begin
+  kind := natural_t;
   expect( cgi_line_count_of_value_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -446,7 +460,7 @@ begin
   end if;
 end ParseLine_Count_of_Value;
 
-procedure ParseCGILine (result : out unbounded_string ) is
+procedure ParseCGILine (result : out unbounded_string; kind : out identifier ) is
 --function ParseLine (Value : in String; Position : in Positive) return String
 -- Given a value that may have multiple lines, return the given line.
 -- If there's no such line, raise Constraint_Error.
@@ -455,6 +469,7 @@ procedure ParseCGILine (result : out unbounded_string ) is
   pos_val  : unbounded_string;
   pos_type : identifier;
 begin
+  kind := string_t;
   expect( cgi_line_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -476,7 +491,7 @@ begin
   end if;
 end ParseCGILine;
 
-procedure ParseValue_of_Line( result : out unbounded_string ) is
+procedure ParseValue_of_Line( result : out unbounded_string; kind : out identifier ) is
 --function ParseValue_of_Line (Key : String; Position : Positive)
 --                        return String is
 -- Given a Key which has a Value that may have multiple lines,
@@ -488,6 +503,7 @@ procedure ParseValue_of_Line( result : out unbounded_string ) is
   pos_val  : unbounded_string;
   pos_type : identifier;
 begin
+  kind := string_t;
   expect( cgi_value_of_line_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -512,7 +528,7 @@ end ParseValue_of_Line;
 
 -- Encoding and Decoding functions:
 
-procedure ParseURL_Decode( result : out unbounded_string ) is
+procedure ParseURL_Decode( result : out unbounded_string; kind : out identifier ) is
 --function ParseURL_Decode(Data : in Unbounded_String;
 --                Translate_Plus : Boolean := True) return Unbounded_String is
 -- In the given string, convert pattern %HH into alphanumeric characters,
@@ -526,6 +542,7 @@ procedure ParseURL_Decode( result : out unbounded_string ) is
   bool_val  : unbounded_string := identifiers( true_t ).value;
   bool_type : identifier;
 begin
+  kind := string_t;
   expect( cgi_url_decode_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -548,7 +565,7 @@ begin
   end if;
 end ParseURL_Decode;
 
-procedure ParseURL_Encode( result : out unbounded_string ) is
+procedure ParseURL_Encode( result : out unbounded_string; kind : out identifier ) is
 --function ParseURL_Encode(Data : in Unbounded_String;
 --                    Translate_Plus : Boolean := False)
 --         return Unbounded_String is
@@ -558,6 +575,7 @@ procedure ParseURL_Encode( result : out unbounded_string ) is
   bool_val  : unbounded_string := identifiers( false_t ).value;
   bool_type : identifier;
 begin
+  kind := string_t;
   expect( cgi_url_encode_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -581,7 +599,7 @@ begin
   end if;
 end ParseURL_Encode;
 
-procedure ParseHTML_Encode( result : out unbounded_string ) is
+procedure ParseHTML_Encode( result : out unbounded_string; kind : out identifier ) is
 --function ParseHTML_Encode(Data : in Unbounded_String) return Unbounded_String
 -- is
 -- Given string, perform HTML encoding, so the text can be included
@@ -597,6 +615,7 @@ procedure ParseHTML_Encode( result : out unbounded_string ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
 begin
+  kind := string_t;
   expect( cgi_html_encode_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -691,7 +710,7 @@ begin
   end if;
 end ParseSet_Cookie;
 
-procedure ParseCookie_Value( result : out unbounded_string ) is
+procedure ParseCookie_Value( result : out unbounded_string; kind : out identifier ) is
 --function ParseCookie_Value(Key : in Unbounded_String;
 -- Index : in Positive := 1;
 -- Required : in Boolean := False)
@@ -703,6 +722,7 @@ procedure ParseCookie_Value( result : out unbounded_string ) is
   bool_val  : unbounded_string := identifiers( false_t ).value;
   bool_type : identifier;
 begin
+  kind := string_t;
   expect( cgi_cookie_value_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -733,9 +753,10 @@ begin
   end if;
 end ParseCookie_Value;
 
-procedure ParseCookie_Count( result : out unbounded_string ) is
+procedure ParseCookie_Count( result : out unbounded_string; kind : out identifier ) is
 -- Returns the number of cookies (0 if none)
 begin
+  kind := natural_t;
   expect( cgi_cookie_count_t );
   if isExecutingCommand then
      result := to_unbounded_string( cgi.cookie_count'img );
@@ -751,35 +772,35 @@ begin
   declareStandardConstant( cgi_unknown_t, "cgi.unknown", cgi_cgi_method_type_t,
     "2" );
 
-  declareFunction( cgi_parsing_errors_t, "cgi.parsing_errors" );
-  declareFunction( cgi_input_received_t, "cgi.input_received" );
-  declareFunction( cgi_is_index_t, "cgi.is_index" );
-  declareFunction( cgi_cgi_method_t, "cgi.cgi_method" );
-  declareFunction( cgi_value_t, "cgi.value" );
-  declareFunction( cgi_key_exists_t, "cgi.key_exists" );
-  declareFunction( cgi_key_count_t, "cgi.key_count" );
-  declareFunction( cgi_argument_count_t, "cgi.argument_count" );
-  declareFunction( cgi_key_t, "cgi.key" );
-  declareFunction( cgi_key_value_t, "cgi.key_value" );
-  declareFunction( cgi_key_value_exists_t, "cgi.key_value_exists" );
+  declareFunction( cgi_parsing_errors_t, "cgi.parsing_errors", ParseParsing_Errors'access );
+  declareFunction( cgi_input_received_t, "cgi.input_received", ParseInput_Received'access );
+  declareFunction( cgi_is_index_t, "cgi.is_index", ParseIs_Index'access );
+  declareFunction( cgi_cgi_method_t, "cgi.cgi_method", ParseCGI_Method'access );
+  declareFunction( cgi_value_t, "cgi.value", ParseValue'access );
+  declareFunction( cgi_key_exists_t, "cgi.key_exists", ParseKey_Exists'access );
+  declareFunction( cgi_key_count_t, "cgi.key_count", ParseKey_Count'access );
+  declareFunction( cgi_argument_count_t, "cgi.argument_count", ParseCGIArgument_Count'access );
+  declareFunction( cgi_key_t, "cgi.key", ParseKey'access );
+  declareFunction( cgi_key_value_t, "cgi.key_value", ParseKeyValue'access );
+  declareFunction( cgi_key_value_exists_t, "cgi.key_value_exists", ParseKey_Value_Exists'access );
   declareProcedure( cgi_put_cgi_header_t, "cgi.put_cgi_header", ParsePut_CGI_Header'access );
   declareProcedure( cgi_put_html_head_t, "cgi.put_html_head", ParsePut_HTML_Head'access );
   declareProcedure( cgi_put_html_heading_t, "cgi.put_html_heading", ParsePut_HTML_Heading'access );
   declareProcedure( cgi_put_html_tail_t, "cgi.put_html_tail", ParsePut_HTML_Tail'access );
   declareProcedure( cgi_put_error_message_t, "cgi.put_error_message", ParsePut_Error_Message'access );
   declareProcedure( cgi_put_variables_t, "cgi.put_variables", ParsePut_Variables'access );
-  declareFunction( cgi_my_url_t, "cgi.my_url" );
-  declareFunction( cgi_get_environment_t, "cgi.get_environment" );
-  declareFunction( cgi_line_count_t, "cgi.line_count" );
-  declareFunction( cgi_line_count_of_value_t, "cgi.line_count_of_value" );
-  declareFunction( cgi_line_t, "cgi.line" );
-  declareFunction( cgi_value_of_line_t, "cgi.value_of_line" );
-  declareFunction( cgi_url_decode_t, "cgi.url_decode" );
-  declareFunction( cgi_url_encode_t, "cgi.url_encode" );
-  declareFunction( cgi_html_encode_t, "cgi.html_encode" );
+  declareFunction( cgi_my_url_t, "cgi.my_url", ParseMy_URL'access );
+  --declareFunction( cgi_get_environment_t, "cgi.get_environment" );
+  declareFunction( cgi_line_count_t, "cgi.line_count", ParseLine_Count'access );
+  declareFunction( cgi_line_count_of_value_t, "cgi.line_count_of_value", ParseLine_Count_Of_Value'access );
+  declareFunction( cgi_line_t, "cgi.line", ParseCGILine'access );
+  declareFunction( cgi_value_of_line_t, "cgi.value_of_line", ParseValue_Of_Line'access );
+  declareFunction( cgi_url_decode_t, "cgi.url_decode", ParseURL_Decode'access );
+  declareFunction( cgi_url_encode_t, "cgi.url_encode", ParseURL_Encode'access );
+  declareFunction( cgi_html_encode_t, "cgi.html_encode", ParseHTML_Encode'access );
   declareProcedure( cgi_set_cookie_t, "cgi.set_cookie", ParseSet_Cookie'access );
-  declareFunction( cgi_cookie_value_t, "cgi.cookie_value" );
-  declareFunction( cgi_cookie_count_t, "cgi.cookie_count" );
+  declareFunction( cgi_cookie_value_t, "cgi.cookie_value", ParseCookie_Value'access );
+  declareFunction( cgi_cookie_count_t, "cgi.cookie_count", ParseCookie_Count'access );
 
 end StartupCGI;
 

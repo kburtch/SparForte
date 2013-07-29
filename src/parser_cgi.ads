@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2013 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -75,33 +75,33 @@ procedure ShutdownCGI;
 -- PARSE THE CGI PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseParsing_Errors( result : out unbounded_string );
-procedure ParseInput_Received( result : out unbounded_string );
-procedure ParseIs_Index( result : out unbounded_string );
-procedure ParseCGI_Method( result : out unbounded_string );
-procedure ParseValue( result : out unbounded_string );
-procedure ParseKey_Exists( result : out unbounded_string );
-procedure ParseKey_Count( result : out unbounded_string );
-procedure ParseCGIArgument_Count( result : out unbounded_string );
-procedure ParseKey( result : out unbounded_string );
-procedure ParseKeyValue( result : out unbounded_string );
-procedure ParseKey_Value_Exists( result : out unbounded_string );
+procedure ParseParsing_Errors( result : out unbounded_string; kind : out identifier );
+procedure ParseInput_Received( result : out unbounded_string; kind : out identifier );
+procedure ParseIs_Index( result : out unbounded_string; kind : out identifier );
+procedure ParseCGI_Method( result : out unbounded_string; kind : out identifier );
+procedure ParseValue( result : out unbounded_string; kind : out identifier );
+procedure ParseKey_Exists( result : out unbounded_string; kind : out identifier );
+procedure ParseKey_Count( result : out unbounded_string; kind : out identifier );
+procedure ParseCGIArgument_Count( result : out unbounded_string; kind : out identifier );
+procedure ParseKey( result : out unbounded_string; kind : out identifier );
+procedure ParseKeyValue( result : out unbounded_string; kind : out identifier );
+procedure ParseKey_Value_Exists( result : out unbounded_string; kind : out identifier );
 procedure ParsePut_CGI_Header;
 procedure ParsePut_HTML_Head;
 procedure ParsePut_HTML_Heading;
 procedure ParsePut_HTML_Tail;
 procedure ParsePut_Error_Message;
 procedure ParsePut_Variables;
-procedure ParseMy_URL( result : out unbounded_string );
-procedure ParseLine_Count( result : out unbounded_string );
-procedure ParseLine_Count_Of_Value( result : out unbounded_string );
-procedure ParseCGILine( result : out unbounded_string );
-procedure ParseValue_Of_Line( result : out unbounded_string );
-procedure ParseURL_Decode( result : out unbounded_string );
-procedure ParseURL_Encode( result : out unbounded_string );
-procedure ParseHTML_Encode( result : out unbounded_string );
+procedure ParseMy_URL( result : out unbounded_string; kind : out identifier );
+procedure ParseLine_Count( result : out unbounded_string; kind : out identifier );
+procedure ParseLine_Count_Of_Value( result : out unbounded_string; kind : out identifier );
+procedure ParseCGILine( result : out unbounded_string; kind : out identifier );
+procedure ParseValue_Of_Line( result : out unbounded_string; kind : out identifier );
+procedure ParseURL_Decode( result : out unbounded_string; kind : out identifier );
+procedure ParseURL_Encode( result : out unbounded_string; kind : out identifier );
+procedure ParseHTML_Encode( result : out unbounded_string; kind : out identifier );
 procedure ParseSet_Cookie;
-procedure ParseCookie_Value( result : out unbounded_string );
-procedure ParseCookie_Count( result : out unbounded_string );
+procedure ParseCookie_Value( result : out unbounded_string; kind : out identifier );
+procedure ParseCookie_Count( result : out unbounded_string; kind : out identifier );
 
 end parser_cgi;

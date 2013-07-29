@@ -19,6 +19,8 @@
 --     along with this program; if not, write to the Free Software
 --     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+WITH ADA.TEXT_IO; USE ADA.TEXT_IO;
+
 with Ada.Calendar;
 with Ada.Unchecked_Deallocation;
 with Ada.Unchecked_Conversion;
@@ -32,6 +34,7 @@ with Interfaces.C.Strings;
 with GNAT.OS_Lib;
 
 use Interfaces.C;
+use Ada.Strings;
 
 package body APQ.PostgreSQL.Client is
 
@@ -539,7 +542,6 @@ package body APQ.PostgreSQL.Client is
       end if;
 
       Reset(C);
-
    end Disconnect;
 
    procedure Internal_Reset(C : in out Connection_Type; In_Finalize : Boolean := False) is
@@ -584,7 +586,7 @@ package body APQ.PostgreSQL.Client is
 
       end if;
 
-      if C.Connection = Null_Connection then
+      if C.Connection = Null_Connection or In_Finalize then
          Free_Ptr(C.Host_Name);
          Free_Ptr(C.Host_Address);
          Free_Ptr(C.DB_Name);

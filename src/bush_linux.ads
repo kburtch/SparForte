@@ -592,6 +592,11 @@ function C_is_waiting_file( path : string ) return boolean;
 pragma import( C, C_is_waiting_file, "C_is_waiting_file" );
 --  True if a file exists, is readable and has data
 
+function C_is_includable_file( path : string ) return boolean;
+pragma import( C, C_is_includable_file, "C_is_includable_file" );
+--  True if a file exists, is readable, not world writable and has data
+-- (that is, that it has permissions for an include file)
+
 function C_file_length( path : string ) return long_integer;
 pragma import( C, C_file_length, "C_file_length" );
 --  Return length of file

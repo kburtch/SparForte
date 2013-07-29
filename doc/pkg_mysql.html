@@ -42,8 +42,7 @@
 			<td align="left" valign="top">
 	<!-- Content Area -->
 <h2><a NAME="4.19"></a>MySQL Database Package</h2>
-<p>The database package is based on Warren Gay's APQ 2.1 MySQL binding.  For full
-details on these routines, consult the APQ documentation.</p>
+<p>The database package is based on a modified version of Warren Gay's APQ MySQL binding.  For full details on these routines, consult the APQ documentation.</p>
 
         <center>
         <div class="code">
@@ -1260,7 +1259,9 @@ not_connected, file already open, file not found exceptions may be raised</p></t
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Reset the database connection.</p></td>
+<td><p>Reset the database connection: close open files, rollback query (if
+necessary) and disconnect.  Use disconnect instead unless you know what
+you are doing.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">mysql.reset;</span></td>

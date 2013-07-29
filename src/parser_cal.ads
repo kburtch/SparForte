@@ -58,15 +58,15 @@ procedure ShutdownCalendar;
 -- PARSE THE CALENDAR PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseCalClock( result : out unbounded_string );
-procedure ParseCalYear( result : out unbounded_string );
-procedure ParseCalMonth( result : out unbounded_string );
-procedure ParseCalDay( result : out unbounded_string );
-procedure ParseCalSeconds( result : out unbounded_string );
+procedure ParseCalClock( result : out unbounded_string; kind : out identifier );
+procedure ParseCalYear( result : out unbounded_string; kind : out identifier );
+procedure ParseCalMonth( result : out unbounded_string; kind : out identifier );
+procedure ParseCalDay( result : out unbounded_string; kind : out identifier );
+procedure ParseCalSeconds( result : out unbounded_string; kind : out identifier );
 procedure ParseCalSplit;
-procedure ParseCalTimeOf( result : out unbounded_string );
-procedure ParseCalToJulian( result : out unbounded_string );
-procedure ParseCalToTime( result : out unbounded_string );
-procedure ParseCalDayOfWeek( result : out unbounded_string );
+procedure ParseCalTimeOf( result : out unbounded_string; kind : out identifier );
+procedure ParseCalToJulian( result : out unbounded_string; kind : out identifier );
+procedure ParseCalToTime( result : out unbounded_string; kind : out identifier );
+procedure ParseCalDayOfWeek( result : out unbounded_string; kind : out identifier );
 
 end parser_cal;

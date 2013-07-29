@@ -569,6 +569,11 @@ function C_is_readable( path : string ) return boolean;
 pragma import( C, C_is_readable, "C_is_readable" );
 --  True if a regular or special file and be read by the shell
 
+function C_is_includable_file( path : string ) return boolean;
+pragma import( C, C_is_includable_file, "C_is_includable_file" );
+--  True if a file exists, is readable, not world writable and has data
+-- (that is, that it has permissions for an include file)
+
 function C_is_waiting_file( path : string ) return boolean;
 pragma import( C, C_is_waiting_file, "C_is_waiting_file" );
 --  True if a file exists, is readable and has data

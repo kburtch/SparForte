@@ -6570,19 +6570,24 @@ begin
         end if;
 
         declare
+          path : string := to_string( libraryPrefix & includeName );
           include_file : file_type;
         begin
-          open( include_file, in_file, to_string( libraryPrefix & includeName ) );
-          -- TODO: trace may not exist at this point
-          if trace or verboseOpt = true then
-             put_trace( to_string( "Including " & libraryPrefix & includeName ) );
+          if C_is_includable_file( path & ASCII.NUL ) then
+             open( include_file, in_file, path );
+             -- TODO: trace may not exist at this point
+             if trace or verboseOpt = true then
+                put_trace( "Including " & path );
+             end if;
+             while not end_of_file( include_file ) loop
+               includeText := includeText & ada.strings.unbounded.text_io.get_line( include_file ) & ASCII.LF;
+             end loop;
+             close( include_file );
+             includeFileOpened := true;
+             exit;
+          else
+             err( "include file " & optional_bold( to_string( includeName ) ) & " is not readable, is world writable, is not a file or is empty" );
           end if;
-          while not end_of_file( include_file ) loop
-            includeText := includeText & ada.strings.unbounded.text_io.get_line( include_file ) & ASCII.LF;
-          end loop;
-          close( include_file );
-          includeFileOpened := true;
-          exit;
         exception
             when STATUS_ERROR =>
               err( "cannot open include file" & optional_bold( to_string( includeName ) ) &

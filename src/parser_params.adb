@@ -112,6 +112,7 @@ end ParseFirstInOutParameter;
 
 procedure ParseLastInOutParameter( param_id : out identifier; expected_type : identifier ) is
 begin
+  expect( symbol_t, "," );
   ParseIdentifier( param_id ); -- in out
   --ParseExpression( expr_val, expr_type );
   --if isExecutingCommand then
@@ -138,6 +139,19 @@ begin
   discard_result := baseTypesOk( identifiers( param_id ).kind, expected_type );
   expect( symbol_t, ")" );
 end ParseSingleInOutParameter;
+
+--  PARSE LAST IN OUT RECORD PARAMETER
+--
+-- Expect a last parameter that is an in out identifier.  It is expected to be
+-- some kind of record, but we don't know the type beforehand.
+
+procedure ParseLastInOutRecordParameter( param_id : out identifier ) is
+begin
+  expect( symbol_t, "," );
+  ParseIdentifier( param_id ); -- in out
+  expect( symbol_t, ")" );
+end ParseLastInOutRecordParameter;
+
 
 --  PARSE FIRST STRING PARAMETER
 --
@@ -446,6 +460,7 @@ end ParseNextOutParameter;
 
 procedure ParseLastOutParameter( ref : out reference; defaultType : identifier ) is
 begin
+  expect( symbol_t, "," );
   ParseOutParameter( ref, defaultType );
   expect( symbol_t, ")" );
 end ParseLastOutParameter;

@@ -147,6 +147,33 @@ int C_is_waiting_file( char * path ) {
   return result;
 }
 
+/* IS INCLUDABLE FILE                                       */
+/*                                                          */
+/* True if file exists, is regular, readable, not empty and */
+/* not world writable                                       */
+
+int C_is_includable_file( char * path ) {
+  struct stat info;
+  int result = 0;
+  if ( stat( path, &info ) == 0 ) {
+     if ( info.st_mode & S_IFREG ) {
+        if ( info.st_size > 0 ) {
+           if ( getuid() == info.st_uid ) {
+              result = (info.st_mode & S_IRUSR ) > 0;
+           } else if ( getgid() == info.st_gid ) {
+              result = (info.st_mode & S_IRGRP ) > 0;
+           } else {
+              result = (info.st_mode & S_IROTH ) > 0;
+           }
+           if ( result ) {
+              result = (info.st_mode & S_IWOTH ) == 0;
+           }
+        }
+     }
+  }
+  return result;
+}
+
 /* FILE LENGTH                                              */
 /*                                                          */
 /* Return file length as reported by stat().                */

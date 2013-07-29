@@ -592,7 +592,8 @@ package body APQ.MySQL.Client is
          end if;
       end if;
 
-      if In_Finalize then
+      -- KB: added In_Finalize: NQS if this is right
+      if C.Connection = Null_Connection or In_Finalize then
          Free_Ptr(C.Host_Name);
          Free_Ptr(C.Host_Address);
          Free_Ptr(C.DB_Name);
@@ -619,6 +620,12 @@ package body APQ.MySQL.Client is
 
    procedure Disconnect(C : in out Connection_Type) is
    begin
+      -- KB: from apq-postgres.  this causes weird PROGRAM_ERROR exception.
+      -- why?
+      --if not Is_Connected(C) then
+      --   raise Not_Connected;
+      --end if;
+
       if C.Connection /= Null_Connection then
          C.Connection := mysql_close(C.Connection);
          if C.Trace_Mode = Trace_APQ or else C.Trace_Mode = Trace_Full then
@@ -628,8 +635,9 @@ package body APQ.MySQL.Client is
             end if;
          end if;
          C.Connection := Null_Connection; -- From APQ 3.0
+
+         Reset(C); -- KB: close open trace files, etc.
       end if;
-      C.Connected := False;
    end Disconnect;
 
    function Is_Connected(C : Connection_Type) return Boolean is
