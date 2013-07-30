@@ -33,11 +33,13 @@ c1  : character;
 b   : boolean;
 s   : string;
 s1  : string;
-ft  : file_type;
-st  : socket_type;
 fm  : file_mode;
 j,k : integer;
 js  : json_string;
+ft  : file_type;
+-- st will be reported as an unused variable.  Unfortunately, there's no way
+-- to use it without opening a socket because it is limited.
+-- st  : socket_type;
 
 -- assignment during declaration (syntax only)
 
@@ -253,6 +255,20 @@ pragma assert( inenum in inenum..inenum );
 pragma assert( inenum not in enum2..enum3 );
 inenum := enum3;
 pragma assert( inenum not in enum1..enum2 );
+un1 := 29;
+pragma assert( un1=29 );
+un2 := 29.5;
+pragma assert( un2=29.5 );
+un := un2;
+pragma assert( un=29.5 );
+us := 'c';
+pragma assert( us='c' );
+us := "cx";
+pragma assert( us="cx" );
+ut := 92;
+pragma assert( ut=92 );
+ut := "jh";
+pragma assert( ut="jh" );
 
 -- boolean true shortcuts
 
@@ -857,8 +873,8 @@ s := $0; -- command name
 s := $1; -- first argument
 pragma assert( s = "a" );
 
-i := command_line.argument_count;
-pragma assert( i = 3 );
+n := command_line.argument_count;
+pragma assert( n = 3 );
 s := command_line.command_name;
 s := command_line.argument( 1 );
 pragma assert( s = "a" );
@@ -919,7 +935,6 @@ FOOBAR1 : string;
 FOOBAR2 : string;
 pragma import( shell, FOOBAR1 ) @ ( shell, FOOBAR2 );
 pragma assert( FOOBAR2 = "foobar" );
-LOGNAME : string;
 FOOBAR3 : string;
 FOOBAR4 : string;
 
@@ -1047,10 +1062,10 @@ lae := arrays.last( la1 );
 pragma assert( lae = aenum3 );
 n := arrays.length( la1 );
 pragma assert( n = 3 );
-i := arrays.first( sa1 );
-pragma assert( i = 1 );
-i := arrays.last( sa1 );
-pragma assert( i = 1 );
+j := arrays.first( sa1 );
+pragma assert( j = 1 );
+k := arrays.last( sa1 );
+pragma assert( k = 1 );
 n := arrays.length( sa1 );
 pragma assert( n = 1 );
 lae := arrays.first( la2 );
@@ -1145,6 +1160,14 @@ rec7.i := 6;
 pragma assert( rec6.i = 5 );
 pragma assert( rec7.i = 6 );
 
+-- to prevent warnings for unused identifiers
+-- normally a record would be used somewhere but here we were only
+-- assigning to components.
+
+rec1 := rec3;
+rec2 := rec4;
+rec5 := rec4;
+rec6 := rec7;
 
 -- complex
 
@@ -1282,7 +1305,7 @@ declare
 
   subtype alt_boolean is boolean;
 
-  js : json_string;
+  --js : json_string; is global
 
   type json_arr1 is array(1..1) of string;
   ja : json_arr1;
@@ -2117,8 +2140,14 @@ echo [];
 
 -- Shell Variable Substitution Tests
 
+-- without suppression
+
+-- with suppression
+
+pragma suppress( word_quoting );
+
 i := 1;
-s := `echo $i;`;
+s := `echo "$i";`;
 pragma assert( s = "1" );
 i := 2;
 s := `echo "$i";`;
@@ -2273,7 +2302,8 @@ trace true;
 trace;
 
 iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii : integer; -- a very long name
--- repeat basic checks with pragma ada_95
+
+iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii := 0; -- to avoid unused var warning
 
 -- output redirection
 
@@ -2429,38 +2459,108 @@ i := 0;
 
 declare
 
-function f1 return boolean is
+function test_f1 return boolean is
 begin
   i := i + 1;
   return true;
-end f1;
+end test_f1;
 
-function f2 return boolean is
+function test_f2 return boolean is
 begin
   return true;
-end f2;
+end test_f2;
 
 begin
 
-if f1 then
+if test_f1 then
    null;
-elsif f1 then
+elsif test_f1 then
    null;
 end if;
 pragma assert( i = 1 );
 
 i := 0;
-if not f1 then
+if not test_f1 then
    null;
-elsif not f1 then
+elsif not test_f1 then
    null;
 end if;
 pragma assert( i = 2 );
 
 -- test that @ is ? not fn's return
-s := `put( f2 ) @ ( f2 );`;
+s := `put( test_f2 ) @ ( test_f2 );`;
 pragma assert( s = "truetrue" );
 
+end;
+
+-- Exception handling
+
+declare
+  procedure divide( x : integer; y : integer ) is
+  begin
+    i := x / y;
+  exception when others =>
+    i := 0;
+  end divide;
+begin
+  divide( 4, 2 );
+  pragma assert( i = 2 );
+  divide( 4, 0 );
+  pragma assert( i = 0 );
+end;
+
+declare
+  function fdivide( x : integer; y : integer ) return integer is
+  begin
+    return x / y;
+  exception when others =>
+    return 0;
+  end fdivide;
+begin
+  i := fdivide( 4, 2 );
+  pragma assert( i = 2 );
+  i := fdivide( 4, 0 );
+  pragma assert( i = 0 );
+end;
+
+declare
+  procedure divide_for( x : integer; y : integer ) is
+  begin
+    i := x / y;
+    -- for should not execute on error
+    for j in 1..2 loop
+       i := i + 1;
+    end loop;
+  exception when others =>
+    i := 0;
+  end divide_for;
+begin
+  divide_for( 4, 2 );
+  pragma assert( i = 4 );
+  divide_for( 4, 0 );
+  pragma assert( i = 0 );
+end;
+
+declare
+  function fdivide_while( x : integer; y : integer ) return integer is
+    i : integer;
+    j : integer;
+  begin
+    j := 1;
+    i := x/y;
+    while j <= 2 loop
+       i := i + 1;
+       j := j + 1;
+    end loop;
+    return i;
+  exception when others =>
+    return 0;
+  end fdivide_while;
+begin
+  i := fdivide_while( 4, 2 );
+  pragma assert( i = 4 );
+  i := fdivide_while( 4, 0 );
+  pragma assert( i = 0 );
 end;
 
 -- integer casting
@@ -2499,6 +2599,33 @@ pragma assert( i = 6 );
 i := long_long_integer( 2.5 ) * 2;
 pragma assert( i = 6 );
 
+-- Test env.  I don't check the result, only
+-- that it doesn't explode.
+env ut;
+env un;
+env us;
+env i;
+env s;
+env i;
+env si;
+env ssi;
+env li;
+env lli;
+env f;
+env lfv;
+env sf;
+env dur;
+env p;
+env n;
+env c;
+env c1;
+env b;
+env s;
+env s1;
+env ft;
+--env st;
+env fm;
+env js;
 
 -- Pragma ada_95 tests
 
@@ -2508,6 +2635,8 @@ pragma ada_95;
 
 ada95_s : string;
 ada95_i : integer := 0;
+
+ada95_s := "assigned"; -- suppress unused var warning
 
 i := (1 + 1 ) / 1;
 pragma assert( i=2 );
