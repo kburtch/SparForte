@@ -4022,6 +4022,7 @@ begin
      lastpos := lastpos - 1;
      if script( lastpos ) = '.' then
         err( "no digits after decimal" );
+        cmdpos := lastpos+1;                                 -- advance posn
         return;
      end if;
      if is_based_number then
@@ -4193,11 +4194,13 @@ begin
           end if;
      when '_' =>                                              -- _ test
           err( "Leading underscores not allowed in identifiers" );
+          cmdpos := cmdpos+1;                                 -- advance posn
           return;
      when '!' =>                                              -- ! / != test
           if script( cmdpos+1 ) = '=' then
              err( "/= expected" );
           end if;
+          cmdpos := cmdpos+2;                                 -- advance posn
           return;
      when others =>                                           -- return other
           cmdpos := cmdpos + 1;                               -- as a symbol

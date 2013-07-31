@@ -1606,7 +1606,7 @@ begin
   declareProcedure( numerics_set_re_t, "numerics.set_re", ParseNumericsSetRe'access );
   declareProcedure( numerics_set_im_t, "numerics.set_im", ParseNumericsSetIm'access );
   declareFunction( numerics_argument_t, "numerics.argument", ParseNumericsArgument'access );
-  declareFunction( numerics_modulus_t, "numerics.modulus" );
+  declareFunction( numerics_modulus_t, "numerics.modulus", ParseNumericsModulus'access );
   declareFunction( hash_of_t, "numerics.hash_of", ParseNumericsHashOf'access );
   declareFunction( sdbm_hash_of_t, "numerics.sdbm_hash_of", ParseNumericsSdbmHashOf'access );
   declareFunction( fnv_hash_of_t, "numerics.fnv_hash_of", ParseNumericsFnvHashOf'access );

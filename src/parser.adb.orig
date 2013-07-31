@@ -291,6 +291,8 @@ begin
   end if;
 exception when symbol_table_overflow =>
   err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  token := eof_t; -- this exception cannot be handled
+  done := true;   -- abort
 end ParseFieldIdentifier;
 
 procedure ParseProcedureIdentifier( id : out identifier ) is
@@ -365,6 +367,8 @@ begin
   end if;
 exception when symbol_table_overflow =>
   err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  token := eof_t; -- this exception cannot be handled
+  done := true;   -- abort
 end ParseProcedureIdentifier;
 
 procedure ParseNewIdentifier( id : out identifier ) is
@@ -429,6 +433,8 @@ begin
   end if;
 exception when symbol_table_overflow =>
   err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  token := eof_t; -- this exception cannot be handled
+  done := true;   -- abort
 end ParseNewIdentifier;
 
 procedure ParseIdentifier( id : out identifier ) is
@@ -493,6 +499,8 @@ begin
   getNextToken;
 exception when symbol_table_overflow =>
   err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  token := eof_t; -- this exception cannot be handled
+  done := true;   -- abort
 end ParseIdentifier;
 
 
@@ -7308,8 +7316,12 @@ begin
   end if;
 exception when symbol_table_overflow =>
   err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  token := eof_t; -- this exception cannot be handled
+  done := true;   -- abort
 when block_table_overflow =>
   err( optional_inverse( "too many nested statements/blocks (block table overflow)" ) );
+  token := eof_t; -- this exception cannot be handled
+  done := true;
 end ParseGeneralStatement;
 
 procedure ParseMainProgram is
