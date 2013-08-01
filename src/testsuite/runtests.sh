@@ -132,6 +132,38 @@ bad_test_wparam() {
   fi
 }
 
+#  BAD TEST TESTMODE
+#
+# Run the test script with no parameters is SparForte testing mode.
+# Declare FOOBAR.  If there's a core dump or a success code is returned,
+# abort with the error.
+# ---------------------------------------------------------------------------
+
+bad_test_testmode() {
+  echo "Running $1..."
+  setup
+  ../spar --debug --test "$1" < /dev/null > /dev/null
+  RESULT=$?
+  teardown
+  TMP=`ls core 2>/dev/null`
+  test -f ./test.txt && rm ./test.txt
+  if [ ! -z "$TMP" ] ; then
+     rm core
+     echo
+     echo "--- $1 FAILED WITH CORE DUMP ---"
+     echo "Test was:"
+     cat "$1"
+     exit 1
+  fi
+  if [ $RESULT -eq 0 ] ; then
+     echo
+     echo "--- $1 TEST FAILED - status code $RESULT ---"
+     echo "Test was:"
+     cat "$1"
+     exit 1
+  fi
+}
+
 #  BAD TEST
 #
 # Run the test script with no parameters.  Declare FOOBAR.  If there's a
@@ -222,6 +254,16 @@ RESULT=$?
 if [ $RESULT -ne 0 ] ; then
    exit $RESULT
 fi
+
+# Run test requiring --test mode
+
+ls testmodesuite/badtest* | (while read FILE ; do
+   bad_test_testmode "$FILE"
+   RESULT=$?
+   if [ $RESULT -ne 0 ] ; then
+      exit $RESULT
+   fi
+done )
 
 # Switch tests
 

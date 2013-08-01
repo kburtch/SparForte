@@ -3020,6 +3020,12 @@ begin
       identifiers( newtype_id ).kind := root_enumerated_t; -- the parent is
       identifiers( newtype_id ).class := typeClass;        -- type based on
       parent_id := newtype_id;                             -- root enumerated
+      -- The enum type name may not be referenced as much
+      -- as items are mentioned.  (e.g. draco_ii doesn't
+      -- use the type name anywhere).
+      if syntax_check and not restriction_no_unused_identifiers then
+         identifiers( parent_id ).wasReferenced := true;
+      end if;
       expect( symbol_t, "(" );                             -- "("
       while token /= eof_t loop                            -- name [,name]
          ParseNewIdentifier( newtype_id );                 -- enumerated item
@@ -3028,12 +3034,6 @@ begin
          -- other statements
          if isExecutingCommand or syntax_check then        -- OK to do it?
             identifiers( newtype_id ).class := constClass; -- it's a type
-            -- The enum type name may not be referenced as much
-            -- as items are mentioned.  (e.g. draco_ii doesn't
-            -- use the type name anywhere).
-            if syntax_check and not restriction_no_unused_identifiers then
-               identifiers( parent_id ).wasReferenced := true;
-            end if;
             -- normally, treat them as values and thus we don't care
             -- if they are used or not.  Unless user explicitly requests
             -- that they are tested.
