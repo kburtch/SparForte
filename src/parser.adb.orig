@@ -1371,183 +1371,183 @@ begin
      elsif token = units_c2k_t then                     -- Units.C2K
         ParseUnitsC2K( f );
         kind := long_float_t;
-     elsif token = files_exists_t then                -- files.file_exists
-        ParseFileExists( f );
-        kind := boolean_t;
-     elsif token = files_is_absolute_path_t then      -- files.is_absolute_path
-        ParseIsAbsolutePath( f );
-        kind := boolean_t;
-     elsif token = files_is_regular_file_t then       -- files.is_regular_file
-        ParseIsRegularFile( f );
-        kind := boolean_t;
-     elsif token = files_is_directory_t then          -- files.is_directory
-        ParseIsDirectory( f );
-        kind := boolean_t;
-     elsif token = files_is_writable_file_t then       -- files.is_writable_file
-        ParseIsWritableFile( f );
-        kind := boolean_t;
-     elsif token = files_is_writable_t then            -- files.is_writable
-        ParseIsWritable( f );
-        kind := boolean_t;
-     elsif token = files_is_executable_file_t then     -- files.is_executable_file
-        ParseIsExecutableFile( f );
-        kind := boolean_t;
-     elsif token = files_is_executable_t then         -- files.is_executable
-        ParseIsExecutable( f );
-        kind := boolean_t;
-     elsif token = files_is_readable_file_t then       -- files.is_readable_file
-        ParseIsReadableFile( f );
-        kind := boolean_t;
-     elsif token = files_is_readable_t then            -- files.is_readable_file
-        ParseIsReadable( f );
-        kind := boolean_t;
-     elsif token = files_basename_t then               -- files.basename
-        ParseBasename( f );
-        kind := string_t;
-     elsif token = files_dirname_t then                -- files.dirname
-        ParseDirname( f );
-        kind := string_t;
-     elsif token = files_size_t then                   -- files.size
-        ParseFileSize( f );
-        kind := long_integer_t;
-     elsif token = files_is_waiting_file_t then        -- files.is_waiting_file
-        ParseIsWaitingFile( f );
-        kind := boolean_t;
-     elsif token = files_last_modified_t then          -- files.last_modified
-        ParseFileLastModified( f );
-        kind := cal_time_t;
-     elsif token = files_last_changed_t then           -- files.last_changed
-        ParseFileLastChanged( f );
-        kind := cal_time_t;
-     elsif token = files_last_accessed_t then          -- files.last_accessed
-        ParseFileLastAccessed( f );
-        kind := cal_time_t;
-     elsif token = dirops_dir_separator_t then         -- dir_opts.dir_separator
-        ParseDirOpsDirSeparator( f );
-        kind := character_t;
-     elsif token = dirops_get_current_dir_t then       -- dir_opts.get_current_dir
-        ParseDirOpsGetCurrentDir( f);
-        kind := dirops_dir_name_str_t;
-     elsif token = dirops_dir_name_t then              -- dir_opts.dir_name
-        ParseDirOpsDirName( f );
-        kind := dirops_dir_name_str_t;
-     elsif token = dirops_base_name_t then             -- dir_opts.base_name
-        ParseDirOpsBaseName( f );
-        kind := string_t;
-     elsif token = dirops_file_extension_t then        -- dir_opts.file_ext
-        ParseDirOpsFileExtension( f );
-        kind := string_t;
-     elsif token = dirops_file_name_t then             -- dir_opts.file_name
-        ParseDirOpsFileName( f );
-        kind := string_t;
-     elsif token = dirops_format_pathname_t then       -- dir_opts.format_p
-        ParseDirOpsFormatPathname( f );
-        kind := dirops_path_name_t;
-     elsif token = dirops_expand_path_t then           -- dir_opts.expand_p
-        ParseDirOpsExpandPath( f );
-        kind := dirops_path_name_t;
-     elsif token = arrays_first_t then                 -- arrays.first
-        ParseArraysFirst( f, kind );
-        if syntax_check then                           -- array index type
-           kind := universal_t;                        -- not known at
-        end if;                                        -- syntax check time
-     elsif token = arrays_last_t then                  -- arrays.last
-        ParseArraysLast( f, kind );
-        if syntax_check then                           -- array index type
-           kind := universal_t;                        -- not known at
-        end if;                                        -- syntax check time
-     elsif token = arrays_length_t then                 -- arrays.last
-        ParseArraysLength( f );
-        kind := natural_t;
-     elsif token = enums_first_t then                  -- enums.first
-        ParseEnumsFirst( f, kind );
-        if syntax_check then                           -- array index type
-           kind := universal_t;                        -- not known at
-        end if;                                        -- syntax check time
-     elsif token = enums_last_t then                   -- enums.last
-        ParseEnumsLast( f, kind );
-        if syntax_check then                           -- array index type
-           kind := universal_t;                        -- not known at
-        end if;                                        -- syntax check time
-     elsif token = enums_pred_t then                   -- enums.pred
-        ParseEnumsPred( f, kind );
-     elsif token = enums_succ_t then                   -- enums.succ
-        ParseEnumsSucc( f, kind );
-     elsif token = stats_average_t then                -- stats.average
-        ParseStatsAverage( f, kind );
-        if syntax_check then                           -- array index type
-           kind := universal_t;                        -- not known at
-        end if;                                        -- syntax check time
-     elsif token = stats_max_t then                    -- stats.max
-        ParseStatsMax( f, kind );
-        if syntax_check then                           -- array index type
-           kind := universal_t;                        -- not known at
-        end if;                                        -- syntax check time
-     elsif token = stats_min_t then                    -- stats.min
-        ParseStatsMin( f, kind );
-        if syntax_check then                           -- array index type
-           kind := universal_t;                        -- not known at
-        end if;                                        -- syntax check time
-     elsif token = stats_standard_deviation_t then     -- stats.standard_deviation
-        ParseStatsStandardDeviation( f, kind );
-        if syntax_check then                           -- array index type
-           kind := universal_t;                        -- not known at
-        end if;                                        -- syntax check time
-     elsif token = stats_sum_t then                    -- stats.sum
-        ParseStatsSum( f, kind );
-        if syntax_check then                           -- array index type
-           kind := universal_t;                        -- not known at
-        end if;                                        -- syntax check time
-     elsif token = stats_variance_t then               -- stats.variance
-        ParseStatsVariance( f, kind );
-        if syntax_check then                           -- array index type
-           kind := universal_t;                        -- not known at
-        end if;                                        -- syntax check time
-     elsif token = pen_is_empty_rect_t then            -- pen.is_empty_rect
-        ParsePenIsEmptyRect( f );
-        kind := boolean_t;
-     elsif token = pen_inside_rect_t then              -- pen.inside_rect
-        ParsePenInsideRect( f );
-        kind := boolean_t;
-     elsif token = pen_in_rect_t then                  -- pen.in_rect
-        ParsePenInRect( f );
-        kind := boolean_t;
-     elsif token = pen_get_pen_mode_t then             -- pen.get_pen_mode
-        ParsePenGetPenMode( f );
-        kind := pen_pen_mode_t;
-     elsif token = pen_greyscale_t then                -- pen.greyscale
-        ParsePenGreyscale( f );
-        kind := pen_rgbcomponent_t;
-     elsif token = memcache_is_valid_memcache_key_t then -- memcache.is_valid_memcache_key
-        ParseMemcacheIsValidMemcacheKey( f );
-        kind := boolean_t;
-     elsif token = memcache_new_cluster_t then         -- memcache.new_cluster
-        ParseMemcacheNewCluster( f );
-        kind := memcache_cluster_t;
-     elsif token = memcache_version_t then             -- memcache.version
-        ParseMemcacheVersion( f );
-        kind := string_t;
-     elsif token = memcache_stats_t then               -- memcache.stats
-        ParseMemcacheStats( f );
-        kind := string_t;
-     elsif token = memcache_get_t then                 -- memcache.get
-        ParseMemcacheGet( f );
-        kind := string_t;
-     elsif token = highread_new_cluster_t then         -- memcache.highread.new_cluster
-        ParseHighreadNewCluster( f );
-        kind := highread_cluster_t;
-     elsif token = highread_version_t then             -- memcache.highread.version
-        ParseHighreadVersion( f );
-        kind := string_t;
-     elsif token = highread_stats_t then               -- memcache.highread.stats
-        ParseHighreadStats( f );
-        kind := string_t;
-     elsif token = highread_get_t then                 -- memcache.highread.get
-        ParseHighreadGet( f );
-        kind := string_t;
-     elsif token = gnat_crc32_get_value_t then         -- gnat.crc32.get_value
-        ParseGnatCRC32GetValue( f );
-        kind := integer_t; -- should be unsigned_32
+     --elsif token = files_exists_t then                -- files.file_exists
+     --   ParseFileExists( f );
+     --   kind := boolean_t;
+     --elsif token = files_is_absolute_path_t then      -- files.is_absolute_path
+     --   ParseIsAbsolutePath( f );
+     --   kind := boolean_t;
+     --elsif token = files_is_regular_file_t then       -- files.is_regular_file
+     --   ParseIsRegularFile( f );
+     --   kind := boolean_t;
+     --elsif token = files_is_directory_t then          -- files.is_directory
+     --   ParseIsDirectory( f );
+     --   kind := boolean_t;
+     --elsif token = files_is_writable_file_t then       -- files.is_writable_file
+     --   ParseIsWritableFile( f );
+     --   kind := boolean_t;
+     --elsif token = files_is_writable_t then            -- files.is_writable
+     --   ParseIsWritable( f );
+     --   kind := boolean_t;
+     --elsif token = files_is_executable_file_t then     -- files.is_executable_file
+     --   ParseIsExecutableFile( f );
+     --   kind := boolean_t;
+     --elsif token = files_is_executable_t then         -- files.is_executable
+     --   ParseIsExecutable( f );
+     --   kind := boolean_t;
+     --elsif token = files_is_readable_file_t then       -- files.is_readable_file
+     --   ParseIsReadableFile( f );
+     --   kind := boolean_t;
+     --elsif token = files_is_readable_t then            -- files.is_readable_file
+     --   ParseIsReadable( f );
+     --   kind := boolean_t;
+     --elsif token = files_basename_t then               -- files.basename
+     --   ParseBasename( f );
+     --   kind := string_t;
+     --elsif token = files_dirname_t then                -- files.dirname
+     --   ParseDirname( f );
+     --   kind := string_t;
+     --elsif token = files_size_t then                   -- files.size
+     --   ParseFileSize( f );
+     --   kind := long_integer_t;
+     --elsif token = files_is_waiting_file_t then        -- files.is_waiting_file
+     --   ParseIsWaitingFile( f );
+     --   kind := boolean_t;
+     --elsif token = files_last_modified_t then          -- files.last_modified
+     --   ParseFileLastModified( f );
+     --   kind := cal_time_t;
+     --elsif token = files_last_changed_t then           -- files.last_changed
+     --   ParseFileLastChanged( f );
+     --   kind := cal_time_t;
+     --elsif token = files_last_accessed_t then          -- files.last_accessed
+     --   ParseFileLastAccessed( f );
+     --   kind := cal_time_t;
+     --elsif token = dirops_dir_separator_t then         -- dir_opts.dir_separator
+     --   ParseDirOpsDirSeparator( f );
+     --   kind := character_t;
+     --elsif token = dirops_get_current_dir_t then       -- dir_opts.get_current_dir
+     --   ParseDirOpsGetCurrentDir( f);
+     --   kind := dirops_dir_name_str_t;
+     --elsif token = dirops_dir_name_t then              -- dir_opts.dir_name
+     --   ParseDirOpsDirName( f );
+     --   kind := dirops_dir_name_str_t;
+     --elsif token = dirops_base_name_t then             -- dir_opts.base_name
+     --   ParseDirOpsBaseName( f );
+     --   kind := string_t;
+     --elsif token = dirops_file_extension_t then        -- dir_opts.file_ext
+     --   ParseDirOpsFileExtension( f );
+     --   kind := string_t;
+     --elsif token = dirops_file_name_t then             -- dir_opts.file_name
+     --   ParseDirOpsFileName( f );
+     --   kind := string_t;
+     --elsif token = dirops_format_pathname_t then       -- dir_opts.format_p
+     --   ParseDirOpsFormatPathname( f );
+     --   kind := dirops_path_name_t;
+     --elsif token = dirops_expand_path_t then           -- dir_opts.expand_p
+     --   ParseDirOpsExpandPath( f );
+     --   kind := dirops_path_name_t;
+     --elsif token = arrays_first_t then                 -- arrays.first
+     --   ParseArraysFirst( f, kind );
+     --   if syntax_check then                           -- array index type
+     --      kind := universal_t;                        -- not known at
+     --   end if;                                        -- syntax check time
+     --elsif token = arrays_last_t then                  -- arrays.last
+     --   ParseArraysLast( f, kind );
+     --   if syntax_check then                           -- array index type
+     --     kind := universal_t;                        -- not known at
+     --   end if;                                        -- syntax check time
+     --elsif token = arrays_length_t then                 -- arrays.last
+     --   ParseArraysLength( f );
+     --   kind := natural_t;
+     --elsif token = enums_first_t then                  -- enums.first
+     --   ParseEnumsFirst( f, kind );
+     --   if syntax_check then                           -- array index type
+     --      kind := universal_t;                        -- not known at
+     --   end if;                                        -- syntax check time
+     --elsif token = enums_last_t then                   -- enums.last
+     --   ParseEnumsLast( f, kind );
+     --   if syntax_check then                           -- array index type
+     --      kind := universal_t;                        -- not known at
+     --   end if;                                        -- syntax check time
+     --elsif token = enums_pred_t then                   -- enums.pred
+     --   ParseEnumsPred( f, kind );
+     --elsif token = enums_succ_t then                   -- enums.succ
+     --   ParseEnumsSucc( f, kind );
+     --elsif token = stats_average_t then                -- stats.average
+     --   ParseStatsAverage( f, kind );
+     --   if syntax_check then                           -- array index type
+     --      kind := universal_t;                        -- not known at
+     --   end if;                                        -- syntax check time
+     --elsif token = stats_max_t then                    -- stats.max
+     --   ParseStatsMax( f, kind );
+     --   if syntax_check then                           -- array index type
+     --      kind := universal_t;                        -- not known at
+     --   end if;                                        -- syntax check time
+     --elsif token = stats_min_t then                    -- stats.min
+     --   ParseStatsMin( f, kind );
+     --   if syntax_check then                           -- array index type
+     --      kind := universal_t;                        -- not known at
+     --   end if;                                        -- syntax check time
+     --elsif token = stats_standard_deviation_t then     -- stats.standard_deviation
+     --   ParseStatsStandardDeviation( f, kind );
+     --   if syntax_check then                           -- array index type
+     --      kind := universal_t;                        -- not known at
+     --   end if;                                        -- syntax check time
+     --elsif token = stats_sum_t then                    -- stats.sum
+     --   ParseStatsSum( f, kind );
+     --   if syntax_check then                           -- array index type
+     --      kind := universal_t;                        -- not known at
+     --   end if;                                        -- syntax check time
+     --elsif token = stats_variance_t then               -- stats.variance
+     --   ParseStatsVariance( f, kind );
+     --   if syntax_check then                           -- array index type
+     --      kind := universal_t;                        -- not known at
+     --   end if;                                        -- syntax check time
+     --elsif token = pen_is_empty_rect_t then            -- pen.is_empty_rect
+     --   ParsePenIsEmptyRect( f );
+     --   kind := boolean_t;
+     --elsif token = pen_inside_rect_t then              -- pen.inside_rect
+     --   ParsePenInsideRect( f );
+     --   kind := boolean_t;
+     --elsif token = pen_in_rect_t then                  -- pen.in_rect
+     --   ParsePenInRect( f );
+     --   kind := boolean_t;
+     --elsif token = pen_get_pen_mode_t then             -- pen.get_pen_mode
+     --   ParsePenGetPenMode( f );
+     --   kind := pen_pen_mode_t;
+     --elsif token = pen_greyscale_t then                -- pen.greyscale
+     --   ParsePenGreyscale( f );
+     --   kind := pen_rgbcomponent_t;
+     --elsif token = memcache_is_valid_memcache_key_t then -- memcache.is_valid_memcache_key
+     --   ParseMemcacheIsValidMemcacheKey( f );
+     --   kind := boolean_t;
+     --elsif token = memcache_new_cluster_t then         -- memcache.new_cluster
+     --   ParseMemcacheNewCluster( f );
+     --   kind := memcache_cluster_t;
+     --elsif token = memcache_version_t then             -- memcache.version
+     --   ParseMemcacheVersion( f );
+     --   kind := string_t;
+     --elsif token = memcache_stats_t then               -- memcache.stats
+     --   ParseMemcacheStats( f );
+     --   kind := string_t;
+     --elsif token = memcache_get_t then                 -- memcache.get
+     --   ParseMemcacheGet( f );
+     --   kind := string_t;
+     --elsif token = highread_new_cluster_t then         -- memcache.highread.new_cluster
+     --   ParseHighreadNewCluster( f );
+     --   kind := highread_cluster_t;
+     --elsif token = highread_version_t then             -- memcache.highread.version
+     --   ParseHighreadVersion( f );
+     --   kind := string_t;
+     --elsif token = highread_stats_t then               -- memcache.highread.stats
+     --   ParseHighreadStats( f );
+     --   kind := string_t;
+     --elsif token = highread_get_t then                 -- memcache.highread.get
+     --   ParseHighreadGet( f );
+     --   kind := string_t;
+     --elsif token = gnat_crc32_get_value_t then         -- gnat.crc32.get_value
+     --   ParseGnatCRC32GetValue( f );
+     --   kind := integer_t; -- should be unsigned_32
      elsif identifiers( token ).class = userFuncClass then
         declare
           funcToken : identifier := token;

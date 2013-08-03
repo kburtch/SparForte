@@ -47,12 +47,35 @@ throw an exception on a number instead of a string as the first parameter.
 
 18. Fix: Bourne shell command immediately following 'else' are no longer treated as Ada format.
 
-19. New: In --test mode, unused variables are not permitted.  Does not affect unused record fields or enumerated types and their items (see next item).
+19. New: Unused variables are not permitted.  In --test mode, most unused identifiers are not permitted.  Does not affect unused record fields or enumerated types and their items (see next item).
 
 20. New: pragma restriction( no_unused_identifiers );  In --test mode, require that all enumerated items and type names are explicitly used.
 
 21. Fix: out record parameters no longer allocate a new record for an existing record.
 
-- pen.set_font( c, f, p ) and pen.put( c, s ) added but drawing text on a canvas not working yet.  Not yet documented.
--- InOut params can't be arrays...give an appropriate error
+22. New: Basic exception handlers implemented.  Reraising exceptions. Not completely negative tested.
+
+23. New: Style checks on identifiers.  Apply only in specific contexts.
+
+24. Fix: strings.split, numerics.set_re, numerics.set_im,memcache.new_cluster, memcache.get, memcache.version, memcache.stats (and highreads) now classed as a procedure, not a function.  pen.inside_rect, pen.in_rect, pen.greyscale, directory_operations.dir_separator now classed as a function not a procedure.
+
+25. Fix: mysql.clear, mysql.will_rollback_on_finalize, mysql.is_trace, db.clear, db.will_rollback_on_finalize, db.is_trace no longer run during a syntax check.
+
+26. Fix: mysql.tuples returns mysql.tuple_count_type as documented, not a natural.  db.tuples returns db.tuple_count_type as document, not a natural.
+
+27. Fix: backported some fixes from APQ 3.0 to APQ 2.1.  Fixed closed trace file bugs, disconnect/reconnect bug and several others.
+
+28. Fix: global profiles work correctly.  (A line was mistakenly deleted in source code at some point.)
+
+29. Fix: stats package functions now appear as functions not procedures (this did not affect their execution).
+
+30. Fix: pen.get_pen_brush existed but wasn't visible.  Now is visible.
+
+31. Change: profile files and include files are now checked that they are not empty, not world-readable.
+
+32. Fix: command_line.argument_count now returns a natural as documenteded, not a universal numeric. command_name now returns a string as document, not a universal string.
+
+33. New: mysqlm package, mysql with multiple connections.  New mysqlm.fetch_values procedure.
+
+---
 

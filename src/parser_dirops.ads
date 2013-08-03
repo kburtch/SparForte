@@ -66,16 +66,16 @@ procedure ShutdownDirOps;
 -- PARSE THE DIRECTORY_OPERATIONS PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseDirOpsDirSeparator( result : out unbounded_string );
+procedure ParseDirOpsDirSeparator( result : out unbounded_string; kind : out identifier );
 procedure ParseDirOpsChangeDir;
 procedure ParseDirOpsMakeDir;
 procedure ParseDirOpsRemoveDir;
-procedure ParseDirOpsGetCurrentDir( result : out unbounded_string );
-procedure ParseDirOpsDirName( result : out unbounded_string );
-procedure ParseDirOpsBaseName( result : out unbounded_string );
-procedure ParseDirOpsFileExtension( result : out unbounded_string );
-procedure ParseDirOpsFileName( result : out unbounded_string );
-procedure ParseDirOpsFormatPathname( result : out unbounded_string );
-procedure ParseDirOpsExpandPath( result : out unbounded_string );
+procedure ParseDirOpsGetCurrentDir( result : out unbounded_string; kind : out identifier );
+procedure ParseDirOpsDirName( result : out unbounded_string; kind : out identifier );
+procedure ParseDirOpsBaseName( result : out unbounded_string; kind : out identifier );
+procedure ParseDirOpsFileExtension( result : out unbounded_string; kind : out identifier );
+procedure ParseDirOpsFileName( result : out unbounded_string; kind : out identifier );
+procedure ParseDirOpsFormatPathname( result : out unbounded_string; kind : out identifier );
+procedure ParseDirOpsExpandPath( result : out unbounded_string; kind : out identifier );
 
 end parser_dirops;

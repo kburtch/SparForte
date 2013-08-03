@@ -50,6 +50,6 @@ procedure ShutdownGnatCRC;
 
 procedure ParseGnatCRC32Initialize;
 procedure ParseGnatCRC32Update;
-procedure ParseGnatCRC32GetValue( result : out unbounded_string );
+procedure ParseGnatCRC32GetValue( result : out unbounded_string; kind : out identifier );
 
 end parser_gnat_crc;

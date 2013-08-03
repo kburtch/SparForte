@@ -2141,20 +2141,20 @@ procedure ShutdownPen;
 ----> Rects
 
 procedure ParsePenSetRect;
-procedure ParsePenIsEmptyRect( result : out unbounded_string );
+procedure ParsePenIsEmptyRect( result : out unbounded_string; kind : out identifier );
 procedure ParsePenOffsetRect;
 procedure ParsePenInsetRect;
 procedure ParsePenIntersectRect;
-procedure ParsePenInsideRect( result : out unbounded_string );
-procedure ParsePenInRect( result : out unbounded_string );
+procedure ParsePenInsideRect( result : out unbounded_string; kind : out identifier );
+procedure ParsePenInRect( result : out unbounded_string; kind : out identifier );
 
 procedure ParsePenSetPenMode;
 procedure ParsePenSetPenBrush;
 procedure ParsePenSetPenInk;
 procedure ParsePenSetPenPattern;
-procedure ParsePenGetPenMode( result : out unbounded_string );
+procedure ParsePenGetPenMode( result : out unbounded_string; kind : out identifier );
 procedure ParsePenGetPenInk;
-procedure ParsePenGetPenBrush( result : out unbounded_string );
+procedure ParsePenGetPenBrush( result : out unbounded_string; kind : out identifier );
 -- procedure ParsePenGetPenPattern( result : out unbounded_string );
 
 procedure ParsePenMoveTo;
@@ -2185,7 +2185,7 @@ procedure ParsePenWaitToReveal;
 procedure ParsePenReveal;
 procedure ParsePenRevealNow;
 
-procedure ParsePenGreyscale( result : out unbounded_string );
+procedure ParsePenGreyscale( result : out unbounded_string; kind : out identifier );
 procedure ParsePenBlend;
 procedure ParsePenFade;
 

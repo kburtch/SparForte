@@ -59,10 +59,11 @@ begin
   end if;
 end ParseSinglePathNameExpression;
 
-procedure ParseDirOpsDirSeparator( result : out unbounded_string ) is
+procedure ParseDirOpsDirSeparator( result : out unbounded_string; kind : out identifier ) is
   -- Syntax:
   -- Source:
 begin
+  kind := character_t;
   expect( dirops_dir_separator_t );
   begin
     if isExecutingCommand then
@@ -147,10 +148,11 @@ begin
   end;
 end ParseDirOpsRemoveDir;
 
-procedure ParseDirOpsGetCurrentDir( result : out unbounded_string ) is
+procedure ParseDirOpsGetCurrentDir( result : out unbounded_string; kind : out identifier ) is
   -- Syntax:
   -- Source:
 begin
+  kind := dirops_dir_name_str_t;
   expect( dirops_get_current_dir_t );
   begin
     if isExecutingCommand then
@@ -163,12 +165,13 @@ begin
   end;
 end ParseDirOpsGetCurrentDir;
 
-procedure ParseDirOpsDirName( result : out unbounded_string ) is
+procedure ParseDirOpsDirName( result : out unbounded_string; kind : out identifier ) is
   -- Syntax:
   -- Source:
   expr_val : unbounded_string;
   expr_type: identifier;
 begin
+  kind := dirops_dir_name_str_t;
   expect( dirops_dir_name_t );
   ParseSinglePathNameExpression( expr_val, expr_type );
   begin
@@ -180,7 +183,7 @@ begin
   end;
 end ParseDirOpsDirName;
 
-procedure ParseDirOpsBaseName( result : out unbounded_string ) is
+procedure ParseDirOpsBaseName( result : out unbounded_string; kind : out identifier ) is
   -- Syntax:
   -- Source:
   expr_val : unbounded_string;
@@ -188,6 +191,7 @@ procedure ParseDirOpsBaseName( result : out unbounded_string ) is
   expr_val2 : unbounded_string;
   expr_type2: identifier;
 begin
+  kind := string_t;
   expect( dirops_base_name_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -210,12 +214,13 @@ begin
   end;
 end ParseDirOpsBaseName;
 
-procedure ParseDirOpsFileExtension( result : out unbounded_string ) is
+procedure ParseDirOpsFileExtension( result : out unbounded_string; kind : out identifier ) is
   -- Syntax:
   -- Source:
   expr_val : unbounded_string;
   expr_type: identifier;
 begin
+  kind := string_t;
   expect( dirops_file_extension_t );
   ParseSinglePathNameExpression( expr_val, expr_type );
   begin
@@ -227,12 +232,13 @@ begin
   end;
 end ParseDirOpsFileExtension;
 
-procedure ParseDirOpsFileName( result : out unbounded_string ) is
+procedure ParseDirOpsFileName( result : out unbounded_string; kind : out identifier ) is
   -- Syntax:
   -- Source:
   expr_val : unbounded_string;
   expr_type: identifier;
 begin
+  kind := string_t;
   expect( dirops_file_name_t );
   ParseSinglePathNameExpression( expr_val, expr_type );
   begin
@@ -244,7 +250,7 @@ begin
   end;
 end ParseDirOpsFileName;
 
-procedure ParseDirOpsFormatPathname( result : out unbounded_string ) is
+procedure ParseDirOpsFormatPathname( result : out unbounded_string; kind : out identifier ) is
   -- Syntax:
   -- Source:
   expr_val : unbounded_string;
@@ -252,6 +258,7 @@ procedure ParseDirOpsFormatPathname( result : out unbounded_string ) is
   expr_val2 : unbounded_string;
   expr_type2: identifier;
 begin
+  kind := dirops_path_name_t;
   expect( dirops_format_pathname_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -286,7 +293,7 @@ begin
   end;
 end ParseDirOpsFormatPathname;
 
-procedure ParseDirOpsExpandPath( result : out unbounded_string ) is
+procedure ParseDirOpsExpandPath( result : out unbounded_string; kind : out identifier ) is
   -- Syntax:
   -- Source:
   expr_val : unbounded_string;
@@ -294,6 +301,7 @@ procedure ParseDirOpsExpandPath( result : out unbounded_string ) is
   expr_val2 : unbounded_string;
   expr_type2: identifier;
 begin
+  kind := dirops_path_name_t;
   expect( dirops_expand_path_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
@@ -334,17 +342,17 @@ procedure StartupDirOps is
 begin
   declareIdent( dirops_dir_name_str_t, "directory_operations.dir_name_dir",
      string_t, subClass );
-  declareFunction( dirops_dir_separator_t, "directory_operations.dir_separator" );
+  declareFunction( dirops_dir_separator_t, "directory_operations.dir_separator", ParseDirOpsDirSeparator'access );
   declareProcedure( dirops_change_dir_t, "directory_operations.change_dir", ParseDirOpsChangeDir'access );
   declareProcedure( dirops_make_dir_t, "directory_operations.make_dir", ParseDirOpsMakeDir'access );
   declareProcedure( dirops_remove_dir_t, "directory_operations.remove_dir", ParseDirOpsRemoveDir'access );
-  declareFunction( dirops_get_current_dir_t, "directory_operations.get_current_dir" );
+  declareFunction( dirops_get_current_dir_t, "directory_operations.get_current_dir", ParseDirOpsGetCurrentDir'access );
   declareIdent( dirops_path_name_t, "directory_operations.path_name",
      string_t, subClass );
-  declareFunction( dirops_dir_name_t, "directory_operations.dir_name" );
-  declareFunction( dirops_base_name_t, "directory_operations.base_name" );
-  declareFunction( dirops_file_extension_t, "directory_operations.file_extension" );
-  declareFunction( dirops_file_name_t, "directory_operations.file_name" );
+  declareFunction( dirops_dir_name_t, "directory_operations.dir_name", ParseDirOpsDirName'access );
+  declareFunction( dirops_base_name_t, "directory_operations.base_name", ParseDirOpsBaseName'access );
+  declareFunction( dirops_file_extension_t, "directory_operations.file_extension", ParseDirOpsFileExtension'access );
+  declareFunction( dirops_file_name_t, "directory_operations.file_name", ParseDirOpsFileName'access );
   declareIdent( dirops_path_style_t, "directory_operations.path_style",
      root_enumerated_t, typeClass );
   declareStandardConstant( dirops_path_style_unix_t, "path_style.unix",
@@ -353,7 +361,7 @@ begin
      dirops_path_style_t, "1" );
   declareStandardConstant( dirops_path_style_system_default_t, "path_style.system_default",
      dirops_path_style_t, "2" );
-  declareFunction( dirops_format_pathname_t, "directory_operations.format_pathname" );
+  declareFunction( dirops_format_pathname_t, "directory_operations.format_pathname", ParseDirOpsFormatPathname'access );
   declareIdent( dirops_env_style_t, "directory_operations.environment_style",
      root_enumerated_t, typeClass );
   declareStandardConstant( dirops_env_style_unix_t, "environment_style.unix",
@@ -364,7 +372,7 @@ begin
      dirops_env_style_t, "2" );
   declareStandardConstant( dirops_env_style_system_default_t, "environment_style.system_default",
      dirops_env_style_t, "3" );
-  declareFunction( dirops_expand_path_t, "directory_operations.expand_path" );
+  declareFunction( dirops_expand_path_t, "directory_operations.expand_path", ParseDirOpsExpandPath'access );
 end StartupDirOps;
 
 procedure ShutdownDirOps is

@@ -418,6 +418,30 @@ as if the exception was not handled.</p>
         </div>
         </div>
         </center>
+
+<h2>Profile Files</h2>
+
+<p>When SparForte is used as a login shell, it checks for the existence
+of two files: "/etc/sparforte_profile" and ".sparforte_profile" in the
+user's home directory.  The first is a system-wide initialization file.   
+The second is for initializing personal preferences.  The personal file 
+always run after the system-wide file.  These are only read on login, or 
+if SparForte simulates a login when it is started with <tt>--login</tt>.</p>
+
+<p>SparForte checks these files before opening them.  They must meet the
+following conditions:</p>
+
+<ul>
+<li>They must be regular files (that is, not a directory or other special-purpose file)</li>
+<li>The file permissions must allow the files to be read by the user</li>
+<li>The file permissions must not allow others to write to the files (for security purposes)</li>
+<li>They must not be empty</li>
+</ul>
+
+<p>If a profile exists but doesn't meet these conditions, an error is
+reported and the profile file will not be run.  The login session will
+be aborted.</p>
+
 <br>&nbsp;
 
 			</td>

@@ -139,11 +139,12 @@ begin
   end if;
 end ParsePenSetRect;
 
-procedure ParsePenIsEmptyRect( result : out unbounded_string ) is
+procedure ParsePenIsEmptyRect( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := pen.is_empty_rect( rec );
   -- Source: Pen.isEmptyRect
   record_id : identifier;
 begin
+  kind := boolean_t;
   expect( pen_is_empty_rect_t );
   expect( symbol_t, "(" );
   ParseIdentifier( record_id );
@@ -268,7 +269,7 @@ begin
   end if;
 end ParsePenIntersectRect;
 
-procedure ParsePenInsideRect( result : out unbounded_string ) is
+procedure ParsePenInsideRect( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := pen.inside_rect( rect, rect2 );
   -- Source: Pen.insideRect
   record_id : identifier;
@@ -276,6 +277,7 @@ procedure ParsePenInsideRect( result : out unbounded_string ) is
   --x_val, y_val : unbounded_string;
   --x_type, y_type : identifier;
 begin
+  kind := boolean_t;
   expect( pen_inside_rect_t );
   expect( symbol_t, "(" );
   ParseIdentifier( record_id );
@@ -300,13 +302,14 @@ begin
   end if;
 end ParsePenInsideRect;
 
-procedure ParsePenInRect( result : out unbounded_string ) is
+procedure ParsePenInRect( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := pen.in_rect( rect, x, y );
   -- Source: Pen.inRect
   record_id : identifier;
   x_val, y_val : unbounded_string;
   x_type, y_type : identifier;
 begin
+  kind := boolean_t;
   expect( pen_in_rect_t );
   expect( symbol_t, "(" );
      ParseExpression( x_val, x_type );
@@ -361,11 +364,12 @@ begin
   end if;
 end ParsePenSetPenMode;
 
-procedure ParsePenGetPenMode( result : out unbounded_string ) is
+procedure ParsePenGetPenMode( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mode := pen.get_pen_mode( canvas_id );
   -- Source: Pen.getPenMode
   canvas_id : identifier;
 begin
+  kind := pen_pen_mode_t;
   expect( pen_get_pen_mode_t );
   expect( symbol_t, "(" );
   ParseIdentifier( canvas_id );
@@ -501,11 +505,12 @@ begin
   end if;
 end ParsePenSetPenBrush;
 
-procedure ParsePenGetPenBrush( result : out unbounded_string ) is
+procedure ParsePenGetPenBrush( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: brush := pen.get_pen_brush( canvas_id );
   -- Source: Pen.getPenBrush
   canvas_id : identifier;
 begin
+  kind := pen_pen_brush_t;
   expect( pen_get_pen_brush_t );
   expect( symbol_t, "(" );
   ParseIdentifier( canvas_id );
@@ -1522,7 +1527,7 @@ begin
   end if;
 end ParsePenRevealNow;
 
-procedure ParsePenGreyscale( result : out unbounded_string ) is
+procedure ParsePenGreyscale( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: rgb := pen.greyscale( r, g, b );
   -- Source: Pen.Greyscale
   rexpr_val : unbounded_string;
@@ -1532,6 +1537,7 @@ procedure ParsePenGreyscale( result : out unbounded_string ) is
   bexpr_val : unbounded_string;
   bexpr_type: identifier;
 begin
+  kind := pen_rgbcomponent_t;
   expect( pen_greyscale_t );
   expect( symbol_t, "(" );
   ParseExpression( rexpr_val, rexpr_type );
@@ -16787,20 +16793,20 @@ begin
   -- declare pen package procedures and functions
 
   declareProcedure( pen_set_rect_t, "pen.set_rect", ParsePenSetRect'access );
-  declareFunction( pen_is_empty_rect_t, "pen.is_empty_rect" );
+  declareFunction( pen_is_empty_rect_t, "pen.is_empty_rect", ParsePenIsEmptyRect'access );
   declareProcedure( pen_offset_rect_t, "pen.offset_rect", ParsePenOffsetRect'access );
   declareProcedure( pen_inset_rect_t, "pen.inset_rect", ParsePenInsetRect'access );
   declareProcedure( pen_intersect_rect_t, "pen.intersect_rect", ParsePenIntersectRect'access );
-  declareFunction( pen_inside_rect_t, "pen.inside_rect" );
-  declareFunction( pen_in_rect_t, "pen.in_rect" );
+  declareFunction( pen_inside_rect_t, "pen.inside_rect", ParsePenInsideRect'access );
+  declareFunction( pen_in_rect_t, "pen.in_rect", ParsePenInRect'access );
 
   declareProcedure( pen_set_pen_mode_t, "pen.set_pen_mode", ParsePenSetPenMode'access );
   declareProcedure( pen_set_pen_ink_t, "pen.set_pen_ink", ParsePenSetPenInk'access );
   declareProcedure( pen_set_pen_brush_t, "pen.set_pen_brush", ParsePenSetPenBrush'access );
   declareProcedure( pen_set_pen_pattern_t, "pen.set_pen_pattern", ParsePenSetPenPattern'access );
-  declareFunction( pen_get_pen_mode_t, "pen.get_pen_mode" );
+  declareFunction( pen_get_pen_mode_t, "pen.get_pen_mode", ParsePenGetPenMode'access );
   declareProcedure( pen_get_pen_ink_t, "pen.get_pen_ink", ParsePenGetPenInk'access );
-  declareFunction( pen_get_pen_brush_t, "pen.get_pen_brush" );
+  declareFunction( pen_get_pen_brush_t, "pen.get_pen_brush", ParsePenGetPenBrush'access );
 --  declareFunction( pen_get_pen_pattern_t, "pen.get_pen_pattern" );
 
   declareProcedure( pen_move_to_t, "pen.move_to", ParsePenMoveTo'access );
@@ -16833,13 +16839,13 @@ begin
 
   -- declareProcedure( pen_clip_rect_t, "pen.clip_rect" );
 
-  declareFunction( pen_greyscale_t, "pen.greyscale" );
+  declareFunction( pen_greyscale_t, "pen.greyscale", ParsePenGreyscale'access );
   declareProcedure( pen_blend_t, "pen.blend", ParsePenBlend'access );
   declareProcedure( pen_fade_t, "pen.fade", ParsePenFade'access );
 
   declareProcedure( pen_plot_t, "pen.plot", ParsePenPlot'access );
 
-  declareProcedure( pen_set_font_t, "pen.sent_font" );
+  declareProcedure( pen_set_font_t, "pen.set_font" );
   declareProcedure( pen_put_t, "pen.put" );
 
   -- the declarations of pen color names have been broken out into separate

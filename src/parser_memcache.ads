@@ -81,8 +81,8 @@ procedure ShutdownMemcache;
 -- PARSE THE MEMCACHE PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseMemcacheIsValidMemcacheKey( result : out unbounded_string );
-procedure ParseMemcacheNewCluster( result : out unbounded_string );
+procedure ParseMemcacheIsValidMemcacheKey( result : out unbounded_string; kind : out identifier );
+procedure ParseMemcacheNewCluster( result : out unbounded_string; kind : out identifier );
 procedure ParseMemcacheRegisterServer;
 procedure ParseMemcacheClearServers;
 procedure ParseMemcacheSetClusterName;
@@ -92,17 +92,17 @@ procedure ParseMemcacheAdd;
 procedure ParseMemcacheReplace;
 procedure ParseMemcacheAppend;
 procedure ParseMemcachePrepend;
-procedure ParseMemcacheGet( result : out unbounded_string );
+procedure ParseMemcacheGet( result : out unbounded_string; kind : out identifier );
 procedure ParseMemcacheDelete;
-procedure ParseMemcacheStats( result : out unbounded_string );
-procedure ParseMemcacheVersion( result : out unbounded_string );
+procedure ParseMemcacheStats( result : out unbounded_string; kind : out identifier );
+procedure ParseMemcacheVersion( result : out unbounded_string; kind : out identifier );
 procedure ParseMemcacheFlush;
 
 ------------------------------------------------------------------------------
 -- PARSE THE MEMCACHE HIGHREAD PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseHighreadNewCluster( result : out unbounded_string );
+procedure ParseHighreadNewCluster( result : out unbounded_string; kind : out identifier );
 procedure ParseHighreadRegisterAlphaServer;
 procedure ParseHighreadRegisterBetaServer;
 procedure ParseHighreadClearServers;
@@ -113,10 +113,10 @@ procedure ParseHighreadAdd;
 procedure ParseHighreadReplace;
 procedure ParseHighreadAppend;
 procedure ParseHighreadPrepend;
-procedure ParseHighreadGet( result : out unbounded_string );
+procedure ParseHighreadGet( result : out unbounded_string; kind : out identifier );
 procedure ParseHighreadDelete;
-procedure ParseHighreadStats( result : out unbounded_string );
-procedure ParseHighreadVersion( result : out unbounded_string );
+procedure ParseHighreadStats( result : out unbounded_string; kind : out identifier );
+procedure ParseHighreadVersion( result : out unbounded_string; kind : out identifier );
 procedure ParseHighreadFlush;
 
 end parser_memcache;

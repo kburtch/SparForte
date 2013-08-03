@@ -101,10 +101,11 @@ begin
   end if;
 end ParseGnatCRC32Update;
 
-procedure ParseGnatCRC32GetValue( result : out unbounded_string ) is
+procedure ParseGnatCRC32GetValue( result : out unbounded_string; kind : out identifier ) is
   -- integer := gnat.crc32.update( crc32 )  -- really, unsigned 32
   var_id  : identifier;
 begin
+  kind := integer_t;
   expect( gnat_crc32_get_value_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
@@ -131,7 +132,7 @@ begin
   declareIdent( gnat_crc32_crc32_t, "gnat.crc32.crc32", uni_numeric_t, typeClass );
   declareProcedure( gnat_crc32_initialize_t, "gnat.crc32.initialize", ParseGnatCRC32Initialize'access );
   declareProcedure( gnat_crc32_update_t, "gnat.crc32.update", ParseGnatCRC32Update'access );
-  declareFunction( gnat_crc32_get_value_t, "gnat.crc32.get_value" );
+  declareFunction( gnat_crc32_get_value_t, "gnat.crc32.get_value",ParseGnatCRC32GetValue'access );
 end StartupGnatCRC;
 
 procedure ShutdownGnatCRC is

@@ -163,12 +163,13 @@ end checkRestrictedShell;
 ----------------------------------------------------------------------------
 
 
-procedure ParseMemcacheIsValidMemcacheKey( result : out unbounded_string ) is
+procedure ParseMemcacheIsValidMemcacheKey( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: pegasock.is_valid_memcache_key
   -- Source: PegaSock.Memcache.isValidMemcacheKey
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  kind := boolean_t;
   expect( memcache_is_valid_memcache_key_t );
   ParseSingleStringParameter( expr_val, expr_type );
   checkMemcacheRestriction;
@@ -181,12 +182,13 @@ begin
   end if;
 end ParseMemcacheIsValidMemcacheKey;
 
-procedure ParseMemcacheNewCluster( result : out unbounded_string ) is
+procedure ParseMemcacheNewCluster( result : out unbounded_string; kind : out identifier ) is
 -- Syntax: cluster := new_cluster;
 -- Source: n/a
   cluster_entry : aMemcacheClusterEntry;
   cluster_id_value : aMemcacheClusterID;
 begin
+  kind := memcache_cluster_t;
   checkRestrictedShell;
   expect( memcache_new_cluster_t );
   checkMemcacheRestriction;
@@ -493,7 +495,7 @@ begin
   end if;
 end ParseMemcachePrepend;
 
-procedure ParseMemcacheGet( result : out unbounded_string ) is
+procedure ParseMemcacheGet( result : out unbounded_string; kind : out identifier ) is
 -- Syntax: value := get( cluster, key )
 -- Source: pegasock.memcache.get
   cluster_entry : aMemcacheClusterEntry;
@@ -501,6 +503,7 @@ procedure ParseMemcacheGet( result : out unbounded_string ) is
   expr_type : identifier;
   cluster_id : identifier;
 begin
+  kind := string_t;
   checkRestrictedShell;
   expect( memcache_get_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
@@ -555,12 +558,13 @@ begin
   end if;
 end ParseMemcacheDelete;
 
-procedure ParseMemcacheStats( result : out unbounded_string ) is
+procedure ParseMemcacheStats( result : out unbounded_string; kind : out identifier ) is
 -- Syntax: stats( cluster )
 -- Source: pegasock.memcache.stats
   cluster_entry : aMemcacheClusterEntry;
   cluster_id : identifier;
 begin
+  kind := string_t;
   checkRestrictedShell;
   expect( memcache_stats_t );
   ParseSingleInOutParameter( cluster_id, memcache_cluster_t  );
@@ -581,12 +585,13 @@ begin
   end if;
 end ParseMemcacheStats;
 
-procedure ParseMemcacheVersion( result : out unbounded_string ) is
+procedure ParseMemcacheVersion( result : out unbounded_string; kind : out identifier ) is
 -- Syntax: version( cluster )
 -- Source: pegasock.memcache.version
   cluster_entry : aMemcacheClusterEntry;
   cluster_id : identifier;
 begin
+  kind := string_t;
   checkRestrictedShell;
   expect( memcache_version_t );
   ParseSingleInOutParameter( cluster_id, memcache_cluster_t  );
@@ -641,12 +646,13 @@ end ParseMemcacheFlush;
 ----------------------------------------------------------------------------
 
 
-procedure ParseHighreadNewCluster( result : out unbounded_string ) is
+procedure ParseHighreadNewCluster( result : out unbounded_string; kind : out identifier ) is
 -- Syntax: cluster := new_cluster;
 -- Source: n/a
   cluster_entry : aMemcacheDualClusterEntry;
   cluster_id_value : aMemcacheDualClusterID;
 begin
+  kind := highread_cluster_t;
   checkRestrictedShell;
   expect( highread_new_cluster_t );
   checkMemcacheRestriction;
@@ -986,7 +992,7 @@ begin
   end if;
 end ParseHighreadPrepend;
 
-procedure ParseHighreadGet( result : out unbounded_string ) is
+procedure ParseHighreadGet( result : out unbounded_string; kind : out identifier ) is
 -- Syntax: value := get( cluster, key )
 -- Source: pegasock.memcache.highread.get
   cluster_entry : aMemcacheDualClusterEntry;
@@ -994,6 +1000,7 @@ procedure ParseHighreadGet( result : out unbounded_string ) is
   expr_type : identifier;
   cluster_id : identifier;
 begin
+  kind := string_t;
   checkRestrictedShell;
   expect( highread_get_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
@@ -1048,12 +1055,13 @@ begin
   end if;
 end ParseHighreadDelete;
 
-procedure ParseHighreadStats( result : out unbounded_string ) is
+procedure ParseHighreadStats( result : out unbounded_string; kind : out identifier ) is
 -- Syntax: stats( cluster )
 -- Source: pegasock.memcache.highread.stats
   cluster_entry : aMemcacheDualClusterEntry;
   cluster_id : identifier;
 begin
+  kind := string_t;
   checkRestrictedShell;
   expect( highread_stats_t );
   ParseSingleInOutParameter( cluster_id, highread_cluster_t  );
@@ -1074,12 +1082,13 @@ begin
   end if;
 end ParseHighreadStats;
 
-procedure ParseHighreadVersion( result : out unbounded_string ) is
+procedure ParseHighreadVersion( result : out unbounded_string; kind : out identifier ) is
 -- Syntax: version( cluster )
 -- Source: pegasock.memcache.highread.version
   cluster_entry : aMemcacheDualClusterEntry;
   cluster_id : identifier;
 begin
+  kind := string_t;
   checkRestrictedShell;
   expect( highread_version_t );
   ParseSingleInOutParameter( cluster_id, highread_cluster_t  );
@@ -1143,8 +1152,8 @@ begin
   declareIdent( memcache_cluster_type_t, "memcache.memcache_cluster_type", root_enumerated_t, typeClass );
   declareStandardConstant( memcache_cluster_type_normal_t, "memcache.memcache_cluster_type.normal", memcache_cluster_type_t, "0" );
 
-  declareFunction(  memcache_is_valid_memcache_key_t, "memcache.is_valid_memcache_key" );
-  declareFunction( memcache_new_cluster_t, "memcache.new_cluster" );
+  declareFunction(  memcache_is_valid_memcache_key_t, "memcache.is_valid_memcache_key", ParseMemcacheIsValidMemcacheKey'access );
+  declareFunction( memcache_new_cluster_t, "memcache.new_cluster", ParseMemcacheNewCluster'access  );
   declareProcedure( memcache_register_server_t, "memcache.register_server", ParseMemcacheRegisterServer'access );
   declareProcedure( memcache_clear_servers_t, "memcache.clear_servers", ParseMemcacheClearServers'access );
   declareProcedure( memcache_set_cluster_name_t, "memcache.set_cluster_name", ParseMemcacheSetClusterName'access );
@@ -1154,15 +1163,15 @@ begin
   declareProcedure( memcache_replace_t, "memcache.replace", ParseMemcacheReplace'access );
   declareProcedure( memcache_append_t, "memcache.append", ParseMemcacheAppend'access );
   declareProcedure( memcache_prepend_t, "memcache.prepend", ParseMemcachePrepend'access );
-  declareFunction(  memcache_get_t, "memcache.get" );
+  declareFunction(  memcache_get_t, "memcache.get", ParseMemcacheGet'access );
   declareProcedure( memcache_delete_t, "memcache.delete", ParseMemcacheDelete'access );
-  declareFunction(  memcache_stats_t, "memcache.stats" );
-  declareFunction(  memcache_version_t, "memcache.version" );
+  declareFunction(  memcache_stats_t, "memcache.stats", ParseMemcacheStats'access );
+  declareFunction(  memcache_version_t, "memcache.version", ParseMemcacheVersion'access );
   declareProcedure( memcache_flush_t, "memcache.flush", ParseMemcacheFlush'access );
 
   declareIdent( highread_cluster_t, "memcache.highread.memcache_dual_cluster", long_integer_t, typeClass );
 
-  declareFunction(  highread_new_cluster_t, "memcache.highread.new_cluster" );
+  declareFunction(  highread_new_cluster_t, "memcache.highread.new_cluster", ParseHighreadNewCluster'access );
   declareProcedure( highread_register_alpha_server_t, "memcache.highread.register_alpha_server", ParseHighreadRegisterAlphaServer'access );
   declareProcedure( highread_register_beta_server_t, "memcache.highread.register_beta_server", ParseHighreadRegisterBetaServer'access );
   declareProcedure( highread_clear_servers_t, "memcache.highread.clear_servers", ParseHighreadClearServers'access );
@@ -1173,10 +1182,10 @@ begin
   declareProcedure( highread_replace_t, "memcache.highread.replace", ParseHighreadReplace'access );
   declareProcedure( highread_append_t, "memcache.highread.append", ParseHighreadAppend'access );
   declareProcedure( highread_prepend_t, "memcache.highread.prepend", ParseHighreadPrepend'access );
-  declareFunction(  highread_get_t, "memcache.highread.get" );
+  declareFunction(  highread_get_t, "memcache.highread.get", ParseHighreadGet'access );
   declareProcedure( highread_delete_t, "memcache.highread.delete", ParseHighreadDelete'access );
-  declareFunction(  highread_stats_t, "memcache.highread.stats" );
-  declareFunction(  highread_version_t, "memcache.highread.version" );
+  declareFunction(  highread_stats_t, "memcache.highread.stats", ParseHighreadStats'access );
+  declareFunction(  highread_version_t, "memcache.highread.version", ParseHighreadVersion'access );
   declareProcedure( highread_flush_t, "memcache.highread.flush", ParseHighreadFlush'access );
 
 end StartupMemcache;

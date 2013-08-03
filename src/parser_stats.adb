@@ -81,6 +81,8 @@ begin
      end loop;
      f := max_string;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
+  elsif syntax_check then
+     kind := universal_t; -- type is not known during syntax check
   end if;
 end ParseStatsMax;
 
@@ -119,6 +121,8 @@ begin
      end loop;
      f := min_string;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
+  elsif syntax_check then
+     kind := universal_t; -- type is not known during syntax check
   end if;
 end ParseStatsMin;
 
@@ -153,6 +157,8 @@ begin
      end loop;
      f := to_unbounded_string( sum );
      kind   := identifiers( identifiers( var_id ).kind ).kind;
+  elsif syntax_check then
+     kind := universal_t; -- type is not known during syntax check
   end if;
 end ParseStatsSum;
 
@@ -188,6 +194,8 @@ begin
      end loop;
      f := to_unbounded_string( sum / long_float( len ) );
      kind   := identifiers( identifiers( var_id ).kind ).kind;
+  elsif syntax_check then
+     kind := universal_t; -- type is not known during syntax check
   end if;
 end ParseStatsAverage;
 
@@ -233,6 +241,8 @@ begin
      f := to_unbounded_string( sum_diff_sq / long_float( len-1 ) );
      -- kind   := identifiers( var_id ).kind;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
+  elsif syntax_check then
+     kind := universal_t; -- type is not known during syntax check
   end if;
 end ParseStatsVariance;
 
@@ -278,6 +288,8 @@ begin
      f := to_unbounded_string( sqrt( sum_diff_sq / long_float( len-1 ) ) );
      -- kind   := identifiers( var_id ).kind;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
+  elsif syntax_check then
+     kind := universal_t; -- type is not known during syntax check
   end if;
 end ParseStatsStandardDeviation;
 
@@ -287,12 +299,12 @@ end ParseStatsStandardDeviation;
 
 procedure StartupStats is
 begin
-  declareProcedure( stats_average_t, "stats.average" );
-  declareProcedure( stats_max_t, "stats.max" );
-  declareProcedure( stats_min_t, "stats.min" );
-  declareProcedure( stats_standard_deviation_t, "stats.standard_deviation" );
-  declareProcedure( stats_sum_t, "stats.sum" );
-  declareProcedure( stats_variance_t, "stats.variance" );
+  declareFunction( stats_average_t, "stats.average", ParseStatsAverage'access );
+  declareFunction( stats_max_t, "stats.max", ParseStatsMax'access );
+  declareFunction( stats_min_t, "stats.min", ParseStatsMin'access );
+  declareFunction( stats_standard_deviation_t, "stats.standard_deviation", ParseStatsStandardDeviation'access );
+  declareFunction( stats_sum_t, "stats.sum", ParseStatsSum'access );
+  declareFunction( stats_variance_t, "stats.variance", ParseStatsVariance'access );
 end StartupStats;
 
 procedure ShutdownStats is

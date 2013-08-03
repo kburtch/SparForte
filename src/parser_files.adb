@@ -28,6 +28,7 @@ with bush_os,
      scanner.calendar,
      parser,
      parser_aux,
+     parser_cal,
      gnat.io_aux,
      gnat.os_lib;
 use  bush_os,
@@ -37,6 +38,7 @@ use  bush_os,
      scanner.calendar,
      parser,
      parser_aux,
+     parser_cal,
      gnat.io_aux,
      gnat.os_lib;
 
@@ -50,12 +52,13 @@ package body parser_files is
 ---------------------------------------------------------
 
 
-procedure ParseFileExists( f : out unbounded_string ) is
+procedure ParseFileExists( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.file_exists( path );
   -- Source: GNAT.IO_Aux.File_Exists
   file_val  : unbounded_string;
   file_type : identifier;
 begin
+  kind := boolean_t;
   expect( files_exists_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -67,12 +70,13 @@ begin
   end if;
 end ParseFileExists;
 
-procedure ParseIsAbsolutePath( f : out unbounded_string ) is
+procedure ParseIsAbsolutePath( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.is_absolute_path( path );
   -- Source: GNAT.OS_Lib.Is_Absolute_Path
   file_val  : unbounded_string;
   file_type : identifier;
 begin
+  kind := boolean_t;
   expect( files_is_absolute_path_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -84,12 +88,13 @@ begin
   end if;
 end ParseIsAbsolutePath;
 
-procedure ParseIsRegularFile( f : out unbounded_string ) is
+procedure ParseIsRegularFile( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.is_regular_file( path );
   -- Source: GNAT.IO_Aux.Is_Regular_File
   file_val  : unbounded_string;
   file_type : identifier;
 begin
+  kind := boolean_t;
   expect( files_is_regular_file_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -101,12 +106,13 @@ begin
   end if;
 end ParseIsRegularFile;
 
-procedure ParseIsDirectory( f : out unbounded_string ) is
+procedure ParseIsDirectory( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.is_directory( path );
   -- Source: GNAT.IO_Aux.Is_Directory
   file_val  : unbounded_string;
   file_type : identifier;
 begin
+  kind := boolean_t;
   expect( files_is_directory_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -118,12 +124,13 @@ begin
   end if;
 end ParseIsDirectory;
 
-procedure ParseIsWritableFile( f : out unbounded_string ) is
+procedure ParseIsWritableFile( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.is_writable_file( path );
   -- Source: GNAT.IO_Aux.Is_Writable_File + Is_Regular_File
   file_val  : unbounded_string;
   file_type : identifier;
 begin
+  kind := boolean_t;
   expect( files_is_writable_file_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -136,12 +143,13 @@ begin
   end if;
 end ParseIsWritableFile;
 
-procedure ParseIsWritable( f : out unbounded_string ) is
+procedure ParseIsWritable( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.is_writable( path );
   -- Source: GNAT.IO_Aux.Is_Writable_File
   file_val  : unbounded_string;
   file_type : identifier;
 begin
+  kind := boolean_t;
   expect( files_is_writable_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -153,12 +161,13 @@ begin
   end if;
 end ParseIsWritable;
 
-procedure ParseIsExecutableFile( f : out unbounded_string ) is
+procedure ParseIsExecutableFile( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.is_executable_file( path );
   -- Source: N/A
   file_val  : unbounded_string;
   file_type : identifier;
 begin
+  kind := boolean_t;
   expect( files_is_executable_file_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -170,12 +179,13 @@ begin
   end if;
 end ParseIsExecutableFile;
 
-procedure ParseIsExecutable( f : out unbounded_string ) is
+procedure ParseIsExecutable( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.is_executable( path );
   -- Source: N/A
   file_val  : unbounded_string;
   file_type : identifier;
 begin
+  kind := boolean_t;
   expect( files_is_executable_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -187,12 +197,13 @@ begin
   end if;
 end ParseIsExecutable;
 
-procedure ParseIsReadableFile( f : out unbounded_string ) is
+procedure ParseIsReadableFile( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.is_readable_file( path );
   -- Source: N/A
   file_val  : unbounded_string;
   file_type : identifier;
 begin
+  kind := boolean_t;
   expect( files_is_readable_file_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -204,12 +215,13 @@ begin
   end if;
 end ParseIsReadableFile;
 
-procedure ParseIsReadable( f : out unbounded_string ) is
+procedure ParseIsReadable( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.is_readable( path );
   -- Source: N/A
   file_val  : unbounded_string;
   file_type : identifier;
 begin
+  kind := boolean_t;
   expect( files_is_readable_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -221,13 +233,14 @@ begin
   end if;
 end ParseIsReadable;
 
-procedure ParseFileSize( f : out unbounded_string ) is
+procedure ParseFileSize( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.size( path );
   -- Source: N/A
   file_val  : unbounded_string;
   file_type : identifier;
   filesize  : long_integer;
 begin
+  kind := long_integer_t;
   expect( files_size_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -244,12 +257,13 @@ begin
   end if;
 end ParseFileSize;
 
-procedure ParseBasename( f : out unbounded_string ) is
+procedure ParseBasename( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.basename( path );
   -- Source: N/A
   file_val  : unbounded_string;
   file_type : identifier;
 begin
+  kind := string_t;
   expect( files_basename_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -261,12 +275,13 @@ begin
   end if;
 end ParseBasename;
 
-procedure ParseDirname( f : out unbounded_string ) is
+procedure ParseDirname( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.dirname( path );
   -- Source: N/A
   file_val  : unbounded_string;
   file_type : identifier;
 begin
+  kind := string_t;
   expect( files_dirname_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -278,12 +293,13 @@ begin
   end if;
 end ParseDirname;
 
-procedure ParseIsWaitingFile( f : out unbounded_string ) is
+procedure ParseIsWaitingFile( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.is_waiting_file( path );
   -- Source: N/A
   file_val  : unbounded_string;
   file_type : identifier;
 begin
+  kind := boolean_t;
   expect( files_is_waiting_file_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -295,13 +311,14 @@ begin
   end if;
 end ParseIsWaitingFile;
 
-procedure ParseFileLastModified( f : out unbounded_string ) is
+procedure ParseFileLastModified( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.last_modified( path );
   -- Source: N/A
   file_val  : unbounded_string;
   file_type : identifier;
   year, month, day, seconds : integer;
 begin
+  kind := cal_time_t;
   expect( files_last_modified_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -322,13 +339,14 @@ begin
   end if;
 end ParseFileLastModified;
 
-procedure ParseFileLastChanged( f : out unbounded_string ) is
+procedure ParseFileLastChanged( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.last_changed( path );
   -- Source: N/A
   file_val  : unbounded_string;
   file_type : identifier;
   year, month, day, seconds : integer;
 begin
+  kind := cal_time_t;
   expect( files_last_changed_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -349,13 +367,14 @@ begin
   end if;
 end ParseFileLastChanged;
 
-procedure ParseFileLastAccessed( f : out unbounded_string ) is
+procedure ParseFileLastAccessed( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.last_accessed( path );
   -- Source: N/A
   file_val  : unbounded_string;
   file_type : identifier;
   year, month, day, seconds : integer;
 begin
+  kind := cal_time_t;
   expect( files_last_accessed_t );
   expect( symbol_t, "(" );
   ParseExpression( file_val, file_type );
@@ -378,23 +397,23 @@ end ParseFileLastAccessed;
 
 procedure StartupFiles is
 begin
-  declareFunction( files_exists_t, "files.exists" );
-  declareFunction( files_is_absolute_path_t, "files.is_absolute_path" );
-  declareFunction( files_is_regular_file_t, "files.is_regular_file" );
-  declareFunction( files_is_directory_t, "files.is_directory" );
-  declareFunction( files_is_writable_file_t, "files.is_writable_file" );
-  declareFunction( files_is_writable_t, "files.is_writable" );
-  declareFunction( files_is_executable_file_t, "files.is_executable_file" );
-  declareFunction( files_is_executable_t, "files.is_executable" );
-  declareFunction( files_is_readable_file_t, "files.is_readable_file" );
-  declareFunction( files_is_readable_t, "files.is_readable" );
-  declareFunction( files_basename_t, "files.basename" );
-  declareFunction( files_dirname_t, "files.dirname" );
-  declareFunction( files_is_waiting_file_t, "files.is_waiting_file" );
-  declareFunction( files_size_t, "files.size" );
-  declareFunction( files_last_modified_t, "files.last_modified" );
-  declareFunction( files_last_changed_t, "files.last_changed" );
-  declareFunction( files_last_accessed_t, "files.last_accessed" );
+  declareFunction( files_exists_t, "files.exists", ParseFileExists'access );
+  declareFunction( files_is_absolute_path_t, "files.is_absolute_path", ParseIsAbsolutePath'access );
+  declareFunction( files_is_regular_file_t, "files.is_regular_file", ParseIsRegularFile'access );
+  declareFunction( files_is_directory_t, "files.is_directory", ParseIsDirectory'access );
+  declareFunction( files_is_writable_file_t, "files.is_writable_file", ParseIsWritableFile'access );
+  declareFunction( files_is_writable_t, "files.is_writable", ParseIsWritable'access );
+  declareFunction( files_is_executable_file_t, "files.is_executable_file", ParseIsExecutableFile'access );
+  declareFunction( files_is_executable_t, "files.is_executable", ParseIsExecutable'access );
+  declareFunction( files_is_readable_file_t, "files.is_readable_file", ParseIsReadableFile'access );
+  declareFunction( files_is_readable_t, "files.is_readable", ParseIsReadable'access );
+  declareFunction( files_basename_t, "files.basename", ParseBasename'access );
+  declareFunction( files_dirname_t, "files.dirname", ParseDirname'access );
+  declareFunction( files_is_waiting_file_t, "files.is_waiting_file", ParseIsWaitingFile'access );
+  declareFunction( files_size_t, "files.size", ParseFileSize'access );
+  declareFunction( files_last_modified_t, "files.last_modified", ParseFileLastModified'access );
+  declareFunction( files_last_changed_t, "files.last_changed", ParseFileLastChanged'access );
+  declareFunction( files_last_accessed_t, "files.last_accessed", ParseFileLastAccessed'access );
 end StartupFiles;
 
 procedure ShutdownFiles is

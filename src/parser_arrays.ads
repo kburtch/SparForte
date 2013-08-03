@@ -59,7 +59,7 @@ procedure ShutdownArrays;
 
 procedure ParseArraysFirst( f : out unbounded_string; kind : out identifier );
 procedure ParseArraysLast( f : out unbounded_string; kind : out identifier );
-procedure ParseArraysLength( f : out unbounded_string );
+procedure ParseArraysLength( f : out unbounded_string; kind : out identifier );
 procedure ParseArraysBubbleSort;
 procedure ParseArraysBubbleSortDescending;
 procedure ParseArraysHeapSort;

@@ -114,12 +114,13 @@ begin
   end if;
 end ParseArraysLast;
 
-procedure ParseArraysLength( f : out unbounded_string ) is
+procedure ParseArraysLength( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: arrays.length( arraytypeorvar );
   -- Source: arraytypeorvar'length
   var_id   : identifier;
   array_id : arrayID;
 begin
+  kind := natural_t;
   expect( arrays_length_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
@@ -633,9 +634,9 @@ end ParseArraysToJSON;
 
 procedure StartupArrays is
 begin
-  declareFunction( arrays_first_t, "arrays.first" );
-  declareFunction( arrays_last_t, "arrays.last" );
-  declareFunction( arrays_length_t, "arrays.length" );
+  declareFunction( arrays_first_t, "arrays.first", ParseArraysFirst'access );
+  declareFunction( arrays_last_t, "arrays.last", ParseArraysLast'access );
+  declareFunction( arrays_length_t, "arrays.length", ParseArraysLength'access );
   declareProcedure( arrays_bubble_sort_t, "arrays.bubble_sort", ParseArraysBubbleSort'access );
   declareProcedure( arrays_bubble_sort_descending_t, "arrays.bubble_sort_descending",ParseArraysBubbleSortDescending'access );
   declareProcedure( arrays_heap_sort_t, "arrays.heap_sort", ParseArraysHeapSort'access );
