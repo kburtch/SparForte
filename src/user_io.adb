@@ -712,7 +712,7 @@ procedure displayVersionSplash is
   -- uses term attributes.
 begin
   if isatty( stdout ) = 1 then
-     Put( "SparForte (Business Shell, BUSH) version " );
+     Put( "SparForte version " );
      Put_Line( version );
      Put_Line( "Copyright (c)2001-2013 Free Software Foundation");
      Put_Line( "This is free software; see the source for copying conditions." );

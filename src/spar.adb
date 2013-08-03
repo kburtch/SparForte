@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2013 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -59,23 +59,25 @@ begin
   if Argument_Count = 1 then
      if Argument(1) = "-h" or Argument( 1 ) = "--help" then
         Put_Line( "SparForte (Business Shell) usage" );
-        Put_Line( "spar [-bcdeghilrtvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--restricted][--test][--trace][--] [script [param1 ...] ]" );
-        Put_Line( "  --break or -b      - enable breakout debugging prompt" );
-        Put_Line( "  --check or -c      - syntax check the script but do not run" );
-        Put_Line( "  --debug or -d      - enable pragma assert and pragma debug" );
-        Put_Line( "  --exec or -e       - script is a string containing BUSH commands" );
-        Put_Line( "  --gcc-errors or -g - simple GCC-style errors (good for IDEs)" );
-        Put_Line( "  --help or -h       - show this help" );
-        Put_Line( "  --import-all or -i - import all environment variables" );
-        Put_Line( "  --Ld or -L d       - add directory d to the separate files search list" );
+        Put_Line( "spar [-bcdeghilrtvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--restricted][--design|--maintenance|--test][--trace][--] [script [param1 ...] ]" );
+        Put_Line( "  --break or -b       - enable breakout debugging prompt" );
+        Put_Line( "  --check or -c       - syntax check the script but do not run" );
+        Put_Line( "  --debug or -d       - enable pragma assert and pragma debug" );
+        Put_Line( "  --design or -D      - design phase mode" );
+        Put_Line( "  --exec or -e        - script is a string containing BUSH commands" );
+        Put_Line( "  --gcc-errors or -g  - simple GCC-style errors (good for IDEs)" );
+        Put_Line( "  --help or -h        - show this help" );
+        Put_Line( "  --import-all or -i  - import all environment variables" );
+        Put_Line( "  -Ld or -L d         - add directory d to the separate files search list" );
         Put_Line( "                       (may be repeated)" );
-        Put_Line( "  --login or -l      - simulate a login shell" );
-        Put_Line( "  --restricted or -r - restricted shell mode" );
-        Put_Line( "  --test or -t       - enable pragma assert and pragma test" );
-        Put_Line( "  --trace or -x      - show script lines as they run" );
-        Put_Line( "  --verbose or -v    - show shell activity" );
-        Put_Line( "  --version or -V    - show version" );
-        Put_Line( "  --                 - explicitly end shell options" );
+        Put_Line( "  --login or -l       - simulate a login shell" );
+        Put_Line( "  --maintenance or -m - maintenance phase mode" );
+        Put_Line( "  --restricted or -r  - restricted shell mode" );
+        Put_Line( "  --test or -t        - test phase mode" );
+        Put_Line( "  --trace or -x       - show script lines as they run" );
+        Put_Line( "  --verbose or -v     - show shell activity" );
+        Put_Line( "  --version or -V     - show version" );
+        Put_Line( "  --                  - explicitly end shell options" );
         Set_Exit_Status( 0 );
         return;
      elsif Argument(1) = "-V" or Argument( 1 ) = "--version" then
@@ -109,6 +111,8 @@ begin
             syntaxOpt := true;
          elsif Argument(i) = "--debug" then
             debugOpt := true;
+         elsif Argument(i) = "--design" then
+            designOpt := true;
          elsif Argument(i) = "--exec" then
             execOpt := true;
          elsif Argument(i) = "--gcc-errors" then
@@ -121,6 +125,8 @@ begin
             importOpt := true;
          elsif Argument(i) = "--login" then
             isLoginShell := true;
+         elsif Argument(i) = "--maintenance" then
+            maintenanceOpt := true;
          elsif Argument(i) = "--restricted" then
             rshOpt := true;
          elsif Argument(i) = "--test" then
@@ -172,6 +178,8 @@ begin
                       syntaxOpt := true;
                    elsif Args(letter) = 'd' then
                       debugOpt := true;
+                   elsif Args(letter) = 'D' then
+                      designOpt := true;
                    elsif Args(letter) = 'e' then
                       execOpt := true;
                    elsif Args(letter) = 'h' then
@@ -182,6 +190,8 @@ begin
                       importOpt := true;
                    elsif Args(letter) = 'l' then
                       isLoginShell := true;
+                   elsif Args(letter) = 'm' then
+                      maintenanceOpt := true;
                    elsif Args(letter) = 'g' then
                       gccOpt := true;
                    elsif Args(letter) = 'r' then
@@ -218,6 +228,11 @@ begin
   if boolean(syntaxOpt) and
      optionOffset > Argument_Count then
      Put_Line( standard_error, Command_Name & ": missing command name" );
+     Set_Exit_Status( 192 );
+     return;
+  end if;
+  if (designOpt and maintenanceOpt) or (designOpt and testOpt) or (maintenanceOpt and testOpt) then
+     Put_Line( standard_error, Command_Name & ": only one of --design, --maintenance or --test is allowed" );
      Set_Exit_Status( 192 );
      return;
   end if;

@@ -59,11 +59,13 @@ script</li>
   <li> <b>--debug (or -d)</b> -&nbsp; enable pragma debug's and
 assert's.&nbsp;
 Without this, pragma debug has no effect.</li>
+  <li> <b>--design (or -D)</b> -&nbsp; specify that this project is in the
+design phase of the software development life cycle.  This will enable/
+disable language features and errors suitable to this phase.</li>
   <li> <b>--exec (or -e)</b> -&nbsp; the script path is not a path but
 a
 script to
 execute.</li>
-
   <li> <b>--gcc-errors (or -g)</b> - show simple gcc-style error
 messages
 to be
@@ -72,15 +74,18 @@ printing in error messages.</li>
   <li> <b>--help (or -h)</b> - show help on command line options</li>
   <li> <b>--import-all (or -n)</b> - declare and import all
 environment variables when SparForte starts</li>
-  <li> <b>--L</b> - specify additional SPAR_LIBRARY_PATH directories (see below)</li>
+  <li> <b>-L<i>d</i> or -L <i>d</i></b> - specify additional SPAR_LIBRARY_PATH directories (see below)</li>
   <li> <b>--login (or -l)</b> - simulate a login shell</li>
-  <li> <b>--no-check (or -n)</b> - run without checking the syntax
-first</li>
+  <li> <b>--maintenance (or -m)</b> -&nbsp; specify that this project is in the
+maintenance phase of the software development life cycle.  That is, that the
+project has been installed in the production environment.  This will enable/
+disable language features and errors suitable to this phase.</li>
   <li> <b>--restricted (or -r)</b> - run as a restricted shell.</li>
 
-  <li> <b>--test (or -t)</b> -&nbsp; enable pragma test's and
-assert's.&nbsp;
-Without this, pragma test has no effect.</li>
+  <li> <b>--test (or -t)</b> -&nbsp; specify that this project is in the
+testing phase of the software development life cycle.  This will enable/
+disable language features and errors suitable to this phase. For example,
+it will enable pragma assert and pragma test.</li>
   <li> <b>--trace (or -x)</b> - same as "trace true". Turn on tracing.</li>
   <li> <b>--verbose (or -v)</b> - show interpreter progress</li>
   <li> <b>--version (or -V)</b> - show version of SparForte and exit</li>

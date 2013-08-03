@@ -173,12 +173,14 @@ type commandLineOption is new boolean;
 breakoutOpt  : commandLineOption := false;           -- true if -b
 syntaxOpt    : commandLineOption := false;           -- true if -c
 debugOpt     : commandLineOption := false;           -- true if -d
+testOpt      : commandLineOption := false;           -- true if -D
 execOpt      : commandLineOption := false;           -- true if -e
 gccOpt       : commandLineOption := false;           -- true if -g
 importOpt    : commandLineOption := false;           -- true if -i
+maintenanceOpt : commandLineOption := false;         -- true if -m
 rshOpt       : commandLineOption := false;           -- true if -r
 verboseOpt   : commandLineOption := false;           -- true if -v
-testOpt      : commandLineOption := false;           -- true if -t
+designOpt    : commandLineOption := false;           -- true if -t
 traceOpt     : commandLineOption := false;           -- true if -x
 
 --optionOffset : natural := 0;     -- character offset to script parameters
