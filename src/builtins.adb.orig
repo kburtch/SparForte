@@ -1213,6 +1213,7 @@ begin
      Put_Line( "  end_of_line       logout          records             wait             " );
      Put_Line( "  enums             loop            return              while            " );
      Put_Line( "  env               memcache        set_input           ""?""            " );
+     Put_Line( "                                                        gnat.cgi         " );
      New_Line;
      Put_Line( "You can also type an O/S word or a SparForte script name." );
 end helpMain;
@@ -1632,11 +1633,33 @@ begin
      Put_Line( "get_line - read a line of text" );
      Put_Line( "  var := get_line [ (file) ]" );
   elsif helpTopic = "gnat.crc32" then
-     Put_Line( "gnat (package) - GNAT CRC packages");
+     Put_Line( "gnat.crc32 (package) - GNAT CRC packages");
      New_Line;
      Put_Line( "  gnat.crc32.initialize( c )" );
      Put_Line( "  gnat.crc32.update(c, s )" );
      Put_Line( "  i := gnat.crc32.get_value( c )" );
+  elsif helpTopic = "gnat.cgi" then
+     Put_Line( "gnat.cgi (package) - GNAT CGI packages");
+     New_Line;
+     Put_Line( "  gnat.cgi.put_header [(f) | (h [,f])]" );
+     Put_Line( "  b := gnat.cgi.ok" );
+     Put_Line( "  m := gnat.cgi.method" );
+     Put_Line( "  s := gnat.cgi.metavariable( k [,r] )" );
+     Put_Line( "  b := gnat.cgi.metavariable.exists( k )" );
+     Put_Line( "  s := gnat.cgi.url" );
+     Put_Line( "  n := gnat.cgi.argument_count" );
+     Put_Line( "  s := gnat.cgi.value( k [,r] | p )" );
+     Put_Line( "  b := gnat.cgi.key_exists( k )" );
+     Put_Line( "  s := gnat.cgi.key( p )" );
+     Put_Line( "  gnat.cgi.cookie.put_header [ (f) | (h [,f]) ]" );
+     Put_Line( "  b := gnat.cgi.cookie_ok" );
+     Put_Line( "  n := gnat.cgi.cookie_count" );
+     Put_Line( "  s := gnat.cgi.cookie_value( k [,r] )" );
+     Put_Line( "  b := gnat.cgi.cookie_exists( k )" );
+     Put_Line( "  s := gnat.cgi.cookie_key( p )" );
+     Put_Line( "  gnat.cgi.cookie.set( k [,v [,c [,d [,m [,p [,s] ] ] ] ] ] )" );
+     Put_Line( "  s := gnat.cgi.debug.text_output" );
+     Put_Line( "  s := gnat.cgi.debug.html_output" );
   elsif helpTopic = "help" then
      Put_Line( "help - show help or script annotations" );
      Put_Line( "  -h - HTML output" );
