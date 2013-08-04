@@ -7,10 +7,10 @@
 # on BASH but I haven't tested it on other shells so your results may vary.
 
 #set -eu
-# CVS: $Id$
 
 PREFIX="/usr/local"
 MANPREFIX="/usr/local"
+NO_GCGI=0
 
 # Get command line options
 
@@ -31,6 +31,7 @@ while [ $# -gt 0 ] ; do
       echo "  --make=MAKE           name of GNU make"
       echo "  --prefix=PREFIX       root installation directory"
       echo "  --manprefix=MANPREFIX man page install directory"
+      echo "  --with-gnat-cgi       enable GNAT.CGI support"
       echo "  --without-mysql       disable MySQL support"
       echo "  --without-postgres    disable PostgreSQL support"
 #      echo "  --without-sdl"
@@ -50,6 +51,9 @@ while [ $# -gt 0 ] ; do
       ;;
   --manprefix)
       MANPREFIX=`echo "$1" | cut -d= -f2`
+      ;;
+  --with-gnat-cgi)
+      NO_GCGI=
       ;;
   --without-mysql)
       NO_MYSQL=0
@@ -961,6 +965,11 @@ if [ -z "$NO_SOUND" ] ; then
 else
    GNATPREP_OPTS="$GNATPREP_OPTS -DSOUND=false"
 fi
+if [ -z "$NO_GCGI" ] ; then
+   GNATPREP_OPTS="$GNATPREP_OPTS -DGCGI=true"
+else
+   GNATPREP_OPTS="$GNATPREP_OPTS -DGCGI=false"
+fi
 # this is for world.ads. APQ=true if either DB is installed
 if [ ! -z "$NEEDS_APQ" ] ; then
    GNATPREP_OPTS="$GNATPREP_OPTS -DAPQ=true"
@@ -1037,6 +1046,12 @@ test -f parser_sound.adb && chmod 666 parser_sound.adb
 cp parser_sound.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb parser_sound.adb
 chmod 444 parser_sound.adb
+
+echo "Updating...parser_gnat_cgi.adb"
+test -f parser_gnat_cgi.adb && chmod 666 parser_gnat_cgi.adb
+cp parser_gnat_cgi.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb parser_gnat_cgi.adb
+chmod 444 parser_gnat_cgi.adb
 
 test -f temp.ads && rm temp.ads
 test -f temp.adb && rm temp.adb
