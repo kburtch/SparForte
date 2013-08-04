@@ -64,7 +64,8 @@ with system,
     parser_sound,
     parser_dirops,
     parser_memcache,
-    parser_gnat_crc;
+    parser_gnat_crc,
+    parser_gnat_cgi;
 use ada.text_io,
     ada.integer_text_io,
     ada.command_line,
@@ -103,7 +104,8 @@ use ada.text_io,
     parser_sound,
     parser_dirops,
     parser_memcache,
-    parser_gnat_crc;
+    parser_gnat_crc,
+    parser_gnat_cgi;
 
 pragma Optimize( time );
 
@@ -1008,6 +1010,7 @@ end dumpSymbolTable;
 procedure shutdownScanner is
 begin
 
+  ShutdownGnatCGI;
   ShutdownSound;
   ShutdownGnatCrc;
   ShutdownMemcache;
@@ -1663,6 +1666,7 @@ begin
   StartupMemcache;
   StartupGnatCrc;
   StartupSound;
+  StartupGnatCGI;
 
   -- Declare all Environment Variables
   --

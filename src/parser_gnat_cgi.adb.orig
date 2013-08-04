@@ -1,0 +1,973 @@
+------------------------------------------------------------------------------
+-- GNAT CGI Package Parser                                                  --
+--                                                                          --
+-- Part of SparForte                                                        --
+------------------------------------------------------------------------------
+--                                                                          --
+--              Copyright (C) 2001-2013 Free Software Foundation            --
+--                                                                          --
+-- This is free software;  you can  redistribute it  and/or modify it under --
+-- terms of the  GNU General Public License as published  by the Free Soft- --
+-- ware  Foundation;  either version 2,  or (at your option) any later ver- --
+-- sion.  This is distributed in the hope that it will be useful, but WITH- --
+-- OUT ANY WARRANTY;  without even the  implied warranty of MERCHANTABILITY --
+-- or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License --
+-- for  more details.  You should have  received  a copy of the GNU General --
+-- Public License  distributed with this;  see file COPYING.  If not, write --
+-- to  the Free Software Foundation,  59 Temple Place - Suite 330,  Boston, --
+-- MA 02111-1307, USA.                                                      --
+--                                                                          --
+-- This is maintained at http://www.sparforte.com                           --
+--                                                                          --
+------------------------------------------------------------------------------
+
+with ada.text_io; use ada.text_io;
+
+with gnat.cgi,
+     gnat.cgi.cookie,
+     gnat.cgi.debug,
+    world,
+    scanner,
+    parser,
+    parser_aux;
+use world,
+    scanner,
+    parser,
+    parser_aux;
+
+package body parser_gnat_cgi is
+
+right_bracket : unbounded_string := to_unbounded_string( ")" );
+
+procedure ParseSingleStringExpression( expr_val : out unbounded_string;
+  expr_type : out identifier ) is
+begin
+  expect( symbol_t, "(" );
+  ParseExpression( expr_val, expr_type );
+  if baseTypesOk( expr_type, string_t ) then
+     expect( symbol_t, ")" );
+  end if;
+end ParseSingleStringExpression;
+
+------------------------------------------------------------------------------
+-- HOUSEKEEPING
+------------------------------------------------------------------------------
+
+procedure StartupGnatCGI is
+begin
+  declareStandardConstant( gnat_cgi_default_header_t, "gnat.cgi.default_header", string_t, gnat.cgi.default_header );
+
+  declareIdent( gnat_cgi_method_type_t, "gnat.cgi.method_type", root_enumerated_t, typeClass );
+
+  declareStandardConstant( gnat_cgi_method_type_get_t, "gnat.cgi.method_type.get", gnat_cgi_method_type_t, "0" );
+  declareStandardConstant( gnat_cgi_method_type_post_t, "gnat.cgi.method_type.post", gnat_cgi_method_type_t, "1" );
+
+  declareIdent( gnat_cgi_metavariable_name_t, "gnat.cgi.metavariable_name", root_enumerated_t, typeClass );
+  declareStandardConstant( gnat_cgi_mvn_Auth_Type_t, "gnat.cgi.metavariable_name.auth_type", gnat_cgi_metavariable_name_t, "0" );
+  declareStandardConstant( gnat_cgi_mvn_Content_Length_t, "gnat.cgi.metavariable_name.content_length", gnat_cgi_metavariable_name_t, "1" );
+  declareStandardConstant( gnat_cgi_mvn_Content_Type_t,"gnat.cgi.metavariable_name.content_type",  gnat_cgi_metavariable_name_t, "2" );
+  declareStandardConstant( gnat_cgi_mvn_Document_Root_t, "gnat.cgi.metavariable_name.document_root", gnat_cgi_metavariable_name_t, "3" );
+  declareStandardConstant( gnat_cgi_mvn_Gateway_Interface_t, "gnat.cgi.metavariable_name.gateway_interface", gnat_cgi_metavariable_name_t, "4" );
+  declareStandardConstant( gnat_cgi_mvn_HTTP_Accept_t, "gnat.cgi.metavariable_name.http_accept", gnat_cgi_metavariable_name_t, "5" );
+  declareStandardConstant( gnat_cgi_mvn_HTTP_Accept_Encoding_t, "gnat.cgi.metavariable_name.http_accept_encoding", gnat_cgi_metavariable_name_t, "6" );
+  declareStandardConstant( gnat_cgi_mvn_HTTP_Accept_Language_t, "gnat.cgi.metavariable_name.http_accept_language", gnat_cgi_metavariable_name_t, "7" );
+  declareStandardConstant( gnat_cgi_mvn_HTTP_Connection_t, "gnat.cgi.metavariable_name.http_connection", gnat_cgi_metavariable_name_t, "8" );
+  declareStandardConstant( gnat_cgi_mvn_HTTP_Cookie_t, "gnat.cgi.metavariable_name.http_cookie", gnat_cgi_metavariable_name_t, "9" );
+  declareStandardConstant( gnat_cgi_mvn_HTTP_Extension_t, "gnat.cgi.metavariable_name.http_extension", gnat_cgi_metavariable_name_t, "10" );
+  declareStandardConstant( gnat_cgi_mvn_HTTP_From_t, "gnat.cgi.metavariable_name.http_from", gnat_cgi_metavariable_name_t, "11" );
+  declareStandardConstant( gnat_cgi_mvn_HTTP_Host_t, "gnat.cgi.metavariable_name.http_host", gnat_cgi_metavariable_name_t, "12" );
+  declareStandardConstant( gnat_cgi_mvn_HTTP_Referer_t, "gnat.cgi.metavariable_name.http_referer", gnat_cgi_metavariable_name_t, "13" );
+  declareStandardConstant( gnat_cgi_mvn_HTTP_User_Agent_t, "gnat.cgi.metavariable_name.http_user_agent", gnat_cgi_metavariable_name_t, "14" );
+  declareStandardConstant( gnat_cgi_mvn_Path_t, "gnat.cgi.metavariable_name.path", gnat_cgi_metavariable_name_t, "15" );
+  declareStandardConstant( gnat_cgi_mvn_Path_Info_t, "gnat.cgi.metavariable_name.path_info", gnat_cgi_metavariable_name_t, "16" );
+  declareStandardConstant( gnat_cgi_mvn_Path_Translated_t, "gnat.cgi.metavariable_name.path_translated", gnat_cgi_metavariable_name_t, "17" );
+  declareStandardConstant( gnat_cgi_mvn_Query_String_t, "gnat.cgi.metavariable_name.query_string", gnat_cgi_metavariable_name_t, "18" );
+  declareStandardConstant( gnat_cgi_mvn_Remote_Addr_t, "gnat.cgi.metavariable_name.remote_addr", gnat_cgi_metavariable_name_t, "19" );
+  declareStandardConstant( gnat_cgi_mvn_Remote_Host_t, "gnat.cgi.metavariable_name.remote_host", gnat_cgi_metavariable_name_t, "20" );
+  declareStandardConstant( gnat_cgi_mvn_Remote_Port_t, "gnat.cgi.metavariable_name.remote_port", gnat_cgi_metavariable_name_t, "21" );
+  declareStandardConstant( gnat_cgi_mvn_Remote_Ident_t, "gnat.cgi.metavariable_name.remote_ident", gnat_cgi_metavariable_name_t, "22" );
+  declareStandardConstant( gnat_cgi_mvn_Remote_User_t, "gnat.cgi.metavariable_name.remote_user", gnat_cgi_metavariable_name_t, "23" );
+  declareStandardConstant( gnat_cgi_mvn_Request_Method_t, "gnat.cgi.metavariable_name.request_method", gnat_cgi_metavariable_name_t, "24" );
+  declareStandardConstant( gnat_cgi_mvn_Request_URI_t, "gnat.cgi.metavariable_name.request_uri", gnat_cgi_metavariable_name_t, "25" );
+  declareStandardConstant( gnat_cgi_mvn_Script_Filename_t, "gnat.cgi.metavariable_name.script_filename", gnat_cgi_metavariable_name_t, "26" );
+  declareStandardConstant( gnat_cgi_mvn_Script_Name_t, "gnat.cgi.metavariable_name.script_name", gnat_cgi_metavariable_name_t, "27" );
+  declareStandardConstant( gnat_cgi_mvn_Server_Addr_t, "gnat.cgi.metavariable_name.server_addr", gnat_cgi_metavariable_name_t, "28" );
+  declareStandardConstant( gnat_cgi_mvn_Server_Admin_t, "gnat.cgi.metavariable_name.server_admin", gnat_cgi_metavariable_name_t, "29" );
+  declareStandardConstant( gnat_cgi_mvn_Server_Name_t, "gnat.cgi.metavariable_name.server_name", gnat_cgi_metavariable_name_t, "30" );
+  declareStandardConstant( gnat_cgi_mvn_Server_Port_t, "gnat.cgi.metavariable_name.server_port", gnat_cgi_metavariable_name_t, "31" );
+  declareStandardConstant( gnat_cgi_mvn_Server_Protocol_t, "gnat.cgi.metavariable_name.server_protocol", gnat_cgi_metavariable_name_t, "32" );
+  declareStandardConstant( gnat_cgi_mvn_Server_Signature_t, "gnat.cgi.metavariable_name.server_signature", gnat_cgi_metavariable_name_t, "33" );
+  declareStandardConstant( gnat_cgi_mvn_Server_Software_t, "gnat.cgi.metavariable_name.server_software", gnat_cgi_metavariable_name_t, "34" );
+
+  declareProcedure( gnat_cgi_put_header_t, "gnat.cgi.put_header", ParseGnatCGIPutHeader'access );
+  declareFunction( gnat_cgi_ok_t, "gnat.cgi.ok", ParseGnatCGIOK'access );
+  declareFunction( gnat_cgi_method_t, "gnat.cgi.method", ParseGnatCGIMethod'access );
+  declareFunction( gnat_cgi_metavariable_t, "gnat.cgi.metavariable", ParseGnatCGIMetavariable'access );
+  declareFunction( gnat_cgi_metavariable_exists_t, "gnat.cgi.metavariable_exists", ParseGnatCGIMetavariableExists'access );
+  declareFunction( gnat_cgi_url_t, "gnat.cgi.url", ParseGnatCGIURL'access );
+  declareFunction( gnat_cgi_argument_count_t, "gnat.cgi.argument_count", ParseGnatCGIArgumentCount'access );
+  declareFunction( gnat_cgi_value_t, "gnat.cgi.value", ParseGnatCGIValue'access );
+  declareFunction( gnat_cgi_key_exists_t, "gnat.cgi.key_exists", ParseGnatCGIKeyExists'access );
+  declareFunction( gnat_cgi_key_t, "gnat.cgi.key", ParseGnatCGIKey'access );
+
+  -- Gnat.Cgi.Cookie
+
+  declareProcedure( gnat_cgi_cookie_put_header_t, "gnat.cgi.cookie.put_header", ParseGnatCGICookiePutHeader'access );
+  declareFunction( gnat_cgi_cookie_ok_t, "gnat.cgi.cookie.ok", ParseGnatCGICookieOK'access );
+  declareFunction( gnat_cgi_cookie_count_t, "gnat.cgi.cookie.count", ParseGnatCGICookieCount'access );
+  declareFunction( gnat_cgi_cookie_value_t, "gnat.cgi.cookie.value", ParseGnatCGICookieValue'access );
+  declareFunction( gnat_cgi_cookie_exists_t, "gnat.cgi.cookie.exists", ParseGnatCGICookieExists'access );
+  declareFunction( gnat_cgi_cookie_key_t, "gnat.cgi.cookie.key", ParseGnatCGICookieKey'access );
+  declareProcedure( gnat_cgi_cookie_set_t, "gnat.cgi.cookie.set", ParseGnatCGICookieSet'access );
+
+  -- Gnat.Cgi.Debug
+
+  declareFunction( gnat_cgi_debug_text_output_t, "gnat.cgi.debug.text_output", ParseGnatCGIDebugTextOutput'access );
+  declareFunction( gnat_cgi_debug_html_output_t, "gnat.cgi.debug.html_output", ParseGnatCGIDebugHTMLOutput'access );
+
+end StartupGnatCGI;
+
+procedure ShutdownGnatCGI is
+begin
+  null;
+end ShutdownGnatCGI;
+
+------------------------------------------------------------------------------
+-- PARSE THE GNAT CGI PACKAGE
+------------------------------------------------------------------------------
+
+#if GCGI
+
+procedure ParseGnatCGIPutHeader is
+  -- gnat.cgi.put_header
+  -- gnat.cgi.put_header( header [, force] )
+  -- gnat.cgi.put_header( force )
+  expr_val  : unbounded_string;
+  expr_type : identifier;
+  expr2_val  : unbounded_string;
+  expr2_type : identifier;
+  Header : unbounded_string := to_unbounded_string( GNAT.CGI.Default_Header );
+  Force  : boolean := false;
+bt : identifier;
+b : boolean;
+begin
+  expect( gnat_cgi_put_header_t );
+  if token = symbol_t and identifiers( token ).value = "(" then
+     expect( symbol_t, "(" );
+     ParseExpression( expr_val, expr_type );
+     bt := getBaseType( expr_type );
+     if bt = string_t or bt = uni_string_t or bt = universal_t then
+        b := baseTypesOK( expr_type, string_t );
+        header := expr_val;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           ParseExpression( expr2_val, expr2_type );
+           if baseTypesOK( expr2_type, boolean_t ) then
+               force := "1" = to_string( expr2_val );
+           end if;
+        end if;
+        expect( symbol_t, ")" );
+     elsif bt = boolean_t then
+        b := baseTypesOK( expr_type, boolean_t );
+        force := "1" = to_string( expr_val );
+
+        expect( symbol_t, ")" );
+     else
+        err( "string or boolean expected" );
+     end if;
+  end if;
+
+  if isExecutingCommand then
+     begin
+       Gnat.CGI.Put_Header( to_string( Header ), Force );
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when Gnat.Cgi.Parameter_Not_Found =>
+       err( "parameter_not_found exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGIPutHeader;
+
+#else
+
+procedure not_configured is
+begin
+  err( "gnat.cgi support not configured" );
+end not_configured;
+
+pragma warnings( 0ff );
+-- Hide unused parameters warnings
+
+procedure ParseGnatCGIPutHeader is
+begin
+  not_configured;
+end ParseGnatCGIPutHeader;
+
+#end if;
+#if GCGI
+
+procedure ParseGnatCGIOK( result : out unbounded_string; kind : out identifier ) is
+  -- bool := gnat.cgi.ok
+begin
+  kind := boolean_t;
+  expect( gnat_cgi_ok_t );
+  if isExecutingCommand then
+     begin
+       result := to_bush_boolean( gnat.cgi.ok );
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGIOK;
+
+#else
+
+procedure ParseGnatCGIPutHeader is
+begin
+  not_configured;
+end ParseGnatCGIPutHeader;
+
+#end if;
+#if GCGI
+
+procedure ParseGnatCGIMethod( result : out unbounded_string; kind : out identifier ) is
+  -- method := gnat.cgi.method
+  mt : gnat.cgi.method_type;
+begin
+  kind := gnat_cgi_method_type_t;
+  expect( gnat_cgi_method_t );
+  if isExecutingCommand then
+     begin
+       mt := gnat.cgi.method;
+       result := to_unbounded_string(
+                   integer'image(
+                      gnat.cgi.method_type'pos( mt )
+                   )(2)&""
+                 );
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when Gnat.Cgi.Parameter_Not_Found =>
+       err( "parameter_not_found exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGIMethod;
+
+#else
+
+procedure ParseGnatCGIMethod( result : out unbounded_string; kind : out identifier ) is
+begin
+  not_configured;
+end ParseGnatCGIMethod;
+
+#end if;
+#if GCGI
+
+procedure ParseGnatCGIMetavariable( result : out unbounded_string; kind : out identifier ) is
+  -- gnat.cgi.metavariable( key [, required] )
+  meta_val   : unbounded_string;
+  meta_type  : identifier;
+  bool_val   : unbounded_string := identifiers( false_t ).value;
+  bool_type  : identifier := boolean_t;
+begin
+  kind := string_t;
+  expect( gnat_cgi_metavariable_t );
+  expect( symbol_t, "(" );
+  ParseExpression( meta_val, meta_type );
+  if baseTypesOk( meta_type, gnat_cgi_metavariable_name_t ) then
+     if token = symbol_t and identifiers( token ).value = "," then
+        expect( symbol_t, "," );
+        ParseExpression( bool_val, bool_type );
+        if baseTypesOk( bool_type, boolean_t ) then
+           null;
+        end if;
+     end if;
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     begin
+       result := to_unbounded_string( Gnat.Cgi.Metavariable(
+          gnat.cgi.metavariable_name'val( integer'value( " " & to_string( meta_val ) ) ),
+          bool_val = identifiers( true_t ).value
+       ) );
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when Gnat.Cgi.Parameter_Not_Found =>
+       err( "parameter_not_found exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGIMetavariable;
+
+#else
+
+procedure ParseGnatCGIMetavariable( result : out unbounded_string; kind : out identifier ) is
+begin
+  not_configured;
+end ParseGnatCGIMetavariable;
+
+#end if;
+#if GCGI
+
+procedure ParseGnatCGIMetavariableExists( result : out unbounded_string; kind : out identifier ) is
+  -- gnat.cgi.metavariable_exists( key )
+  meta_val   : unbounded_string;
+  meta_type  : identifier;
+  bool       : boolean := false;
+begin
+  kind := boolean_t;
+  expect( gnat_cgi_metavariable_exists_t );
+  expect( symbol_t, "(" );
+  ParseExpression( meta_val, meta_type );
+  if baseTypesOk( meta_type, gnat_cgi_metavariable_name_t ) then
+     null;
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     begin
+       result := to_bush_boolean(
+          Gnat.Cgi.Metavariable_Exists(
+             Gnat.Cgi.metavariable_name'val(
+                integer'value(
+                   " " & to_string (
+                      meta_val
+       ) ) ) ) );
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when Gnat.Cgi.Parameter_Not_Found =>
+       err( "parameter_not_found exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGIMetavariableExists;
+
+#else
+
+procedure ParseGnatCGIMetavariableExists( result : out unbounded_string; kind : out identifier ) is
+begin
+  not_configured;
+end ParseGnatCGIMetavariableExists;
+  
+#end if;
+#if GCGI
+
+procedure ParseGnatCGIURL( result : out unbounded_string; kind : out identifier ) is
+begin
+  kind := string_t;
+  expect( gnat_cgi_url_t );
+  if isExecutingCommand then
+     result := to_unbounded_string( gnat.cgi.url );
+  end if;
+end ParseGnatCGIURL;
+
+#else
+
+procedure ParseGnatCGIURL( result : out unbounded_string; kind : out identifier ) is
+begin
+  not_configured;
+end ParseGnatCGIURL;
+
+#end if;
+#if GCGI
+
+procedure ParseGnatCGIArgumentCount( result : out unbounded_string; kind : out identifier ) is
+  -- gnat.cgi.argument_count
+begin
+  kind := natural_t;
+  expect( gnat_cgi_argument_count_t );
+  if isExecutingCommand then
+     begin
+       result := to_unbounded_string( natural'image( gnat.cgi.argument_count ) );
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when Gnat.Cgi.Parameter_Not_Found =>
+       err( "parameter_not_found exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGIArgumentCount;
+
+#else
+
+procedure ParseGnatCGIArgumentCount( result : out unbounded_string; kind : out identifier ) is
+begin
+  not_configured;
+end ParseGnatCGIArgumentCount;
+
+#end if;
+#if GCGI
+
+procedure ParseGnatCGIValue( result : out unbounded_string; kind : out identifier ) is
+  -- gnat.cgi.value( key [,required] )
+  -- gnat.cgi.value( pos )
+  expr_val  : unbounded_string;
+  expr_type : identifier;
+  base_type : identifier;
+  bool_val  : unbounded_string := identifiers( false_t ).value;
+  bool_type : identifier := boolean_t;
+  key_version : boolean := false;
+begin
+  kind := string_t;
+  expect( gnat_cgi_value_t );
+  expect( symbol_t, "(" );
+  ParseExpression( expr_val, expr_type );
+  base_type := getBaseType( expr_type );
+  if base_type = string_t or base_type = uni_string_t or base_type = universal_t then
+     key_version := true;
+     if baseTypesOk( expr_type, string_t ) then
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           ParseExpression( bool_val, bool_type );
+           if baseTypesOk( bool_type, boolean_t ) then
+              null;
+           end if;
+        end if;
+     end if;
+  elsif base_type = positive_t or base_type = uni_numeric_t then
+     key_version := false;
+     if intTypesOk( expr_type, positive_t ) then
+        null;
+     end if;
+  else
+     err( "postive or string expected" );
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     begin
+       if key_version then
+          result := to_unbounded_string( gnat.cgi.value(
+            to_string( expr_val ),
+            bool_val = identifiers( true_t ).value
+          ) );
+       else
+          result := to_unbounded_string( gnat.cgi.value(
+            positive'value( " " & to_string( expr_val ) )
+          ) );
+       end if;
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when Gnat.Cgi.Parameter_Not_Found =>
+       err( "parameter_not_found exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGIValue;
+
+#else
+
+procedure ParseGnatCGIValue( result : out unbounded_string; kind : out identifier ) is
+begin
+  not_configured;
+end ParseGnatCGIValue;
+
+#end if;
+#if GCGI
+
+procedure ParseGnatCGIKeyExists( result : out unbounded_string; kind : out identifier ) is
+  -- bool := gnat.cgi.key_exists( key )
+  key_val : unbounded_string;
+  key_type : identifier;
+begin
+  kind := boolean_t;
+  expect( gnat_cgi_key_exists_t );
+  ParseSingleStringExpression( key_val, key_type );
+  if isExecutingCommand then
+     begin
+       result := to_bush_boolean(
+         gnat.cgi.key_exists( to_string( key_val ))
+       );
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when Gnat.Cgi.Parameter_Not_Found =>
+       err( "parameter_not_found exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGIKeyExists;
+
+#else
+
+procedure ParseGnatCGIKeyExists( result : out unbounded_string; kind : out identifier ) is
+begin
+  not_configured;
+end ParseGnatCGIKeyExists;
+
+#end if;
+#if GCGI
+
+procedure ParseGnatCGIKey( result : out unbounded_string; kind : out identifier ) is
+  -- s := key( position )
+  pos_val  : unbounded_string;
+  pos_type : identifier;
+begin
+  kind := string_t;
+  expect( gnat_cgi_key_t );
+  expect( symbol_t, "(" );
+  ParseExpression( pos_val, pos_type );
+  if baseTypesOK( pos_type, positive_t ) then
+     null;
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     begin
+       result := to_unbounded_string(
+         gnat.cgi.key( positive'value( " " & to_string( pos_val ) ) )
+       );
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when Gnat.Cgi.Parameter_Not_Found =>
+       err( "parameter_not_found exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGIKey;
+
+#else
+
+procedure ParseGnatCGIKey( result : out unbounded_string; kind : out identifier ) is
+begin
+  not_configured;
+end ParseGnatCGIKey;
+
+#end if;
+#if GCGI
+
+-- Cookies to be added here
+
+procedure ParseGnatCGICookiePutHeader is
+  -- gnat.cgi.cookie.put_header
+  -- gnat.cgi.cookie.put_header( header [, force] )
+  -- gnat.cgi.cookie.put_header( force )
+  expr_val  : unbounded_string;
+  expr_type : identifier;
+  expr2_val  : unbounded_string;
+  expr2_type : identifier;
+  Header : unbounded_string := to_unbounded_string( GNAT.CGI.Default_Header );
+  Force  : boolean := false;
+bt : identifier;
+b : boolean;
+begin
+  expect( gnat_cgi_cookie_put_header_t );
+  if token = symbol_t and identifiers( token ).value = "(" then
+     expect( symbol_t, "(" );
+     ParseExpression( expr_val, expr_type );
+     bt := getBaseType( expr_type );
+     if bt = string_t or bt = uni_string_t or bt = universal_t then
+        b := baseTypesOK( expr_type, string_t );
+        header := expr_val;
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           ParseExpression( expr2_val, expr2_type );
+           if baseTypesOK( expr2_type, boolean_t ) then
+               force := "1" = to_string( expr2_val );
+           end if;
+        end if;
+        expect( symbol_t, ")" );
+     elsif bt = boolean_t then
+        b := baseTypesOK( expr_type, boolean_t );
+        force := "1" = to_string( expr_val );
+
+        expect( symbol_t, ")" );
+     else
+        err( "string or boolean expected" );
+     end if;
+  end if;
+
+  if isExecutingCommand then
+     begin
+       Gnat.CGI.Cookie.Put_Header( to_string( Header ), Force );
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when Gnat.Cgi.Parameter_Not_Found =>
+       err( "parameter_not_found exception" );
+     when Gnat.Cgi.Cookie.Cookie_Not_Found =>
+       err( "cookie_not_found exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGICookiePutHeader;
+
+#else
+
+procedure ParseGnatCGICookiePutHeader is
+begin
+  not_configured;
+end ParseGnatCGICookiePutHeader;
+
+#end if;
+#if GCGI
+
+procedure ParseGnatCGICookieOK( result : out unbounded_string; kind : out identifier ) is
+  -- bool := gnat.cgi.cookie.ok
+begin
+  kind := boolean_t;
+  expect( gnat_cgi_cookie_ok_t );
+  if isExecutingCommand then
+     begin
+       result := to_bush_boolean( gnat.cgi.cookie.ok );
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGICookieOK;
+
+#else
+
+procedure ParseGnatCGICookieOK( result : out unbounded_string; kind : out identifier ) is
+begin
+  not_configured;
+end ParseGnatCGICookieOK;
+
+#end if;
+#if GCGI
+
+procedure ParseGnatCGICookieCount( result : out unbounded_string; kind : out identifier ) is
+  -- gnat.cgi.cookie.count
+begin
+  kind := natural_t;
+  expect( gnat_cgi_cookie_count_t );
+  if isExecutingCommand then
+     begin
+       result := to_unbounded_string( natural'image( gnat.cgi.cookie.count ) );
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when Gnat.Cgi.Parameter_Not_Found =>
+       err( "parameter_not_found exception" );
+     when Gnat.Cgi.Cookie.Cookie_Not_Found =>
+       err( "cookie_not_found exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGICookieCount;
+
+#else
+
+procedure ParseGnatCGICookieCount( result : out unbounded_string; kind : out identifier ) is
+begin
+  not_configured;
+end ParseGnatCGICookieCount;
+
+#end if;
+#if GCGI
+
+procedure ParseGnatCGICookieValue( result : out unbounded_string; kind : out identifier ) is
+  -- gnat.cgi.cookie.value( key [,required] )
+  -- gnat.cgi.cookie.value( pos )
+  expr_val  : unbounded_string;
+  expr_type : identifier;
+  base_type : identifier;
+  bool_val  : unbounded_string := identifiers( false_t ).value;
+  bool_type : identifier := boolean_t;
+  key_version : boolean := false;
+begin
+  kind := string_t;
+  expect( gnat_cgi_cookie_value_t );
+  expect( symbol_t, "(" );
+  ParseExpression( expr_val, expr_type );
+  base_type := getBaseType( expr_type );
+  if base_type = string_t or base_type = uni_string_t or base_type = universal_t then
+     key_version := true;
+     if baseTypesOk( expr_type, string_t ) then
+        if token = symbol_t and identifiers( token ).value = "," then
+           expect( symbol_t, "," );
+           ParseExpression( bool_val, bool_type );
+           if baseTypesOk( bool_type, boolean_t ) then
+              null;
+           end if;
+        end if;
+     end if;
+  elsif base_type = positive_t or base_type = uni_numeric_t then
+     key_version := false;
+     if intTypesOk( expr_type, positive_t ) then
+        null;
+     end if;
+  else
+     err( "postive or string expected" );
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     begin
+       if key_version then
+          result := to_unbounded_string( gnat.cgi.cookie.value(
+            to_string( expr_val ),
+            bool_val = identifiers( true_t ).value
+          ) );
+       else
+          result := to_unbounded_string( gnat.cgi.cookie.value(
+            positive'value( " " & to_string( expr_val ) )
+          ) );
+       end if;
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when Gnat.Cgi.Parameter_Not_Found =>
+       err( "parameter_not_found exception" );
+     when Gnat.Cgi.Cookie.Cookie_Not_Found =>
+       err( "cookie_not_found exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGICookieValue;
+
+#else
+
+procedure ParseGnatCGICookieValue( result : out unbounded_string; kind : out identifier ) is
+begin
+  not_configured;
+end ParseGnatCGICookieValue;
+
+#end if;
+#if GCGI
+
+procedure ParseGnatCGICookieExists( result : out unbounded_string; kind : out identifier ) is
+  -- bool := gnat.cgi.cookie.exists( key )
+  key_val : unbounded_string;
+  key_type : identifier;
+begin
+  kind := boolean_t;
+  expect( gnat_cgi_cookie_exists_t );
+  ParseSingleStringExpression( key_val, key_type );
+  if isExecutingCommand then
+     begin
+       result := to_bush_boolean(
+         gnat.cgi.cookie.exists( to_string( key_val ))
+       );
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when Gnat.Cgi.Parameter_Not_Found =>
+       err( "parameter_not_found exception" );
+     when Gnat.Cgi.Cookie.Cookie_Not_Found =>
+       err( "cookie_not_found exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGICookieExists;
+
+#else
+
+procedure ParseGnatCGICookieExists( result : out unbounded_string; kind : out identifier ) is
+begin
+  not_configured;
+end ParseGnatCGICookieExists;
+
+#end if;
+#if GCGI
+
+procedure ParseGnatCGICookieKey( result : out unbounded_string; kind : out identifier ) is
+  -- s := key( position )
+  pos_val  : unbounded_string;
+  pos_type : identifier;
+begin
+  kind := string_t;
+  expect( gnat_cgi_cookie_key_t );
+  expect( symbol_t, "(" );
+  ParseExpression( pos_val, pos_type );
+  if baseTypesOK( pos_type, positive_t ) then
+     null;
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     begin
+       result := to_unbounded_string(
+         gnat.cgi.cookie.key( positive'value( " " & to_string( pos_val ) ) )
+       );
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when Gnat.Cgi.Parameter_Not_Found =>
+       err( "parameter_not_found exception" );
+     when Gnat.Cgi.Cookie.Cookie_Not_Found =>
+       err( "cookie_not_found exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGICookieKey;
+
+#else
+
+procedure ParseGnatCGICookieKey( result : out unbounded_string; kind : out identifier ) is
+begin
+  not_configured;
+end ParseGnatCGICookieKey;
+
+#end if;
+#if GCGI
+
+procedure ParseGnatCGICookieSet is
+  key_val  : unbounded_string;
+  key_type : identifier;
+  val_val  : unbounded_string;
+  val_type : identifier;
+  com_val  : unbounded_string := null_unbounded_string;
+  com_type : identifier;
+  dom_val  : unbounded_string := null_unbounded_string;
+  dom_type : identifier;
+  age_val  : unbounded_string := to_unbounded_string( " " & natural'last'img );
+  age_type : identifier;
+  path_val  : unbounded_string := to_unbounded_string("/");
+  path_type : identifier;
+  sec_val  : unbounded_string;
+  sec_type : identifier;
+  base_type : identifier;
+  secure   : boolean := false;
+begin
+  expect( gnat_cgi_cookie_set_t );
+  expect( symbol_t, "(" );
+
+  -- Is this universal_t handling necessary?  That this should be automatic...
+  ParseExpression( key_val, key_type ); -- key
+  base_type := getBaseType( key_type );
+  if base_type = string_t or base_type = uni_string_t or base_type = universal_t then
+     expect( symbol_t, "," );
+     ParseExpression( val_val, val_type ); -- value
+     base_type := getBaseType( val_type );
+     if base_type = string_t or base_type = uni_string_t or base_type = universal_t then
+        -- all other parameters optional .  This presents a problem in SparForte
+        -- since we don't have named parameters.  We can only assume the they
+        -- are optional to the end of the positions.
+        if token = symbol_t and identifiers( token ).value /= right_bracket then
+           expect( symbol_t, "," );
+           ParseExpression( com_val, com_type ); -- comment
+           base_type := getBaseType( com_type );
+           if base_type = string_t or base_type = uni_string_t or base_type = universal_t then
+              if token = symbol_t and identifiers( token ).value /= right_bracket  then
+                 expect( symbol_t, "," );
+                 ParseExpression( dom_val, dom_type ); -- domain
+                 base_type := getBaseType( dom_type );
+                 if base_type = string_t or base_type = uni_string_t or base_type = universal_t then
+                    if token = symbol_t and identifiers( token ).value /= right_bracket then
+                       expect( symbol_t, "," );
+                       ParseExpression( age_val, age_type ); -- max-age
+                       base_type := getBaseType( age_type );
+                       if intTypesOK( age_type, natural_t ) or base_type = uni_numeric_t or base_type = universal_t then
+                          if token = symbol_t and identifiers( token ).value /= right_bracket then
+                             expect( symbol_t, "," );
+                             ParseExpression( path_val, path_type ); -- path
+                             base_type := getBaseType( path_type );
+                             if base_type = string_t or base_type = uni_string_t or base_type = universal_t then
+                                if token = symbol_t and identifiers( token ).value /= right_bracket then
+                                   expect( symbol_t, "," );
+                                   ParseExpression( sec_val, sec_type ); -- max-age
+                                   base_type := getBaseType( sec_type );
+                                   if baseTypesOK( base_type, boolean_t ) then
+                                      secure := "1" = to_string( sec_val );
+                                   end if;
+                                end if;
+                             end if;
+                          end if;
+                       end if;
+                    end if;
+                 end if;
+              end if;
+           end if;
+        end if;
+     end if;
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     begin
+       Gnat.Cgi.Cookie.Set(
+          to_string( key_val ),
+          to_string( val_val ),
+          to_string( com_val ),
+          to_string( dom_val ),
+          natural'value( " " & to_string( age_val ) ),
+          to_string( path_val ),
+          secure
+       );
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when Gnat.Cgi.Parameter_Not_Found =>
+       err( "parameter_not_found exception" );
+     when Gnat.Cgi.Cookie.Cookie_Not_Found =>
+       err( "cookie_not_found exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGICookieSet;
+
+#else
+
+procedure ParseGnatCGICookieSet is
+begin
+  not_configured;
+end ParseGnatCGICookieSet;
+
+#end if;
+#if GCGI
+
+procedure ParseGnatCGIDebugTextOutput( result : out unbounded_string; kind : out identifier ) is
+begin
+  kind := string_t;
+  expect( gnat_cgi_debug_text_output_t );
+  if isExecutingCommand then
+     begin
+       result := to_unbounded_string( Gnat.Cgi.Debug.Text_Output );
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when Gnat.Cgi.Parameter_Not_Found =>
+       err( "parameter_not_found exception" );
+     when Gnat.Cgi.Cookie.Cookie_Not_Found =>
+       err( "cookie_not_found exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGIDebugTextOutput;
+
+#else
+
+procedure ParseGnatCGIDebugTextOutput( result : out unbounded_string; kind : out identifier ) is
+begin
+  not_configured;
+end ParseGnatCGIDebugTextOutput;
+
+#end if;
+#if GCGI
+
+procedure ParseGnatCGIDebugHTMLOutput( result : out unbounded_string; kind : out identifier ) is
+begin
+  kind := string_t;
+  expect( gnat_cgi_debug_html_output_t );
+  if isExecutingCommand then
+     begin
+       result := to_unbounded_string( Gnat.Cgi.Debug.HTML_Output );
+     exception when Gnat.Cgi.Data_Error =>
+       err( "data_error exception" );
+     when Gnat.Cgi.Parameter_Not_Found =>
+       err( "parameter_not_found exception" );
+     when Gnat.Cgi.Cookie.Cookie_Not_Found =>
+       err( "cookie_not_found exception" );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseGnatCGIDebugHTMLOutput;
+
+#else
+
+procedure ParseGnatCGIDebugHTMLOutput( result : out unbounded_string; kind : out identifier ) is
+begin
+  not_configured;
+end ParseGnatCGIDebugHTMLOutput;
+
+#end if;
+
+end parser_gnat_cgi;

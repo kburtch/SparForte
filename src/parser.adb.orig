@@ -64,7 +64,8 @@ with system,
     parser_gnat_crc,
     parser_sound,
     parser_dirops,
-    parser_memcache;
+    parser_memcache,
+    parser_gnat_cgi;
 use ada.text_io,
     ada.text_io.editing,
     ada.command_line,
@@ -106,7 +107,8 @@ use ada.text_io,
     parser_gnat_crc,
     parser_sound,
     parser_dirops,
-    parser_memcache;
+    parser_memcache,
+    parser_gnat_cgi;
 
 package body parser is
 
