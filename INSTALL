@@ -163,6 +163,10 @@ By default, SparForte will install under /usr/local.
     --manprefix= (MANPREFIX variable): the root directory for the
             installation of the man page (by default, /usr/local)
 
+    --with-gnat-cgi: by default, GNAT.CGI is not included in SparForte
+            because it raises an exception if SparForte is not running
+            in a CGI context.  Use this switch to enable support.
+
     --without-mysql (NO_MYSQL variable): disable MySQL database support
 
     --without-postgres (NO_POSTGRES variable): disable PostgreSQL database

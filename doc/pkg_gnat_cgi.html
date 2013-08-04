@@ -4,11 +4,11 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <META NAME="description" CONTENT="SparForte language documentation">
-	<title>SparForte - Packages - System</title>
+	<title>SparForte - Packages - GNAT CGI</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 	<link rel="index" href="packages.html" />
-	<link rel="prev" href="pkg_strings.html" />
-	<link rel="next" href="pkg_text_io.html" />
+	<link rel="prev" href="pkg_files.html" />
+	<link rel="next" href="pkg_lock_files.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -29,7 +29,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="pkg_strings.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_text_io.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_files.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_gnat_crc32.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -41,104 +41,79 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-<h2><a NAME="4.6"></a>System Package</h2>
-<p>The SparForte System package provides information about the computer a script
-is running on, including the numeric precision limits, size of the basic memory
-units, amount of free memory and more.</p>
-<p><u>GCC Ada equivalent</u>: System
+<h2><a NAME="4.4"></a>GNAT.CGI Package</h2>
+
+<p>The GNAT.CGI package is the standard CGI package included with GCC Ada
+(GNAT).
+By default, support is disabled because, once enabled, it requires SparForte
+to only run as a CGI language.  It can be enabled in the configure script
+when building SparForte from sources.</p>
+
+<p>This package is experimental.  It has not been fully tested in SparForte.</p>
+
+<p><u>GCC Ada Equivalent</u>: GNAT.CGI</p>
+
+<p>See also: the SparForte cgi package.</p>
+
+<p> The documentation is not complete.  See the Gcc Ada documentation for
+more information on these subprograms.</p>
 
         <center>
         <div class="code">
 <pre>
-  System.System_Name            System.Fine_Delta
-  System.Max_Int                System.Tick
-  System.Min_Int                System.Storage_Unit
-  System.Max_Binary_Modulus     System.Word_Size
-  System.Max_Nonbinary_Modulus  System.Memory_Size
-  System.Max_Base_Digits        System.Default_Bit_Order
-  System.Max_Mantissa           System.Login_Shell
-  System.Restricted_Shell       System.Script_License
-  System.Script_Software_Model  System.System_Version
+gnat.cgi.put_header [(f) | (h [,f])]
+b := gnat.cgi.ok
+m := gnat.cgi.method
+s := gnat.cgi.metavariable( k [,r] )
+b := gnat.cgi.metavariable.exists( k )
+s := gnat.cgi.url
+n := gnat.cgi.argument_count
+s := gnat.cgi.value( k [,r] | p )
+b := gnat.cgi.key_exists( k )
+s := gnat.cgi.key( p )
+gnat.cgi.cookie.put_header [ (f) | (h [,f]) ]
+b := gnat.cgi.cookie_ok
+n := gnat.cgi.cookie_count
+s := gnat.cgi.cookie_value( k [,r] )
+b := gnat.cgi.cookie_exists( k )
+s := gnat.cgi.cookie_key( p )
+gnat.cgi.cookie.set( k [,v [,c [,d [,m [,p [,s] ] ] ] ] ] )
+s := gnat.cgi.debug.text_output
+s := gnat.cgi.debug.html_output
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the System package</span>
+        <b>Help Command</b>: Contents of the gnat.cgi package
         </div>
         </div>
         </center>
 
+<h3>Standard Types and Constants</h3>
+
 <ul>
-<li>
-<b>System.System_Name</b>- name of the system...string "SYSTEM_NAME_SPARFORTE"</li>
-
-<b>System.System_Version</b>- return the SparForte version string (e.g. 1.0)</li>
-
-<li>
-<b>System.Min_Int</b> - smallest integer</li>
-
-<li>
-<b>System.Max_Int</b> - largest integer</li>
-
-<li>
-<b>System.Max_Binary_Modulus</b> - maximum size for a modular type (if
-power of 2</li>
-
-<li>
-<b>System.Max_Nonbinary_Modulus</b> - maximum size for a modular type (if
-not power of 2)</li>
-
-<li>
-<b>System.Max_Base_Digits</b> - maximum decimal precision for a range</li>
-
-<li>
-<b>System.Max_Digits</b> - largest number of digits allowed for a floating-point
-number</li>
-
-<li>
-<b>System.Max_Mantissa</b> - largest number of binary digits allowed for
-a fixed-point number</li>
-
-<li>
-<b>System.Fine_Delta</b> - smallest delta allowed for a fixed-point number</li>
-
-<li>
-<b>System.Tick</b> - basic clock period in seconds</li>
-
-<li>
-<b>System.Storage_Unit</b> - number of bits per unit of storage (e.g. 8
-bits)</li>
-
-<li>
-<b>System.Word_Size</b> - size of a word in bits (e.g. 32)</li>
-
-<li>
-<b>System.Memory_Size</b> - number of available storage units (e.g. 4 Gig
-of virtual memory)</li>
-
-<li>
-<b>System.Default_Bit_Order</b> - the "endianness" of your computer (eg.
-HIGH_ORDER_FIRST)</li>
-
-<li>
-<b>System.Login_Shell</b> - (boolean) true if this is a login shell (AdaScript
-extension)</li>
-
-<li>
-<b>System.Restricted_Shell</b> - (boolean) true if this is a restricted
-shell (AdaScript extension)</li>
-
-<li>
-<b>System.Script_License</b> - (string) the license name set by pragma
-license (or empty string if none)</li>
-
-<li>
-<b>System.Script_Software_Model</b> - (string) the software model name set by pragma
-software_model (or empty string if none)</li>
-
+<li>gnat.cgi.default_header - a constant string, the default HTML header returned</li>
+<li>gnat.cgi.method_type - an enumerated type gnat.cgi.method_type.get and gnat.cgi.method_type.post</li>
+<li>gnat.cgi.metavariable_name - an enumerated type of the standard CGI variables (e.g. gnat.cgi.metavariable_name.auth_type and so on)</li>
 </ul>
-<p>SparForte is case-sensitve.&nbsp; "system.system_name" is not the same as "System.System_Name".</p>
-<p><tt>=&gt; ? System.Memory_Size</tt>
-<br><tt>&nbsp;4294967296</tt></p>
+
+<!--
+        <center>
+        <div class="code">
+=&gt; gnat.crc32.initialize( c )<br>
+=&gt; (Assuming c is a new gnat.crc32.crc32 variable)<br>
+=&gt; gnat.crc32.update( c, "Deign, Sovereign Mistress! to accept a lay,")<br>
+=&gt; gnat.crc32.update( c, "No Laureate offering of elaborate art;")<br>
+=&gt; crc := gnat.crc32.get_value( c )<br>
+=&gt; (Assuming crc is a new integer variable)<br>
+=&gt; ? crc<br>
+&nbsp;3245118365<br>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Example</b>: Using the gnat.crc32 package
+        </div>
+        </div>
+        </center>
+-->
 
 &nbsp;<br>
 
@@ -153,7 +128,7 @@ software_model (or empty string if none)</li>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_gnat_cgi.html">&nbsp;gnat.cgi</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_gnat_cgi.html">&nbsp;<b>gnat.cgi</b></a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_gnat_crc32.html">&nbsp;gnat.crc32</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
@@ -169,11 +144,9 @@ software_model (or empty string if none)</li>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_sinfo.html">&nbsp;source_info</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;stats</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_strings.html">&nbsp;strings</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;<b>System</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>
