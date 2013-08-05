@@ -105,6 +105,8 @@ mysqlm_schema_t       : identifier;
 mysqlm_users_t        : identifier;
 mysqlm_databases_t    : identifier;
 mysqlm_fetch_values_t : identifier;
+mysqlm_append_for_insert_t : identifier;
+mysqlm_append_for_update_t : identifier;
 
 ------------------------------------------------------------------------------
 -- HOUSEKEEPING
@@ -166,6 +168,8 @@ procedure ParseMySQLMUsers;
 procedure ParseMySQLMDatabases;
 
 procedure ParseMySQLMFetchValues;
+procedure ParseMySQLMAppendForInsert;
+procedure ParseMySQLMAppendForUpdate;
 
 -- for embedded SQL
 

@@ -161,9 +161,19 @@ end ParseMySQLMConnect;
 pragma warnings( off );
 -- Hide unused parameters warnings
 
-procedure ParseMySQLMConnect is
+procedure not_configured is
 begin
   err( "mysql support not configured" );
+end not_configured;
+
+procedure not_configured( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end not_configured;
+
+procedure ParseMySQLMConnect is
+begin
+  not_configured;
 end ParseMySQLMConnect;
 
 #end if;
@@ -196,10 +206,7 @@ end ParseMySQLMEngineOf;
 
 #else
 
-procedure ParseMySQLMEngineOf( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMEngineOf;
+procedure ParseMySQLMEngineOf( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -247,10 +254,7 @@ end ParseMySQLMPrepare;
 
 #else
 
-procedure ParseMySQLMPrepare( result : out unbounded_string ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMPrepare;
+procedure ParseMySQLMPrepare( result : out unbounded_string ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -290,10 +294,7 @@ end ParseMySQLMPrepare;
 
 #else
 
-procedure ParseMySQLMPrepare is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMPrepare;
+procedure ParseMySQLMPrepare renames not_configured;
 
 #end if;
 #if MYSQL
@@ -333,10 +334,7 @@ end ParseMySQLMAppend;
 
 #else
 
-procedure ParseMySQLMAppend is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMAppend;
+procedure ParseMySQLMAppend renames not_configured;
 
 #end if;
 #if MYSQL
@@ -364,10 +362,7 @@ end ParseMySQLMAppendLine;
 
 #else
 
-procedure ParseMySQLMAppendLine is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMAppendLine;
+procedure ParseMySQLMAppendLine renames not_configured;
 
 #end if;
 #if MYSQL
@@ -412,10 +407,7 @@ end ParseMySQLMAppendQuoted;
 
 #else
 
-procedure ParseMySQLMAppendQuoted is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMAppendQuoted;
+procedure ParseMySQLMAppendQuoted renames not_configured;
 
 #end if;
 #if MYSQL
@@ -451,10 +443,7 @@ end ParseMySQLMExecute;
 
 #else
 
-procedure ParseMySQLMExecute is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMExecute;
+procedure ParseMySQLMExecute renames not_configured;
 
 #end if;
 #if MYSQL
@@ -502,10 +491,7 @@ end ParseMySQLMExecuteChecked;
 
 #else
 
-procedure ParseMySQLMExecuteChecked is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMExecuteChecked;
+procedure ParseMySQLMExecuteChecked renames not_configured;
 
 #end if;
 
@@ -546,10 +532,7 @@ end ParseMySQLMDisconnect;
 
 #else
 
-procedure ParseMySQLMDisconnect is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMDisconnect;
+procedure ParseMySQLMDisconnect renames not_configured;
 
 #end if;
 #if MYSQL
@@ -575,10 +558,7 @@ end ParseMySQLMIsConnected;
 
 #else
 
-procedure ParseMySQLMIsConnected( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMIsConnected;
+procedure ParseMySQLMIsConnected( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -604,10 +584,7 @@ end ParseMySQLMReset;
 
 #else
 
-procedure ParseMySQLMReset is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMReset;
+procedure ParseMySQLMReset renames not_configured;
 
 #end if;
 #if MYSQL
@@ -648,10 +625,7 @@ end ParseMySQLMErrorMessage;
 
 #else
 
-procedure ParseMySQLMErrorMessage( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMErrorMessage;
+procedure ParseMySQLMErrorMessage( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -680,10 +654,7 @@ end ParseMySQLMInAbortState;
 
 #else
 
-procedure ParseMySQLMInAbortState( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMInAbortState;
+procedure ParseMySQLMInAbortState( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -710,10 +681,7 @@ end ParseMySQLMOptions;
 
 #else
 
-procedure ParseMySQLMOptions( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMOptions;
+procedure ParseMySQLMOptions( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -744,10 +712,7 @@ end ParseMySQLMSetRollbackOnFinalize;
 
 #else
 
-procedure ParseMySQLMSetRollbackOnFinalize is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMSetRollbackOnFinalize;
+procedure ParseMySQLMSetRollbackOnFinalize renames not_configured;
 
 #end if;
 #if MYSQL
@@ -774,10 +739,7 @@ end ParseMySQLMWillRollbackOnFinalize;
 
 #else
 
-procedure ParseMySQLMWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMWillRollbackOnFinalize;
+procedure ParseMySQLMWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -826,10 +788,7 @@ end ParseMySQLMOpenDBTrace;
 
 #else
 
-procedure ParseMySQLMOpenDBTrace is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMOpenDBTrace;
+procedure ParseMySQLMOpenDBTrace renames not_configured;
 
 #end if;
 #if MYSQL
@@ -855,10 +814,7 @@ end ParseMySQLMCloseDBTrace;
 
 #else
 
-procedure ParseMySQLMCloseDBTrace is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMCloseDBTrace;
+procedure ParseMySQLMCloseDBTrace renames not_configured;
 
 #end if;
 #if MYSQL
@@ -889,10 +845,7 @@ end ParseMySQLMSetTrace;
 
 #else
 
-procedure ParseMySQLMSetTrace is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMSetTrace;
+procedure ParseMySQLMSetTrace renames not_configured;
 
 #end if;
 #if MYSQL
@@ -919,10 +872,7 @@ end ParseMySQLMIsTrace;
 
 #else
 
-procedure ParseMySQLMIsTrace( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMIsTrace;
+procedure ParseMySQLMIsTrace( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -950,10 +900,7 @@ end ParseMySQLMClear;
 
 #else
 
-procedure ParseMySQLMClear is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMClear;
+procedure ParseMySQLMClear renames not_configured;
 
 #end if;
 #if MYSQL
@@ -989,10 +936,7 @@ end ParseMySQLMRaiseExceptions;
 
 #else
 
-procedure ParseMySQLMRaiseExceptions is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMRaiseExceptions;
+procedure ParseMySQLMRaiseExceptions renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1028,10 +972,7 @@ end ParseMySQLMReportErrors;
 
 #else
 
-procedure ParseMySQLMReportErrors is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMReportErrors;
+procedure ParseMySQLMReportErrors renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1066,10 +1007,7 @@ end ParseMySQLMBeginWork;
 
 #else
 
-procedure ParseMySQLMBeginWork is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMBeginWork;
+procedure ParseMySQLMBeginWork renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1104,10 +1042,7 @@ end ParseMySQLMRollbackWork;
 
 #else
 
-procedure ParseMySQLMRollbackWork is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMRollbackWork;
+procedure ParseMySQLMRollbackWork renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1142,10 +1077,7 @@ end ParseMySQLMCommitWork;
 
 #else
 
-procedure ParseMySQLMCommitWork is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMCommitWork;
+procedure ParseMySQLMCommitWork renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1171,10 +1103,7 @@ end ParseMySQLMRewind;
 
 #else
 
-procedure ParseMySQLMRewind is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMRewind;
+procedure ParseMySQLMRewind renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1216,10 +1145,7 @@ end ParseMySQLMFetch;
 
 #else
 
-procedure ParseMySQLMFetch is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMFetch;
+procedure ParseMySQLMFetch renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1246,10 +1172,7 @@ end ParseMySQLMEndOfQuery;
 
 #else
 
-procedure ParseMySQLMEndOfQuery( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMEndOfQuery;
+procedure ParseMySQLMEndOfQuery( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1278,10 +1201,7 @@ end ParseMySQLMTuple;
 
 #else
 
-procedure ParseMySQLMTuple( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMTuple;
+procedure ParseMySQLMTuple( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1310,10 +1230,7 @@ end ParseMySQLMTuples;
 
 #else
 
-procedure ParseMySQLMTuples( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMTuples;
+procedure ParseMySQLMTuples( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1342,10 +1259,7 @@ end ParseMySQLMColumns;
 
 #else
 
-procedure ParseMySQLMColumns( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMColumns;
+procedure ParseMySQLMColumns( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1379,10 +1293,7 @@ end ParseMySQLMColumnName;
 
 #else
 
-procedure ParseMySQLMColumnName( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMColumnName;
+procedure ParseMySQLMColumnName( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1416,10 +1327,7 @@ end ParseMySQLMColumnIndex;
 
 #else
 
-procedure ParseMySQLMColumnIndex( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMColumnIndex;
+procedure ParseMySQLMColumnIndex( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1484,10 +1392,7 @@ end ParseMySQLMIsNull;
 
 #else
 
-procedure ParseMySQLMIsNull( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMIsNull;
+procedure ParseMySQLMIsNull( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1525,10 +1430,7 @@ end ParseMySQLMValue;
 
 #else
 
-procedure ParseMySQLMValue( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMValue;
+procedure ParseMySQLMValue( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 
@@ -1721,10 +1623,7 @@ end ParseMySQLMShow;
 
 #else
 
-procedure ParseMySQLMShow is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMShow;
+procedure ParseMySQLMShow renames not_configured;
 
 #end if;
 #if MYSQL
@@ -2094,10 +1993,7 @@ end ParseMySQLMList;
 
 #else
 
-procedure ParseMySQLMList is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMList;
+procedure ParseMySQLMList renames not_configured;
 
 #end if;
 #if MYSQL
@@ -2382,10 +2278,7 @@ end ParseMySQLMSchema;
 
 #else
 
-procedure ParseMySQLMSchema is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMSchema;
+procedure ParseMySQLMSchema renames not_configured;
 
 #end if;
 #if MYSQL
@@ -2591,10 +2484,7 @@ end ParseMySQLMUsers;
 
 #else
 
-procedure ParseMySQLMUsers is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMUsers;
+procedure ParseMySQLMUsers renames not_configured;
 
 #end if;
 #if MYSQL
@@ -2800,10 +2690,7 @@ end ParseMySQLMDatabases;
 
 #else
 
-procedure ParseMySQLMDatabases is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMDatabases;
+procedure ParseMySQLMDatabases renames not_configured;
 
 #end if;
 #if MYSQL
@@ -2859,10 +2746,7 @@ end ParseMySQLMNewConnection;
 
 #else
 
-procedure ParseMySQLMNewConnection is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMNewConnection;
+procedure ParseMySQLMNewConnection renames not_configured;
 
 #end if;
 #if MYSQL
@@ -2887,10 +2771,7 @@ end ParseMySQLMNewQuery;
 
 #else
 
-procedure ParseMySQLMNewQuery is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLMNewQuery;
+procedure ParseMySQLMNewQuery renames not_configured;
 
 #end if;
 #if MYSQL
@@ -2906,8 +2787,8 @@ procedure ParseMySQLMFetchValues is
   connectionExpr : unbounded_string;
   connectionType : identifier;
   connection : resPtr;
-  --ref : reference;
   id : identifier;
+  --ref : reference;
 begin
   expect( mysqlm_fetch_values_t );
   ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
@@ -3018,7 +2899,7 @@ begin
      --when sql_error =>
      --  err( Error_Message( Q ) );
      when others =>
-       err( "exception was raised" );
+       err( "exception raised" );
        --if sourceLen = long_integer'value( to_string( identifiers( identifiers( target_var_id ).kind ).value ) ) then
 -- TODO: no_coumn, no_result, null_value, no_tuple, etc exception handling
      end;
@@ -3028,10 +2909,217 @@ end ParseMySQLMFetchValues;
 
 #else
 
-procedure ParseMySQLMFetchValues is
+procedure ParseMySQLMFetchValues renames not_configured;
+
+#end if;
+#if MYSQL
+
+procedure ParseMySQLMAppendForInsert is
+-- mysqlm.append_for_insert( Q, C, r );
+-- append the fields of record r to the query in the format of an ANSI SQL insert
+-- " ( a, b, ... ) VALUES ( 'a', 'b', ... )"
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+  connectionExpr : unbounded_string;
+  connectionType : identifier;
+  connection : resPtr;
+  id : identifier;
 begin
-  err( "mysql support not configured" );
-end ParseMySQLMFetchValues;
+  expect( mysqlm_append_for_insert_t );
+  expect( mysqlm_fetch_values_t );
+  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseNextNumericParameter( connectionExpr, connectionType, mysqlm_connection_t );
+  -- TODO: ref type is meaningless here since you can't autodeclare
+  ParseLastInOutRecordParameter( id  );
+-- TODO: is kind in the reference?
+  if identifiers( getBaseType( identifiers( id ).kind ) ).kind /= root_record_t then
+     err( "Record type expected" );
+  end if;
+  if isExecutingCommand then
+     declare
+       fieldName : unbounded_string;
+       fieldSuffix : unbounded_string;
+       dotPos : natural;
+       field_t : identifier;
+       elementKind : identifier;
+       elementUniKind : identifier;
+       firstField : boolean := true;
+     begin
+       -- get the resources
+       findResource( to_resource_id( connectionExpr ), connection );
+       findResource( to_resource_id( queryExpr ), query );
+
+       append( query.Q, " (" );
+
+       -- The basic logic is copied from DoRecordToJson()
+       for i in 1..integer'value( to_string( identifiers( identifiers( id ).kind ).value ) ) loop
+           for j in 1..identifiers_top-1 loop
+               if identifiers( j ).field_of = identifiers( id ).kind then
+                  if integer'value( to_string( identifiers( j ).value )) = i then
+                     fieldName := identifiers( j ).name;
+                     dotPos := length( fieldName );
+                     while dotPos > 1 loop
+                        exit when element( fieldName, dotPos ) = '.';
+                        dotPos := dotPos - 1;
+                     end loop;
+                     fieldSuffix := delete( fieldName, 1, dotPos );
+                     fieldName := identifiers( id ).name & "." & fieldSuffix;
+                     findIdent( fieldName, field_t );
+
+                     if firstField then
+                        firstField := false;
+                     else
+                        Append( query.Q, "," );
+                     end if;
+                     Append( query.Q, to_string( identifiers( field_t ).name ) );
+                  end if;
+               end if;
+           end loop;
+       end loop;
+
+       append( query.Q, " ) VALUES ( " );
+       firstField := true;
+
+       for i in 1..integer'value( to_string( identifiers( identifiers( id ).kind ).value ) ) loop
+           for j in 1..identifiers_top-1 loop
+               if identifiers( j ).field_of = identifiers( id ).kind then
+                  if integer'value( to_string( identifiers( j ).value )) = i then
+                     fieldName := identifiers( j ).name;
+                     dotPos := length( fieldName );
+                     while dotPos > 1 loop
+                        exit when element( fieldName, dotPos ) = '.';
+                        dotPos := dotPos - 1;
+                     end loop;
+                     fieldSuffix := delete( fieldName, 1, dotPos );
+                     fieldName := identifiers( id ).name & "." & fieldSuffix;
+                     findIdent( fieldName, field_t );
+
+                     elementKind := getBaseType( identifiers( field_t ).kind );
+                     elementUniKind := getUniType( identifiers( field_t ).kind );
+
+                     if elementKind = boolean_t then
+                        Append( query.Q, to_string( identifiers( field_t ).value ) );
+                     elsif elementUniKind = uni_string_t then
+-- TODO: shouldn't catToType be used here to guarantee character values are
+-- only one letter long (probably doesn't matter for JSON, but matters here)
+                          -- identifiers( j ).value := field;
+                        Append_Quoted( query.Q, connection.C, to_string( identifiers( field_t ).value ) );
+                     elsif elementUniKind = uni_numeric_t then
+                        Append( query.Q, to_string( identifiers( field_t ).value ) );
+                     elsif elementUniKind = universal_t then
+                        Append_Quoted( query.Q, connection.C, to_string( identifiers( field_t ).value ) );
+                     else
+                         err( "unsupported data type" );
+                     end if;
+                  end if;
+               end if;
+           end loop;
+       end loop;
+       append( query.Q, " )" );
+
+     exception when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseMySQLMAppendForInsert;
+
+#else
+
+procedure ParseMySQLMAppendForInsert renames not_configured;
+
+#end if;
+#if MYSQL
+
+procedure ParseMySQLMAppendForUpdate is
+-- mysqlm.append_for_update( Q, C, r );
+-- append the fields of record r to the query in the format of an ANSI SQL update
+-- " SET a = 'a', b = 'b', ..."
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+  connectionExpr : unbounded_string;
+  connectionType : identifier;
+  connection : resPtr;
+  id : identifier;
+begin
+  expect( mysqlm_append_for_update_t );
+  expect( mysqlm_fetch_values_t );
+  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseNextNumericParameter( connectionExpr, connectionType, mysqlm_connection_t );
+  -- TODO: ref type is meaningless here since you can't autodeclare
+  ParseLastInOutRecordParameter( id  );
+-- TODO: is kind in the reference?
+  if identifiers( getBaseType( identifiers( id ).kind ) ).kind /= root_record_t then
+     err( "Record type expected" );
+  end if;
+  if isExecutingCommand then
+     declare
+       fieldName : unbounded_string;
+       fieldSuffix : unbounded_string;
+       dotPos : natural;
+       field_t : identifier;
+       elementKind : identifier;
+       elementUniKind : identifier;
+       firstField : boolean := true;
+     begin
+       -- get the resources
+       findResource( to_resource_id( connectionExpr ), connection );
+       findResource( to_resource_id( queryExpr ), query );
+
+       Append( query.Q, " SET " );
+       -- The basic logic is copied from DoRecordToJson()
+     for i in 1..integer'value( to_string( identifiers( identifiers( id ).kind ).value ) ) loop
+         for j in 1..identifiers_top-1 loop
+             if identifiers( j ).field_of = identifiers( id ).kind then
+                if integer'value( to_string( identifiers( j ).value )) = i then
+                   fieldName := identifiers( j ).name;
+                   dotPos := length( fieldName );
+                   while dotPos > 1 loop
+                      exit when element( fieldName, dotPos ) = '.';
+                      dotPos := dotPos - 1;
+                   end loop;
+                   fieldSuffix := delete( fieldName, 1, dotPos );
+                   fieldName := identifiers( id ).name & "." & fieldSuffix;
+                   findIdent( fieldName, field_t );
+
+                   elementKind := getBaseType( identifiers( field_t ).kind );
+                   elementUniKind := getUniType( identifiers( field_t ).kind );
+
+                   if firstField then
+                      firstField := false;
+                   else
+                      Append( query.Q, "," );
+                   end if;
+
+                   if elementKind = boolean_t then
+                      Append( query.Q, identifiers( field_t ).value );
+                   elsif elementUniKind = uni_string_t then
+-- TODO: shouldn't catToType be used here to guarantee character values are
+-- only one letter long (probably doesn't matter for JSON, but matters here)
+                          -- identifiers( j ).value := field;
+                      Append_Quoted( query.Q, connection.C, identifiers( field_t ).value );
+                   elsif getUniType( elementKind ) = uni_numeric_t then
+                      Append( query.Q, identifiers( field_t ).value );
+                   elsif getUniType( elementKind ) = universal_t then
+                      Append_Quoted( query.Q, connection.C, identifiers( field_t ).value );
+                   else
+                       err( "unsupported data type" );
+                   end if;
+                 end if;
+             end if;
+         end loop;
+       end loop;
+
+     exception when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseMySQLMAppendForUpdate;
+
+#else
+
+procedure ParseMySQLMAppendForUpdate renames not_configured;
 
 #end if;
 
@@ -3113,6 +3201,8 @@ begin
   declareProcedure( mysqlm_databases_t, "mysqlm.databases", ParseMySQLMDatabases'access );
 
   declareProcedure( mysqlm_fetch_values_t, "mysqlm.fetch_values", ParseMySQLMFetchValues'access );
+  declareProcedure( mysqlm_append_for_insert_t, "mysqlm.append_for_insert", ParseMySQLMAppendForInsert'access );
+  declareProcedure( mysqlm_append_for_update_t, "mysqlm.append_for_update", ParseMySQLMAppendForUpdate'access );
 
   --declareFunction( db_do_t, "db.do" );
   --declareFunction( db_fetchrow_t, "dbi.fetchrow" );

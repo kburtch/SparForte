@@ -80,7 +80,9 @@ accept that they also require a connection, query or both.</p>
   <a href="#mysqlm.show">show( q, c )</a>                 <a href="#mysqlm.list">list( c )</a>
   <a href="#mysqlm.schema">schema( c, t )</a>               <a href="#mysqlm.users">users( c )</a>
   <a href="#mysqlm.new_connection">new_connection( c )</a>          <a href="#mysqlm.new_query">new_query( q )</a>
-  <a href="#mysqlm.fetch_values">mysqlm.fetch_values( q, c, r )</a>
+  <a href="#mysqlm.fetch_values">fetch_values( q, c, r )</a>
+  <a href="#mysqlm.append_for_insert">append_for_insert( q, c, r )</a>
+  <a href="#mysqlm.append_for_update">append_for_update( q, c, r )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -184,6 +186,130 @@ accept that they also require a connection, query or both.</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: APQ.Append</p></td>
+</tr>
+</table>
+
+<a name="mysqlm.append_for_insert"></a><h3>mysqlm.append_for_insert( q, c, r )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Append the fields of record r to the query in the format of an ANSI SQL
+insert (that is, " ( a, b, ... ) VALUES ( 'a', 'b', ... )").  The record fields may be
+boolean, string, numeric or universal (treated as a string).  String values
+are appended with Append_Quoted.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">type row is record<br />
+&nbsp;&nbsp;b : boolean;<br />
+&nbsp;&nbsp;i : integer;<br />
+&nbsp;&nbsp;s : string;<br />
+end record;<br />
+r : row;<br />
+...<br />
+mysqlm.append_for_insert( q, c, r ); -- (b,i,s) values (...)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>mysqlm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>mysqlm.connection</span></td>
+<td><span>required</span></td>
+<td><span>MySQL connection id</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>in</span></td>
+<td><span>record type</span></td>
+<td><span>required</span></td>
+<td><span>The record type to use for insert data</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_mysql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#mysqlm.append_for_update">mysqml.append_for_update</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A</p></td>
+</tr>
+</table>
+
+<a name="mysqlm.append_for_update"></a><h3>mysqlm.append_for_update( q, c, r )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Append the fields of record r to the query in the format of an ANSI SQL
+update (that is," SET a = 'a', b = 'b', ..." ).  The record fields may be
+boolean, string, numeric or universal (treated as a string).  String values
+are appended with Append_Quoted.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">type row is record<br />
+&nbsp;&nbsp;b : boolean;<br />
+&nbsp;&nbsp;i : integer;<br />
+&nbsp;&nbsp;s : string;<br />
+end record;<br />
+r : row;<br />
+...<br />
+mysqlm.append_for_update( q, c, r ); -- SET b = ..., i = ... etc.</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>mysqlm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>mysqlm.connection</span></td>
+<td><span>required</span></td>
+<td><span>MySQL connection id</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>in</span></td>
+<td><span>record type</span></td>
+<td><span>required</span></td>
+<td><span>The record type to use for update data</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_mysql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#mysqlm.append_for_insert">mysqml.append_for_insert</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A</p></td>
 </tr>
 </table>
 
@@ -1046,7 +1172,7 @@ exception.</p></td>
 <td><p><a href="#mysqlm.fetch_values">mysqlm.fetch_values</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: APQ.Fetch<br>PHP: mysql_fetch_array</p></td>
+<td><p>Ada: APQ.Fetch<br>PHP: mysql_fetch_assoc</p></td>
 </tr>
 </table>
 
@@ -1072,8 +1198,8 @@ r : row;<br />
 ...<br />
 mysqlm.prepare( Q, "SELECT b, i, s FROM sometable" );<br />
 mysqlm.execute( Q, C );<br />
-if not mysqlm.end_of_query( q ) then<br />
-&nbsp;&nbsp;mysqlm.fetch_values( q, c, r );</span></td>
+if not mysqlm.end_of_query( Q ) then<br />
+&nbsp;&nbsp;mysqlm.fetch_values( Q, C, r );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
