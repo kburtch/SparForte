@@ -180,9 +180,9 @@ begin
      alreadyStarted := false;
   end if;
 #end if;
-  declareProcedure( sound_play_t, "sound.play" );
-  declareProcedure( sound_playcd_t, "sound.playcd" );
-  declareProcedure( sound_stopcd_t, "sound.stopcd" );
+  declareProcedure( sound_play_t, "sound.play", ParsePlay'access );
+  declareProcedure( sound_playcd_t, "sound.playcd", ParsePlayCD'access );
+  declareProcedure( sound_stopcd_t, "sound.stopcd", ParseStopCD'access );
   --declareProcedure( sound_mute_t, "sound.mute" );
   --declareProcedure( sound_unmute_t, "sound.unmute" );
 end StartupSound;
