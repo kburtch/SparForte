@@ -773,7 +773,9 @@ begin
          if softwareModelSet then
             recordSoftwareModelRequirements( i );
          end if;
-      elsif boolean( testOpt ) or identifiers( i ).class = otherClass then
+      -- Unused variables are always checked.  Check all identifiers if
+      -- in design mode or test mode.
+      elsif boolean( designOpt ) or boolean( testOpt ) or identifiers( i ).class = otherClass then
          -- variables are always checked.  Other identifiers are only checked
          -- when testing
 -- TODO declaration line would be helpful if two identifiers have the same
