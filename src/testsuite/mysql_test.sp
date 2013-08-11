@@ -148,6 +148,40 @@ begin
      pragma assert( r.b = false );
      pragma assert( r.i = 15 );
      pragma assert( r.s = "hello" );
+
+     r.i := 7;
+     r.s := "cart";
+     r.b := true;
+
+     mysqlm.prepare( Q, "UPDATE foobar" );
+     mysqlm.append_for_update( Q, C, r );
+     mysqlm.append( Q, "WHERE i = 1" );
+     mysqlm.execute( Q, C );
+
+     mysqlm.prepare( Q, "select b, i, s from foobar" );
+     mysqlm.execute( Q, C );
+     mysqlm.fetch_values( Q, C, r );
+
+     pragma assert( r.b = true );
+     pragma assert( r.i = 7 );
+     pragma assert( r.s = "cart" );
+
+     mysqlm.prepare( Q, "INSERT INTO foobar" );
+     mysqlm.append_for_insert( Q, C, r );
+     mysqlm.execute( Q, C );
+
+     r.i := 2;
+     r.s := "horse";
+     r.b := true;
+
+     mysqlm.prepare( Q, "select b, i, s from foobar order by i" );
+     mysqlm.execute( Q, C );
+     mysqlm.fetch_values( Q, C, r );
+
+     pragma assert( r.b = true );
+     pragma assert( r.i = 2 );
+     pragma assert( r.s = "horse" );
+
   end;
   mysqlm.disconnect( C );
 

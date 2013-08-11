@@ -2927,7 +2927,6 @@ procedure ParseMySQLMAppendForInsert is
   id : identifier;
 begin
   expect( mysqlm_append_for_insert_t );
-  expect( mysqlm_fetch_values_t );
   ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
   ParseNextNumericParameter( connectionExpr, connectionType, mysqlm_connection_t );
   -- TODO: ref type is meaningless here since you can't autodeclare
@@ -2972,7 +2971,7 @@ begin
                      else
                         Append( query.Q, "," );
                      end if;
-                     Append( query.Q, to_string( identifiers( field_t ).name ) );
+                     Append( query.Q, fieldSuffix );
                   end if;
                end if;
            end loop;
@@ -2985,6 +2984,11 @@ begin
            for j in 1..identifiers_top-1 loop
                if identifiers( j ).field_of = identifiers( id ).kind then
                   if integer'value( to_string( identifiers( j ).value )) = i then
+                     if firstField then
+                        firstField := false;
+                     else
+                        Append( query.Q, "," );
+                     end if;
                      fieldName := identifiers( j ).name;
                      dotPos := length( fieldName );
                      while dotPos > 1 loop
@@ -3044,7 +3048,6 @@ procedure ParseMySQLMAppendForUpdate is
   id : identifier;
 begin
   expect( mysqlm_append_for_update_t );
-  expect( mysqlm_fetch_values_t );
   ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
   ParseNextNumericParameter( connectionExpr, connectionType, mysqlm_connection_t );
   -- TODO: ref type is meaningless here since you can't autodeclare
@@ -3091,6 +3094,7 @@ begin
                    else
                       Append( query.Q, "," );
                    end if;
+                   Append( query.Q, fieldSuffix & "=" );
 
                    if elementKind = boolean_t then
                       Append( query.Q, identifiers( field_t ).value );
@@ -3110,6 +3114,7 @@ begin
              end if;
          end loop;
        end loop;
+       Append( query.Q, " " );
 
      exception when others =>
        err( "exception raised" );
