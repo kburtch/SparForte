@@ -1299,6 +1299,8 @@ begin
      Put_Line( "  show( q, c )                 list( c )" );
      Put_Line( "  schema( c, t )               users( c )" );
      Put_Line( "  new_connection( c )          new_query( q )" );
+     Put_Line( "  fetch_values( q, c, r )" );
+     Put_Line( "  append_for_insert( q, c, r ) append_for_update( q, c, r )" );
 end helpMySQLM;
 
 procedure helpUnits is
