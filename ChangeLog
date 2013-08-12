@@ -77,5 +77,11 @@ throw an exception on a number instead of a string as the first parameter.
 
 33. New: mysqlm package, mysql with multiple connections.  New mysqlm.fetch_values procedure.
 
----
+34. Change: Most built-in procedures and some functions now run using callbacks which should run slightly faster.
+
+35. Fix: mysql.list now limits output to the current database, has fixed table type and engine layout and has been upgraded to show info properly for newer versions of MySQL and MariaDB.
+
+36. Fix: assignments and user-defind subprogram parameters for integer subtypes (integer, positive, natural) to be assigned to the larger ranged integer type.
+
+37. New: mysqlm.append_for_insert and mysqlm.append_for_update procedures that take a record as a parameter.
 

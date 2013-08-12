@@ -775,13 +775,25 @@ begin
          end if;
       -- Unused variables are always checked.  Check all identifiers if
       -- in design mode or test mode.
-      elsif boolean( designOpt ) or boolean( testOpt ) or identifiers( i ).class = otherClass then
-         -- variables are always checked.  Other identifiers are only checked
-         -- when testing
+      --elsif boolean( designOpt ) or boolean( testOpt ) or identifiers( i ).class = otherClass then
+      -- elsif boolean( designOpt ) or boolean( testOpt ) or identifiers( i ).class = otherClass then
+      else
+        -- in design mode, only check types
+        if designOpt then
+           if identifiers( i ).class = typeClass and identifiers( i ).class = subClass then
+              err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+           end if;
+        -- when testing or maintenance, check all identifiers, even
+        -- variables
+        elsif testOpt or maintenanceOpt then
+           err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+        -- in development, only check variables
+        elsif identifiers( i ).class = otherClass then
+           err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+        end if;
+      end if;
 -- TODO declaration line would be helpful if two identifiers have the same
 -- name.
-          err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
-      end if;
   end loop;
 end checkIdentifiersInCurrentBlock;
 

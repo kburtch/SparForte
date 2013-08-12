@@ -377,6 +377,31 @@ There are functions in the <a href="pkg_numerics.html">numerics</a> and <a
 packages to do these conversions.
 </p>
 
+<h3>Integer, Natural and Positive</h3>
+
+<p>Natural and Positive are subranges of the integer type.  SparForte
+does not have subranges but many Ada packages rely on the fact that
+subranges are compatible with the type with more values.  These types
+are treated as a special exception to make using Ada packages easier.</p>
+
+<p>A positive can be assigned to a natural or integer.  A natural can
+be assigned to an integer.  But an integer cannot be assigned to a
+natural or a positive, and a natural cannot be assigned to a positive.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; int : integer := -1<br>
+=&gt; nat : natural := 1<br>
+=&gt; nat := int<br>
+nat := int;<br>
+          ^ type integer is not compatible with type natural<br>
+=&gt; int := nat
+</p>
+        </div>
+        </center>
+
+<p>This also applies to parameters to subprogram parameters.</p>
+
 <h3>Type Attributes</h3>
 
 <p>The System package contains information about the representation of

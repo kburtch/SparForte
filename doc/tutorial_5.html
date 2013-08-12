@@ -92,7 +92,7 @@ script:</p>
         <center>
         <div class="code">
         <p class="code">
-	#!/usr/local/bin/bush<br>
+	#!/usr/local/bin/spar<br>
 	&nbsp;<br>
 	<b>pragma</b> annotate( summary, "checkfiles.sp" );<br>
 	<b>pragma</b> annotate( description, "check the files in the incoming directory and email someone when the files arrive." );<br>
@@ -135,7 +135,7 @@ uses
 this information to start the right program to run the script. For SparForte
 scripts, this line contains the absolute pathname to where the SparForte
 shell
-resides. On many systems, this will be /usr/local/bin/bush.
+resides. On many systems, this will be /usr/local/bin/spar.
 </p>
 <p>If you don't know the location of the SparForte shell, use the "whereis"
 command to find it:
@@ -144,7 +144,7 @@ command to find it:
         <center>
         <div class="code">
         <p class="code">=&gt; whereis spar<br>
-	bush: /usr/local/bin/spar<br>&nbsp;<br>
+	spar: /usr/local/bin/spar<br>&nbsp;<br>
         </p>
         <div class="code_caption">
         <b>Example</b>: How to Find the Interpreter's Path</span>
@@ -221,7 +221,7 @@ itself can be contained in a <span style="font-weight: bold;">main procedure</sp
         <center>
         <div class="code">
         <p class="code">
-#!/usr/local/bin/bush<br>
+#!/usr/local/bin/spar<br>
 &nbsp;<br>
 -- Bottles.sp: A Script implementing a children's song<br>
 &nbsp;<br>
@@ -254,7 +254,7 @@ the declaration section of the procedure.<br>
         <center>
         <div class="code">
         <p class="code">
-#!/usr/local/bin/bush<br>
+#!/usr/local/bin/spar<br>
 &nbsp;<br>
 -- math1.sp: do some simple math<br>
 &nbsp;<br>
@@ -286,7 +286,7 @@ the declaration section of the procedure.<br>
         <center>
         <div class="code">
         <p class="code">
-#!/usr/local/bin/bush<br>
+#!/usr/local/bin/spar<br>
 &nbsp;<br>
 -- math2.sp: do some simple math<br>
 &nbsp;<br>
@@ -310,6 +310,90 @@ the declaration section of the procedure.<br>
 
 <p>There is another kind of subprogram, a <b>declare block</b>, that
 is discussed in the reference section.</p>
+
+<h3>Designing</h3>
+
+<p>When starting a large project or a project involving more than one
+programmer, SparForte has a design mode that is turned on
+with the command line option <span style="font-weight: bold;">--design</span>.</p>
+
+<p>In design mode, "spec out" your project by declaring types, global
+variables and empty functions and procedures.  These subprograms that
+do nothing are sometimes called "stubs".  Comment that your
+work is unfinished with a
+<span style="font-weight: bold;">pragma annotate( todo )</span>.
+Then run syntax checking to confirm that your overall design is
+well-crafted.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">
+#!/usr/local/bin/spar<br>
+&nbsp;<br>
+<b>procedure</b> design_example <b>is</b><br>
+<br>
+&nbsp;&nbsp;<b>type</b> customer <b>is</b> <b>new</b> natural;<br>
+&nbsp;&nbsp;no_customer : <b>constant</b> customer := 0;<br>
+<br>
+&nbsp;&nbsp;<b>type</b> supplier <b>is</b> <b>new</b> natural;<br>
+&nbsp;&nbsp;no_supplier : <b>constant</b> supplier := 0;<br>
+<br>
+&nbsp;&nbsp;total : integer;<br>
+<br>
+&nbsp;&nbsp;<b>function</b> get_customer <b>return</b> customer <b>is</b><br>
+&nbsp;&nbsp;<b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>pragma</b> annotate( todo, "unfinished" );<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b> no_customer;<br>
+&nbsp;&nbsp;<b>end</b> get_customer;<br>
+<br>
+&nbsp;&nbsp;<b>function</b> get_supplier <b>return</b> supplier <b>is</b><br>
+&nbsp;&nbsp;<b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>pragma</b> annotate( todo, "unfinished" );<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b> no_supplier;<br>
+&nbsp;&nbsp;<b>end</b> get_supplier;<br>
+<br>
+&nbsp;&nbsp;<b>procedure</b> set_customer( c : customer; name : string ) <b>is</b><br>
+&nbsp;&nbsp;<b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>pragma</b> annotate( todo, "unfinished" );<br>
+&nbsp;&nbsp;<b>end</b> set_customer;<br>
+<br>
+&nbsp;&nbsp;<b>procedure</b> set_supplier( c : supplier; name : string ) <b>is</b><br>
+&nbsp;&nbsp;<b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>pragma</b> annotate( todo, "unfinished" );<br>
+&nbsp;&nbsp;<b>end</b> set_supplier;<br>
+<br>
+<b>begin</b><br>
+&nbsp;&nbsp;<b>pragma</b> annotate( todo, "unfinished" );<br>
+<b>end</b> design_example;<br>&nbsp;<br>
+        </p>
+        <div class="code_caption">
+        <b>Example</b>: Simple Example of Specing Out a Project
+        </div>
+        </div>
+        </center>
+
+<p>This design can be tested with</p>
+
+        <center>
+        <div class="code">
+        <p class="code">$ spar --design --check design_example.sp</p>
+        </div>
+        </center>
+
+<p>In design mode, SparForte will focus on design errors and will ignore
+errors related to unfinished work.</p>
+
+<p>Specing out your project instead of immediately writing executable
+code has several advantages:</p>
+
+<ul>
+<li>Your team can discuss the overall project and ensure that it meets
+all the basic requirements.</li>
+<li>Your team can discuss how to organize the project and assign the work.</li>
+<li>Team members can start work even if functions and procedure have
+not been completed by other team members.</li>
+<li>SparForte can verify before you start writing executable code that your design has no errors.</li>
+</ul>
 
 <h3>Debugging</h3>
 

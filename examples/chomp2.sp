@@ -140,8 +140,8 @@ end loop;
 
 -- Check files
 
-sourcepath := command_line.argument(command_line.argument_count-1);
-targetpath := command_line.argument(command_line.argument_count);
+sourcepath := command_line.argument(positive(command_line.argument_count)-1);
+targetpath := command_line.argument(positive(command_line.argument_count));
 if not files.is_readable_file( sourcepath ) then
    put( standard_error, source_info.file );
    put( standard_error, ":" );

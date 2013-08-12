@@ -12,14 +12,14 @@ pragma license( unrestricted );
 pragma restriction( no_external_commands );
 
 procedure aplusb is
-  l : string;
+  s : string;
   a : integer;
   b : integer;
 begin
   -- get( a ) @ ( b ) doesn't work in Bush since there's no integer_io.get()
-  l := get_line;
-  a := numerics.value( strings.field( l, 1, ' ' ) );
-  b := numerics.value( strings.field( l, 2, ' ' ) );
+  s := get_line;
+  a := numerics.value( strings.field( s, 1, ' ' ) );
+  b := numerics.value( strings.field( s, 2, ' ' ) );
   ? a+b;
 end aplusb;
 

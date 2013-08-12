@@ -412,6 +412,8 @@ begin
      err( "file already open" );
   else
      ParseOutParameter( ref, file_type_t );
+     -- GCC Ada 4.7.2 raises STORAGE_ERROR here under certain circumstances
+     -- if a put_line doesn't appear.
 
   -- Verify that the identifier is a file.  Unless during a syntax check,
   -- verify that the file is also open (files are not opened during a

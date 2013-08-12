@@ -2599,6 +2599,33 @@ pragma assert( i = 6 );
 i := long_long_integer( 2.5 ) * 2;
 pragma assert( i = 6 );
 
+-- integer compatibility with user functions
+-- TODO: should also do integer
+
+declare
+
+  function nat_func1 ( nat : natural ) return natural is
+  begin
+    return nat;
+  end nat_func1;
+
+  procedure nat_proc1 ( nat : natural ) is
+  begin
+    n := nat;
+  end nat_proc1;
+
+begin
+  p := 98;
+  n := nat_func1( p );
+  pragma assert( n = 98 );
+  p := 97;
+  nat_proc1( p );
+  pragma assert( n = 97 );
+  n := p; -- this should succeed
+  i := n;
+  i := p;
+end;
+
 -- Test env.  I don't check the result, only
 -- that it doesn't explode.
 env ut;

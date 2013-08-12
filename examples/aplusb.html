@@ -33,14 +33,14 @@ $ spar aplusb
 <b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> aplusb <b>is</b>
-  l : string;
+  s : string;
   a : integer;
   b : integer;
 <b>begin</b>
   <FONT COLOR=green><EM>-- get( a ) @ ( b ) doesn't work in Bush since there's no integer_io.get()</EM></FONT>
-  l := get_line;
-  a := numerics.value( strings.field( l, 1, ' ' ) );
-  b := numerics.value( strings.field( l, 2, ' ' ) );
+  s := get_line;
+  a := numerics.value( strings.field( s, 1, ' ' ) );
+  b := numerics.value( strings.field( s, 2, ' ' ) );
   ? a+b;
 <b>end</b> aplusb;
 
@@ -48,7 +48,4 @@ $ spar aplusb
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>
-<HEAD><TITLE>aplusb.sp</TITLE></HEAD>
-<BODY>
-<HR><DIV ALIGN="center"><H1> File : aplusb.sp </H1></DIV><HR>
-<PRE>
+

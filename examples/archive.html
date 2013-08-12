@@ -97,7 +97,7 @@ command_line.set_exit_status( 0 );                            <FONT COLOR=green>
   <FONT COLOR=green><EM>-- Expire the archive directory</EM></FONT>
 
   <b>cd</b> "$archive_directory" ;
-  find . -<b>type</b> f -mtime +$expire_period_days -exec rm {} \; ;
+  find . -<b>type</b> f -mtime +"$expire_period_days" -exec rm {} \; ;
   <b>cd</b> - ;
 
   <FONT COLOR=green><EM>-- Move to the source directory.  Get a list of files to back up.  Each</EM></FONT>

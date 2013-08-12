@@ -24,7 +24,7 @@ begin
 
   -- Usage
 
-  if $# /= 1 then
+  if $# /= 2 then
      usage;
      return;
   elsif $1 = "-h" or $1 = "--help" then

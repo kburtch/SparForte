@@ -93,7 +93,7 @@ begin
   -- Expire the archive directory
 
   cd "$archive_directory" ;
-  find . -type f -mtime +$expire_period_days -exec rm {} \; ;
+  find . -type f -mtime +"$expire_period_days" -exec rm {} \; ;
   cd - ;
 
   -- Move to the source directory.  Get a list of files to back up.  Each
