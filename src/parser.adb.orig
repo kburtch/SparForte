@@ -3779,6 +3779,9 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
           subword := to_unbounded_string( Ada.Command_Line.Command_Name );
        end if;
     elsif length( expansionVar ) = 1 and (expansionVar >= "1" and expansionVar <= "9" ) then
+       if syntax_check and then not suppress_word_quoting and then not inDQuote then
+          err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
+       end if;
        if isExecutingCommand then
           begin
              subword := to_unbounded_string(
@@ -3792,6 +3795,9 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
           end;
        end if;
     else
+       if syntax_check and then not suppress_word_quoting and then not inDQuote then
+          err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
+       end if;
        -- Regular variable substitution
        findIdent( expansionVar, id );
        if id = eof_t then
@@ -4128,9 +4134,6 @@ begin
 
     elsif ch = ''' and not inDQuote and not inBackslash then -- unescaped '?
        if inDollar then                                      -- was doing $?
-          if syntax_check and then not suppress_word_quoting then
-             err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
-          end if;
           dollarExpansion;                                   -- complete it
        end if;
        inSQuote := not inSQuote;                             -- toggle ' flag
@@ -4150,18 +4153,12 @@ begin
     elsif ch = '`' and not inSQuote and not inBackslash then -- unescaped `?
        inBQuote := not inBQuote;                             -- toggle ` flag
        if inBQuote and inDollar then                         -- doing $ ere `?
-          if syntax_check and then not suppress_word_quoting then
-             err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
-          end if;
           dollarExpansion;                                   -- complete it
        end if;
        if inBQuote then                                      -- starting?
           startOfBQuote := length( word );                   -- offset to start
        else                                                  -- ending?
           if inDollar then                                   -- in a $?
-             if syntax_check and then not suppress_word_quoting then
-                err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
-             end if;
              dollarExpansion;                                -- finish it
           end if;
 --put_line( "PSW: " & word );
@@ -4191,9 +4188,6 @@ begin
     elsif ch = '\' and not inSQuote and not inBackslash then -- unescaped \?
        inBackslash := true;                                -- \ escape
        if inDollar then                                    -- in a $?
-          if syntax_check and then not suppress_word_quoting then
-             err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
-          end if;
           dollarExpansion;                                 -- complete it
        end if;
 
@@ -4206,14 +4200,8 @@ begin
        if inDollar then                                    -- in a $?
           if length( expansionVar ) = 0 then               -- $$ is special
              expansionVar := expansionVar & ch;            -- var is $
-             if syntax_check and then not suppress_word_quoting then
-                err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
-             end if;
              dollarExpansion;                              -- expand it
           else                                             -- otherwise
-             if syntax_check and then not suppress_word_quoting then
-                err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
-             end if;
              dollarExpansion;                              -- complete it
              inDollar := true;                             -- start new one
           end if;
@@ -4234,9 +4222,6 @@ begin
           if ch /= '_' and ch not in 'A'..'Z'  and ch not in 'a'..'z'
              and ch not in '0'..'9' then
              if length( expansionVar ) > 0 then
-                if syntax_check and then not suppress_word_quoting then
-                   err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
-                end if;
                 dollarExpansion;
              end if;
           end if;
@@ -4274,10 +4259,8 @@ begin
        end if;
     end if;
   end loop;                                                -- expansions done
+
   if inDollar then                                         -- last $ not done ?
-     if syntax_check and then not suppress_word_quoting then
-        err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
-     end if;
      dollarExpansion;                                      -- finish it
   end if;
 
