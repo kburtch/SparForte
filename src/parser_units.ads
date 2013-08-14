@@ -93,207 +93,207 @@ procedure ShutdownUnits;
 -- PARSE THE UNITS PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseUnitsInches2mm( result : out unbounded_string );
+procedure ParseUnitsInches2mm( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.inches2mm( expr );
   -- Conversion: inches * 25.4
 
-procedure ParseUnitsFeet2cm( result : out unbounded_string );
+procedure ParseUnitsFeet2cm( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.feet2cm( expr );
   -- Conversion: feet * 30.48
 
-procedure ParseUnitsYards2m( result : out unbounded_string );
+procedure ParseUnitsYards2m( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.yards2m( expr );
   -- Conversion: yards * 0.9144
 
-procedure ParseUnitsMiles2km( result : out unbounded_string );
+procedure ParseUnitsMiles2km( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.miles2km( expr );
   -- Conversion: miles * 1.60934
 
-procedure ParseUnitsMM2Inches( result : out unbounded_string );
+procedure ParseUnitsMM2Inches( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.mm2inches( expr );
   -- Conversion: mm * 0.03937
 
-procedure ParseUnitsCm2Inches( result : out unbounded_string );
+procedure ParseUnitsCm2Inches( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.cm2inches( expr );
   -- Conversion: cm2 * 0.3937
 
-procedure ParseUnitsM2Yards( result : out unbounded_string );
+procedure ParseUnitsM2Yards( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.m2yards( expr );
   -- Conversion:  m * 1.0936
 
-procedure ParseUnitsKm2Miles( result : out unbounded_string );
+procedure ParseUnitsKm2Miles( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.km2miles( expr );
   -- Conversion: km * 0.62137
 
-procedure ParseUnitsSqIn2SqCm( result : out unbounded_string );
+procedure ParseUnitsSqIn2SqCm( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.km2miles( expr );
   -- Conversion: sq in * 6.4516
 
-procedure ParseUnitsSqFt2SqM( result : out unbounded_string );
+procedure ParseUnitsSqFt2SqM( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.sqft2sqm( expr );
   -- Conversion: sq ft * 0.092903
 
-procedure ParseUnitsSqYd2SqM( result : out unbounded_string );
+procedure ParseUnitsSqYd2SqM( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.sqyd2sqm( expr );
   -- Conversion: sq yd * 0.836127
 
-procedure ParseUnitsAcres2Hectares( result : out unbounded_string );
+procedure ParseUnitsAcres2Hectares( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.acres2hectares( expr );
   -- Conversion: acres * 0.40486
 
-procedure ParseUnitsSqCm2SqIn( result : out unbounded_string );
+procedure ParseUnitsSqCm2SqIn( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.sqcm2sqin( expr );
   -- Conversion: sq cm * 0.155
 
-procedure ParseUnitsSqM2SqFt( result : out unbounded_string );
+procedure ParseUnitsSqM2SqFt( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.sqm2sqft( expr );
   -- Conversion: sq m * 10.7639
 
-procedure ParseUnitsSqM2SqYd( result : out unbounded_string );
+procedure ParseUnitsSqM2SqYd( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.sqm2sqyd( expr );
   -- Conversion: sq m * 1.19599
 
-procedure ParseUnitsSqKm2SqMiles( result : out unbounded_string );
+procedure ParseUnitsSqKm2SqMiles( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.sqkm2sqmiles( expr );
   -- Conversion: sq km * 0.38611
 
-procedure ParseUnitsHectares2Acres( result : out unbounded_string );
+procedure ParseUnitsHectares2Acres( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.sqkm2sqm( expr );
   -- Conversion: hectares * 2.471
 
-procedure ParseUnitsOz2Grams( result : out unbounded_string );
+procedure ParseUnitsOz2Grams( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.oz2grams( expr );
   -- Conversion: oz * 28.349
 
-procedure ParseUnitsLb2Kg( result : out unbounded_string );
+procedure ParseUnitsLb2Kg( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.lb2kg( expr );
   -- Conversion: lb * 0.45359
 
-procedure ParseUnitsTons2Tonnes( result : out unbounded_string );
+procedure ParseUnitsTons2Tonnes( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.tons2tonnes( expr );
   -- Conversion: tons * 1.01605
 
-procedure ParseUnitsGrams2Oz( result : out unbounded_string );
+procedure ParseUnitsGrams2Oz( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.tons2tonnes( expr );
   -- Conversion: grams * 0.3527
 
-procedure ParseUnitsKg2Lb( result : out unbounded_string );
+procedure ParseUnitsKg2Lb( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.kg2lb( expr );
   -- Conversion: kg * 2.2046
 
-procedure ParseUnitsTonnes2Tons( result : out unbounded_string );
+procedure ParseUnitsTonnes2Tons( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.tonnes2tons( expr );
   -- Conversion: tonnes * 0.9842
 
-procedure ParseUnitsLy2Pc( result : out unbounded_string );
+procedure ParseUnitsLy2Pc( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.ly2pc( expr );
   -- Conversion: ly * 0.3066
 
-procedure ParseUnitsPc2Ly( result : out unbounded_string );
+procedure ParseUnitsPc2Ly( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.pc2ly( expr );
   -- Conversion: pc * 3.2616
 
-procedure ParseUnitsFlOz2Ml( result : out unbounded_string );
+procedure ParseUnitsFlOz2Ml( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.floz2ml( expr );
   -- Conversion: fl oz * 28.4131
 
-procedure ParseUnitsUSFlOz2Ml( result : out unbounded_string );
+procedure ParseUnitsUSFlOz2Ml( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.floz2ml( expr );
   -- Conversion: fl oz * 29.57
 
-procedure ParseUnitsUSFlOz2FlOz( result : out unbounded_string );
+procedure ParseUnitsUSFlOz2FlOz( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.floz2ml( expr );
   -- Conversion: fl oz * 1.041
 
-procedure ParseUnitsPints2L( result : out unbounded_string );
+procedure ParseUnitsPints2L( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.pints2l( expr );
   -- Conversion: pints * 0.568
 
-procedure ParseUnitsGal2L( result : out unbounded_string );
+procedure ParseUnitsGal2L( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.gal2l( expr );
   -- Conversion: gal * 4.546
 
-procedure ParseUnitsMl2FlOz( result : out unbounded_string );
+procedure ParseUnitsMl2FlOz( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.ml2floz( expr );
   -- Conversion: ml * 0.03519
 
-procedure ParseUnitsMl2USFlOz( result : out unbounded_string );
+procedure ParseUnitsMl2USFlOz( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.ml2floz( expr );
   -- Conversion: ml * 0.033815
 
-procedure ParseUnitsFlOz2USFlOz( result : out unbounded_string );
+procedure ParseUnitsFlOz2USFlOz( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.ml2floz( expr );
   -- Conversion: ml * 0.961
 
-procedure ParseUnitsL2Quarts( result : out unbounded_string );
+procedure ParseUnitsL2Quarts( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.l2quarts( expr );
   -- Conversion: l * 0.8795
 
-procedure ParseUnitsL2Gal( result : out unbounded_string );
+procedure ParseUnitsL2Gal( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.l2gal( expr );
   -- Conversion: l * 0.21997
 
-procedure ParseUnitsF2C( result : out unbounded_string );
+procedure ParseUnitsF2C( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.f2c( expr );
   -- Conversion: f = 5/9*c-32
 
-procedure ParseUnitsC2F( result : out unbounded_string );
+procedure ParseUnitsC2F( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.c2f( expr );
   -- Conversion: c= 9/5f+32
 
-procedure ParseUnitsK2C( result : out unbounded_string );
+procedure ParseUnitsK2C( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.k2c( expr );
   -- Conversion: c = k-273.15
 
-procedure ParseUnitsC2K( result : out unbounded_string );
+procedure ParseUnitsC2K( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.c2k( expr );
   -- Conversion: k = c+273.15
 
-procedure ParseUnitsUSDryGal2L( result : out unbounded_string );
+procedure ParseUnitsUSDryGal2L( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.usdrygal2l( expr );
   -- Conversion: dg * 4.4049
 
-procedure ParseUnitsL2USDryGal( result : out unbounded_string );
+procedure ParseUnitsL2USDryGal( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.l2usdrygal( expr );
   -- Conversion: liters * 0.22702
 
-procedure ParseUnitsUSLiqGal2L( result : out unbounded_string );
+procedure ParseUnitsUSLiqGal2L( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.usliqgal2l( expr );
   -- Conversion: lg * 3.7854
 
-procedure ParseUnitsL2USLiqGal( result : out unbounded_string );
+procedure ParseUnitsL2USLiqGal( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.l2usliqgal( expr );
   -- Conversion: l * 0.26417
 
-procedure ParseUnitsTrOz2G( result : out unbounded_string );
+procedure ParseUnitsTrOz2G( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.troz2g( expr );
   -- Conversion: toz * 31.1035
 
-procedure ParseUnitsG2TrOz( result : out unbounded_string );
+procedure ParseUnitsG2TrOz( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.g2troz( expr );
   -- Conversion: g * 0.03215
 
-procedure ParseUnitsCuCm2FlOz( result : out unbounded_string );
+procedure ParseUnitsCuCm2FlOz( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.cucm2floz( expr );
   -- Conversion: cucm * 0.03519
 
-procedure ParseUnitsFlOz2CuCm( result : out unbounded_string );
+procedure ParseUnitsFlOz2CuCm( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.floz2cucm( expr );
   -- Conversion: floz * 28.413
 
-procedure ParseUnitsCuCm2USFlOz( result : out unbounded_string );
+procedure ParseUnitsCuCm2USFlOz( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.cucm2usfloz( expr );
   -- Conversion: cucm * 0.3381
 
-procedure ParseUnitsUSFlOz2CuCm( result : out unbounded_string );
+procedure ParseUnitsUSFlOz2CuCm( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.usfloz2cucm( expr );
   -- Conversion: floz * 29.5735
 
-procedure ParseUnitsBytes2MB( result : out unbounded_string );
+procedure ParseUnitsBytes2MB( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.bytes2mb( expr );
   -- Conversion: bytes / 1024 / 1024
 
-procedure ParseUnitsMB2Bytes( result : out unbounded_string );
+procedure ParseUnitsMB2Bytes( result : out unbounded_string; kind : out identifier );
   -- Syntax: units.mb2bytes( expr );
   -- Conversion: mb * 1024 * 1024
 

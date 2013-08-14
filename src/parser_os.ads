@@ -21,8 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.strings.unbounded;
-use  ada.strings.unbounded;
+with ada.strings.unbounded, world;
+use  ada.strings.unbounded, world;
 
 package parser_os is
 
@@ -34,6 +34,6 @@ procedure ShutdownSparOS;
 ---------------------------------------------------------
 
 procedure ParseOSSystem;
-procedure ParseOSStatus( result : out unbounded_string );
+procedure ParseOSStatus( result : out unbounded_string; kind : out identifier );
 
 end parser_os;

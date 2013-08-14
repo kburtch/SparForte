@@ -57,9 +57,10 @@ begin
   end if;
 end ParseOSSystem;
 
-procedure ParseOSStatus( result : out unbounded_string ) is
+procedure ParseOSStatus( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: os.status
 begin
+  kind := integer_t;
   expect( os_status_t );
   result := to_unbounded_string( aStatusCode'image( last_status ) );
 end ParseOSStatus;
@@ -67,7 +68,7 @@ end ParseOSStatus;
 procedure StartupSparOS is
 begin
   declareProcedure( os_system_t, "os.system", ParseOSSystem'access );
-  declareFunction( os_status_t, "os.status" );
+  declareFunction( os_status_t, "os.status", ParseOSStatus'access );
 end StartupSparOS;
 
 procedure ShutdownSparOS is

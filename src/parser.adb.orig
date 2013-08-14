@@ -1217,162 +1217,162 @@ begin
         err( "postgresql support not configured" );
 #end if;
         kind := universal_t;
-     elsif token = os_status_t then                    -- OS.status
-        ParseOSSTatus( f );
-        kind := integer_t;
-     elsif token = units_inches2mm_t then               -- Units.Inches2MM
-        ParseUnitsInches2MM( f );
-        kind := long_float_t;
-     elsif token = units_feet2cm_t then                 -- Units.Feet2CM
-        ParseUnitsFeet2CM( f );
-        kind := long_float_t;
-     elsif token = units_yards2m_t then                 -- Units.Yards2M
-        ParseUnitsYards2M( f );
-        kind := long_float_t;
-     elsif token = units_miles2km_t then                -- Units.Miles2KM
-        ParseUnitsMiles2Km( f );
-        kind := long_float_t;
-     elsif token = units_mm2inches_t then               -- Units.MM2Inches
-        ParseUnitsMM2Inches( f );
-        kind := long_float_t;
-     elsif token = units_cm2inches_t then               -- Units.CM2Inches
-        ParseUnitsCM2Inches( f );
-        kind := long_float_t;
-     elsif token = units_m2yards_t then                 -- Units.M2Yards
-        ParseUnitsM2Yards( f );
-        kind := long_float_t;
-     elsif token = units_km2miles_t then                -- Units.Km2Miles
-        ParseUnitsKm2Miles( f );
-        kind := long_float_t;
-     elsif token = units_sqin2sqcm_t then               -- Units.SqIn2SqCm
-        ParseUnitsSqIn2SqCm( f );
-        kind := long_float_t;
-     elsif token = units_sqft2sqm_t then                -- Units.SqFt2SqM
-        ParseUnitsSqFt2SqM( f );
-        kind := long_float_t;
-     elsif token = units_sqyd2sqm_t then                -- Units.SqYd2SqM
-        ParseUnitsSqYd2SqM( f );
-        kind := long_float_t;
-     elsif token = units_acres2hectares_t then          -- Units.Acres2Hectares
-        ParseUnitsAcres2Hectares( f );
-        kind := long_float_t;
-     elsif token = units_sqcm2sqin_t then               -- Units.SqCm2SqIn
-        ParseUnitsSqCm2SqIn( f );
-        kind := long_float_t;
-     elsif token = units_sqm2sqft_t then                -- Units.SqM2SqFt
-        ParseUnitsSqM2SqFt( f );
-        kind := long_float_t;
-     elsif token = units_sqm2sqyd_t then                -- Units.SqM2SqYd
-        ParseUnitsSqM2SqYd( f );
-        kind := long_float_t;
-     elsif token = units_sqkm2sqmiles_t then            -- Units.SqKm2SqM
-        ParseUnitsSqKm2SqMiles( f );
-        kind := long_float_t;
-     elsif token = units_hectares2acres_t then          -- Units.Hectares2Acres
-        ParseUnitsHectares2Acres( f );
-        kind := long_float_t;
-     elsif token = units_oz2grams_t then                -- Units.Oz2Grams
-        ParseUnitsOz2Grams( f );
-        kind := long_float_t;
-     elsif token = units_lb2kg_t then                   -- Units.Lb2Kg
-        ParseUnitsLb2Kg( f );
-        kind := long_float_t;
-     elsif token = units_tons2tonnes_t then             -- Units.Tons2Tonnes
-        ParseUnitsTons2Tonnes( f );
-        kind := long_float_t;
-     elsif token = units_grams2oz_t then                -- Units.Grams2Oz
-        ParseUnitsGrams2Oz( f );
-        kind := long_float_t;
-     elsif token = units_kg2lb_t then                   -- Units.Grams2Oz
-        ParseUnitsKg2Lb( f );
-        kind := long_float_t;
-     elsif token = units_tonnes2tons_t then             -- Units.Tonnes2Tons
-        ParseUnitsTonnes2Tons( f );
-        kind := long_float_t;
-     elsif token = units_ly2pc_t then                   -- Units.Ly2Pc
-        ParseUnitsLy2Pc( f );
-        kind := long_float_t;
-     elsif token = units_pc2ly_t then                   -- Units.Pc2Ly
-        ParseUnitsPc2Ly( f );
-        kind := long_float_t;
-     elsif token = units_floz2ml_t then                 -- Units.FlOz2Ml
-        ParseUnitsFlOz2Ml( f );
-        kind := long_float_t;
-     elsif token = units_usfloz2ml_t then               -- Units.USFlOz2Ml
-        ParseUnitsUSFlOz2Ml( f );
-        kind := long_float_t;
-     elsif token = units_usfloz2floz_t then             -- Units.USFlOz2FlOz
-        ParseUnitsUSFlOz2FlOz( f );
-        kind := long_float_t;
-     elsif token = units_pints2l_t then                 -- Units.Pints2L
-        ParseUnitsPints2L( f );
-        kind := long_float_t;
-     elsif token = units_gal2l_t then                   -- Units.Gal2L
-        ParseUnitsGal2L( f );
-        kind := long_float_t;
-     elsif token = units_ml2floz_t then                 -- Units.Ml2FlOz
-        ParseUnitsMl2FlOz( f );
-        kind := long_float_t;
-     elsif token = units_ml2usfloz_t then               -- Units.Ml2USFlOz
-        ParseUnitsMl2USFlOz( f );
-        kind := long_float_t;
-     elsif token = units_floz2usfloz_t then             -- Units.FlOz2USFlOz
-        ParseUnitsFlOz2USFlOz( f );
-        kind := long_float_t;
-     elsif token = units_usdrygal2l_t then              -- Units.USDryGal2L
-        ParseUnitsUSDryGal2L( f );
-        kind := long_float_t;
-     elsif token = units_l2usdrygal_t then              -- Units.L2USDryGal
-        ParseUnitsL2USDryGal( f );
-        kind := long_float_t;
-     elsif token = units_usliqgal2l_t then              -- Units.USDryLiq2L
-        ParseUnitsUSLiqGal2L( f );
-        kind := long_float_t;
-     elsif token = units_l2usliqgal_t then              -- Units.L2USLiqGal
-        ParseUnitsL2USLiqGal( f );
-        kind := long_float_t;
-     elsif token = units_troz2g_t then                  -- Units.Troz2G
-        ParseUnitsTrOz2G( f );
-        kind := long_float_t;
-     elsif token = units_g2troz_t then                  -- Units.G2Troz
-        ParseUnitsG2TrOz( f );
-        kind := long_float_t;
-     elsif token = units_cucm2floz_t then               -- Units.CuCm2Oz
-        ParseUnitsCuCm2FlOz( f );
-        kind := long_float_t;
-     elsif token = units_floz2cucm_t then               -- Units.Oz2CuCm
-        ParseUnitsFlOz2CuCm( f );
-        kind := long_float_t;
-     elsif token = units_cucm2usfloz_t then             -- Units.CuCm2USFlOz
-        ParseUnitsCuCm2USFlOz( f );
-        kind := long_float_t;
-     elsif token = units_usfloz2cucm_t then             -- Units.USFlOz2CuCm
-        ParseUnitsUSFlOz2CuCm( f );
-        kind := long_float_t;
-     elsif token = units_bytes2mb_t then                -- Units.Bytes2MB
-        ParseUnitsBytes2MB( f );
-        kind := long_float_t;
-     elsif token = units_mb2bytes_t then                -- Units.MB2Bytes
-        ParseUnitsMB2Bytes( f );
-        kind := long_float_t;
-     elsif token = units_l2quarts_t then                -- Units.L2Quarts
-        ParseUnitsL2Quarts( f );
-        kind := long_float_t;
-     elsif token = units_l2gal_t then                   -- Units.L2Gal
-        ParseUnitsL2Gal( f );
-        kind := long_float_t;
-     elsif token = units_f2c_t then                     -- Units.F2C
-        ParseUnitsF2C( f );
-        kind := long_float_t;
-     elsif token = units_c2f_t then                     -- Units.C2F
-        ParseUnitsC2F( f );
-        kind := long_float_t;
-     elsif token = units_k2c_t then                     -- Units.K2C
-        ParseUnitsK2C( f );
-        kind := long_float_t;
-     elsif token = units_c2k_t then                     -- Units.C2K
-        ParseUnitsC2K( f );
-        kind := long_float_t;
+     --elsif token = os_status_t then                    -- OS.status
+     --   ParseOSSTatus( f );
+     --   kind := integer_t;
+     --elsif token = units_inches2mm_t then               -- Units.Inches2MM
+     --   ParseUnitsInches2MM( f );
+     --   kind := long_float_t;
+     --elsif token = units_feet2cm_t then                 -- Units.Feet2CM
+     --   ParseUnitsFeet2CM( f );
+     --   kind := long_float_t;
+     --elsif token = units_yards2m_t then                 -- Units.Yards2M
+     --   ParseUnitsYards2M( f );
+     --   kind := long_float_t;
+     --elsif token = units_miles2km_t then                -- Units.Miles2KM
+     --   ParseUnitsMiles2Km( f );
+     --   kind := long_float_t;
+     --elsif token = units_mm2inches_t then               -- Units.MM2Inches
+     --   ParseUnitsMM2Inches( f );
+     --   kind := long_float_t;
+     --elsif token = units_cm2inches_t then               -- Units.CM2Inches
+     --   ParseUnitsCM2Inches( f );
+     --   kind := long_float_t;
+     --elsif token = units_m2yards_t then                 -- Units.M2Yards
+     --   ParseUnitsM2Yards( f );
+     --   kind := long_float_t;
+     --elsif token = units_km2miles_t then                -- Units.Km2Miles
+     --   ParseUnitsKm2Miles( f );
+     --   kind := long_float_t;
+     --elsif token = units_sqin2sqcm_t then               -- Units.SqIn2SqCm
+     --   ParseUnitsSqIn2SqCm( f );
+     --   kind := long_float_t;
+     --elsif token = units_sqft2sqm_t then                -- Units.SqFt2SqM
+     --   ParseUnitsSqFt2SqM( f );
+     --   kind := long_float_t;
+     --elsif token = units_sqyd2sqm_t then                -- Units.SqYd2SqM
+     --   ParseUnitsSqYd2SqM( f );
+     --   kind := long_float_t;
+     --elsif token = units_acres2hectares_t then          -- Units.Acres2Hectares
+     --   ParseUnitsAcres2Hectares( f );
+     --   kind := long_float_t;
+     --elsif token = units_sqcm2sqin_t then               -- Units.SqCm2SqIn
+     --   ParseUnitsSqCm2SqIn( f );
+     --   kind := long_float_t;
+     --elsif token = units_sqm2sqft_t then                -- Units.SqM2SqFt
+     --   ParseUnitsSqM2SqFt( f );
+     --   kind := long_float_t;
+     --elsif token = units_sqm2sqyd_t then                -- Units.SqM2SqYd
+     --   ParseUnitsSqM2SqYd( f );
+     --   kind := long_float_t;
+     --elsif token = units_sqkm2sqmiles_t then            -- Units.SqKm2SqM
+     --   ParseUnitsSqKm2SqMiles( f );
+     --   kind := long_float_t;
+     --elsif token = units_hectares2acres_t then          -- Units.Hectares2Acres
+     --   ParseUnitsHectares2Acres( f );
+     --   kind := long_float_t;
+     --elsif token = units_oz2grams_t then                -- Units.Oz2Grams
+     --   ParseUnitsOz2Grams( f );
+     --   kind := long_float_t;
+     --elsif token = units_lb2kg_t then                   -- Units.Lb2Kg
+     --   ParseUnitsLb2Kg( f );
+     --   kind := long_float_t;
+     --elsif token = units_tons2tonnes_t then             -- Units.Tons2Tonnes
+     --   ParseUnitsTons2Tonnes( f );
+     --   kind := long_float_t;
+     --elsif token = units_grams2oz_t then                -- Units.Grams2Oz
+     --   ParseUnitsGrams2Oz( f );
+     --   kind := long_float_t;
+     --elsif token = units_kg2lb_t then                   -- Units.Grams2Oz
+     --   ParseUnitsKg2Lb( f );
+     --   kind := long_float_t;
+     --elsif token = units_tonnes2tons_t then             -- Units.Tonnes2Tons
+     --   ParseUnitsTonnes2Tons( f );
+     --   kind := long_float_t;
+     --elsif token = units_ly2pc_t then                   -- Units.Ly2Pc
+     --   ParseUnitsLy2Pc( f );
+     --   kind := long_float_t;
+     --elsif token = units_pc2ly_t then                   -- Units.Pc2Ly
+     --   ParseUnitsPc2Ly( f );
+     --   kind := long_float_t;
+     --elsif token = units_floz2ml_t then                 -- Units.FlOz2Ml
+     --   ParseUnitsFlOz2Ml( f );
+     --   kind := long_float_t;
+     --elsif token = units_usfloz2ml_t then               -- Units.USFlOz2Ml
+     --   ParseUnitsUSFlOz2Ml( f );
+     --   kind := long_float_t;
+     --elsif token = units_usfloz2floz_t then             -- Units.USFlOz2FlOz
+     --   ParseUnitsUSFlOz2FlOz( f );
+     --   kind := long_float_t;
+     --elsif token = units_pints2l_t then                 -- Units.Pints2L
+     --   ParseUnitsPints2L( f );
+     --   kind := long_float_t;
+     --elsif token = units_gal2l_t then                   -- Units.Gal2L
+     --   ParseUnitsGal2L( f );
+     --   kind := long_float_t;
+     --elsif token = units_ml2floz_t then                 -- Units.Ml2FlOz
+     --   ParseUnitsMl2FlOz( f );
+     --   kind := long_float_t;
+     --elsif token = units_ml2usfloz_t then               -- Units.Ml2USFlOz
+     --   ParseUnitsMl2USFlOz( f );
+     --   kind := long_float_t;
+     --elsif token = units_floz2usfloz_t then             -- Units.FlOz2USFlOz
+     --   ParseUnitsFlOz2USFlOz( f );
+     --   kind := long_float_t;
+     --elsif token = units_usdrygal2l_t then              -- Units.USDryGal2L
+     --   ParseUnitsUSDryGal2L( f );
+     --   kind := long_float_t;
+     --elsif token = units_l2usdrygal_t then              -- Units.L2USDryGal
+     --   ParseUnitsL2USDryGal( f );
+     --   kind := long_float_t;
+     --elsif token = units_usliqgal2l_t then              -- Units.USDryLiq2L
+     --   ParseUnitsUSLiqGal2L( f );
+     --   kind := long_float_t;
+     --elsif token = units_l2usliqgal_t then              -- Units.L2USLiqGal
+     --   ParseUnitsL2USLiqGal( f );
+     --   kind := long_float_t;
+     --elsif token = units_troz2g_t then                  -- Units.Troz2G
+     --   ParseUnitsTrOz2G( f );
+     --   kind := long_float_t;
+     --elsif token = units_g2troz_t then                  -- Units.G2Troz
+     --   ParseUnitsG2TrOz( f );
+     --   kind := long_float_t;
+     --elsif token = units_cucm2floz_t then               -- Units.CuCm2Oz
+     --   ParseUnitsCuCm2FlOz( f );
+     --   kind := long_float_t;
+     --elsif token = units_floz2cucm_t then               -- Units.Oz2CuCm
+     --   ParseUnitsFlOz2CuCm( f );
+     --   kind := long_float_t;
+     --elsif token = units_cucm2usfloz_t then             -- Units.CuCm2USFlOz
+     --   ParseUnitsCuCm2USFlOz( f );
+     --   kind := long_float_t;
+     --elsif token = units_usfloz2cucm_t then             -- Units.USFlOz2CuCm
+     --   ParseUnitsUSFlOz2CuCm( f );
+     --   kind := long_float_t;
+     --elsif token = units_bytes2mb_t then                -- Units.Bytes2MB
+     --   ParseUnitsBytes2MB( f );
+     --   kind := long_float_t;
+     --elsif token = units_mb2bytes_t then                -- Units.MB2Bytes
+     --   ParseUnitsMB2Bytes( f );
+     --   kind := long_float_t;
+     --elsif token = units_l2quarts_t then                -- Units.L2Quarts
+     --   ParseUnitsL2Quarts( f );
+     --   kind := long_float_t;
+     --elsif token = units_l2gal_t then                   -- Units.L2Gal
+     --   ParseUnitsL2Gal( f );
+     --   kind := long_float_t;
+     --elsif token = units_f2c_t then                     -- Units.F2C
+     --   ParseUnitsF2C( f );
+     --   kind := long_float_t;
+     --elsif token = units_c2f_t then                     -- Units.C2F
+     --   ParseUnitsC2F( f );
+     --   kind := long_float_t;
+     --elsif token = units_k2c_t then                     -- Units.K2C
+     --   ParseUnitsK2C( f );
+     --   kind := long_float_t;
+     --elsif token = units_c2k_t then                     -- Units.C2K
+     --   ParseUnitsC2K( f );
+     --   kind := long_float_t;
      --elsif token = files_exists_t then                -- files.file_exists
      --   ParseFileExists( f );
      --   kind := boolean_t;

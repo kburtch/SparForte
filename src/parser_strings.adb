@@ -1583,7 +1583,7 @@ begin
   declareFunction( mktemp_t, "strings.mktemp", ParseStringsMkTemp'access );
   declareFunction( to_string_t, "strings.to_string", ParseStringsToString'access );
   declareFunction( to_u_string_t, "strings.to_unbounded_string", ParseStringsToUString'access );
-  declareFunction( is_typo_of_t, "strings.is_typo_of" );
+  declareFunction( is_typo_of_t, "strings.is_typo_of", ParseStringsIsTypoOf'access );
   declareProcedure( set_unbounded_string_t, "strings.set_unbounded_string", ParseStringsSetUnboundedString'access );
   declareFunction( unbounded_slice_t, "strings.unbounded_slice", ParseStringsUnboundedSlice'access );
   declareFunction( strings_to_json_t, "strings.to_json", ParseStringsToJSON'access );

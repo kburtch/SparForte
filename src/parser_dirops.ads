@@ -31,6 +31,7 @@ package parser_dirops is
 -- Directory_Operations package identifiers
 ------------------------------------------------------------------------------
 
+dirops_dir_type_t       : identifier;
 dirops_dir_name_str_t   : identifier;
 dirops_dir_separator_t  : identifier;
 dirops_change_dir_t     : identifier;
@@ -53,7 +54,10 @@ dirops_env_style_dos_t  : identifier;
 dirops_env_style_both_t : identifier;
 dirops_env_style_system_default_t : identifier;
 dirops_expand_path_t    : identifier;
--- reading directory list not included yet
+dirops_open_t           : identifier;
+dirops_close_t          : identifier;
+dirops_is_open_t        : identifier;
+dirops_read_t          : identifier;
 
 ------------------------------------------------------------------------------
 -- HOUSEKEEPING
@@ -77,5 +81,9 @@ procedure ParseDirOpsFileExtension( result : out unbounded_string; kind : out id
 procedure ParseDirOpsFileName( result : out unbounded_string; kind : out identifier );
 procedure ParseDirOpsFormatPathname( result : out unbounded_string; kind : out identifier );
 procedure ParseDirOpsExpandPath( result : out unbounded_string; kind : out identifier );
+procedure ParseDirOpsOpen;
+procedure ParseDirOpsClose;
+procedure ParseDirOpsIsOpen( result : out unbounded_string; kind : out identifier );
+procedure ParseDirOpsRead;
 
 end parser_dirops;
