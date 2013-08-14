@@ -30,7 +30,7 @@ procedure bases is
        return;
     end if;
     -- strip off the type and convert hex chars to uppercase
-    number := `echo $i |  sed -e "s/^0[bBxX]//" | tr "[a-f]" "[A-F]";`;
+    number := `echo "$i" |  sed -e "s/^0[bBxX]//" | tr "[a-f]" "[A-F]";`;
     -- convert to base 10 to ensure it's valid
     dec := `echo "ibase=$ibase; $number" | bc;`;
     -- if we got a valid result, show the number in other bases

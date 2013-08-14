@@ -22,14 +22,18 @@
 ------------------------------------------------------------------------------
 
 with gen_list,
+     Ada.Numerics.Long_Complex_Types,
      ada.strings.unbounded,
      unchecked_deallocation,
+     gnat.directory_operations,
 #if MYSQL
      APQ.MySQL.Client,
 #end if;
      world;
 use  world,
-     ada.strings.unbounded;
+     Ada.Numerics.Long_Complex_Types,
+     ada.strings.unbounded,
+     gnat.directory_operations;
 
 package scanner_res is
 
@@ -55,6 +59,8 @@ type aResourceType is (
    mysql_query,
    postgresql_connection,
    postgresql_query,
+   complex_number,
+   directory,
    memcache_connection,
    pen_canvas
 );
@@ -94,6 +100,10 @@ type resHandle( rt : aResourceType ) is record
 #else
           null; -- PostgreSQL support not enabled
 #end if;
+     when complex_number =>
+          cn : Complex;
+     when directory =>
+          dir : Dir_Type;
      when memcache_connection => null;
      when pen_canvas => null;
      when none => null;

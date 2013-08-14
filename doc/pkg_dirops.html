@@ -52,7 +52,8 @@ directories.</p>
   <a href="#directory_operations.dir_separator">c := dir_separator</a>             <a href="#directory_operations.change_dir">change_dir( p )</a>               <a href="#directory_operations.remove_dir">remove_dir( p [, r] )</a>
   <a href="#directory_operations.get_current_dir">p := get_current_dir</a>           <a href="#directory_operations.dir_name">s := dir_name( p )</a>            <a href="#directory_operations.base_name">s := base_name( p [, f] )</a>
   <a href="#directory_operations.file_extension">s := file_extension( p )</a>       <a href="#directory_operations.file_name">s := file_name( p )</a>           <a href="#directory_operations.format_pathname">s := format_pathname( p [,t] )</a>
-  <a href="#directory_operations.expand_path">s := expand_path( p [,t] )</a>     <a href="#directory_operations.make_dir">make_dir( p )</a>
+  <a href="#directory_operations.expand_path">s := expand_path( p [,t] )</a>     <a href="#directory_operations.make_dir">make_dir( p )</a>                 <a href="#directory_operations.close">close( d )</a>
+  <a href="#directory_operations.is_open">b := is_open( d )</a>              <a href="#directory_operations.open">open( d, p )</a>                  <a href="#directory_operations.read">read( d, s )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -78,6 +79,7 @@ Path_Name handle both styles (UNIX and DOS) of directory separators (either
 slash or back slash).</li>
 <li><b>directory_operations.path_style</b>: the format of a pathname - path_style.unix, path_style.dos, path_style.system_default</li>
 <li><b>directory_operations.environment_style</b>: the format for environment variable substitution - environment_style.unix, environment_style.dos, environment_style.both, environment_style.system_default</li>
+<li><b>directory_operations.dir_file_id</b>: the id number of a dir_file resource, allocated by directory_operations.open</li>
 </ul>
 
 <a name="directory_operations.base_name"></a><h3>s := directory_operations.base_name( p [, f] )</h3>
@@ -165,6 +167,43 @@ slash or back slash).</li>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: GNAT.Directory_Operations.Change_Dir<br>PHP:chdir</p></td>
+</tr>
+</table>
+
+<a name="directory_operations.close"></a><h3>directory_operations.close( d )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Closes a directory referenced by the dir_file id.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">directory_operations.close( dir );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>d</span></td>
+<td><span>in</span></td>
+<td><span>dir_file_id</span></td>
+<td><span>required</span></td>
+<td><span>the id of a directory file resource</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An error occurs if the dir_file is not open.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#directory_operations.open">directory_operations.open</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.Directory_Operations.Open</p></td>
 </tr>
 </table>
 
@@ -511,6 +550,141 @@ slash or back slash).</li>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: GNAT.Directory_Operations.Make_Dir<br>PHP: mkdir</p></td>
+</tr>
+</table>
+
+<a name="directory_operations.is_open"></a><h3>b := directory_operations.is_open( d )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return true if the directory is open.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := directory_operations.is_open( dir );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if directory is open</span></td>
+</tr><tr>
+<td><span>d</span></td>
+<td><span>in</span></td>
+<td><span>dir_file_id</span></td>
+<td><span>required</span></td>
+<td><span>the id of a directory file resource</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.Directory_Operations.Is_Open</p></td>
+</tr>
+</table>
+
+<a name="directory_operations.open"></a><h3>directory_operations.open( d, p )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Opens the directory named p and returns a dir_file id and is
+positioned at the first entry in the directory.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">directory_operations.open( dir, "/tmp" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>d</span></td>
+<td><span>out</span></td>
+<td><span>dir_file_id</span></td>
+<td><span>required</span></td>
+<td><span>the id of a directory file resource</span></td>
+</tr><tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the pathname of the directory</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An error occurs if the directory does not exist or is not accessible.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>SparForte strings are not arrays so the length of the string is not returned as it is in Ada.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#directory_operations.close">directory_operations.close</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.Directory_Operations.Open</p></td>
+</tr>
+</table>
+
+<a name="directory_operations.read"></a><h3>directory_operations.read( d, s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Reads the next entry from the directory and returns the name
+as s.  This list includes the "." and ".." directory entries.  If s is empty,
+then the end of the directory is reached.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">directory_operations.read( dir, filename );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>d</span></td>
+<td><span>in</span></td>
+<td><span>dir_file_id</span></td>
+<td><span>required</span></td>
+<td><span>the id of a directory file resource</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>out</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>a directory entry</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An error occurs if the directory does not exist or is not accessible.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>The directory entry is limited to 1024 characters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.Directory_Operations.Read</p></td>
 </tr>
 </table>
 

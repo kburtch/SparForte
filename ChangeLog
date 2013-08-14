@@ -85,3 +85,5 @@ throw an exception on a number instead of a string as the first parameter.
 
 37. New: mysqlm.append_for_insert and mysqlm.append_for_update procedures that take a record as a parameter.
 
+38. New: directory_operations.open, close, is_open, read.  New data type directory_operations.dir_file_id.
+

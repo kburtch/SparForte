@@ -1573,7 +1573,8 @@ begin
      Put_Line( "  c := dir_separator             change_dir( p )               remove_dir( p [, r] )" );
      Put_Line( "  p := get_current_dir           s := dir_name( p )            s := base_name( p [, f] )" );
      Put_Line( "  s := file_extension( p )       s := file_name( p )           s := format_pathname( p [,t] )" );
-     Put_Line( "  s := expand_path( p [,t] )     make_dir( p )" );
+     Put_Line( "  s := expand_path( p [,t] )     make_dir( p )                 close( d )" );
+     Put_Line( "  b := is_open( d )              open( d, p )                  read( d, s )" );
   elsif helpTopic = "end_of_file" then
      Put_Line( "end_of_file - true if an in_file file has no more data" );
      Put_Line( "  end_of_file( file )" );

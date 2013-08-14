@@ -117,6 +117,10 @@ begin
        put_line( "postgresql connection" );
   when postgresql_query =>
        put_line( "postgresql query" );
+  when complex_number =>
+       put_line( "complex number" );
+  when directory =>
+       put_line( "directory type" );
   when memcache_connection =>
        put_line( "memcache connection" );
   when pen_canvas =>
@@ -189,6 +193,10 @@ begin
 #end if;
   elsif rp.rt = mysql_query then
      Free( rp );
+  elsif rp.rt = directory then
+     if is_open( rp.dir ) then
+        close( rp.dir );
+     end if;
   end if;
   resHandleList.clear( resHandles, long_integer( id ) );
 end clearResource;

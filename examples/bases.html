@@ -52,7 +52,7 @@ bin=11010111
        <b>return</b>;
     <b>end</b> <b>if</b>;
     <FONT COLOR=green><EM>-- strip off the type and convert hex chars to uppercase</EM></FONT>
-    number := `echo $i |  sed -e "s/^0[bBxX]//" | tr "[a-f]" "[A-F]";`;
+    number := `echo "$i" |  sed -e "s/^0[bBxX]//" | tr "[a-f]" "[A-F]";`;
     <FONT COLOR=green><EM>-- convert to base 10 to ensure it's valid</EM></FONT>
     dec := `echo "ibase=$ibase; $number" | bc;`;
     <FONT COLOR=green><EM>-- if we got a valid result, show the number in other bases</EM></FONT>
