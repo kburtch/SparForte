@@ -124,7 +124,9 @@ confusingprogram_words : unbounded_string := to_unbounded_string( " eval exec re
 ---------------------------------------------------------
 
 procedure ParseBasicShellWord( shell_word : out unbounded_string ) is
-  -- Check token for a shell word.
+  -- Check token for a shell word.  Even though this is called "parse",
+  -- don't to getNextToken as the shell word hasn't been expanded yet
+  -- and errors have yet to be reported against the token.
 begin
   shell_word := null_unbounded_string;
   if identifiers( token ).kind = command_t then   -- handle a command type
@@ -413,13 +415,14 @@ begin
      getNextToken;
   else
      id := token;
-     getNextToken;
      -- if in a script, prohibit "l" and "O" as identifier names
      if inputMode /= interactive and inputMode /= breakout then
         if identifiers( id ).name = lowercase_l then
            err( "style issue: name lowercase " & optional_bold( "l" ) & " can be confused with the number one" );
         elsif identifiers( id ).name = uppercase_o then
            err( "style issue: name uppercase " & optional_bold( "O" ) & " can be confused with the number zero" );
+        elsif index( nonmeaningful_words, to_string( " " & toLower( identifiers( id ).name ) & " " ) ) > 0 then
+           err( "style issue:  name " & optional_bold( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
         else
            declare
               nameAsLower : unbounded_string := toLower( identifiers(id).name );
@@ -432,6 +435,7 @@ begin
            end;
         end if;
      end if;
+     getNextToken;
   end if;
 exception when symbol_table_overflow =>
   err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
@@ -2715,16 +2719,6 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean ) 
   right_type    : identifier;
   expr_expected : boolean := false;
 begin
-
-  -- Variable/Constant style checks
-
-  if syntax_check then
-     if inputMode /= interactive and inputMode /= breakout then
-        if index( nonmeaningful_words, to_string( " " & toLower( identifiers( id ).name ) & " " ) ) > 0 then
-           err( "style issue:  name " & optional_bold( to_string( identifiers(id).name ) ) & " is not descriptive or meaningful" );
-        end if;
-     end if;
-  end if;
 
   expect( symbol_t, ":" );
 

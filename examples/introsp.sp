@@ -29,10 +29,10 @@ begin
 
    -- the bloop test
 
-   s := `echo $e | grep "^bloop\ " ;` ;
+   s := `echo "$e" | grep "^bloop\ " ;` ;
    if strings.length( s ) > 0 then
       ? "bloop exists";
-      s := `echo $e | grep "^abs\ " ;` ;
+      s := `echo "$e" | grep "^abs\ " ;` ;
       if strings.length( s ) > 0 then
          ? "abs() exists";
          ? "abs(bloop) = " & strings.image( abs( bloop ) );
@@ -49,24 +49,24 @@ begin
 
    declare
      pos : natural := 0;
-     l   : string;
+     ln  : string;
      ch  : character;
      cnt : natural := 0;
      sum : integer := 0;
    begin
      while pos < strings.length( e ) loop
-       l := "";
+       ln := "";
        loop
          pos := @+1;
          exit when pos > strings.length( e );
          ch := strings.element( e, positive( pos ) );
          exit when ch = ASCII.LF;
-         l := @ & ch;
+         ln := @ & ch;
        end loop;
-       if strings.index( l, "identifier of the type integer" ) > 0 then
-         ? l;
+       if strings.index( ln, "identifier of the type integer" ) > 0 then
+         ? ln;
          cnt := @ + 1;
-         s := strings.trim( strings.field( l, 2, "|" ), trim_end.both );
+         s := strings.trim( strings.field( ln, 2, "|" ), trim_end.both );
          if strings.length( s ) > 0 then
             sum := @ + numerics.value( s );
          end if;

@@ -3732,7 +3732,7 @@ begin
 
   -- find token in command line
 
-  if firstpos > line_firstpos then                  -- token on line?
+  if firstpos >= line_firstpos then                 -- token on line?
      token_firstpos := firstpos-line_firstpos+1;    -- position in
      token_lastpos := lastpos-line_firstpos+1;      -- returned string
      cmdline := null_unbounded_string;              -- begin decompression
@@ -5836,7 +5836,8 @@ begin
         cmdpos := lastpos+1; -- skip last "
      end if;
      ci.compressedScript := ci.compressedScript &
-        slice( command, firstpos, lastpos );
+        immediate_word_delimiter & slice( command, firstpos, lastpos ) &
+        immediate_word_delimiter;
      ci.context := startOfParameters;
      return;
 

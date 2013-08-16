@@ -19,7 +19,7 @@ procedure monte is
 
 pragma restriction( no_external_commands );
  
-   function pi (throws : positive) return float is
+   function pi_estimate (throws : positive) return float is
       inside : natural := 0;
    begin
       for throw in 1..throws loop
@@ -28,13 +28,13 @@ pragma restriction( no_external_commands );
          end if;
       end loop;
       return 4.0 * float (inside) / float (throws);
-   end pi;
+   end pi_estimate;
 
 begin
-   ? "      1_000:" & strings.image (pi (      1_000))
-   @ "     10_000:" & strings.image (pi (     10_000))
-   @ "    100_000:" & strings.image (pi (    100_000))
-   @ "  1_000_000:" & strings.image (pi (  1_000_000));
+   ? "      1_000:" & strings.image (pi_estimate (      1_000))
+   @ "     10_000:" & strings.image (pi_estimate (     10_000))
+   @ "    100_000:" & strings.image (pi_estimate (    100_000))
+   @ "  1_000_000:" & strings.image (pi_estimate (  1_000_000));
 end monte;
 
 -- VIM editor formatting instructions

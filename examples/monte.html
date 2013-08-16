@@ -41,7 +41,7 @@ $ spar monte
 
 <b>pragma</b> restriction( no_external_commands );
  
-   <b>function</b> pi (throws : positive) <b>return</b> float <b>is</b>
+   <b>function</b> pi_estimate (throws : positive) <b>return</b> float <b>is</b>
       inside : natural := 0;
    <b>begin</b>
       <b>for</b> throw <b>in</b> 1..throws <b>loop</b>
@@ -50,16 +50,15 @@ $ spar monte
          <b>end</b> <b>if</b>;
       <b>end</b> <b>loop</b>;
       <b>return</b> 4.0 * float (inside) / float (throws);
-   <b>end</b> pi;
+   <b>end</b> pi_estimate;
 
 <b>begin</b>
-   ? "      1_000:" &amp; strings.image (pi (      1_000))
-   @ "     10_000:" &amp; strings.image (pi (     10_000))
-   @ "    100_000:" &amp; strings.image (pi (    100_000))
-   @ "  1_000_000:" &amp; strings.image (pi (  1_000_000));
+   ? "      1_000:" &amp; strings.image (pi_estimate (      1_000))
+   @ "     10_000:" &amp; strings.image (pi_estimate (     10_000))
+   @ "    100_000:" &amp; strings.image (pi_estimate (    100_000))
+   @ "  1_000_000:" &amp; strings.image (pi_estimate (  1_000_000));
 <b>end</b> monte;
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
-
 </PRE></BODY></HTML>

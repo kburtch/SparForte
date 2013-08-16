@@ -15,8 +15,8 @@ procedure minsort is
 
   best_value : data_type;
   best       : integer;
-  data       : data_array;
-  data_cnt   : integer := arrays.first( data );
+  num_data   : data_array;
+  data_cnt   : integer := arrays.first( num_data );
   s          : string;
 
 begin
@@ -27,9 +27,9 @@ begin
     put( "Data? (Enter nothing to sort): " );
     s := get_line;
     exit when s = "";
-    data( data_cnt ) := numerics.value( s );
+    num_data( data_cnt ) := numerics.value( s );
     data_cnt := data_cnt + 1;
-    exit when data_cnt > arrays.last( data );
+    exit when data_cnt > arrays.last( num_data );
   end loop;
   data_cnt := data_cnt - 1;
 
@@ -39,25 +39,25 @@ begin
 -- for this position.  Continue for all positions (except that last
 -- because it will be sorted when last-1 is sorted)
   
-  for i in arrays.first(data)..data_cnt-1 loop
-    best_value := data(i);
+  for i in arrays.first(num_data)..data_cnt-1 loop
+    best_value := num_data(i);
     best := i;
     for j in i+1..data_cnt loop
-      if data(j) < best_value then
+      if num_data(j) < best_value then
          best := j;
-         best_value := data(j);
+         best_value := num_data(j);
       end if;
     end loop;
     if best /= i then
-       data(best) := data(i);
-       data(i) := best_value;
+       num_data(best) := num_data(i);
+       num_data(i) := best_value;
     end if;
   end loop;
 
 -- Show data
 
-  for i in arrays.first(data)..data_cnt loop
-      put_line( data(i) );
+  for i in arrays.first(num_data)..data_cnt loop
+      put_line( num_data(i) );
   end loop;
 
 end minsort;

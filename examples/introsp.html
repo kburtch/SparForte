@@ -55,10 +55,10 @@ Their sum is -5
 
    <FONT COLOR=green><EM>-- the bloop test</EM></FONT>
 
-   s := `echo $e | grep "^bloop\ " ;` ;
+   s := `echo "$e" | grep "^bloop\ " ;` ;
    <b>if</b> strings.length( s ) &gt; 0 <b>then</b>
       ? "bloop exists";
-      s := `echo $e | grep "^abs\ " ;` ;
+      s := `echo "$e" | grep "^abs\ " ;` ;
       <b>if</b> strings.length( s ) &gt; 0 <b>then</b>
          ? "abs() exists";
          ? "abs(bloop) = " &amp; strings.image( <b>abs</b>( bloop ) );
@@ -75,24 +75,24 @@ Their sum is -5
 
    <b>declare</b>
      pos : natural := 0;
-     l   : string;
+     ln  : string;
      ch  : character;
      cnt : natural := 0;
      sum : integer := 0;
    <b>begin</b>
      <b>while</b> pos &lt; strings.length( e ) <b>loop</b>
-       l := "";
+       ln := "";
        <b>loop</b>
          pos := @+1;
          <b>exit</b> <b>when</b> pos &gt; strings.length( e );
          ch := strings.element( e, positive( pos ) );
          <b>exit</b> <b>when</b> ch = ASCII.LF;
-         l := @ &amp; ch;
+         ln := @ &amp; ch;
        <b>end</b> <b>loop</b>;
-       <b>if</b> strings.index( l, "identifier of the type integer" ) &gt; 0 <b>then</b>
-         ? l;
+       <b>if</b> strings.index( ln, "identifier of the type integer" ) &gt; 0 <b>then</b>
+         ? ln;
          cnt := @ + 1;
-         s := strings.trim( strings.field( l, 2, "|" ), trim_end.both );
+         s := strings.trim( strings.field( ln, 2, "|" ), trim_end.both );
          <b>if</b> strings.length( s ) &gt; 0 <b>then</b>
             sum := @ + numerics.value( s );
          <b>end</b> <b>if</b>;

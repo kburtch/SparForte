@@ -42,8 +42,8 @@ Data? (Enter nothing to sort):
 
   best_value : data_type;
   best       : integer;
-  data       : data_array;
-  data_cnt   : integer := arrays.first( data );
+  num_data   : data_array;
+  data_cnt   : integer := arrays.first( num_data );
   s          : string;
 
 <b>begin</b>
@@ -54,9 +54,9 @@ Data? (Enter nothing to sort):
     put( "Data? (Enter nothing to sort): " );
     s := get_line;
     <b>exit</b> <b>when</b> s = "";
-    data( data_cnt ) := numerics.value( s );
+    num_data( data_cnt ) := numerics.value( s );
     data_cnt := data_cnt + 1;
-    <b>exit</b> <b>when</b> data_cnt &gt; arrays.last( data );
+    <b>exit</b> <b>when</b> data_cnt &gt; arrays.last( num_data );
   <b>end</b> <b>loop</b>;
   data_cnt := data_cnt - 1;
 
@@ -66,25 +66,25 @@ Data? (Enter nothing to sort):
 <FONT COLOR=green><EM>-- for this position.  Continue for all positions (except that last</EM></FONT>
 <FONT COLOR=green><EM>-- because it will be sorted when last-1 is sorted)</EM></FONT>
   
-  <b>for</b> i <b>in</b> arrays.first(data)..data_cnt-1 <b>loop</b>
-    best_value := data(i);
+  <b>for</b> i <b>in</b> arrays.first(num_data)..data_cnt-1 <b>loop</b>
+    best_value := num_data(i);
     best := i;
     <b>for</b> j <b>in</b> i+1..data_cnt <b>loop</b>
-      <b>if</b> data(j) &lt; best_value <b>then</b>
+      <b>if</b> num_data(j) &lt; best_value <b>then</b>
          best := j;
-         best_value := data(j);
+         best_value := num_data(j);
       <b>end</b> <b>if</b>;
     <b>end</b> <b>loop</b>;
     <b>if</b> best /= i <b>then</b>
-       data(best) := data(i);
-       data(i) := best_value;
+       num_data(best) := num_data(i);
+       num_data(i) := best_value;
     <b>end</b> <b>if</b>;
   <b>end</b> <b>loop</b>;
 
 <FONT COLOR=green><EM>-- Show data</EM></FONT>
 
-  <b>for</b> i <b>in</b> arrays.first(data)..data_cnt <b>loop</b>
-      put_line( data(i) );
+  <b>for</b> i <b>in</b> arrays.first(num_data)..data_cnt <b>loop</b>
+      put_line( num_data(i) );
   <b>end</b> <b>loop</b>;
 
 <b>end</b> minsort;
