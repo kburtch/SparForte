@@ -59,7 +59,7 @@ procedure roman_numerals is
    function RomanToNatural (RomanNumeral : RomanNumeralType) return natural is
       Result : natural := 0;  -- result variable
       CurrentPosition : positive := 1; -- the current position in RomanNumeral being examined.
-      Value : integer:=0; -- Value of the corresponding roman numeral
+      Num_Value : integer:=0; -- Value of the corresponding roman numeral
       First  : integer:=0;
       Next : integer:=0;
 
@@ -72,29 +72,29 @@ procedure roman_numerals is
          if CurrentPosition > positive( strings.length( RomanNumeral ) ) then
             exit;
          elsif strings.element( RomanNumeral, CurrentPosition) = 'M' then
-            Value := 1000;      
+            Num_Value := 1000;      
          elsif strings.element( RomanNumeral, CurrentPosition) = 'D' then
-            Value := 500;
+            Num_Value := 500;
          elsif strings.element( RomanNumeral, CurrentPosition) = 'C' then
-            Value := 100;
+            Num_Value := 100;
          elsif strings.element( RomanNumeral, CurrentPosition) = 'L' then    
-            Value := 50;
+            Num_Value := 50;
          elsif strings.element( RomanNumeral, CurrentPosition) = 'X' then
-            Value := 10;
+            Num_Value := 10;
          elsif strings.element( RomanNumeral, CurrentPosition) = 'V' then
-            Value := 5;
+            Num_Value := 5;
          elsif strings.element( RomanNumeral, CurrentPosition) = 'I' then
-            Value := 1;
+            Num_Value := 1;
          end if;
                        
          -- If this is the first character then store the value
          -- of it in the variable 'First'
 
          if CurrentPosition = 1 then
-            First := Value;        
+            First := Num_Value;        
          end if;   
          
-         Next := Value; -- Store the second value in this variable(2nd iteration)
+         Next := Num_Value; -- Store the second value in this variable(2nd iteration)
          
          -- This is for the second Iteration. Check if the second value
          -- is greater than the first value and perform the nescassary
@@ -221,50 +221,50 @@ procedure roman_numerals is
 
    procedure ConvertBack(ConvertWhat : natural) is
          
-     Value : natural;
+     Num_Value : natural;
      
     begin  
         
-     Value := ConvertWhat;
+     Num_Value := ConvertWhat;
      for I in 1..20 loop
-        if Value<=4000 and Value>=1 then
+        if Num_Value<=4000 and Num_Value>=1 then
         
-               while Value>=1000 loop
+               while Num_Value>=1000 loop
                
                   put( "M" );             
-                  Value:=Value - 1000;
+                  Num_Value:=Num_Value - 1000;
                   
                end loop;
                
-               while Value>=500 loop
+               while Num_Value>=500 loop
                
                   put( "D" );
-                  Value:=Value - 500;  
+                  Num_Value:=Num_Value - 500;  
                end loop;
                
-               while Value>=100 loop
+               while Num_Value>=100 loop
                   put( "C" );
-                  Value:=Value - 100;
+                  Num_Value:=Num_Value - 100;
                end loop;
                
-               while Value>=50 loop
+               while Num_Value>=50 loop
                   put( "L" );
-                  Value:=Value - 50;
+                  Num_Value:=Num_Value - 50;
                end loop;
                
-               while Value>=10 loop
+               while Num_Value>=10 loop
                   put( "X" );
-                  Value:=Value - 10;
+                  Num_Value:=Num_Value - 10;
                end loop;
                
-               while Value>=5 loop
+               while Num_Value>=5 loop
                   put( "V" );
-                  Value:=Value - 5;
+                  Num_Value:=Num_Value - 5;
                end loop;
                
-               while Value>=1 loop
+               while Num_Value>=1 loop
                   put( "I" );
-                  Value:=Value - 1;
+                  Num_Value:=Num_Value - 1;
                end loop;                                 
                
             end if;

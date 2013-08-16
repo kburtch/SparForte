@@ -131,69 +131,46 @@ begin
   shell_word := null_unbounded_string;
   if identifiers( token ).kind = command_t then   -- handle a command type
       shell_word := identifiers( token ).value;
-      getNextToken;
   elsif token = symbol_t then
      if identifiers( token ).value = ";" then
         err( "shell word expected" );
      end if;
      shell_word := identifiers( token ).value;
-     getNextToken;
   elsif token = word_t then
      shell_word := identifiers( token ).value;
-     getNextToken;
   elsif token = cd_t then
      shell_word := identifiers( token ).name;
-     getNextToken;
   elsif token = clear_t then
      shell_word := identifiers( token ).name;
-     getNextToken;
   elsif token = env_t then
      shell_word := identifiers( token ).name;
-     getNextToken;
   elsif token = help_t then
      shell_word := identifiers( token ).name;
-     getNextToken;
   elsif token = history_t then
      shell_word := identifiers( token ).name;
-     getNextToken;
   elsif token = jobs_t then
      shell_word := identifiers( token ).name;
-     getNextToken;
   elsif token = pwd_t then
      shell_word := identifiers( token ).name;
-     getNextToken;
   elsif token = trace_t then
      shell_word := identifiers( token ).name;
-     getNextToken;
   elsif token = unset_t then
      shell_word := identifiers( token ).name;
-     getNextToken;
   elsif token = wait_t then
      shell_word := identifiers( token ).name;
-     getNextToken;
   elsif token = alter_t then
      shell_word := identifiers( token ).name;
-     getNextToken;
   elsif token = delete_t then
      shell_word := identifiers( token ).name;
-     getNextToken;
   elsif token = insert_t then
      shell_word := identifiers( token ).name;
-     getNextToken;
   elsif token = select_t then
      shell_word := identifiers( token ).name;
-     getNextToken;
   elsif token = update_t then
      shell_word := identifiers( token ).name;
-     getNextToken;
-  elsif token = strlit_t then
-     shell_word := identifiers( token ).value;
-     discardUnusedIdentifier( token );
-     getNextToken;
   elsif identifiers( token ).kind = new_t then
      shell_word := identifiers( token ).name;
      discardUnusedIdentifier( token );
-     getNextToken;
   elsif token = number_t then
      err( optional_bold( "shell word") & " expected, not a " &
           optional_bold( "number" ) );
@@ -3967,7 +3944,6 @@ begin
      ignoreTerminatingWhitespace := true;                -- word contains space
      expandInSingleQuotes := true;
      stripQuoteMarks := false;
-     getNextToken;
   else
      -- Otherwise, get a non-SQL shell word
      ParseBasicShellWord( shell_word );
@@ -3982,6 +3958,7 @@ begin
      pattern := null_unbounded_string;
      wordType := normalWord;
      shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
+     getNextToken;
      return;
   end if;
 
@@ -3997,6 +3974,7 @@ begin
      pattern := semicolon_string;
      wordType := semicolonWord;
      shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
+     getNextToken;
      return;
 
   elsif ch = '|' then                                  -- vertical bar?
@@ -4004,6 +3982,7 @@ begin
      pattern := verticalbar_string;
      wordType := pipeWord;
      shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
+     getNextToken;
      return;
 
   elsif ch = '&' then                                  -- ampersand?
@@ -4011,6 +3990,7 @@ begin
      pattern := ampersand_string;
      wordType := ampersandWord;
      shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
+     getNextToken;
      return;
 
   elsif ch = '<' then                                  -- less than?
@@ -4018,6 +3998,7 @@ begin
      pattern := redirectIn_string;
      wordType := redirectInWord;
      shellWordList.Queue( wordList, aShellWord'( wordtype, pattern, word ) );
+     getNextToken;
      return;
 
   elsif ch = '>' then                                  -- greater than?
@@ -4027,12 +4008,14 @@ begin
         pattern := redirectAppend_string;
         wordType := redirectAppendWord;
         shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
+        getNextToken;
         return;
      end if;
      word := redirectOut_string;                       -- it's redirectOut
      pattern := redirectOut_string;
      wordType := redirectOutWord;
      shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
+     getNextToken;
      return;
 
   elsif ch = '2' and then wordLen > 1 and then Element(shell_word, 2 ) = '>' then -- 2+greater than?
@@ -4042,6 +4025,7 @@ begin
            pattern := redirectErr2Out_string;
            wordType := redirectErr2OutWord;
            shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
+           getNextToken;
            return;
         end if;
      elsif wordLen > 2 and then Element( shell_word, 3 ) = '>' then -- double greater than?
@@ -4049,12 +4033,14 @@ begin
         pattern := redirectErrAppend_string;
         wordType := redirectErrAppendWord;
         shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
+        getNextToken;
         return;
      end if;
      word := redirectErrOut_string;                     -- it's redirectErrOut
      pattern := redirectErrOut_string;
      wordType := redirectErrOutWord;
      shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
+     getNextToken;
      return;
 
   elsif ch = '@' then                                   -- itself?
@@ -4062,6 +4048,7 @@ begin
      pattern := itself_string;
      wordType := itselfWord;
      shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
+     getNextToken;
      return;
 
   end if;
@@ -4073,6 +4060,7 @@ begin
   --  However, to trace whether variables are referenced.
 
   if error_found then                                 -- error:
+     getNextToken;
      return;                                          -- no expansions
   --elsif syntax_check then                             -- chk?
   --   shellWordList.Queue( wordList, aShellWord'( normalWord, pattern, shell_word ) );
@@ -4305,6 +4293,7 @@ begin
         end;
      end if;
   end if;
+  getNextToken;
 
 end ParseShellWord;
 

@@ -80,7 +80,7 @@ begin
   best_method := c_none; 
 
   if files.is_executable( compress ) then
-     $compress "-c" "$source_path" > "/tmp/temp.out";
+     "$compress" "-c" "$source_path" > "/tmp/temp.out";
      this_size   := numerics.value( `stat -c '%s' /tmp/temp.out;` );
      if verbose then
         put_line( source_info.file & ": compress size = " & strings.image( this_size ) );
@@ -96,7 +96,7 @@ begin
   end if;
 
   if files.is_executable( zip ) then
-     $zip "-q" "-" "$source_path" > "/tmp/temp.out";
+     "$zip" "-q" "-" "$source_path" > "/tmp/temp.out";
      this_size   := numerics.value( `stat -c '%s' /tmp/temp.out;` );
      if verbose then
         put_line( source_info.file & ": zip size = " & strings.image( this_size ) );
@@ -116,7 +116,7 @@ begin
   --end if;
 
   if files.is_executable( gzip ) then
-     $gzip "-c" "$source_path" > "/tmp/temp.out";
+     "$gzip" "-c" "$source_path" > "/tmp/temp.out";
      this_size   := numerics.value( `stat -c '%s' /tmp/temp.out;` );
      if verbose then
         put_line( source_info.file & ": gzip size = " & strings.image( this_size ) );
@@ -132,7 +132,7 @@ begin
   end if;
 
   if files.is_executable( bzip ) then
-     $bzip "-c" "$source_path" > "/tmp/temp.out";
+     "$bzip" "-c" "$source_path" > "/tmp/temp.out";
      this_size   := numerics.value( `stat -c '%s' /tmp/temp.out;` );
      if verbose then
         put_line( source_info.file & ": bzip2 size = " & strings.image( this_size ) );
@@ -153,19 +153,19 @@ begin
        mv "$source_path" "$source_path"".none";
   when c_compress =>
        put_line( source_info.file & ": using compress" );
-       $compress "$source_path";
+       "$compress" "$source_path";
   when c_zip =>
        put_line( source_info.file & ": using zip" );
-       $zip "$source_path"".zip" "$source_path";
+       "$zip" "$source_path"".zip" "$source_path";
        rm  "$source_path";
   when c_zoo =>
        null;
   when c_gzip =>
        put_line( source_info.file & ": using gzip" );
-       $gzip "$source_path";
+       "$gzip" "$source_path";
   when c_bzip =>
        put_line( source_info.file & ": using bzip" );
-       $bzip "$source_path";
+       "$bzip" "$source_path";
   when others =>
      put( standard_error, source_info.file )
          @( standard_error, ": unknown compression method" );

@@ -26,22 +26,22 @@ heth  6.31920000000000E-02 rest
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "randdist" );
-<b>pragma</b> annotate( description, "Given a mapping between items and their required" );
-<b>pragma</b> annotate( description, "probability of occurrence, generate a million items" );
-<b>pragma</b> annotate( description, "randomly subject to the given probabilities and compare" );
-<b>pragma</b> annotate( description, "the target probability of occurrence versus the" );
-<b>pragma</b> annotate( description, "generated values." );
-<b>pragma</b> annotate( description, "" );
-<b>pragma</b> annotate( description, "The total of all the probabilities should equal one." );
-<b>pragma</b> annotate( description, "(Because floating point arithmetic is involved this is" );
-<b>pragma</b> annotate( description, "subject to rounding errors).  Use the following mapping" );
-<b>pragma</b> annotate( description, "to test your programs: aleph 1/5.0, beth 1/6.0," );
-<b>pragma</b> annotate( description, "gimel 1/7.0, daleth 1/8.0, he 1/9.0,  waw 1/10.0" );
-<b>pragma</b> annotate( description, "zayin 1/11.0, heth 1759/27720 adjusted so that" );
-<b>pragma</b> annotate( description, "probabilities add to 1" );
-<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Probabilistic_choice" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "randdist" )
+              @( description, "Given a mapping between items and their required" )
+              @( description, "probability of occurrence, generate a million items" )
+              @( description, "randomly subject to the given probabilities and compare" )
+              @( description, "the target probability of occurrence versus the" )
+              @( description, "generated values." )
+              @( description, "" )
+              @( description, "The total of all the probabilities should equal one." )
+              @( description, "(Because floating point arithmetic is involved this is" )
+              @( description, "subject to rounding errors).  Use the following mapping" )
+              @( description, "to test your programs: aleph 1/5.0, beth 1/6.0," )
+              @( description, "gimel 1/7.0, daleth 1/8.0, he 1/9.0,  waw 1/10.0" )
+              @( description, "zayin 1/11.0, heth 1759/27720 adjusted so that" )
+              @( description, "probabilities add to 1" )
+              @( see_also, "http://rosettacode.org/wiki/Probabilistic_choice" )
+              @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
@@ -52,16 +52,16 @@ heth  6.31920000000000E-02 rest
   pr : <b>constant</b> <b>array</b>(aleph..heth) <b>of</b> float :=
      (1/5, 1/6, 1/7, 1/8, 1/9, 1/10, 1/11, 1 );
   samples : <b>array</b>(aleph..heth) <b>of</b> natural := (0, 0, 0, 0, 0, 0, 0, 0);
-  value : float;
+  random_value : float;
 <b>begin</b>
   <b>for</b> try <b>in</b> 1..trials <b>loop</b>
-    value := numerics.random;
+    random_value := numerics.random;
     <b>for</b> i <b>in</b> arrays.first( pr )..arrays.last( pr ) <b>loop</b>
-       <b>if</b> value &lt;= pr(i) <b>then</b>
+       <b>if</b> random_value &lt;= pr(i) <b>then</b>
          samples(i) := samples(i) + 1;
          <b>exit</b>;
        <b>else</b>
-         value := @ - pr(i);
+         random_value := @ - pr(i);
        <b>end</b> <b>if</b>;
     <b>end</b> <b>loop</b>;
   <b>end</b> <b>loop</b>;
@@ -78,5 +78,4 @@ heth  6.31920000000000E-02 rest
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
-
 </PRE></BODY></HTML>

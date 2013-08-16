@@ -319,8 +319,9 @@ with the command line option <span style="font-weight: bold;">--design</span>.</
 
 <p>In design mode, "spec out" your project by declaring types, global
 variables and empty functions and procedures.  These subprograms that
-do nothing are sometimes called "stubs".  Comment that your
-work is unfinished with a
+do nothing are sometimes called "stubs".  Using stubs creates a
+skeleton program that has enough structure to be tested by SparForte.
+Comment that your work is unfinished with a
 <span style="font-weight: bold;">pragma annotate( todo )</span>.
 Then run syntax checking to confirm that your overall design is
 well-crafted.</p>
@@ -382,6 +383,9 @@ well-crafted.</p>
 
 <p>In design mode, SparForte will focus on design errors and will ignore
 errors related to unfinished work.</p>
+
+<p>This is also a good time to choose any architectural pragmas to shape
+the design of your project.</p>
 
 <p>Specing out your project instead of immediately writing executable
 code has several advantages:</p>

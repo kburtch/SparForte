@@ -90,7 +90,7 @@ Final Result is: XXXII
    <b>function</b> RomanToNatural (RomanNumeral : RomanNumeralType) <b>return</b> natural <b>is</b>
       Result : natural := 0;  <FONT COLOR=green><EM>-- result variable</EM></FONT>
       CurrentPosition : positive := 1; <FONT COLOR=green><EM>-- the current position in RomanNumeral being examined.</EM></FONT>
-      Value : integer:=0; <FONT COLOR=green><EM>-- Value of the corresponding roman numeral</EM></FONT>
+      Num_Value : integer:=0; <FONT COLOR=green><EM>-- Value of the corresponding roman numeral</EM></FONT>
       First  : integer:=0;
       Next : integer:=0;
 
@@ -103,29 +103,29 @@ Final Result is: XXXII
          <b>if</b> CurrentPosition &gt; positive( strings.length( RomanNumeral ) ) <b>then</b>
             <b>exit</b>;
          <b>elsif</b> strings.element( RomanNumeral, CurrentPosition) = 'M' <b>then</b>
-            Value := 1000;      
+            Num_Value := 1000;      
          <b>elsif</b> strings.element( RomanNumeral, CurrentPosition) = 'D' <b>then</b>
-            Value := 500;
+            Num_Value := 500;
          <b>elsif</b> strings.element( RomanNumeral, CurrentPosition) = 'C' <b>then</b>
-            Value := 100;
+            Num_Value := 100;
          <b>elsif</b> strings.element( RomanNumeral, CurrentPosition) = 'L' <b>then</b>    
-            Value := 50;
+            Num_Value := 50;
          <b>elsif</b> strings.element( RomanNumeral, CurrentPosition) = 'X' <b>then</b>
-            Value := 10;
+            Num_Value := 10;
          <b>elsif</b> strings.element( RomanNumeral, CurrentPosition) = 'V' <b>then</b>
-            Value := 5;
+            Num_Value := 5;
          <b>elsif</b> strings.element( RomanNumeral, CurrentPosition) = 'I' <b>then</b>
-            Value := 1;
+            Num_Value := 1;
          <b>end</b> <b>if</b>;
                        
          <FONT COLOR=green><EM>-- If this is the first character then store the value</EM></FONT>
          <FONT COLOR=green><EM>-- of it in the variable 'First'</EM></FONT>
 
          <b>if</b> CurrentPosition = 1 <b>then</b>
-            First := Value;        
+            First := Num_Value;        
          <b>end</b> <b>if</b>;   
          
-         Next := Value; <FONT COLOR=green><EM>-- Store the second value in this variable(2nd iteration)</EM></FONT>
+         Next := Num_Value; <FONT COLOR=green><EM>-- Store the second value in this variable(2nd iteration)</EM></FONT>
          
          <FONT COLOR=green><EM>-- This is for the second Iteration. Check if the second value</EM></FONT>
          <FONT COLOR=green><EM>-- is greater than the first value and perform the nescassary</EM></FONT>
@@ -252,50 +252,50 @@ Final Result is: XXXII
 
    <b>procedure</b> ConvertBack(ConvertWhat : natural) <b>is</b>
          
-     Value : natural;
+     Num_Value : natural;
      
     <b>begin</b>  
         
-     Value := ConvertWhat;
+     Num_Value := ConvertWhat;
      <b>for</b> I <b>in</b> 1..20 <b>loop</b>
-        <b>if</b> Value&lt;=4000 <b>and</b> Value&gt;=1 <b>then</b>
+        <b>if</b> Num_Value&lt;=4000 <b>and</b> Num_Value&gt;=1 <b>then</b>
         
-               <b>while</b> Value&gt;=1000 <b>loop</b>
+               <b>while</b> Num_Value&gt;=1000 <b>loop</b>
                
                   put( "M" );             
-                  Value:=Value - 1000;
+                  Num_Value:=Num_Value - 1000;
                   
                <b>end</b> <b>loop</b>;
                
-               <b>while</b> Value&gt;=500 <b>loop</b>
+               <b>while</b> Num_Value&gt;=500 <b>loop</b>
                
                   put( "D" );
-                  Value:=Value - 500;  
+                  Num_Value:=Num_Value - 500;  
                <b>end</b> <b>loop</b>;
                
-               <b>while</b> Value&gt;=100 <b>loop</b>
+               <b>while</b> Num_Value&gt;=100 <b>loop</b>
                   put( "C" );
-                  Value:=Value - 100;
+                  Num_Value:=Num_Value - 100;
                <b>end</b> <b>loop</b>;
                
-               <b>while</b> Value&gt;=50 <b>loop</b>
+               <b>while</b> Num_Value&gt;=50 <b>loop</b>
                   put( "L" );
-                  Value:=Value - 50;
+                  Num_Value:=Num_Value - 50;
                <b>end</b> <b>loop</b>;
                
-               <b>while</b> Value&gt;=10 <b>loop</b>
+               <b>while</b> Num_Value&gt;=10 <b>loop</b>
                   put( "X" );
-                  Value:=Value - 10;
+                  Num_Value:=Num_Value - 10;
                <b>end</b> <b>loop</b>;
                
-               <b>while</b> Value&gt;=5 <b>loop</b>
+               <b>while</b> Num_Value&gt;=5 <b>loop</b>
                   put( "V" );
-                  Value:=Value - 5;
+                  Num_Value:=Num_Value - 5;
                <b>end</b> <b>loop</b>;
                
-               <b>while</b> Value&gt;=1 <b>loop</b>
+               <b>while</b> Num_Value&gt;=1 <b>loop</b>
                   put( "I" );
-                  Value:=Value - 1;
+                  Num_Value:=Num_Value - 1;
                <b>end</b> <b>loop</b>;                                 
                
             <b>end</b> <b>if</b>;
@@ -357,5 +357,4 @@ Final Result is: XXXII
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
-
 </PRE></BODY></HTML>

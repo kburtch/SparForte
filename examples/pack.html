@@ -75,7 +75,7 @@ command_line.set_exit_status( 0 );                            <FONT COLOR=green>
 
   compress : <b>constant</b> string := "/usr/bin/compress";
   zip      : <b>constant</b> string := "/usr/bin/zip";
-  --zoo    : <b>constant</b> string := "/bin/zoo";
+  <FONT COLOR=green><EM>--zoo      : constant string := "/bin/zoo";</EM></FONT>
   gzip     : <b>constant</b> string := "/bin/gzip";
   bzip     : <b>constant</b> string := "/usr/bin/bzip2";
 
@@ -107,7 +107,7 @@ command_line.set_exit_status( 0 );                            <FONT COLOR=green>
   best_method := c_none; 
 
   <b>if</b> files.is_executable( compress ) <b>then</b>
-     $compress "-c" "$source_path" &gt; "/tmp/temp.out";
+     "$compress" "-c" "$source_path" &gt; "/tmp/temp.out";
      this_size   := numerics.value( `stat -c '%s' /tmp/temp.<b>out</b>;` );
      <b>if</b> verbose <b>then</b>
         put_line( source_info.file &amp; ": compress size = " &amp; strings.image( this_size ) );
@@ -123,7 +123,7 @@ command_line.set_exit_status( 0 );                            <FONT COLOR=green>
   <b>end</b> <b>if</b>;
 
   <b>if</b> files.is_executable( zip ) <b>then</b>
-     $zip "-q" "-" "$source_path" &gt; "/tmp/temp.out";
+     "$zip" "-q" "-" "$source_path" &gt; "/tmp/temp.out";
      this_size   := numerics.value( `stat -c '%s' /tmp/temp.<b>out</b>;` );
      <b>if</b> verbose <b>then</b>
         put_line( source_info.file &amp; ": zip size = " &amp; strings.image( this_size ) );
@@ -143,7 +143,7 @@ command_line.set_exit_status( 0 );                            <FONT COLOR=green>
   <FONT COLOR=green><EM>--end if;</EM></FONT>
 
   <b>if</b> files.is_executable( gzip ) <b>then</b>
-     $gzip "-c" "$source_path" &gt; "/tmp/temp.out";
+     "$gzip" "-c" "$source_path" &gt; "/tmp/temp.out";
      this_size   := numerics.value( `stat -c '%s' /tmp/temp.<b>out</b>;` );
      <b>if</b> verbose <b>then</b>
         put_line( source_info.file &amp; ": gzip size = " &amp; strings.image( this_size ) );
@@ -159,7 +159,7 @@ command_line.set_exit_status( 0 );                            <FONT COLOR=green>
   <b>end</b> <b>if</b>;
 
   <b>if</b> files.is_executable( bzip ) <b>then</b>
-     $bzip "-c" "$source_path" &gt; "/tmp/temp.out";
+     "$bzip" "-c" "$source_path" &gt; "/tmp/temp.out";
      this_size   := numerics.value( `stat -c '%s' /tmp/temp.<b>out</b>;` );
      <b>if</b> verbose <b>then</b>
         put_line( source_info.file &amp; ": bzip2 size = " &amp; strings.image( this_size ) );
@@ -180,19 +180,19 @@ command_line.set_exit_status( 0 );                            <FONT COLOR=green>
        mv "$source_path" "$source_path"".none";
   <b>when</b> c_compress =&gt;
        put_line( source_info.file &amp; ": using compress" );
-       $compress "$source_path";
+       "$compress" "$source_path";
   <b>when</b> c_zip =&gt;
        put_line( source_info.file &amp; ": using zip" );
-       $zip "$source_path"".zip" "$source_path";
+       "$zip" "$source_path"".zip" "$source_path";
        rm  "$source_path";
   <b>when</b> c_zoo =&gt;
        <b>null</b>;
   <b>when</b> c_gzip =&gt;
        put_line( source_info.file &amp; ": using gzip" );
-       $gzip "$source_path";
+       "$gzip" "$source_path";
   <b>when</b> c_bzip =&gt;
        put_line( source_info.file &amp; ": using bzip" );
-       $bzip "$source_path";
+       "$bzip" "$source_path";
   <b>when</b> <b>others</b> =&gt;
      put( standard_error, source_info.file )
          @( standard_error, ": unknown compression method" );
@@ -205,8 +205,4 @@ rm /tmp/temp.<b>out</b>;
 command_line.set_exit_status( 0 );
 
 <b>end</b> pack;
-
-<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
-<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
-
 </PRE></BODY></HTML>
