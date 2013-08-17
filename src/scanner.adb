@@ -1482,6 +1482,8 @@ end shutdownScanner;
   declareIdent( integer_t, "integer", uni_numeric_t, typeClass );
   declareIdent( natural_t, "natural", uni_numeric_t, typeClass );
   declareIdent( positive_t, "positive", uni_numeric_t, typeClass );
+  --declareIdent( natural_t, "natural", integer_t, subClass );
+  --eclareIdent( positive_t, "positive", integer_t, subClass );
   declareIdent( short_short_integer_t, "short_short_integer", uni_numeric_t, typeClass );
   declareIdent( short_integer_t, "short_integer", uni_numeric_t, typeClass );
   declareIdent( long_integer_t, "long_integer", uni_numeric_t, typeClass );

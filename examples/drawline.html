@@ -59,8 +59,8 @@ Picture : image_array;
    <FONT COLOR=green><EM>-- at this point, formal parameters are defined but the actual values aren't defined!</EM></FONT>
    <FONT COLOR=green><EM>-- but creating a dummy Line in a test script works?</EM></FONT>
 
-   DX  : <b>constant</b> float := <b>abs</b>( float (Stop_X - Start_X) );
-   DY  : <b>constant</b> float := <b>abs</b>( float (Stop_Y - Start_Y) );
+   DX  : <b>constant</b> float := <b>abs</b>( float( Stop_X ) - float( Start_X ) );
+   DY  : <b>constant</b> float := <b>abs</b>( float( Stop_Y ) - float( Start_Y ) );
    Err : float;
    X   : positive := Start_X;
    Y   : positive := Start_Y;
@@ -76,7 +76,7 @@ Picture : image_array;
    <b>if</b> DX &gt; DY <b>then</b>
       Err := DX / 2.0;
       <b>while</b> X /= Stop_X <b>loop</b>
-         Picture (X + width*(Y-1)) := Color;
+         Picture (positive( natural(X) + natural(width)*(natural(Y)-1))) := Color;
          Err := @ - DY;
          <b>if</b> Err &lt; 0.0 <b>then</b>
             Y := positive( integer(@) + Step_Y);
@@ -87,7 +87,7 @@ Picture : image_array;
    <b>else</b>
       Err := DY / 2.0;
       <b>while</b> Y /= Stop_Y <b>loop</b>
-         Picture (X + width*(Y-1)) := Color;
+         Picture (positive( natural(X) + natural(height)*(natural(Y)-1))) := Color;
          Err := @ - DX;
          <b>if</b> Err &lt; 0.0 <b>then</b>
             X := positive( integer(@) + Step_X );
@@ -96,7 +96,7 @@ Picture : image_array;
          Y := positive( integer(@) + Step_Y );
       <b>end</b> <b>loop</b>;
    <b>end</b> <b>if</b>;
-   Picture (X + width*(Y-1)) := Color;
+   Picture (positive( natural(X) + natural(width)*(natural(Y)-1))) := Color;
 <b>end</b> Line;
 
 <FONT COLOR=green><EM>-- new_picture</EM></FONT>
@@ -116,7 +116,7 @@ Picture : image_array;
 <b>begin</b>
   <b>for</b> i <b>in</b> arrays.first( Picture )..arrays.last( Picture ) <b>loop</b>
       put( Picture(i) );
-      <b>if</b> i <b>mod</b> width = 0 <b>then</b>
+      <b>if</b> natural(i) <b>mod</b> natural(width) = 0 <b>then</b>
          new_line;
       <b>end</b> <b>if</b>;
   <b>end</b> <b>loop</b>;

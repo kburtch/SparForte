@@ -1137,6 +1137,9 @@ procedure ParsePragma is
 begin
   expect( pragma_t );
   if token = is_t then
+     if onlyAda95 then
+        err( "pragma block is not allowed with " & optional_bold( "pragma ada_95" ) );
+     end if;
      -- a pragma block
      expect( is_t );
      -- empty block?
@@ -1152,6 +1155,9 @@ begin
         -- an error check
         ParsePragmaStatement( pragmaKind );
         if token = symbol_t and identifiers( symbol_t ).value = to_unbounded_string( "@" ) then
+           if onlyAda95 then
+              err( "@ is not allowed with " & optional_bold( "pragma ada_95" ) );
+           end if;
            expect( symbol_t, "@" );
         elsif token = symbol_t and identifiers( symbol_t ).value = to_unbounded_string( ";" ) then
            expect( symbol_t, ";" );
@@ -1178,6 +1184,9 @@ begin
            err( "'@' or ';' expected" );
         end if;
         exit when done or token = eof_t or (token = symbol_t and identifiers( symbol_t ).value /= to_unbounded_string( "@" ) );
+        if onlyAda95 then
+           err( "@ is not allowed with " & optional_bold( "pragma ada_95" ) );
+        end if;
         expect( symbol_t, "@" );
      end loop;
   end if;

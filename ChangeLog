@@ -87,3 +87,5 @@ throw an exception on a number instead of a string as the first parameter.
 
 38. New: directory_operations.open, close, is_open, read.  New data type directory_operations.dir_file_id.
 
+39. New: style check: variable expansions must be in double quotes (with the exception of $?, $$, etc).  New pragma suppress( word_quoting ) will disable this check.
+

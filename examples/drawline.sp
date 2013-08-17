@@ -26,8 +26,8 @@ procedure Line ( Start_X : positive; Start_Y : positive; Stop_X : positive; Stop
    -- at this point, formal parameters are defined but the actual values aren't defined!
    -- but creating a dummy Line in a test script works?
 
-   DX  : constant float := abs( float (Stop_X - Start_X) );
-   DY  : constant float := abs( float (Stop_Y - Start_Y) );
+   DX  : constant float := abs( float( Stop_X ) - float( Start_X ) );
+   DY  : constant float := abs( float( Stop_Y ) - float( Start_Y ) );
    Err : float;
    X   : positive := Start_X;
    Y   : positive := Start_Y;
@@ -43,7 +43,7 @@ begin
    if DX > DY then
       Err := DX / 2.0;
       while X /= Stop_X loop
-         Picture (X + width*(Y-1)) := Color;
+         Picture (positive( natural(X) + natural(width)*(natural(Y)-1))) := Color;
          Err := @ - DY;
          if Err < 0.0 then
             Y := positive( integer(@) + Step_Y);
@@ -54,7 +54,7 @@ begin
    else
       Err := DY / 2.0;
       while Y /= Stop_Y loop
-         Picture (X + height*(Y-1)) := Color;
+         Picture (positive( natural(X) + natural(height)*(natural(Y)-1))) := Color;
          Err := @ - DX;
          if Err < 0.0 then
             X := positive( integer(@) + Step_X );
@@ -63,7 +63,7 @@ begin
          Y := positive( integer(@) + Step_Y );
       end loop;
    end if;
-   Picture (X + width*(Y-1)) := Color;
+   Picture (positive( natural(X) + natural(width)*(natural(Y)-1))) := Color;
 end Line;
 
 -- new_picture
@@ -83,7 +83,7 @@ procedure render is
 begin
   for i in arrays.first( Picture )..arrays.last( Picture ) loop
       put( Picture(i) );
-      if i mod width = 0 then
+      if natural(i) mod natural(width) = 0 then
          new_line;
       end if;
   end loop;

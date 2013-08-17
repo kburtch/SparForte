@@ -3767,7 +3767,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
        end if;
     else
        if syntax_check and then not suppress_word_quoting and then not inDQuote then
-          err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
+          err( "style issue: expected double quoted word parameters in shell or SQL command to prevent word splitting" );
        end if;
        -- Regular variable substitution
        findIdent( expansionVar, id );

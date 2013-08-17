@@ -361,8 +361,8 @@ into related types.</p>
 =&gt; f : float := 0<br>
 =&gt; f := i<br>
 f := i;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^ type 'float' is not compatible
-with type 'integer'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ^ type <b>float</b> is not compatible
+with type <b>integer</b><br>
 =&gt; f := float(i) -- typecast<br>
 =&gt; ? f<br>
 5
@@ -379,10 +379,41 @@ packages to do these conversions.
 
 <h3>Integer, Natural and Positive</h3>
 
-<p>Natural and Positive are subranges of the integer type.  SparForte
-does not have subranges but many Ada packages rely on the fact that
-subranges are compatible with the type with more values.  These types
-are treated as a special exception to make using Ada packages easier.</p>
+<p>Natural and Positive are technically subranges of the integer type.
+Positive is an integer with positive values.  Natural is an integer
+with zero or a positive value.  SparForte does not support subranges.
+This creates a problem: if they are all incompatible types, then
+typecasts will be needed whenever they are used.  If they are all
+subtypes, then the benefits of strong typing are lost.</p>
+
+<p>Natural, positive and integer are defined in SparForte as different
+types.  When you use them in an expression, for example, they are
+incompatible with each other and must be typecast.  Also, if a
+variable or parameter expects a natural, positive or integer, you
+must give it the correct type.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">$ src/spar<br>
+Type "help" for help<br>
+=&gt; n : natural := 1<br>
+=&gt; p : positive := 2<br>
+=&gt; ? n + p<br>
+? n + p;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ type <b>natural</b> is not compatible with type <b>positive</b><br>
+=&gt; ? integer(n) + integer(p)<br>
+ 3<br>
+</p>
+        </div>
+        </center>
+
+<p>However, when you assign a natural, positive or integer value to
+a variable (or use it as a parameter),
+SparForte will permit what would
+logically be a smaller range to be assigned to the type with a larger
+range.  Many Ada packages rely on the fact that subranges are
+compatible with the type with more values.  These integer types
+are treated as a special exception it easier to use these packages.</p>
 
 <p>A positive can be assigned to a natural or integer.  A natural can
 be assigned to an integer.  But an integer cannot be assigned to a
@@ -394,13 +425,41 @@ natural or a positive, and a natural cannot be assigned to a positive.</p>
 =&gt; nat : natural := 1<br>
 =&gt; nat := int<br>
 nat := int;<br>
-          ^ type integer is not compatible with type natural<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ type <b>integer</b> is not compatible with type <b>natural</b><br>
 =&gt; int := nat
 </p>
         </div>
         </center>
 
-<p>This also applies to parameters to subprogram parameters.</p>
+<p>Type casting will also check at run-time for reasonable values for these
+types.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">$ src/spar<br>
+Type "help" for help<br>
+=&gt; n : natural := 0<br>
+=&gt; p : positive<br>
+=&gt; p := positive( n )<br>
+p := positive( n )<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ positive value is less than zero<br>
+</p>
+        </div>
+        </center>
+
+<p>In the future, this behaviour many change to be more lenient and like Ada,
+especially if SparForte implements new typing features like true subranges.</p>
+
+<p><b>Ada</b>: natural and positive are subranges of integers.  That is,
+Ada sees them all the same except there are range restrictions on
+acceptable values.  Arithmetic is done by treating them all as integers.
+ The range of acceptable values is only checked when a value is assigned
+to a variable or parameter.  SparForte cannot do this because it doesn't
+have subranges.</p>
+
+<p><b>C/C++/Java</b>: A natural is not the same as an unsigned type.  A
+natural is an integer with a restricted set of values and the sign bit
+is not used for storing values.</p>
 
 <h3>Type Attributes</h3>
 
@@ -602,7 +661,7 @@ n : <b>constant</b> <b>command</b> := l;<br>
 
 <h3>JSON and SparForte Types</h3>
 
-<p>JSON is an acronym for JavaScript Object Notaiton.  It is an easier-to-use
+<p>JSON is an acronym for JavaScript Object Notation.  It is an easier-to-use
 and more limited standard for data interchange compared to XML.  Many
 programming languages support JSON.</p>
 
