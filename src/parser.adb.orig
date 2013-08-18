@@ -4890,12 +4890,12 @@ begin
                     if formal_param_t = eof_t then
                        err( "unable to find formal parameter" );
                     else
-                       if getUniType( expr_type ) = uni_numeric_t then
+                       --if getUniType( expr_type ) = uni_numeric_t then
                           --typesOK := intTypesOK( identifiers( formal_param_t ).kind, expr_type );
-                          typesOK := intTypesOK( givenType => expr_type, desiredType => identifiers( formal_param_t ).kind );
-                       else
-                          typesOK := baseTypesOK( identifiers( formal_param_t ).kind, expr_type );
-                       end if;
+                          --typesOK := intTypesOK( givenType => expr_type, desiredType => identifiers( formal_param_t ).kind );
+                       --else
+                       typesOK := baseTypesOK( identifiers( formal_param_t ).kind, expr_type );
+                       --end if;
                        if typesOK then
                           paramName := identifiers( j ).name;
                           paramName := delete( paramName, 1, index( paramName, "." ) );
@@ -6334,7 +6334,8 @@ begin
 
   if getUniType( var_id ) = uni_numeric_t then
      -- int types have special handling
-     if intTypesOK( right_type, var_kind ) then
+     --if intTypesOK( right_type, var_kind ) then
+     if baseTypesOk( var_kind, right_type ) then
         null;
      end if;
      -- numeric test.  universal typelesses could result

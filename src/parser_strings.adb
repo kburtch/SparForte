@@ -190,7 +190,7 @@ begin
   if uniTypesOk( str_type, string_t ) then
      expect( symbol_t, "," );
      ParseExpression( index_val, index_type );
-     if intTypesOk( index_type, positive_t ) then
+     if baseTypesOk( index_type, positive_t ) then
         expect( symbol_t, ")" );
      end if;
   end if;
@@ -221,10 +221,10 @@ begin
   if uniTypesOk( str_type, string_t ) then
      expect( symbol_t, "," );
      ParseExpression( low_val, low_type );
-     if intTypesOk( low_type, positive_t ) then
+     if baseTypesOk( low_type, positive_t ) then
         expect( symbol_t, "," );
         ParseExpression( hi_val, hi_type );
-        if intTypesOk( hi_type, natural_t ) then
+        if baseTypesOk( hi_type, natural_t ) then
            expect( symbol_t, ")" );
         end if;
      end if;
@@ -376,10 +376,10 @@ begin
   if uniTypesOk( str_type, string_t ) then
      expect( symbol_t, "," );
      ParseExpression( low_val, low_type );
-     if intTypesOk( low_type, positive_t ) then
+     if baseTypesOk( low_type, positive_t ) then
         expect( symbol_t, "," );
         ParseExpression( hi_val, hi_type );
-        if intTypesOk( hi_type, natural_t ) then
+        if baseTypesOk( hi_type, natural_t ) then
            expect( symbol_t, "," );
            ParseExpression( by_val, by_type );
            if baseTypesOk( by_type, string_t ) then
@@ -418,7 +418,7 @@ begin
   if uniTypesOk( str_type, string_t ) then
      expect( symbol_t, "," );
      ParseExpression( before_val, before_type );
-     if intTypesOk( before_type, positive_t ) then
+     if baseTypesOk( before_type, positive_t ) then
         expect( symbol_t, "," );
         ParseExpression( new_val, new_type );
         if baseTypesOk( new_type, string_t ) then
@@ -455,7 +455,7 @@ begin
   if uniTypesOk( str_type, string_t ) then
      expect( symbol_t, "," );
      ParseExpression( pos_val, pos_type );
-     if intTypesOk( pos_type, positive_t ) then
+     if baseTypesOk( pos_type, positive_t ) then
         expect( symbol_t, "," );
         ParseExpression( new_val, new_type );
         if baseTypesOk( new_type, string_t ) then
@@ -492,10 +492,10 @@ begin
   if uniTypesOk( str_type, string_t ) then
      expect( symbol_t, "," );
      ParseExpression( low_val, low_type );
-     if intTypesOk( low_type, positive_t ) then
+     if baseTypesOk( low_type, positive_t ) then
         expect( symbol_t, "," );
         ParseExpression( hi_val, hi_type );
-        if intTypesOk( hi_type, natural_t ) then
+        if baseTypesOk( hi_type, natural_t ) then
            expect( symbol_t, ")" );
         end if;
      end if;
@@ -673,7 +673,7 @@ begin
   if uniTypesOk( str_type, string_t ) then
      expect( symbol_t, "," );
      ParseExpression( cnt_val, cnt_type );
-     if intTypesOk( cnt_type, natural_t ) then
+     if baseTypesOk( cnt_type, natural_t ) then
         if token = symbol_t and identifiers( token ).value = "," then
            expect( symbol_t, "," );
            ParseExpression( del_val, del_type );
@@ -717,7 +717,7 @@ begin
   if uniTypesOk( str_type, string_t ) then
      expect( symbol_t, "," );
      ParseExpression( cnt_val, cnt_type );
-     if intTypesOk( cnt_type, natural_t ) then
+     if baseTypesOk( cnt_type, natural_t ) then
         if token = symbol_t and identifiers( token ).value = "," then
            expect( symbol_t, "," );
            ParseExpression( del_val, del_type );
@@ -790,7 +790,7 @@ begin
   expect( val_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
-  if intTypesOk( expr_type, natural_t ) then
+  if baseTypesOk( expr_type, natural_t ) then
      expect( symbol_t, ")" );
   end if;
   begin
@@ -938,7 +938,7 @@ begin
   if uniTypesOk( src_ref.kind, string_t ) then
      expect( symbol_t, "," );
      ParseExpression( cnt_val, cnt_type );
-     if intTypesOk( cnt_type, natural_t ) then
+     if baseTypesOk( cnt_type, natural_t ) then
         expect( symbol_t, "," );
         ParseExpression( tar_val, tar_type );
         if uniTypesOk( tar_type, string_t ) then
@@ -992,7 +992,7 @@ begin
   if uniTypesOk( src_ref.kind, string_t ) then
      expect( symbol_t, "," );
      ParseExpression( cnt_val, cnt_type );
-     if intTypesOk( cnt_type, natural_t ) then
+     if baseTypesOk( cnt_type, natural_t ) then
         expect( symbol_t, "," );
         ParseExpression( tar_val, tar_type );
         if uniTypesOk( tar_type, string_t ) then
@@ -1125,7 +1125,7 @@ begin
         if uniTypesOk( right_ref.kind, string_t ) then
            expect( symbol_t, "," );
            ParseExpression( field_val, field_type );
-           if intTypesOk( field_type, natural_t ) then
+           if baseTypesOk( field_type, natural_t ) then
               expect( symbol_t, ")" );
            end if;
         end if;
@@ -1432,10 +1432,10 @@ begin
   if uniTypesOk( str_type, string_t ) then
      expect( symbol_t, "," );
      ParseExpression( low_val, low_type );
-     if intTypesOk( low_type, positive_t ) then
+     if baseTypesOk( low_type, positive_t ) then
         expect( symbol_t, "," );
         ParseExpression( hi_val, hi_type );
-        if intTypesOk( hi_type, natural_t ) then
+        if baseTypesOk( hi_type, natural_t ) then
            expect( symbol_t, ")" );
         end if;
      end if;

@@ -1480,10 +1480,10 @@ end shutdownScanner;
   identifiers( identifiers_top-1 ).limit := true; -- limited type
   declareIdent( universal_t, "universal_typeless", variable_t, typeClass );
   declareIdent( integer_t, "integer", uni_numeric_t, typeClass );
-  declareIdent( natural_t, "natural", uni_numeric_t, typeClass );
-  declareIdent( positive_t, "positive", uni_numeric_t, typeClass );
-  --declareIdent( natural_t, "natural", integer_t, subClass );
-  --eclareIdent( positive_t, "positive", integer_t, subClass );
+  --declareIdent( natural_t, "natural", uni_numeric_t, typeClass );
+  --declareIdent( positive_t, "positive", uni_numeric_t, typeClass );
+  declareIdent( natural_t, "natural", integer_t, subClass );
+  declareIdent( positive_t, "positive", integer_t, subClass );
   declareIdent( short_short_integer_t, "short_short_integer", uni_numeric_t, typeClass );
   declareIdent( short_integer_t, "short_integer", uni_numeric_t, typeClass );
   declareIdent( long_integer_t, "long_integer", uni_numeric_t, typeClass );
@@ -2329,36 +2329,36 @@ begin
 
 end baseTypesOk;
 
-function intTypesOk( givenType, desiredType : identifier ) return boolean is
-  -- Like baseTypesOk, check that the two integer subtypes are
-  -- compatible.  This is placed in a separate function for performance
-  -- and because, unlike baseTypesOK, the order of the parameters is
-  -- important.   If the types are not compatible, reports an error
-  -- message and return false.
-  effectiveGivenType : identifier;
-  effectiveDesiredType : identifier;
-begin
-  effectiveGivenType := getBaseType( givenType );             -- dereference
-  effectiveDesiredType := getBaseType( desiredType );         -- subtypes
-  if effectiveDesiredType = integer_t then                    -- looking for
-     if effectiveGivenType = integer_t then                   -- an integer?
-        return true;                                          -- integer,
-     elsif effectiveGivenType = natural_t then                -- natural,
-        return true;                                          -- positive
-     elsif effectiveGivenType = positive_t then               -- are good
-        return true;
-     end if;
-  elsif effectiveDesiredType = natural_t then                 -- natural?
-     if effectiveGivenType = natural_t then                   -- natural,
-        return true;                                          -- positive
-     elsif effectiveGivenType = positive_t then               -- are good
-        return true;
-     end if;
-  end if;
-  -- positive must be an exact match so it can fall through to
-  -- baseTypesOK
-  return baseTypesOK( givenType, desiredType );               -- fall back
-end intTypesOk;
+--function intTypesOk( givenType, desiredType : identifier ) return boolean is
+--  -- Like baseTypesOk, check that the two integer subtypes are
+--  -- compatible.  This is placed in a separate function for performance
+--  -- and because, unlike baseTypesOK, the order of the parameters is
+--  -- important.   If the types are not compatible, reports an error
+--  -- message and return false.
+--  effectiveGivenType : identifier;
+--  effectiveDesiredType : identifier;
+--begin
+--  effectiveGivenType := getBaseType( givenType );             -- dereference
+--  effectiveDesiredType := getBaseType( desiredType );         -- subtypes
+--  if effectiveDesiredType = integer_t then                    -- looking for
+--     if effectiveGivenType = integer_t then                   -- an integer?
+--        return true;                                          -- integer,
+--     elsif effectiveGivenType = natural_t then                -- natural,
+--        return true;                                          -- positive
+--     elsif effectiveGivenType = positive_t then               -- are good
+--        return true;
+--     end if;
+--  elsif effectiveDesiredType = natural_t then                 -- natural?
+--     if effectiveGivenType = natural_t then                   -- natural,
+--        return true;                                          -- positive
+--     elsif effectiveGivenType = positive_t then               -- are good
+--        return true;
+--     end if;
+--  end if;
+--  -- positive must be an exact match so it can fall through to
+--  -- baseTypesOK
+--  return baseTypesOK( givenType, desiredType );               -- fall back
+--end intTypesOk;
 
 ---> CAST TO TYPE
 --

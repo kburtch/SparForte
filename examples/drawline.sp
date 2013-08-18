@@ -1,9 +1,9 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "DrawLine" );
-pragma annotate( description, "Draw a line given 2 points with the Bresenham's algorithm." );
-pragma annotate( see_also, "http://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "DrawLine" )
+              @( description, "Draw a line given 2 points with the Bresenham's algorithm." )
+              @( see_also, "http://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm" )
+              @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
@@ -43,7 +43,7 @@ begin
    if DX > DY then
       Err := DX / 2.0;
       while X /= Stop_X loop
-         Picture (positive( natural(X) + natural(width)*(natural(Y)-1))) := Color;
+         Picture (X + width*(Y-1)) := Color;
          Err := @ - DY;
          if Err < 0.0 then
             Y := positive( integer(@) + Step_Y);
@@ -54,7 +54,7 @@ begin
    else
       Err := DY / 2.0;
       while Y /= Stop_Y loop
-         Picture (positive( natural(X) + natural(height)*(natural(Y)-1))) := Color;
+         Picture (X + height*(Y-1)) := Color;
          Err := @ - DX;
          if Err < 0.0 then
             X := positive( integer(@) + Step_X );
@@ -63,7 +63,7 @@ begin
          Y := positive( integer(@) + Step_Y );
       end loop;
    end if;
-   Picture (positive( natural(X) + natural(width)*(natural(Y)-1))) := Color;
+   Picture (X + width*(Y-1)) := Color;
 end Line;
 
 -- new_picture
@@ -83,7 +83,7 @@ procedure render is
 begin
   for i in arrays.first( Picture )..arrays.last( Picture ) loop
       put( Picture(i) );
-      if natural(i) mod natural(width) = 0 then
+      if i mod width = 0 then
          new_line;
       end if;
   end loop;

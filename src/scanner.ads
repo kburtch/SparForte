@@ -278,7 +278,7 @@ function uniTypesOk( leftType, rightType : identifier ) return boolean;
 function baseTypesOk( leftType, rightType : identifier ) return boolean;
 -- check that the two types are logically compatible
 
-function intTypesOk( givenType, desiredType : identifier ) return boolean;
+--function intTypesOk( givenType, desiredType : identifier ) return boolean;
 -- check that one integer type is logically compatible with another
 
 -- Type Casting

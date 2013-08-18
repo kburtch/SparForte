@@ -57,7 +57,7 @@ begin
   expect( cmd_argument_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
-  if intTypesOk( expr_type, positive_t ) then
+  if baseTypesOk( expr_type, positive_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
@@ -95,7 +95,7 @@ begin
   expect( cmd_setexit_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
-  if intTypesOk( expr_type, short_short_integer_t ) then
+  if baseTypesOk( expr_type, short_short_integer_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
@@ -125,7 +125,7 @@ begin
   expect( cmd_envval_t );
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
-  if intTypesOk( expr_type, positive_t ) then
+  if baseTypesOk( expr_type, positive_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then

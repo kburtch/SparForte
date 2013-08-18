@@ -438,7 +438,7 @@ begin
      end if;
   elsif base_type = positive_t or base_type = uni_numeric_t then
      key_version := false;
-     if intTypesOk( expr_type, positive_t ) then
+     if baseTypesOk( expr_type, positive_t ) then
         null;
      end if;
   else
@@ -698,7 +698,7 @@ begin
      end if;
   elsif base_type = positive_t or base_type = uni_numeric_t then
      key_version := false;
-     if intTypesOk( expr_type, positive_t ) then
+     if baseTypesOk( expr_type, positive_t ) then
         null;
      end if;
   else
@@ -860,7 +860,8 @@ begin
                        expect( symbol_t, "," );
                        ParseExpression( age_val, age_type ); -- max-age
                        base_type := getBaseType( age_type );
-                       if intTypesOK( age_type, natural_t ) or base_type = uni_numeric_t or base_type = universal_t then
+                       --if intTypesOK( age_type, natural_t ) or base_type = uni_numeric_t or base_type = universal_t then
+                       if base_type = natural_t or base_type = uni_numeric_t or base_type = universal_t then
                           if token = symbol_t and identifiers( token ).value /= right_bracket then
                              expect( symbol_t, "," );
                              ParseExpression( path_val, path_type ); -- path
