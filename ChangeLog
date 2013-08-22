@@ -89,3 +89,5 @@ throw an exception on a number instead of a string as the first parameter.
 
 39. New: style check: variable expansions must be in double quotes (with the exception of $?, $$, etc).  New pragma suppress( word_quoting ) will disable this check.
 
+40. Change: positive and natural are now subtypes of integer.
+

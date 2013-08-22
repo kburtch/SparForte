@@ -2814,22 +2814,23 @@ begin
         null;
      end if;
      if isExecutingCommand then
-        if getUniType( type_token ) = uni_numeric_t then
-           -- numeric test.  universal typelesses could result
-           -- in a non-numeric expression that baseTypesOk
-           -- doesn't catch.
-           declare
-              lf : long_float;
-           begin
-              lf := to_numeric( expr_value );
-              -- handle integer types
-              expr_value := castToType( lf, type_token );
-           exception when program_error =>
-              err( "program_error exception raised" );
-           when others =>
-              err( "exception raised" );
-           end;
-        end if;
+        --if getUniType( type_token ) = uni_numeric_t then
+        --   -- numeric test.  universal typelesses could result
+        --   -- in a non-numeric expression that baseTypesOk
+        --   -- doesn't catch.
+        --   declare
+        --      lf : long_float;
+        --   begin
+        --      lf := to_numeric( expr_value );
+        --      -- handle integer types
+        --      expr_value := castToType( lf, type_token );
+        --   exception when program_error =>
+        --      err( "program_error exception raised" );
+        --   when others =>
+        --      err( "exception raised" );
+        --   end;
+        --end if;
+        expr_value := castToType( expr_value, type_token );
         identifiers( id ).value := expr_value;
         if trace then
             put_trace(
@@ -6332,27 +6333,29 @@ begin
 
   -- Type testing and casting
 
-  if getUniType( var_id ) = uni_numeric_t then
-     -- int types have special handling
-     --if intTypesOK( right_type, var_kind ) then
-     if baseTypesOk( var_kind, right_type ) then
-        null;
-     end if;
-     -- numeric test.  universal typelesses could result
-     -- in a non-numeric expression that baseTypesOk
-     -- doesn't catch.
-     declare
-        lf : long_float;
-     begin
-        if isExecutingCommand then
-           lf := to_numeric( expr_value );
-           -- handle integer types
-           expr_value := castToType( lf, var_kind );
-        end if;
-     exception when others =>
-        err( "'" & to_string( expr_value) & "' is not numeric" );
-     end;
-  elsif baseTypesOk( var_kind, right_type ) then
+  --if getUniType( var_id ) = uni_numeric_t then
+  --   -- int types have special handling
+  --   --if intTypesOK( right_type, var_kind ) then
+  --   if baseTypesOk( var_kind, right_type ) then
+  --      null;
+  --   end if;
+  --   -- numeric test.  universal typelesses could result
+  --   -- in a non-numeric expression that baseTypesOk
+  --   -- doesn't catch.
+  --   -- declare
+  --   --    lf : long_float;
+  --   begin
+  --      if isExecutingCommand then
+  --         expr_value := castToType( expr_value, right_type );
+  --         -- lf := to_numeric( expr_value );
+  --         -- -- handle integer types
+  --         -- expr_value := castToType( lf, var_kind );
+  --      end if;
+  --   exception when others =>
+  --      err( "'" & to_string( expr_value) & "' is not numeric" );
+  --   end;
+  -- elsif baseTypesOk( var_kind, right_type ) then
+  if baseTypesOk( var_kind, right_type ) then
      if isExecutingCommand then
         expr_value := castToType( expr_value, var_kind );
      end if;

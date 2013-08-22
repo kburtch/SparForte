@@ -379,76 +379,37 @@ packages to do these conversions.
 
 <h3>Integer, Natural and Positive</h3>
 
-<p>Natural and Positive are technically subranges of the integer type.
+<p>Natural and positive are technically subranges of the integer type.
 Positive is an integer with positive values.  Natural is an integer
 with zero or a positive value.  SparForte does not support subranges.
 This creates a problem: if they are all incompatible types, then
 typecasts will be needed whenever they are used.  If they are all
 subtypes, then the benefits of strong typing are lost.</p>
 
-<p>Natural, positive and integer are defined in SparForte as different
-types.  When you use them in an expression, for example, they are
-incompatible with each other and must be typecast.  Also, if a
-variable or parameter expects a natural, positive or integer, you
-must give it the correct type.</p>
+<p>Before SparForte 1.4, natural, positive and integer were defined
+as distinct types.  After SparForte 1.4., natural and positive are
+subtypes of integer.  You can mix natural, positive and integer in
+expressions, assignments and parameters.  However, as a special case,
+SparForte will check the values of natural and positive when assigned
+to a variable, type cast or used as a parameter.  This run-time check only
+occurs for natural and positive types, not types derived from natural
+or positive.</p>
 
         <center>
         <div class="code">
-                <p class="code">$ src/spar<br>
-Type "help" for help<br>
-=&gt; n : natural := 1<br>
-=&gt; p : positive := 2<br>
-=&gt; ? n + p<br>
-? n + p;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ type <b>natural</b> is not compatible with type <b>positive</b><br>
-=&gt; ? integer(n) + integer(p)<br>
- 3<br>
-</p>
-        </div>
-        </center>
-
-<p>However, when you assign a natural, positive or integer value to
-a variable (or use it as a parameter),
-SparForte will permit what would
-logically be a smaller range to be assigned to the type with a larger
-range.  Many Ada packages rely on the fact that subranges are
-compatible with the type with more values.  These integer types
-are treated as a special exception it easier to use these packages.</p>
-
-<p>A positive can be assigned to a natural or integer.  A natural can
-be assigned to an integer.  But an integer cannot be assigned to a
-natural or a positive, and a natural cannot be assigned to a positive.</p>
-
-        <center>
-        <div class="code">
-                <p class="code">=&gt; int : integer := -1<br>
-=&gt; nat : natural := 1<br>
-=&gt; nat := int<br>
-nat := int;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ type <b>integer</b> is not compatible with type <b>natural</b><br>
-=&gt; int := nat
-</p>
-        </div>
-        </center>
-
-<p>Type casting will also check at run-time for reasonable values for these
-types.</p>
-
-        <center>
-        <div class="code">
-                <p class="code">$ src/spar<br>
-Type "help" for help<br>
+                <p class="code">=&gt; p : positive := 1<br>
 =&gt; n : natural := 0<br>
-=&gt; p : positive<br>
-=&gt; p := positive( n )<br>
-p := positive( n )<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ positive value is less than zero<br>
+=&gt; n := p<br>
+=&gt; n := 0<br>
+=&gt; p := n<br>
+p := n;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ positive value is less than zero<br>
+=&gt; i : integer := positive( n )<br>
+i : integer := positive( n );<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ positive value is less than zero<br>
 </p>
         </div>
         </center>
-
-<p>In the future, this behaviour many change to be more lenient and like Ada,
-especially if SparForte implements new typing features like true subranges.</p>
 
 <p><b>Ada</b>: natural and positive are subranges of integers.  That is,
 Ada sees them all the same except there are range restrictions on

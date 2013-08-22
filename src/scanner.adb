@@ -2364,7 +2364,7 @@ end baseTypesOk;
 --
 -- If a value is an integer type (i.e. positive, natural or integer),
 -- round the value.  Otherwise do not round the value.  Return the
--- result as a string value.
+-- result as a string value.  This version only handles numbers.
 -----------------------------------------------------------------------------
 
 function castToType( val : long_float; kind : identifier ) return unbounded_string is
@@ -2376,22 +2376,22 @@ begin
   baseType := getBaseType( kind );
   --put_identifier( baseType ); -- DEBUG
   -- If it's an integer type, just round it
-  if baseType = short_short_integer_t or
-     baseType = short_integer_t or
-     baseType = integer_t or
-     baseType = long_integer_t or
-     baseType = long_long_integer_t then
+  if kind = short_short_integer_t or
+     kind = short_integer_t or
+     kind = integer_t or
+     kind = long_integer_t or
+     kind = long_long_integer_t then
      roundedVal := long_long_integer( val );
      str := to_unbounded_string( long_long_integer'image( roundedVal ) );
   -- If it's a natural type, round it and check for negative
-  elsif baseType = natural_t then
+  elsif kind = natural_t then
      roundedVal := long_long_integer( val );
      if roundedVal < 0 then
         err( "natural value is less than zero" );
      end if;
      str := to_unbounded_string( long_long_integer'image( roundedVal ) );
   -- If it's a positive type, round it and check for negative or zero
-  elsif baseType = positive_t then
+  elsif kind = positive_t then
      roundedVal := long_long_integer( val );
      if roundedVal <= 0 then
         err( "positive value is less than zero" );
@@ -2415,11 +2415,13 @@ begin
   baseType := getBaseType( kind );
   --put_identifier( baseType ); -- DEBUG
   -- If it's an integer type, just round it
-  if baseType = short_short_integer_t or
-     baseType = short_integer_t or
-     baseType = integer_t or
-     baseType = long_integer_t or
-     baseType = long_long_integer_t then
+  -- TODO: positive is subtype of integer.  We should really walk the tree
+  -- to find out if any ancestor type is positive, natural.
+  if kind = short_short_integer_t or
+     kind = short_integer_t or
+     kind = integer_t or
+     kind = long_integer_t or
+     kind = long_long_integer_t then
      begin
        roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
      exception when others =>
@@ -2427,7 +2429,8 @@ begin
      end;
      str := to_unbounded_string( long_long_integer'image( roundedVal ) );
   -- If it's a natural type, round it and check for negative
-  elsif baseType = natural_t then
+  --elsif baseType = natural_t then
+  elsif kind = natural_t then
      begin
        roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
      exception when others =>
@@ -2442,7 +2445,8 @@ begin
        err( "exception raised" );
      end;
   -- If it's a positive type, round it and check for negative or zero
-  elsif baseType = positive_t then
+  --elsif baseType = positive_t then
+  elsif kind = positive_t then
      begin
        roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
      exception when others =>
