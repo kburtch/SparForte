@@ -1,4 +1,4 @@
-SparForte (Business Shell) Installation
+SparForte Installation
 
 This file contains instructions for building and installing SparForte.
 General information about SparForte can be found in the doc/ directory.
@@ -20,9 +20,8 @@ Building from Sources
 
 LONG VERSION
 
-The primary test plaform for SparForte is Intel/Linux and AMD/Linux.  There
-is also some support for DEC Alpha, FreeBSD and Cywin.  HP-UX 
-is obsolete.
+The primary test plaform for SparForte is Linux or FreeBSD.  There
+is also old support for DEC Alpha and Cywin.  HP-UX is obsolete.
 
 Information on porting SparForte to other platforms can be found in the
 documentation: SparForte should port to a modern Unix-compatible platform
@@ -66,33 +65,35 @@ The following software packages are required for SparForte:
   may be missing.  How you install these depends on your operating system.
   For example:
 
-   - Fedora/Red Hat/Linux - yum install package-name (or use add/remove
+   - Fedora/Red Hat Linux - yum install package-name (or use add/remove
      software in the menus)
-   - SuSE/Novell/Linux - yast
-   - Debian/Linux - apt-get install package-name (visit packages.debian.org
+   - SuSE Linux - yast
+   - Debian Linux - apt-get install package-name (visit packages.debian.org
      for a list of available packages)
    - FreeBSD - pkg_add package-name
    - Pre-build versions of SDL_image are available from www.libsdl.org 
 
   The package name depends on your operating system.  For example:
 
-    - Debian Linux users can try gnat-4.1 (or similar)
-    - Fedora Linux users can try gcc-gnat
+    - Ubuntu/Debian Linux users can try gnat-4.6 (or similar)
+    - Red Hat/Fedora Linux users can try gcc-gnat
     - SuSE Linux   users can try gcc-ada
 
-  Example: Debian Linux
+  Example: Ubuntu Linux
 
   The default Debian database is PostgreSQL.  However, Debian doesn't
   install Ada, SDL, MySQL or the PostgreSQL development packages.  Check
   packages.debian.org for a list of software package names.
 
-  $ apt-get install gnat-4.1
-  $ apt-get install libncurses5-dev
+  $ apt-get install gnat-4.6
   $ apt-get install libsdl1.2-dev
-  $ apt-get install libsdl-image1.2
-  $ apt-get install libpgeasy-dev
-  $ apt-get install mysql-server
-  $ apt-get install libmysqlclient12-dev
+  $ apt-get install libsdl-image1.2-dev
+  $ apt-get install libsdl-ttf2.0-dev
+  $ apt-get install libmysqlclient-dev
+  $ apt-get install postgresql-client
+  $ apt-get install postgresql-server-dev-9.1
+  $ apt-get install postgresql-server-dev-all
+  $ apt-get install libgstreamer0.10-dev
 
   Update the locate database: Debian uses a static Ada Run-Time file so SparForte
   will need to use locate instead of ldconfig to find it.  (Running updatedb
