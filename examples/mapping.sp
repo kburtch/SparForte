@@ -21,32 +21,40 @@ procedure mapping is
    second_range_first : constant second_range := -1.0;
    second_range_last : constant second_range := 0.0;
 
-   function translate (value : first_range) return second_range is
+   function translate (first_range_value : first_range) return second_range is
       b1 : float := float( second_range_first );
       b2 : float := float( second_range_last );
       a1 : float := float( first_range_first );
       a2 : float := float( first_range_last );
       result : float;
    begin
-      result := b1 + (float (value) - a1) * (b2 - b1) / (a2 - a1);
+      result := b1 + (float (first_range_value) - a1) * (b2 - b1) / (a2 - a1);
       return second_range(result);
    end translate;
 
-   function translate_back (value : second_range) return first_range is
+   function translate_back (second_range_value : second_range) return first_range is
       b1 : float := float (first_range_first);
       b2 : float := float (first_range_last);
       a1 : float := float (second_range_first);
       a2 : float := float (second_range_last);
       result : float;
    begin
-      result := b1 + (float (value) - a1) * (b2 - b1) / (a2 - a1);
+      result := b1 + (float (second_range_value) - a1) * (b2 - b1) / (a2 - a1);
       return first_range (result);
    end translate_back;
-   test_value : first_range := first_range_first;
+
+   test_value            : first_range := first_range_first;
+   translated_value      : second_range;
+   translated_back_value : first_range;
 begin
    loop
+      translated_value := translate( test_value );
+      translated_back_value := translate_back( translated_value );
+
       ? strings.image(test_value) & " maps to: "
-                          & strings.image (translate (test_value));
+                          & strings.image (translated_value);
+      ? strings.image(translated_value) & " maps back to: "
+                          & strings.image (translated_back_value);
       exit when test_value = first_range_last;
       test_value := @ + 1.0;
    end loop;

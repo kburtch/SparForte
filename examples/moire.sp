@@ -9,7 +9,6 @@ pragma restriction( no_external_commands );
 
 procedure moire is
   c    : pen.canvas_id;
-  r    : pen.rect;
   s    : string;
 begin
   pen.new_window_canvas( 200,200,32,c);

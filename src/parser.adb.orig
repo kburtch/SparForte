@@ -116,7 +116,7 @@ package body parser is
 
 lowercase_l : unbounded_string := to_unbounded_string( "l" );
 uppercase_o : unbounded_string := to_unbounded_string( "O" );
-nonmeaningful_words : unbounded_string := to_unbounded_string( " blah data equals stuff thing things whatever whatnot whatsoever value " );
+nonmeaningful_words : unbounded_string := to_unbounded_string( " blah data equals stuff thing things whatever whatnot whatsoever value values " );
 confusingprogram_words : unbounded_string := to_unbounded_string( " eval exec read test " );
 
 ---------------------------------------------------------

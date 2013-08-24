@@ -69,9 +69,9 @@ Number   Binary     Gray Decoded
 <b>procedure</b> gray <b>is</b>
 
    bits : <b>constant</b> natural := 5;
-   <b>subtype</b> values <b>is</b> natural;
+   <b>subtype</b> nat_values <b>is</b> natural;
 
-   <b>function</b> encode (binary : values) <b>return</b> values <b>is</b>
+   <b>function</b> encode (binary : nat_values) <b>return</b> nat_values <b>is</b>
    <b>begin</b>
       <b>return</b> binary <b>xor</b> numerics.shift_right (binary, 1);
    <b>end</b> encode;
@@ -79,9 +79,9 @@ Number   Binary     Gray Decoded
    <FONT COLOR=green><EM>-- SparForte 1.3 cannot print to numbers to different bases but we</EM></FONT>
    <FONT COLOR=green><EM>-- we can write a function</EM></FONT>
 
-   <b>function</b> intToBin( value : values ) <b>return</b> string <b>is</b>
+   <b>function</b> intToBin( nat_value : nat_values ) <b>return</b> string <b>is</b>
      result : string;
-     v      : values := value;
+     v      : nat_values := nat_value;
    <b>begin</b>
      <b>if</b> v = 0 <b>then</b>
         result := '0';
@@ -98,10 +98,10 @@ Number   Binary     Gray Decoded
      <b>return</b> "2#" &amp; result &amp; "#";
    <b>end</b> intToBin;
 
-   <b>function</b> decode (gray : values) <b>return</b> values <b>is</b>
-      binary : values;
-      bit    : values;
-      mask   : values := 2 ** (bits - 1);
+   <b>function</b> decode (gray : nat_values) <b>return</b> nat_values <b>is</b>
+      binary : nat_values;
+      bit    : nat_values;
+      mask   : nat_values := 2 ** (bits - 1);
    <b>begin</b>
       bit    := gray <b>and</b> mask;
       binary := bit;
@@ -114,7 +114,7 @@ Number   Binary     Gray Decoded
       <b>return</b> binary;
    <b>end</b> decode;
 
-   j       : values;
+   j       : nat_values;
    ibinstr : string;
    jbinstr : string;
 

@@ -20,9 +20,9 @@ pragma restriction( no_external_commands );
 procedure gray is
 
    bits : constant natural := 5;
-   subtype values is natural;
+   subtype nat_values is natural;
 
-   function encode (binary : values) return values is
+   function encode (binary : nat_values) return nat_values is
    begin
       return binary xor numerics.shift_right (binary, 1);
    end encode;
@@ -30,9 +30,9 @@ procedure gray is
    -- SparForte 1.3 cannot print to numbers to different bases but we
    -- we can write a function
 
-   function intToBin( value : values ) return string is
+   function intToBin( nat_value : nat_values ) return string is
      result : string;
-     v      : values := value;
+     v      : nat_values := nat_value;
    begin
      if v = 0 then
         result := '0';
@@ -49,10 +49,10 @@ procedure gray is
      return "2#" & result & "#";
    end intToBin;
 
-   function decode (gray : values) return values is
-      binary : values;
-      bit    : values;
-      mask   : values := 2 ** (bits - 1);
+   function decode (gray : nat_values) return nat_values is
+      binary : nat_values;
+      bit    : nat_values;
+      mask   : nat_values := 2 ** (bits - 1);
    begin
       bit    := gray and mask;
       binary := bit;
@@ -65,7 +65,7 @@ procedure gray is
       return binary;
    end decode;
 
-   j       : values;
+   j       : nat_values;
    ibinstr : string;
    jbinstr : string;
 

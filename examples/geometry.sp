@@ -12,7 +12,6 @@ procedure geometry is
   c    : pen.canvas_id;
   r    : pen.rect;
   s    : string;
-  fill : boolean;
 
 -- the c2
 
@@ -34,10 +33,10 @@ begin
   pen.set_pen_mode( c, pen_mode.invert );
   pen.set_pen_ink( c, 100.0, 0.0, 0.0 );
   for x in 1..35 loop
-      pen.fill_rect( c, r );
+      pen.paint_rect( c, r );
       if x /= 35 then
          delay 0.02;
-         pen.fill_rect( c, r );
+         pen.paint_rect( c, r );
          pen.offset_rect( r, 2, 0 );
       end if;
   end loop;
@@ -62,10 +61,10 @@ begin
   pen.set_pen_mode( c, pen_mode.invert );
   pen.set_pen_ink( c, 0.0, 0.0, 100.0 );
   for x in 1..35 loop
-      pen.fill_ellipse( c, r );
+      pen.paint_ellipse( c, r );
       if x /= 35 then
          delay 0.02;
-         pen.fill_ellipse( c, r );
+         pen.paint_ellipse( c, r );
          pen.offset_rect( r, 2, 0 );
       end if;
   end loop;

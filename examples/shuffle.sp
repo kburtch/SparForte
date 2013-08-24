@@ -16,9 +16,9 @@ pragma restriction( no_external_commands );
 procedure shuffle is
 
   subtype array_element_type is string;
-  type stuff is array(1..3) of array_element_type;
+  type magic_items is array(1..3) of array_element_type;
 
-  a : stuff := ( "bell", "book", "candle" );
+  a : magic_items := ( "bell", "book", "candle" );
   t : array_element_type;
   k : integer;
 
