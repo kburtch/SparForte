@@ -86,6 +86,7 @@ while [ $# -gt 0 ] ; do
       MANPREFIX=`echo "$1" | cut -d= -f2`
       ;;
  --infodir) echo "--infodir not used" ;;
+ --target) echo "--infodir not used" ;;
   *)
       echo "Unrecognized option $TMP"
       exit 192

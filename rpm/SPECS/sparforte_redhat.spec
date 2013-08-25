@@ -27,7 +27,7 @@ project website
 %setup -q
 
 %build
-%configure --without-sound --without-postgres
+%configure
 make max
 strip src/spar
 

@@ -113,7 +113,7 @@ c_gstreamer.o: c_gstreamer.c
 #	./apq-2.1/configure
 #	mv -f Makeincl apq-2.1/Makeincl
 
-max: clean c_os.o c_scanner.o
+max: clean c_os.o c_scanner.o c_gstreamer.o
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "Making AdaCGI"
