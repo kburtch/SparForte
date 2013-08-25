@@ -1,7 +1,3 @@
-Tue Mar 13 21:44:00 EST 2012 Ken Burtch - ken@pegasoft.ca
-- 20120313-1 suppress OSS sound library
-Wed Mar 23 14:20:00 EST 2011 Ken Burtch - ken@pegasoft.ca
-- 20110323-1 initial version of package spec %{version}
-Tue Jun 26 06:30:00 EST 2012 Ken Burtch - ken@pegasoft.ca
-- 20120626-1 restore OSS sound library support
+Sat Aug 24 21:44:00 EST 2013 Ken Burtch - ken@pegasoft.ca
+- 20130824-1 version 1.4 build script created
 

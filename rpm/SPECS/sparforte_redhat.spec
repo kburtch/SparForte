@@ -45,6 +45,6 @@ rm -rf %{buildroot}
 %attr(0755,root,root) /usr/bin/spar
 
 %changelog
-* Sun Mar 23 2011 Ken Burtch <ken@pegasoft.ca> 1.3-1
+* Sat Aug 24 2013 Ken Burtch <ken@pegasoft.ca> 1.4-1
 - initial version of package spec %{version}
 
