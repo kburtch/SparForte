@@ -2195,7 +2195,18 @@ procedure ParsePenPut;
 procedure ParsePenPlot;
 
 -- OpenGL (Mesa)
+-- TODO: these don't need to appear here anymore due to callbacks
 
-procedure ParsePenglMatrixMode;
+--procedure ParsePenglLoadIdentity;
+--procedure ParsePenglMatrixMode;
+--procedure ParsePenglShadeModel;
+-- ParsePenglClearColor
+-- ParsePenglClearDepth
+-- ParsePenglEnable
+-- ParsePenglDisable
+-- ParsePenglIsEnabled
+-- ParsePenglDepthFunc
+-- ParsePenglHint
+-- ParsePenglClear
 
 end parser_pen;

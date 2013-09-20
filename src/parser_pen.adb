@@ -1862,6 +1862,9 @@ begin
   if isExecutingCommand then
     begin
       glClearColor( GLclampf( to_numeric( red_val ) ), GLclampf( to_numeric( green_val ) ), GLclampf( to_numeric( blue_val ) ), GLclampf( to_numeric( alpha_val ) ) );
+      if glGetError /= GL_NO_ERROR then
+         opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -1879,6 +1882,9 @@ begin
   if isExecutingCommand then
     begin
       glClear( GLbitfield( to_numeric( mask_val ) ) );
+      if glGetError /= GL_NO_ERROR then
+         opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2298,6 +2304,9 @@ begin
   if isExecutingCommand then
     begin
       glEnable( GLenum( to_numeric( cap_val ) ) );
+      if glGetError /= GL_NO_ERROR then
+         opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2315,23 +2324,30 @@ begin
   if isExecutingCommand then
     begin
       glDisable( GLenum( to_numeric( cap_val ) ) );
+      if glGetError /= GL_NO_ERROR then
+         opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePenglDisable;
 
-procedure ParsePenglIsEnabled( result : out unbounded_string ) is
+procedure ParsePenglIsEnabled( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: glIsEnabled( cap : GLenum ) return GLboolean; -- left as GLenum
   -- Source: bush_os.opengl.glIsEnabled
   cap_val  : unbounded_string;
   cap_type : identifier;
 begin
+  kind := boolean_t;
   expect( pen_glisenabled_t );
   ParseSingleNumericParameter( cap_val, cap_type, pen_glenum_t ); -- cap : GLenum
   if isExecutingCommand then
     begin
       result := to_unbounded_string( long_float( glIsEnabled( GLenum( to_numeric( cap_val ) ) ) ) );
+      if glGetError /= GL_NO_ERROR then
+         opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2615,6 +2631,9 @@ begin
   if isExecutingCommand then
     begin
       glHint( GLhints( to_numeric( target_val ) ), GLhintmodes( to_numeric( mode_val ) ) );
+      if glGetError /= GL_NO_ERROR then
+         opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2632,6 +2651,9 @@ begin
   if isExecutingCommand then
     begin
       glClearDepth( GLclampd( to_numeric( depth_val ) ) );
+      if glGetError /= GL_NO_ERROR then
+         opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2649,6 +2671,9 @@ begin
   if isExecutingCommand then
     begin
       glDepthFunc( GLalphacompare( to_numeric( func_val ) ) );
+      if glGetError /= GL_NO_ERROR then
+         opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -6848,6 +6873,9 @@ begin
   if isExecutingCommand then
     begin
       glShadeModel( GLlighting( to_numeric( mode_val ) ) );
+      if glGetError /= GL_NO_ERROR then
+         opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -15659,7 +15687,7 @@ begin
 
   declareIdent( pen_glenum_t,   "pen.glenum", natural_t, typeClass  );
   declareIdent( pen_glboolean_t, "pen.glboolean", natural_t, typeClass  );
-  declareIdent( pen_glbitfield_t,"pen.glbitfield_t", natural_t, typeClass );
+  declareIdent( pen_glbitfield_t,"pen.glbitfield", natural_t, typeClass );
   declareIdent( pen_glbyte_t,   "pen.glbyte_t", integer_t, subClass );
   declareIdent( pen_glshort_t,  "pen.glshort_t", integer_t, subClass );
   declareIdent( pen_glint_t,    "pen_glint_t", integer_t, subClass );
@@ -16235,7 +16263,9 @@ begin
   declareStandardConstant( pen_gl_stack_underflow_t, "pen.gl_stack_underflow", pen_glerrors_t, float_to_string( GL_STACK_UNDERFLOW ) );
   declareStandardConstant( pen_gl_out_of_memory_t, "pen.gl_out_of_memory", pen_glerrors_t, float_to_string( GL_OUT_OF_MEMORY ) );
 
-  declareIdent( pen_glpushbits_t, "pen.glpushbits", integer_t, typeClass  );
+  -- bitfield is natural, not int, but bits are passed to glClear, etc. which takes a bitfield
+  --declareIdent( pen_glpushbits_t, "pen.glpushbits", integer_t, typeClass  );
+  declareIdent( pen_glpushbits_t, "pen.glpushbits", pen_glbitfield_t, subClass  );
 
   declareStandardConstant( pen_gl_current_bit_t, "pen.gl_current_bit", pen_glpushbits_t, float_to_string( GL_CURRENT_BIT ) );
   declareStandardConstant( pen_gl_point_bit_t, "pen.gl_point_bit", pen_glpushbits_t, float_to_string( GL_POINT_BIT ) );
@@ -16897,8 +16927,8 @@ begin
   -- Pen.StartupPen;
 
   declareProcedure( pen_glclearindex_t, "pen.glclearindex" );
-  declareProcedure( pen_glclearcolor_t, "pen.glclearcolor" );
-  declareProcedure( pen_glclear_t, "pen.glclear" );
+  declareProcedure( pen_glclearcolor_t, "pen.glclearcolor", ParsePenglClearColor'access );
+  declareProcedure( pen_glclear_t, "pen.glclear", ParsePenglClear'access );
   declareProcedure( pen_glindexmask_t, "pen.glindexmask" );
   declareProcedure( pen_glcolormask_t, "pen.glcolormask" );
   declareProcedure( pen_glalphafunc_t, "pen.glalphafunc" );
@@ -16920,9 +16950,9 @@ begin
   declareProcedure( pen_glgetclipplane_t, "pen.glgetclipplane" );
   declareProcedure( pen_gldrawbuffer_t, "pen.gldrawbuffer" );
   declareProcedure( pen_glreadbuffer_t, "pen.glreadbuffer" );
-  declareProcedure( pen_glenable_t, "pen.glenable" );
-  declareProcedure( pen_gldisable_t, "pen.gldisable" );
-  declareFunction(  pen_glisenabled_t, "pen.glisenabled" );
+  declareProcedure( pen_glenable_t, "pen.glenable", ParsePenglEnable'access );
+  declareProcedure( pen_gldisable_t, "pen.gldisable", ParsePenglDisable'access );
+  declareFunction(  pen_glisenabled_t, "pen.glisenabled", ParsePenglIsEnabled'access );
   declareProcedure( pen_glenableclientstate_t, "pen.glenableclientstate" );
   declareProcedure( pen_gldisableclientstate_t, "pen.gldisableclientstate" );
   declareProcedure( pen_glgetbooleanv_t, "pen.glgetbooleanv" );
@@ -16938,9 +16968,9 @@ begin
   declareFunction(  pen_glgetstring_t, "pen.glgetstring" );
   declareProcedure( pen_glfinish_t, "pen.glfinish" );
   declareProcedure( pen_glflush_t, "pen.glflush" );
-  declareProcedure( pen_glhint_t, "pen.glhint" );
-  declareProcedure( pen_glcleardepth_t, "pen.glcleardepth" );
-  declareProcedure( pen_gldepthfunc_t, "pen.gldepthfunc" );
+  declareProcedure( pen_glhint_t, "pen.glhint", ParsePenglHint'access );
+  declareProcedure( pen_glcleardepth_t, "pen.glcleardepth", ParsePenglClearDepth'access );
+  declareProcedure( pen_gldepthfunc_t, "pen.gldepthfunc", ParsePenglDepthFunc'access );
   declareProcedure( pen_gldepthmask_t, "pen.gldepthmask" );
   declareProcedure( pen_gldepthrange_t, "pen.gldepthrange" );
   declareProcedure( pen_glclearaccum_t, "pen.glclearaccum" );
@@ -17123,7 +17153,7 @@ begin
   declareProcedure( pen_gldrawarrays_t, "pen.gldrawarrays" );
   declareProcedure( pen_gldrawelements_t, "pen.gldrawelements" );
   declareProcedure( pen_glinterleavedarrays_t, "pen.glinterleavedarrays" );
-  declareProcedure( pen_glshademodel_t, "pen.glshademodel" );
+  declareProcedure( pen_glshademodel_t, "pen.glshademodel", ParsePenglShadeModel'access );
   declareProcedure( pen_gllightf_t, "pen.gllightf" );
   declareProcedure( pen_gllighti_t, "pen.gllighti" );
   declareProcedure( pen_gllightfv_t, "pen.gllightfv" );
