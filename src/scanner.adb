@@ -6222,6 +6222,9 @@ begin
     lastLinePos := linePos - 1;                          -- back up one
     line2compile := to_unbounded_string( slice( command, firstLinePos, lastLinePos ) );
     line2ByteCode( ci, line2compile );                   -- compress that slice
+    if element( line2compile, lastLinePos ) = ' ' or element( line2compile, lastLinePos ) = ASCII.HT then
+       err_tokenize( "trailing whitespace at end of line", to_string( line2compile ) );
+    end if;
     -- DOS text files have CR+LF
     if  linePos < length( command ) then
         if element( command, linePos ) = ASCII.CR then
@@ -6392,6 +6395,22 @@ begin
         end if;
      end if;
      line2ByteCode( ci, command );                            -- compress line
+     -- check for white space at end-of-line.  Do line2ByteCode first because
+     -- it increments the line number so line number is accurate.
+     declare
+       i  : integer := length( command );
+       ch : character;
+     begin
+       while i > 0 loop
+         ch := element( command, i );
+         if ch = ' ' or ch = ASCII.HT then
+            err_tokenize( "trailing whitespace at end-of-line", to_string( command ) );
+         elsif ch /= ASCII.CR and ch /= ASCII.LF then
+            exit;
+         end if;
+         i := i - 1;
+       end loop;
+     end;
      exit when error_found;                                   -- quit on err
      compileDone := not LineRead( command'access );           -- quit when done
   end loop;

@@ -1340,7 +1340,7 @@ procedure glPopAttrib;
 procedure glPushClientAttrib( mask : GLbitfield );  -- /* 1.1 */
 procedure glPopClientAttrib;  -- /* 1.1 */
 function  glRenderMode( mode : GLrendermodes ) return GLint;
-function  glGetError return GLenum;
+function  glGetError return GLerrors;
 function  glGetString( name : GLenum ) return system.address; -- GLUbyte*
 procedure glFinish;
 procedure glFlush;

@@ -73,11 +73,11 @@ begin
             blue := 0.0;
          else
             bits := (loop_count and 3 );
-            red := 100.0-pen.rgbcomponent((100*bits/3)); 
+            red := 100.0-pen.rgbcomponent((100*bits/3));
             bits := (loop_count / 3 ) and 3;
-            green := 100.0-pen.rgbcomponent((100*bits/3)); 
+            green := 100.0-pen.rgbcomponent((100*bits/3));
             bits := (loop_count / 27 ) and 2;
-            blue := 100.0-pen.rgbcomponent((100*bits)/2); 
+            blue := 100.0-pen.rgbcomponent((100*bits)/2);
          end if;
          pen.set_pen_ink( c, red, green, blue );
 

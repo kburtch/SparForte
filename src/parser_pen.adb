@@ -85,6 +85,11 @@ begin
      identifiers( bottom_field_t ).value := to_unbounded_string( long_float( pen_rect.bottom ) );
 end penRect2bushRect;
 
+procedure opengl_err is
+begin
+  -- TODO: need message, function  glGetString( name : GLenum ) return system.address
+  err( "OpenGL error" );
+end opengl_err;
 
 ----> Rects
 
@@ -2538,7 +2543,7 @@ begin
   expect( pen_glgeterror_t );
   if isExecutingCommand then
     declare
-      errNum : GLenum := glGetError;
+      errNum : GLerrors := glGetError;
     begin
       result := to_unbounded_string( long_float( errNum ) );
     exception when others =>
@@ -2744,6 +2749,9 @@ begin
   if isExecutingCommand then
     begin
       glMatrixMode( GLmodes( to_numeric( mode_val ) ) );
+      if glGetError /= GL_NO_ERROR then
+         opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2876,6 +2884,9 @@ begin
   if isExecutingCommand then
     begin
       glLoadIdentity;
+      if glGetError /= GL_NO_ERROR then
+         opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -16934,13 +16945,13 @@ begin
   declareProcedure( pen_gldepthrange_t, "pen.gldepthrange" );
   declareProcedure( pen_glclearaccum_t, "pen.glclearaccum" );
   declareProcedure( pen_glaccum_t, "pen.glaccum" );
-  declareProcedure( pen_glmatrixmode_t, "pen.glmatrixmode" );
+  declareProcedure( pen_glmatrixmode_t, "pen.glmatrixmode", ParsePenglMatrixMode'access );
   declareProcedure( pen_glortho_t, "pen.glortho" );
   declareProcedure( pen_glfrustum_t, "pen.glfrustum" );
   declareProcedure( pen_glviewport_t, "pen.glviewport" );
   declareProcedure( pen_glpushmatrix_t, "pen.glpushmatrix" );
   declareProcedure( pen_glpopmatrix_t, "pen.glpopmatrix" );
-  declareProcedure( pen_glloadidentity_t, "pen.glloadidentity" );
+  declareProcedure( pen_glloadidentity_t, "pen.glloadidentity", ParsePenglLoadIdentity'access );
   declareProcedure( pen_glloadmatrixd_t, "pen.glloadmatrixd" );
   declareProcedure( pen_glloadmatrixf_t, "pen.glloadmatrixf" );
   declareProcedure( pen_glmultmatrixd_t, "pen.glmultmatrixd" );

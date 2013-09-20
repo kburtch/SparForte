@@ -2194,4 +2194,8 @@ procedure ParsePenPut;
 
 procedure ParsePenPlot;
 
+-- OpenGL (Mesa)
+
+procedure ParsePenglMatrixMode;
+
 end parser_pen;
