@@ -48,11 +48,11 @@ procedure ShutdownStats;
 -- PARSE THE STATS PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseStatsAverage( f : out unbounded_string; kind : out identifier );
-procedure ParseStatsMax( f : out unbounded_string; kind : out identifier );
-procedure ParseStatsMin( f : out unbounded_string; kind : out identifier );
-procedure ParseStatsStandardDeviation( f : out unbounded_string; kind : out identifier );
-procedure ParseStatsSum( f : out unbounded_string; kind : out identifier );
-procedure ParseStatsVariance( f : out unbounded_string; kind : out identifier );
+-- procedure ParseStatsAverage( f : out unbounded_string; kind : out identifier );
+-- procedure ParseStatsMax( f : out unbounded_string; kind : out identifier );
+-- procedure ParseStatsMin( f : out unbounded_string; kind : out identifier );
+-- procedure ParseStatsStandardDeviation( f : out unbounded_string; kind : out identifier );
+-- procedure ParseStatsSum( f : out unbounded_string; kind : out identifier );
+-- procedure ParseStatsVariance( f : out unbounded_string; kind : out identifier );
 
 end parser_stats;

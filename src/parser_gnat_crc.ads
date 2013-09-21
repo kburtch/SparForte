@@ -48,8 +48,8 @@ procedure ShutdownGnatCRC;
 -- PARSE THE CGI PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseGnatCRC32Initialize;
-procedure ParseGnatCRC32Update;
-procedure ParseGnatCRC32GetValue( result : out unbounded_string; kind : out identifier );
+-- procedure ParseGnatCRC32Initialize;
+-- procedure ParseGnatCRC32Update;
+-- procedure ParseGnatCRC32GetValue( result : out unbounded_string; kind : out identifier );
 
 end parser_gnat_crc;

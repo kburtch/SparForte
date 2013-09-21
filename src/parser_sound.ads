@@ -33,8 +33,8 @@ procedure ShutdownSound;
 -- PARSE THE SOUND PACKAGE
 ---------------------------------------------------------
 
-procedure ParsePlay;
-procedure ParsePlayCD;
-procedure ParseStopCD;
+-- procedure ParsePlay;
+-- procedure ParsePlayCD;
+-- procedure ParseStopCD;
 
 end parser_sound;

@@ -45,7 +45,7 @@ procedure ShutdownLockFiles;
 -- PARSE THE LOCK_FILES PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseLockLockFile;
-procedure ParseLockUnlockFile;
+-- procedure ParseLockLockFile;
+-- procedure ParseLockUnlockFile;
 
 end parser_lock;

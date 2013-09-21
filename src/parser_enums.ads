@@ -46,9 +46,9 @@ procedure ShutdownEnums;
 -- PARSE THE ENUMS PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseEnumsFirst( f : out unbounded_string; kind : out identifier );
-procedure ParseEnumsLast( f : out unbounded_string; kind : out identifier );
-procedure ParseEnumsPred( f : out unbounded_string; kind : out identifier );
-procedure ParseEnumsSucc( f : out unbounded_string; kind : out identifier );
+-- procedure ParseEnumsFirst( f : out unbounded_string; kind : out identifier );
+-- procedure ParseEnumsLast( f : out unbounded_string; kind : out identifier );
+-- procedure ParseEnumsPred( f : out unbounded_string; kind : out identifier );
+-- procedure ParseEnumsSucc( f : out unbounded_string; kind : out identifier );
 
 end parser_enums;

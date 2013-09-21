@@ -57,20 +57,20 @@ procedure ShutdownArrays;
 -- PARSE THE ARRAYS PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseArraysFirst( f : out unbounded_string; kind : out identifier );
-procedure ParseArraysLast( f : out unbounded_string; kind : out identifier );
-procedure ParseArraysLength( f : out unbounded_string; kind : out identifier );
-procedure ParseArraysBubbleSort;
-procedure ParseArraysBubbleSortDescending;
-procedure ParseArraysHeapSort;
-procedure ParseArraysHeapSortDescending;
-procedure ParseArraysShuffle;
-procedure ParseArraysFlip;
-procedure ParseArraysRotateLeft;
-procedure ParseArraysRotateRight;
-procedure ParseArraysShiftLeft;
-procedure ParseArraysShiftRight;
-procedure ParseArraysToArray;
-procedure ParseArraysToJSON;
+-- procedure ParseArraysFirst( f : out unbounded_string; kind : out identifier );
+-- procedure ParseArraysLast( f : out unbounded_string; kind : out identifier );
+-- procedure ParseArraysLength( f : out unbounded_string; kind : out identifier );
+-- procedure ParseArraysBubbleSort;
+-- procedure ParseArraysBubbleSortDescending;
+-- procedure ParseArraysHeapSort;
+-- procedure ParseArraysHeapSortDescending;
+-- procedure ParseArraysShuffle;
+-- procedure ParseArraysFlip;
+-- procedure ParseArraysRotateLeft;
+-- procedure ParseArraysRotateRight;
+-- procedure ParseArraysShiftLeft;
+-- procedure ParseArraysShiftRight;
+-- procedure ParseArraysToArray;
+-- procedure ParseArraysToJSON;
 
 end parser_arrays;

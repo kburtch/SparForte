@@ -48,11 +48,11 @@ procedure ShutdownCommandLine;
 -- PARSE THE COMMAND LINE PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseArgument( result : out unbounded_string; kind : out identifier );
-procedure ParseArgument_Count( result : out unbounded_string; kind : out identifier );
-procedure ParseCommand_Name( result : out unbounded_string; kind : out identifier );
-procedure ParseSetExitStatus;
-procedure ParseEnvironment_Count( result : out unbounded_string; kind : out identifier );
-procedure ParseEnvironment_Value( result : out unbounded_string; kind : out identifier );
+-- procedure ParseArgument( result : out unbounded_string; kind : out identifier );
+-- procedure ParseArgument_Count( result : out unbounded_string; kind : out identifier );
+-- procedure ParseCommand_Name( result : out unbounded_string; kind : out identifier );
+-- procedure ParseSetExitStatus;
+-- procedure ParseEnvironment_Count( result : out unbounded_string; kind : out identifier );
+-- procedure ParseEnvironment_Value( result : out unbounded_string; kind : out identifier );
 
 end parser_cmd;

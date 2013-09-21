@@ -70,20 +70,20 @@ procedure ShutdownDirOps;
 -- PARSE THE DIRECTORY_OPERATIONS PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseDirOpsDirSeparator( result : out unbounded_string; kind : out identifier );
-procedure ParseDirOpsChangeDir;
-procedure ParseDirOpsMakeDir;
-procedure ParseDirOpsRemoveDir;
-procedure ParseDirOpsGetCurrentDir( result : out unbounded_string; kind : out identifier );
-procedure ParseDirOpsDirName( result : out unbounded_string; kind : out identifier );
-procedure ParseDirOpsBaseName( result : out unbounded_string; kind : out identifier );
-procedure ParseDirOpsFileExtension( result : out unbounded_string; kind : out identifier );
-procedure ParseDirOpsFileName( result : out unbounded_string; kind : out identifier );
-procedure ParseDirOpsFormatPathname( result : out unbounded_string; kind : out identifier );
-procedure ParseDirOpsExpandPath( result : out unbounded_string; kind : out identifier );
-procedure ParseDirOpsOpen;
-procedure ParseDirOpsClose;
-procedure ParseDirOpsIsOpen( result : out unbounded_string; kind : out identifier );
-procedure ParseDirOpsRead;
+-- procedure ParseDirOpsDirSeparator( result : out unbounded_string; kind : out identifier );
+-- procedure ParseDirOpsChangeDir;
+-- procedure ParseDirOpsMakeDir;
+-- procedure ParseDirOpsRemoveDir;
+-- procedure ParseDirOpsGetCurrentDir( result : out unbounded_string; kind : out identifier );
+-- procedure ParseDirOpsDirName( result : out unbounded_string; kind : out identifier );
+-- procedure ParseDirOpsBaseName( result : out unbounded_string; kind : out identifier );
+-- procedure ParseDirOpsFileExtension( result : out unbounded_string; kind : out identifier );
+-- procedure ParseDirOpsFileName( result : out unbounded_string; kind : out identifier );
+-- procedure ParseDirOpsFormatPathname( result : out unbounded_string; kind : out identifier );
+-- procedure ParseDirOpsExpandPath( result : out unbounded_string; kind : out identifier );
+-- procedure ParseDirOpsOpen;
+-- procedure ParseDirOpsClose;
+-- procedure ParseDirOpsIsOpen( result : out unbounded_string; kind : out identifier );
+-- procedure ParseDirOpsRead;
 
 end parser_dirops;

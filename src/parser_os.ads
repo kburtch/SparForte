@@ -33,7 +33,7 @@ procedure ShutdownSparOS;
 -- PARSE THE BUSH_OS PACKAGE
 ---------------------------------------------------------
 
-procedure ParseOSSystem;
-procedure ParseOSStatus( result : out unbounded_string; kind : out identifier );
+--procedure ParseOSSystem;
+--procedure ParseOSStatus( result : out unbounded_string; kind : out identifier );
 
 end parser_os;

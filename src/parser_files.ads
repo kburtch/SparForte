@@ -59,22 +59,22 @@ procedure ShutdownFiles;
 -- PARSE THE FILES PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseFileExists( f : out unbounded_string; kind : out identifier );
-procedure ParseIsAbsolutePath( f : out unbounded_string; kind : out identifier );
-procedure ParseIsRegularFile( f : out unbounded_string; kind : out identifier );
-procedure ParseIsDirectory( f : out unbounded_string; kind : out identifier );
-procedure ParseIsWritableFile( f : out unbounded_string; kind : out identifier );
-procedure ParseIsWritable( f : out unbounded_string; kind : out identifier );
-procedure ParseIsExecutableFile( f : out unbounded_string; kind : out identifier );
-procedure ParseIsExecutable( f : out unbounded_string; kind : out identifier );
-procedure ParseIsReadableFile( f : out unbounded_string; kind : out identifier );
-procedure ParseIsReadable( f : out unbounded_string; kind : out identifier );
-procedure ParseDirname( f : out unbounded_string; kind : out identifier );
-procedure ParseBasename( f : out unbounded_string; kind : out identifier );
-procedure ParseIsWaitingFile( f : out unbounded_string; kind : out identifier );
-procedure ParseFileSize( f : out unbounded_string; kind : out identifier );
-procedure ParseFileLastModified( f : out unbounded_string; kind : out identifier );
-procedure ParseFileLastChanged( f : out unbounded_string; kind : out identifier );
-procedure ParseFileLastAccessed( f : out unbounded_string; kind : out identifier );
+-- procedure ParseFileExists( f : out unbounded_string; kind : out identifier );
+-- procedure ParseIsAbsolutePath( f : out unbounded_string; kind : out identifier );
+-- procedure ParseIsRegularFile( f : out unbounded_string; kind : out identifier );
+-- procedure ParseIsDirectory( f : out unbounded_string; kind : out identifier );
+-- procedure ParseIsWritableFile( f : out unbounded_string; kind : out identifier );
+-- procedure ParseIsWritable( f : out unbounded_string; kind : out identifier );
+-- procedure ParseIsExecutableFile( f : out unbounded_string; kind : out identifier );
+-- procedure ParseIsExecutable( f : out unbounded_string; kind : out identifier );
+-- procedure ParseIsReadableFile( f : out unbounded_string; kind : out identifier );
+-- procedure ParseIsReadable( f : out unbounded_string; kind : out identifier );
+-- procedure ParseDirname( f : out unbounded_string; kind : out identifier );
+-- procedure ParseBasename( f : out unbounded_string; kind : out identifier );
+-- procedure ParseIsWaitingFile( f : out unbounded_string; kind : out identifier );
+-- procedure ParseFileSize( f : out unbounded_string; kind : out identifier );
+-- procedure ParseFileLastModified( f : out unbounded_string; kind : out identifier );
+-- procedure ParseFileLastChanged( f : out unbounded_string; kind : out identifier );
+-- procedure ParseFileLastAccessed( f : out unbounded_string; kind : out identifier );
 
 end parser_files;

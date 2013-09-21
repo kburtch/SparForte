@@ -44,7 +44,7 @@ procedure ShutdownRecords;
 -- PARSE THE RECORDS PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseRecordsToJson;
-procedure ParseRecordsToRecord;
+--procedure ParseRecordsToJson;
+--procedure ParseRecordsToRecord;
 
 end parser_records;
