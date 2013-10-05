@@ -6,3 +6,5 @@ CHANGES SINCE 1.4
 
 1. New: End of line whitespace check.
 
+2. New: pen.gl_new_screen_canvas, pen.glloadidentity, pen.glmatrixmode, pen.glshademodel, pen.glclearcolor, pen.glcleardepth, pen.glenable, pen.gldisable, pen.glisenabled, pen.gldepthfunc, pen.glhint, pen.glclear, pen.glviewport, pen.gluperspective, pen.glbegin, pen.glend, pen.glvertex3d, pen.glvertex4d, pen.gltranslated pen.glvertex3f, pen.glvertex3i, pen.glvertex3s, pen.glvertex2d, pen.glvertex2f, pen.glvertex2i, pen.glvertex2s, pen.glvertex4d, pen.glvertex4f, pen.glvertex4i, pen.glvertex4s [Not documented yet]
+

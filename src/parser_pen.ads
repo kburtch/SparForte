@@ -1600,6 +1600,11 @@ pen_glu_tess_winding_negative_t : identifier;
 pen_glu_tess_winding_abs_geq_two_t : identifier;
 pen_glu_tess_max_coord_t : identifier;
 
+-- SparForte additions
+
+pen_raise_gl_errors_t : identifier;
+pen_is_raising_gl_errors_t : identifier;
+
 -- OpenGL Functions (MESA library)
 
 pen_glclearindex_t : identifier;
@@ -2208,5 +2213,25 @@ procedure ParsePenPlot;
 -- ParsePenglDepthFunc
 -- ParsePenglHint
 -- ParsePenglClear
+
+-- ParsePenglViewport
+-- ParsePengluPerspective
+-- ParsePenglBegin
+-- ParsePenglEnd
+-- ParsePenglVertex2d
+-- ParsePenglVertex2f
+-- ParsePenglVertex2i
+-- ParsePenglVertex2s
+-- ParsePenglVertex3d
+-- ParsePenglVertex3f
+-- ParsePenglVertex3i
+-- ParsePenglVertex3s
+-- ParsePenglVertex4d
+-- ParsePenglVertex4f
+-- ParsePenglVertex4i
+-- ParsePenglVertex4s
+-- ParsePenglTranslated
+
+-- TODO: raise exception
 
 end parser_pen;

@@ -57,6 +57,9 @@ penRunning : boolean := false;
 -- some versions of SDL take control of the screen if video is started so
 -- we'll only start SDL when a canvas is created.
 
+raiseGlExceptions : boolean := true;
+-- true if user wants GL errors raised as exceptions
+
 ----> Utils
 
 procedure bushRect2penRect( pen_rect : out aRect; bush_rect : identifier ) is
@@ -85,11 +88,48 @@ begin
      identifiers( bottom_field_t ).value := to_unbounded_string( long_float( pen_rect.bottom ) );
 end penRect2bushRect;
 
-procedure opengl_err is
+procedure check_opengl_err is
+  err_id : GLerrors;
 begin
   -- TODO: need message, function  glGetString( name : GLenum ) return system.address
-  err( "OpenGL error" );
-end opengl_err;
+  err_id := glGetError;
+  if err_id /= GL_NO_ERROR then
+     -- TODO this is a hack until glGetString is done
+     case err_id is
+     when GL_INVALID_ENUM => err( "OpenGL error: invalid enum" );
+     when GL_INVALID_VALUE => err( "OpenGL error: invalid value" );
+     when GL_INVALID_OPERATION => err( "OpenGL error: invalid operation" );
+     when GL_STACK_OVERFLOW => err( "OpenGL error: stack overflow" );
+     when GL_STACK_UNDERFLOW => err( "OpenGL error: stack underflow" );
+     when GL_OUT_OF_MEMORY => err( "OpenGL error: out of memory" );
+     when others =>
+        err( "OpenGL error: id" & err_id'img );
+     end case;
+  end if;
+end check_opengl_err;
+
+----> GL Exceptions
+
+procedure ParsePenRaiseGlErrors is
+  -- Syntax: pen.raise_gl_errors( bool );
+  -- Source: N/A
+  val  : unbounded_string;
+  kind : identifier;
+begin
+  expect( pen_raise_gl_errors_t );
+  ParseSingleNumericParameter( val, kind, boolean_t );
+  if isExecutingCommand then
+     declare
+       flag : boolean := val = to_unbounded_string( "1" );
+     begin
+       raiseGlExceptions := flag;
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParsePenRaiseGlErrors;
+
+-- TODO: IsRaisingGlErrors
 
 ----> Rects
 
@@ -1862,8 +1902,8 @@ begin
   if isExecutingCommand then
     begin
       glClearColor( GLclampf( to_numeric( red_val ) ), GLclampf( to_numeric( green_val ) ), GLclampf( to_numeric( blue_val ) ), GLclampf( to_numeric( alpha_val ) ) );
-      if glGetError /= GL_NO_ERROR then
-         opengl_err;
+      if raiseGlExceptions then
+         check_opengl_err;
       end if;
     exception when others =>
       err( "exception raised" );
@@ -1882,8 +1922,8 @@ begin
   if isExecutingCommand then
     begin
       glClear( GLbitfield( to_numeric( mask_val ) ) );
-      if glGetError /= GL_NO_ERROR then
-         opengl_err;
+      if raiseGlExceptions then
+         check_opengl_err;
       end if;
     exception when others =>
       err( "exception raised" );
@@ -2304,8 +2344,8 @@ begin
   if isExecutingCommand then
     begin
       glEnable( GLenum( to_numeric( cap_val ) ) );
-      if glGetError /= GL_NO_ERROR then
-         opengl_err;
+      if raiseGlExceptions then
+         check_opengl_err;
       end if;
     exception when others =>
       err( "exception raised" );
@@ -2324,8 +2364,8 @@ begin
   if isExecutingCommand then
     begin
       glDisable( GLenum( to_numeric( cap_val ) ) );
-      if glGetError /= GL_NO_ERROR then
-         opengl_err;
+      if raiseGlExceptions then
+         check_opengl_err;
       end if;
     exception when others =>
       err( "exception raised" );
@@ -2345,8 +2385,8 @@ begin
   if isExecutingCommand then
     begin
       result := to_unbounded_string( long_float( glIsEnabled( GLenum( to_numeric( cap_val ) ) ) ) );
-      if glGetError /= GL_NO_ERROR then
-         opengl_err;
+      if raiseGlExceptions then
+         check_opengl_err;
       end if;
     exception when others =>
       err( "exception raised" );
@@ -2631,8 +2671,8 @@ begin
   if isExecutingCommand then
     begin
       glHint( GLhints( to_numeric( target_val ) ), GLhintmodes( to_numeric( mode_val ) ) );
-      if glGetError /= GL_NO_ERROR then
-         opengl_err;
+      if raiseGlExceptions then
+         check_opengl_err;
       end if;
     exception when others =>
       err( "exception raised" );
@@ -2651,8 +2691,8 @@ begin
   if isExecutingCommand then
     begin
       glClearDepth( GLclampd( to_numeric( depth_val ) ) );
-      if glGetError /= GL_NO_ERROR then
-         opengl_err;
+      if raiseGlExceptions then
+         check_opengl_err;
       end if;
     exception when others =>
       err( "exception raised" );
@@ -2671,8 +2711,8 @@ begin
   if isExecutingCommand then
     begin
       glDepthFunc( GLalphacompare( to_numeric( func_val ) ) );
-      if glGetError /= GL_NO_ERROR then
-         opengl_err;
+      if raiseGlExceptions then
+         check_opengl_err;
       end if;
     exception when others =>
       err( "exception raised" );
@@ -2774,8 +2814,8 @@ begin
   if isExecutingCommand then
     begin
       glMatrixMode( GLmodes( to_numeric( mode_val ) ) );
-      if glGetError /= GL_NO_ERROR then
-         opengl_err;
+      if raiseGlExceptions then
+         check_opengl_err;
       end if;
     exception when others =>
       err( "exception raised" );
@@ -2867,6 +2907,9 @@ begin
   if isExecutingCommand then
     begin
       glViewport( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2909,8 +2952,8 @@ begin
   if isExecutingCommand then
     begin
       glLoadIdentity;
-      if glGetError /= GL_NO_ERROR then
-         opengl_err;
+      if raiseGlExceptions then
+         check_opengl_err;
       end if;
     exception when others =>
       err( "exception raised" );
@@ -3129,6 +3172,9 @@ begin
   if isExecutingCommand then
     begin
       glTranslated( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( z_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -3319,6 +3365,7 @@ begin
   if isExecutingCommand then
     begin
       glBegin( GLprimitives( to_numeric( mode_val ) ) );
+      -- do not check errors: only allowed after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -3333,6 +3380,9 @@ begin
   if isExecutingCommand then
     begin
       glEnd;
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -3436,6 +3486,7 @@ begin
   if isExecutingCommand then
     begin
       glVertex3d( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( z_val ) ) );
+      -- do not check errors: only allowed after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -3459,6 +3510,7 @@ begin
   if isExecutingCommand then
     begin
       glVertex3f( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ), GLfloat( to_numeric( z_val ) ) );
+      -- do not check errors: only allowed after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -3482,6 +3534,7 @@ begin
   if isExecutingCommand then
     begin
       glVertex3i( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLint( to_numeric( z_val ) ) );
+      -- do not check errors: only allowed after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -3505,6 +3558,7 @@ begin
   if isExecutingCommand then
     begin
       glVertex3s( GLshort( to_numeric( x_val ) ), GLshort( to_numeric( y_val ) ), GLshort( to_numeric( z_val ) ) );
+      -- do not check errors: only allowed after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -3531,6 +3585,7 @@ begin
   if isExecutingCommand then
     begin
       glVertex4d( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( z_val ) ), GLdouble( to_numeric( w_val ) ) );
+      -- do not check errors: only allowed after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -6873,8 +6928,8 @@ begin
   if isExecutingCommand then
     begin
       glShadeModel( GLlighting( to_numeric( mode_val ) ) );
-      if glGetError /= GL_NO_ERROR then
-         opengl_err;
+      if raiseGlExceptions then
+         check_opengl_err;
       end if;
     exception when others =>
       err( "exception raised" );
@@ -14273,6 +14328,9 @@ begin
   if isExecutingCommand then
     begin
       gluPerspective( GLdouble( to_numeric( fovy_val ) ), GLdouble( to_numeric( aspect_val ) ), GLdouble( to_numeric( zNear_val ) ), GLdouble( to_numeric( zFar_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -16868,6 +16926,7 @@ begin
 
   declareProcedure( pen_new_screen_canvas_t, "pen.new_screen_canvas", ParsePenNewScreenCanvas'access );
   declareProcedure( pen_new_window_canvas_t, "pen.new_window_canvas", ParsePenNewWindowCanvas'access );
+  declareProcedure( pen_new_gl_screen_canvas_t, "pen.new_gl_screen_canvas", ParsePenNewGLScreenCanvas'access );
   declareProcedure( pen_new_gl_window_canvas_t, "pen.new_gl_window_canvas", ParsePenNewGLWindowCanvas'access );
   declareProcedure( pen_new_canvas_t, "pen.new_canvas", ParsePenNewCanvas'access );
   declareProcedure( pen_save_canvas_t, "pen.save_canvas", ParsePenSaveCanvas'access );
@@ -16926,6 +16985,7 @@ begin
   -- We don't start the actual pen package unless we need it.
   -- Pen.StartupPen;
 
+  declareProcedure( pen_raise_gl_errors_t, "pen.raise_gl_errors", ParsePenRaiseGlErrors'access );
   declareProcedure( pen_glclearindex_t, "pen.glclearindex" );
   declareProcedure( pen_glclearcolor_t, "pen.glclearcolor", ParsePenglClearColor'access );
   declareProcedure( pen_glclear_t, "pen.glclear", ParsePenglClear'access );
@@ -16978,7 +17038,7 @@ begin
   declareProcedure( pen_glmatrixmode_t, "pen.glmatrixmode", ParsePenglMatrixMode'access );
   declareProcedure( pen_glortho_t, "pen.glortho" );
   declareProcedure( pen_glfrustum_t, "pen.glfrustum" );
-  declareProcedure( pen_glviewport_t, "pen.glviewport" );
+  declareProcedure( pen_glviewport_t, "pen.glviewport", ParsePenglViewport'access );
   declareProcedure( pen_glpushmatrix_t, "pen.glpushmatrix" );
   declareProcedure( pen_glpopmatrix_t, "pen.glpopmatrix" );
   declareProcedure( pen_glloadidentity_t, "pen.glloadidentity", ParsePenglLoadIdentity'access );
@@ -16990,7 +17050,7 @@ begin
   declareProcedure( pen_glrotatef_t, "pen.glrotatef" );
   declareProcedure( pen_glscaled_t, "pen.glscaled" );
   declareProcedure( pen_glscalef_t, "pen.glscalef" );
-  declareProcedure( pen_gltranslated_t, "pen.gltranslated" );
+  declareProcedure( pen_gltranslated_t, "pen.gltranslated", ParsePenglTranslated'access );
   declareProcedure( pen_gltranslatef_t, "pen.gltranslatef" );
   declareFunction(  pen_glislist_t, "pen.glislist" );
   declareProcedure( pen_gldeletelists_t, "pen.gldeletelists" );
@@ -17000,20 +17060,20 @@ begin
   declareProcedure( pen_glcalllist_t, "pen.glcalllist" );
   declareProcedure( pen_glcalllists_t, "pen.glcalllists" );
   declareProcedure( pen_gllistbase_t, "pen.gllistbase" );
-  declareProcedure( pen_glbegin_t, "pen.glbegin" );
-  declareProcedure( pen_glend_t, "pen.glend" );
-  declareProcedure( pen_glvertex2d_t, "pen.glvertex2d" );
-  declareProcedure( pen_glvertex2f_t, "pen.glvertex2f" );
-  declareProcedure( pen_glvertex2i_t, "pen.glvertex2i" );
-  declareProcedure( pen_glvertex2s_t, "pen.glvertex2s" );
-  declareProcedure( pen_glvertex3d_t, "pen.glvertex3d" );
-  declareProcedure( pen_glvertex3f_t, "pen.glvertex3f" );
-  declareProcedure( pen_glvertex3i_t, "pen.glvertex3i" );
-  declareProcedure( pen_glvertex3s_t, "pen.glvertex3s" );
-  declareProcedure( pen_glvertex4d_t, "pen.glvertex4d" );
-  declareProcedure( pen_glvertex4f_t, "pen.glvertex4f" );
-  declareProcedure( pen_glvertex4i_t, "pen.glvertex4i" );
-  declareProcedure( pen_glvertex4s_t, "pen.glvertex4s" );
+  declareProcedure( pen_glbegin_t, "pen.glbegin", ParsePenglBegin'access );
+  declareProcedure( pen_glend_t, "pen.glend", ParsePenglEnd'access );
+  declareProcedure( pen_glvertex2d_t, "pen.glvertex2d", ParsePenglVertex2d'access );
+  declareProcedure( pen_glvertex2f_t, "pen.glvertex2f", ParsePenglVertex2f'access );
+  declareProcedure( pen_glvertex2i_t, "pen.glvertex2i", ParsePenglVertex2i'access );
+  declareProcedure( pen_glvertex2s_t, "pen.glvertex2s", ParsePenglVertex2s'access );
+  declareProcedure( pen_glvertex3d_t, "pen.glvertex3d", ParsePenglVertex3d'access );
+  declareProcedure( pen_glvertex3f_t, "pen.glvertex3f", ParsePenglVertex3f'access );
+  declareProcedure( pen_glvertex3i_t, "pen.glvertex3i", ParsePenglVertex3i'access );
+  declareProcedure( pen_glvertex3s_t, "pen.glvertex3s", ParsePenglVertex3s'access );
+  declareProcedure( pen_glvertex4d_t, "pen.glvertex4d", ParsePenglVertex4d'access );
+  declareProcedure( pen_glvertex4f_t, "pen.glvertex4f", ParsePenglVertex4f'access );
+  declareProcedure( pen_glvertex4i_t, "pen.glvertex4i", ParsePenglVertex4i'access );
+  declareProcedure( pen_glvertex4s_t, "pen.glvertex4s", ParsePenglVertex4s'access );
   declareProcedure( pen_glvertex2dv_t, "pen.glvertex2dv" );
   declareProcedure( pen_glvertex2fv_t, "pen.glvertex2fv" );
   declareProcedure( pen_glvertex2iv_t, "pen.glvertex2iv" );
@@ -17429,7 +17489,7 @@ begin
   declareProcedure( pen_glunurbssurface_t, "pen.glunurbssurface" );
   declareProcedure( pen_gluortho2d_t, "pen.gluortho2d" );
   declareProcedure( pen_glupartialdisk_t, "pen.glupartialdisk" );
-  declareProcedure( pen_gluperspective_t, "pen.gluperspective" );
+  declareProcedure( pen_gluperspective_t, "pen.gluperspective", ParsePengluPerspective'access );
   declareProcedure( pen_glupickmatrix_t, "pen.glupickmatrix" );
   declareFunction(  pen_gluproject_t, "pen.gluproject" );
   declareProcedure( pen_glupwlcurve_t, "pen.glupwlcurve" );
