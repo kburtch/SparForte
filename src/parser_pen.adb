@@ -2008,6 +2008,9 @@ begin
   if isExecutingCommand then
     begin
       glBlendFunc( GLblending( to_numeric( sfactor_val ) ), GLblending( to_numeric( dfactor_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2335,12 +2338,23 @@ end ParsePenglReadBuffer;
 
 procedure ParsePenglEnable is
   -- Syntax: glEnable( cap : GLenum ); -- left as GLenum
+  --         glEnable( cap : GLdbuffer );
+  --         glEnable( cap : GLblending );
   -- Source: bush_os.opengl.glEnable
   cap_val  : unbounded_string;
   cap_type : identifier;
+  baseType : identifier;
 begin
   expect( pen_glenable_t );
-  ParseSingleNumericParameter( cap_val, cap_type, pen_glenum_t ); -- cap : GLenum
+  ParseSingleNumericParameter( cap_val, cap_type );
+  baseType := getBaseType( cap_type );
+  if baseType = pen_gldbuffer_t then
+     null;
+  elsif baseType = pen_glblending_t then
+     null;
+  elsif baseType /= pen_glenum_t then
+     err( "expected type of pen.glenum, pen.glblending, pen.gldbuffer" ); --TODO
+  end if;
   if isExecutingCommand then
     begin
       glEnable( GLenum( to_numeric( cap_val ) ) );
@@ -2401,6 +2415,7 @@ procedure ParsePenglEnableClientState is
   cap_type : identifier;
 begin
   expect( pen_glenableclientstate_t );
+
   ParseSingleNumericParameter( cap_val, cap_type, pen_glenum_t ); -- cap : GLenum
   if isExecutingCommand then
     begin
@@ -2592,10 +2607,11 @@ begin
   end if;
 end ParsePenglRenderMode;
 
-procedure ParsePenglGetError( result : out unbounded_string ) is
+procedure ParsePenglGetError( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: glGetError return GLenum;
   -- Source: bush_os.opengl.glGetError
 begin
+  kind := pen_glerrors_t;
   expect( pen_glgeterror_t );
   if isExecutingCommand then
     declare
@@ -2637,6 +2653,9 @@ begin
   if isExecutingCommand then
     begin
       glFinish;
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2651,6 +2670,9 @@ begin
   if isExecutingCommand then
     begin
       glFlush;
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2849,6 +2871,9 @@ begin
   if isExecutingCommand then
     begin
       glOrtho( GLdouble( to_numeric( left_val ) ), GLdouble( to_numeric( right_val ) ), GLdouble( to_numeric( bottom_val ) ), GLdouble( to_numeric( top_val ) ), GLdouble( to_numeric( near_val_val ) ), GLdouble( to_numeric( far_val_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2924,6 +2949,9 @@ begin
   if isExecutingCommand then
     begin
       glPushMatrix;
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2938,6 +2966,9 @@ begin
   if isExecutingCommand then
     begin
       glPopMatrix;
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -3077,6 +3108,9 @@ begin
   if isExecutingCommand then
     begin
       glRotated( GLdouble( to_numeric( angle_val ) ), GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( z_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -3103,6 +3137,9 @@ begin
   if isExecutingCommand then
     begin
       glRotatef( GLfloat( to_numeric( angle_val ) ), GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ), GLfloat( to_numeric( z_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -3198,6 +3235,9 @@ begin
   if isExecutingCommand then
     begin
       glTranslatef( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ), GLfloat( to_numeric( z_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -4376,6 +4416,29 @@ begin
   end if;
 end ParsePenglIndexubv;
 
+procedure ParsePenglColor3 is
+  -- Syntax: glColor( colour_name );
+  -- Source: N/A
+  nameVal   : unbounded_string;
+  nameType  : identifier;
+begin
+  expect( pen_glcolor3_t );
+  ParseSingleNumericParameter( nameVal, nameType, pen_pen_color_name_t );
+  if isExecutingCommand then
+    declare
+      cn : AColourName := aColourName'val( integer( to_numeric( nameVal ) ) );
+    begin
+      glColor3f( GLfloat( ColourNames( cn ).red ),
+                 GLfloat( ColourNames( cn ).green ),
+                 GLfloat( ColourNames( cn ).blue ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor3;
+
 procedure ParsePenglColor3b is
   -- Syntax: glColor3b( red, green, blue : GLbyte );
   -- Source: bush_os.opengl.glColor3b
@@ -4393,6 +4456,8 @@ begin
   if isExecutingCommand then
     begin
       glColor3b( GLbyte( to_numeric( red_val ) ), GLbyte( to_numeric( green_val ) ), GLbyte( to_numeric( blue_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -4416,6 +4481,8 @@ begin
   if isExecutingCommand then
     begin
       glColor3d( GLdouble( to_numeric( red_val ) ), GLdouble( to_numeric( green_val ) ), GLdouble( to_numeric( blue_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -4439,6 +4506,8 @@ begin
   if isExecutingCommand then
     begin
       glColor3f( GLfloat( to_numeric( red_val ) ), GLfloat( to_numeric( green_val ) ), GLfloat( to_numeric( blue_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -4462,6 +4531,8 @@ begin
   if isExecutingCommand then
     begin
       glColor3i( GLint( to_numeric( red_val ) ), GLint( to_numeric( green_val ) ), GLint( to_numeric( blue_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -4485,6 +4556,8 @@ begin
   if isExecutingCommand then
     begin
       glColor3s( GLshort( to_numeric( red_val ) ), GLshort( to_numeric( green_val ) ), GLshort( to_numeric( blue_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -4508,6 +4581,8 @@ begin
   if isExecutingCommand then
     begin
       glColor3ub( GLubyte( to_numeric( red_val ) ), GLubyte( to_numeric( green_val ) ), GLubyte( to_numeric( blue_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -4531,6 +4606,8 @@ begin
   if isExecutingCommand then
     begin
       glColor3ui( GLuint( to_numeric( red_val ) ), GLuint( to_numeric( green_val ) ), GLuint( to_numeric( blue_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -4554,11 +4631,41 @@ begin
   if isExecutingCommand then
     begin
       glColor3us( GLushort( to_numeric( red_val ) ), GLushort( to_numeric( green_val ) ), GLushort( to_numeric( blue_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
     exception when others =>
       err( "exception raised" );
     end;
   end if;
 end ParsePenglColor3us;
+
+procedure ParsePenglColor4 is
+  -- Syntax: glColor( colour_name );
+  -- Source: N/A
+  nameVal   : unbounded_string;
+  nameType  : identifier;
+  alpha_val  : unbounded_string;
+  alpha_type : identifier;
+begin
+  expect( pen_glcolor4_t );
+  ParseFirstNumericParameter( nameVal, nameType, pen_pen_color_name_t );
+  ParseFirstNumericParameter( nameVal, nameType, pen_pen_color_name_t );
+  ParseLastNumericParameter( alpha_val, alpha_type, pen_glfloat_t );
+  if isExecutingCommand then
+    declare
+      cn : AColourName := aColourName'val( integer( to_numeric( nameVal ) ) );
+    begin
+      glColor4f( GLfloat( ColourNames( cn ).red ),
+                 GLfloat( ColourNames( cn ).green ),
+                 GLfloat( ColourNames( cn ).blue ),
+                 GLfloat( to_numeric( alpha_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
+    exception when others =>
+      err( "exception raised" );
+    end;
+  end if;
+end ParsePenglColor4;
 
 procedure ParsePenglColor4b is
   -- Syntax: glColor4b( red, green, blue, alpha : GLbyte );
@@ -4580,6 +4687,8 @@ begin
   if isExecutingCommand then
     begin
       glColor4b( GLbyte( to_numeric( red_val ) ), GLbyte( to_numeric( green_val ) ), GLbyte( to_numeric( blue_val ) ), GLbyte( to_numeric( alpha_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -4606,6 +4715,8 @@ begin
   if isExecutingCommand then
     begin
       glColor4d( GLdouble( to_numeric( red_val ) ), GLdouble( to_numeric( green_val ) ), GLdouble( to_numeric( blue_val ) ), GLdouble( to_numeric( alpha_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -4632,6 +4743,8 @@ begin
   if isExecutingCommand then
     begin
       glColor4f( GLfloat( to_numeric( red_val ) ), GLfloat( to_numeric( green_val ) ), GLfloat( to_numeric( blue_val ) ), GLfloat( to_numeric( alpha_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -4658,6 +4771,8 @@ begin
   if isExecutingCommand then
     begin
       glColor4i( GLint( to_numeric( red_val ) ), GLint( to_numeric( green_val ) ), GLint( to_numeric( blue_val ) ), GLint( to_numeric( alpha_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -4684,6 +4799,8 @@ begin
   if isExecutingCommand then
     begin
       glColor4s( GLshort( to_numeric( red_val ) ), GLshort( to_numeric( green_val ) ), GLshort( to_numeric( blue_val ) ), GLshort( to_numeric( alpha_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -4710,6 +4827,8 @@ begin
   if isExecutingCommand then
     begin
       glColor4ub( GLubyte( to_numeric( red_val ) ), GLubyte( to_numeric( green_val ) ), GLubyte( to_numeric( blue_val ) ), GLubyte( to_numeric( alpha_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -4736,6 +4855,8 @@ begin
   if isExecutingCommand then
     begin
       glColor4ui( GLuint( to_numeric( red_val ) ), GLuint( to_numeric( green_val ) ), GLuint( to_numeric( blue_val ) ), GLuint( to_numeric( alpha_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -4762,6 +4883,8 @@ begin
   if isExecutingCommand then
     begin
       glColor4us( GLushort( to_numeric( red_val ) ), GLushort( to_numeric( green_val ) ), GLushort( to_numeric( blue_val ) ), GLushort( to_numeric( alpha_val ) ) );
+      -- do not check errors: glcolor may be called during glbegin which
+      -- requires error checking only after glEnd
     exception when others =>
       err( "exception raised" );
     end;
@@ -5862,6 +5985,9 @@ begin
   if isExecutingCommand then
     begin
       glRasterPos2d( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -5882,6 +6008,9 @@ begin
   if isExecutingCommand then
     begin
       glRasterPos2f( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -5902,6 +6031,9 @@ begin
   if isExecutingCommand then
     begin
       glRasterPos2i( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -5922,6 +6054,9 @@ begin
   if isExecutingCommand then
     begin
       glRasterPos2s( GLshort( to_numeric( x_val ) ), GLshort( to_numeric( y_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -5945,6 +6080,9 @@ begin
   if isExecutingCommand then
     begin
       glRasterPos3d( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( z_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -5968,6 +6106,9 @@ begin
   if isExecutingCommand then
     begin
       glRasterPos3f( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ), GLfloat( to_numeric( z_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -5991,6 +6132,9 @@ begin
   if isExecutingCommand then
     begin
       glRasterPos3i( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLint( to_numeric( z_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -6014,6 +6158,9 @@ begin
   if isExecutingCommand then
     begin
       glRasterPos3s( GLshort( to_numeric( x_val ) ), GLshort( to_numeric( y_val ) ), GLshort( to_numeric( z_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -6040,6 +6187,9 @@ begin
   if isExecutingCommand then
     begin
       glRasterPos4d( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( z_val ) ), GLdouble( to_numeric( w_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -6066,6 +6216,9 @@ begin
   if isExecutingCommand then
     begin
       glRasterPos4f( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ), GLfloat( to_numeric( z_val ) ), GLfloat( to_numeric( w_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -6092,6 +6245,9 @@ begin
   if isExecutingCommand then
     begin
       glRasterPos4i( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLint( to_numeric( z_val ) ), GLint( to_numeric( w_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -6118,6 +6274,9 @@ begin
   if isExecutingCommand then
     begin
       glRasterPos4s( GLshort( to_numeric( x_val ) ), GLshort( to_numeric( y_val ) ), GLshort( to_numeric( z_val ) ), GLshort( to_numeric( w_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -15746,17 +15905,17 @@ begin
   declareIdent( pen_glenum_t,   "pen.glenum", natural_t, typeClass  );
   declareIdent( pen_glboolean_t, "pen.glboolean", natural_t, typeClass  );
   declareIdent( pen_glbitfield_t,"pen.glbitfield", natural_t, typeClass );
-  declareIdent( pen_glbyte_t,   "pen.glbyte_t", integer_t, subClass );
-  declareIdent( pen_glshort_t,  "pen.glshort_t", integer_t, subClass );
-  declareIdent( pen_glint_t,    "pen_glint_t", integer_t, subClass );
-  declareIdent( pen_glubyte_t,  "pen.glubyte_t", natural_t, subClass );
-  declareIdent( pen_glushort_t, "pen_glushort_t", natural_t, subClass );
-  declareIdent( pen_gluint_t,   "pen_gluint_t", natural_t, typeClass );
-  declareIdent( pen_glsizei_t, "pen_glsizei_t", natural_t, typeClass );
-  declareIdent( pen_glfloat_t,  "pen_glfloat_t", float_t, subClass );
-  declareIdent( pen_glclampf_t, "pen_glclampf_t", float_t, typeClass );
-  declareIdent( pen_gldouble_t, "pen_gldouble_t", float_t, subClass );
-  declareIdent( pen_glclampd_t, "pen_glclampd_t", float_t, typeClass );
+  declareIdent( pen_glbyte_t,   "pen.glbyte", integer_t, subClass );
+  declareIdent( pen_glshort_t,  "pen.glshort", integer_t, subClass );
+  declareIdent( pen_glint_t,    "pen.glint", integer_t, subClass );
+  declareIdent( pen_glubyte_t,  "pen.glubyte", natural_t, subClass );
+  declareIdent( pen_glushort_t, "pen.glushort", natural_t, subClass );
+  declareIdent( pen_gluint_t,   "pen.gluint", natural_t, typeClass );
+  declareIdent( pen_glsizei_t, "pen.glsizei", natural_t, typeClass );
+  declareIdent( pen_glfloat_t,  "pen.glfloat", float_t, subClass );
+  declareIdent( pen_glclampf_t, "pen.glclampf", float_t, typeClass );
+  declareIdent( pen_gldouble_t, "pen.gldouble", float_t, subClass );
+  declareIdent( pen_glclampd_t, "pen.glclampd", float_t, typeClass );
 
   -- OpenGL constants
 
@@ -16992,7 +17151,7 @@ begin
   declareProcedure( pen_glindexmask_t, "pen.glindexmask" );
   declareProcedure( pen_glcolormask_t, "pen.glcolormask" );
   declareProcedure( pen_glalphafunc_t, "pen.glalphafunc" );
-  declareProcedure( pen_glblendfunc_t, "pen.glblendfunc" );
+  declareProcedure( pen_glblendfunc_t, "pen.glblendfunc", ParsePenglBlendFunc'access );
   declareProcedure( pen_gllogicop_t, "pen.gllogicop" );
   declareProcedure( pen_glcullface_t, "pen.glcullface" );
   declareProcedure( pen_glfrontface_t, "pen.glfrontface" );
@@ -17024,10 +17183,10 @@ begin
   declareProcedure( pen_glpushclientattrib_t, "pen.glpushclientattrib" );
   declareProcedure( pen_glpopclientattrib_t, "pen.glpopclientattrib" );
   declareFunction(  pen_glrendermode_t, "pen.glrendermode" );
-  declareFunction(  pen_glgeterror_t, "pen.glgeterror" );
+  declareFunction(  pen_glgeterror_t, "pen.glgeterror", ParsePenglGetError'access );
   declareFunction(  pen_glgetstring_t, "pen.glgetstring" );
-  declareProcedure( pen_glfinish_t, "pen.glfinish" );
-  declareProcedure( pen_glflush_t, "pen.glflush" );
+  declareProcedure( pen_glfinish_t, "pen.glfinish", ParsePenglFinish'access );
+  declareProcedure( pen_glflush_t, "pen.glflush", ParsePenglFlush'access );
   declareProcedure( pen_glhint_t, "pen.glhint", ParsePenglHint'access );
   declareProcedure( pen_glcleardepth_t, "pen.glcleardepth", ParsePenglClearDepth'access );
   declareProcedure( pen_gldepthfunc_t, "pen.gldepthfunc", ParsePenglDepthFunc'access );
@@ -17036,22 +17195,22 @@ begin
   declareProcedure( pen_glclearaccum_t, "pen.glclearaccum" );
   declareProcedure( pen_glaccum_t, "pen.glaccum" );
   declareProcedure( pen_glmatrixmode_t, "pen.glmatrixmode", ParsePenglMatrixMode'access );
-  declareProcedure( pen_glortho_t, "pen.glortho" );
+  declareProcedure( pen_glortho_t, "pen.glortho", ParsePenglOrtho'access );
   declareProcedure( pen_glfrustum_t, "pen.glfrustum" );
   declareProcedure( pen_glviewport_t, "pen.glviewport", ParsePenglViewport'access );
-  declareProcedure( pen_glpushmatrix_t, "pen.glpushmatrix" );
-  declareProcedure( pen_glpopmatrix_t, "pen.glpopmatrix" );
+  declareProcedure( pen_glpushmatrix_t, "pen.glpushmatrix", ParsePenglPushMatrix'access );
+  declareProcedure( pen_glpopmatrix_t, "pen.glpopmatrix", ParsePenglPopMatrix'access );
   declareProcedure( pen_glloadidentity_t, "pen.glloadidentity", ParsePenglLoadIdentity'access );
   declareProcedure( pen_glloadmatrixd_t, "pen.glloadmatrixd" );
   declareProcedure( pen_glloadmatrixf_t, "pen.glloadmatrixf" );
   declareProcedure( pen_glmultmatrixd_t, "pen.glmultmatrixd" );
   declareProcedure( pen_glmultmatrixf_t, "pen.glmultmatrixf" );
-  declareProcedure( pen_glrotated_t, "pen.glrotated" );
-  declareProcedure( pen_glrotatef_t, "pen.glrotatef" );
+  declareProcedure( pen_glrotated_t, "pen.glrotated", ParsePenglRotated'access );
+  declareProcedure( pen_glrotatef_t, "pen.glrotatef", ParsePenglRotatef'access );
   declareProcedure( pen_glscaled_t, "pen.glscaled" );
   declareProcedure( pen_glscalef_t, "pen.glscalef" );
   declareProcedure( pen_gltranslated_t, "pen.gltranslated", ParsePenglTranslated'access );
-  declareProcedure( pen_gltranslatef_t, "pen.gltranslatef" );
+  declareProcedure( pen_gltranslatef_t, "pen.gltranslatef", ParsePenglTranslatef'access );
   declareFunction(  pen_glislist_t, "pen.glislist" );
   declareProcedure( pen_gldeletelists_t, "pen.gldeletelists" );
   declareFunction(  pen_glgenlists_t, "pen.glgenlists" );
@@ -17106,22 +17265,24 @@ begin
   declareProcedure( pen_glindexiv_t, "pen.glindexiv" );
   declareProcedure( pen_glindexsv_t, "pen.glindexsv" );
   declareProcedure( pen_glindexubv_t, "pen.glindexubv" );
-  declareProcedure( pen_glcolor3b_t, "pen.glcolor3b" );
-  declareProcedure( pen_glcolor3d_t, "pen.glcolor3d" );
-  declareProcedure( pen_glcolor3f_t, "pen.glcolor3f" );
-  declareProcedure( pen_glcolor3i_t, "pen.glcolor3i" );
-  declareProcedure( pen_glcolor3s_t, "pen.glcolor3s" );
-  declareProcedure( pen_glcolor3ub_t, "pen.glcolor3ub" );
-  declareProcedure( pen_glcolor3ui_t, "pen.glcolor3ui" );
-  declareProcedure( pen_glcolor3us_t, "pen.glcolor3us" );
-  declareProcedure( pen_glcolor4b_t, "pen.glcolor4b" );
-  declareProcedure( pen_glcolor4d_t, "pen.glcolor4d" );
-  declareProcedure( pen_glcolor4f_t, "pen.glcolor4f" );
-  declareProcedure( pen_glcolor4i_t, "pen.glcolor4i" );
-  declareProcedure( pen_glcolor4s_t, "pen.glcolor4s" );
-  declareProcedure( pen_glcolor4ub_t, "pen.glcolor4ub" );
-  declareProcedure( pen_glcolor4ui_t, "pen.glcolor4ui" );
-  declareProcedure( pen_glcolor4us_t, "pen.glcolor4us" );
+  declareProcedure( pen_glcolor3_t, "pen.glcolor3", ParsePenglColor3'access );
+  declareProcedure( pen_glcolor3b_t, "pen.glcolor3b", ParsePenglColor3b'access );
+  declareProcedure( pen_glcolor3d_t, "pen.glcolor3d", ParsePenglColor3d'access );
+  declareProcedure( pen_glcolor3f_t, "pen.glcolor3f", ParsePenglColor3f'access );
+  declareProcedure( pen_glcolor3i_t, "pen.glcolor3i", ParsePenglColor3i'access );
+  declareProcedure( pen_glcolor3s_t, "pen.glcolor3s", ParsePenglColor3s'access );
+  declareProcedure( pen_glcolor3ub_t, "pen.glcolor3ub", ParsePenglColor3ub'access );
+  declareProcedure( pen_glcolor3ui_t, "pen.glcolor3ui", ParsePenglColor3ui'access );
+  declareProcedure( pen_glcolor3us_t, "pen.glcolor3us", ParsePenglColor3us'access );
+  declareProcedure( pen_glcolor4_t, "pen.glcolor4", ParsePenglColor4'access );
+  declareProcedure( pen_glcolor4b_t, "pen.glcolor4b", ParsePenglColor4b'access );
+  declareProcedure( pen_glcolor4d_t, "pen.glcolor4d", ParsePenglColor4d'access );
+  declareProcedure( pen_glcolor4f_t, "pen.glcolor4f", ParsePenglColor4f'access );
+  declareProcedure( pen_glcolor4i_t, "pen.glcolor4i", ParsePenglColor4i'access );
+  declareProcedure( pen_glcolor4s_t, "pen.glcolor4s", ParsePenglColor4s'access );
+  declareProcedure( pen_glcolor4ub_t, "pen.glcolor4ub", ParsePenglColor4ub'access );
+  declareProcedure( pen_glcolor4ui_t, "pen.glcolor4ui", ParsePenglColor4ui'access );
+  declareProcedure( pen_glcolor4us_t, "pen.glcolor4us", ParsePenglColor4us'access );
   declareProcedure( pen_glcolor3bv_t, "pen.glcolor3bv" );
   declareProcedure( pen_glcolor3dv_t, "pen.glcolor3dv" );
   declareProcedure( pen_glcolor3fv_t, "pen.glcolor3fv" );
@@ -17170,18 +17331,18 @@ begin
   declareProcedure( pen_gltexcoord4fv_t, "pen.gltexcoord4fv" );
   declareProcedure( pen_gltexcoord4iv_t, "pen.gltexcoord4iv" );
   declareProcedure( pen_gltexcoord4sv_t, "pen.gltexcoord4sv" );
-  declareProcedure( pen_glrasterpos2d_t, "pen.glrasterpos2d" );
-  declareProcedure( pen_glrasterpos2f_t, "pen.glrasterpos2f" );
-  declareProcedure( pen_glrasterpos2i_t, "pen.glrasterpos2i" );
-  declareProcedure( pen_glrasterpos2s_t, "pen.glrasterpos2s" );
-  declareProcedure( pen_glrasterpos3d_t, "pen.glrasterpos3d" );
-  declareProcedure( pen_glrasterpos3f_t, "pen.glrasterpos3f" );
-  declareProcedure( pen_glrasterpos3i_t, "pen.glrasterpos3i" );
-  declareProcedure( pen_glrasterpos3s_t, "pen.glrasterpos3s" );
-  declareProcedure( pen_glrasterpos4d_t, "pen.glrasterpos4d" );
-  declareProcedure( pen_glrasterpos4f_t, "pen.glrasterpos4f" );
-  declareProcedure( pen_glrasterpos4i_t, "pen.glrasterpos4i" );
-  declareProcedure( pen_glrasterpos4s_t, "pen.glrasterpos4s" );
+  declareProcedure( pen_glrasterpos2d_t, "pen.glrasterpos2d", ParsePenglRasterPos2d'access );
+  declareProcedure( pen_glrasterpos2f_t, "pen.glrasterpos2f", ParsePenglRasterPos2f'access );
+  declareProcedure( pen_glrasterpos2i_t, "pen.glrasterpos2i", ParsePenglRasterPos2i'access );
+  declareProcedure( pen_glrasterpos2s_t, "pen.glrasterpos2s", ParsePenglRasterPos2s'access );
+  declareProcedure( pen_glrasterpos3d_t, "pen.glrasterpos3d", ParsePenglRasterPos3d'access );
+  declareProcedure( pen_glrasterpos3f_t, "pen.glrasterpos3f", ParsePenglRasterPos3f'access );
+  declareProcedure( pen_glrasterpos3i_t, "pen.glrasterpos3i", ParsePenglRasterPos3i'access );
+  declareProcedure( pen_glrasterpos3s_t, "pen.glrasterpos3s", ParsePenglRasterPos3s'access );
+  declareProcedure( pen_glrasterpos4d_t, "pen.glrasterpos4d", ParsePenglRasterPos4d'access );
+  declareProcedure( pen_glrasterpos4f_t, "pen.glrasterpos4f", ParsePenglRasterPos4f'access );
+  declareProcedure( pen_glrasterpos4i_t, "pen.glrasterpos4i", ParsePenglRasterPos4i'access );
+  declareProcedure( pen_glrasterpos4s_t, "pen.glrasterpos4s", ParsePenglRasterPos4s'access );
   declareProcedure( pen_glrasterpos2dv_t, "pen.glrasterpos2dv" );
   declareProcedure( pen_glrasterpos2fv_t, "pen.glrasterpos2fv" );
   declareProcedure( pen_glrasterpos2iv_t, "pen.glrasterpos2iv" );

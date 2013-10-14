@@ -172,6 +172,7 @@ type ADisplayInfoRec is record
 end record;
 
 type aCanvasType is ( unknown, screen, window, offscreen, closed );
+type aDrawingType is ( unknown, raster, opengl );
 
 subtype aCanvasID is natural;
 
@@ -187,6 +188,7 @@ type aCanvas is record
     hardware    : system.address;                      -- same as a C pointer
     name        : unbounded_string;                    -- name of canvas
     kind        : aCanvasType := unknown;
+    drawingType : aDrawingType := unknown;
     hasFont     : boolean := false;                    -- true if font loaded
     font_ptr     : TTF_font;                           -- TTF font
 end record;

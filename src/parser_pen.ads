@@ -1727,6 +1727,7 @@ pen_glindexfv_t : identifier;
 pen_glindexiv_t : identifier;
 pen_glindexsv_t : identifier;
 pen_glindexubv_t : identifier;
+pen_glcolor3_t : identifier;
 pen_glcolor3b_t : identifier;
 pen_glcolor3d_t : identifier;
 pen_glcolor3f_t : identifier;
@@ -1735,6 +1736,7 @@ pen_glcolor3s_t : identifier;
 pen_glcolor3ub_t : identifier;
 pen_glcolor3ui_t : identifier;
 pen_glcolor3us_t : identifier;
+pen_glcolor4_t : identifier;
 pen_glcolor4b_t : identifier;
 pen_glcolor4d_t : identifier;
 pen_glcolor4f_t : identifier;
@@ -2231,6 +2233,47 @@ procedure ParsePenPlot;
 -- ParsePenglVertex4i
 -- ParsePenglVertex4s
 -- ParsePenglTranslated
+
+-- ParsePenglFlush
+-- ParsePenglFinish
+-- ParsePenglRotated
+-- pen.glcolor3b
+-- pen.glcolor3d
+-- pen.glcolor3f
+-- pen.glcolor3i
+-- pen.glcolor3s
+-- pen.glcolor3ub
+-- pen.glcolor3ui
+-- pen.glcolor3us
+-- pen.glcolor4b
+-- pen.glcolor4d
+-- pen.glcolor4f
+-- pen.glcolor4i
+-- pen.glcolor4s
+-- pen.glcolor4ub
+-- pen.glcolor4ui
+-- pen.glcolor4us
+-- pen.glblendfunc
+-- pen.glpushmatrix
+-- pen.glpopmatrix
+-- pen.gltranslatef
+-- pen.glrotatef
+-- pen.glgeterror
+-- pen.glortho
+-- pen.glrasterpos2d
+-- pen.glrasterpos2f
+-- pen.glrasterpos2i
+-- pen.glrasterpos2s
+-- pen.glrasterpos3d
+-- pen.glrasterpos3f
+-- pen.glrasterpos3i
+-- pen.glrasterpos3s
+-- pen.glrasterpos4d
+-- pen.glrasterpos4f
+-- pen.glrasterpos4i
+-- pen.glrasterpos4s
+-- pen.glcolor3
+-- pen.glcolor4
 
 -- TODO: raise exception
 

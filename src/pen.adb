@@ -732,13 +732,24 @@ end waitToReveal;
 
 procedure reveal( theCanvas : in out aCanvas ) is
 begin
-  if theCanvas.pen.revealCount > 0 then
-     theCanvas.pen.revealCount := theCanvas.pen.revealCount - 1;
-     if theCanvas.pen.revealCount  = 0 then
-        SDL_UnlockSurface( theCanvas.surface  );
-        SDL_UpdateRect( theCanvas.surface, 0, 0, 0, 0 );
+  case theCanvas.drawingType is
+  when opengl =>
+     if theCanvas.pen.revealCount > 0 then
+        theCanvas.pen.revealCount := theCanvas.pen.revealCount - 1;
+        if theCanvas.pen.revealCount  = 0 then
+           SDL_GL_SwapBuffers;
+        end if;
      end if;
-  end if;
+  when raster =>
+     if theCanvas.pen.revealCount > 0 then
+        theCanvas.pen.revealCount := theCanvas.pen.revealCount - 1;
+        if theCanvas.pen.revealCount  = 0 then
+           SDL_UnlockSurface( theCanvas.surface  );
+        SDL_UpdateRect( theCanvas.surface, 0, 0, 0, 0 );
+        end if;
+     end if;
+  when others => null;
+  end case;
 end reveal;
 
 procedure reveal( canvas_id : aCanvasID ) is
@@ -766,11 +777,20 @@ end reveal;
 
 procedure revealNow( theCanvas : in out aCanvas ) is
 begin
-  if theCanvas.pen.revealCount > 0 then
-     SDL_UnlockSurface( theCanvas.surface  );
-     SDL_UpdateRect( theCanvas.surface, 0, 0, 0, 0 );
-  end if;
-  theCanvas.pen.revealCount := 0;
+  case theCanvas.drawingType is
+  when opengl =>
+     if theCanvas.pen.revealCount >= 0 then
+        SDL_GL_SwapBuffers;
+     end if;
+     theCanvas.pen.revealCount := 0;
+  when raster =>
+     if theCanvas.pen.revealCount >= 0 then
+        SDL_UnlockSurface( theCanvas.surface  );
+        SDL_UpdateRect( theCanvas.surface, 0, 0, 0, 0 );
+     end if;
+     theCanvas.pen.revealCount := 0;
+  when others => null;
+  end case;
 end revealNow;
 
 procedure revealNow( canvas_id : aCanvasID ) is
@@ -1739,9 +1759,10 @@ begin
   newcanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), SDL_FULLSCREEN + SDL_HWPALETTE );
   newcanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
   if newcanvas.surface_ptr = null then
-     put_line( standard_error, "newScreenCanvas: falied for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
+     put_line( standard_error, "newScreenCanvas: failed for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
   end if;
   newcanvas.kind := screen;
+  newcanvas.drawingType := raster;
   newCanvas.name := to_unbounded_string( "Untitled SparForte Screen Canvas" );
   canvasList.Queue( canvas, newCanvas );
   canvas_id := newcanvas.id;
@@ -1756,6 +1777,7 @@ end newScreenCanvas;
 
 procedure newGLScreenCanvas( H_Res, V_Res, C_Res : positive; canvas_id : out aCanvasID ) is
   newcanvas : aCanvas;
+  res : SDL_success;
 begin
   newcanvas.id := canvasIdTop;
   canvasIdTop := canvasIdTop + 1;
@@ -1765,12 +1787,18 @@ begin
   newcanvas.displayInfo.C_Res := C_Res;
   newcanvas.hardware := SDL_GetVideoInfo;
   newcanvas.hardware_ptr := SDL_VideoInfo_Conv.To_Pointer( newcanvas.hardware );
+  -- newcanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), SDL_FULLSCREEN + SDL_OPENGL );
   newcanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), SDL_FULLSCREEN + SDL_OPENGL );
-  newcanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
-  if newcanvas.surface_ptr = null then
-     put_line( standard_error, "newScreenCanvas: falied for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
+  res := SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+  if res /= SDL_OK then
+     put_line( standard_error, "newGLWindowCanvas: double buffer failed" );
   end if;
+  if newcanvas.surface_ptr = null then
+     put_line( standard_error, "newScreenCanvas: failed for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
+  end if;
+  newcanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
   newcanvas.kind := screen;
+  newcanvas.drawingType := opengl;
   newCanvas.name := to_unbounded_string( "Untitled SparForte Screen Canvas" );
   canvasList.Queue( canvas, newCanvas );
   canvas_id := newcanvas.id;
@@ -1791,12 +1819,14 @@ begin
   newCanvas.displayInfo.H_Res := H_Res;
   newCanvas.displayInfo.V_Res := V_Res;
   newCanvas.displayInfo.C_Res := C_Res;
+  --newCanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), SDL_HWSURFACE + SDL_OPENGL );
   newCanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), SDL_HWSURFACE );
   newCanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
   if newCanvas.surface_ptr = null then
-     put_line( standard_error, "newWindowCanvas: falied for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
+     put_line( standard_error, "newWindowCanvas: failed for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
   end if;
   newCanvas.kind := window;
+  newcanvas.drawingType := raster;
   newCanvas.name := to_unbounded_string( "Untitled SparForte Window Canvas" );
   SDL_EXT_Window_Title( "Untitled SparForte Window Canvas" & ASCII.NUL );
   canvasList.Queue( canvas, newCanvas );
@@ -1811,6 +1841,7 @@ end newWindowCanvas;
 
 procedure newGLWindowCanvas( H_Res, V_Res, C_Res : positive; canvas_id : out aCanvasID ) is
   newCanvas : aCanvas;
+  res : SDL_success;
 begin
   newCanvas.id := canvasIdTop;
   canvasIdTop := canvasIdTop + 1;
@@ -1818,12 +1849,18 @@ begin
   newCanvas.displayInfo.H_Res := H_Res;
   newCanvas.displayInfo.V_Res := V_Res;
   newCanvas.displayInfo.C_Res := C_Res;
+  -- newCanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), SDL_OPENGL );
   newCanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), SDL_OPENGL );
+  res := SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+  if res /= SDL_OK then
+     put_line( standard_error, "newGLWindowCanvas: double buffer failed" );
+  end if;
   newCanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
   if newCanvas.surface_ptr = null then
-     put_line( standard_error, "newWindowCanvas: falied for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
+     put_line( standard_error, "newWindowCanvas: failed for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
   end if;
   newCanvas.kind := window;
+  newcanvas.drawingType := opengl;
   newCanvas.name := to_unbounded_string( "Untitled SparForte Window Canvas" );
   SDL_EXT_Window_Title( "Untitled SparForte Window Canvas" & ASCII.NUL );
   canvasList.Queue( canvas, newCanvas );
@@ -1866,9 +1903,10 @@ begin
      oldCanvasPixelFormat_ptr.Amask );
   newCanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
   if newCanvas.surface_ptr = null then
-     put_line( standard_error, "newCanvas: falied for " & H_Res'img & V_Res'img & "SDL error = " & to_string( get_sdl_error ) );
+     put_line( standard_error, "newCanvas: failed for " & H_Res'img & V_Res'img & "SDL error = " & to_string( get_sdl_error ) );
   end if;
   newCanvas.kind := offscreen;
+  newcanvas.drawingType := raster;
   newCanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
   newCanvas.name := to_unbounded_string( "Untitled SparForte Offscreen Canvas" );
   canvasList.Queue( canvas, newCanvas );
@@ -1892,6 +1930,7 @@ begin
     put_line( standard_error, "Load failed, SDL error = " & to_string( get_sdl_error ) );
   end if;
   newcanvas.kind := offscreen;
+  newcanvas.drawingType := raster;
   newcanvas.displayInfo.H_Res := integer( newCanvas.surface_ptr.w );
   newcanvas.displayInfo.V_Res := integer( newCanvas.surface_ptr.h );
   format_ptr := SDL_PixelFormat_Conv.To_Pointer( get_format_address( newcanvas.surface ) );

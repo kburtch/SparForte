@@ -1,0 +1,105 @@
+<HEAD><TITLE>opengl_first.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : opengl_first.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD align="center" BGCOLOR="#000040"><SPAN STYLE="color: #00CC00">
+<img src="opengl_first.png" alt="[Moire image]">
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "opengl_first" )
+              @( description, "A first example of OpenGL: display a triangle" )
+              @( description, "and rectangle side-by-side." )
+              @( description, "Based on code was created by Jeff Molofee 1999" )
+              @( description, "and ported to Linux/SDL by Ti Leggett 2001)" )
+              @( see_also, "http://nehe.gamedev.net" )
+              @( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> opengl_first <b>is</b>
+  width  : <b>constant</b> universal_numeric := 320;
+  height : <b>constant</b> universal_numeric := 200;
+  c : pen.canvas_id;
+  s : string;
+<b>begin</b>
+
+  <FONT COLOR=green><EM>-- initialize opengl</EM></FONT>
+
+  pen.new_gl_window_canvas( width, height, 32, c );
+  pen.set_title( c, "OpenGL First" );
+  pen.glshademodel( pen.gl_smooth );
+  pen.glclearcolor( 0.5294, 0.8078, 0.9216, 1.0 ); <FONT COLOR=green><EM>-- sky blue</EM></FONT>
+  pen.glcleardepth( 1 );
+
+  <FONT COLOR=green><EM>-- Enable 3-D</EM></FONT>
+
+  pen.glenable( pen.gl_depth_test );
+  pen.gldepthfunc( pen.gl_lequal );
+  pen.glhint( pen.gl_perspective_correction_hint, pen.gl_nicest );
+
+  <FONT COLOR=green><EM>-- Clear the canvas</EM></FONT>
+
+  pen.glclear( pen.gl_color_buffer_bit <b>or</b> pen.gl_depth_buffer_bit );
+
+  <FONT COLOR=green><EM>-- Setup view</EM></FONT>
+
+  pen.glviewport( 0, 0, width, height );
+  pen.glmatrixmode( pen.gl_projection );
+  pen.glloadidentity;
+  pen.gluperspective( 45, width/height, 0.1, 100 );
+  pen.glmatrixmode( pen.gl_modelview );
+  pen.glloadidentity;
+
+  <FONT COLOR=green><EM>-- Move left and back</EM></FONT>
+
+  pen.gltranslated( -1.5, 0, -6 );
+
+  <FONT COLOR=green><EM>-- Draw a white triangle</EM></FONT>
+
+  pen.glbegin( pen.gl_triangles );
+    pen.glcolor3( pen_color_name.white );
+    pen.glvertex3d( 0, 1, 0 );
+    pen.glvertex3d( -1, -1, 0 );
+    pen.glvertex3d( 1, -1, 0 );
+  pen.glend;
+
+  <FONT COLOR=green><EM>-- Move right</EM></FONT>
+
+  pen.gltranslated( 3, 0, 0 );
+
+  <FONT COLOR=green><EM>-- Draw a black square</EM></FONT>
+
+  pen.glbegin( pen.gl_quads );
+    pen.glcolor3( pen_color_name.black );
+    pen.glvertex3d( -1,  1, 0 );
+    pen.glvertex3d(  1,  1, 0 );
+    pen.glvertex3d(  1, -1, 0 );
+    pen.glvertex3d( -1, -1, 0 );
+  pen.glend;
+
+  <FONT COLOR=green><EM>-- Display the scene</EM></FONT>
+
+  pen.reveal_now( c );
+
+  <FONT COLOR=green><EM>-- Wait to close</EM></FONT>
+
+  put_line( "Press any key" );
+  s := get_line;
+  pen.close_canvas( c );
+
+<b>end</b> opengl_first;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>

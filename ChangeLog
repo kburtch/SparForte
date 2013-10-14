@@ -6,5 +6,31 @@ CHANGES SINCE 1.4
 
 1. New: End of line whitespace check.
 
-2. New: pen.gl_new_screen_canvas, pen.glloadidentity, pen.glmatrixmode, pen.glshademodel, pen.glclearcolor, pen.glcleardepth, pen.glenable, pen.gldisable, pen.glisenabled, pen.gldepthfunc, pen.glhint, pen.glclear, pen.glviewport, pen.gluperspective, pen.glbegin, pen.glend, pen.glvertex3d, pen.glvertex4d, pen.gltranslated pen.glvertex3f, pen.glvertex3i, pen.glvertex3s, pen.glvertex2d, pen.glvertex2f, pen.glvertex2i, pen.glvertex2s, pen.glvertex4d, pen.glvertex4f, pen.glvertex4i, pen.glvertex4s [Not documented yet]
+2. New: Standard OpenGL functions (not documented yet)
+                              pen.glloadidentity,  pen.glmatrixmode,
+   pen.glshademodel,          pen.glclearcolor,    pen.glcleardepth,
+   pen.glenable,              pen.gldisable,       pen.glisenabled,
+   pen.gldepthfunc,           pen.glhint,          pen.glclear,
+   pen.glviewport,            pen.gluperspective,  pen.glbegin,
+   pen.glend,                 pen.glvertex3d,      pen.glvertex4d,
+   pen.gltranslated           pen.glvertex3f,      pen.glvertex3i,
+   pen.glvertex3s,            pen.glvertex2d,      pen.glvertex2f,
+   pen.glvertex2i,            pen.glvertex2s,      pen.glvertex4d,
+   pen.glvertex4f,            pen.glvertex4i,      pen.glvertex4s,
+   pen.glrotated,             pen.glflush,         pen.glfinish,
+   pen.glcolor3b,             pen.glcolor3d,       pen.glcolor3f,
+   pen.glcolor3i,             pen.glcolor3s,       pen.glcolor3ub,
+   pen.glcolor3ui,            pen.glcolor3us,      pen.glcolor4b,
+   pen.glcolor4d,             pen.glcolor4f,       pen.glcolor4i,
+   pen.glcolor4s,             pen.glcolor4ub,      pen.glcolor4ui,
+   pen.glcolor4us,            pen.glblendfunc,     pen.glpushmatrix,
+   pen.glpopmatrix,           pen.gltranslatef,    pen.glrotatef,
+   pen.glgeterror,            pen.glortho,         pen.glrasterpos2d,
+   pen.glrasterpos2f,         pen.glrasterpos2i,   pen.glrasterpos2s,
+   pen.glrasterpos3d,         pen.glrasterpos3f,   pen.glrasterpos3i,
+   pen.glrasterpos3s,         pen.glrasterpos4d,   pen.glrasterpos4f,
+   pen.glrasterpos4i,         pen.glrasterpos4s,
+
+3. New: OpenGL extension functions
+   pen.gl_new_screen_canvas,  pen.glcolor3,        pen.glcolor4
 
