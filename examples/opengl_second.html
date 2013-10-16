@@ -1,0 +1,120 @@
+<HEAD><TITLE>opengl_second.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : opengl_second.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD align="center" BGCOLOR="#000040"><SPAN STYLE="color: #00CC00">
+<img src="opengl_second.png" alt="[OpenGL image]">
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "opengl_second" )
+              @( description, "A second example of OpenGL: animate a" )
+              @( description, "rotating triangle and rectangle side-by-side." )
+              @( description, "Based on code was created by Jeff Molofee 1999" )
+              @( description, "and ported to Linux/SDL by Ti Leggett 2001)" )
+              @( see_also, "http://nehe.gamedev.net" )
+              @( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> opengl_second <b>is</b>
+  width  : <b>constant</b> universal_numeric := 320;
+  height : <b>constant</b> universal_numeric := 200;
+  c : pen.canvas_id;
+  i : integer;
+<b>begin</b>
+
+  <FONT COLOR=green><EM>-- initialize opengl</EM></FONT>
+
+  pen.new_gl_window_canvas( width, height, 32, c );
+  pen.set_title( c, "OpenGL Second Example" );
+  pen.glshademodel( pen.gl_smooth );
+  pen.glclearcolor( 0.5294, 0.8078, 0.9216, 1.0 ); <FONT COLOR=green><EM>-- sky blue</EM></FONT>
+  pen.glcleardepth( 1 );
+
+  <FONT COLOR=green><EM>-- Enable 3-D</EM></FONT>
+
+  pen.glenable( pen.gl_depth_test );
+  pen.gldepthfunc( pen.gl_lequal );
+  pen.glhint( pen.gl_perspective_correction_hint, pen.gl_nicest );
+
+  <FONT COLOR=green><EM>-- Setup view</EM></FONT>
+
+  pen.glviewport( 0, 0, width, height );
+  pen.glmatrixmode( pen.gl_projection );
+  pen.glloadidentity;
+  pen.gluperspective( 45, width/height, 0.1, 100 );
+  pen.glmatrixmode( pen.gl_modelview );
+
+  <b>loop</b>
+
+    i := 0;
+
+    <b>loop</b>
+      i := ( @ + 1 ) <b>mod</b> 180;
+      <b>exit</b> <b>when</b> i = 0;
+
+      <FONT COLOR=green><EM>-- Clear the canvas</EM></FONT>
+
+      pen.glclear( pen.gl_color_buffer_bit <b>or</b> pen.gl_depth_buffer_bit );
+
+      <FONT COLOR=green><EM>-- Start at the center</EM></FONT>
+
+      pen.glloadidentity;
+
+      <FONT COLOR=green><EM>-- Move left and back</EM></FONT>
+
+      pen.gltranslated( -1.5, 0, -6 );
+      pen.glrotated( pen.gldouble(i), 0, 1, 0 );
+
+      <FONT COLOR=green><EM>-- Draw a white triangle</EM></FONT>
+
+      pen.glbegin( pen.gl_triangles );
+        pen.glcolor3( pen_color_name.white );
+        pen.glvertex3d( 0, 1, 0 ) @ ( -1, -1, 0 ) @ ( 1, -1, 0 );
+      pen.glend;
+
+      <FONT COLOR=green><EM>-- Move right</EM></FONT>
+
+      pen.glloadidentity;
+      pen.gltranslated( 1.5, 0, -6 );
+      pen.glrotated( pen.gldouble(i), 1, 0, 0 );
+
+      <FONT COLOR=green><EM>-- Draw a black square</EM></FONT>
+
+      pen.glbegin( pen.gl_quads );
+        pen.glcolor3( pen_color_name.black );
+        pen.glvertex3d( -1,  1, 0 ) @ (  1,  1, 0 ) @ (  1, -1, 0 ) @ ( -1, -1, 0 );
+      pen.glend;
+
+      <FONT COLOR=green><EM>-- Display the scene and wait 1/60th of a second</EM></FONT>
+
+      pen.reveal_now( c );
+      <b>delay</b>( 0.015 );
+
+    <b>end</b> <b>loop</b>;
+
+    <FONT COLOR=green><EM>-- Ask to do it again</EM></FONT>
+
+    put( "Quit (Y/N)? " );
+    <b>exit</b> <b>when</b> strings.to_upper( get_line ) = "Y";
+
+  <b>end</b> <b>loop</b>;
+
+  pen.close_canvas( c );
+
+<b>end</b> opengl_second;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>

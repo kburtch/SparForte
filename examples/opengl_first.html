@@ -5,7 +5,7 @@
 <TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
 <TR>
 <TD align="center" BGCOLOR="#000040"><SPAN STYLE="color: #00CC00">
-<img src="opengl_first.png" alt="[Moire image]">
+<img src="opengl_first.png" alt="[OpenGL image]">
 </SPAN>
 </TD>
 </TR>
@@ -36,7 +36,7 @@
   <FONT COLOR=green><EM>-- initialize opengl</EM></FONT>
 
   pen.new_gl_window_canvas( width, height, 32, c );
-  pen.set_title( c, "OpenGL First" );
+  pen.set_title( c, "OpenGL First Example" );
   pen.glshademodel( pen.gl_smooth );
   pen.glclearcolor( 0.5294, 0.8078, 0.9216, 1.0 ); <FONT COLOR=green><EM>-- sky blue</EM></FONT>
   pen.glcleardepth( 1 );
@@ -47,17 +47,16 @@
   pen.gldepthfunc( pen.gl_lequal );
   pen.glhint( pen.gl_perspective_correction_hint, pen.gl_nicest );
 
-  <FONT COLOR=green><EM>-- Clear the canvas</EM></FONT>
-
-  pen.glclear( pen.gl_color_buffer_bit <b>or</b> pen.gl_depth_buffer_bit );
-
   <FONT COLOR=green><EM>-- Setup view</EM></FONT>
 
   pen.glviewport( 0, 0, width, height );
   pen.glmatrixmode( pen.gl_projection );
-  pen.glloadidentity;
   pen.gluperspective( 45, width/height, 0.1, 100 );
   pen.glmatrixmode( pen.gl_modelview );
+
+  <FONT COLOR=green><EM>-- Clear the canvas</EM></FONT>
+
+  pen.glclear( pen.gl_color_buffer_bit <b>or</b> pen.gl_depth_buffer_bit );
   pen.glloadidentity;
 
   <FONT COLOR=green><EM>-- Move left and back</EM></FONT>
@@ -68,9 +67,7 @@
 
   pen.glbegin( pen.gl_triangles );
     pen.glcolor3( pen_color_name.white );
-    pen.glvertex3d( 0, 1, 0 );
-    pen.glvertex3d( -1, -1, 0 );
-    pen.glvertex3d( 1, -1, 0 );
+    pen.glvertex3d( 0, 1, 0 ) @ ( -1, -1, 0 ) @ ( 1, -1, 0 );
   pen.glend;
 
   <FONT COLOR=green><EM>-- Move right</EM></FONT>
@@ -81,10 +78,7 @@
 
   pen.glbegin( pen.gl_quads );
     pen.glcolor3( pen_color_name.black );
-    pen.glvertex3d( -1,  1, 0 );
-    pen.glvertex3d(  1,  1, 0 );
-    pen.glvertex3d(  1, -1, 0 );
-    pen.glvertex3d( -1, -1, 0 );
+    pen.glvertex3d( -1,  1, 0 ) @ (  1,  1, 0 ) @ (  1, -1, 0 ) @ ( -1, -1, 0 );
   pen.glend;
 
   <FONT COLOR=green><EM>-- Display the scene</EM></FONT>
@@ -98,7 +92,6 @@
   pen.close_canvas( c );
 
 <b>end</b> opengl_first;
-
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 

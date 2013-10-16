@@ -21,7 +21,7 @@ begin
   -- initialize opengl
 
   pen.new_gl_window_canvas( width, height, 32, c );
-  pen.set_title( c, "OpenGL First" );
+  pen.set_title( c, "OpenGL First Example" );
   pen.glshademodel( pen.gl_smooth );
   pen.glclearcolor( 0.5294, 0.8078, 0.9216, 1.0 ); -- sky blue
   pen.glcleardepth( 1 );
@@ -32,17 +32,16 @@ begin
   pen.gldepthfunc( pen.gl_lequal );
   pen.glhint( pen.gl_perspective_correction_hint, pen.gl_nicest );
 
-  -- Clear the canvas
-
-  pen.glclear( pen.gl_color_buffer_bit or pen.gl_depth_buffer_bit );
-
   -- Setup view
 
   pen.glviewport( 0, 0, width, height );
   pen.glmatrixmode( pen.gl_projection );
-  pen.glloadidentity;
   pen.gluperspective( 45, width/height, 0.1, 100 );
   pen.glmatrixmode( pen.gl_modelview );
+
+  -- Clear the canvas
+
+  pen.glclear( pen.gl_color_buffer_bit or pen.gl_depth_buffer_bit );
   pen.glloadidentity;
 
   -- Move left and back
@@ -53,9 +52,7 @@ begin
 
   pen.glbegin( pen.gl_triangles );
     pen.glcolor3( pen_color_name.white );
-    pen.glvertex3d( 0, 1, 0 );
-    pen.glvertex3d( -1, -1, 0 );
-    pen.glvertex3d( 1, -1, 0 );
+    pen.glvertex3d( 0, 1, 0 ) @ ( -1, -1, 0 ) @ ( 1, -1, 0 );
   pen.glend;
 
   -- Move right
@@ -66,10 +63,7 @@ begin
 
   pen.glbegin( pen.gl_quads );
     pen.glcolor3( pen_color_name.black );
-    pen.glvertex3d( -1,  1, 0 );
-    pen.glvertex3d(  1,  1, 0 );
-    pen.glvertex3d(  1, -1, 0 );
-    pen.glvertex3d( -1, -1, 0 );
+    pen.glvertex3d( -1,  1, 0 ) @ (  1,  1, 0 ) @ (  1, -1, 0 ) @ ( -1, -1, 0 );
   pen.glend;
 
   -- Display the scene
