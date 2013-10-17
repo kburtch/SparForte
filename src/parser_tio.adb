@@ -176,9 +176,9 @@ begin
   expect( inkey_t );
   if isExecutingCommand then
      getKey( ch );
-     if wasSIGINT then
-        null;
-     end if;
+     --if wasSIGINT then
+     --   null;
+     --end if;
      str := to_unbounded_string( ch & "" );
   end if;
 end ParseInkey;
@@ -1531,6 +1531,158 @@ begin
   end if;
 end ParseSetError;
 
+procedure ParseGetImmediate is
+  -- Syntax: get_immediate( [file,] ch [, bool] )
+  -- Source: Ada.Text_IO.Get_Immediate
+  file_ref  : reference;
+  kind      : identifier;
+  fd        : aFileDescriptor;
+  ch        : character;
+  id_ref    : reference;
+  avail_ref : reference;
+  --result    : size_t;
+  fileInfo  : unbounded_string;
+  hasAvail  : boolean := false;
+  baseType  : identifier;
+begin
+  file_ref.id := eof_t;
+  expect( get_immediate_t );
+  fd := stdin;
+  expect( symbol_t, "(" );
+  kind := identifiers( token ).kind;
+  if kind /= new_t then
+     baseType := getBaseType( kind );
+     if baseType = file_type_t or baseType = socket_type_t then
+        ParseOpenFileOrSocket( file_ref, kind );
+        expect( symbol_t, "," );
+     else
+        -- default is standard input
+        file_ref.id := standard_input_t;
+     end if;
+  else
+     -- default is standard input
+     file_ref.id := standard_input_t;
+  end if;
+  ParseOutParameter( id_ref, character_t );
+  if token = symbol_t and identifiers( token ).value = "," then
+     expect( symbol_t, "," );
+     ParseOutParameter( avail_ref, boolean_t );
+     hasAvail := true;
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     -- TODO: integration with text_io functions.  Currently, it's ignoring
+     -- TextIO's double-buffer queue.
+     if file_ref.id /= eof_t then
+        if isatty( fd ) /= 0 then
+           if hasAvail then
+              -- TODO: this can echo the keypress because echoing is only
+              -- turned off when it tries to get a key.  So if a user presses
+              -- a key before getKey runs, it will echo because getKey hasn't
+              -- run yet.
+              getKey( ch, nonblock => true );
+              --if wasSIGINT then
+              --   null;
+              --end if;
+              -- when non-blocking, Control-D indicates nothing read
+              AssignParameter( avail_ref, to_bush_boolean( ch = ASCII.EOT ) );
+           else
+              getKey( ch );
+              --if wasSIGINT then
+              --   null;
+              --end if;
+           end if;
+           AssignParameter( id_ref, to_unbounded_string( "" & ch ) );
+        else
+           err( "only implemented for a tty/terminal" );
+        end if;
+     else
+        -- TODO: this is only doing the terminal/tty, not files/sockets.
+        -- This will probably require a C select() to avoid blocking.
+        err( "get_immediate for files are not yet implemented" );
+     end if;
+  end if;
+end ParseGetImmediate;
+
+procedure ParseLookAhead is
+  -- Syntax: look_ahead( [file,] ch [, eol] )
+  -- Source: Ada.Text_IO.Look_Ahead
+  -- This is the equivalent of a Get that does not get the next character.
+--   procedure Look_Ahead
+--     (Item        : out Character;
+--      End_Of_Line : out Boolean);
+  file_ref  : reference;
+  kind      : identifier;
+  fd        : aFileDescriptor;
+  ch        : character;
+  id_ref    : reference;
+  result    : size_t;
+  fileInfo  : unbounded_string;
+begin
+  file_ref.id := eof_t;
+  expect( look_ahead_t );
+  fd := stdin;
+  expect( symbol_t, "(" );
+  if identifiers( token ).kind /= keyword_t then
+     ParseOpenFileOrSocket( file_ref, kind );
+     expect( symbol_t, "," );
+  else
+     file_ref.id := standard_input_t;
+  end if;
+  ParseOutParameter( id_ref, character_t );
+  if baseTypesOk( id_ref.kind, character_t ) then
+     expect( symbol_t, ")" );
+  end if;
+  -- TODO: second parameter
+  if isExecutingCommand then
+     if trace then
+        put_trace( "Using file descriptor " & to_string( stringField( file_ref, fd_field ) ) );
+     end if;
+     -- reading from a file?
+     if file_ref.id /= eof_t then
+        GetParameterValue( file_ref, fileInfo );
+        if kind = socket_type_t and then stringField( fileInfo, recSep, doget_field ) = "1" then
+           -- First get must update the 1 char look-ahead in the file_info
+           DoGet( file_ref );
+           GetParameterValue( file_ref, fileInfo );
+           replaceField( fileInfo, recSep, doget_field, boolean'image(false));
+        end if;
+        if stringField( fileInfo, recSep, eof_field ) = "1" then
+           err( "end of file" );
+        else
+           ch := Element( fileInfo, 1 );
+           AssignParameter( id_ref, to_unbounded_string( "" & ch ) );
+           AssignParameter( file_ref, fileInfo );
+           -- DoGet( file_ref );
+        end if;
+     else
+        -- reading from default input
+        -- TODO: why no buffering here?
+        fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
+   <<reread>> readchar( result, fd, ch, 1 );
+ -- KB: 2012/02/15: see bush_os-tty for an explaination of this kludge
+         if result < 0 or result = size_t'last then
+              if C_errno = EAGAIN  or C_errno = EINTR then
+                 goto reread;
+              end if;
+              err( "unable to read file:" & OSerror( C_errno ) );
+         elsif result = 0 then
+            err( "end of file" );
+         else
+            AssignParameter( id_ref, to_unbounded_string( "" & ch ) );
+         end if;
+      end if;
+      if ch = ASCII.LF then -- not stdin (or error)?
+         replaceField( file_ref, line_field,
+            long_integer'image( long_integer'value(
+            to_string( stringField( file_ref, line_field ) ) ) + 1 ) );
+         replaceField( file_ref, eol_field, "1" );
+      else
+         replaceField( file_ref, eol_field, "0" );
+      end if;
+  end if;
+end ParseLookAhead;
+
 procedure StartupTextIO is
 begin
   -- Predefined Text_IO Types
@@ -1561,6 +1713,9 @@ begin
   declareProcedure( set_output_t, "set_output", ParseSetOutput'access );
   declareProcedure( set_error_t, "set_error", ParseSetError'access );
   declareProcedure( reset_t, "reset", ParseReset'access );
+  declareProcedure( get_immediate_t, "get_immediate", ParseGetImmediate'access );
+  -- Look ahead doesn't work yet
+  -- declareProcedure( look_ahead_t, "look_ahead", ParseLookAhead'access );
 
   -- declareProcedure( delete_t, "delete" );
   -- delete declared in scanner since it's also a SQL command

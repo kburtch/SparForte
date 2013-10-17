@@ -132,6 +132,8 @@ set_output_t : identifier;  -- built-in text_io.set_output
 reset_t    : identifier;  -- built-in text_io.reset
 delete_t   : identifier;  -- built-in text_io.delete
 set_error_t : identifier;  -- built-in text_io.set_error
+get_immediate_t   : identifier; -- built-in text_io.get_immediate
+look_ahead_t      : identifier; -- built-in text_io.look_ahead
 standard_input_t  : identifier; -- built-in text_io.standard_input
 standard_output_t : identifier; -- built-in text_io.standard_output
 standard_error_t  : identifier; -- built-in text_io.standard_error

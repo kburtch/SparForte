@@ -69,8 +69,9 @@ procedure clearHistory;
 -- Special capabilities not in standard Ada packages
 ------------------------------------------------------
 
-procedure getKey( ch : out character );
+procedure getKey( ch : out character; nonblock : boolean := false );
 -- read a single keypress and don't show the character to user
+-- when non-blocking, ASCII.EOT is returned if no key
 
 procedure getLine( line : out unbounded_string; keepHistory : boolean := false );
 -- read a line from the keyboard

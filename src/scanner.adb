@@ -299,6 +299,8 @@ begin
         put( "function return " );
      when mainProgramClass =>
         put( "main program " );
+     when exceptionClass =>
+        put( "exception " );
      when others =>
         put( "identifier of the type " );
      end case;
@@ -316,6 +318,8 @@ begin
         if ident.class /= funcClass and ident.class /= procClass and ident.class /= userProcClass and ident.class /= userFuncClass and ident.class /= mainProgramClass then
            put( "keyword" );
         end if;
+     elsif ident.class = exceptionClass then
+        null;
      else
         if kind.name = "an anonymous array" then
            -- special handling since they're not easily visible
@@ -420,7 +424,7 @@ begin
 
      if ident.kind /= keyword_t then
         put( ident.name );
-        if not ident.list and ident.kind /= root_record_t then
+        if not ident.list and ident.kind /= root_record_t and ident.class /= exceptionClass then
             put( " := " );
             if ident.class = userProcClass then
                 -- this appears first because getBaseType will fail on a
@@ -1587,6 +1591,7 @@ begin
   identifiers_top := reserved_top;                            -- keep keywords
   blocks_top := block'first;                                  -- no blocks
   error_found := false;                                       -- no error
+  err_exception := eof_t;                                     -- no exception
   onlyAda95 := false;                                         -- no Ada_95
   depreciatedMsg := Null_Unbounded_String;                    -- nothing dep.
   exit_block := false;                                        -- not exiting

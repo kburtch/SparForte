@@ -356,7 +356,7 @@ end updateDisplayInfo;
 
 -- Basic TTY I/O
 
-procedure simpleGetKey( ch : out character ) is
+procedure simpleGetKey( ch : out character; nonblock : boolean := false ) is
 -- read a (raw) key from the keyboard without echoing to display
   tio        : termios;         -- tty setting for raw input
   oldtio     : termios;         -- previous tty settings
@@ -414,6 +414,12 @@ begin
            tio.c_iflag := tio.c_iflag and not IXANY;   -- shouldn't be needed
            tio.c_iflag := tio.c_iflag and not ICRNL;   -- no CR->NL conversion
            tio.c_iflag := tio.c_iflag and not INLCR;   -- or vice versa
+           -- if it should return immediately, set these to zero.  This
+           -- indicates a non-blocking terminal read().
+           if nonblock then
+              tio.cc_time := ASCII.NUL;
+              tio.cc_min  := ASCII.NUL;
+           end if;
            -- ISIG and some other stuff done by readline not
            -- done here.  Use ISIG to allow ctrl-c through.  For testing,
            -- leave alone.

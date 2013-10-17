@@ -38,6 +38,9 @@ type termAttributes is (normal, bold, inverse, cleop, cleol, up,
 
 type termAttributesArray is array (termAttributes) of unbounded_string;
 
+type termMode is (normal, normal_noecho, nonblock_noecho );
+-- how to read a character: block, don't block, echo or don't echo
+
 term : termAttributesArray;
 -- array containing the attribute strings
 
@@ -60,8 +63,9 @@ procedure updateDisplayInfo;
 
 -- Basic TTY I/O
 
-procedure simpleGetKey( ch : out character );
+procedure simpleGetKey( ch : out character; nonblock : boolean := false );
 -- read a (raw) key from the keyboard without echoing to display
+-- when non-blocking, ASCII.EOT is returned if there is no character
 
 procedure simpleBeep;
 -- ring the bell on the terminal (ie. send a control-G)

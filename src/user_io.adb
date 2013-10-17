@@ -55,10 +55,10 @@ begin
   simpleBeep;
 end beep;
 
-procedure getKey( ch : out character ) is
+procedure getKey( ch : out character; nonblock : boolean := false ) is
 -- read a single keypress and don't show the character to user
 begin
-  simpleGetKey( ch );
+  simpleGetKey( ch, nonblock );
   -- constrain to lower ASCII
   if ch > ASCII.DEL then
      ch := character'val( character'pos( ch ) - 128 );

@@ -2685,6 +2685,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean ) 
   -- Syntax: declaration = " : anonymous-array
   -- Syntax: declaration = " : array-declaration
   -- Syntax: declaration = " : record-declaration
+  -- Syntax: declaration = " : exception [with message? "," err code]
   -- assigns type of identifier and value (if assignment part)
   -- Note: in some cases, the variable id may change.
 
@@ -2698,6 +2699,31 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean ) 
 begin
 
   expect( symbol_t, ":" );
+
+  -- Exceptions
+
+  if token = exception_t then                          -- handle exception
+     expect( exception_t );
+     declare
+       var_name : unbounded_string;
+       default_message : unbounded_string;
+       exception_status : unbounded_string;
+     begin
+        var_name := identifiers( id ).name;                 -- remember name
+        discardUnusedIdentifier( id );                      -- discard variable
+        if token = with_t then
+           expect( with_t );
+           default_message := identifiers( token ).value;
+           expect( strlit_t );
+           expect( symbol_t, "," );
+           exception_status := identifiers( token ).value;
+           expect( number_t );
+        end if;
+        declareIdent( id, var_name, exception_t, exceptionClass ); -- declare var
+        identifiers( id ).value := default_message & ASCII.NUL & exception_status;
+     end;
+     return;
+  end if;
 
   if token = aliased_t then                            -- aliased not supported
      err( "aliased isn't supported" );
@@ -4447,6 +4473,36 @@ begin
   end loop;
 end ParseDeclarations;
 
+-- Raise an exception outside of an exception block
+-- TODO: inside a block
+
+procedure ParseRaise is
+  id : identifier;
+  with_text : unbounded_string;
+begin
+  expect( raise_t );
+  if identifiers( token ).class /= exceptionClass then
+     err( optional_bold( to_string( identifiers( token ).name ) ) & " is not an exception" );
+  else
+     ParseIdentifier( id );
+     if token = with_t then
+        expect( with_t );
+        with_text := identifiers( token ).value;
+        expect( strlit_t );
+     end if;
+  end if;
+  if isExecutingCommand then
+     err_exception := id;
+     if length( with_text ) > 0 then
+        err( "raised " & to_upper( to_string( identifiers( id ).name ) ) & ": " & to_string( with_text ) );
+     else
+        err( "raised " & to_upper( to_string( identifiers( id ).name ) ) );
+     end if;
+  end if;
+end ParseRaise;
+
+-- skip a block of code
+
 procedure SkipBlock( termid1, termid2 : identifier := keyword_t ) is
   old_error : boolean;
 begin
@@ -4469,6 +4525,8 @@ begin
   syntax_check := old_error;
 end SkipBlock;
 
+-- execute a block of code
+
 procedure ParseBlock( termid1, termid2 : identifier := keyword_t ) is
   -- Syntax: block = "general-stmt [general-stmt...] termid1 | termid2"
 begin
@@ -4479,6 +4537,8 @@ begin
      ParseGeneralStatement;
   end loop;
 end ParseBlock;
+
+-- parse an exception block
 
 procedure ParseExceptionBlock( termid1, termid2 : identifier := keyword_t ) is
   -- Same as ParseBlock except raise is permitted
@@ -4534,25 +4594,65 @@ end SkipExceptionBlock;
 
 procedure ParseExceptionHandler is
   -- syntax: exception when others => (block)
+  found_exception     : boolean := false;
+  formal_exception_id : identifier;
+  handling_exceptions : boolean;
+  handled_exception   : boolean := false;
 begin
-  if error_found and not done and not syntax_check then
-     -- for trace purposes, turn off errors as soon as possible.
+  handling_exceptions := (error_found and not done and not syntax_check);
+
+  -- for trace purposes, turn off errors as soon as possible.
+  if handling_exceptions then
      error_found := false;
      if trace then
         put_trace( "exception handler running" );
      end if;
-     expect( exception_t );
-     expect( when_t );
-     expect( others_t );
-     expect( symbol_t, "=>" );
-     ParseExceptionBlock;
-  else
-     expect( exception_t );
-     expect( when_t );
-     expect( others_t );
-     expect( symbol_t, "=>" );
-     SkipExceptionBlock;
   end if;
+
+  -- walk through the exception block
+  expect( exception_t );
+  loop
+    expect( when_t );
+    -- if we have a case that matches, match will not be eof_t
+    if token /= others_t then
+       if identifiers( token ).class = exceptionClass then
+          ParseIdentifier( formal_exception_id );
+          found_exception := formal_exception_id = err_exception;
+          if found_exception then
+             if trace then
+                put_trace( "exception handler applying case " & to_string( identifiers( formal_exception_id ).name ) );
+             end if;
+          end if;
+       else
+          err( optional_bold( to_string( identifiers( token ).name ) ) & " is not an exception" );
+          exit;
+       end if;
+    else
+       -- if we haven't found a case that matches, others always matches
+       expect( others_t );
+       if not handled_exception then
+          found_exception := true;
+          if trace then
+             put_trace( "exception handler applying default case" );
+          end if;
+       end if;
+    end if;
+    expect( symbol_t, "=>" );
+    -- this case matches and we're handling exceptions? then handle it.
+    -- otherwise, skip the exception handler block
+    if found_exception and handling_exceptions then
+       ParseExceptionBlock( when_t );
+       found_exception := false;
+       handled_exception := true;
+       -- if not re-raising or some other error, clear the exception occurrence
+       if not error_found then
+          err_exception := eof_t;
+       end if;
+    else
+       SkipExceptionBlock( when_t );
+    end if;
+    exit when token = eof_t or token = end_t;
+  end loop;
 end ParseExceptionHandler;
 
 procedure ParseDeclareBlock is
@@ -7132,7 +7232,7 @@ begin
   elsif Token = package_t then
      err( "packages not implemented" );
   elsif Token = raise_t then
-     err( "raise can only be used in an exception handler" );
+     ParseRaise;
   elsif Token = exit_t then
      if blocks_top = block'first then           -- not complete. should check
          err( "no enclosing loop to exit" );    -- not just for no blocks

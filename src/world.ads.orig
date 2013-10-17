@@ -127,7 +127,8 @@ commandLineSource : constant string := "Command";
 ------------------------------------------------------------------------------
 
 -- error_type    : anExceptionType;          -- type of exception
-err_message : unbounded_string;         -- last error message
+err_message   : unbounded_string;         -- last error message
+err_exception : identifier;               -- the exception else eof_t for none
 
 BAD_PROFILE : exception;
 
@@ -216,11 +217,12 @@ libraryPath : Unbounded_String;
 --   procClass     - a procedure
 --   userProcClass - a user-defined procedure
 --   taskClass     - a task
+--   exceptionClass - an exception
 --   otherClass    - a variable (probably needs a more descriptive name)
 
 type anIdentifierClass is ( constClass, subClass, typeClass, funcClass,
   userFuncClass, procClass, userProcClass, taskClass, mainProgramClass,
-  otherClass );
+  exceptionClass, otherClass );
 
 ------------------------------------------------------------------------------
 --
