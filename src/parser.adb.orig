@@ -2685,7 +2685,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean ) 
   -- Syntax: declaration = " : anonymous-array
   -- Syntax: declaration = " : array-declaration
   -- Syntax: declaration = " : record-declaration
-  -- Syntax: declaration = " : exception [with message? "," err code]
+  -- Syntax: declaration = " : exception [with err code "," message]
   -- assigns type of identifier and value (if assignment part)
   -- Note: in some cases, the variable id may change.
 
@@ -2712,15 +2712,19 @@ begin
         var_name := identifiers( id ).name;                 -- remember name
         discardUnusedIdentifier( id );                      -- discard variable
         if token = with_t then
+           if onlyAda95 then
+              err( "exception with not allowed with " &
+                 optional_bold( "pragam ada_95" ) );
+           end if;
            expect( with_t );
-           default_message := identifiers( token ).value;
-           expect( strlit_t );
-           expect( symbol_t, "," );
            exception_status := identifiers( token ).value;
            expect( number_t );
+           expect( symbol_t, "," );
+           default_message := identifiers( token ).value;
+           expect( strlit_t );
         end if;
         declareIdent( id, var_name, exception_t, exceptionClass ); -- declare var
-        identifiers( id ).value := default_message & ASCII.NUL & exception_status;
+        identifiers( id ).value := exception_status & ASCII.NUL & default_message;
      end;
      return;
   end if;
@@ -4486,6 +4490,9 @@ begin
   else
      ParseIdentifier( id );
      if token = with_t then
+        if onlyAda95 then
+           err( "with not allowed with " & optional_bold( "pragma ada_95" ) );
+        end if;
         expect( with_t );
         with_text := identifiers( token ).value;
         expect( strlit_t );
@@ -4493,10 +4500,19 @@ begin
   end if;
   if isExecutingCommand then
      err_exception := id;
-     if length( with_text ) > 0 then
-        err( "raised " & to_upper( to_string( identifiers( id ).name ) ) & ": " & to_string( with_text ) );
+     if length( with_text ) > 0 then 
+        -- TODO: err must track error location
+        -- f := to_unbounded_string( getLineNo'img );
+        -- f := basename( getSourceFileName ) & ":" & f;
+        err( "raised " &
+             to_string( identifiers( id ).name ) &
+             ": " &
+             to_string( with_text )
+        );
      else
-        err( "raised " & to_upper( to_string( identifiers( id ).name ) ) );
+        err( "raised " &
+             to_string( identifiers( id ).name )
+        );
      end if;
   end if;
 end ParseRaise;
