@@ -574,7 +574,7 @@ end put_trace;
 -----------------------------------------------------------------------------
 -- ERR
 --
--- Raise a BUSH exception by creating an error message (in GCC or BUSH format)
+-- Raise a Spar exception by creating an error message (in GCC or BUSH format)
 --  and setting the error_found flag.
 --
 -- Only display the first error encounted.  Set the token to end-of-file
@@ -704,8 +704,140 @@ begin
      new_line;
   end if;
   error_found := true;                                          -- flag error
+  err_exception := eof_t;                                       -- not an exception
+  last_status := 0;
   --token := eof_t;                                             -- stop parser
 end err;
+
+--  RAISE EXCEPTION
+--
+-- Like err, but for exceptions
+-----------------------------------------------------------------------------
+
+procedure raise_exception( msg : string ) is
+  cmdline  : unbounded_string;
+  firstpos : natural;
+  lastpos  : natural;
+  lineStr  : unbounded_string;
+  firstposStr : unbounded_string;
+  lineno   : natural;
+  fileno   : natural;
+  outLine  : unbounded_string;
+  sfr      : aSourceFile;
+begin
+
+  -- Already displayed one error or script is complete?
+  -- Don't display any more
+
+  if error_found or done then
+     return;
+  end if;
+
+  -- Decode a copy of the command line to show the error.  Also returns
+  -- the current token position and the line number.
+
+  getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+
+  -- If in a script (that is, a non-interactive input mode) then
+  -- show the location and traceback.  Otherwise, don't bother.
+
+  if inputMode /= interactive and inputMode /= breakout then
+
+  -- Get the location information.  If gcc option, strip the leading
+  -- blanks form the location information.  Use outLine to generate a full
+  -- line of text because individual Put's are shown as individual lines
+  -- in Apache's error logs for templates...a real mess.
+
+     if gccOpt then                                    -- gcc style?
+        lineStr := to_unbounded_string( lineno'img );  -- remove leading
+        if length( lineStr ) > 0 then                  -- space (if any)
+           if element( lineStr, 1 ) = ' ' then
+              delete( lineStr, 1, 1 );
+           end if;
+        end if;
+        firstposStr := to_unbounded_string( firstpos'img );
+        if length( firstposStr ) > 0 then              -- here, too
+           if element( firstposStr, 1 ) = ' ' then
+              delete( firstposStr, 1, 1 );
+           end if;
+        end if;
+        sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
+        outLine := sfr.name
+          & ":" & lineStr
+          & ":" & firstposStr
+          & ":";                  -- no traceback
+     else
+
+  -- If not gcc option, show the location and traceback
+
+        sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
+        outLine := sfr.name               -- otherwise
+          & ":" & lineno'img
+          & ":" & firstpos'img
+          & ": ";
+
+        if blocks_top > blocks'first then                     -- in a block?
+           for i in reverse blocks'first..blocks_top-1 loop
+               if i /= blocks_top-1 then
+                  outLine := outLine & " in ";
+               end if;
+               outLine := outLine & ToEscaped( blocks( i ).blockName );
+           end loop;
+           put( standard_error, outLine );
+           outLine := null_unbounded_string;
+        else
+           outLine := outLine & "script";
+           put( standard_error, outLine );
+           outLine := null_unbounded_string;
+        end if;
+        New_Line( standard_error );
+     end if;
+  end if;
+
+  -- If not gcc option, show the command line, underline the token and show
+  -- the error.  Otherwise, just add the error to the location information.
+  -- Output only full lines to avoid messy Apache error logs.
+
+  if not gccOpt then
+
+     -- Normal: Draw The Current Line
+
+     put_line( standard_error, toEscaped( cmdline ) );          -- current line
+
+     -- Normal: Draw Error Pointer
+
+     outLine := outLine & to_string( (firstPos-1) * " " );               -- indent
+     outLine := outLine & '^';                                  -- token start
+     if lastpos > firstpos then                                 -- multi chars?
+        outLine := outLine & to_string( (lastpos-firstPos-1) * "-" );
+        outLine := outLine & '^';                               -- token end
+     end if;
+     outLine := outLine & ' ';                                  -- token start
+  end if;
+  outLine := outLine & msg;
+  put_line( standard_error, outLine );                          -- error msg
+
+  -- If we're in a template and in debug mode, put the error message on the
+  -- web page.
+
+  if boolean( debugOpt ) and processingTemplate then
+     put( "<table cellspacing=1 cellpadding=2 border=1 summary=""SparForte Exception"">" );
+     put( "<tr>" );
+     put( "<td bgcolor=""grey"">" );
+     put( "<font face=""courier"" color=""white"" size=""2"">" );
+     put( "&nbsp;<i>SparForte</i>&nbsp;" );
+     put( "</font></td>" );
+     put( "<td bgcolor=""white""" );
+     put( "<font face=""courier"" color=""black"" size=""2"">" );
+     put( "&nbsp;<b>" & outLine & "</b>&nbsp;" );
+     put( "</font></td>" );
+     put( "</table>" );
+     put( "<br />" );
+     new_line;
+  end if;
+  error_found := true;                                          -- flag error
+  --token := eof_t;                                             -- stop parser
+end raise_exception;
 
 
 -----------------------------------------------------------------------------

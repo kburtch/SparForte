@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2013 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -2708,6 +2708,8 @@ begin
        var_name : unbounded_string;
        default_message : unbounded_string;
        exception_status : unbounded_string;
+       type esc is new natural range 0..255;
+       exception_status_code : esc := 1;
      begin
         var_name := identifiers( id ).name;                 -- remember name
         discardUnusedIdentifier( id );                      -- discard variable
@@ -2722,9 +2724,16 @@ begin
            expect( symbol_t, "," );
            default_message := identifiers( token ).value;
            expect( strlit_t );
+           begin
+             exception_status_code := esc'value( to_string( exception_status ) );
+           exception when others =>
+             err( "exception status code out of range" );
+           end;
         end if;
-        declareIdent( id, var_name, exception_t, exceptionClass ); -- declare var
-        identifiers( id ).value := exception_status & ASCII.NUL & default_message;
+        if not error_found then
+           declareIdent( id, var_name, exception_t, exceptionClass ); -- declare var
+           identifiers( id ).value := character'val( exception_status_code ) & default_message;
+        end if;
      end;
      return;
   end if;
@@ -4480,42 +4489,61 @@ end ParseDeclarations;
 -- Raise an exception outside of an exception block
 -- TODO: inside a block
 
-procedure ParseRaise is
+procedure ParseRestOfRaise is
   id : identifier;
   with_text : unbounded_string;
 begin
-  expect( raise_t );
-  if identifiers( token ).class /= exceptionClass then
-     err( optional_bold( to_string( identifiers( token ).name ) ) & " is not an exception" );
+
+  -- re-raise?
+  if token = symbol_t and identifiers( token ).value = to_unbounded_string( ";" ) then
+     err( "re-raise is not in an exception handler" );
   else
-     ParseIdentifier( id );
-     if token = with_t then
-        if onlyAda95 then
-           err( "with not allowed with " & optional_bold( "pragma ada_95" ) );
-        end if;
-        expect( with_t );
-        with_text := identifiers( token ).value;
-        expect( strlit_t );
-     end if;
-  end if;
-  if isExecutingCommand then
-     err_exception := id;
-     if length( with_text ) > 0 then 
-        -- TODO: err must track error location
-        -- f := to_unbounded_string( getLineNo'img );
-        -- f := basename( getSourceFileName ) & ":" & f;
-        err( "raised " &
-             to_string( identifiers( id ).name ) &
-             ": " &
-             to_string( with_text )
-        );
+
+     if identifiers( token ).class /= exceptionClass then
+        err( optional_bold( to_string( identifiers( token ).name ) ) & " is not an exception" );
      else
-        err( "raised " &
-             to_string( identifiers( id ).name )
-        );
+        ParseIdentifier( id );
+        if token = with_t then
+           if onlyAda95 then
+              err( "with not allowed with " & optional_bold( "pragma ada_95" ) );
+           end if;
+           expect( with_t );
+           with_text := identifiers( token ).value;
+           expect( strlit_t );
+        end if;
+     end if;
+     if isExecutingCommand then
+        -- if no message, check for and use the default message
+        if length( with_text ) = 0 then
+           if length( identifiers( id ).value ) > 1 then
+              with_text := unbounded_slice( identifiers( id ).value, 2, length( identifiers( id ).value ) );
+           end if;
+        end if;
+        -- record the exception id
+        err_exception := id;
+        if length( with_text ) > 0 then
+           raise_exception( "raised " &
+                to_string( identifiers( id ).name ) &
+                ": " &
+                to_string( with_text )
+           );
+        else
+           raise_exception( "raised " &
+                to_string( identifiers( id ).name )
+           );
+        end if;
+        -- set the exit status
+        last_status := character'pos( element( identifiers( id ).value, 1 ) );
      end if;
   end if;
+end ParseRestOfRaise;
+
+procedure ParseRaise is
+begin
+  expect( raise_t );
+  ParseRestOfRaise;
 end ParseRaise;
+
 
 -- skip a block of code
 
@@ -4556,23 +4584,35 @@ end ParseBlock;
 
 -- parse an exception block
 
-procedure ParseExceptionBlock( termid1, termid2 : identifier := keyword_t ) is
+--procedure ParseExceptionBlock( termid1, termid2 : identifier := keyword_t ) is
+procedure ParseExceptionBlock( occurrence_exception_id : identifier;
+  occurrence_message      : unbounded_string;
+  occurrence_status       : aStatusCode ) is
   -- Same as ParseBlock except raise is permitted
 begin
-  if token = end_t or token = eof_t or token = termid1 or token = termid2 then
+  if token = end_t or token = eof_t or token = when_t then
      err( "missing statement or command" );
   end if;
-  while token /= end_t and token /= eof_t and token /= exception_t and token /= termid1 and token /= termid2 loop
+  while token /= end_t and token /= eof_t and token /= exception_t and token /= when_t  loop
+     -- Raise is a special case.
      if token = raise_t then
         expect( raise_t );
-        expectSemicolon;
-        if syntax_check then
-           if token /= end_t and token /= when_t then
-              err( "unreachable code" );
+        -- re-raise?  restore the exception occurrence
+        if token = symbol_t and identifiers( token ).value = to_unbounded_string( ";" ) then
+           err_exception := occurrence_exception_id;
+           err_message := occurrence_message;
+           last_status := occurrence_status;
+           expectSemicolon;
+           if syntax_check then
+             if token /= end_t and token /= when_t then
+                err( "unreachable code" );
+             end if;
+           elsif isExecutingCommand then
+             error_found := true;
            end if;
-        elsif isExecutingCommand then
-           error_found := true;
-        end if;
+       else
+          ParseRestOfRaise;
+       end if;
      else
         ParseGeneralStatement;
      end if;
@@ -4582,22 +4622,22 @@ begin
   end if;
 end ParseExceptionBlock;
 
-procedure SkipExceptionBlock( termid1, termid2 : identifier := keyword_t ) is
+procedure SkipExceptionBlock is
   -- Same as SkipBlock except raise is permitted
   old_error : boolean;
 begin
-  if token = end_t or token = eof_t or token = termid1 or token = termid2 then
+  if token = end_t or token = eof_t or token = when_t then
      err( "missing statement or command" );
   end if;
   if syntax_check then               -- if we're checking syntax
-     ParseExceptionBlock( termid1, termid2 ); -- must process the block to look
+     ParseExceptionBlock( eof_t, null_unbounded_string, 1 ); -- must process the block to look
      return;                         -- for syntax errors
   end if;
   old_error := syntax_check;
   syntax_check := true;
   -- if an error happens in the block, we were skipping it anyway...
-  while token /= end_t and token /= eof_t and token /= exception_t and token /= termid1 and token /= termid2 loop
-      if token = raise_t then
+  while token /= end_t and token /= eof_t and token /= exception_t and token /= when_t loop
+      if token = raise_t then -- TODO: wrong
          expect( raise_t );
          expectSemicolon;
      --elsif token = exception_t then
@@ -4614,18 +4654,29 @@ procedure ParseExceptionHandler is
   formal_exception_id : identifier;
   handling_exceptions : boolean;
   handled_exception   : boolean := false;
+
+  occurrence_exception_id : identifier;
+  occurrence_message      : unbounded_string;
+  occurrence_status       : aStatusCode;
 begin
   handling_exceptions := (error_found and not done and not syntax_check);
 
-  -- for trace purposes, turn off errors as soon as possible.
+  -- for trace purposes, turn off errors as soon as possible.  Also, save
+  -- the information about the exception for re-raising.
+
   if handling_exceptions then
      error_found := false;
      if trace then
         put_trace( "exception handler running" );
      end if;
+     occurrence_exception_id := err_exception; -- save the exception id
+     occurrence_message := err_message;
+     occurrence_status := last_status;
   end if;
 
-  -- walk through the exception block
+  -- parse the exception block and see if there's a matching case for this
+  -- exception.  If there's an others clause, it matches if nothing else did
+
   expect( exception_t );
   loop
     expect( when_t );
@@ -4657,15 +4708,19 @@ begin
     -- this case matches and we're handling exceptions? then handle it.
     -- otherwise, skip the exception handler block
     if found_exception and handling_exceptions then
-       ParseExceptionBlock( when_t );
-       found_exception := false;
-       handled_exception := true;
-       -- if not re-raising or some other error, clear the exception occurrence
-       if not error_found then
-          err_exception := eof_t;
+       ParseExceptionBlock( occurrence_exception_id, occurrence_message, occurrence_status );
+       --ParseExceptionBlock( when_t );                -- run exception handler
+       found_exception := false;                          -- clear found flag
+       handled_exception := true;                 -- we handled the exception
+       if not error_found then                                 -- no re-raise?
+          err_exception := eof_t;                        -- discard occurrence
+          last_status := 0;                           -- and clear status code
+          if trace then
+             put_trace( "cleared exception occurrence" );
+          end if;
        end if;
     else
-       SkipExceptionBlock( when_t );
+       SkipExceptionBlock;
     end if;
     exit when token = eof_t or token = end_t;
   end loop;
@@ -8056,13 +8111,6 @@ begin
   else
      checkAndInterpretScript( Argument( OptionOffset ) );
   end if;
-
-  -- Apply the return error status
-
-  if error_found and last_status = 0 then
-     last_status := 192;
-  end if;
-  Set_Exit_Status( Exit_Status( last_status ) );
 
 end interpret;
 

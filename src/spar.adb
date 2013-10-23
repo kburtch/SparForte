@@ -258,13 +258,6 @@ begin
 
   interpret;
 
-  -- Apply the return error status
-
-  if error_found then
-     last_status := 192;
-  end if;
-  Set_Exit_Status( Exit_Status( last_status ) );
-
   -- shutdown
 
   shutdownParser;

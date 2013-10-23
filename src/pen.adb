@@ -1747,6 +1747,7 @@ end fillEllipse;
 
 procedure newScreenCanvas( H_Res, V_Res, C_Res : positive; canvas_id : out aCanvasID ) is
   newcanvas : aCanvas;
+  videoFlags : SDL_Surface_Flag;
 begin
   newcanvas.id := canvasIdTop;
   canvasIdTop := canvasIdTop + 1;
@@ -1754,9 +1755,24 @@ begin
   newcanvas.displayInfo.H_Res := H_Res;
   newcanvas.displayInfo.V_Res := V_Res;
   newcanvas.displayInfo.C_Res := C_Res;
+
+  -- Check the hardware and set the options accordingly
+
   newcanvas.hardware := SDL_GetVideoInfo;
   newcanvas.hardware_ptr := SDL_VideoInfo_Conv.To_Pointer( newcanvas.hardware );
-  newcanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), SDL_FULLSCREEN + SDL_HWPALETTE );
+  videoFlags := SDL_FULLSCREEN + SDL_HWPALETTE;
+  if newcanvas.hardware_ptr.hw_available then
+     videoFlags := videoFlags + SDL_HWSURFACE;
+  else
+     videoFlags := videoFlags + SDL_SWSURFACE;
+  end if;
+  if newcanvas.hardware_ptr.blit_hw then
+     videoFlags := videoFlags + SDL_HWACCEL;
+  end if;
+
+  -- Create the window
+
+  newcanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), videoFlags );
   newcanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
   if newcanvas.surface_ptr = null then
      put_line( standard_error, "newScreenCanvas: failed for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
@@ -1778,6 +1794,7 @@ end newScreenCanvas;
 procedure newGLScreenCanvas( H_Res, V_Res, C_Res : positive; canvas_id : out aCanvasID ) is
   newcanvas : aCanvas;
   res : SDL_success;
+  videoFlags : SDL_Surface_Flag;
 begin
   newcanvas.id := canvasIdTop;
   canvasIdTop := canvasIdTop + 1;
@@ -1785,10 +1802,24 @@ begin
   newcanvas.displayInfo.H_Res := H_Res;
   newcanvas.displayInfo.V_Res := V_Res;
   newcanvas.displayInfo.C_Res := C_Res;
+
+  -- Check the hardware and set the options accordingly
+
   newcanvas.hardware := SDL_GetVideoInfo;
   newcanvas.hardware_ptr := SDL_VideoInfo_Conv.To_Pointer( newcanvas.hardware );
-  -- newcanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), SDL_FULLSCREEN + SDL_OPENGL );
-  newcanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), SDL_FULLSCREEN + SDL_OPENGL );
+  videoFlags := SDL_OPENGL + SDL_FULLSCREEN;
+  if newcanvas.hardware_ptr.hw_available then
+     videoFlags := videoFlags + SDL_HWSURFACE;
+  else
+     videoFlags := videoFlags + SDL_SWSURFACE;
+  end if;
+  if newcanvas.hardware_ptr.blit_hw then
+     videoFlags := videoFlags + SDL_HWACCEL;
+  end if;
+
+  -- Create the window
+
+  newcanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), videoFlags );
   res := SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
   if res /= SDL_OK then
      put_line( standard_error, "newGLWindowCanvas: double buffer failed" );
@@ -1812,6 +1843,7 @@ end newGLScreenCanvas;
 
 procedure newWindowCanvas( H_Res, V_Res, C_Res : positive; canvas_id : out aCanvasID ) is
   newCanvas : aCanvas;
+  videoFlags : SDL_Surface_Flag;
 begin
   newCanvas.id := canvasIdTop;
   canvasIdTop := canvasIdTop + 1;
@@ -1819,8 +1851,24 @@ begin
   newCanvas.displayInfo.H_Res := H_Res;
   newCanvas.displayInfo.V_Res := V_Res;
   newCanvas.displayInfo.C_Res := C_Res;
-  --newCanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), SDL_HWSURFACE + SDL_OPENGL );
-  newCanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), SDL_HWSURFACE );
+
+  -- Check the hardware and set the options accordingly
+
+  newcanvas.hardware := SDL_GetVideoInfo;
+  newcanvas.hardware_ptr := SDL_VideoInfo_Conv.To_Pointer( newcanvas.hardware );
+  videoFlags := 0;
+  if newcanvas.hardware_ptr.hw_available then
+     videoFlags := videoFlags + SDL_HWSURFACE;
+  else
+     videoFlags := videoFlags + SDL_SWSURFACE;
+  end if;
+  if newcanvas.hardware_ptr.blit_hw then
+     videoFlags := videoFlags + SDL_HWACCEL;
+  end if;
+
+  -- Create the window
+
+  newCanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), videoFlags );
   newCanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
   if newCanvas.surface_ptr = null then
      put_line( standard_error, "newWindowCanvas: failed for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
@@ -1842,6 +1890,7 @@ end newWindowCanvas;
 procedure newGLWindowCanvas( H_Res, V_Res, C_Res : positive; canvas_id : out aCanvasID ) is
   newCanvas : aCanvas;
   res : SDL_success;
+  videoFlags : SDL_Surface_Flag;
 begin
   newCanvas.id := canvasIdTop;
   canvasIdTop := canvasIdTop + 1;
@@ -1849,8 +1898,24 @@ begin
   newCanvas.displayInfo.H_Res := H_Res;
   newCanvas.displayInfo.V_Res := V_Res;
   newCanvas.displayInfo.C_Res := C_Res;
-  -- newCanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), SDL_OPENGL );
-  newCanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), SDL_OPENGL );
+
+  -- Check the hardware and set the options accordingly
+
+  newcanvas.hardware := SDL_GetVideoInfo;
+  newcanvas.hardware_ptr := SDL_VideoInfo_Conv.To_Pointer( newcanvas.hardware );
+  videoFlags := SDL_OPENGL;
+  if newcanvas.hardware_ptr.hw_available then
+     videoFlags := videoFlags + SDL_HWSURFACE;
+  else
+     videoFlags := videoFlags + SDL_SWSURFACE;
+  end if;
+  if newcanvas.hardware_ptr.blit_hw then
+     videoFlags := videoFlags + SDL_HWACCEL;
+  end if;
+
+  -- Create the window
+
+  newCanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), videoFlags );
   res := SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
   if res /= SDL_OK then
      put_line( standard_error, "newGLWindowCanvas: double buffer failed" );

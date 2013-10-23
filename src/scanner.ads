@@ -175,6 +175,7 @@ procedure err( msg : string );
 -- set the token to eof_t to abort the parsing and set the
 -- error_found flag to indicate that an error was encountered
 
+procedure raise_exception( msg : string );
 
 ------------------------------------------------------------------------------
 -- Saving/Restoring Positions/Scripts
