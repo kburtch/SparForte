@@ -4493,7 +4493,6 @@ procedure ParseRestOfRaise is
   id : identifier;
   with_text : unbounded_string;
 begin
-
   -- re-raise?
   if token = symbol_t and identifiers( token ).value = to_unbounded_string( ";" ) then
      err( "re-raise is not in an exception handler" );
@@ -4594,7 +4593,8 @@ begin
      err( "missing statement or command" );
   end if;
   while token /= end_t and token /= eof_t and token /= exception_t and token /= when_t  loop
-     -- Raise is a special case.
+     -- Re-eaise is a special case.  It must be handled here, in the
+     -- exception block
      if token = raise_t then
         expect( raise_t );
         -- re-raise?  restore the exception occurrence
@@ -4604,7 +4604,7 @@ begin
            last_status := occurrence_status;
            expectSemicolon;
            if syntax_check then
-             if token /= end_t and token /= when_t then
+             if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
                 err( "unreachable code" );
              end if;
            elsif isExecutingCommand then
@@ -4612,6 +4612,12 @@ begin
            end if;
        else
           ParseRestOfRaise;
+          expectSemicolon;
+          if syntax_check then
+            if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
+               err( "unreachable code" );
+            end if;
+          end if;
        end if;
      else
         ParseGeneralStatement;
@@ -4724,6 +4730,10 @@ begin
     end if;
     exit when token = eof_t or token = end_t;
   end loop;
+  -- no handler found?  restore the error flag
+  if not found_exception and handling_exceptions then
+     error_found := true;
+  end if;
 end ParseExceptionHandler;
 
 procedure ParseDeclareBlock is
@@ -7304,6 +7314,19 @@ begin
      err( "packages not implemented" );
   elsif Token = raise_t then
      ParseRaise;
+     if syntax_check then
+        -- this is a bit slow but it's only during a syntax check
+        declare
+          atSemicolon : aScannerState;
+        begin
+          markScanner( atSemicolon );
+          getNextToken; -- skip semicolon
+          if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
+             err( "unreachable code" );
+          end if;
+          resumeScanning( atSemicolon ); -- restore original position
+        end;
+     end if;
   elsif Token = exit_t then
      if blocks_top = block'first then           -- not complete. should check
          err( "no enclosing loop to exit" );    -- not just for no blocks
@@ -7700,6 +7723,9 @@ begin
           while token /= eof_t and not error_found loop
              ParseGeneralStatement;                     -- do the command
           end loop;
+          if error_found then
+             put_line( standard_error, fullErrorMessage );
+          end if;
        end if;
     end if;
     -- restore original standard input, output, error for the command line
@@ -8030,6 +8056,10 @@ begin
            trace := true;                            -- turn on trace
         end if;
         interpretScript( fullScriptPath ); -- run the script
+     end if;
+     -- display any error message
+     if error_found then
+        put_line( standard_error, fullErrorMessage );
      end if;
      if length( depreciatedMsg ) > 0 then            -- pragma depreciated?
         put( standard_error, scriptFilePath );       -- show the message

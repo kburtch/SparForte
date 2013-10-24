@@ -606,6 +606,8 @@ begin
 
   getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
 
+  fullErrorMessage := null_unbounded_string;
+
   -- If in a script (that is, a non-interactive input mode) then
   -- show the location and traceback.  Otherwise, don't bother.
 
@@ -651,14 +653,16 @@ begin
                end if;
                outLine := outLine & ToEscaped( blocks( i ).blockName );
            end loop;
-           put( standard_error, outLine );
+           fullErrorMessage := outLine & ASCII.LF;
+           --put( standard_error, outLine );
            outLine := null_unbounded_string;
         else
            outLine := outLine & "script";
-           put( standard_error, outLine );
+           fullErrorMessage := outLine & ASCII.LF;
+           --put( standard_error, outLine );
            outLine := null_unbounded_string;
         end if;
-        New_Line( standard_error );
+        --New_Line( standard_error );
      end if;
   end if;
 
@@ -670,7 +674,9 @@ begin
 
      -- Normal: Draw The Current Line
 
-     put_line( standard_error, toEscaped( cmdline ) );          -- current line
+     -- TODO: use correct newline (this is Linux)
+     fullErrorMessage := fullErrorMessage & toEscaped( cmdline );
+     --put_line( standard_error, toEscaped( cmdline ) );          -- current line
 
      -- Normal: Draw Error Pointer
 
@@ -683,11 +689,14 @@ begin
      outLine := outLine & ' ';                                  -- token start
   end if;
   outLine := outLine & msg;
-  put_line( standard_error, outLine );                          -- error msg
+  -- TODO: use correct newline (this is Linux)
+  fullErrorMessage := fullErrorMessage & ASCII.LF & outLine;
+  --put_line( standard_error, outLine );                          -- error msg
 
   -- If we're in a template and in debug mode, put the error message on the
   -- web page.
 
+  -- TODO: update this for HTML5
   if boolean( debugOpt ) and processingTemplate then
      put( "<table cellspacing=1 cellpadding=2 border=1 summary=""SparForte Error"">" );
      put( "<tr>" );
@@ -708,6 +717,7 @@ begin
   last_status := 0;
   --token := eof_t;                                             -- stop parser
 end err;
+
 
 --  RAISE EXCEPTION
 --
@@ -783,14 +793,16 @@ begin
                end if;
                outLine := outLine & ToEscaped( blocks( i ).blockName );
            end loop;
-           put( standard_error, outLine );
+           fullErrorMessage := outLine & ASCII.LF;
+           --put( standard_error, outLine );
            outLine := null_unbounded_string;
         else
            outLine := outLine & "script";
-           put( standard_error, outLine );
+           fullErrorMessage := outLine & ASCII.LF;
+           --put( standard_error, outLine );
            outLine := null_unbounded_string;
         end if;
-        New_Line( standard_error );
+        --New_Line( standard_error );
      end if;
   end if;
 
@@ -802,7 +814,8 @@ begin
 
      -- Normal: Draw The Current Line
 
-     put_line( standard_error, toEscaped( cmdline ) );          -- current line
+     fullErrorMessage := fullErrorMessage & toEscaped( cmdline );
+     --put_line( standard_error, toEscaped( cmdline ) );          -- current line
 
      -- Normal: Draw Error Pointer
 
@@ -815,11 +828,13 @@ begin
      outLine := outLine & ' ';                                  -- token start
   end if;
   outLine := outLine & msg;
-  put_line( standard_error, outLine );                          -- error msg
+  fullErrorMessage := fullErrorMessage & ASCII.LF & outLine;
+  --put_line( standard_error, outLine );                          -- error msg
 
   -- If we're in a template and in debug mode, put the error message on the
   -- web page.
 
+  -- TODO: update for HTML5
   if boolean( debugOpt ) and processingTemplate then
      put( "<table cellspacing=1 cellpadding=2 border=1 summary=""SparForte Exception"">" );
      put( "<tr>" );
@@ -4445,6 +4460,7 @@ begin
   scannerState.itself_type := itself_type;
   scannerState.last_output := last_output;
   scannerState.last_output_type := last_output_type;
+  scannerState.err_exception := err_exception;
   if token = symbol_t or token = strlit_t or token = charlit_t or token = number_t or token = word_t then
      scannerState.value := identifiers( token ).value;
   end if;
@@ -4462,6 +4478,7 @@ begin
   itself_type := scannerState.itself_type;
   last_output := scannerState.last_output;
   last_output_type := scannerState.last_output_type;
+  err_exception := scannerState.err_exception;
   if token = symbol_t or token = strlit_t or token = charlit_t or token = number_t or token = word_t then
      identifiers( token ).value := scannerState.value;
   end if;

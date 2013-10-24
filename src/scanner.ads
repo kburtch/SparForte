@@ -448,6 +448,7 @@ type aScannerState is record
      itself_type : identifier;         -- type of @ or procedure identifier
      last_output : unbounded_string;   -- result of last output
      last_output_type : identifier;    -- type of last output
+     err_exception : identifier;       -- exception occurrence (if any)
 end record;
 
 type aScriptState is record

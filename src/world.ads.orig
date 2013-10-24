@@ -126,9 +126,10 @@ commandLineSource : constant string := "Command";
 -- Error Handling
 ------------------------------------------------------------------------------
 
--- error_type    : anExceptionType;          -- type of exception
-err_message   : unbounded_string;         -- last error message
-err_exception : identifier;               -- the exception else eof_t for none
+-- error_type    : anExceptionType;                       -- type of exception
+err_message      : unbounded_string;                     -- last error message
+fullErrorMessage : unbounded_string;                -- same with location info
+err_exception    : identifier;            -- the exception else eof_t for none
 
 BAD_PROFILE : exception;
 
