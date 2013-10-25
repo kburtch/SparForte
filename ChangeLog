@@ -36,10 +36,10 @@ CHANGES SINCE 1.4
 
 4. New: get_immediate.  Not fully working, doesn't support files. [testing needed] [docs needed].
 
-5. New: exception declarations.  "exception" may be followed by "with" and include a status code and default message.  The extension is not allowed with pragma ada_95. [testing needed] [docs needed]
+5. New: exception declarations.  "exception" may be followed by "with" and include a default message and use for a status code.  The extension is not allowed with pragma ada_95. [testing needed]
 
-4. New: exception handlers accept exception names. [testing needed] [docs needed]
+4. New: exception handlers accept exception names. [testing needed] 
 
-5. New: raise command (beside re-raising in handlers).  The exception may be followed by "with" and a message, as in Ada 2005.  The extension is not allowed with pragma ada_95. [testing needed] [docs needed]
+5. New: raise command (beside re-raising in handlers).  The exception may be followed by "with" and a message, as in Ada 2005.  The extension is not allowed with pragma ada_95. [testing needed] 
 
 

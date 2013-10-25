@@ -1209,11 +1209,11 @@ begin
      Put_Line( "  delay             is_open         procedure           typeset          " );
      Put_Line( "  delete            jobs            put                 units            " );
      Put_Line( "  directory_operations keys         put_line            unset                " );
-     Put_Line( "  end_of_file       line            reset               variables        " );
-     Put_Line( "  end_of_line       logout          records             wait             " );
-     Put_Line( "  enums             loop            return              while            " );
-     Put_Line( "  env               memcache        set_input           ""?""            " );
-     Put_Line( "                                                        gnat.cgi         " );
+     Put_Line( "  end_of_file       line            raise               variables        " );
+     Put_Line( "  end_of_line       logout          reset               wait             " );
+     Put_Line( "  enums             loop            records             while            " );
+     Put_Line( "  env               memcache        return              ""?""            " );
+     Put_Line( "                                    set_input           gnat.cgi         " );
      New_Line;
      Put_Line( "You can also type an O/S word or a SparForte script name." );
 end helpMain;
@@ -1816,6 +1816,13 @@ begin
      Put_Line( "records - records package functions" );
      New_Line;
      Put_Line( "  to_record( r, s )        to_json( s, r )" );
+     New_Line;
+  elsif helpTopic = "raise" then
+     Put_Line( "raise [e [with s] ] - raise (throw) an exception" );
+     New_Line;
+     Put_Line( "  raise   - re-raise an exception in an exception handler" );
+     Put_Line( "  raise e - raise exception e" );
+     Put_Line( "  raise e with s - raise exception e with new message s" );
      New_Line;
   elsif helpTopic = "reset" then
      Put_Line( "reset - reopen a file" );

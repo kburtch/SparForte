@@ -2685,7 +2685,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean ) 
   -- Syntax: declaration = " : anonymous-array
   -- Syntax: declaration = " : array-declaration
   -- Syntax: declaration = " : record-declaration
-  -- Syntax: declaration = " : exception [with err code "," message]
+  -- Syntax: declaration = " : exception [with message use status]
   -- assigns type of identifier and value (if assignment part)
   -- Note: in some cases, the variable id may change.
 
@@ -2710,6 +2710,8 @@ begin
        exception_status : unbounded_string;
        type esc is new natural range 0..255;
        exception_status_code : esc := 1;
+       messageType : identifier;
+       statusType  : identifier;
      begin
         var_name := identifiers( id ).name;                 -- remember name
         discardUnusedIdentifier( id );                      -- discard variable
@@ -2719,16 +2721,22 @@ begin
                  optional_bold( "pragam ada_95" ) );
            end if;
            expect( with_t );
-           exception_status := identifiers( token ).value;
-           expect( number_t );
-           expect( symbol_t, "," );
-           default_message := identifiers( token ).value;
-           expect( strlit_t );
-           begin
-             exception_status_code := esc'value( to_string( exception_status ) );
-           exception when others =>
-             err( "exception status code out of range" );
-           end;
+           ParseExpression( default_message, messageType );
+           if uniTypesOK( messageType, uni_string_t ) then
+              expect( use_t );
+              ParseExpression( exception_status, statusType );
+              if baseTypesOK( statusType, natural_t ) then
+                 null;
+              end if;
+           end if;
+           -- expression value has no meaning except as run-time
+           if isExecutingCommand then
+              begin
+                exception_status_code := esc'value( to_string( exception_status ) );
+              exception when others =>
+                err( "exception status code " & optional_bold( to_string( exception_status ) ) & " is out-of-range" );
+              end;
+           end if;
         end if;
         if not error_found then
            declareIdent( id, var_name, exception_t, exceptionClass ); -- declare var
@@ -4492,12 +4500,12 @@ end ParseDeclarations;
 procedure ParseRestOfRaise is
   id : identifier;
   with_text : unbounded_string;
+  withTextType : identifier;
 begin
   -- re-raise?
   if token = symbol_t and identifiers( token ).value = to_unbounded_string( ";" ) then
      err( "re-raise is not in an exception handler" );
   else
-
      if identifiers( token ).class /= exceptionClass then
         err( optional_bold( to_string( identifiers( token ).name ) ) & " is not an exception" );
      else
@@ -4507,8 +4515,10 @@ begin
               err( "with not allowed with " & optional_bold( "pragma ada_95" ) );
            end if;
            expect( with_t );
-           with_text := identifiers( token ).value;
-           expect( strlit_t );
+           ParseExpression( with_text, withTextType );
+           if uniTypesOK( withTextType, uni_string_t ) then
+              null;
+           end if;
         end if;
      end if;
      if isExecutingCommand then
@@ -4675,7 +4685,9 @@ begin
      if trace then
         put_trace( "exception handler running" );
      end if;
-     occurrence_exception_id := err_exception; -- save the exception id
+     -- save the exception id
+     -- if this is a regular error, there will be no exception id
+     occurrence_exception_id := err_exception;
      occurrence_message := err_message;
      occurrence_status := last_status;
   end if;
@@ -4731,7 +4743,10 @@ begin
     exit when token = eof_t or token = end_t;
   end loop;
   -- no handler found?  restore the error flag
-  if not found_exception and handling_exceptions then
+  if not handled_exception and handling_exceptions then
+     if trace then
+        put_trace( "no appropriate handler was found" );
+     end if;
      error_found := true;
   end if;
 end ParseExceptionHandler;
