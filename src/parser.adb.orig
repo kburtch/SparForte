@@ -2721,6 +2721,9 @@ begin
                  optional_bold( "pragam ada_95" ) );
            end if;
            expect( with_t );
+           if token = use_t then
+              err( "with message missing" );
+           end if;
            ParseExpression( default_message, messageType );
            if uniTypesOK( messageType, uni_string_t ) then
               expect( use_t );
@@ -2734,9 +2737,11 @@ begin
               begin
                 exception_status_code := esc'value( to_string( exception_status ) );
               exception when others =>
-                err( "exception status code " & optional_bold( to_string( exception_status ) ) & " is out-of-range" );
+                err( "exception status code " & optional_bold( to_string( trim( exception_status, ada.strings.both ) ) ) & " is out-of-range 0..255" );
               end;
            end if;
+        elsif token /= symbol_t and identifiers( token ).value /= ";" then
+           err( "with or ';' expected" );
         end if;
         if not error_found then
            declareIdent( id, var_name, exception_t, exceptionClass ); -- declare var
@@ -4519,6 +4524,8 @@ begin
            if uniTypesOK( withTextType, uni_string_t ) then
               null;
            end if;
+        elsif token /= symbol_t and identifiers( token ).value /= ";" then
+           err( "with or ';' expected" );
         end if;
      end if;
      if isExecutingCommand then

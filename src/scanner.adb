@@ -2182,6 +2182,11 @@ begin
   elsif identifiers( original ).kind = new_t then
         return new_t;
 
+  -- exceptions are unique
+
+  elsif identifiers( original ).kind = exception_t then
+        return exception_t;
+
   -- safety check: keywords have no type
 
   elsif identifiers( original ).kind = keyword_t then
@@ -2230,6 +2235,11 @@ begin
   elsif identifiers( original ).kind = new_t then
         return new_t;
 
+  -- exceptions are unique
+
+  elsif identifiers( original ).kind = exception_t then
+        return exception_t;
+
   -- safety check: keywords have no type
 
   elsif identifiers( original ).kind = keyword_t then
@@ -2277,6 +2287,8 @@ begin
      return "procedure";                                      -- "procedure"
   elsif class = taskClass then                                -- subClass?
      return "task";                                           -- "task"
+  elsif class = exceptionClass then                           -- exceptionClass?
+     return "exception";                                      -- "exception"
   else                                                        -- otherwise
      return "variable";                                       -- "variable"
   end if;
@@ -2340,7 +2352,7 @@ function class_ok( id : identifier; c1,c2,c3 : anIdentifierClass ) return boolea
 begin
   if identifiers( id ).class /= c1 and identifiers( id ).class /= c2 and identifiers( id ).class /= c3 then
      if id = eof_t then
-        err( "internal error: eof given to class_ok(2)" );
+        err( "internal error: eof given to class_ok(3)" );
      elsif id < reserved_top then
         err_previous( "a " & bold( "keyword" ) &
            " is not a " &
