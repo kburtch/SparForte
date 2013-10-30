@@ -2852,9 +2852,14 @@ begin
        end if;
      end;
 
+     -- exceptions are a special case because they are a keyword
+
+     if right_type = exception_t then
+        err( "exceptions cannot be assigned" );
+
      -- command types have special limitations
 
-     if getBaseType( type_token ) = command_t then
+     elsif getBaseType( type_token ) = command_t then
         if baseTypesOk( uni_string_t, right_type ) then
            type_token := uni_string_t; -- pretend it's a string
            if not C_is_executable_file( to_string( expr_value ) & ASCII.NUL ) then
@@ -3660,10 +3665,16 @@ begin
    end if;
    if token = is_t then
       expect( is_t );
-      ParseIdentifier( typeid );
+      if token = exception_t then
+         err( "types cannot be changed to an exception" );
+      else
+         ParseIdentifier( typeid );
+      end if;
    end if;
    if isExecutingCommand then
-      if typeid = eof_t then
+      if identifiers( id ).kind = exception_t then
+         err( "exception types cannot be changed to another type" );
+      elsif typeid = eof_t then
          identifiers( id ).kind := universal_t;
       elsif identifiers( id ).list then
          err( "typeset with array types not yet implemented" );
@@ -6558,7 +6569,13 @@ begin
   --      err( "'" & to_string( expr_value) & "' is not numeric" );
   --   end;
   -- elsif baseTypesOk( var_kind, right_type ) then
-  if baseTypesOk( var_kind, right_type ) then
+
+  -- Assigning to an exception variable will be flagged as illegal, but we may
+  -- try to assign an exception to a universal type.  We need to flag that as
+  -- a special case
+  if right_type = exception_t then
+     err( "exceptions cannot be assigned" );
+  elsif baseTypesOk( var_kind, right_type ) then
      if isExecutingCommand then
         expr_value := castToType( expr_value, var_kind );
      end if;

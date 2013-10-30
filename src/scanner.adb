@@ -2184,7 +2184,7 @@ begin
 
   -- exceptions are unique
 
-  elsif identifiers( original ).kind = exception_t then
+  elsif original = exception_t then
         return exception_t;
 
   -- safety check: keywords have no type
@@ -2297,10 +2297,15 @@ end getClassName;
 function class_ok( id : identifier; class : anIdentifierClass ) return boolean is
   -- Check if identifier matches a certain class.  If the identifier is
   -- of another class, display an error message and return false.
+  -- Exception is a special case because it is a keyword.
 begin
   if identifiers( id ).class /= class then
      if id = eof_t then
         err( "internal error: eof given to class_ok(1)" );
+     elsif id = exception_t then
+        err_previous( "an " & bold( "exception" ) &
+           " is not a " &
+           getClassName( class ) );
      elsif id < reserved_top then
         err_previous( "a " & bold( "keyword" ) &
            " is not a " &
@@ -2321,10 +2326,17 @@ end class_ok;
 function class_ok( id : identifier; c1,c2 : anIdentifierClass ) return boolean is
   -- Check if identifier matches one of two classes.  If the identifier is of
   -- another class, display an error message and return false.
+  -- Exception is a special case because it is a keyword.
 begin
   if identifiers( id ).class /= c1 and identifiers( id ).class /= c2 then
      if id = eof_t then
         err( "internal error: eof given to class_ok(2)" );
+     elsif id = exception_t then
+        err_previous( "an " & bold( "exception" ) &
+           " is not a " &
+           getClassName( c1 ) &
+           " or a " &
+           getClassName( c2 ) );
      elsif id < reserved_top then
         err_previous( "a " & bold( "keyword" ) &
            " is not a " &
@@ -2349,10 +2361,19 @@ end class_ok;
 function class_ok( id : identifier; c1,c2,c3 : anIdentifierClass ) return boolean is
   -- Check if identifier matches one of two classes.  If the identifier is of
   -- another class, display an error message and return false.
+  -- Exception is a special case because it is a keyword.
 begin
   if identifiers( id ).class /= c1 and identifiers( id ).class /= c2 and identifiers( id ).class /= c3 then
      if id = eof_t then
         err( "internal error: eof given to class_ok(3)" );
+     elsif id = exception_t then
+        err_previous( "an " & bold( "exception" ) &
+           " is not a " &
+           getClassName( c1 ) &
+           ", " &
+           getClassName( c2 ) &
+           " or a " &
+           getClassName( c3 ) );
      elsif id < reserved_top then
         err_previous( "a " & bold( "keyword" ) &
            " is not a " &
@@ -2387,9 +2408,12 @@ function uniTypesOk( leftType, rightType : identifier ) return boolean is
 begin
 
   -- Basic checks: we're expecting a type, subtype or array type.  Unversal
-  -- typeless is always a match.
+  -- typeless is always a match.  Exceptions are a special case as they
+  -- are a keyword not a data type.
 
-  if not class_ok( leftType, typeClass, subClass ) then
+  if leftType = exception_t or rightType = exception_t then
+     null;
+  elsif not class_ok( leftType, typeClass, subClass ) then
      return false;
   elsif not class_ok( rightType, typeClass, subClass ) then
      return false;
