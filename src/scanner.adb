@@ -65,7 +65,8 @@ with system,
     parser_dirops,
     parser_memcache,
     parser_gnat_crc,
-    parser_gnat_cgi;
+    parser_gnat_cgi,
+    parser_exceptions;
 use ada.text_io,
     ada.integer_text_io,
     ada.command_line,
@@ -105,7 +106,8 @@ use ada.text_io,
     parser_dirops,
     parser_memcache,
     parser_gnat_crc,
-    parser_gnat_cgi;
+    parser_gnat_cgi,
+    parser_exceptions;
 
 pragma Optimize( time );
 
@@ -1175,6 +1177,7 @@ end dumpSymbolTable;
 procedure shutdownScanner is
 begin
 
+  ShutdownExceptions;
   ShutdownGnatCGI;
   ShutdownSound;
   ShutdownGnatCrc;
@@ -1835,6 +1838,7 @@ begin
   StartupGnatCrc;
   StartupSound;
   StartupGnatCGI;
+  StartupExceptions;
 
   -- Declare all Environment Variables
   --
@@ -6206,6 +6210,9 @@ begin
        exit when cmdpos > length( command );  -- ignore if at end of line
     end loop;
     lastpos := cmdpos-1;            -- actually, first non-whitespace char
+    if lastpos+tabAdjust > 80 then
+       err_tokenize( "style issue: large identation can hide text beyond right display margin", to_string( command ) );
+    end if;
     if lastpos+tabAdjust > 254 then -- hopefully, never, but harmless
        lastpos := 254-tabAdjust;    -- to truncate leading indentation
     end if;

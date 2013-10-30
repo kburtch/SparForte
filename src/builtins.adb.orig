@@ -1213,7 +1213,7 @@ begin
      Put_Line( "  end_of_line       logout          reset               wait             " );
      Put_Line( "  enums             loop            records             while            " );
      Put_Line( "  env               memcache        return              ""?""            " );
-     Put_Line( "                                    set_input           gnat.cgi         " );
+     Put_Line( "  exceptions                        set_input           gnat.cgi         " );
      New_Line;
      Put_Line( "You can also type an O/S word or a SparForte script name." );
 end helpMain;
@@ -1591,6 +1591,11 @@ begin
      Put_Line( "  " & bold( "env" ) & " [identifier]" );
      Put_Line( "  " & bold( "env" ) & " identifier [identifier...]" );
      Put_Line( "  " & bold( "env" ) & " (identifier [, identifier...])" );
+  elsif helpTopic = "exceptions" then
+     Put_Line( "exceptions - exceptions package functions" );
+     New_Line;
+     Put_Line( "  s := exceptions.exception_name        s := exceptions.exception_info" );
+     Put_Line( "  n := exceptions.exception_status_code" );
   elsif helpTopic = "exit" then
      Put_Line( "exit - break out of a loop" );
      Put_Line( "  " & bold( "exit" ) & " or " &

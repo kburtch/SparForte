@@ -2402,6 +2402,9 @@ begin
   end if;
   expect( symbol_t, ")" );                                  -- finished ind
   expect( of_t );
+  if token = exception_t then
+     err( "arrays of exceptions are not allowed" );
+  end if;
   ParseIdentifier( elementType );
 
   -- Declare anonymous type in symbol table and array table
@@ -2680,7 +2683,7 @@ begin
 
 end ParseRecordDeclaration;
 
-procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean ) is
+procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; exceptions : boolean ) is
   -- Syntax: declaration = " : [aliased|constant] ident assign-part"
   -- Syntax: declaration = " : anonymous-array
   -- Syntax: declaration = " : array-declaration
@@ -2690,6 +2693,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean ) 
   -- Note: in some cases, the variable id may change.
 
   -- anon_arrays => actually, any nested structure allowed? for records
+  -- exceptions => exceptions not allowed in records
 
   type_token    : identifier;
   expr_value    : unbounded_string;
@@ -2704,50 +2708,54 @@ begin
 
   if token = exception_t then                          -- handle exception
      expect( exception_t );
-     declare
-       var_name : unbounded_string;
-       default_message : unbounded_string;
-       exception_status : unbounded_string;
-       type esc is new natural range 0..255;
-       exception_status_code : esc := 1;
-       messageType : identifier;
-       statusType  : identifier;
-     begin
-        var_name := identifiers( id ).name;                 -- remember name
-        discardUnusedIdentifier( id );                      -- discard variable
-        if token = with_t then
-           if onlyAda95 then
-              err( "exception with not allowed with " &
-                 optional_bold( "pragam ada_95" ) );
-           end if;
-           expect( with_t );
-           if token = use_t then
-              err( "with message missing" );
-           end if;
-           ParseExpression( default_message, messageType );
-           if uniTypesOK( messageType, uni_string_t ) then
-              expect( use_t );
-              ParseExpression( exception_status, statusType );
-              if baseTypesOK( statusType, natural_t ) then
-                 null;
-              end if;
-           end if;
-           -- expression value has no meaning except as run-time
-           if isExecutingCommand then
-              begin
-                exception_status_code := esc'value( to_string( exception_status ) );
-              exception when others =>
-                err( "exception status code " & optional_bold( to_string( trim( exception_status, ada.strings.both ) ) ) & " is out-of-range 0..255" );
-              end;
-           end if;
-        elsif token /= symbol_t and identifiers( token ).value /= ";" then
-           err( "with or ';' expected" );
-        end if;
-        if not error_found then
-           declareIdent( id, var_name, exception_t, exceptionClass ); -- declare var
-           identifiers( id ).value := character'val( exception_status_code ) & default_message;
-        end if;
-     end;
+     if not exceptions then                            --  not permitted?
+        err( "exceptions are not allowed" );
+     else
+       declare
+         var_name : unbounded_string;
+         default_message : unbounded_string;
+         exception_status : unbounded_string;
+         type esc is new natural range 0..255;
+         exception_status_code : esc := 1;
+         messageType : identifier;
+         statusType  : identifier;
+       begin
+          var_name := identifiers( id ).name;                 -- remember name
+          discardUnusedIdentifier( id );                      -- discard variable
+          if token = with_t then
+             if onlyAda95 then
+                err( "exception with not allowed with " &
+                   optional_bold( "pragam ada_95" ) );
+             end if;
+             expect( with_t );
+             if token = use_t then
+                err( "with message missing" );
+             end if;
+             ParseExpression( default_message, messageType );
+             if uniTypesOK( messageType, uni_string_t ) then
+                expect( use_t );
+                ParseExpression( exception_status, statusType );
+                if baseTypesOK( statusType, natural_t ) then
+                   null;
+                end if;
+             end if;
+             -- expression value has no meaning except as run-time
+             if isExecutingCommand then
+                begin
+                  exception_status_code := esc'value( to_string( exception_status ) );
+                exception when others =>
+                  err( "exception status code " & optional_bold( to_string( trim( exception_status, ada.strings.both ) ) ) & " is out-of-range 0..255" );
+                end;
+             end if;
+          elsif token /= symbol_t and identifiers( token ).value /= ";" then
+             err( "with or ';' expected" );
+          end if;
+          if not error_found then
+             declareIdent( id, var_name, exception_t, exceptionClass ); -- declare var
+             identifiers( id ).value := character'val( exception_status_code ) & default_message;
+          end if;
+       end;
+     end if;
      return;
   end if;
 
@@ -2765,7 +2773,7 @@ begin
 
   if token = array_t then                              -- anonymous array?
      if not anon_arrays then
-        err( "anonymous arrays not allowed" );
+        err( "anonymous arrays are not allowed" );
      end if;
      ParseAnonymousArray( id );                        -- handle it
      return;                                           --  and nothing more
@@ -2918,7 +2926,7 @@ procedure ParseRecordFields( record_id : identifier; field_no : in out integer )
 begin
   -- ParseNewIdentifier( field_id );
   ParseFieldIdentifier( record_id, field_id );
-  ParseDeclarationPart( field_id, anon_arrays => false );
+  ParseDeclarationPart( field_id, anon_arrays => false, exceptions => false );
   identifiers( field_id ).class := subClass;        -- it is a subtype
   identifiers( field_id ).field_of := record_id;    -- it is a field
   identifiers( field_id ).value := to_unbounded_string( field_no'img );
@@ -2995,6 +3003,9 @@ begin
    end if;
    expect( symbol_t, ")" );
    expect( of_t );
+   if token = exception_t then
+      err( "arrays of exceptions are not allowed" );
+   end if;
    ParseIdentifier( elementType );                       -- parent type name
 
    -- Finish declaring the array
@@ -4504,7 +4515,7 @@ begin
         syntax_check := save_syntax_check;
      else
         ParseNewIdentifier( var_id );
-        ParseDeclarationPart( var_id, anon_arrays => true ); -- var id may change...
+        ParseDeclarationPart( var_id, anon_arrays => true, exceptions => true ); -- var id may change...
         expectSemicolon;
      end if;
   end loop;
@@ -6675,7 +6686,7 @@ begin
       end if;
       return;
    end if;
-   ParseDeclarationPart( var_id, anon_arrays => true ); -- var id may change...won't effect next stmt
+   ParseDeclarationPart( var_id, anon_arrays => true, exceptions => true ); -- var id may change...won't effect next stmt
    if error_found then
       discardUnusedIdentifier( var_id );
    end if;

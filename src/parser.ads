@@ -52,7 +52,7 @@ procedure ParseRelation( re : out unbounded_string; rel_type : out identifier );
 procedure ParseExpressionOperator( op : out identifier );
 procedure ParseExpression( ex : out unbounded_string; expr_type : out identifier );
 procedure ParseAssignPart( expr_value : out unbounded_string; expr_type : out identifier );
-procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean );
+procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; exceptions : boolean );
 procedure ParseType;
 procedure ParseSubtype;
 procedure ParseIfBlock;

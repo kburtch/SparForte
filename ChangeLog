@@ -42,4 +42,7 @@ CHANGES SINCE 1.4
 
 5. New: raise command (beside re-raising in handlers).  The exception may be followed by "with" and a message, as in Ada 2005.  The extension is not allowed with pragma ada_95. [testing needed] 
 
+6. New: exceptions package.  exceptions.exception_name, exceptions.exception_info, exceptions.exception_status_code.
+
+7. New: style issue: large indentations now reported as an error
 
