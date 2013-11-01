@@ -906,8 +906,6 @@ pragma assert( % = " $123.45" );
 -- null statement
 
 null;
--- null with trailing spaces after the command
-null;   
 
 -- delay statement
 
@@ -1423,28 +1421,28 @@ begin
   pragma assert( s3(3) = "box" );
   -- special chars
   s1(1) := "" & ASCII.Quotation;
-  arrays.to_json( js, s1 ); 
+  arrays.to_json( js, s1 );
   pragma assert( js = "[" & ASCII.Quotation & "\" & ASCII.Quotation & ASCII.Quotation & "]" );
   s1(1) := "\";
-  arrays.to_json( js, s1 ); 
+  arrays.to_json( js, s1 );
   pragma assert( js = "[" & ASCII.Quotation & "\\" & ASCII.Quotation & "]" );
   s1(1) := "/";
-  arrays.to_json( js, s1 ); 
+  arrays.to_json( js, s1 );
   pragma assert( js = "[" & ASCII.Quotation & "\/" & ASCII.Quotation & "]" );
   s1(1) := "" & ASCII.BS;
-  arrays.to_json( js, s1 ); 
+  arrays.to_json( js, s1 );
   pragma assert( js = "[" & ASCII.Quotation & "\b" & ASCII.Quotation & "]" );
   s1(1) := "" & ASCII.FF;
-  arrays.to_json( js, s1 ); 
+  arrays.to_json( js, s1 );
   pragma assert( js = "[" & ASCII.Quotation & "\f" & ASCII.Quotation & "]" );
   s1(1) := "" & ASCII.LF;
-  arrays.to_json( js, s1 ); 
+  arrays.to_json( js, s1 );
   pragma assert( js = "[" & ASCII.Quotation & "\n" & ASCII.Quotation & "]" );
   s1(1) := "" & ASCII.CR;
-  arrays.to_json( js, s1 ); 
+  arrays.to_json( js, s1 );
   pragma assert( js = "[" & ASCII.Quotation & "\r" & ASCII.Quotation & "]" );
   s1(1) := "" & ASCII.HT;
-  arrays.to_json( js, s1 ); 
+  arrays.to_json( js, s1 );
   pragma assert( js = "[" & ASCII.Quotation & "\t" & ASCII.Quotation & "]" );
   --
   arrays.to_array( s1, "[" & ASCII.Quotation & "\" & ASCII.Quotation & ASCII.Quotation & "]" );
@@ -2561,6 +2559,42 @@ begin
   pragma assert( i = 4 );
   i := fdivide_while( 4, 0 );
   pragma assert( i = 0 );
+end;
+
+declare
+  exc : exception;
+begin
+  raise exc;
+  exception when exc =>
+    null;
+end;
+
+declare
+  exc : exception with "foobar" use 2;
+begin
+  raise exc;
+  exception when exc =>
+    null;
+end;
+
+declare
+  exc : exception with "foobar" use 2;
+begin
+  raise exc;
+  exception when exc =>
+    pragma assert( exceptions.exception_name = "exc" );
+    pragma assert( exceptions.exception_status_code = 2 );
+    pragma assert( strings.index( exceptions.exception_info, "foobar" ) > 0 );
+end;
+
+declare
+  exc : exception with "foobar" use 3;
+begin
+  raise exc with "new message";
+  exception when exc =>
+    pragma assert( exceptions.exception_name = "exc" );
+    pragma assert( exceptions.exception_status_code = 3 );
+    pragma assert( strings.index( exceptions.exception_info, "new message" ) > 0 );
 end;
 
 -- integer casting

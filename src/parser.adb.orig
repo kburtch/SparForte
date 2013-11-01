@@ -4703,6 +4703,7 @@ procedure ParseExceptionHandler is
   occurrence_exception_id : identifier;
   occurrence_message      : unbounded_string;
   occurrence_status       : aStatusCode;
+  occurrence_full         : unbounded_string;
 begin
   handling_exceptions := (error_found and not done and not syntax_check);
 
@@ -4717,8 +4718,10 @@ begin
      -- save the exception id
      -- if this is a regular error, there will be no exception id
      occurrence_exception_id := err_exception;
+     err_exception := eof_t;
      occurrence_message := err_message;
      occurrence_status := last_status;
+     occurrence_full := fullErrorMessage;
   end if;
 
   -- parse the exception block and see if there's a matching case for this
@@ -4744,27 +4747,32 @@ begin
     else
        -- if we haven't found a case that matches, others always matches
        expect( others_t );
-       if not handled_exception then
-          found_exception := true;
-          if trace then
-             put_trace( "exception handler applying default case" );
+       if handling_exceptions then
+          if not handled_exception then
+             found_exception := true;
+             if trace then
+                put_trace( "exception handler applying default case" );
+             end if;
           end if;
        end if;
     end if;
     expect( symbol_t, "=>" );
     -- this case matches and we're handling exceptions? then handle it.
     -- otherwise, skip the exception handler block
-    if found_exception and handling_exceptions then
-       ParseExceptionBlock( occurrence_exception_id, occurrence_message, occurrence_status );
-       --ParseExceptionBlock( when_t );                -- run exception handler
-       found_exception := false;                          -- clear found flag
-       handled_exception := true;                 -- we handled the exception
-       if not error_found then                                 -- no re-raise?
-          err_exception := eof_t;                        -- discard occurrence
-          last_status := 0;                           -- and clear status code
-          if trace then
-             put_trace( "cleared exception occurrence" );
+    if handling_exceptions then
+       if found_exception then
+          ParseExceptionBlock( occurrence_exception_id, occurrence_message, occurrence_status );
+          found_exception := false;                          -- clear found flag
+          handled_exception := true;                 -- we handled the exception
+          if not error_found then                                 -- no re-raise?
+             err_exception := eof_t;                        -- discard occurrence
+             last_status := 0;                           -- and clear status code
+             if trace then
+                put_trace( "cleared exception occurrence" );
+             end if;
           end if;
+       else
+          SkipExceptionBlock;
        end if;
     else
        SkipExceptionBlock;
@@ -4772,11 +4780,21 @@ begin
     exit when token = eof_t or token = end_t;
   end loop;
   -- no handler found?  restore the error flag
-  if not handled_exception and handling_exceptions then
-     if trace then
-        put_trace( "no appropriate handler was found" );
+  -- if another error happened in the handler, it takes precidence
+  if handling_exceptions then
+     if not handled_exception then
+        if trace then
+           put_trace( "no appropriate handler was found" );
+        end if;
+        if not error_found then
+           -- restore the exception.  do the messages just to be safe
+           err_exception := occurrence_exception_id;
+           err_message := occurrence_message;
+           last_status := occurrence_status;
+           fullErrorMessage := occurrence_full;
+           error_found := true;
+        end if;
      end if;
-     error_found := true;
   end if;
 end ParseExceptionHandler;
 
@@ -8096,6 +8114,9 @@ begin
   --      trace := true;                               -- turn on trace
   --   end if;
   --   interpretScript( Argument( OptionOffset ) );    -- run the script
+     if error_found then
+        put_line( standard_error, fullErrorMessage );
+     end if;
   else
      syntax_check := true;                           -- check syntax only
      interpretScript( fullScriptPath );    -- check the script
