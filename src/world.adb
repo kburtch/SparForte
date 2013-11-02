@@ -347,6 +347,60 @@ begin
   end if;
 end declareReturnResult;
 
+procedure findException( name : unbounded_string; id : out identifier ) is
+-- search for a pre-existing exception with the same name
+-- while Ada allows two exceptions with the same name
+-- to overshadow each other, differentiating each other
+-- using dot notation, it's a hacky solution.  SparForte
+-- simply doesn't allow it.
+begin
+  id := eof_t;                                                  -- assume bad
+  for i in reverse 1..identifiers_top-1 loop                    -- from top
+      if i /= eof_t then
+         if identifiers( i ).name = name and                    -- exists and
+            identifiers( i ).kind = exception_t and not         -- and exception
+            identifiers( i ).deleted then                       -- not deleted?
+            id := i;                                            -- return id
+            exit;                                               -- we're done
+         end if;
+      end if;
+  end loop;
+end findException;
+
+procedure declareException( id : out identifier; name : unbounded_string;
+   default_message : unbounded_string; exception_status_code : anExceptionStatusCode ) is
+-- Declare an exception.  Check for the existence first with findException.
+begin
+  if identifiers_top = identifier'last then                     -- no room?
+     raise symbol_table_overflow;                               -- raise error
+  else                                                          -- otherwise
+     id := eof_t;                                               -- assume bad
+     id := identifiers_top;                                  -- return id
+     identifiers_top := identifiers_top+1;                   -- push stack
+     identifiers( id ) := declaration'(                      -- define
+       name     => name,                                     -- identifier
+       kind     => exception_t,
+       value    => character'val( exception_status_code ) & default_message,
+       class    => exceptionClass,
+       import   => false,
+       method   => none,
+       mapping  => none,
+       export   => false,
+       volatile => false,
+       limit    => false,
+       list     => false,
+       resource => false,
+       field_of => eof_t,
+       inspect  => false,
+       deleted  => false,
+       wasReferenced => false,
+       procCB => null,
+       funcCB => null
+     );
+  end if;
+end declareException;
+
+
 -- Type Conversions
 
 

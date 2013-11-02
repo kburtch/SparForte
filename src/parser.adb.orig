@@ -2715,8 +2715,7 @@ begin
          var_name : unbounded_string;
          default_message : unbounded_string;
          exception_status : unbounded_string;
-         type esc is new natural range 0..255;
-         exception_status_code : esc := 1;
+         exception_status_code : anExceptionStatusCode := 1;
          messageType : identifier;
          statusType  : identifier;
        begin
@@ -2742,7 +2741,7 @@ begin
              -- expression value has no meaning except as run-time
              if isExecutingCommand then
                 begin
-                  exception_status_code := esc'value( to_string( exception_status ) );
+                  exception_status_code := anExceptionStatusCode'value( to_string( exception_status ) );
                 exception when others =>
                   err( "exception status code " & optional_bold( to_string( trim( exception_status, ada.strings.both ) ) ) & " is out-of-range 0..255" );
                 end;
@@ -2751,8 +2750,13 @@ begin
              err( "with or ';' expected" );
           end if;
           if not error_found then
-             declareIdent( id, var_name, exception_t, exceptionClass ); -- declare var
-             identifiers( id ).value := character'val( exception_status_code ) & default_message;
+             findException( var_name, id );
+             if id = eof_t then
+                declareException( id, var_name, default_message, exception_status_code ); -- declare var
+             else
+                err( "exception " & optional_bold( to_string( var_name ) ) &
+                     " already exists in a greater scope" );
+             end if;
           end if;
        end;
      end if;

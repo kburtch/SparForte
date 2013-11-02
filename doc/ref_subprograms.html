@@ -389,6 +389,15 @@ the main program and is not handled.</p>
 
 <p>The with/use clause is not available with pragma ada_95.</p>
 
+<p>Unlike other variables, two exceptions with the same name declared in
+overlapping scopes are not allowed.  This is to make it easier to
+identify which exception was raised.  For example, if you had a global
+exception named "disk_space_error" you cannot declare another
+"disk_space_error" in a procedure.</p>
+
+<p><b>Ada</b>: Ada permits exceptions with the same name in overlapping
+scopes.  It differentiates between them with dotted notation.</p>
+
 <h4>Exception Handlers</h4>
 
 <p>Exception handlers are created using an <b>exception</b> section.  Once

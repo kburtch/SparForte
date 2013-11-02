@@ -582,6 +582,15 @@ value : unbounded_string );
 procedure declareReturnResult( id : out identifier; func_id : identifier );
 -- Declare space for the function return result.
 
+type anExceptionStatusCode is new natural range 0..255;
+
+procedure findException( name : unbounded_string; id : out identifier );
+-- search for a pre-existing exception with the same name
+
+procedure declareException( id : out identifier; name : unbounded_string;
+   default_message : unbounded_string; exception_status_code : anExceptionStatusCode );
+-- Declare an exception.  Check with findException first.
+
 procedure findIdent( name : unbounded_string; id : out identifier );
 -- find an identifier, eof_t if failed
 

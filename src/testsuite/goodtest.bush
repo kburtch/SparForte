@@ -2597,6 +2597,20 @@ begin
     pragma assert( strings.index( exceptions.exception_info, "new message" ) > 0 );
 end;
 
+-- exc is ok if the outer exc is not an exception
+
+declare
+  exc : integer;
+begin
+  declare
+    exc : exception;
+  begin
+    null;
+  exception when exc => null;
+  end;
+  exc := 0;
+end;
+
 -- integer casting
 -- in bush, literals are universal_numeric's
 
