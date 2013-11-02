@@ -123,13 +123,8 @@ commandLineSource : constant string := "Command";
 -- name for a "script" (command) typed at the command prompt
 
 ------------------------------------------------------------------------------
--- Error Handling
+-- Exceptions
 ------------------------------------------------------------------------------
-
--- error_type    : anExceptionType;                       -- type of exception
-err_message      : unbounded_string;                     -- last error message
-fullErrorMessage : unbounded_string;                -- same with location info
-err_exception    : identifier;            -- the exception else eof_t for none
 
 BAD_PROFILE : exception;
 
@@ -271,6 +266,18 @@ type declaration is record
      procCB   : aBuiltinProcedureCallback := null;
      funcCB   : aBuiltinFunctionCallback := null;
 end record;
+
+
+------------------------------------------------------------------------------
+-- Error Handling
+------------------------------------------------------------------------------
+
+-- error_type    : anExceptionType;                       -- type of exception
+err_message      : unbounded_string;                     -- last error message
+fullErrorMessage : unbounded_string;                -- same with location info
+err_exception    : declaration;           -- the exception else eof_t for none
+-- err_exception must be a declaration because it can be propogated out of
+-- the exception declaration scope
 
 
 ------------------------------------------------------------------------------

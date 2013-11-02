@@ -46,11 +46,13 @@ begin
   kind := string_t;
   expect( exceptions_exception_name_t );
   if isExecutingCommand then
-     if err_exception = eof_t then
+     if err_exception.deleted then
         result := null_unbounded_string;
      else
-        result := identifiers( err_exception ).name;
+        result := err_exception.name;
      end if;
+new_line; -- DEBUG
+put_line( "EXCEPTION NAME: " & to_string( result ) ); -- DEBUG
   end if;
 end ParseExceptionsExceptionName;
 
@@ -61,7 +63,7 @@ begin
   kind := string_t;
   expect( exceptions_exception_info_t );
   if isExecutingCommand then
-     if err_exception = eof_t then
+     if err_exception.deleted then
         result := null_unbounded_string;
      else
         result := fullErrorMessage;
@@ -76,10 +78,10 @@ begin
   kind := natural_t;
   expect( exceptions_exception_status_code_t );
   if isExecutingCommand then
-     if err_exception = eof_t then
+     if err_exception.deleted then
         result := to_unbounded_string( "0" );
      else
-        result := to_unbounded_string( long_float( character'pos( element( identifiers( err_exception ).value, 1 ) ) ) );
+        result := to_unbounded_string( long_float( character'pos( element( err_exception.value, 1 ) ) ) );
      end if;
   end if;
 end ParseExceptionsExceptionStatusCode;

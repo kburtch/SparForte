@@ -715,7 +715,7 @@ begin
      new_line;
   end if;
   error_found := true;                                          -- flag error
-  err_exception := eof_t;                                       -- not an exception
+  err_exception.name := null_unbounded_string;            -- not an exception
   last_status := 0;
   --token := eof_t;                                             -- stop parser
 end err;
@@ -1741,7 +1741,7 @@ begin
   identifiers_top := reserved_top;                            -- keep keywords
   blocks_top := block'first;                                  -- no blocks
   error_found := false;                                       -- no error
-  err_exception := eof_t;                                     -- no exception
+  err_exception.name := null_unbounded_string;                -- no exception
   onlyAda95 := false;                                         -- no Ada_95
   depreciatedMsg := Null_Unbounded_String;                    -- nothing dep.
   exit_block := false;                                        -- not exiting

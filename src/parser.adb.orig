@@ -2756,7 +2756,7 @@ begin
           end if;
        end;
      end if;
-     return;
+     return; -- done
   end if;
 
   if token = aliased_t then                            -- aliased not supported
@@ -4558,7 +4558,8 @@ begin
            end if;
         end if;
         -- record the exception id
-        err_exception := id;
+        err_exception := identifiers( id );
+        err_exception.deleted := false;
         if length( with_text ) > 0 then
            raise_exception( "raised " &
                 to_string( identifiers( id ).name ) &
@@ -4623,7 +4624,7 @@ end ParseBlock;
 -- parse an exception block
 
 --procedure ParseExceptionBlock( termid1, termid2 : identifier := keyword_t ) is
-procedure ParseExceptionBlock( occurrence_exception_id : identifier;
+procedure ParseExceptionBlock( occurrence_exception : declaration;
   occurrence_message      : unbounded_string;
   occurrence_status       : aStatusCode ) is
   -- Same as ParseBlock except raise is permitted
@@ -4638,7 +4639,7 @@ begin
         expect( raise_t );
         -- re-raise?  restore the exception occurrence
         if token = symbol_t and identifiers( token ).value = to_unbounded_string( ";" ) then
-           err_exception := occurrence_exception_id;
+           err_exception := occurrence_exception;
            err_message := occurrence_message;
            last_status := occurrence_status;
            expectSemicolon;
@@ -4669,13 +4670,16 @@ end ParseExceptionBlock;
 
 procedure SkipExceptionBlock is
   -- Same as SkipBlock except raise is permitted
+  pragma warnings( off );
+  null_declaration : declaration;
+  pragma warnings( on );
   old_error : boolean;
 begin
   if token = end_t or token = eof_t or token = when_t then
      err( "missing statement or command" );
   end if;
   if syntax_check then               -- if we're checking syntax
-     ParseExceptionBlock( eof_t, null_unbounded_string, 1 ); -- must process the block to look
+     ParseExceptionBlock( null_declaration, null_unbounded_string, 1 ); -- must process the block to look
      return;                         -- for syntax errors
   end if;
   old_error := syntax_check;
@@ -4700,10 +4704,10 @@ procedure ParseExceptionHandler is
   handling_exceptions : boolean;
   handled_exception   : boolean := false;
 
-  occurrence_exception_id : identifier;
-  occurrence_message      : unbounded_string;
-  occurrence_status       : aStatusCode;
-  occurrence_full         : unbounded_string;
+  occurrence_exception : declaration;
+  occurrence_message   : unbounded_string;
+  occurrence_status    : aStatusCode;
+  occurrence_full      : unbounded_string;
 begin
   handling_exceptions := (error_found and not done and not syntax_check);
 
@@ -4717,8 +4721,9 @@ begin
      end if;
      -- save the exception id
      -- if this is a regular error, there will be no exception id
-     occurrence_exception_id := err_exception;
-     err_exception := eof_t;
+     occurrence_exception := err_exception;
+-- TODO: an exception may be progated out of the declaration scope, leaving
+-- the position in the symbol table undefined
      occurrence_message := err_message;
      occurrence_status := last_status;
      occurrence_full := fullErrorMessage;
@@ -4734,7 +4739,9 @@ begin
     if token /= others_t then
        if identifiers( token ).class = exceptionClass then
           ParseIdentifier( formal_exception_id );
-          found_exception := formal_exception_id = err_exception;
+          -- TODO: a propogated exception that propogates but a new exception overlooks it.  The
+          -- exception name must be unique
+          found_exception := identifiers( formal_exception_id ).name = occurrence_exception.name;
           if found_exception then
              if trace then
                 put_trace( "exception handler applying case " & to_string( identifiers( formal_exception_id ).name ) );
@@ -4759,14 +4766,21 @@ begin
     expect( symbol_t, "=>" );
     -- this case matches and we're handling exceptions? then handle it.
     -- otherwise, skip the exception handler block
-    if handling_exceptions then
+    if handling_exceptions and not error_found then
        if found_exception then
-          ParseExceptionBlock( occurrence_exception_id, occurrence_message, occurrence_status );
+          ParseExceptionBlock( occurrence_exception, occurrence_message, occurrence_status );
           found_exception := false;                          -- clear found flag
           handled_exception := true;                 -- we handled the exception
-          if not error_found then                                 -- no re-raise?
-             err_exception := eof_t;                        -- discard occurrence
-             last_status := 0;                           -- and clear status code
+          if error_found and err_exception.deleted then     -- non-except error?
+             if trace then
+                put_trace( "an error occurred while handling the exception" );
+             end if;
+          elsif not error_found then                             -- no re-raise?
+             err_exception.deleted := true;                      -- mark handled
+             last_status := 0;                          -- and clear status code
+                                                      -- exception already clear
+             err_message := null_unbounded_string;                  -- clear any
+             fullErrorMessage := null_unbounded_string;              -- messages
              if trace then
                 put_trace( "cleared exception occurrence" );
              end if;
@@ -4781,14 +4795,18 @@ begin
   end loop;
   -- no handler found?  restore the error flag
   -- if another error happened in the handler, it takes precidence
-  if handling_exceptions then
-     if not handled_exception then
-        if trace then
-           put_trace( "no appropriate handler was found" );
-        end if;
-        if not error_found then
-           -- restore the exception.  do the messages just to be safe
-           err_exception := occurrence_exception_id;
+  if handling_exceptions then                       -- not syntax check, etc.?
+     if not handled_exception then                        -- no handler found?
+        if error_found then                                 -- error occurred?
+           null;                                       -- then can't propogate
+        else                                                      -- otherwise
+           if trace then                                            -- explain
+              put_trace( "no appropriate handler was found" );
+           end if;
+           -- propogate the exception
+           -- restore the exception unless a new exception or an error occurred.
+           -- do the messages just to be safe.
+           err_exception := occurrence_exception;
            err_message := occurrence_message;
            last_status := occurrence_status;
            fullErrorMessage := occurrence_full;
