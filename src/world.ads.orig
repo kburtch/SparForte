@@ -49,6 +49,17 @@ copyright : constant string :=  " Copyright (c)2001-2012 Free Software Foundatio
 
 random_generator : ada.numerics.float_random.generator;
 
+------------------------------------------------------------------------------
+-- Unbounded String Constants
+------------------------------------------------------------------------------
+
+--chain_count_str   : constant unbounded_string := to_unbounded_string( "SPARFORTE_CHAIN_COUNT" );
+--last_in_chain_str : constant unbounded_string := to_unbounded_string( "SPARFORTE_LAST_IN_CHAIN" );
+chain_count_str   : constant unbounded_string := to_unbounded_string( "chain count" );
+last_in_chain_str : constant unbounded_string := to_unbounded_string( "last in chain" );
+return_value_str  : constant unbounded_string := to_unbounded_string( "return value" );
+
+
 --
 -- Decimal type for formatted numbers
 --
@@ -95,6 +106,7 @@ error_found : boolean := false;           -- true if an error occurred
 done_sub    : boolean := false;           -- true if done a subprogram
 exit_block  : boolean := false;           -- true if "exit"ing
 last_status : aStatusCode := 0;           -- status of last shell command
+tabSize     : natural := 8;               -- how many spaces for a tab
 
 -- Source Files List
 --

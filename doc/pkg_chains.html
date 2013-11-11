@@ -4,11 +4,11 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <META NAME="description" CONTENT="SparForte language documentation">
-	<title>SparForte - Packages - Sound</title>
+	<title>SparForte - Packages - Chains</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 	<link rel="index" href="packages.html" />
-	<link rel="prev" href="pkg_sinfo.html" />
-	<link rel="next" href="pkg_stats.html" />
+	<link rel="prev" href="pkg_cgi.html" />
+	<link rel="next" href="pkg_cmdline.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -29,7 +29,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="pkg_records.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_sinfo.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_cgi.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_cmdline.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -41,35 +41,87 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-<h2><a NAME="4.4"></a>Sound Package</h2>
-<p>The SparForte sound package plays music and sounds and controls the sound hardware
-on your computer.  It currently uses gstreamer.</p>
+<h2><a NAME="4.14"></a>Chains Package</h2>
+
+<p>The SparForte built-in exceptions package provides subprograms to provide
+information about chains.  Use this to determine if your procedure is in a
+chain, which call is this in the chain, or how many times your procedure has
+been called in the chain.  This package currently only applies to user-defined
+procedures.</p>
+
+<p><u>Introduced</u>: SparForte 1.5<br>
+
+<p><u>GCC Ada Equivalent</u>: N/A (AdaScript extension)<br>
+
+<p>This package includes an enumerated type, <span style="code">chains.context</span>:</p>
+
+<ul>
+<li><b>chains.context_first</b> - this is the first call in the chain</li>
+<li><b>chains.context_middle</b> - this is neither the first nor last call in the chain</li>
+<li><b>chains.context_last</b> - this is the second call in the chain</li>
+<li><b>chains.not_in_chain</b> - this is not in a chain</li>
+</ul>
+
+<p>A procedure is in a chain if it was called from a chain.  Declare blocks will not change
+the results.  If the procedure calls a second procedure, the second procedure is not in a
+chain.</p>
+
+<p>For example,</p>
+
+<p class="code">my_proc( "A" ); my_proc( "B" ) @ ( "C" ) @ ( "D" );</p>
+
+<table cellspacing="0" cellpadding="3">
+<tr>
+  <td>Call</td>
+  <td>chains.in_chain</td>
+  <td>chains.chain_count</td>
+  <td>chains.chain_context</td>
+</tr><tr>
+  <td>my_proc( "A" )</td>
+  <td>false</td>
+  <td>exception</td>
+  <td>chains.not_in_chain</td>
+</tr><tr>
+  <td>my_proc( "B" )</td>
+  <td>true</td>
+  <td>1</td>
+  <td>chains.context_first</td>
+</tr><tr>
+  <td>my_proc( "C" )</td>
+  <td>true</td>
+  <td>2</td>
+  <td>chains.context_middle</td>
+</tr><tr>
+  <td>my_proc( "D" )</td>
+  <td>true</td>
+  <td>3</td>
+  <td>chains.context_last</td>
+</tr>
+</table>
 
         <center>
         <div class="code">
 <pre>
-  <a href="#sound.play">play( f [, p] )</a>
-  <a href="#sound.playcd">playcd [( f )]</a>
-  <a href="#sound.stopcd">stopcd</a>
+  <a href="#chains.chain_count">p := chains.chain_count</a>        <a href="#chains.chain_context">e := chains.chain_context</a>
+  <a href="#chains.in_chain">b := chains.in_chain</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the sound package</span>
+        <b>Help Command</b>: Contents of the chains package</span>
         </div>
         </div>
         </center>
 
-<a name="sound.play"></a><h3>sound.play( f [, p] )</h3>
+<a name="chains.chain_count"></a><h3>p := chains.chain_count</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Play a WAV or AU sound file through /dev/dsp.  If priority is given, use real-time scheduling to sechedule the playback priority.</p></td>
+<td><p>Return the ordinal position of this call in the chain.  The first call is 1.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">sound.play( "waterfall.wav" );</span></td>
+<td><p class="pkg_label">Example</td><td><span class="code">pos := chains.chain_count</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -77,43 +129,40 @@ on your computer.  It currently uses gstreamer.</p>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>f</span></td>
-<td><span>in</span></td>
-<td><span>universal_string</span></td>
-<td><span>required</span></td>
-<td><span>the sound file to play</span></td>
-</tr>
-<tr>
 <td><span>p</span></td>
-<td><span>in</span></td>
-<td><span>integer</span></td>
-<td><span>highest integer</span></td>
-<td><span>ignored.<br>Obsolete: will be removed</span></td>
+<td><span>return value</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the position in the chain</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
+<td><p>An exception is thrown if this is not in a chain</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This currently only works for built-in procedure chains.</p></td>
 </tr>
 </table>
 
-<a name="sound.playcd"></a><h3>sound.playcd [( f )]</h3>
+<a name="chains.chain_context"></a><h3>e := chains.chain_context</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Play an audio CD in /dev/cdrom (or an alternative CD device if specified).</p></td>
+<td><p>Return the relative position of the call in the chain, whether first, last or in the middle.
+This is useful when combined with a case statement to handle initialization or finalization for the
+chain.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">sound.playcd;</span></td>
+<td><p class="pkg_label">Example</td><td><span class="code">name := exceptions.exception_name</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -121,11 +170,11 @@ on your computer.  It currently uses gstreamer.</p>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>f</span></td>
-<td><span>in</span></td>
-<td><span>universal_string</span></td>
-<td><span>/dev/cdrom</span></td>
-<td><span>the name of the CD device</span></td>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span>chains.context</span></td>
+<td><span>required</span></td>
+<td><span>the relative position of the call</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -133,35 +182,54 @@ on your computer.  It currently uses gstreamer.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#sound.stopcd">sound.stopcd</a></p></td>
+<td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
+<td><p>Ada: Ada.Exceptions.Exception_Name<br>PHP: N/A</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This currently only works for built-in procedure chains.</p></td>
 </tr>
 </table>
 
-<a name="sound.stopcd"></a><h3>sound.stopcd [( f )]</h3>
+<a name="chains.in_chain"></a><h3>b := chains.in_chain</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Stop playing the current audio CD.</p></td>
+<td><p>Return true if this procedure is part of a chain.  It is equivalent to
+chains.chain_context /= chains.not_in_chain</p>
 </tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">sound.stopcd;</span></td>
+<td><p class="pkg_label">Example</td><td><span class="code">if chains.in_chain then ...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td>none</td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if in a chain</span></td>
+</tr>
+</table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#sound.playcd">sound.playcd</a></p></td>
+<td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
+<td><p>Ada: N/A (AdaScript extension)<br>PHP: N/A</p></td>
 </tr>
 </table>
+
+&nbsp;<br>
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
@@ -169,7 +237,7 @@ on your computer.  It currently uses gstreamer.</p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_arrays.html">&nbsp;arrays</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_calendar.html">&nbsp;calendar</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_cgi.html">&nbsp;cgi</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_chains.html">&nbsp;chains</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_chains.html">&nbsp;<b>chains</b></a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_cmdline.html">&nbsp;command_line</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_db.html">&nbsp;db/ postgresql</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
@@ -188,7 +256,7 @@ on your computer.  It currently uses gstreamer.</p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_pen.html">&nbsp;pen</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_pengl.html">&nbsp;pen (OpenGL)</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_records.html">&nbsp;records</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_sound.html">&nbsp;<b>sound</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sound.html">&nbsp;sound</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_sinfo.html">&nbsp;source_info</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;stats</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_strings.html">&nbsp;strings</a></p>

@@ -119,6 +119,9 @@ uppercase_o : unbounded_string := to_unbounded_string( "O" );
 nonmeaningful_words : unbounded_string := to_unbounded_string( " blah data equals stuff thing things whatever whatnot whatsoever value values " );
 confusingprogram_words : unbounded_string := to_unbounded_string( " eval exec read test " );
 
+chain_count_str : unbounded_string := to_unbounded_string( "chain count" );
+last_in_chain_str : unbounded_string := to_unbounded_string( "last in chain" );
+
 ---------------------------------------------------------
 -- START OF ADASCRIPT PARSER
 ---------------------------------------------------------
@@ -4947,7 +4950,7 @@ begin
 
   -- Create the parameter
 
-  declareIdent( formal_param_id, to_unbounded_string( "return value" ), type_token, otherClass );
+  declareIdent( formal_param_id, return_value_str, type_token, otherClass );
   if syntax_check then
      identifiers( formal_param_id ).wasReferenced := true;
   end if;
@@ -5339,6 +5342,14 @@ procedure DoUserDefinedProcedure( s : unbounded_string ) is
   resultName  : unbounded_string;
   results     : unbounded_string;
   proc_id     : identifier;
+
+  -- chain contexts
+  chain_count_id   : identifier := eof_t;
+  last_in_chain_id : identifier := eof_t;
+  in_chain     : boolean := false;
+  has_context  : boolean := false;
+  last_in_chain: boolean := false;
+  contextName  : unbounded_string;
 begin
   -- Interpret parameters
   proc_id := token;
@@ -5348,11 +5359,112 @@ begin
      identifiers( proc_id ).wasReferenced := true;
   end if;
   getNextToken;
+
+  -- TODO: check for pre-existing chain context
+  -- TODO: destroy chain context
+
+  -- To check for a chain, the parameters must be read and the @ located
+  -- (if it exists).  This must be done in syntax check mode since we
+  -- don't want anything actually declared.  Then return to the start of
+  -- the parameters and create a chain context block _prior_ to creating
+  -- the procedure block.
+  declare
+    old_syntax_check : boolean := syntax_check;
+    paramStart   : aScannerState;
+  begin
+    -- do we have a chain context?  Then we must be in a chain.
+    contextName := identifiers( proc_id ).name & " chain";
+    -- if we already have a context block, don't create another
+    if blocks_top > 1 then
+       has_context := ( getBlockName( blocks_top-1 ) = contextName );
+       in_chain := has_context;
+    end if;
+
+    -- check for itself.  If it exists, we must be in a chain
+    markScanner( paramStart );
+    syntax_check := true;
+    if token = symbol_t and identifiers( token ).value = "(" then
+       ParseActualParameters( proc_id );
+    end if;
+    if ( token = symbol_t or token = word_t ) and identifiers( token ).value = "@" then
+       in_chain := true;
+    end if;
+    if has_context then
+       if ( token = symbol_t or token = word_t ) and identifiers( token ).value = ";" then
+          if trace then
+             put_trace( "Last call in chain" );
+          end if;
+          last_in_chain := true;
+       end if;
+    end if;
+    resumeScanning( paramStart );
+    syntax_check := old_syntax_check;
+
+    if in_chain then
+       -- if we have a context?  then update the content of the context
+       if has_context then
+--put_line( "DEBUG: has context " );
+          findIdent( chain_count_str, chain_count_id );
+          if chain_count_id = eof_t then
+             err( "internal error: chain count not found" );
+          else
+             if isExecutingCommand then
+                -- values only exist if not syntax check
+                identifiers( chain_count_id ).value :=
+                  to_unbounded_string(
+                    to_numeric( identifiers( chain_count_id ).value ) + 1.0
+                  );
+                  findIdent( last_in_chain_str, last_in_chain_id );
+                  if last_in_chain_id = eof_t then
+                     err( "internal error: last in chain not found" );
+                  end if;
+                identifiers( last_in_chain_id ).value := to_bush_boolean( last_in_chain );
+             end if;
+--put_line( "DEBUG: chain count: " & to_string( identifiers( chain_count_id ).value )  );
+--put_line( "DEBUG: last in cha: " & to_string( identifiers( last_in_chain_id ).value )  );
+          end if;
+       -- no context?  then we have to create a new context
+       else
+--put_line( "DEBUG: new context " );
+          if trace then
+             put_trace( "Creating chain context " & to_string( contextName ) );
+          end if;
+          pushBlock( newScope => true, newName => to_string( contextName ) );
+          declareIdent( chain_count_id, chain_count_str, natural_t, otherClass );
+          declareIdent( last_in_chain_id, last_in_chain_str, boolean_t, otherClass );
+          if syntax_check then
+             identifiers( chain_count_id ).wasReferenced := true;
+             identifiers( last_in_chain_id ).wasReferenced := true;
+          else
+             if isExecutingCommand then
+                -- values only exist if not syntax check
+                identifiers( chain_count_id ).value := to_unbounded_string( " 1" );
+                identifiers( last_in_chain_id ).value := to_bush_boolean( last_in_chain );
+                -- TODO: we only want to export these if we are the current chain.
+                -- Otherwise, they will always be exported even if the chain was further
+                -- down the block stack
+                --identifiers( chain_count_id ).export := true;
+                --identifiers( last_in_chain_id ).export := true;
+--put_line( "DEBUG: chain count: " & to_string( identifiers( chain_count_id ).value ) );
+--put_line( "DEBUG: last in cha: " & to_string( identifiers( last_in_chain_id ).value ) );
+             end if;
+          end if;
+       end if;
+    end if;
+    -- put_all_identifiers; -- DEBUG
+  end;
+
   pushBlock( newScope => true,
      newName => to_string (identifiers( proc_id ).name ) );
   if token = symbol_t and identifiers( token ).value = "(" then
      ParseActualParameters( proc_id );
   end if;
+  -- token will be @ here if in a chain but the final ; may or may not
+  -- indicate a chain
+  -- declareIdent( formal_param_id, to_unbounded_string( "chain count" ), type_token, otherClass );
+  -- if syntax_check then
+  --    identifiers( formal_param_id ).wasReferenced := true;
+  -- end if;
   if isExecutingCommand then
      parseNewCommands( scriptState, s );
      results := null_unbounded_string;        -- no results (yet)
@@ -5387,6 +5499,13 @@ begin
      err( "(forward) procedure declaration not completed" );
   end if;
   pullBlock;
+
+  if last_in_chain and has_context then
+     if trace then
+        put_trace( "Destroying chain context " & to_string( contextName ) );
+     end if;
+     pullBlock;
+  end if;
 end DoUserDefinedProcedure;
 
 procedure DoUserDefinedFunction( s : unbounded_string; result : out unbounded_string ) is
@@ -7531,8 +7650,15 @@ begin
         end if;
      end if;
   end if;
+
+  -- End of Statement
+
   if not eof_flag then
-     if token = symbol_t and identifiers( token ).value = "@" then
+     -- itself?
+     -- procedure with no parameters can be interpreted as shell words by the
+     -- compiler because it doesn't know if something is a procedure or an
+     -- external command at compile time.
+     if ( token = symbol_t or token = word_t ) and identifiers( token ).value = "@" then
         if onlyAda95 then
            err( "@ is not allowed with " & optional_bold( "pragma ada_95" ) );
            -- move to next token or inifinite loop if done = true

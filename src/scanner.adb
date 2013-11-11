@@ -66,7 +66,8 @@ with system,
     parser_memcache,
     parser_gnat_crc,
     parser_gnat_cgi,
-    parser_exceptions;
+    parser_exceptions,
+    parser_chains;
 use ada.text_io,
     ada.integer_text_io,
     ada.command_line,
@@ -107,7 +108,8 @@ use ada.text_io,
     parser_memcache,
     parser_gnat_crc,
     parser_gnat_cgi,
-    parser_exceptions;
+    parser_exceptions,
+    parser_chains;
 
 pragma Optimize( time );
 
@@ -1177,6 +1179,7 @@ end dumpSymbolTable;
 procedure shutdownScanner is
 begin
 
+  ShutdownChains;
   ShutdownExceptions;
   ShutdownGnatCGI;
   ShutdownSound;
@@ -1706,6 +1709,7 @@ procedure resetScanner is
     term_key   : unbounded_string := to_unbounded_string( "TERM=" );
     shell_key  : unbounded_string := to_unbounded_string( "SHELL=" );
     library_key: unbounded_string := to_unbounded_string( "SPAR_LIBRARY_PATH=" );
+    tab_key    : unbounded_string := to_unbounded_string( "TABSIZE=" );
     ev  : unbounded_string;                                     -- an env var
   begin
      for i in 1..environmentList.Length( initialEnvironment ) loop
@@ -1724,6 +1728,8 @@ procedure resetScanner is
         elsif Head( ev, 6 ) = shell_key then
            init_env_ident( to_string( ev ) );
         elsif Head( ev, 18 ) = library_key then
+           init_env_ident( to_string( ev ) );
+        elsif Head( ev, 8 ) = tab_key then
            init_env_ident( to_string( ev ) );
         elsif importOpt then
            init_env_ident( to_string( ev ) );
@@ -1839,6 +1845,7 @@ begin
   StartupSound;
   StartupGnatCGI;
   StartupExceptions;
+  StartupChains;
 
   -- Declare all Environment Variables
   --
@@ -1911,6 +1918,17 @@ begin
            terminalWindowNaming := true;
         end if;
      end if;
+  end if;
+
+  findIdent( to_unbounded_string( "TABSIZE" ), temp_id );        -- TABSIZE
+  if temp_id = eof_t then                                     -- missing?
+     tabSize := 8;
+  else
+     begin
+       tabSize := natural( to_numeric( identifiers( temp_id ).value ) );
+     exception when others =>
+       tabSize := 8;
+     end;
   end if;
 
 end resetScanner;
@@ -6196,7 +6214,7 @@ begin
   -- INDENT COMPRESSION
   --
   -- The third character of the line is the indentation white space byte (plus
-  -- one to avoid ASCII 0).  (Tab stops are treated as 8 spaces.)
+  -- one to avoid ASCII 0).  (Tab stops are treated as tabSize (default 8) spaces.)
 
   cmdpos := 1;
   if Element( command, cmdpos ) = ' ' or Element( command,
@@ -6204,7 +6222,7 @@ begin
     while Element( command, cmdpos ) = ' ' or Element(
        command, cmdpos ) = ASCII.HT loop
        if Element( command, cmdpos ) = ASCII.HT then
-          tabAdjust := tabAdjust + 8 - ((cmdpos+tabAdjust) mod 8);
+          tabAdjust := tabAdjust + tabSize - ((cmdpos+tabAdjust) mod tabSize);
        end if;
        cmdpos := cmdpos + 1;
        exit when cmdpos > length( command );  -- ignore if at end of line

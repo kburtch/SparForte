@@ -42,7 +42,11 @@ CHANGES SINCE 1.4
 
 5. New: raise command (beside re-raising in handlers).  The exception may be followed by "with" and a message, as in Ada 2005.  The extension is not allowed with pragma ada_95. [testing needed] 
 
-6. New: exceptions package.  exceptions.exception_name, exceptions.exception_info, exceptions.exception_status_code. [docs needed]
+6. New: exceptions package.  exceptions.exception_name, exceptions.exception_info, exceptions.exception_status_code.
 
 7. New: style issue: large indentations now reported as an error. 
+
+8. New: environment variable TABSIZE can change the number of spaces for a tab from the default 8 to a different number.
+
+9. New chains package.  chains.chain_count, chains.chain_context, chains.in_chain. [docs needed]
 

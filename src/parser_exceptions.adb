@@ -51,8 +51,6 @@ begin
      else
         result := err_exception.name;
      end if;
-new_line; -- DEBUG
-put_line( "EXCEPTION NAME: " & to_string( result ) ); -- DEBUG
   end if;
 end ParseExceptionsExceptionName;
 

@@ -2611,6 +2611,126 @@ begin
   exc := 0;
 end;
 
+declare
+  procedure itself_test is
+  begin
+    pragma assert( chains.in_chain = false );
+    pragma assert( chains.chain_context = chains.not_in_chain );
+  end itself_test;
+begin
+  itself_test;
+end;
+
+declare
+  procedure itself_test is
+  begin
+    pragma assert( chains.in_chain = true );
+    pragma assert( chains.chain_context /= chains.not_in_chain );
+    pragma assert( chains.chain_count >= 1 and chains.chain_count <= 2 );
+  end itself_test;
+begin
+  itself_test @ ;
+end;
+
+-- begin block should not obscure chain
+
+declare
+  procedure itself_test is
+  begin
+    begin
+      pragma assert( chains.in_chain = true );
+      pragma assert( chains.chain_context /= chains.not_in_chain );
+      pragma assert( chains.chain_count >= 1 and chains.chain_count <= 2 );
+   end;
+  end itself_test;
+begin
+  itself_test @ ;
+end;
+
+-- declare block should not obscure chain
+
+declare
+  procedure itself_test is
+  begin
+    declare
+      i : integer;
+    begin
+      i := 0;
+      pragma assert( chains.in_chain = true );
+      pragma assert( chains.chain_context /= chains.not_in_chain );
+      pragma assert( chains.chain_count >= 1 and chains.chain_count <= 2 );
+   end;
+  end itself_test;
+begin
+  itself_test @ ;
+end;
+
+-- while loop should not obscure chain
+
+declare
+  procedure itself_test is
+  begin
+    while true loop
+      pragma assert( chains.in_chain = true );
+      pragma assert( chains.chain_context /= chains.not_in_chain );
+      pragma assert( chains.chain_count >= 1 and chains.chain_count <= 2 );
+   exit;
+   end loop;
+  end itself_test;
+begin
+  itself_test @ ;
+end;
+
+-- for loop should not obscure chain
+
+declare
+  procedure itself_test is
+  begin
+    for i in 1..1 loop
+      pragma assert( chains.in_chain = true );
+      pragma assert( chains.chain_context /= chains.not_in_chain );
+      pragma assert( chains.chain_count >= 1 and chains.chain_count <= 2 );
+   end loop;
+  end itself_test;
+begin
+  itself_test @ ;
+end;
+
+-- loop loop should not obscure chain
+
+declare
+  procedure itself_test is
+  begin
+    loop
+      pragma assert( chains.in_chain = true );
+      pragma assert( chains.chain_context /= chains.not_in_chain );
+      pragma assert( chains.chain_count >= 1 and chains.chain_count <= 2 );
+   exit;
+   end loop;
+  end itself_test;
+begin
+  itself_test @ ;
+end;
+
+-- nested procedure should obscure chain
+
+declare
+  procedure itself_test is
+  begin
+    loop
+      pragma assert( chains.in_chain = false );
+   exit;
+   end loop;
+  end itself_test;
+
+  procedure itself2_test is
+  begin
+    itself_test;
+  end itself2_test;
+begin
+  itself2_test @ ;
+end;
+
 -- integer casting
 -- in bush, literals are universal_numeric's
 

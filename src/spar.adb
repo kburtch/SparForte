@@ -133,6 +133,8 @@ begin
             testOpt := true;
          elsif Argument(i) = "--trace" then
             traceOpt := true;
+         --elsif Argument(i) = "--tabsize" then
+         --   tabsizeOpt := true;
          elsif Argument(i) = "--verbose" then
             verboseOpt := true;
          elsif Argument(i) = "--version" then
@@ -204,6 +206,8 @@ begin
                       Put_Line( standard_error, Command_Name & ": -V should appear by itself" );
                       Set_Exit_Status( 192 );
                       return;
+                   --elsif Argument(i) = "-w" then
+                   --   tabsizeOpt := true;
                    elsif Args(letter) = 'x' then
                       traceOpt := true;
                    else
