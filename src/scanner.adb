@@ -930,8 +930,8 @@ begin
          end if;
       -- Unused variables are always checked.  Check all identifiers if
       -- in design mode or test mode.
-      --elsif boolean( designOpt ) or boolean( testOpt ) or identifiers( i ).class = otherClass then
-      -- elsif boolean( designOpt ) or boolean( testOpt ) or identifiers( i ).class = otherClass then
+      --elsif boolean( designOpt ) or boolean( testOpt ) or identifiers( i ).class = varClass then
+      -- elsif boolean( designOpt ) or boolean( testOpt ) or identifiers( i ).class = varClass then
       else
         -- in design mode, only check types
         if designOpt then
@@ -943,7 +943,7 @@ begin
         elsif testOpt or maintenanceOpt then
            err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
         -- in development, only check variables
-        elsif identifiers( i ).class = otherClass then
+        elsif identifiers( i ).class = varClass then
            err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
         end if;
       end if;
@@ -977,7 +977,7 @@ begin
             recordSoftwareModelRequirements( i );
          end if;
 -- TODO: should this be dropped altogether?
-      elsif boolean( testOpt ) or identifiers( i ).class = otherClass then
+      elsif boolean( testOpt ) or identifiers( i ).class = varClass then
           err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
       end if;
   end loop;
@@ -2696,7 +2696,7 @@ begin
      -- if we're using json, then we're not actually exporting the
      -- array value but the json string representing the array
      -- don't delete array types, just array vars.
-     if identifiers( id ).list and identifiers( id ).class = otherClass then
+     if identifiers( id ).list and identifiers( id ).class = varClass then
         -- Note: You can't discard the array type: others may be using it.
         -- Destroying an array will also shift the other array id numbers
         -- since they are in a linked list!
@@ -2721,9 +2721,9 @@ begin
      identifiers_top := identifiers_top - 1;                    -- pull stack
      return true;                                               -- delete ok
   end if;                                                       -- else
-  if identifiers( id ).list and identifiers( id ).class = otherClass then
+  if identifiers( id ).list and identifiers( id ).class = varClass then
      clearArray( arrayID( to_numeric( identifiers( id ).value ) ) );
-  elsif identifiers( id ).resource and identifiers( id ).class = otherClass then
+  elsif identifiers( id ).resource and identifiers( id ).class = varClass then
      null;
      -- deleting a single resource is not allowed because the id is the index
      -- into the list of reousrces.

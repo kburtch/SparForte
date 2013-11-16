@@ -45,7 +45,7 @@ function in_chain return chain_types is
   contextName : unbounded_string;
   found : chain_types;
   i : block;
-  chain_count_id : identifier;
+  --chain_count_id : identifier;
 begin
   found := none;
 

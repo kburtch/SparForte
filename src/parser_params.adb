@@ -350,7 +350,7 @@ begin
         err( "Identifier not declared.  Cannot auto-declare a record field" );
      else
         identifiers( ref.id ).kind := defaultType;
-        identifiers( ref.id ).class := otherClass;
+        identifiers( ref.id ).class := varClass;
         put_trace( "Assuming " & to_string( identifiers( ref.id ).name ) &
             " is a new " & to_string( identifiers( defaultType ).name ) &
             " variable" );
@@ -421,7 +421,7 @@ begin
                          end loop;
                          fieldName := delete( fieldName, 1, dotPos );
                          fieldName := identifiers( ref.id ).name & "." & fieldName;
-                         declareIdent( dont_care_t, fieldName, identifiers( j ).kind, otherClass );
+                         declareIdent( dont_care_t, fieldName, identifiers( j ).kind, varClass );
                       end;
                    end if;
                 end if;
@@ -536,7 +536,7 @@ begin
                       end loop;
                       fieldName := delete( fieldName, 1, dotPos );
                       fieldName := identifiers( ref.id ).name & "." & fieldName;
-                      declareIdent( dont_care_t, fieldName, identifiers( j ).kind, otherClass );
+                      declareIdent( dont_care_t, fieldName, identifiers( j ).kind, varClass );
                    end;
                 end if;
              end if;

@@ -256,7 +256,7 @@ begin
            err( "already declared " &
                 optional_bold( to_string( fieldName ) ) );
         else                                                     -- declare it
-           declareIdent( id, fieldName, new_t, otherClass );
+           declareIdent( id, fieldName, new_t, varClass );
         end if;
      end if;
      getNextToken;
@@ -269,7 +269,7 @@ begin
              optional_bold( to_string( fieldName ) ) );
      else                                                     -- declare it
         discardUnusedIdentifier( token );
-        declareIdent( id, fieldName, new_t, otherClass );
+        declareIdent( id, fieldName, new_t, varClass );
      end if;
      getNextToken;
   end if;
@@ -390,7 +390,7 @@ begin
              optional_bold( to_string( identifiers( token ).name ) ) );
      else
         -- create a new one in this scope
-        declareIdent( id, identifiers( token ).name, new_t, otherClass );
+        declareIdent( id, identifiers( token ).name, new_t, varClass );
      end if;
      getNextToken;
   else
@@ -2342,7 +2342,7 @@ begin
   else                                                         -- copying a
      ParseIdentifier( second_array_id );                       -- second array?
      if isExecutingCommand then
-        if not class_ok( second_array_id, otherClass ) then    -- must be arr
+        if not class_ok( second_array_id, varClass ) then    -- must be arr
            null;                                               -- and good type
         elsif baseTypesOK( identifiers( array_id ).kind, identifiers( second_array_id ).kind ) then
            arrayIndex := firstBound( array_id2 );              -- low bound
@@ -2577,7 +2577,7 @@ begin
   else
      ParseIdentifier( second_record_id );                      -- second rec?
      if isExecutingCommand then
-        if not class_ok( second_record_id, otherClass ) then   -- must be rec
+        if not class_ok( second_record_id, varClass ) then     -- must be rec
            null;                                               -- and good type
         elsif baseTypesOK( identifiers( id ).kind, identifiers( second_record_id ).kind ) then
            begin
@@ -2664,7 +2664,7 @@ begin
                       end loop;
                       fieldName := delete( fieldName, 1, dotPos );
                       fieldName := identifiers( id ).name & "." & fieldName;
-                      declareIdent( dont_care_t, fieldName, identifiers( j ).kind, otherClass );
+                      declareIdent( dont_care_t, fieldName, identifiers( j ).kind, varClass );
                       -- at least, for now, don't worry if record fields are
                       -- declared but not accessed.  We'll just check the
                       -- main record identifier.
@@ -2773,7 +2773,7 @@ begin
      identifiers( id ).class := constClass;            -- as a constant and
      expr_expected := true;                            -- must assign value
   else
-     identifiers( id ).class := otherClass;            -- as a constant and
+     identifiers( id ).class := varClass;              -- as a constant and
   end if;
 
   -- Anonymous Array?  Handled elsewhere.
@@ -2861,7 +2861,7 @@ begin
        -- Redeclare temporarily destroyed identifier (ie. declare new i)
        -- and assign its type
 
-       declareIdent( id, var_name, type_token, otherClass ); -- declare var
+       declareIdent( id, var_name, type_token, varClass );  -- declare var
        if is_constant then                                  -- a constant?
           identifiers( id ).class := constClass;            -- fix class
        end if;
@@ -3272,7 +3272,7 @@ begin
   expect( case_t );                                        -- "case"
   ParseIdentifier( test_id );                              -- identifier to test
   -- we allow const because parameters are consts in Bush 1.x.
-  if class_ok( test_id, constClass, otherClass ) then
+  if class_ok( test_id, constClass, varClass ) then
      expect( is_t );                                       -- "is"
   end if;
 
@@ -4950,7 +4950,7 @@ begin
 
   -- Create the parameter
 
-  declareIdent( formal_param_id, return_value_str, type_token, otherClass );
+  declareIdent( formal_param_id, return_value_str, type_token, varClass );
   if syntax_check then
      identifiers( formal_param_id ).wasReferenced := true;
   end if;
@@ -5075,7 +5075,7 @@ begin
   -- A forward declaration?
   if token /= is_t and not (token = symbol_t and identifiers( token ).value = "(" ) then
      -- the following is only true for a forward declaration
-     -- (otherwise PPI will return otherClass)
+     -- (otherwise PPI will return varClass)
      if identifiers( proc_id ).class = userProcClass then
         err( "already forward declared " & optional_bold( to_string( identifiers( proc_id ).name ) ) );
      end if;
@@ -5285,7 +5285,7 @@ begin
      expect( return_t );
   elsif token /= return_t and not (token = symbol_t and identifiers( token ).value = "(" ) then
      -- the following is only true for a forward declaration
-     -- (otherwise PPI will return otherClass)
+     -- (otherwise PPI will return varClass)
      if identifiers( func_id ).class = userFuncClass then
         err( "already forward declared " & optional_bold( to_string( identifiers( func_id ).name ) ) );
      end if;
@@ -5430,8 +5430,8 @@ begin
              put_trace( "Creating chain context " & to_string( contextName ) );
           end if;
           pushBlock( newScope => true, newName => to_string( contextName ) );
-          declareIdent( chain_count_id, chain_count_str, natural_t, otherClass );
-          declareIdent( last_in_chain_id, last_in_chain_str, boolean_t, otherClass );
+          declareIdent( chain_count_id, chain_count_str, natural_t, varClass );
+          declareIdent( last_in_chain_id, last_in_chain_str, boolean_t, varClass );
           if syntax_check then
              identifiers( chain_count_id ).wasReferenced := true;
              identifiers( last_in_chain_id ).wasReferenced := true;
@@ -5461,7 +5461,7 @@ begin
   end if;
   -- token will be @ here if in a chain but the final ; may or may not
   -- indicate a chain
-  -- declareIdent( formal_param_id, to_unbounded_string( "chain count" ), type_token, otherClass );
+  -- declareIdent( formal_param_id, to_unbounded_string( "chain count" ), type_token, varClass );
   -- if syntax_check then
   --    identifiers( formal_param_id ).wasReferenced := true;
   -- end if;
@@ -6670,7 +6670,7 @@ begin
   -- at a breakout prompt, constant assignment is permitted
   if inputMode = breakout and identifiers( var_id ).class = constClass then
      put_trace( "Warning: assigning a new value to a constant" );
-  elsif not class_ok( var_id, otherClass ) then
+  elsif not class_ok( var_id, varClass ) then
      null;
   end if;
   if identifiers( var_kind ).limit then
@@ -6707,7 +6707,7 @@ begin
         else
            var_kind := right_type;
            identifiers( var_id ).kind := right_type;
-           identifiers( var_id ).class := otherClass;
+           identifiers( var_id ).class := varClass;
            put_trace( "Assuming " & to_string( identifiers( var_id ).name ) &
               " is a new " & to_string( identifiers( right_type ).name ) &
               " variable" );
@@ -7627,8 +7627,8 @@ begin
            itself_type := new_t;
 
         -- Boolean true shortcut (boolean assertions)
-        -- new_t check because a command will produce an otherClass with no type
-        elsif identifiers( startToken ).class = otherClass and then identifiers( startToken ).kind /= new_t and then getBaseType( identifiers( startToken ).kind ) = boolean_t and then not identifiers( startToken ).deleted then
+        -- new_t check because a command will produce an varClass with no type
+        elsif identifiers( startToken ).class = varClass and then identifiers( startToken ).kind /= new_t and then getBaseType( identifiers( startToken ).kind ) = boolean_t and then not identifiers( startToken ).deleted then
            if onlyAda95 then
               err( "use " & optional_bold( ":= true " ) & " with " & optional_bold( "pragma ada_95" ) );
            end if;
@@ -7671,7 +7671,7 @@ begin
         --elsif class_ok( itself_type, procClass ) then -- lift this?
         else
            token := itself_type;
-           if identifiers( token ).class = otherClass then
+           if identifiers( token ).class = varClass then
               -- not a procedure or keyword? restore value
               identifiers( token ).value := itself;
            end if;

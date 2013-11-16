@@ -68,7 +68,7 @@ begin
      if not identifiers( var_id ).list then
         err( "Array or array type expected" );
      end if;
-  elsif not (class_ok( var_id, otherClass, constClass ) and identifiers( var_id ).list) then
+  elsif not (class_ok( var_id, varClass, constClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -98,7 +98,7 @@ begin
      if not identifiers( var_id ).list then
         err( "Array or array type expected" );
      end if;
-  elsif not (class_ok( var_id, otherClass, constClass ) and identifiers( var_id ).list) then
+  elsif not (class_ok( var_id, varClass, constClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -129,7 +129,7 @@ begin
      if not identifiers( var_id ).list then
         err( "Array or array type expected" );
      end if;
-  elsif not (class_ok( var_id, otherClass, constClass ) and identifiers( var_id ).list) then
+  elsif not (class_ok( var_id, varClass, constClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -245,7 +245,7 @@ begin
   --      err( "Array or array type expected" );
   --   end if;
   --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
-  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -279,7 +279,7 @@ begin
   --      err( "Array or array type expected" );
   --   end if;
   --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
-  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -313,7 +313,7 @@ begin
   --      err( "Array or array type expected" );
   --   end if;
   --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
-  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -347,7 +347,7 @@ begin
   --      err( "Array or array type expected" );
   --   end if;
   --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
-  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -383,7 +383,7 @@ begin
   --      err( "Array or array type expected" );
   --   end if;
   --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
-  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -420,7 +420,7 @@ begin
   --      err( "Array or array type expected" );
   --   end if;
   --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
-  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -452,7 +452,7 @@ begin
   --      err( "Array expected" );
   --   end if;
   --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
-  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array expected" );
   end if;
   expect( symbol_t, ")" );
@@ -482,7 +482,7 @@ begin
   --      err( "Array or array type expected" );
   --   end if;
   --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
-  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -512,7 +512,7 @@ begin
   --      err( "Array or array type expected" );
   --   end if;
   --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
-  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -544,7 +544,7 @@ begin
   --      err( "Array or array type expected" );
   --   end if;
   --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
-  if not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
@@ -583,7 +583,7 @@ begin
   --      err( "Array or array type expected" );
   --   end if;
   --elsif not (class_ok( target_var_id, otherClass ) and identifiers( target_var_id ).list) then
-  if not (class_ok( target_var_id, otherClass ) and identifiers( target_var_id ).list) then
+  if not (class_ok( target_var_id, varClass ) and identifiers( target_var_id ).list) then
      err( "Array expected" );
   end if;
   expect( symbol_t, "," );
@@ -617,7 +617,7 @@ begin
   --      err( "Array or array type expected" );
   --   end if;
   --elsif not (class_ok( source_var_id, otherClass ) and identifiers( source_var_id ).list) then
-  if not (class_ok( source_var_id, otherClass ) and identifiers( source_var_id ).list) then
+  if not (class_ok( source_var_id, varClass ) and identifiers( source_var_id ).list) then
      err( "Array expected" );
   end if;
   expect( symbol_t, ")" );

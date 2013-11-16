@@ -230,7 +230,7 @@ libraryPath : Unbounded_String;
 
 type anIdentifierClass is ( constClass, subClass, typeClass, funcClass,
   userFuncClass, procClass, userProcClass, taskClass, mainProgramClass,
-  exceptionClass, otherClass );
+  exceptionClass, varClass, otherClass );
 
 ------------------------------------------------------------------------------
 --
@@ -564,12 +564,12 @@ procedure declareProcedure( id : out identifier; s : string; cb : aBuiltinProced
 -- moved to scanner because this has become a complex operation
 
 procedure declareIdent( id : out identifier; name : unbounded_string;
-  kind : identifier; class : anIdentifierClass := otherClass );
+  kind : identifier; class : anIdentifierClass := varClass );
 -- Declare an identifier in the symbol table, specifying name, kind.
 -- and (optionally) symbol class.  The id is returned.
 
 procedure declareIdent( id : out identifier; name : string;
-  kind : identifier; class : anIdentifierClass := otherClass );
+  kind : identifier; class : anIdentifierClass := varClass );
 -- Alternate version: use fixed string type for name
 
 procedure declareStandardConstant( id : out identifier;

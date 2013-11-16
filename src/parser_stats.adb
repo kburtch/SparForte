@@ -61,7 +61,7 @@ begin
      if not identifiers( var_id ).list then
         err( "Array or array type expected" );
      end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
@@ -101,7 +101,7 @@ begin
      if not identifiers( var_id ).list then
         err( "Array or array type expected" );
      end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
@@ -141,7 +141,7 @@ begin
      if not identifiers( var_id ).list then
         err( "Array or array type expected" );
      end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
@@ -177,7 +177,7 @@ begin
      if not identifiers( var_id ).list then
         err( "Array or array type expected" );
      end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
@@ -217,7 +217,7 @@ begin
      if not identifiers( var_id ).list then
         err( "Array or array type expected" );
      end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
@@ -264,7 +264,7 @@ begin
      if not identifiers( var_id ).list then
         err( "Array or array type expected" );
      end if;
-  elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
+  elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then

@@ -153,7 +153,7 @@ begin
        name     => To_Unbounded_String( s(s'first..eqpos-1) ),  -- identifier
        kind     => string_t,
        value    => To_Unbounded_String( s(eqpos+1..s'last ) ),
-       class    => otherClass,
+       class    => varClass,
        import   => true,                                        -- must import
        method   => shell,
        mapping  => none,
@@ -174,7 +174,7 @@ begin
 end init_env_ident;
 
 procedure declareIdent( id : out identifier; name : unbounded_string;
-  kind : identifier; class : anIdentifierClass := otherClass ) is
+  kind : identifier; class : anIdentifierClass := varClass ) is
 -- Declare an identifier in the symbol table, specifying name, kind.
 -- and (optionally) symbol class.  The id is returned.
 begin
@@ -207,7 +207,7 @@ begin
 end declareIdent;
 
 procedure declareIdent( id : out identifier; name : string;
-  kind : identifier; class : anIdentifierClass := otherClass ) is
+  kind : identifier; class : anIdentifierClass := varClass ) is
 -- Alternate version: use fixed string type for name
 begin
   declareIdent( id, to_unbounded_string( name ), kind, class );

@@ -1776,7 +1776,7 @@ begin
   if baseTypesOk( identifiers( canvas_id ).kind, pen_canvas_id_t ) then
      expect( symbol_t, "," );
      ParseIdentifier( array_var_id );
-     if not (class_ok( array_var_id, otherClass ) and identifiers( array_var_id ).list) then
+     if not (class_ok( array_var_id, varClass ) and identifiers( array_var_id ).list) then
         err( "Array expected" );
      end if;
      if uniTypesOK( identifiers( array_var_id ).kind, uni_numeric_t ) then
