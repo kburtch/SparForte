@@ -242,8 +242,6 @@ type anImportMapping is ( none, json );
 
 ------------------------------------------------------------------------------
 --
--- This is not actually used.
---
 -- Callbacks to execute a build-in procedure or function (such as put_line).
 
 type aBuiltinProcedureCallback is access procedure;
@@ -277,6 +275,7 @@ type declaration is record
      wasReferenced : boolean := false;          -- true if ref'd in syn chk
      procCB   : aBuiltinProcedureCallback := null;
      funcCB   : aBuiltinFunctionCallback := null;
+     genKind  : identifier;                     -- generic type (if any)
 end record;
 
 

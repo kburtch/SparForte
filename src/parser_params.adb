@@ -97,12 +97,21 @@ procedure ParseFirstInOutParameter( param_id : out identifier; expected_type : i
 begin
   expect( symbol_t, "(" );
   ParseIdentifier( param_id ); -- in out
-  --ParseExpression( expr_val, expr_type );
-  --if isExecutingCommand then
-  --   expr_val := castToType( expr_val, expected_type );
-  --end if;
   discard_result := baseTypesOk( identifiers( param_id ).kind, expected_type );
 end ParseFirstInOutParameter;
+
+
+--  PARSE NEXT IN OUT PARAMETER
+--
+-- Expect a next parameter that is a numeric expression.  If there is no expected
+-- type, assume it's a universal string type.
+
+procedure ParseNextInOutParameter( param_id : out identifier; expected_type : identifier  ) is
+begin
+  expect( symbol_t, "," );
+  ParseIdentifier( param_id ); -- in out
+  discard_result := baseTypesOk( identifiers( param_id ).kind, expected_type );
+end ParseNextInOutParameter;
 
 
 --  PARSE LAST IN OUT PARAMETER
@@ -151,6 +160,17 @@ begin
   ParseIdentifier( param_id ); -- in out
   expect( symbol_t, ")" );
 end ParseLastInOutRecordParameter;
+
+--  PARSE NEXT IN OUT RECORD PARAMETER
+--
+-- Expect a next parameter that is an in out identifier.  It is expected to be
+-- some kind of record, but we don't know the type beforehand.
+
+procedure ParseNextInOutRecordParameter( param_id : out identifier ) is
+begin
+  expect( symbol_t, "," );
+  ParseIdentifier( param_id ); -- in out
+end ParseNextInOutRecordParameter;
 
 
 --  PARSE FIRST STRING PARAMETER

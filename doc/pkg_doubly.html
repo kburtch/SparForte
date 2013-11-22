@@ -1,0 +1,272 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Packages - Doubly Linked Lists</title>
+	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+	<link rel="index" href="packages.html" />
+	<link rel="prev" href="pkg_cgi.html" />
+	<link rel="next" href="pkg_cmdline.html" />
+</head>
+<body bgcolor="#FFFFFF"><a name="top"></a>
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html">Tutorials</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html"><b>Packages</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_cgi.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_cmdline.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+	<!-- Content Area -->
+<h2><a NAME="4.14"></a>Chains Package</h2>
+
+<p>The SparForte built-in exceptions package provides subprograms to provide
+information about chains.  Use this to determine if your procedure is in a
+chain, which call is this in the chain, or how many times your procedure has
+been called in the chain.  This package currently only applies to user-defined
+procedures.</p>
+
+<p><u>Introduced</u>: SparForte 1.5<br>
+
+<p><u>GCC Ada Equivalent</u>: Ada.Containers.Doubly_Linked_Lists<br>
+
+<p>This package includes four new types:</p>
+
+<ul>
+<li><b>containers.count_type</b></li>
+<li><b>containers.hash_type</b></li>
+<li><b>doubly_linked_lists.list</b></li>
+<li><b>doubly_linked_lists.cursor</b></li>
+</ul>
+
+<pre>
+
+doubly_linked_lists.append
+doubly_linked_lists.assign
+doubly_linked_lists.clear
+doubly_linked_lists.contains
+doubly_linked_lists.delete
+doubly_linked_lists.delete_first
+doubly_linked_lists.delete_last
+doubly_linked_lists.element
+doubly_linked_lists.find
+doubly_linked_lists.first
+doubly_linked_lists.first_element
+doubly_linked_lists.flip
+doubly_linked_lists.has_element
+doubly_linked_lists.insert
+doubly_linked_lists.is_empty
+doubly_linked_lists.last
+doubly_linked_lists.last_element
+doubly_linked_lists.length
+doubly_linked_lists.move
+doubly_linked_lists.new_cursor
+doubly_linked_lists.new_list
+doubly_linked_lists.next
+doubly_linked_lists.prepend
+doubly_linked_lists.previous
+doubly_linked_lists.replace_element
+doubly_linked_lists.reverse_elements
+doubly_linked_lists.reverse_find
+doubly_linked_lists.splice
+doubly_linked_lists.swap
+doubly_linked_lists.swap_links
+
+  <a href="#chains.chain_count">p := chains.chain_count</a>        <a href="#chains.chain_context">e := chains.chain_context</a>
+  <a href="#chains.in_chain">b := chains.in_chain</a>
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the chains package</span>
+        </div>
+        </div>
+        </center>
+
+<a name="chains.chain_count"></a><h3>p := chains.chain_count</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the ordinal position of this call in the chain.  The first call is 1.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">pos := chains.chain_count</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>p</span></td>
+<td><span>return value</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the position in the chain</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if this is not in a chain</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This currently only works for built-in procedure chains.</p></td>
+</tr>
+</table>
+
+<a name="chains.chain_context"></a><h3>e := chains.chain_context</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the relative position of the call in the chain, whether first, last or in the middle.
+This is useful when combined with a case statement to handle initialization or finalization for the
+chain.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">name := exceptions.exception_name</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span>chains.context</span></td>
+<td><span>required</span></td>
+<td><span>the relative position of the call</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Exceptions.Exception_Name<br>PHP: N/A</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This currently only works for built-in procedure chains.</p></td>
+</tr>
+</table>
+
+<a name="chains.in_chain"></a><h3>b := chains.in_chain</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return true if this procedure is part of a chain.  It is equivalent to
+chains.chain_context /= chains.not_in_chain</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">if chains.in_chain then ...</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if in a chain</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)<br>PHP: N/A</p></td>
+</tr>
+</table>
+
+&nbsp;<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="packages.html">&nbsp;Summary</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_arrays.html">&nbsp;arrays</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_calendar.html">&nbsp;calendar</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cgi.html">&nbsp;cgi</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_chains.html">&nbsp;<b>chains</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cmdline.html">&nbsp;command_line</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_db.html">&nbsp;db/ postgresql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_exceptions.html">&nbsp;exceptions</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_gnat_cgi.html">&nbsp;gnat.cgi</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_gnat_crc32.html">&nbsp;gnat.crc32</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_mysqlm.html">&nbsp;mysqlm</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_pen.html">&nbsp;pen</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_pengl.html">&nbsp;pen (OpenGL)</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_records.html">&nbsp;records</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sound.html">&nbsp;sound</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sinfo.html">&nbsp;source_info</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;stats</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_strings.html">&nbsp;strings</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
+</a></p>
+
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" border="0" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>
+

@@ -108,6 +108,8 @@ procedure ParseSingleInOutParameter( param_id : out identifier; expected_type : 
 
 procedure ParseFirstInOutParameter( param_id : out identifier; expected_type : identifier  );
 
+procedure ParseNextInOutParameter( param_id : out identifier; expected_type : identifier  );
+
 procedure ParseLastInOutParameter( param_id : out identifier; expected_type : identifier  );
 
 procedure ParseInOutParameter( ref : out reference );

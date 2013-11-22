@@ -125,6 +125,10 @@ begin
        put_line( "memcache connection" );
   when pen_canvas =>
        put_line( "pen canvas" );
+  when doubly_linked_string_list =>
+       put_line( "doubly linked list" );
+  when doubly_linked_string_list_cursor =>
+       put_line( "doubly linked list cursor" );
   when none =>
        put_line( "undefined resource" );
   when others =>
@@ -197,6 +201,8 @@ begin
      if is_open( rp.dir ) then
         close( rp.dir );
      end if;
+  elsif rp.rt = doubly_linked_string_list then
+     doubly_linked_string_lists.clear( rp.dlslList );
   end if;
   resHandleList.clear( resHandles, long_integer( id ) );
 end clearResource;

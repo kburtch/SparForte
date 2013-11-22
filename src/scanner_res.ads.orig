@@ -23,17 +23,18 @@
 
 with gen_list,
      Ada.Numerics.Long_Complex_Types,
-     ada.strings.unbounded,
-     unchecked_deallocation,
-     gnat.directory_operations,
+     Ada.Strings.Unbounded,
+     Ada.Containers.Doubly_Linked_Lists,
+     Unchecked_Deallocation,
+     Gnat.Directory_Operations,
 #if MYSQL
      APQ.MySQL.Client,
 #end if;
      world;
 use  world,
      Ada.Numerics.Long_Complex_Types,
-     ada.strings.unbounded,
-     gnat.directory_operations;
+     Ada.Strings.Unbounded,
+     Gnat.Directory_Operations;
 
 package scanner_res is
 
@@ -62,8 +63,12 @@ type aResourceType is (
    complex_number,
    directory,
    memcache_connection,
-   pen_canvas
+   pen_canvas,
+   doubly_linked_string_list,
+   doubly_linked_string_list_cursor
 );
+
+package doubly_linked_string_lists is new Ada.Containers.Doubly_Linked_Lists( unbounded_string );
 
 -- Resource Handle
 --
@@ -106,6 +111,10 @@ type resHandle( rt : aResourceType ) is record
           dir : Dir_Type;
      when memcache_connection => null;
      when pen_canvas => null;
+     when doubly_linked_string_list =>
+          dlslList : doubly_linked_string_lists.List;
+     when doubly_linked_string_list_cursor =>
+          dlslCursor : doubly_linked_string_lists.Cursor;
      when none => null;
      end case;
 

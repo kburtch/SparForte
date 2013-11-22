@@ -67,7 +67,8 @@ with system,
     parser_gnat_crc,
     parser_gnat_cgi,
     parser_exceptions,
-    parser_chains;
+    parser_chains,
+    parser_doubly;
 use ada.text_io,
     ada.integer_text_io,
     ada.command_line,
@@ -109,7 +110,8 @@ use ada.text_io,
     parser_gnat_crc,
     parser_gnat_cgi,
     parser_exceptions,
-    parser_chains;
+    parser_chains,
+    parser_doubly;
 
 pragma Optimize( time );
 
@@ -1179,6 +1181,7 @@ end dumpSymbolTable;
 procedure shutdownScanner is
 begin
 
+  ShutdownDoubly;
   ShutdownChains;
   ShutdownExceptions;
   ShutdownGnatCGI;
@@ -1846,6 +1849,7 @@ begin
   StartupGnatCGI;
   StartupExceptions;
   StartupChains;
+  StartupDoubly;
 
   -- Declare all Environment Variables
   --

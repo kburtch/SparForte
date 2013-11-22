@@ -167,7 +167,8 @@ begin
        deleted  => false,
        wasReferenced => false,
        procCB => null,
-       funcCB => null
+       funcCB => null,
+       genKind => eof_t
      );
      identifiers_top := identifiers_top + 1;                    -- push stack
   end if;
@@ -201,7 +202,8 @@ begin
        deleted  => false,
        wasReferenced => false,
        procCB => null,
-       funcCB => null
+       funcCB => null,
+       genKind => eof_t
      );
   end if;
 end declareIdent;
@@ -304,7 +306,8 @@ begin
                  deleted  => false,
                  wasReferenced => false,
                  procCB => null,
-                 funcCB => null
+                 funcCB => null,
+                 genKind => eof_t
                );
             end if;
          end if;
@@ -342,7 +345,8 @@ begin
        deleted  => false,
        wasReferenced => false,
        procCB => null,
-       funcCB => null
+       funcCB => null,
+       genKind => eof_t
      );
   end if;
 end declareReturnResult;
@@ -394,8 +398,9 @@ begin
        inspect  => false,
        deleted  => false,
        wasReferenced => false,
-       procCB => null,
-       funcCB => null
+       procCB   => null,
+       funcCB   => null,
+       genKind  => eof_t
      );
   end if;
 end declareException;
