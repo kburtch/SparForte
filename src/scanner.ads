@@ -279,12 +279,18 @@ function uniTypesOk( leftType, rightType : identifier ) return boolean;
 function baseTypesOk( leftType, rightType : identifier ) return boolean;
 -- check that the two types are logically compatible
 
---function intTypesOk( givenType, desiredType : identifier ) return boolean;
--- check that one integer type is logically compatible with another
+procedure baseTypesOk( leftType, rightType : identifier );
+-- same as a procedure
+
+function genTypesOk( leftType, rightType : identifier ) return boolean;
+-- same as base types OK, but clearer error message for generic items
+
+procedure genTypesOk( leftType, rightType : identifier );
+-- same as a procedure
+
 
 -- Type Casting
 -----------------------------------------------------------------------------
-
 
 function castToType( val : long_float; kind : identifier ) return unbounded_string;
 function castToType( val : unbounded_string; kind : identifier ) return unbounded_string;

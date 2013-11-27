@@ -53,6 +53,19 @@ pragma inline( GetParameterValue );
 -- return the value of the variable or array indicated by ref
 
 ------------------------------------------------------------------------------
+-- Unchecked Parameters
+------------------------------------------------------------------------------
+
+procedure ParseNextGenItemParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier := uni_string_t );
+
+procedure ParseLastGenItemParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier := uni_string_t );
+
+procedure CheckUncheckedParameter( expr_val : out unbounded_string;
+  expr_type : in out identifier; expected_type : identifier := uni_string_t  );
+
+------------------------------------------------------------------------------
 -- String Parameters
 ------------------------------------------------------------------------------
 

@@ -69,6 +69,63 @@ begin
 end GetParameterValue;
 pragma inline( GetParameterValue );
 
+--  PARSE NEXT GEN ITEM PARAMETER
+--
+-- Expect an "in" parameter.  Don't check the type.  This is used when
+-- there is more than one possible parameter type and you don't know which
+-- one it is.
+
+procedure ParseNextGenItemParameter( expr_val : out unbounded_string; expr_type : out identifier; expected_type : identifier := uni_string_t ) is
+  u : identifier;
+begin
+  expect( symbol_t, "," );
+  ParseExpression( expr_val, expr_type );
+  genTypesOk( expr_type, expected_type );
+  if isExecutingCommand then
+     u := getUniType( expected_type );
+     if u = uni_string_t or u = uni_numeric_t or u = universal_t then
+        expr_val := castToType( expr_val, expected_type );
+     end if;
+  end if;
+end ParseNextGenItemParameter;
+
+--  PARSE LAST GEN ITEM PARAMETER
+--
+-- Expect an "in" parameter.  Don't check the type.  This is used when
+-- there is more than one possible parameter type and you don't know which
+-- one it is.
+
+procedure ParseLastGenItemParameter( expr_val : out unbounded_string; expr_type : out identifier; expected_type : identifier := uni_string_t ) is
+  u : identifier;
+begin
+  expect( symbol_t, "," );
+  ParseExpression( expr_val, expr_type );
+  expect( symbol_t, ")" );
+  genTypesOk( expr_type, expected_type );
+  if isExecutingCommand then
+     u := getUniType( expected_type );
+     if u = uni_string_t or u = uni_numeric_t or u = universal_t then
+        expr_val := castToType( expr_val, expected_type );
+     end if;
+  end if;
+end ParseLastGenItemParameter;
+
+--  CHECK UNCHECKED PARAMETER
+--
+-- Check a parameter that was parsed unchecked.
+
+procedure CheckUncheckedParameter( expr_val : out unbounded_string;
+  expr_type : in out identifier; expected_type : identifier := uni_string_t  ) is
+  u : identifier;
+begin
+  discard_result := baseTypesOk( expr_type, expected_type );
+  if isExecutingCommand then
+     u := getUniType( expected_type );
+     if u = uni_string_t or u = uni_numeric_t or u = universal_t then
+        expr_val := castToType( expr_val, expected_type );
+     end if;
+  end if;
+end CheckUncheckedParameter;
 
 --  PARSE SINGLE STRING PARAMETER
 --

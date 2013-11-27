@@ -2543,36 +2543,78 @@ begin
 
 end baseTypesOk;
 
---function intTypesOk( givenType, desiredType : identifier ) return boolean is
---  -- Like baseTypesOk, check that the two integer subtypes are
---  -- compatible.  This is placed in a separate function for performance
---  -- and because, unlike baseTypesOK, the order of the parameters is
---  -- important.   If the types are not compatible, reports an error
---  -- message and return false.
---  effectiveGivenType : identifier;
---  effectiveDesiredType : identifier;
---begin
---  effectiveGivenType := getBaseType( givenType );             -- dereference
---  effectiveDesiredType := getBaseType( desiredType );         -- subtypes
---  if effectiveDesiredType = integer_t then                    -- looking for
---     if effectiveGivenType = integer_t then                   -- an integer?
---        return true;                                          -- integer,
---     elsif effectiveGivenType = natural_t then                -- natural,
---        return true;                                          -- positive
---     elsif effectiveGivenType = positive_t then               -- are good
---        return true;
---     end if;
---  elsif effectiveDesiredType = natural_t then                 -- natural?
---     if effectiveGivenType = natural_t then                   -- natural,
---        return true;                                          -- positive
---     elsif effectiveGivenType = positive_t then               -- are good
---        return true;
---     end if;
---  end if;
---  -- positive must be an exact match so it can fall through to
---  -- baseTypesOK
---  return baseTypesOK( givenType, desiredType );               -- fall back
---end intTypesOk;
+-- same, as a procedure
+
+procedure baseTypesOk( leftType, rightType : identifier ) is
+  discard : boolean;
+begin
+  discard := baseTypesOk( leftType, rightType );
+end baseTypesOk;
+
+
+---> GEN TYPES OK
+--
+-- same as base types OK, but clearer error message for generic items
+-- Check that the two types are extended from a common base type.
+-- If the types differ, report an error message and return false.
+-----------------------------------------------------------------------------
+-- TODO: the getUniType message will still just be "type".  Refactor
+-- getUniType and getBaseType to take an optional descriptive string
+-- (e.g. "item") and make genTypesOk pass this.
+
+function genTypesOk( leftType, rightType : identifier ) return boolean is
+  effectiveLeftType : identifier;
+  effectiveRightType : identifier;
+begin
+
+  -- Basic checks: if the root types don't match, then the base types
+  -- won't.  If either type is universal typeless, they automatically
+  -- match.
+
+  if not uniTypesOk( leftType, rightType ) then
+     return false;
+  end if;
+  if leftType = universal_t or rightType = universal_t then
+     return true;
+  end if;
+  effectiveLeftType := getBaseType( leftType );
+  effectiveRightType := getBaseType( rightType );
+
+  -- Universal type cases: Universal numeric or universal string will
+  -- match depending on the root type of the second type.
+
+  if effectiveLeftType = uni_numeric_t and then getUniType( rightType ) = uni_numeric_t then
+     return true;
+  end if;
+  if effectiveLeftType = uni_string_t and then getUniType( rightType ) = uni_string_t then
+     return true;
+  end if;
+  if effectiveRightType = uni_numeric_t and then getUniType( leftType ) = uni_numeric_t then
+     return true;
+  end if;
+  if effectiveRightType = uni_string_t and then getUniType( leftType ) = uni_string_t then
+     return true;
+  end if;
+
+  -- Otherwise, the types must be identical.
+
+  if effectiveLeftType /= effectiveRightType then
+     err_previous( "item type " & bold( to_string( identifiers( leftType ).name) ) &
+          " is not compatible with item type " &
+          bold( to_string( identifiers( rightType ).name ) ) );
+     return false;
+  end if;
+  return true;
+end genTypesOk;
+
+-- same as a procedure
+
+procedure genTypesOk( leftType, rightType : identifier ) is
+  discard : boolean;
+begin
+  discard := genTypesOk( leftType, rightType );
+end genTypesOk;
+
 
 ---> CAST TO TYPE
 --
