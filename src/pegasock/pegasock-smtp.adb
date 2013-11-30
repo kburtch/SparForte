@@ -1,8 +1,11 @@
 
 with ada.text_io;
 use  ada.text_io;
-with Gnat.Source_Info;
-
+with Ada.Calendar,
+     Gnat.Source_Info,
+     Gnat.Calendar.Time_IO;
+use  Ada.Calendar,
+     Gnat.Calendar.Time_IO;
 package body pegasock.smtp is
 
 --  ESTABLISH
@@ -40,6 +43,7 @@ end establish;
 procedure email( mysmtp : in out aSMTPSocket; serverDomain, from, to, content : unbounded_string ) is
   status : integer;
   s : unbounded_string;
+  sanitized_content : unbounded_string := content;
 begin
   if not isOpen( mysmtp.socket ) then
      return;
@@ -67,8 +71,28 @@ begin
            if status = 354 then
               put_line( mysmtp.socket, "From: " & from );
               put_line( mysmtp.socket, "To: " & to );
-		 -- date
-              put_line( mysmtp.socket, content );
+              -- TODO: timezone handling
+              put_line( mysmtp.socket, "Date: " & Image(Clock, "%a, %d %b %Y %T -0500") );
+              declare
+                 -- sanitize input: "." at the start of lines must be
+                 -- escaped
+                 start_of_line : boolean := false;
+                 i  : positive := 1;
+                 ch : character;
+              begin
+                 while i < length( sanitized_content ) loop
+                     ch := element( sanitized_content, i );
+                     if start_of_line and ch = '.' then
+                        insert( sanitized_content, i, "." );
+                     end if;
+                     if ch = ASCII.LF then
+                        start_of_line := true;
+                     else
+                        start_of_line := false;
+                     end if;
+                 end loop;
+              end;
+              put_line( mysmtp.socket, sanitized_content );
               put_line( mysmtp.socket, "." );
 
               get( mysmtp.socket, s );
