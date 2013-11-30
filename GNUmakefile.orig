@@ -25,21 +25,21 @@ max:
 
 install:
 ifdef RPM_BUILD_ROOT
-	install -d ${DESTDIR}${PREFIX}/bin
-	install -m 555 src/spar ${DESTDIR}${PREFIX}/bin/spar
-	install -d ${DESTDIR}$(MANPREFIX)/man1
-	install -m 555 src/spar.1 ${DESTDIR}${MANPREFIX}/man1/spar.1
+	install -pd ${DESTDIR}${PREFIX}/bin
+	install -pm0755 src/spar ${DESTDIR}${PREFIX}/bin/spar
+	install -pd ${DESTDIR}$(MANPREFIX)/man1
+	install -pm0644 src/spar.1 ${DESTDIR}${MANPREFIX}/man1/spar.1
 else
-	install -d ${PREFIX}/bin
-	install -m 555 src/spar ${PREFIX}/bin/spar
-	install -d $(MANPREFIX)/man/man1
-	install -m 555 src/spar.1 ${MANPREFIX}/man/man1/spar.1
+	install -pd ${PREFIX}/bin
+	install -pm0755 src/spar ${PREFIX}/bin/spar
+	install -pd $(MANPREFIX)/man/man1
+	install -pm0644 src/spar.1 ${MANPREFIX}/man/man1/spar.1
 endif
 
 uninstall:
 ifdef RPM_BUILD_ROOT
-	rm ${DESTDIR}/${PREFIX}/bin/spar
-	rm ${DESTDIR}/${MANPREFIX}/man1/spar.1
+	rm ${DESTDIR}${PREFIX}/bin/spar
+	rm ${DESTDIR}${MANPREFIX}/man1/spar.1
 else
 	rm ${PREFIX}/bin/spar
 	rm ${MANPREFIX}/man/man1/spar.1
