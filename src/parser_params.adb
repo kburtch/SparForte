@@ -110,6 +110,25 @@ begin
   end if;
 end ParseLastGenItemParameter;
 
+--  PARSE GEN ITEM PARAMETER
+--
+-- Expect an "in" parameter.  Don't check the type.  This is used when
+-- there is more than one possible parameter type and you don't know which
+-- one it is.
+
+procedure ParseGenItemParameter( expr_val : out unbounded_string; expr_type : out identifier; expected_type : identifier := uni_string_t ) is
+  u : identifier;
+begin
+  ParseExpression( expr_val, expr_type );
+  genTypesOk( expr_type, expected_type );
+  if isExecutingCommand then
+     u := getUniType( expected_type );
+     if u = uni_string_t or u = uni_numeric_t or u = universal_t then
+        expr_val := castToType( expr_val, expected_type );
+     end if;
+  end if;
+end ParseGenItemParameter;
+
 --  CHECK UNCHECKED PARAMETER
 --
 -- Check a parameter that was parsed unchecked.
@@ -396,6 +415,21 @@ begin
   end if;
   expect( symbol_t, ")" );
 end ParseLastNumericParameter;
+
+
+--  PARSE NUMERIC PARAMETER
+--
+-- Special case: don't read ( / , / )
+
+procedure ParseNumericParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier := uni_numeric_t ) is
+begin
+  ParseExpression( expr_val, expr_type );
+  discard_result := baseTypesOk( expr_type, expected_type );
+  if isExecutingCommand then
+     expr_val := castToType( expr_val, expected_type );
+  end if;
+end ParseNumericParameter;
 
 
 ------------------------------------------------------------------------------

@@ -62,6 +62,10 @@ procedure ParseNextGenItemParameter( expr_val : out unbounded_string;
 procedure ParseLastGenItemParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_string_t );
 
+procedure ParseGenItemParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier := uni_string_t );
+
+-- TODO: can this be removed?
 procedure CheckUncheckedParameter( expr_val : out unbounded_string;
   expr_type : in out identifier; expected_type : identifier := uni_string_t  );
 
@@ -111,6 +115,9 @@ procedure ParseNextNumericParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_numeric_t );
 
 procedure ParseLastNumericParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier := uni_numeric_t );
+
+procedure ParseNumericParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_numeric_t );
 
 ------------------------------------------------------------------------------

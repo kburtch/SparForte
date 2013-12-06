@@ -524,31 +524,56 @@ begin
   end if;
 end ParseDoublyReplaceElement;
 
-procedure ParseDoublyInsert is
-  -- Syntax: doubly_linked_list.insert( l, c, s [, n] );
-  --         doubly_linked_list.insert( l, c, s, c2 [, n] ); -- TODO
+-- Insert Family
+--
+-- The Original Ada is:
+--
+--procedure Insert (Container : in out List;
+--                  Before    : in     Cursor;
+--                  New_Item  : in     Element_Type;
+--                  Count     : in     Count_Type := 1);
+--If Before is not No_Element, and does not designate an element in Container, then Program_Error is propagated. Otherwise, Insert inserts Count copies of New_Item prior to the element designated by Before. If Before equals No_Element, the new elements are inserted after the last node (if any). Any exception raised during allocation of internal storage is propagated, and Container is not modified.
+--procedure Insert (Container : in out List;
+--                  Before    : in     Cursor;
+--                  New_Item  : in     Element_Type;
+--                  Position  :    out Cursor;
+--                  Count     : in     Count_Type := 1);
+--If Before is not No_Element, and does not designate an element in Container, then Program_Error is propagated. Otherwise, Insert allocates Count copies of New_Item, and inserts them prior to the element designated by Before. If Before equals No_Element, the new elements are inserted after the last element (if any). Position designates the first newly-inserted element. Any exception raised during allocation of internal storage is propagated, and Container is not modified.
+--procedure Insert (Container : in out List;
+--                  Before    : in     Cursor;
+--                  Position  :    out Cursor;
+--                  Count     : in     Count_Type := 1);
+--If Before is not No_Element, and does not designate an element in Container, then Program_Error is propagated. Otherwise, Insert inserts Count new elements prior to the element designated by Before. If Before equals No_Element, the new elements are inserted after the last node (if any). The new elements are initialized by default (see 3.3.1). Any exception raised during allocation of internal storage is propagated, and Container is not modified.
+--
+-- The third parameter can be a cursor, a new item, or an expression.  The
+-- problem is that we may not be able to distinguish between the new item
+-- and the count because both could be numeric.  So we have to have two
+-- inserts to differentiate the cases.
+
+procedure ParseDoublyInsertBefore is
+  -- Syntax: doubly_linked_list.insert_before( l, c, s [, n] );
   -- Ada:    doubly_linked_list.insert( l ,c, s [, n]);
-  --         doubly_linked_list.insert( l ,c, s, c2 [, n]); -- TODO
-  -- Note: inserts before the cursor position
-  --listExpr  : unbounded_string;
-  --listType  : identifier;
-  listId : identifier;
-  theList   : resPtr;
-  cursExpr  : unbounded_string;
-  cursType  : identifier;
-  theCursor : resPtr;
-  strExpr   : unbounded_string;
-  strType   : identifier;
-  cntExpr   : unbounded_string;
-  cntType   : identifier;
-  hasCnt    : boolean := false;
+  -- This is the basic form of insert that doesn't return another cursor.
+  -- Note: "insert" is a reserved word in SparForte
+  listId     : identifier;
+  theList    : resPtr;
+  cursId     : identifier;
+  theCursor  : resPtr;
+  itemExpr   : unbounded_string;
+  itemType   : identifier;
+  cntExpr    : unbounded_string;
+  cntType    : identifier;
+  hasItem    : boolean := false;
+  hasCnt     : boolean := false;
 begin
-  expect( doubly_insert_t );
+  expect( doubly_insert_before_t );
   ParseFirstListParameter( listId );
-  ParseNextNumericParameter( cursExpr, cursType, doubly_cursor_t );
-  ParseNextStringParameter( strExpr, strType, string_t );
+  ParseNextCursorParameter( cursId );
+  genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+  ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+  genTypesOk( identifiers( listId ).genKind, itemType );
   if token = symbol_t and identifiers( token ).value = "," then
-     ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
+     ParseLastNumericParameter( cntExpr, cntType );
      hasCnt := true;
   else
      expect( symbol_t, ")" );
@@ -558,18 +583,106 @@ begin
        cnt : Ada.Containers.Count_Type;
      begin
        findResource( to_resource_id( identifiers( listId ).value ), theList );
-       findResource( to_resource_id( cursExpr ), theCursor );
+       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
-          Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, strExpr, cnt );
+          Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr, cnt );
        else
-          Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, strExpr );
+          Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr );
        end if;
      exception when constraint_error =>
        err( "constraint error raised" );
      end;
   end if;
-end ParseDoublyInsert;
+end ParseDoublyInsertBefore;
+
+procedure ParseDoublyInsertBeforeAndMark is
+  -- Syntax: doubly_linked_list.insert_before_with_mark( l, c, c2 [, n] );
+  --         doubly_linked_list.insert_before_with_mark( l, c, s, c2 [, n] );
+  -- Ada:    doubly_linked_list.insert( l ,c, s [, n]);
+  --         doubly_linked_list.insert( l ,c, c2 [, n]);
+  --         doubly_linked_list.insert( l ,c, s, c2 [, n]);
+  -- Note: inserts before the cursor position
+  --       "insert" is a reserved word in SparForte
+
+  listId     : identifier;
+  theList    : resPtr;
+  cursId     : identifier;
+  theCursor  : resPtr;
+  theSecondCursor : resPtr;
+  itemExpr   : unbounded_string;
+  itemType   : identifier;
+  cntExpr    : unbounded_string;
+  cntType    : identifier;
+  hasItem    : boolean := false;
+  hasCnt     : boolean := false;
+  resId : resHandleId;
+  ref        : reference;
+begin
+  expect( doubly_insert_before_and_mark_t );
+  ParseFirstListParameter( listId );
+  ParseNextCursorParameter( cursId );
+  genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+  expect( symbol_t, "," );
+  -- The third parameter can be a cursor or a new item.
+  if getBaseType( identifiers( token ).kind ) = doubly_cursor_t or
+     getBaseType( identifiers( token ).kind ) = new_t then
+     ParseOutParameter( ref, doubly_cursor_t );
+     baseTypesOK( ref.kind, doubly_cursor_t );
+     if token = symbol_t and identifiers( token ).value = "," then
+        getNextToken;
+        ParseNumericParameter( cntExpr, cntType );
+        if getBaseType( cntType ) /= containers_count_type_t and
+           getBaseType( cntType ) /= uni_numeric_t then
+           err( "containers.count_type or doubly_linked_lists.cursor expected" );
+        end if;
+        hasCnt := true;
+     end if;
+     expect( symbol_t, ")" );
+  else
+     ParseGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+     genTypesOk( identifiers( listId ).genKind, itemType );
+     ParseNextOutParameter( ref, doubly_cursor_t );
+     baseTypesOK( ref.kind, doubly_cursor_t );
+     if token = symbol_t and identifiers( token ).value = "," then
+        getNextToken;
+        ParseNumericParameter( cntExpr, cntType );
+        if getBaseType( cntType ) /= containers_count_type_t and
+           getBaseType( cntType ) /= uni_numeric_t then
+           err( "containers.count_type or doubly_linked_lists.cursor expected" );
+        end if;
+        hasCnt := true;
+     end if;
+  end if;
+  if isExecutingCommand then
+     declare
+       cnt : Ada.Containers.Count_Type;
+     begin
+       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       -- the second cursor is the out parameter.  Declare it.  Then fetch it.
+       identifiers( ref.id ).resource := true;
+       identifiers( ref.id ).genKind := identifiers( listId ).genKind;
+       declareResource( resId, doubly_linked_string_list_cursor, blocks_top );
+       AssignParameter( ref, to_unbounded_string( resId ) );
+       findResource( resId, theSecondCursor );
+       -- there are four variations
+       if hasItem and hasCnt then
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+          Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr, theSecondCursor.dlslCursor, cnt );
+       elsif hasItem then
+          Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr, theSecondCursor.dlslCursor );
+       elsif hasCnt then
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+          Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, theSecondCursor.dlslCursor, cnt );
+       else
+          Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, theSecondCursor.dlslCursor );
+       end if;
+     exception when constraint_error =>
+       err( "constraint error raised" );
+     end;
+  end if;
+end ParseDoublyInsertBeforeAndMark;
 
 procedure ParseDoublyDelete is
   -- Syntax: doubly_linked_list.delete( l, c,[, n] );
@@ -695,7 +808,7 @@ procedure ParseDoublyReverseElements is
   theList  : resPtr;
 begin
   expect( doubly_reverse_elements_t );
-  ParseSingleInOutParameter( listId, doubly_list_t );
+  ParseSingleListParameter( listId );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value ), theList );
@@ -711,7 +824,7 @@ procedure ParseDoublyFlip is
   theList  : resPtr;
 begin
   expect( doubly_flip_t );
-  ParseSingleInOutParameter( listId, doubly_list_t );
+  ParseSingleListParameter( listId );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value ), theList );
@@ -770,26 +883,24 @@ procedure ParseDoublySwap is
   -- Syntax: doubly_linked_list.swap( l, c1, c2 );
   -- Ada:    doubly_linked_list.swap( l, c1, c2 );
   -- Swaps values stored at c1, c2.
-  --listExpr : unbounded_string;
-  --listType : identifier;
-  listId   : identifier;
-  theList  : resPtr;
-  firstCursExpr : unbounded_string;
-  firstCursType : identifier;
+  listId         : identifier;
+  theList        : resPtr;
+  firstCursId    : identifier;
   theFirstCursor : resPtr;
-  secondCursExpr : unbounded_string;
-  secondCursType : identifier;
+  secondCursId   : identifier;
   theSecondCursor: resPtr;
 begin
   expect( doubly_swap_t );
-  ParseFirstInOutParameter( listId, doubly_list_t );
-  ParseNextNumericParameter( firstCursExpr, firstCursType, doubly_cursor_t );
-  ParseLastNumericParameter( secondCursExpr, secondCursType, doubly_cursor_t );
+  ParseFirstListParameter( listId );
+  ParseNextCursorParameter( firstCursId );
+  genTypesOk( identifiers( listId ).genKind, identifiers( firstCursId ).genKind );
+  ParseLastCursorParameter( secondCursId );
+  genTypesOk( identifiers( listId ).genKind, identifiers( secondCursId ).genKind );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value ), theList );
-       findResource( to_resource_id( firstCursExpr ), theFirstCursor );
-       findResource( to_resource_id( secondCursExpr ), theSecondCursor );
+       findResource( to_resource_id( identifiers( firstCursId ).value ), theFirstCursor );
+       findResource( to_resource_id( identifiers( secondCursId ).value ), theSecondCursor );
        Doubly_Linked_String_Lists.Swap( theList.dlslList, theFirstCursor.dlslCursor, theSecondCursor.dlslCursor );
      exception when constraint_error =>
        err( "cursor has no element" );
@@ -801,26 +912,24 @@ procedure ParseDoublySwapLinks is
   -- Syntax: doubly_linked_list.swap( l, c1, c2 );
   -- Ada:    doubly_linked_list.swap( l, c1, c2 );
   -- Swaps the list nodes stored at c1, c2.  Cursors will follow the node as it moves as it's just a pointer to the node.
-  --listExpr : unbounded_string;
-  --listType : identifier;
-  listId   : identifier;
-  theList  : resPtr;
-  firstCursExpr : unbounded_string;
-  firstCursType : identifier;
+  listId         : identifier;
+  theList        : resPtr;
+  firstCursId    : identifier;
   theFirstCursor : resPtr;
-  secondCursExpr : unbounded_string;
-  secondCursType : identifier;
+  secondCursId   : identifier;
   theSecondCursor: resPtr;
 begin
   expect( doubly_swap_links_t );
-  ParseFirstInOutParameter( listId, doubly_list_t );
-  ParseNextNumericParameter( firstCursExpr, firstCursType, doubly_cursor_t );
-  ParseLastNumericParameter( secondCursExpr, secondCursType, doubly_cursor_t );
+  ParseFirstListParameter( listId );
+  ParseNextCursorParameter( firstCursId );
+  genTypesOk( identifiers( listId ).genKind, identifiers( firstCursId ).genKind );
+  ParseLastCursorParameter( secondCursId );
+  genTypesOk( identifiers( listId ).genKind, identifiers( secondCursId ).genKind );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value ), theList );
-       findResource( to_resource_id( firstCursExpr ), theFirstCursor );
-       findResource( to_resource_id( secondCursExpr ), theSecondCursor );
+       findResource( to_resource_id( identifiers( firstCursId ).value ), theFirstCursor );
+       findResource( to_resource_id( identifiers( secondCursId ).value ), theSecondCursor );
        Doubly_Linked_String_Lists.Swap_Links( theList.dlslList, theFirstCursor.dlslCursor, theSecondCursor.dlslCursor );
      exception when constraint_error =>
        err( "cursor has no element" );
@@ -837,8 +946,7 @@ procedure ParseDoublySplice is
   theSourceList   : resPtr;
   targetListId    : identifier;
   theTargetList   : resPtr;
-  cursExpr        : unbounded_string;
-  cursType        : identifier;
+  cursId          : identifier;
   theCursor       : resPtr;
   curs2Id         : identifier;
   theSecondCursor : resPtr;
@@ -847,8 +955,9 @@ procedure ParseDoublySplice is
   hasCurs2        : boolean := false;
 begin
   expect( doubly_splice_t );
-  ParseFirstInOutParameter( targetListId, doubly_list_t );
-  ParseNextNumericParameter( cursExpr, cursType, doubly_cursor_t );
+  ParseFirstListParameter( targetListId );
+  ParseNextCursorParameter( cursId );
+  genTypesOk( identifiers( targetListId ).genKind, identifiers( cursId ).genKind );
   -- There's no easy way to handle this.  Two optional parameters, one is
   -- in out and one isn't.
   expect( symbol_t, "," );
@@ -856,9 +965,11 @@ begin
   if getBaseType( identifiers( tempId ).kind ) = doubly_list_t then
      sourceListId := tempId;
      hasSourceId := true;
+     genTypesOk( identifiers( targetListId ).genKind, identifiers( sourceListId ).genKind );
      if token = symbol_t and identifiers( token ).value = "," then
-        ParseLastInOutParameter( curs2Id, doubly_cursor_t );
+        ParseLastCursorParameter( curs2Id );
         hasCurs2 := true;
+        genTypesOk( identifiers( targetListId ).genKind, identifiers( curs2Id ).genKind );
      else
         expect( symbol_t, ")" );
      end if;
@@ -867,6 +978,7 @@ begin
      -- it never will be.
      curs2Id := tempId;
      hasCurs2 := true;
+     genTypesOk( identifiers( targetListId ).genKind, identifiers( curs2Id ).genKind );
      expect( symbol_t, ")" );
   else
      err( "list or cursor expected" );
@@ -875,7 +987,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( targetListId ).value ), theTargetList );
-       findResource( to_resource_id( cursExpr ), theCursor );
+       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
        if hasSourceId then
           findResource( to_resource_id( identifiers( sourceListId ).value ), theSourceList );
        end if;
@@ -943,50 +1055,50 @@ begin
   declareIdent( doubly_list_t,   "doubly_linked_lists.list", positive_t, typeClass );
   declareIdent( doubly_cursor_t, "doubly_linked_lists.cursor", positive_t, typeClass );
 
-  declareProcedure( doubly_new_list_t, "doubly_linked_lists.new_list", ParseDoublyNewList'access );
-  declareProcedure( doubly_clear_t,    "doubly_linked_lists.clear",    ParseDoublyClear'access );
-  declareFunction(  doubly_is_empty_t, "doubly_linked_lists.is_empty", ParseDoublyIsEmpty'access );
-  declareFunction(  doubly_length_t,   "doubly_linked_lists.length",   ParseDoublyLength'access );
-  declareProcedure( doubly_append_t,   "doubly_linked_lists.append",   ParseDoublyAppend'access );
-  declareProcedure( doubly_prepend_t,  "doubly_linked_lists.prepend",  ParseDoublyPrepend'access );
+  declareProcedure( doubly_new_list_t,  "doubly_linked_lists.new_list", ParseDoublyNewList'access );
+  declareProcedure( doubly_clear_t,     "doubly_linked_lists.clear",    ParseDoublyClear'access );
+  declareFunction(  doubly_is_empty_t,  "doubly_linked_lists.is_empty", ParseDoublyIsEmpty'access );
+  declareFunction(  doubly_length_t,    "doubly_linked_lists.length",   ParseDoublyLength'access );
+  declareProcedure( doubly_append_t,    "doubly_linked_lists.append",   ParseDoublyAppend'access );
+  declareProcedure( doubly_prepend_t,   "doubly_linked_lists.prepend",  ParseDoublyPrepend'access );
   declareFunction(  doubly_first_element_t, "doubly_linked_lists.first_element", ParseDoublyFirstElement'access );
   declareFunction(  doubly_last_element_t,  "doubly_linked_lists.last_element", ParseDoublyLastElement'access );
   declareProcedure( doubly_delete_first_t,  "doubly_linked_lists.delete_first",  ParseDoublyDeleteFirst'access );
   declareProcedure( doubly_delete_last_t,   "doubly_linked_lists.delete_last",  ParseDoublyDeleteLast'access );
 
   declareProcedure( doubly_new_cursor_t, "doubly_linked_lists.new_cursor", ParseDoublyNewCursor'access );
-  declareProcedure( doubly_first_t,    "doubly_linked_lists.first",    ParseDoublyFirst'access );
-  declareProcedure( doubly_last_t,     "doubly_linked_lists.last",     ParseDoublyLast'access );
-  declareProcedure( doubly_next_t,     "doubly_linked_lists.next",     ParseDoublyNext'access );
-  declareProcedure( doubly_previous_t, "doubly_linked_lists.previous", ParseDoublyPrevious'access );
-  declareFunction(  doubly_element_t,  "doubly_linked_lists.element",  ParseDoublyElement'access );
+  declareProcedure( doubly_first_t,     "doubly_linked_lists.first",    ParseDoublyFirst'access );
+  declareProcedure( doubly_last_t,      "doubly_linked_lists.last",     ParseDoublyLast'access );
+  declareProcedure( doubly_next_t,      "doubly_linked_lists.next",     ParseDoublyNext'access );
+  declareProcedure( doubly_previous_t,  "doubly_linked_lists.previous", ParseDoublyPrevious'access );
+  declareFunction(  doubly_element_t,   "doubly_linked_lists.element",  ParseDoublyElement'access );
   declareProcedure( doubly_replace_element_t, "doubly_linked_lists.replace_element",  ParseDoublyReplaceElement'access );
-  declareProcedure( doubly_insert_t,   "doubly_linked_lists.insert",   ParseDoublyInsert'access ); -- TODO: insert is reserved.
-  declareProcedure( doubly_delete_t,   "doubly_linked_lists.delete",   ParseDoublyDelete'access ); -- TODO: delete is reserved.  delete_element?
-  declareFunction(  doubly_contains_t, "doubly_linked_lists.contains", ParseDoublyContains'access );
-  declareProcedure( doubly_find_t,     "doubly_linked_lists.find",     ParseDoublyFind'access );
+  declareProcedure( doubly_insert_before_t,   "doubly_linked_lists.insert_before",   ParseDoublyInsertBefore'access );
+  declareProcedure( doubly_insert_before_and_mark_t,   "doubly_linked_lists.insert_before_and_mark",   ParseDoublyInsertBeforeAndMark'access );
+  declareProcedure( doubly_delete_t,    "doubly_linked_lists.delete",   ParseDoublyDelete'access );
+  declareFunction(  doubly_contains_t,  "doubly_linked_lists.contains", ParseDoublyContains'access );
+  declareProcedure( doubly_find_t,      "doubly_linked_lists.find",     ParseDoublyFind'access );
   declareProcedure( doubly_reverse_find_t, "doubly_linked_lists.reverse_find", ParseDoublyReverseFind'access );
 
   declareProcedure( doubly_reverse_elements_t, "doubly_linked_lists.reverse_elements",   ParseDoublyReverseElements'access );
-  declareProcedure( doubly_flip_t, "doubly_linked_lists.flip",   ParseDoublyFlip'access );
+  declareProcedure( doubly_flip_t,      "doubly_linked_lists.flip",   ParseDoublyFlip'access );
   declareFunction(  doubly_has_element_t, "doubly_linked_lists.has_element", ParseDoublyHasElement'access );
 
-  declareProcedure( doubly_assign_t,   "doubly_linked_lists.assign",   ParseDoublyAssign'access );
-  declareProcedure( doubly_move_t,     "doubly_linked_lists.move",     ParseDoublyMove'access );
-  declareProcedure( doubly_swap_t,     "doubly_linked_lists.swap",     ParseDoublySwap'access );
+  declareProcedure( doubly_assign_t,    "doubly_linked_lists.assign",   ParseDoublyAssign'access );
+  declareProcedure( doubly_move_t,      "doubly_linked_lists.move",     ParseDoublyMove'access );
+  declareProcedure( doubly_swap_t,      "doubly_linked_lists.swap",     ParseDoublySwap'access );
   declareProcedure( doubly_swap_links_t,"doubly_linked_lists.swap_links", ParseDoublySwapLinks'access );
-  declareProcedure( doubly_splice_t,   "doubly_linked_lists.splice",   ParseDoublySplice'access );
+  declareProcedure( doubly_splice_t,    "doubly_linked_lists.splice",   ParseDoublySplice'access );
 
 
-  -- TODO: copy not done
+  -- copy not implemented
   -- TODO: to array, to json?, to string/image
-  -- TODO: iterate, reverse_iterate
+  -- TODO: iterate, reverse_iterate? possible?
   -- TODO: write/echo, read as a command - not easy because commands only take strings
   -- TODO: shuffle, bubble_sort, heap_sort
-  -- TODO: insert, delete are reserved words?
   -- TODO: genTypesOk refactor
   -- TODO: error messages do not appear on the token
-  -- TODO: complete insert
+  -- TODO: complete insert variations
 
 end StartupDoubly;
 
