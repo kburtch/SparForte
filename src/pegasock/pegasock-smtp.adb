@@ -90,6 +90,7 @@ begin
                      else
                         start_of_line := false;
                      end if;
+                     i := i + 1;
                  end loop;
               end;
               put_line( mysmtp.socket, sanitized_content );
