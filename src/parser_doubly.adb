@@ -115,6 +115,52 @@ begin
   CheckCursorIsInitialized( cursId );
 end ParseLastCursorParameter;
 
+------------------------------------------------------------------------------
+
+-- A special message for the insert function
+
+function insertTypesOk( leftType, rightType : identifier ) return boolean is
+  effectiveLeftType : identifier;
+  effectiveRightType : identifier;
+begin
+
+  -- Basic checks: if the root types don't match, then the base types
+  -- won't.  If either type is universal typeless, they automatically
+  -- match.
+
+  if not uniTypesOk( leftType, rightType ) then
+     return false;
+  end if;
+  if leftType = universal_t or rightType = universal_t then
+     return true;
+  end if;
+  effectiveLeftType := getBaseType( leftType );
+  effectiveRightType := getBaseType( rightType );
+
+  -- Universal type cases: Universal numeric or universal string will
+  -- match depending on the root type of the second type.
+
+  if effectiveLeftType = uni_numeric_t and then getUniType( rightType ) = uni_numeric_t then
+     return true;
+  end if;
+  if effectiveLeftType = uni_string_t and then getUniType( rightType ) = uni_string_t then
+     return true;
+  end if;
+  if effectiveRightType = uni_numeric_t and then getUniType( leftType ) = uni_numeric_t then
+     return true;
+  end if;
+  if effectiveRightType = uni_string_t and then getUniType( leftType ) = uni_string_t then
+     return true;
+  end if;
+
+  -- Otherwise, the types must be identical.
+
+  if effectiveLeftType /= effectiveRightType then
+     err( "doubly_linked_lists.cursor or list item expected" );
+     return false;
+  end if;
+  return true;
+end insertTypesOk;
 
 ------------------------------------------------------------------------------
 -- Parser subprograms
@@ -590,8 +636,10 @@ begin
        else
           Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr );
        end if;
-     exception when constraint_error =>
-       err( "constraint error raised" );
+     exception when program_error =>
+       err( "internal error: program_error raised" );
+     when storage_error =>
+       err( "storage_error raised" );
      end;
   end if;
 end ParseDoublyInsertBefore;
@@ -618,42 +666,46 @@ procedure ParseDoublyInsertBeforeAndMark is
   hasCnt     : boolean := false;
   resId : resHandleId;
   ref        : reference;
+  b          : boolean;
 begin
   expect( doubly_insert_before_and_mark_t );
   ParseFirstListParameter( listId );
   ParseNextCursorParameter( cursId );
   genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
   expect( symbol_t, "," );
-  -- The third parameter can be a cursor or a new item.
-  if getBaseType( identifiers( token ).kind ) = doubly_cursor_t or
-     getBaseType( identifiers( token ).kind ) = new_t then
+  -- The third parameter can be a cursor or a new item.  Since a cursor
+  -- is a single variable, it will either be the token or else new_t
+  -- for an undeclared variable.  This assumes the undeclared variable
+  -- was intended as a cursor, not intended as a data item.
+  if identifiers( token ).kind = new_t or else
+     getBaseType( identifiers( token ).kind ) = doubly_cursor_t then
      ParseOutParameter( ref, doubly_cursor_t );
      baseTypesOK( ref.kind, doubly_cursor_t );
+     -- A curor may be followed by an optional count
      if token = symbol_t and identifiers( token ).value = "," then
-        getNextToken;
-        ParseNumericParameter( cntExpr, cntType );
-        if getBaseType( cntType ) /= containers_count_type_t and
-           getBaseType( cntType ) /= uni_numeric_t then
-           err( "containers.count_type or doubly_linked_lists.cursor expected" );
-        end if;
+        ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
         hasCnt := true;
+     else
+        expect( symbol_t, ")" );
      end if;
-     expect( symbol_t, ")" );
   else
+     -- If it's a new item value, check the generic item type and
+     -- then get the cursor
      ParseGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
-     genTypesOk( identifiers( listId ).genKind, itemType );
+     -- Instead of genTypeOK, we'll show a custom message explaining
+     -- the two different variations for the third parameter.
+     b := insertTypesOk( itemType, identifiers( listId ).genKind );
+     hasItem := true;
      ParseNextOutParameter( ref, doubly_cursor_t );
      baseTypesOK( ref.kind, doubly_cursor_t );
      if token = symbol_t and identifiers( token ).value = "," then
-        getNextToken;
-        ParseNumericParameter( cntExpr, cntType );
-        if getBaseType( cntType ) /= containers_count_type_t and
-           getBaseType( cntType ) /= uni_numeric_t then
-           err( "containers.count_type or doubly_linked_lists.cursor expected" );
-        end if;
+        ParseLastNumericParameter( cntExpr, cntType );
         hasCnt := true;
+     else
+        expect( symbol_t, ")" );
      end if;
   end if;
+
   if isExecutingCommand then
      declare
        cnt : Ada.Containers.Count_Type;
@@ -678,8 +730,10 @@ begin
        else
           Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, theSecondCursor.dlslCursor );
        end if;
-     exception when constraint_error =>
-       err( "constraint error raised" );
+     exception when program_error =>
+       err( "internal error: program_error raised" );
+     when storage_error =>
+       err( "storage_error raised" );
      end;
   end if;
 end ParseDoublyInsertBeforeAndMark;
