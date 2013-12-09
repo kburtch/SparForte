@@ -2822,6 +2822,483 @@ env ft;
 env fm;
 env js;
 
+-- doubly_linked_lists positive tests
+
+-- Basic Assign
+
+declare
+  l1 : doubly_linked_lists.list;
+  l2 : doubly_linked_lists.list;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.new_list( l2, integer );
+  doubly_linked_lists.assign( l1, l2 );
+end;
+
+-- Basic Append
+
+declare
+  l1 : doubly_linked_lists.list;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+end;
+
+-- Basic Move
+
+declare
+  l1 : doubly_linked_lists.list;
+  l2 : doubly_linked_lists.list;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.new_list( l2, integer );
+  doubly_linked_lists.assign( l1, l2 );
+end;
+
+-- Basic Is_Empty
+
+declare
+  l1 : doubly_linked_lists.list;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  pragma assert( doubly_linked_lists.is_empty( l1 ) );
+  doubly_linked_lists.append( l1, 1234 );
+  pragma assert( not doubly_linked_lists.is_empty( l1 ) );
+end;
+
+-- Clear
+
+declare
+  l1 : doubly_linked_lists.list;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.clear( l1 );
+  pragma assert( doubly_linked_lists.is_empty( l1 ) );
+end;
+
+-- Basic Length
+
+declare
+  l1 : doubly_linked_lists.list;
+  c : containers.count_type;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  c := doubly_linked_lists.length( l1 );
+  pragma assert( c = 0 );
+  doubly_linked_lists.append( l1, 1234 );
+  c := doubly_linked_lists.length( l1 );
+  pragma assert( c = 1 );
+end;
+
+-- First_Element
+
+declare
+  l1 : doubly_linked_lists.list;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.append( l1, 2345 );
+  pragma assert( doubly_linked_lists.first_element( l1 ) = 1234 );
+end;
+
+-- Last_Element
+
+declare
+  l1 : doubly_linked_lists.list;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.append( l1, 2345 );
+  pragma assert( doubly_linked_lists.last_element( l1 ) = 2345 );
+end;
+
+-- Delete_First
+
+declare
+  l1 : doubly_linked_lists.list;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.append( l1, 2345 );
+  doubly_linked_lists.delete_first( l1 );
+  pragma assert( doubly_linked_lists.first_element( l1 ) = 2345 );
+  doubly_linked_lists.append( l1, 3456 );
+  doubly_linked_lists.append( l1, 4567 );
+  doubly_linked_lists.delete_first( l1, 2 );
+  pragma assert( doubly_linked_lists.first_element( l1 ) = 4567 );
+end;
+
+-- First / Element
+
+declare
+  l1 : doubly_linked_lists.list;
+  c1 : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.append( l1, 2345 );
+  doubly_linked_lists.new_cursor( c1, integer );
+  doubly_linked_lists.first( l1, c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 1234 );
+end;
+
+-- Last
+
+declare
+  l1 : doubly_linked_lists.list;
+  c1 : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.append( l1, 2345 );
+  doubly_linked_lists.new_cursor( c1, integer );
+  doubly_linked_lists.last( l1, c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 2345 );
+end;
+
+-- Next / Previous
+
+declare
+  l1 : doubly_linked_lists.list;
+  c1 : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.append( l1, 2345 );
+  doubly_linked_lists.new_cursor( c1, integer );
+  doubly_linked_lists.last( l1, c1 );
+  doubly_linked_lists.previous( c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 1234 );
+  doubly_linked_lists.first( l1, c1 );
+  doubly_linked_lists.next( c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 2345 );
+end;
+
+-- Replace_Element
+
+declare
+  l1 : doubly_linked_lists.list;
+  c1 : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.append( l1, 2345 );
+  doubly_linked_lists.new_cursor( c1, integer );
+  doubly_linked_lists.last( l1, c1 );
+  doubly_linked_lists.replace_element( l1, c1, 3456 );
+  doubly_linked_lists.last( l1, c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 3456 );
+end;
+
+-- Delete / Multi-append
+
+declare
+  l1 : doubly_linked_lists.list;
+  c1 : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234, 4 );
+  pragma assert( doubly_linked_lists.length( l1 ) = 4 );
+  doubly_linked_lists.new_cursor( c1, integer );
+  doubly_linked_lists.first( l1, c1 );
+  doubly_linked_lists.delete( l1, c1 );
+  pragma assert( doubly_linked_lists.length( l1 ) = 3 );
+  doubly_linked_lists.prepend( l1, 1234, 3 );
+  doubly_linked_lists.first( l1, c1 );
+  doubly_linked_lists.delete( l1, c1, 2 );
+  pragma assert( doubly_linked_lists.length( l1 ) = 4 );
+end;
+
+-- Contains / Find / Hash_Element
+
+declare
+  l1 : doubly_linked_lists.list;
+  c1 : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.append( l1, 2345 );
+  doubly_linked_lists.append( l1, 3456 );
+  pragma assert( doubly_linked_lists.contains( l1, 1234 ) );
+  pragma assert( not doubly_linked_lists.contains( l1, 7890 ) );
+  doubly_linked_lists.new_cursor( c1, integer );
+  doubly_linked_lists.find( l1, 2345, c1 );
+  pragma assert( doubly_linked_lists.has_element( c1 ) );
+  doubly_linked_lists.find( l1, 7890, c1 );
+  pragma assert( not doubly_linked_lists.has_element( c1 ) );
+  doubly_linked_lists.reverse_find( l1, 2345, c1 );
+  pragma assert( doubly_linked_lists.has_element( c1 ) );
+  doubly_linked_lists.reverse_find( l1, 7890, c1 );
+  pragma assert( not doubly_linked_lists.has_element( c1 ) );
+end;
+
+-- Reverse_Elements / Flip
+
+declare
+  l1 : doubly_linked_lists.list;
+  c1 : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.append( l1, 2345 );
+  doubly_linked_lists.append( l1, 3456 );
+  doubly_linked_lists.reverse_elements( l1 );
+  doubly_linked_lists.new_cursor( c1, integer );
+  doubly_linked_lists.first( l1, c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 3456 );
+  doubly_linked_lists.flip( l1 );
+  doubly_linked_lists.first( l1, c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 1234 );
+end;
+
+-- Swap
+
+declare
+  l1 : doubly_linked_lists.list;
+  c1 : doubly_linked_lists.cursor;
+  c2 : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.append( l1, 2345 );
+  doubly_linked_lists.append( l1, 3456 );
+  doubly_linked_lists.new_cursor( c1, integer );
+  doubly_linked_lists.first( l1, c1 );
+  doubly_linked_lists.new_cursor( c2, integer );
+  doubly_linked_lists.last( l1, c2 );
+  doubly_linked_lists.swap( l1, c1, c2 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 3456 );
+  pragma assert( doubly_linked_lists.element( c2 ) = 1234 );
+  doubly_linked_lists.swap_links( l1, c1, c2 );
+  doubly_linked_lists.first( l1, c1 );
+  doubly_linked_lists.last( l1, c2 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 1234 );
+  pragma assert( doubly_linked_lists.element( c2 ) = 3456 );
+end;
+
+-- Insert_Before
+
+declare
+  l1 : doubly_linked_lists.list;
+  c1 : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.append( l1, 2345 );
+  doubly_linked_lists.append( l1, 3456 );
+  doubly_linked_lists.new_cursor( c1, integer );
+
+  -- Variation 1
+
+  doubly_linked_lists.first( l1, c1 );
+  doubly_linked_lists.insert_before( l1, c1, 4567 );
+  doubly_linked_lists.first( l1, c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 4567 );
+  doubly_linked_lists.next( c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 1234 );
+
+  -- Variation 2
+
+  doubly_linked_lists.first( l1, c1 );
+  doubly_linked_lists.insert_before( l1, c1, 5678, 1+1 );
+  doubly_linked_lists.first( l1, c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 5678 );
+  doubly_linked_lists.next( c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 5678 );
+  doubly_linked_lists.next( c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 4567 );
+end;
+
+-- Insert_Before_And_Mark (Version 3)
+
+declare
+  l1 : doubly_linked_lists.list;
+  c1 : doubly_linked_lists.cursor;
+  c2 : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.append( l1, 2345 );
+  doubly_linked_lists.append( l1, 3456 );
+  doubly_linked_lists.new_cursor( c1, integer );
+
+  doubly_linked_lists.first( l1, c1 );
+  doubly_linked_lists.insert_before_and_mark( l1, c1, 4567, c2 );
+
+  pragma assert( doubly_linked_lists.length( l1 ) = 4 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 1234 );
+  pragma assert( doubly_linked_lists.element( c2 ) = 4567 );
+  doubly_linked_lists.next( c2 );
+  pragma assert( doubly_linked_lists.element( c2 ) = 1234 );
+end;
+
+-- Insert_Before_And_Mark (Version 4)
+
+declare
+  l1 : doubly_linked_lists.list;
+  c1 : doubly_linked_lists.cursor;
+  c2 : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.append( l1, 2345 );
+  doubly_linked_lists.append( l1, 3456 );
+  doubly_linked_lists.new_cursor( c1, integer );
+
+  doubly_linked_lists.first( l1, c1 );
+  doubly_linked_lists.insert_before_and_mark( l1, c1, 4567, c2, 2 );
+
+  pragma assert( doubly_linked_lists.length( l1 ) = 5 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 1234 );
+  pragma assert( doubly_linked_lists.element( c2 ) = 4567 );
+  doubly_linked_lists.next( c2 );
+  pragma assert( doubly_linked_lists.element( c2 ) = 4567 );
+  doubly_linked_lists.next( c2 );
+  pragma assert( doubly_linked_lists.element( c2 ) = 1234 );
+end;
+
+-- Insert_Before_And_Mark (Version 5)
+
+declare
+  l1 : doubly_linked_lists.list;
+  c1 : doubly_linked_lists.cursor;
+  c2 : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.append( l1, 2345 );
+  doubly_linked_lists.append( l1, 3456 );
+  doubly_linked_lists.new_cursor( c1, integer );
+
+  doubly_linked_lists.first( l1, c1 );
+  doubly_linked_lists.insert_before_and_mark( l1, c1, c2 );
+
+  pragma assert( doubly_linked_lists.length( l1 ) = 4 );
+  doubly_linked_lists.replace_element( l1, c2, 4567 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 1234 );
+  doubly_linked_lists.first( l1, c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 4567 );
+end;
+
+-- Insert_Before_And_Mark (Version 6)
+
+declare
+  l1 : doubly_linked_lists.list;
+  c1 : doubly_linked_lists.cursor;
+  c2 : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( l1, integer );
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.append( l1, 2345 );
+  doubly_linked_lists.append( l1, 3456 );
+  doubly_linked_lists.new_cursor( c1, integer );
+
+  doubly_linked_lists.first( l1, c1 );
+  doubly_linked_lists.insert_before_and_mark( l1, c1, c2, 1+1 );
+
+  pragma assert( doubly_linked_lists.length( l1 ) = 5 );
+  doubly_linked_lists.replace_element( l1, c2, 4567 );
+  doubly_linked_lists.next( c2 );
+  doubly_linked_lists.replace_element( l1, c2, 5678 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 1234 );
+  doubly_linked_lists.first( l1, c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 4567 );
+  doubly_linked_lists.next( c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = 5678 );
+end;
+
+-- Splice Variation 1: copying one list to another
+
+declare
+  l1 : doubly_linked_lists.list;
+  l2 : doubly_linked_lists.list;
+  c1 : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( l1, string );
+  doubly_linked_lists.append( l1, "apple" ) @ ( l1, "banana" ) @ ( l1, "cherry" );
+
+  doubly_linked_lists.new_list( l2, string );
+  doubly_linked_lists.append( l2, "donut" ) @ ( l2, "eclair" ) @ (l2, "gelato" );
+
+  doubly_linked_lists.new_cursor( c1, string );
+  doubly_linked_lists.first( l1, c1 );
+  doubly_linked_lists.next( c1 );
+
+  doubly_linked_lists.splice( l1, c1, l2 );  -- add list 2 before "banana"
+  pragma assert( doubly_linked_lists.length( l1 ) = 6 );
+
+  doubly_linked_lists.first( l1, c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = "apple" );
+  doubly_linked_lists.next( c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = "donut" );
+  doubly_linked_lists.next( c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = "eclair" );
+  doubly_linked_lists.next( c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = "gelato" );
+  doubly_linked_lists.next( c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = "banana" );
+  doubly_linked_lists.next( c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = "cherry" );
+end;
+
+-- Splice Variation 2: copying one element from one list to another
+
+declare
+  l1 : doubly_linked_lists.list;
+  l2 : doubly_linked_lists.list;
+  c1 : doubly_linked_lists.cursor;
+  c2 : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( l1, string );
+  doubly_linked_lists.append( l1, "apple" ) @ ( l1, "banana" ) @ ( l1, "cherry" );
+
+  doubly_linked_lists.new_list( l2, string );
+  doubly_linked_lists.append( l2, "donut" ) @ ( l2, "eclair" ) @ (l2, "gelato" );
+
+  doubly_linked_lists.new_cursor( c1, string ) @ ( c2, string );
+  doubly_linked_lists.last( l1, c1 );
+  doubly_linked_lists.first( l2, c2 );
+  doubly_linked_lists.next( c2 );
+
+  doubly_linked_lists.splice( l1, c1, l2, c2 );  -- add "eclair" only to list l1 before "cherry"
+  pragma assert( doubly_linked_lists.length( l1 ) = 4 );
+
+  doubly_linked_lists.first( l1, c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = "apple" );
+  doubly_linked_lists.next( c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = "banana" );
+  doubly_linked_lists.next( c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = "eclair" );
+  doubly_linked_lists.next( c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = "cherry" );
+end;
+
+-- Splice Variation 3: a single list
+
+declare
+  l1 : doubly_linked_lists.list;
+  c1 : doubly_linked_lists.cursor;
+  c2 : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( l1, string );
+  doubly_linked_lists.append( l1, "apple" ) @ ( l1, "banana" ) @ ( l1, "cherry" );
+
+  doubly_linked_lists.new_cursor( c1, string ) @ ( c2, string );
+  doubly_linked_lists.first( l1, c1 );
+  doubly_linked_lists.last( l1, c2 );
+
+  doubly_linked_lists.splice( l1, c1, c2 );  -- move "cherry" before "apple"
+  pragma assert( doubly_linked_lists.length( l1 ) = 3 );
+
+  doubly_linked_lists.first( l1, c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = "cherry" );
+  doubly_linked_lists.next( c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = "apple" );
+  doubly_linked_lists.next( c1 );
+  pragma assert( doubly_linked_lists.element( c1 ) = "banana" );
+end;
+
 -- Pragma ada_95 tests
 
 pragma ada_95;
@@ -2865,3 +3342,4 @@ pragma assert( ada95_i=10 );
 trace( false );
 new_line;
 put_line( "CONGRATULATIONS! BUSH HAS SUCCESSFULLY RUN THIS TEST SCRIPT" );
+

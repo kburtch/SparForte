@@ -50,7 +50,7 @@ CHANGES SINCE 1.4
 
 9. New chains package.  chains.chain_count, chains.chain_context, chains.in_chain. [docs needed]
 
-10. New doubly_linked_list package: new_list, clear, is_empty, length, append, prepend, first_element, last_element, delete_first, delete_last, new_cursor, first, last, next, previous, element, replace_element, insert_before, insert_before_and_mark, delete, contains, find, reverse_find, reverse_elements flip, assign, move, swap, swap_links, splice, has_element [negative testing needed] [docs needed]
+10. New doubly_linked_list package: new_list, clear, is_empty, length, append, prepend, first_element, last_element, delete_first, delete_last, new_cursor, first, last, next, previous, element, replace_element, insert_before, insert_before_and_mark, delete, contains, find, reverse_find, reverse_elements flip, assign, move, swap, swap_links, splice, has_element, assemble, disasemble [negative testing needed] [docs needed]
 
 11. Fix: SMTP sanitizes output, provides timestamp. [testing needed] [timezone handling needed]
 
