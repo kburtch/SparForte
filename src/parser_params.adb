@@ -129,23 +129,6 @@ begin
   end if;
 end ParseGenItemParameter;
 
---  CHECK UNCHECKED PARAMETER
---
--- Check a parameter that was parsed unchecked.
-
-procedure CheckUncheckedParameter( expr_val : out unbounded_string;
-  expr_type : in out identifier; expected_type : identifier := uni_string_t  ) is
-  u : identifier;
-begin
-  discard_result := baseTypesOk( expr_type, expected_type );
-  if isExecutingCommand then
-     u := getUniType( expected_type );
-     if u = uni_string_t or u = uni_numeric_t or u = universal_t then
-        expr_val := castToType( expr_val, expected_type );
-     end if;
-  end if;
-end CheckUncheckedParameter;
-
 --  PARSE SINGLE STRING PARAMETER
 --
 -- Expect a parameter with a single string expression.  If there is no expected

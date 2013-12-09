@@ -681,6 +681,7 @@ begin
      getBaseType( identifiers( token ).kind ) = doubly_cursor_t then
      ParseOutParameter( ref, doubly_cursor_t );
      baseTypesOK( ref.kind, doubly_cursor_t );
+     identifiers( ref.id ).genKind := identifiers( listId ).genKind;
      -- A curor may be followed by an optional count
      if token = symbol_t and identifiers( token ).value = "," then
         ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
@@ -698,6 +699,7 @@ begin
      hasItem := true;
      ParseNextOutParameter( ref, doubly_cursor_t );
      baseTypesOK( ref.kind, doubly_cursor_t );
+     identifiers( ref.id ).genKind := identifiers( listId ).genKind;
      if token = symbol_t and identifiers( token ).value = "," then
         ParseLastNumericParameter( cntExpr, cntType );
         hasCnt := true;
@@ -714,7 +716,6 @@ begin
        findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
        -- the second cursor is the out parameter.  Declare it.  Then fetch it.
        identifiers( ref.id ).resource := true;
-       identifiers( ref.id ).genKind := identifiers( listId ).genKind;
        declareResource( resId, doubly_linked_string_list_cursor, blocks_top );
        AssignParameter( ref, to_unbounded_string( resId ) );
        findResource( resId, theSecondCursor );
@@ -1100,6 +1101,102 @@ begin
   end if;
 end ParseDoublyHasElement;
 
+-----------------------------------------------------------------------------
+
+procedure ParseDoublyAssemble( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: b := doubly_linked_lists.assemble( l [,d [,f]] );
+  -- Ada:    N/A
+  -- This should run faster than if the user did it themselves in a script.
+  -- As a shell language, this is useful for passing data to a pipeline
+  -- echo( doubly_linked_lists.assemble( l ) ) | wc
+  listId  : identifier;
+  theList : resPtr;
+  delimExpr : unbounded_string;
+  delimType : identifier;
+  hasDelim : boolean := false;
+  finalExpr : unbounded_string;
+  finalType : identifier;
+  hasFinal : boolean := false;
+  curs    : Doubly_Linked_String_Lists.Cursor;
+begin
+  kind := uni_string_t;
+  expect( doubly_assemble_t );
+  ParseFirstListParameter( listId );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseNextStringParameter( delimExpr, delimType, uni_string_t );
+     hasDelim := true;
+     if token = symbol_t and identifiers( token ).value = "," then
+        ParseLastStringParameter( finalExpr, finalType, uni_string_t );
+        hasFinal := true;
+     else
+        expect( symbol_t, ")" );
+     end if;
+  else
+     expect( symbol_t, ")" );
+  end if;
+  if isExecutingCommand then
+     begin
+       if not hasDelim then
+          delimExpr := to_unbounded_string( "" & ASCII.LF );
+       end if;
+       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       curs := Doubly_Linked_String_Lists.First( theList.dlslList );
+       if Doubly_Linked_String_Lists.Has_Element( curs ) then
+          loop
+             result := result & Doubly_Linked_String_Lists.Element( curs );
+             Doubly_Linked_String_Lists.Next( curs );
+             exit when not Doubly_Linked_String_Lists.Has_Element( curs );
+             result := result & delimExpr;
+          end loop;
+       end if;
+       if hasFinal then
+          result := result & finalExpr;
+       end if;
+     exception when storage_error =>
+       err( "storage error raised" );
+     end;
+  end if;
+end ParseDoublyAssemble;
+
+procedure ParseDoublyDisassemble is
+  -- TODO: not done
+  strExpr : unbounded_string;
+  strType : identifier;
+  listId  : identifier;
+begin
+  expect( doubly_disassemble_t );
+  ParseFirstStringParameter( strExpr, strType, uni_string_t );
+  ParseLastListParameter( listId );
+  if isExecutingCommand then
+     declare
+       ch : character;
+       i  : natural := 1;
+       l  : natural := length( strExpr );
+       tempStr : unbounded_string;
+       theList : resPtr;
+     begin
+       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       while l >= i loop
+          ch := element( strExpr, i );
+          if ch = ASCII.LF then
+             Doubly_Linked_String_Lists.Append( theList.dlslList, tempStr );
+             tempStr := null_unbounded_string;
+          else
+             tempStr := tempStr & ch;
+          end if;
+          i := i + 1;
+       end loop;
+       if length( tempStr ) > 0 then
+          Doubly_Linked_String_Lists.Append( theList.dlslList, tempStr );
+       end if;
+     exception when storage_error =>
+       err( "storage error raised" );
+     end;
+  end if;
+end ParseDoublyDisassemble;
+
+-----------------------------------------------------------------------------
+
 procedure StartupDoubly is
 begin
   -- These two are actually mod types but we don't support that yet
@@ -1144,15 +1241,16 @@ begin
   declareProcedure( doubly_swap_links_t,"doubly_linked_lists.swap_links", ParseDoublySwapLinks'access );
   declareProcedure( doubly_splice_t,    "doubly_linked_lists.splice",   ParseDoublySplice'access );
 
+  declareFunction(  doubly_assemble_t, "doubly_linked_lists.assemble", ParseDoublyAssemble'access );
+  declareProcedure( doubly_disassemble_t, "doubly_linked_lists.disassemble", ParseDoublyDisassemble'access );
 
   -- copy not implemented
-  -- TODO: to array, to json?, to string/image
-  -- TODO: iterate, reverse_iterate? possible?
-  -- TODO: write/echo, read as a command - not easy because commands only take strings
-  -- TODO: shuffle, bubble_sort, heap_sort
+  -- TODO: to array - we need to refactor arrays first, to json?
+  -- TODO: iterate, reverse_iterate? possible...we don't have callbacks but use `...`?
+  -- doubly_linked_lists.echo - read as a command - not easy because commands only take strings
+  -- shuffle, bubble_sort, heap_sort -- skipped because doubly linked lists are not indexed
   -- TODO: genTypesOk refactor
   -- TODO: error messages do not appear on the token
-  -- TODO: complete insert variations
 
 end StartupDoubly;
 

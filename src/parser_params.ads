@@ -65,10 +65,6 @@ procedure ParseLastGenItemParameter( expr_val : out unbounded_string;
 procedure ParseGenItemParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_string_t );
 
--- TODO: can this be removed?
-procedure CheckUncheckedParameter( expr_val : out unbounded_string;
-  expr_type : in out identifier; expected_type : identifier := uni_string_t  );
-
 ------------------------------------------------------------------------------
 -- String Parameters
 ------------------------------------------------------------------------------

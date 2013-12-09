@@ -72,8 +72,10 @@ doubly_move_t          : identifier;
 doubly_swap_t          : identifier;
 doubly_swap_links_t    : identifier;
 doubly_splice_t        : identifier;
-
 doubly_has_element_t   : identifier;
+
+doubly_assemble_t      : identifier;
+doubly_disassemble_t   : identifier;
 
 ------------------------------------------------------------------------------
 -- HOUSEKEEPING
