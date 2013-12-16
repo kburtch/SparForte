@@ -41,13 +41,11 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-<h2><a NAME="4.14"></a>Chains Package</h2>
+<h2><a NAME="4.14"></a>Doubly_Linked_Lists Package</h2>
 
-<p>The SparForte built-in exceptions package provides subprograms to provide
-information about chains.  Use this to determine if your procedure is in a
-chain, which call is this in the chain, or how many times your procedure has
-been called in the chain.  This package currently only applies to user-defined
-procedures.</p>
+<p>The SparForte built-in doubly_linked_lists package contains subprograms
+to create and manage ordered, unindexed, linked lists.  Cursors are used to designate
+a particular node in the list.</p>
 
 <p><u>Introduced</u>: SparForte 1.5<br>
 
@@ -62,56 +60,43 @@ procedures.</p>
 <li><b>doubly_linked_lists.cursor</b></li>
 </ul>
 
+        <center>
+        <div class="code">
 <pre>
-
-doubly_linked_lists.append
-doubly_linked_lists.assign
-doubly_linked_lists.clear
-doubly_linked_lists.contains
-doubly_linked_lists.delete
-doubly_linked_lists.delete_first
-doubly_linked_lists.delete_last
-doubly_linked_lists.element
-doubly_linked_lists.find
-doubly_linked_lists.first
-doubly_linked_lists.first_element
-doubly_linked_lists.flip
-doubly_linked_lists.has_element
-doubly_linked_lists.insert
-doubly_linked_lists.is_empty
-doubly_linked_lists.last
-doubly_linked_lists.last_element
-doubly_linked_lists.length
-doubly_linked_lists.move
-doubly_linked_lists.new_cursor
-doubly_linked_lists.new_list
-doubly_linked_lists.next
-doubly_linked_lists.prepend
-doubly_linked_lists.previous
-doubly_linked_lists.replace_element
-doubly_linked_lists.reverse_elements
-doubly_linked_lists.reverse_find
-doubly_linked_lists.splice
-doubly_linked_lists.swap
-doubly_linked_lists.swap_links
-
-  <a href="#chains.chain_count">p := chains.chain_count</a>        <a href="#chains.chain_context">e := chains.chain_context</a>
-  <a href="#chains.in_chain">b := chains.in_chain</a>
+  <a href="#doubly_linked_lists.append">append( l, e )</a>                                         <a href="#doubly_linked_lists.assemble">e := assemble( l [,d [,f]] )</a>
+  <a href="#doubly_linked_lists.assign">assign( l1, l2 )</a>                                       <a href="#doubly_linked_lists.clear">clear( l )</a>
+  <a href="#doubly_linked_lists.contains">b := contains( l, e )</a>                                  <a href="#doubly_linked_lists.delete">delete( l, c [,n] )</a>
+  <a href="#doubly_linked_lists.delete_first">delete_first( l [,n] )</a>                                 <a href="#doubly_linked_lists.delete_last">delete_last( l [,n] )</a>
+  <a href="#doubly_linked_lists.disassemble">disassemble( e, l [,d] )</a>                               <a href="#doubly_linked_lists.element">e := element( c )</a>
+  <a href="#doubly_linked_lists.find">find( l, e, c )</a>                                        <a href="#doubly_linked_lists.first">first( l, c )</a>
+  <a href="#doubly_linked_lists.first_element">e := first_element( l )</a>                                <a href="#doubly_linked_lists.flip">flip( l )</a>
+  <a href="#doubly_linked_lists.has_element">b := has_element( c )</a>
+  <a href="#doubly_linked_lists.insert_before">insert_before( l, c [, n] ) | ( l, c, e [, n] )</a>
+  <a href="#doubly_linked_lists.insert_before_and_mark">insert_before_and_mark( l, c, c2 [, n] ) | ( l, c, e, c2 [, n] )</a>
+  <a href="#doubly_linked_lists.is_empty">b := is_empty( l )</a>
+  <a href="#doubly_linked_lists.last_element">e := last_element( l )</a>                                 <a href="#doubly_linked_lists.length">n := length( l )</a>
+  <a href="#doubly_linked_lists.move">move( l1, l2 )</a>                                         <a href="#doubly_linked_lists.new_cursor">new_cursor( c, t )</a>
+  <a href="#doubly_linked_lists.new_list">new_list( l, t )</a>                                       <a href="#doubly_linked_lists.next">next( c )</a>
+  <a href="#doubly_linked_lists.prepend">prepend( l, e )</a>                                        <a href="#doubly_linked_lists.previous">previous( c )</a>
+  <a href="#doubly_linked_lists.replace_element">replace_element( l, c, e )</a>                             <a href="#doubly_linked_lists.reverse_elements">reverse_elements( l )</a>
+  <a href="#doubly_linked_lists.reverse_find">reverse_find( l, e, c )</a>
+  <a href="#doubly_linked_lists.splice">splice( l1, c, l2 [,c2] ) | ( l1, c, c2 )</a>
+  <a href="#doubly_linked_lists.swap">swap( l, c1, c2 )</a>                                      <a href="#doubly_linked_lists.swap_links">swap_links( l, c1, c2 )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the chains package</span>
+        <b>Help Command</b>: Contents of the doubly_linked_lists package</span>
         </div>
         </div>
         </center>
 
-<a name="chains.chain_count"></a><h3>p := chains.chain_count</h3>
+<a name="doubly_linked_lists.append"></a><h3>doubly_linked_lists.append( l, e )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the ordinal position of this call in the chain.  The first call is 1.</p>
+<td><p>Queue list element e at the end of the list.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">pos := chains.chain_count</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.append( l, "zebra" )</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -122,52 +107,160 @@ doubly_linked_lists.swap_links
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>p</span></td>
-<td><span>return value</span></td>
-<td><span>positive</span></td>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
 <td><span>required</span></td>
-<td><span>the position in the chain</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is thrown if this is not in a chain</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Implementation Note</p></td>
-<td><p>This currently only works for built-in procedure chains.</p></td>
-</tr>
-</table>
-
-<a name="chains.chain_context"></a><h3>e := chains.chain_context</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Return the relative position of the call in the chain, whether first, last or in the middle.
-This is useful when combined with a case statement to handle initialization or finalization for the
-chain.</p>
-</tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">name := exceptions.exception_name</span></p></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
+<td><span>the list</span></td>
 </tr><tr>
 <td><span>e</span></td>
-<td><span>return value</span></td>
-<td><span>chains.context</span></td>
+<td><span>in</span></td>
+<td><span><i>list element type</i></span></td>
 <td><span>required</span></td>
-<td><span>the relative position of the call</span></td>
+<td><span>the element to queue</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.prepend</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Append</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.assemble"></a><h3>e := doubly_linked_lists.assemble( l [,d [,f]] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Apply strings.image to each element in the list.  Concatenate the strings together, separated by delimiter string d and ending with optional string f.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">put_line( doubly_linked_lists.assemble( l ) );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>universal_string</i></span></td>
+<td><span>required</span></td>
+<td><span>the string image of the list</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr><tr>
+<td><span>d</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>ASCII.LF</span></td>
+<td><span>the delimiter</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>null_unbounded_string</span></td>
+<td><span>the end of the string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.disassemble</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.assign"></a><h3>doubly_linked_lists.assign( l1, l2 )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Overwrite the contents of list l1 with a copy of l2.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.assign( destination_list, source_list )</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l1</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the destination list</span></td>
+</tr><tr>
+<td><span>l2</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the source list</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element type is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.move</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Assign</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.clear"></a><h3>doubly_linked_lists.clear( l )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Delete the contents of list l.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.clear( animal_list )</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list to erase</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -175,24 +268,23 @@ chain.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
+<td><p>doubly_linked_lists.delete</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Exceptions.Exception_Name<br>PHP: N/A</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Clear</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
-<td><p>This currently only works for built-in procedure chains.</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
-<a name="chains.in_chain"></a><h3>b := chains.in_chain</h3>
+<a name="doubly_linked_lists.contains"></a><h3>b := doubly_linked_lists.contains( l, e )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return true if this procedure is part of a chain.  It is equivalent to
-chains.chain_context /= chains.not_in_chain</p>
+<td><p>Return true if the list contains list element e.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if chains.in_chain then ...</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">if doubly_linked_lists.contains( animal_list, "hyena" ) then ...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -207,7 +299,833 @@ chains.chain_context /= chains.not_in_chain</p>
 <td><span>return value</span></td>
 <td><span>boolean</span></td>
 <td><span>required</span></td>
-<td><span>true if in a chain</span></td>
+<td><span>true if in list</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span><i>list element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element to find</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element is the wrong type</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.find<br>doubly_linked_lists.reverse_find</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Contains</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.delete"></a><h3>doubly_linked_lists.delete( l, c,[, n] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Remove the list element at cursor position c from the list.  If n exists, remove n items instead of one</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.delete( animal_list, elephant_position )</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the position to delete</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>containers.count_type</span></td>
+<td><span>1</span></td>
+<td><span>the number of positions</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element type does not match</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.delete_first<br>doubly_linked_lists.delete_last</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Delete</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.delete_first"></a><h3>doubly_linked_lists.delete_first( l, [, n] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Remove the list element from the start of the list.  If n exists, remove n items instead of one.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.delete_first( animal_list )</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>containers.count_type</span></td>
+<td><span>1</span></td>
+<td><span>the number of positions</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if there are no more elements.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.delete<br>doubly_linked_lists.delete_last</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Delete_First</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.delete_last"></a><h3>doubly_linked_lists.delete_last( l, [, n] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Remove the list element from the end of the list.  If n exists, remove n items instead of one.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.delete_last( animal_list )</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>containers.count_type</span></td>
+<td><span>1</span></td>
+<td><span>the number of positions</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if there are no more elements.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.delete<br>doubly_linked_lists.delete_first</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Delete_Last</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.disassemble"></a><h3>e := doubly_linked_lists.disassemble( l [,d [,f]] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>[NOT DONE]Apply strings.value to each element in the list.  Concatenate the strings together, separated by delimiter string d and ending with optional string f.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">put_line( doubly_linked_lists.assemble( l ) );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>universal_string</i></span></td>
+<td><span>required</span></td>
+<td><span>the string image of the list</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr><tr>
+<td><span>d</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>ASCII.LF</span></td>
+<td><span>the delimiter</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>null_unbounded_string</span></td>
+<td><span>the end of the string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.disassemble</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.element"></a><h3>e := doubly_linked_lists.element( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the list element at the cursor.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">put_line( doubly_linked_lists.element( orca_position ) );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span><i>list element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if there is no element</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Element</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.find"></a><h3>doubly_linked_lists.find( l, e, c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Move the cursor to the location of e in the list  Start from the beginning.  doubly_linked_lists.has_element will be false if the element is not found.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.find( animal_list, "bear" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in out</span></td>
+<td><span><i>list element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element to find</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>int out</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the position of the element</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element is the wrong type</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.reverse_find</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Find</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada version is a function.</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.first"></a><h3>doubly_linked_lists.first( l, c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Move the cursor to the first element in the list.  doubly_linked_lists.has_element will be false if the list is empty.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.first( animal_list, the_cursor );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element type is the wrong type<br>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.last</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.First</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada version is a function.</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.first_element"></a><h3>e := doubly_linked_lists.first_element( l )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the first list element.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">animal := doubly_listed_lists.first_element( animal_list );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span><i>list element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if there is no element</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.last_element</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.First_Element</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.flip"></a><h3>doubly_linked_lists.flip( l )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Reverse the order of the list elements.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_listed_lists.flip( animal_list );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.reverse_elements</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Reverse_Elements</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This is a renaming of reverse_elements to correspond with arrays.flip.</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.has_element"></a><h3>b := doubly_linked_lists.has_element( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if the cursor is positioned at a list element.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">if doubly_listed_lists.has_element( list_position ) then ...</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if there's an element</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if there is no element</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Has_Element</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.insert_before"></a><h3>doubly_linked_lists.insert_before( l, c [, n] ) | ( l, c, e [, n] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Insert element e before the cursor c.  If no element is given, a node is inserted with an unknown element.  If the cursor does not point at an element, the element is appended.  If n is given, insert n copies instead of one.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_listed_lists.insert_before( animal_list, porpose_position, "penguin" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>true if there's an element</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor to insert before</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span><i>list element type</i></span></td>
+<td><span>unknown value</span></td>
+<td><span>the element</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>containers.count_type</span></td>
+<td><span>1</span></td>
+<td><span>the number of elements</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.insert_before_and_mark</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Insert</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada is Doubly_Linked_Lists.Insert but insert is a SparForte reserved word.</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.insert_before_and_mark"></a><h3>doubly_linked_lists.insert_before_and_mark( l, c, c2 [, n] ) | ( l, c, e, c2 [, n] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Insert element e before the cursor c and position cursor c2 to the element inserted.  If no element is given, a node is inserted with an unknown element.  If the cursor does not point at an element, the element is appended.  If n is given, insert n copies instead of one.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_listed_lists.insert_before( animal_list, porpose_position, "penguin" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>true if there's an element</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor to insert before</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span><i>list element type</i></span></td>
+<td><span>unknown value</span></td>
+<td><span>the element</span></td>
+</tr><tr>
+<td><span>c2</span></td>
+<td><span>out</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor to first element inserted</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>containers.count_type</span></td>
+<td><span>1</span></td>
+<td><span>the number of elements</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.insert_before</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Insert</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada is Doubly_Linked_Lists.Insert but insert is a SparForte reserved word.  This is broken into two functions to make parsing easier.</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.is_empty"></a><h3>b := doubly_linked_lists.is_empty( l )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return true if the list has no elements.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">if doubly_linked_lists.is_empty( animal_list ) then ...</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if empty</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.contains</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Is_Empty</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.last_element"></a><h3>e := doubly_linked_lists.last_element( l )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the last list element.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">animal := doubly_listed_lists.last_element( animal_list );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span><i>list element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if there is no element</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.first_element</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Last_Element</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.length"></a><h3>n := doubly_linked_lists.length( l )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of elements in the list.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">if doubly_listed_lists.length( animal_list ) &gt; 10 then ...</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>containers.count_type</span></td>
+<td><span>required</span></td>
+<td><span>the number of elements</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.is_empty</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Length</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.move"></a><h3>doubly_linked_lists.move( l1, l2 )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Overwrite the contents of list l1 with a copy of l2 and erase l2.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.move( destination_list, source_list )</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l1</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the destination list</span></td>
+</tr><tr>
+<td><span>l2</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the source list</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element type is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.assign</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Move</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.new_cursor"></a><h3>doubly_linked_lists.new_cursor( c, t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Initialize a new cursor, assigning the element type for the cursor.  The element type must be a scalar type, and it may be a universal type.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.new_cursor( animal_position, string );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor to initialize</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span><i>the element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the type of element</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -218,7 +1136,479 @@ chains.chain_context /= chains.not_in_chain</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: N/A (AdaScript extension)<br>PHP: N/A</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Allocates a resource for the cursor.</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.new_list"></a><h3>doubly_linked_lists.new_list( l, t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Initialize a new list, assigning the element type for the list.  The element type must be a scalar type, and it may be a universal type.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.new_list( animal_position, string );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list to initialize</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in</span></td>
+<td><span><i>the element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the type of element</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Allocates a resource for the list.</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.next"></a><h3>doubly_linked_lists.next( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Move the cursor to the next element in the list.  doubly_linked_lists.has_element will be false if the end of the list is reached.  Moving when there is no element will not move the cursor.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.next( animal_position );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor to move</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.previous</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Next</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada version is a function.</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.prepend"></a><h3>doubly_linked_lists.prepend( l, e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Push list element e on the front of the list.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.prepend( l, "albatross" )</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span><i>list element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element to push</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.append</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Prepend</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.previous"></a><h3>doubly_linked_lists.previous( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Move the cursor to the previous element in the list.  doubly_linked_lists.has_element will be false if the start of the list is reached.  Moving when there is no element will not move the cursor.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.previous( animal_position );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor to move</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.next</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Previous</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada version is a function.</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.replace_element"></a><h3>doubly_linked_lists.replace_element( l, c, e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Replace the list element at the cursor position with e.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.replace_element( animal_list, dog_position, "collie" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span><i>list element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element to assign</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element is the wrong type<br>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Replace_Element</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.reverse_elements"></a><h3>doubly_linked_lists.reverse_elements( l )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Reverse the order of the list elements.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_listed_lists.reverse_elements( animal_list );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.flip</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Reverse_Elements</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.reverse_find"></a><h3>doubly_linked_lists.reverse_find( l, e, c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Move the cursor to the location of e in the list.  Start from the end of the list.  doubly_linked_lists.has_element will be false if the element is not found.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.reverse_find( animal_list, "bear", bear_position );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in out</span></td>
+<td><span><i>list element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element to find</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>int out</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the position of the element</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element is the wrong type</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.find</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Reverse_Find</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada version is a function.</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.splice"></a><h3>doubly_linked_lists.splice( l1, c, l2 [,c2] ) | ( l1, c, c2 )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>For (l1, c, l2), move the all the elements of l2 to list l1 before cursor c.  If l1 and l2 are the same list, nothing happens.<br>For (l1, c, l2, c2), move the element of l2 at cursor c2 before cursor c in list l1. If both lists and cursors are the same, nothing happens.<br>For (l1, c, c2), move the element at cursor c2 in list l1 to new position c.  If both cursors are the same, nothing happens.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.splice( animal_list, cat_position, dog_position );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l1</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the target list</span></td>
+</tr><tr>
+<td><span>l2</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the source list</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the target cursor</span></td>
+</tr><tr>
+<td><span>c2</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the source cursor</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element type is the wrong type.  The element types must be the same for all lists and cursors.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Splice</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada version does not necessarily treat all parameters as in out mode.</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.swap"></a><h3>doubly_linked_lists.swap( l, c1, c2 )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Swap the elements at cursor c1 and c2.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.swap( animal_list, cat_position, dog_position );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr><tr>
+<td><span>c1</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the first cursor</span></td>
+</tr><tr>
+<td><span>c2</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the second cursor</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element type is the wrong type.<br>An exception is raised if a cursor points at no element</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.swap_links</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Swap</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.swap_links"></a><h3>doubly_linked_lists.swap_links( l, c1, c2 )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Swap the elements at cursor c1 and c2 by swapping internal pointers.  This is usually faster than doubly_linked_lists.swap but causes the cursor positions to be swapped in the list as well.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.swap_links( animal_list, cat_position, dog_position );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list</span></td>
+</tr><tr>
+<td><span>c1</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the first cursor</span></td>
+</tr><tr>
+<td><span>c2</span></td>
+<td><span>in</span></td>
+<td><span>doubly_linked_lists.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the second cursor</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element type is the wrong type.<br>An exception is raised if a cursor points at no element.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.swap</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Doubly_Linked_Lists.Swap_Links</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
@@ -230,10 +1620,11 @@ chains.chain_context /= chains.not_in_chain</p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_arrays.html">&nbsp;arrays</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_calendar.html">&nbsp;calendar</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_cgi.html">&nbsp;cgi</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_chains.html">&nbsp;<b>chains</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_chains.html">&nbsp;chains</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_cmdline.html">&nbsp;command_line</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_db.html">&nbsp;db/ postgresql</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_doubly.html">&nbsp;<b>doubly_linked...</b></a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_exceptions.html">&nbsp;exceptions</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
