@@ -168,7 +168,7 @@ end insertTypesOk;
 
 
 procedure ParseDoublyNewList is
-  -- Syntax: doubly_linked_list.new_list( l );
+  -- Syntax: doubly_linked_list.new_list( l, t );
   -- Ada:    N/A
   resId : resHandleId;
   ref : reference;
@@ -356,8 +356,8 @@ begin
 end ParseDoublyLastElement;
 
 procedure ParseDoublyDeleteFirst is
-  -- Syntax: doubly_linked_list.delete_first( l, c );
-  -- Ada:    doubly_linked_list.delete_first( l, c );
+  -- Syntax: doubly_linked_list.delete_first( l, [, n] );
+  -- Ada:    doubly_linked_list.delete_first( l, [, n] );
   -- listExpr : unbounded_string;
   -- listType : identifier;
   listId   : identifier;
@@ -385,13 +385,15 @@ begin
        else
           Doubly_Linked_String_Lists.Delete_First( theList.dlslList );
        end if;
+     exception when constraint_error =>
+       err( "no more elements" );
      end;
   end if;
 end ParseDoublyDeleteFirst;
 
 procedure ParseDoublyDeleteLast is
-  -- Syntax: doubly_linked_list.delete_last( l, s );
-  -- Ada:    doubly_linked_list.delete_last( l, s );
+  -- Syntax: doubly_linked_list.delete_last( l, [, n] );
+  -- Ada:    doubly_linked_list.delete_last( l, [, n] );
   --listExpr : unbounded_string;
   --listType : identifier;
   listId   : identifier;
@@ -419,12 +421,14 @@ begin
        else
           Doubly_Linked_String_Lists.Delete_Last( theList.dlslList );
        end if;
+     exception when constraint_error =>
+       err( "no more elements" );
      end;
   end if;
 end ParseDoublyDeleteLast;
 
 procedure ParseDoublyNewCursor is
-  -- Syntax: doubly_linked_list.new_cursor( c );
+  -- Syntax: doubly_linked_list.new_cursor( c, t );
   -- Ada:    N/A
   resId : resHandleId;
   ref : reference;
@@ -469,7 +473,7 @@ begin
 end ParseDoublyFirst;
 
 procedure ParseDoublyLast is
-  -- Syntax: doubly_linked_list.delete_last( l, s, c );
+  -- Syntax: doubly_linked_list.delete_last( l, c );
   -- Ada:    c := doubly_linked_list.last( l );
   listId    : identifier;
   theList   : resPtr;
@@ -645,8 +649,8 @@ begin
 end ParseDoublyInsertBefore;
 
 procedure ParseDoublyInsertBeforeAndMark is
-  -- Syntax: doubly_linked_list.insert_before_with_mark( l, c, c2 [, n] );
-  --         doubly_linked_list.insert_before_with_mark( l, c, s, c2 [, n] );
+  -- Syntax: doubly_linked_list.insert_before_and_mark( l, c, c2 [, n] );
+  --         doubly_linked_list.insert_before_and_mark( l, c, s, c2 [, n] );
   -- Ada:    doubly_linked_list.insert( l ,c, s [, n]);
   --         doubly_linked_list.insert( l ,c, c2 [, n]);
   --         doubly_linked_list.insert( l ,c, s, c2 [, n]);
@@ -964,8 +968,8 @@ begin
 end ParseDoublySwap;
 
 procedure ParseDoublySwapLinks is
-  -- Syntax: doubly_linked_list.swap( l, c1, c2 );
-  -- Ada:    doubly_linked_list.swap( l, c1, c2 );
+  -- Syntax: doubly_linked_list.swap_links( l, c1, c2 );
+  -- Ada:    doubly_linked_list.swap_links( l, c1, c2 );
   -- Swaps the list nodes stored at c1, c2.  Cursors will follow the node as it moves as it's just a pointer to the node.
   listId         : identifier;
   theList        : resPtr;
@@ -993,8 +997,8 @@ begin
 end ParseDoublySwapLinks;
 
 procedure ParseDoublySplice is
-  -- Syntax: doubly_linked_list.splice( l1, c, l2 [,c2] );
-  -- Ada:    doubly_linked_list.splice( l1, c, l2 );
+  -- Syntax: doubly_linked_list.splice( l1, c, l2 [,c2] ) | ( l1, c, c2 );
+  -- Ada:    doubly_linked_list.splice( l1, c, l2 [,c2] ) | ( l1, c, c2 );
   -- Append one list to another, or a node from one list to another, or
   -- a node within one list.
   sourceListId    : identifier;
@@ -1251,6 +1255,7 @@ begin
   -- shuffle, bubble_sort, heap_sort -- skipped because doubly linked lists are not indexed
   -- TODO: genTypesOk refactor
   -- TODO: error messages do not appear on the token
+  -- TODO: find/reverse find: should take the cursor position
 
 end StartupDoubly;
 

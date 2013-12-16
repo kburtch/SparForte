@@ -54,3 +54,5 @@ CHANGES SINCE 1.4
 
 11. Fix: SMTP sanitizes output, provides timestamp. [testing needed] [timezone handling needed]
 
+12. Around parser.adb 5812: doesn't allow mixing of param types in a pipeline.
+
