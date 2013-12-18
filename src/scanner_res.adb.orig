@@ -47,6 +47,16 @@ begin
   return resHandleID( valAsLongFloat  );
 end to_resource_id;
 
+function String_Hash( key : unbounded_string ) return Hash_Position is
+begin
+  return 1; -- TODO
+end String_Hash;
+
+--function Equal_Keys( key1, key2 : unbounded_string ) return boolean is
+--begin
+--  return key1 = key2;
+--end Equal_Keys;
+
 ------------------------------------------------------------------------------
 
 --  DECLARE RESOURCE
@@ -129,6 +139,8 @@ begin
        put_line( "doubly linked list" );
   when doubly_linked_string_list_cursor =>
        put_line( "doubly linked list cursor" );
+  when doubly_string_hash_table =>
+       put_line( "dynamic hash table" );
   when none =>
        put_line( "undefined resource" );
   when others =>
@@ -203,6 +215,8 @@ begin
      end if;
   elsif rp.rt = doubly_linked_string_list then
      doubly_linked_string_lists.clear( rp.dlslList );
+  elsif rp.rt = dynamic_string_hash_table then
+     dynamic_string_hash_tables.reset( rp.dsht );
   end if;
   resHandleList.clear( resHandles, long_integer( id ) );
 end clearResource;

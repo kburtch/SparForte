@@ -27,6 +27,7 @@ with gen_list,
      Ada.Containers.Doubly_Linked_Lists,
      Unchecked_Deallocation,
      Gnat.Directory_Operations,
+     Gnat.Dynamic_HTables,
 #if MYSQL
      APQ.MySQL.Client,
 #end if;
@@ -65,10 +66,26 @@ type aResourceType is (
    memcache_connection,
    pen_canvas,
    doubly_linked_string_list,
-   doubly_linked_string_list_cursor
+   doubly_linked_string_list_cursor,
+   dynamic_string_hash_table
 );
 
 package doubly_linked_string_lists is new Ada.Containers.Doubly_Linked_Lists( unbounded_string );
+
+
+type Hash_Position is new integer range 0..65535;
+
+function String_Hash( key : unbounded_string ) return Hash_Position;
+
+package dynamic_string_hash_tables is
+   new Gnat.Dynamic_HTables.Simple_HTable(
+      Hash_Position,
+      unbounded_string,
+      null_unbounded_string,
+      unbounded_string,
+      String_Hash,
+      "="
+);
 
 -- Resource Handle
 --
@@ -115,6 +132,8 @@ type resHandle( rt : aResourceType ) is record
           dlslList : doubly_linked_string_lists.List;
      when doubly_linked_string_list_cursor =>
           dlslCursor : doubly_linked_string_lists.Cursor;
+     when dynamic_string_hash_table =>
+          dsht : string_hash_tables.Instance;
      when none => null;
      end case;
 
