@@ -94,6 +94,7 @@ begin
        kw.class := funcClass;
        kw.procCB := null;
        kw.funcCB := cb;
+       kw.avalue := null;
      end;
   end if;
 end declareFunction;
@@ -115,6 +116,7 @@ begin
        kw.class := procClass;
        kw.procCB := cb;
        kw.funcCB := null;
+       kw.avalue := null;
      end;
   end if;
 end declareProcedure;
@@ -168,7 +170,8 @@ begin
        wasReferenced => false,
        procCB => null,
        funcCB => null,
-       genKind => eof_t
+       genKind => eof_t,
+       avalue => null
      );
      identifiers_top := identifiers_top + 1;                    -- push stack
   end if;
@@ -203,7 +206,8 @@ begin
        wasReferenced => false,
        procCB => null,
        funcCB => null,
-       genKind => eof_t
+       genKind => eof_t,
+       avalue => null
      );
   end if;
 end declareIdent;
@@ -307,7 +311,8 @@ begin
                  wasReferenced => false,
                  procCB => null,
                  funcCB => null,
-                 genKind => eof_t
+                 genKind => eof_t,
+                 avalue => null
                );
             end if;
          end if;
@@ -346,7 +351,8 @@ begin
        wasReferenced => false,
        procCB => null,
        funcCB => null,
-       genKind => eof_t
+       genKind => eof_t,
+       avalue => null
      );
   end if;
 end declareReturnResult;
@@ -400,7 +406,8 @@ begin
        wasReferenced => false,
        procCB   => null,
        funcCB   => null,
-       genKind  => eof_t
+       genKind  => eof_t,
+       avalue   => null
      );
   end if;
 end declareException;

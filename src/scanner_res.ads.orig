@@ -72,8 +72,8 @@ type aResourceType is (
 
 package doubly_linked_string_lists is new Ada.Containers.Doubly_Linked_Lists( unbounded_string );
 
-
-type Hash_Position is new integer range 0..65535;
+--type Hash_Position is new long_integer range 0.. 4_294_967_295; -- 2^32-1
+type Hash_Position is new integer range 0.. 65_535; -- 2^32-1
 
 function String_Hash( key : unbounded_string ) return Hash_Position;
 
@@ -133,7 +133,7 @@ type resHandle( rt : aResourceType ) is record
      when doubly_linked_string_list_cursor =>
           dlslCursor : doubly_linked_string_lists.Cursor;
      when dynamic_string_hash_table =>
-          dsht : string_hash_tables.Instance;
+          dsht : dynamic_string_hash_tables.Instance;
      when none => null;
      end case;
 

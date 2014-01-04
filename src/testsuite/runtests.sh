@@ -224,6 +224,8 @@ fi
 # Run the good tests (if not -b (bad-only)
 
 if [ "$1" != "-b" ] ; then
+   # goodtest.bush checks itself for read-only
+   chmod -w goodtest.bush
    good_test "goodtest.bush"
    good_test "goodtest2.bush"
 fi

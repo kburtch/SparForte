@@ -24,6 +24,7 @@
 ------------------------------------------------------------------------------
 
 with system,
+  unchecked_deallocation,
   ada.numerics.float_random,
   ada.unchecked_deallocation,
   ada.strings.unbounded,
@@ -247,6 +248,12 @@ type anImportMapping is ( none, json );
 type aBuiltinProcedureCallback is access procedure;
 type aBuiltinFunctionCallback is access procedure( value : out unbounded_string; kind : out identifier );
 
+-- Each identifier has a single-dimension array of strings to hold the
+-- identifier's value(s)
+
+type storage is array( natural range <>) of unbounded_string;
+type storagePtr is access all storage;
+procedure free is new unchecked_deallocation( storage, storagePtr );
 
 ------------------------------------------------------------------------------
 -- Identifier Declarations
@@ -276,6 +283,7 @@ type declaration is record
      procCB   : aBuiltinProcedureCallback := null;
      funcCB   : aBuiltinFunctionCallback := null;
      genKind  : identifier;                     -- generic type (if any)
+     avalue   : storagePtr;                     -- array value;
 end record;
 
 

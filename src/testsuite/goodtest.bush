@@ -3299,6 +3299,77 @@ begin
   pragma assert( doubly_linked_lists.element( c1 ) = "banana" );
 end;
 
+-- dynamic hash tables
+
+declare
+  t   : dynamic_hash_tables.table;
+  t2  : dynamic_hash_tables.table;
+  s   : string;
+  eof : boolean;
+begin
+
+  -- dynamic hash gets /sets
+
+  dynamic_hash_tables.new_table( t, string );
+  dynamic_hash_tables.set( t, "foo", "bar" );
+  dynamic_hash_tables.reset( t );
+  dynamic_hash_tables.set( t, "foo", "bar" );
+  pragma assert( dynamic_hash_tables.has_element( t, "foo" ) );
+  pragma assert( dynamic_hash_tables.get( t, "foo" ) = "bar" );
+  dynamic_hash_tables.reset( t );
+  pragma assert( not dynamic_hash_tables.has_element( t, "foo" ) );
+  pragma assert( dynamic_hash_tables.get( t, "foo" ) = "" );
+  dynamic_hash_tables.set( t, "foo", "bar" );
+  dynamic_hash_tables.remove( t, "foo" );
+  pragma assert( dynamic_hash_tables.get( t, "foo" ) = "" );
+  dynamic_hash_tables.set( t, "foo", "bar" );
+  dynamic_hash_tables.add( t, "foo", "bar2" );
+  pragma assert( dynamic_hash_tables.get( t, "foo" ) = "bar" );
+  dynamic_hash_tables.add( t, "foo2", "bar2" );
+  pragma assert( dynamic_hash_tables.get( t, "foo2" ) = "bar2" );
+  dynamic_hash_tables.replace( t, "foo2", "bar3" );
+  pragma assert( dynamic_hash_tables.get( t, "foo2" ) = "bar3" );
+  dynamic_hash_tables.replace( t, "foo3", "bar3" );
+  pragma assert( dynamic_hash_tables.get( t, "foo3" ) = "" );
+  dynamic_hash_tables.prepend( t, "foo", "start" );
+  dynamic_hash_tables.append( t, "foo", "end" );
+  pragma assert( dynamic_hash_tables.get( t, "foo" ) = "startbarend" );
+  dynamic_hash_tables.prepend( t, "foo4", "start" );
+  dynamic_hash_tables.append( t, "foo4", "end" );
+  pragma assert( dynamic_hash_tables.get( t, "foo4" ) = "" );
+
+  -- dynamic hash increment / decrement
+
+  dynamic_hash_tables.new_table( t2, integer );
+
+  dynamic_hash_tables.set( t2, "counter", 0 );
+  dynamic_hash_tables.increment( t2, "counter" );
+  pragma assert( dynamic_hash_tables.get( t2, "counter" ) = 1 );
+  dynamic_hash_tables.increment( t2, "counter", 2 );
+  pragma assert( dynamic_hash_tables.get( t2, "counter" ) = 3 );
+  dynamic_hash_tables.increment( t2, "counter2" );
+  pragma assert( not dynamic_hash_tables.has_element( t2, "counter2" ) );
+
+  dynamic_hash_tables.set( t2, "counter", 0 );
+  dynamic_hash_tables.decrement( t2, "counter" );
+  pragma assert( dynamic_hash_tables.get( t2, "counter" ) = -1 );
+  dynamic_hash_tables.decrement( t2, "counter", 2 );
+  pragma assert( dynamic_hash_tables.get( t2, "counter" ) = -3 );
+  dynamic_hash_tables.decrement( t2, "counter2" );
+  pragma assert( not dynamic_hash_tables.has_element( t2, "counter2" ) );
+
+  -- dynamic hash traversal
+
+  dynamic_hash_tables.reset( t );
+  dynamic_hash_tables.set( t, "foo", "bar" );
+  dynamic_hash_tables.get_first( t, s, eof );
+  pragma assert( s  = "bar" );
+  pragma assert( not eof );
+  dynamic_hash_tables.get_next( t, s, eof );
+  pragma assert( eof );
+
+end;
+
 -- Pragma ada_95 tests
 
 pragma ada_95;

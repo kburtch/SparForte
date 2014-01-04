@@ -47,15 +47,29 @@ begin
   return resHandleID( valAsLongFloat  );
 end to_resource_id;
 
-function String_Hash( key : unbounded_string ) return Hash_Position is
-begin
-  return 1; -- TODO
-end String_Hash;
+------------------------------------------------------------------------------
 
---function Equal_Keys( key1, key2 : unbounded_string ) return boolean is
---begin
---  return key1 = key2;
---end Equal_Keys;
+
+type hash_integer is mod 2**32;
+
+function String_Hash( key : unbounded_string ) return Hash_Position is
+-- FVN hash (see parser_numerics)
+  hash   : hash_integer := 16#711c9dc5#; -- was 16#8
+  k      : hash_integer;
+  limit  : hash_integer;
+begin
+  limit := hash_integer( hash_position'last );
+  for data in 1..length(key)-3 loop
+      k := character'pos( element(key, data) ) +
+           character'pos( element(key, data+1) ) * 256 +     -- 8
+           character'pos( element(key, data+2) ) * 65536 +   -- 16
+           character'pos( element(key, data+3) ) * 16777216; -- 24
+       hash := hash xor k;
+       hash := hash * 16#01000193#;
+  end loop;
+  hash := (hash mod limit);
+  return hash_position( hash );
+end String_Hash;
 
 ------------------------------------------------------------------------------
 
@@ -139,7 +153,7 @@ begin
        put_line( "doubly linked list" );
   when doubly_linked_string_list_cursor =>
        put_line( "doubly linked list cursor" );
-  when doubly_string_hash_table =>
+  when dynamic_string_hash_table =>
        put_line( "dynamic hash table" );
   when none =>
        put_line( "undefined resource" );

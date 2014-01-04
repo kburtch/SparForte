@@ -54,5 +54,8 @@ CHANGES SINCE 1.4
 
 11. Fix: SMTP sanitizes output, provides timestamp. [testing needed] [timezone handling needed]
 
-12. Around parser.adb 5812: doesn't allow mixing of param types in a pipeline.
+12. New: dynamic_hash_tables package.   dynamic_hash_tables.new_table,  dynamic_hash_tables.set, dynamic_hash_tables.reset, dynamic_hash_tables.get, dynamic_hash_tables.has_element, dynamic_hash_tables.remove, dynamic_hash_tables.get_first, dynamic_hash_tables.get_next, dynamic_hash_tables.add, dynamic_hash_tables.replace, dynamic_hash_tables.append, dynamic_hash_tables.prepend, dynamic_hash_tables.increment, dynamic_hash_tables.decrement. [negative testing needed] [docs needed]
+
+??. Around parser.adb 5812: doesn't allow mixing of param types in a pipeline.
+
 

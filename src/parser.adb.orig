@@ -5689,13 +5689,13 @@ procedure ParseShellCommand is
     free( ap );
   end clearParamList;
 
-  function isParanthesis return boolean is
+  function isParenthesis return boolean is
   -- check for a paranthesis, skipping any white space in front.
   begin
      skipWhiteSpace;
      return token = symbol_t and identifiers( token ).value = "(";
      -- return script( cmdpos ) = '(';
-  end isParanthesis;
+  end isParenthesis;
 
   -- Word parsing and Parameter counting
 
@@ -5794,7 +5794,7 @@ begin
   inBackground := false;                                 -- assume fg command
   paramCnt := 0;                                         -- params unknown
 
-  if isParanthesis then                                  -- parenthesis?
+  if isParenthesis then                                  -- parenthesis?
      -- getNextToken;                                       -- AdaScript syntax
      expect( symbol_t, "(" );                            -- skip paraenthesis
      markScanner( firstParam );                          -- save position
