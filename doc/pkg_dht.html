@@ -1,0 +1,884 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Packages - Dynamic Hash Tables</title>
+	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+	<link rel="index" href="packages.html" />
+	<link rel="prev" href="pkg_cgi.html" />
+	<link rel="next" href="pkg_cmdline.html" />
+</head>
+<body bgcolor="#FFFFFF"><a name="top"></a>
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html">Tutorials</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html"><b>Packages</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_doubly.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_enums.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+	<!-- Content Area -->
+<h2><a NAME="4.14"></a>Dynamic Hash Tables Package</h2>
+
+<p>The SparForte built-in dynamic_hash_tables package contains subprograms
+to create and manage simple hash tables.</p>
+
+<p><u>Introduced</u>: SparForte 1.5<br>
+
+<p><u>GCC Ada Equivalent</u>: Gnat.Dynamic_Hash_Tables<br>
+
+        <center>
+        <div class="code">
+<pre>
+<a href="#dynamic_hash_tables.add">add( t, k, v )</a>                  <a href="#dynamic_hash_tables.append">append( t, k, v )</a>
+<a href="#dynamic_hash_tables.decrement">decrement( t, k [,n] )</a>          <a href="#dynamic_hash_tables.get">v := get( t, k )</a>
+<a href="#dynamic_hash_tables.get_first">get_first( t, v, f )</a>            <a href="#dynamic_hash_tables.get_next">get_next( t, v, f )</a>
+<a href="#dynamic_hash_tables.has_element">b := has_element( t, k )</a>        <a href="#dynamic_hash_tables.increment">increment( t, k [,n] )</a>
+<a href="#dynamic_hash_tables.new_table">new_table( t, y )</a>               <a href="#dynamic_hash_tables.prepend">prepend( t, k, v )</a>
+<a href="#dynamic_hash_tables.remove">remove( t, k )</a>                  <a href="#dynamic_hash_tables.replace">replace( t, k, v )</a>
+<a href="#dynamic_hash_tables.reset">reset( t )</a>                      <a href="#dynamic_hash_tables.set">set( t, k, v )</a>
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the dynamic_hash_tables package</span>
+        </div>
+        </div>
+        </center>
+
+<p>A hash table is a lookup table containing key-value pairs.  Keys are unique
+in the table.</p>
+
+<p>This package includes a new type:</p>
+
+<ul>
+<li><b>dynamic_hash_tables.table</b></li>
+</ul>
+
+        <center>
+        <div class="code">
+<pre>
+<b>=&gt;</b> type url_string is new string
+<b>=&gt;</b> dynamic_hash_tables.new_table( urls, url_string )
+=&gt; (Assuming urls is a new dynamic_hash_tables.table variable)
+<b>=&gt;</b> u : url_string
+<b>=&gt;</b> dynamic_hash_tables.get_first( urls, u, eof )
+=&gt; (Assuming eof is a new boolean variable)
+<b>=&gt;</b> ? eof
+true
+<b>=&gt;</b> dynamic_hash_tables.set( urls, "google", "http://www.google.com" )
+<b>=&gt;</b> dynamic_hash_tables.set( urls, "yahoo", "http://www.yahoo.com" )
+<b>=&gt;</b> dynamic_hash_tables.set( urls, "amazon", "http://www.amazon.com" )
+<b>=&gt;</b> ? dynamic_hash_tables.has_element( urls, "google" )
+true
+<b>=&gt;</b> ? dynamic_hash_tables.get( urls, "google" )
+http://www.google.com
+<b>=&gt;</b> dynamic_hash_tables.get_first( urls, u, eof )
+<b>=&gt;</b> ? eof
+false
+<b>=&gt;</b> ? u
+http://www.amazon.com
+<b>=&gt;</b> dynamic_hash_tables.get_next( urls, u, eof )
+<b>=&gt;</b> ? eof
+false
+<b>=&gt;</b> ? u
+http://www.google.com
+<b>=&gt;</b> dynamic_hash_tables.set( urls, "amazon", 12345 )
+dynamic_hash_tables.set( urls, "amazon", 12345 );
+                                                ^ type <b>universal_numeric</b> is
+inherently different from an <b>url_string</b> (an universal_string)
+
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Example</b>: Using dynamic_hash_tables to store URL's</span>
+        </div>
+        </div>
+        </center>
+
+
+<a name="dynamic_hash_tables.add"></a><h3>dynamic_hash_tables.add( t, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Put value v under key k in the hash table.  If the key already exists, do nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.add( fruit, "apples", 15 );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in out</span></td>
+<td><span>dynamic_hash_tables.table</span></td>
+<td><span>required</span></td>
+<td><span>the table</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span><i>table value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the value</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed with pragma ada_95</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dynamic_hash_tables.set">dynamic_hash_tables.set</a><br><a href="#dynamic_hash_tables.replace">dynamic_hash_tables.replace</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
+<a name="dynamic_hash_tables.append"></a><h3>dynamic_hash_tables.append( t, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Append string value v to the value under key k in the hash table.  If the key does not exist, do nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.set( fruit_unit, "apples", "bushel" );<br>doubly_linked_lists.append( fruit_unit, "apples", "s" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in out</span></td>
+<td><span>dynamic_hash_tables.table</span></td>
+<td><span>required</span></td>
+<td><span>the table</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span><i>table value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the string to append</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory<br>
+An exception is raised if the value type is not a string</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed with pragma ada_95</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dynamic_hash_tables.prepend">dynamic_hash_tables.prepend</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
+<a name="dynamic_hash_tables.decrement"></a><h3>dynamic_hash_tables.decrement( t, k [,n] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Reduce the numeric value under key k in the hash table by one (or n).  If the key does not exist, do nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.decrement( fruit, "apples" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in out</span></td>
+<td><span>dynamic_hash_tables.table</span></td>
+<td><span>required</span></td>
+<td><span>the table</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span><i>table value type</i></span></td>
+<td><span>1</span></td>
+<td><span>the amount to decrement</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory<br>
+An exception is raised if the value type is not numeric</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed with pragma ada_95</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dynamic_hash_tables.increment">dynamic_hash_tables.increment</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
+<a name="dynamic_hash_tables.get"></a><h3>v := dynamic_hash_tables.get( t, k )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Get the value under key k in the hash table.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">put_line( dynamic_hash_tables.get( fruit, "apples" ) );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>return value</span></td>
+<td><span><i>table value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the value</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>dynamic_hash_tables.table</span></td>
+<td><span>required</span></td>
+<td><span>the table</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Gnat.Dynamic_Hash_Tables.Get</p></td>
+</tr>
+</table>
+
+<a name="dynamic_hash_tables.get_first"></a><h3>dynamic_hash_tables.get_first( t, v, f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Iterate through the hash table.  Return the first value in the table.  Order of the values is not predictable.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.get_first( fruit, first_value, eof );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in out</span></td>
+<td><span>dynamic_hash_tables.table</span></td>
+<td><span>required</span></td>
+<td><span>the table</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span><i>table value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the first value</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>out</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if the table is empty</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed with pragma ada_95</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dynamic_hash_tables.get_next">dynamic_hash_tables.get_next</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Gnat.Dynamic_Hash_Tables.Get_First</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada uses different parameters.</p></td>
+</tr>
+</table>
+
+<a name="dynamic_hash_tables.get_next"></a><h3>dynamic_hash_tables.get_next( t, v, f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Iterate through the hash table.  Return the next value in the table.  Order of the values is not predictable.  Use get_first to start iterating.  If iteration breaks if the table is altered.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.get_next( fruit, next_value, eof );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in out</span></td>
+<td><span>dynamic_hash_tables.table</span></td>
+<td><span>required</span></td>
+<td><span>the table</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span><i>table value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the first value</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>out</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if there are no more elements</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed with pragma ada_95</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dynamic_hash_tables.get_first">dynamic_hash_tables.get_first</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Gnat.Dynamic_Hash_Tables.Get_Next</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada uses different parameters.</p></td>
+</tr>
+</table>
+
+<a name="dynamic_hash_tables.has_element"></a><h3>b := dynamic_hash_tables.has_element( t, k )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Get the value under key k in the hash table.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">if dynamic_hash_tables.has_element( fruit, "apples" ) then ...</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if there is an element</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>dynamic_hash_tables.table</span></td>
+<td><span>required</span></td>
+<td><span>the table</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Gnat.Dynamic_Hash_Tables.Get</p></td>
+</tr>
+</table>
+
+<a name="dynamic_hash_tables.increment"></a><h3>dynamic_hash_tables.increment( t, k [,n] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Increase the numeric value under key k in the hash table by one (or n).  If the key does not exist, do nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.increment( fruit, "apples" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in out</span></td>
+<td><span>dynamic_hash_tables.table</span></td>
+<td><span>required</span></td>
+<td><span>the table</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span><i>table value type</i></span></td>
+<td><span>1</span></td>
+<td><span>the amount to increment</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory<br>
+An exception is raised if the value type is not numeric</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed with pragma ada_95</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dynamic_hash_tables.decrement">dynamic_hash_tables.decrement</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
+<a name="dynamic_hash_tables.new_table"></a><h3>dynamic_hash_tables.new_table( t, y )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Initialize a new hash table, assigning the type for the values in the table.  The value type must be a scalar type, and it may be a universal type.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.new_table( fruit, natural );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>out</span></td>
+<td><span>dynamic_hash_tables.table</span></td>
+<td><span>required</span></td>
+<td><span>the table to initialize</span></td>
+</tr><tr>
+<td><span>y</span></td>
+<td><span>in</span></td>
+<td><span><i>the value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the type of values</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Allocates a resource for the list.</p></td>
+</tr>
+</table>
+
+<a name="dynamic_hash_tables.prepend"></a><h3>dynamic_hash_tables.prepend( t, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Prepend string value v to the value under key k in the hash table.  If the key does not exist, do nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.set( fruit_unit, "apples", "ushels" );<br>dynamic_hash_tables.prepend( fruit_unit, "apples", "b" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in out</span></td>
+<td><span>dynamic_hash_tables.table</span></td>
+<td><span>required</span></td>
+<td><span>the table</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span><i>table value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the string to prepend</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory<br>
+An exception is raised if the value type is not a string</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed with pragma ada_95</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dynamic_hash_tables.append">dynamic_hash_tables.append</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
+<a name="dynamic_hash_tables.remove"></a><h3>dynamic_hash_tables.remove( t, k )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Delete a key and the associated value from the hash table.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.remove( fruit, "bad apples" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in out</span></td>
+<td><span>dynamic_hash_tables.table</span></td>
+<td><span>required</span></td>
+<td><span>the table</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key to delete</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed with pragma ada_95</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dynamic_hash_tables.reset">dynamic_hash_tables.reset</a><br><a href="#dynamic_hash_tables.set">dynamic_hash_tables.set</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
+<a name="dynamic_hash_tables.replace"></a><h3>dynamic_hash_tables.replace( t, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Replace the value v under key k in the hash table.  If the key does not exist, do nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.replace( fruit, "apples", 23 );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in out</span></td>
+<td><span>dynamic_hash_tables.table</span></td>
+<td><span>required</span></td>
+<td><span>the table</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span><i>table value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the new value</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed with pragma ada_95</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dynamic_hash_tables.set">dynamic_hash_tables.set</a><br><a href="#dynamic_hash_tables.add">dynamic_hash_tables.add</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
+<a name="dynamic_hash_tables.reset"></a><h3>dynamic_hash_tables.reset( t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Delete all keys and associated values in the hash table..</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.reset( fruit );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in out</span></td>
+<td><span>dynamic_hash_tables.table</span></td>
+<td><span>required</span></td>
+<td><span>the table to clear</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dynamic_hash_tables.remove">dynamic_hash_tables.remove</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Gnat.Dynamic_Hash_Tables.Reset</p></td>
+</tr>
+</table>
+
+<a name="dynamic_hash_tables.set"></a><h3>dynamic_hash_tables.set( t, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Assign the value v to the key k in the hash table.  If the key does not exist, create it.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.set( fruit, "apples", 21 );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in out</span></td>
+<td><span>dynamic_hash_tables.table</span></td>
+<td><span>required</span></td>
+<td><span>the table</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span><i>table value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the new value</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dynamic_hash_tables.add">dynamic_hash_tables.add</a><br><a href="#dynamic_hash_tables.replace">dynamic_hash_tables.replace</a><br><a href="#dynamic_hash_tables.remove">dynamic_hash_tables.remove</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Gnat.Dynamic_Hash_Tables.Set</p></td>
+</tr>
+</table>
+
+&nbsp;<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="packages.html">&nbsp;Summary</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_arrays.html">&nbsp;arrays</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_calendar.html">&nbsp;calendar</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cgi.html">&nbsp;cgi</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_chains.html">&nbsp;chains</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cmdline.html">&nbsp;command_line</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_db.html">&nbsp;db/ postgresql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_doubly.html">&nbsp;doubly_linked...</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_dht.html">&nbsp;<b>dynamic_hash_...</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_exceptions.html">&nbsp;exceptions</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_gnat_cgi.html">&nbsp;gnat.cgi</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_gnat_crc32.html">&nbsp;gnat.crc32</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_mysqlm.html">&nbsp;mysqlm</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_pen.html">&nbsp;pen</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_pengl.html">&nbsp;pen (OpenGL)</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_records.html">&nbsp;records</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sound.html">&nbsp;sound</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sinfo.html">&nbsp;source_info</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;stats</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_strings.html">&nbsp;strings</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
+</a></p>
+
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" border="0" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>
+

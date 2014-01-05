@@ -1581,6 +1581,38 @@ begin
   elsif helpTopic = "end_of_line" then
      Put_Line( "end_of_line - true if an in_file file has reached the end of a line with get" );
      Put_Line( "  end_of_line( file )" );
+  elsif helpTopic = "doubly_linked_lists" then
+     Put_Line( "doubly_linked_lists - linked lists package" );
+     New_Line;
+     Put_Line( "append( l, e )                                         s := assemble( l [,d [,f]] )" );
+     Put_Line( "assign( l1, l2 )                                       clear( l )" );
+     Put_Line( "b := contains( l, e )                                  delete( l, c [,n] )" );
+     Put_Line( "delete_first( l [,n] )                                 delete_last( l [,n] )" );
+     Put_Line( "disassemble( s, l [,d] )                               e := element( c )" );
+     Put_Line( "find( l, e, c )                                        first( l, c )" );
+     Put_Line( "e := first_element( l )                                flip( l )" );
+     Put_Line( "b := has_element( c )" );
+     Put_Line( "insert_before( l, c [, n] ) | ( l, c, e [, n] )" );
+     Put_Line( "insert_before_and_mark( l, c, c2 [, n] ) | ( l, c, e, c2 [, n] )" );
+     Put_Line( "b := is_empty( l )" );
+     Put_Line( "e := last_element( l )                                 n := length( l )" );
+     Put_Line( "move( l1, l2 )                                         new_cursor( c, t )" );
+     Put_Line( "new_list( l, t )                                       next( c )" );
+     Put_Line( "prepend( l, e )                                        previous( c )" );
+     Put_Line( "replace_element( l, c, e )                             reverse_elements( l )" );
+     Put_Line( "reverse_find( l, e, c )" );
+     Put_Line( "splice( l1, c, l2 [,c2] ) | ( l1, c, c2 )" );
+     Put_Line( "swap( l, c1, c2 )                                      swap_links( l, c1, c2 )" );
+  elsif helpTopic = "dynamic_hash_tables" then
+     Put_Line( "dynamic_hash_tables - hash table package" );
+     New_Line;
+     Put_Line( "add( t, k, v )                  append( t, k, v )" );
+     Put_Line( "decrement( t, k [,n] )          v := get( t, k )" );
+     Put_Line( "get_first( t, v, f )            get_next( t, v, f )" );
+     Put_Line( "b := has_element( t, k )        increment( t, k [,n] )" );
+     Put_Line( "new_table( t, y )               prepend( t, k, v )" );
+     Put_Line( "remove( t, k )                  replace( t, k, v )" );
+     Put_Line( "reset( t )                      set( t, k, v )" );
   elsif helpTopic = "enums" then
      Put_Line( "enums (package) - enumerated types" );
      New_Line;

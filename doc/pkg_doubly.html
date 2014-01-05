@@ -29,7 +29,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="pkg_cgi.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_cmdline.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_dirops.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_dht.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -44,21 +44,11 @@
 <h2><a NAME="4.14"></a>Doubly_Linked_Lists Package</h2>
 
 <p>The SparForte built-in doubly_linked_lists package contains subprograms
-to create and manage ordered, unindexed, linked lists.  Cursors are used to designate
-a particular node in the list.</p>
+to create and manage ordered, unindexed, linked lists.</p>
 
 <p><u>Introduced</u>: SparForte 1.5<br>
 
 <p><u>GCC Ada Equivalent</u>: Ada.Containers.Doubly_Linked_Lists<br>
-
-<p>This package includes four new types:</p>
-
-<ul>
-<li><b>containers.count_type</b></li>
-<li><b>containers.hash_type</b></li>
-<li><b>doubly_linked_lists.list</b></li>
-<li><b>doubly_linked_lists.cursor</b></li>
-</ul>
 
         <center>
         <div class="code">
@@ -86,6 +76,49 @@ a particular node in the list.</p>
         &nbsp;<br>
         <div class="code_caption">
         <b>Help Command</b>: Contents of the doubly_linked_lists package</span>
+        </div>
+        </div>
+        </center>
+
+<p>A list is a dynamic collection of list nodes.  Each node stores a value
+called an element.  Each list can only hold one kind of element (though it
+can be a universal type).  The programmer can traverse forward or reverse
+through the list.  List positions are designated by cursors.</p>
+
+<p>This package includes four new types:</p>
+
+<ul>
+<li><b>containers.count_type</b></li>
+<li><b>containers.hash_type</b></li>
+<li><b>doubly_linked_lists.list</b></li>
+<li><b>doubly_linked_lists.cursor</b></li>
+</ul>
+
+        <center>
+        <div class="code">
+<pre>
+<b>=&gt;</b> type fruit_string is new string
+<b>=&gt;</b> doubly_linked_lists.new_list( fruit, fruit_string )
+=&gt; (Assuming fruit is a new doubly_linked_lists.list variable)
+<b>=&gt;</b> doubly_linked_lists.append( fruit, "apple" );
+<b>=&gt;</b> doubly_linked_lists.append( fruit, "blueberry" )
+<b>=&gt;</b> doubly_linked_lists.append( fruit, "cherry" )
+<b>=&gt;</b> ? doubly_linked_lists.length( fruit )
+ 3
+<b>=&gt;</b> ? doubly_linked_lists.first_element( fruit )
+apple
+<b>=&gt;</b> ? doubly_linked_lists.contains( fruit, "pineapple" )
+false
+<b>=&gt;</b> doubly_linked_lists.new_cursor( c, fruit_string )
+=&gt; (Assuming c is a new doubly_linked_lists.cursor variable)
+<b>=&gt;</b> doubly_linked_lists.first( fruit, c )
+<b>=&gt;</b> doubly_linked_lists.next( c )
+<b>=&gt;</b> ? doubly_linked_lists.element( c )
+blueberry
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Example</b>: Using doubly_linked_lists to create a list of fruit</span>
         </div>
         </div>
         </center>
@@ -1116,7 +1149,7 @@ An exception is raised if out of memory</p></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
 <td><span>c</span></td>
-<td><span>in out</span></td>
+<td><span>out</span></td>
 <td><span>doubly_linked_lists.cursor</span></td>
 <td><span>required</span></td>
 <td><span>the cursor to initialize</span></td>
@@ -1161,12 +1194,12 @@ An exception is raised if out of memory</p></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
 <td><span>l</span></td>
-<td><span>in out</span></td>
+<td><span>out</span></td>
 <td><span>doubly_linked_lists.list</span></td>
 <td><span>required</span></td>
 <td><span>the list to initialize</span></td>
 </tr><tr>
-<td><span>l</span></td>
+<td><span>t</span></td>
 <td><span>in</span></td>
 <td><span><i>the element type</i></span></td>
 <td><span>required</span></td>
@@ -1625,6 +1658,7 @@ An exception is raised if out of memory</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_db.html">&nbsp;db/ postgresql</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_doubly.html">&nbsp;<b>doubly_linked...</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_dht.html">&nbsp;dynamic_hash_...</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_exceptions.html">&nbsp;exceptions</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
