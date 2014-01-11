@@ -45,8 +45,8 @@ package world is
 -- Global Variables / Flags
 ------------------------------------------------------------------------------
 
-version   : constant string := "1.4";
-copyright : constant string :=  " Copyright (c)2001-2012 Free Software Foundation";
+version   : constant string := "1.5";
+copyright : constant string :=  " Copyright (c)2001-2014 Free Software Foundation";
 
 random_generator : ada.numerics.float_random.generator;
 
@@ -251,7 +251,7 @@ type aBuiltinFunctionCallback is access procedure( value : out unbounded_string;
 -- Each identifier has a single-dimension array of strings to hold the
 -- identifier's value(s)
 
-type storage is array( natural range <>) of unbounded_string;
+type storage is array( long_integer range <>) of unbounded_string;
 type storagePtr is access all storage;
 procedure free is new unchecked_deallocation( storage, storagePtr );
 
@@ -280,10 +280,15 @@ type declaration is record
      inspect  : boolean := false;               -- show value on breakout
      deleted  : boolean := false;               -- marked for deletion
      wasReferenced : boolean := false;          -- true if ref'd in syn chk
-     procCB   : aBuiltinProcedureCallback := null;
-     funcCB   : aBuiltinFunctionCallback := null;
+
+     -- New fields for symbol table
+
+     procCB   : aBuiltinProcedureCallback := null;  -- built-in proc only
+     funcCB   : aBuiltinFunctionCallback := null;  -- built-in func only
      genKind  : identifier;                     -- generic type (if any)
-     avalue   : storagePtr;                     -- array value;
+     firstBound : long_integer := 1;           -- first bound (array type only)
+     lastBound  : long_integer := 0;            -- last bound (array type only)
+     avalue   : storagePtr := null;             -- array value (array variable)
 end record;
 
 

@@ -53,8 +53,11 @@ begin
    if ref.index = 0 then
       identifiers( ref.id ).value := value;
    else
-      assignElement( ref.a_id, ref.index, value );
+      -- assignElement( ref.a_id, ref.index, value ); -- OLDARRAY
+      identifiers( ref.id ).avalue( ref.index ) := value; --NEWARRAY
    end if;
+exception when storage_error =>
+   err( "internal error: storage error raised in AssignParameter" );
 end AssignParameter;
 pragma inline( AssignParameter );
 
@@ -65,6 +68,7 @@ begin
       value := identifiers( ref.id ).value;
    else
       value := arrayElement( ref.a_id, ref.index );
+      value := identifiers( ref.id ).avalue( ref.index ); -- NEWARRAY
    end if;
 end GetParameterValue;
 pragma inline( GetParameterValue );

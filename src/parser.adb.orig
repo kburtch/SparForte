@@ -2315,10 +2315,17 @@ begin
                   optional_bold( lastIndex'img ) & " elements" );
           else
              assignElement( array_id2, arrayIndex, expr_value );
+             begin
+               identifiers( array_id ).avalue( arrayIndex ) := expr_value; -- NEWARRAY
+             exception when CONSTRAINT_ERROR =>
+               err( "constraint_error : index out of range " & identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
+             when STORAGE_ERROR =>
+               err( "internal error : storage error raised in ParseAssignment" );
+             end;
           end if;
        end if;
        if arrayIndex = long_integer'last then                  -- shound never
-          err( "too large for BUSH to store" );                -- happen but
+          err( "array is too large" );                         -- happen but
        else                                                    -- check anyway
           arrayIndex := arrayIndex+1;                          -- next element
        end if;                                                 -- stop on err
@@ -2352,6 +2359,32 @@ begin
                expr_value := arrayElement( second_array_id2, i );
                assignElement( array_id2, i, expr_value );
            end loop;
+           begin
+put_line("C - Copying one array to another"); -- DEBUG NEWARRAY
+put_line( "first array : " & to_string( identifiers( array_id ).name ) & " " & identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
+put_line( "second array : " & to_string( identifiers( second_array_id ).name ) & " " & arrayIndex'img & " .. " & lastIndex'img );
+-- copying one array to another
+              if identifiers( array_id ).avalue = null then
+put_line( "internal error: target array storage unexpectedly null" );
+                 err( "internal error: target array storage unexpectedly null" );
+              elsif identifiers( array_id ).avalue'first /= arrayIndex then
+put_line( "internal error: target array first bound doesn't match: " & identifiers( array_id ).avalue'first'img & " vs " & arrayIndex'img );
+                 err( "internal error: target array first bound doesn't match: " & identifiers( array_id ).avalue'first'img & " vs " & arrayIndex'img );
+              elsif identifiers( array_id ).avalue'last /= lastIndex then
+put_line( "internal error: target array last bound doesn't match: " & identifiers( array_id ).avalue'last'img & " vs " &  lastIndex'img );
+                 err( "internal error: target array last bound doesn't match: " & identifiers( array_id ).avalue'last'img & " vs " &  lastIndex'img );
+              elsif not error_found then
+                 for i in arrayIndex..lastIndex loop                 -- do the copy
+put_line( i'img & " for " & arrayIndex'img & " .. " & lastIndex'img ); -- DEBUG NEWARRAY
+                     identifiers( array_id ).avalue( i ) := expr_value; -- NEWARRAY
+put_line( "OK - no exception raised" );
+                 end loop;
+              end if;
+           exception when CONSTRAINT_ERROR =>
+              err( "constraint_error : index out of range " & identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
+           when STORAGE_ERROR =>
+              err( "internal error : storage error raised when copying arrays" );
+           end;
            if trace then
               put_trace(
                 to_string( identifiers( array_id ).name ) & " := " &
@@ -2393,7 +2426,7 @@ begin
   ParseExpression( ab2, kind2 );                            -- high bound
   if token = symbol_t and identifiers( token ).value = "," then
      err( "array of arrays not yet supported" );
-  elsif baseTypesOk(kind1, kind2 ) then                     -- indexes good?
+  elsif baseTypesOk( kind1, kind2 ) then                    -- indexes good?
      if isExecutingCommand then                             -- not on synchk
         if to_numeric( ab1 ) > to_numeric( ab2 ) then       -- bound backwd?
            if long_integer( to_numeric( ab1 ) ) /= 1 and    -- only 1..0
@@ -2434,6 +2467,8 @@ begin
                          ind => kind1,
                          blocklvl => blocks_top );
               identifiers( anonType ).value := to_unbounded_string( type_id'img );
+              identifiers( anonType ).firstBound := long_integer( to_numeric( ab1 ) ); -- NEWARRAY
+              identifiers( anonType ).lastBound  := long_integer( to_numeric( ab2 ) ); -- NEWARRAY
            end if;
         end if;
      end if;
@@ -2452,6 +2487,9 @@ begin
                    ind => kind1,
                    blocklvl => blocks_top );
      identifiers( id ).value := to_unbounded_string( array_id'img );
+     identifiers( id ).avalue := new storage( long_integer( to_numeric( ab1 ) ) .. long_integer( to_numeric( ab2 ) ) );  -- NEWARRAY
+put_line( "parseAnonArray: " & to_string( identifiers( id ).name ) & " is new array " & identifiers( kind1 ).firstBound'img & ".." & identifiers( kind1 ).lastBound'img & " => " & identifiers( id ).avalue'first'img & ".." & identifiers( id ).avalue'first'img );
+     identifiers( id ).genKind := kind1; -- NEWARRAY
   end if;
 
   -- Change variable into an array
@@ -2477,6 +2515,7 @@ procedure ParseArrayDeclaration( id : identifier; arrayType : identifier ) is
   -- was declared separatly.
   array_id : arrayID;
   type_id : arrayID;
+  base_type_id : identifier;
 begin
 
   -- ParseDeclarationPart detected an array type, so let's set up the
@@ -2486,8 +2525,11 @@ begin
   -- (Constant assignments, etc. occur only when actually running a script)
 
   if isExecutingCommand then
-     type_id := arrayID( to_numeric( identifiers(
-        getBaseType( arrayType ) ).value ) );
+     -- get the base type because this may be a subtype of another type
+     -- subtypes are just renamings right now and they have no values/bounds
+     base_type_id := getBaseType( arrayType );
+     -- type id is the array id (e.g. in the old array package )
+     type_id := arrayID( to_numeric( identifiers( base_type_id ).value ) );
      declareArray( id => array_id,
                    name => identifiers( id ).value,
                    first => firstBound( type_id ),
@@ -2495,6 +2537,9 @@ begin
                    ind => indexType( type_id ),
                    blocklvl => blocks_top );
      identifiers( id ).value := to_unbounded_string( array_id'img );
+     identifiers( id ).avalue := new storage( identifiers( base_type_id ).firstBound .. identifiers( base_type_id ).lastBound );  -- NEWARRAY
+--put_line( "parseArrayDecl: " & to_string( identifiers( id ).name ) & " is new array " & identifiers( base_type_id ).firstBound'img & ".." & identifiers( base_type_id ).lastBound'img & " => " & identifiers( id ).avalue'first'img & ".." & identifiers( id ).avalue'last'img );
+     identifiers( id ).genKind := indexType( type_id ); -- NEWARRAY
   end if;
 
   -- Change variable into an array
@@ -3032,6 +3077,8 @@ begin
                     ind => kind1,
                     blocklvl => blocks_top );
          identifiers( newtype_id ).value := to_unbounded_string( type_id'img );
+         identifiers( newtype_id ).firstBound := long_integer( to_numeric( ab1 ) ); -- NEWARRAY
+         identifiers( newtype_id ).lastBound := long_integer( to_numeric( ab2 ) ); -- NEWARRAY
       end if;
       identifiers( newtype_id ).kind := elementType;        -- element type
       identifiers( newtype_id ).list := true;               -- it is an array
@@ -6759,6 +6806,24 @@ begin
            err( "exception raised" );
         else
            assignElement( array_id, arrayIndex, expr_value );
+           begin
+              if identifiers( var_id ).avalue = null then
+put_line( "internal error: target array storage unexpectedly null" ); -- DEBUG
+                 err( "internal error: target array storage unexpectedly null" );
+              elsif identifiers( var_id ).avalue'first > arrayIndex then -- DEBUG
+put_line( "internal error: array index out of bounds" ); -- DEBUG
+                 err( "internal error: array index out of bounds" );
+              elsif identifiers( var_id ).avalue'last < arrayIndex then
+put_line( "internal error: array index out of bounds" ); -- DEBUG
+                 err( "internal error: array index out of bounds" );
+              elsif not error_found then
+                 identifiers( var_id ).avalue( arrayIndex ) := expr_value; -- NEWARRAY
+              end if;
+           exception when CONSTRAINT_ERROR =>
+             err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+           when STORAGE_ERROR =>
+             err( "internal error : storage error raised in ParseAssignment" );
+           end;
            if trace then
               put_trace(
                  to_string( identifiers( var_id ).name ) &

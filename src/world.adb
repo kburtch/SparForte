@@ -67,6 +67,9 @@ begin
      declare
        kw : declaration renames identifiers( id );
      begin
+       if kw.avalue /= null then
+          free( kw.avalue );
+       end if;
        kw.name := To_Unbounded_String( s );
        kw.kind := identifier'first;
        kw.value := Null_Unbounded_String;
@@ -88,6 +91,9 @@ begin
      declare
        kw : declaration renames identifiers( id );
      begin
+       if kw.avalue /= null then
+          free( kw.avalue );
+       end if;
        kw.name := To_Unbounded_String( s );
        kw.kind := identifier'first;
        kw.value := Null_Unbounded_String;
@@ -110,6 +116,9 @@ begin
      declare
        kw : declaration renames identifiers( id );
      begin
+       if kw.avalue /= null then
+          free( kw.avalue );
+       end if;
        kw.name := To_Unbounded_String( s );
        kw.kind := identifier'first;
        kw.value := Null_Unbounded_String;
@@ -151,6 +160,9 @@ begin
             exit;                                               -- and done
          end if;
      end loop;
+     if identifiers( identifiers_top ).avalue /= null then
+        free( identifiers( identifiers_top ).avalue );
+     end if;
      identifiers( identifiers_top ) := declaration'(            -- define
        name     => To_Unbounded_String( s(s'first..eqpos-1) ),  -- identifier
        kind     => string_t,
@@ -171,6 +183,8 @@ begin
        procCB => null,
        funcCB => null,
        genKind => eof_t,
+       firstBound => 1,
+       lastBound => 0,
        avalue => null
      );
      identifiers_top := identifiers_top + 1;                    -- push stack
@@ -187,6 +201,9 @@ begin
   else                                                          -- otherwise
      id := identifiers_top;                                     -- return id
      identifiers_top := identifiers_top+1;                      -- push stack
+     if identifiers( id ).avalue /= null then
+        free( identifiers( id ).avalue );
+     end if;
      identifiers( id ) := declaration'(                         -- define
        name     => name,                                        -- identifier
        kind     => kind,
@@ -207,6 +224,8 @@ begin
        procCB => null,
        funcCB => null,
        genKind => eof_t,
+       firstBound => 1,
+       lastBound => 0,
        avalue => null
      );
   end if;
@@ -230,6 +249,9 @@ begin
      declare
        sc : declaration renames identifiers( identifiers_top );
      begin
+       if sc.avalue /= null then
+          free( sc.avalue );
+       end if;
        sc.name  := to_unbounded_string( name );                 -- define
        sc.kind  := kind;                                        -- identifier
        sc.value := to_unbounded_string( value );
@@ -292,6 +314,9 @@ begin
             else                                                -- otherwise
                id := identifiers_top;                           -- return id
                identifiers_top := identifiers_top+1;            -- push stack
+               if identifiers( id ).avalue /= null then
+                  free( identifiers( id ).avalue );
+               end if;
                identifiers( id ) := declaration'(               -- define
                  name     => paramName,                         -- identifier
                  kind     => identifiers( i ).kind,
@@ -312,6 +337,8 @@ begin
                  procCB => null,
                  funcCB => null,
                  genKind => eof_t,
+                 firstBound => 1,
+                 lastBound => 0,
                  avalue => null
                );
             end if;
@@ -332,6 +359,9 @@ begin
   else                                                -- otherwise
      id := identifiers_top;                           -- return id
      identifiers_top := identifiers_top+1;            -- push stack
+     if identifiers( id ).avalue /= null then
+        free( identifiers( id ).avalue );
+     end if;
      identifiers( id ) := declaration'(               -- define
        name     => paramName,                         -- identifier
        kind     => identifiers( func_id ).kind,
@@ -352,6 +382,8 @@ begin
        procCB => null,
        funcCB => null,
        genKind => eof_t,
+       firstBound => 1,
+       lastBound => 0,
        avalue => null
      );
   end if;
@@ -387,6 +419,9 @@ begin
      id := eof_t;                                               -- assume bad
      id := identifiers_top;                                  -- return id
      identifiers_top := identifiers_top+1;                   -- push stack
+     if identifiers( id ).avalue /= null then
+        free( identifiers( id ).avalue );
+     end if;
      identifiers( id ) := declaration'(                      -- define
        name     => name,                                     -- identifier
        kind     => exception_t,
@@ -407,6 +442,8 @@ begin
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,
+       firstBound => 1,
+       lastBound => 0,
        avalue   => null
      );
   end if;

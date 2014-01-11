@@ -114,16 +114,6 @@ begin
   resHandleList.Find( resHandles, resHandleList.aListIndex( id ), rp );
 end findResource;
 
---  SAVE RESOURCE
---
--- Save a resource, replacing the pointer was in the list.  It will not
--- free the memory if the pointer changes
------------------------------------------------------------------------------
-
---procedure saveResource( id : resHandleID; rp : in resPtr ) is
---begin
---  resHandleList.Replace( resHandles, id, rp );
---end saveResource;
 
 --  PUT RESOURCE
 --
@@ -162,49 +152,6 @@ begin
   end case;
 end putResource;
 
---procedure declareArray( id : out arrayID; name : unbounded_string;
---  first, last : long_integer;
---  ind : identifier; blocklvl : block ) is
---  b   : bushArray;
---  lastElement : arrayElementID;
---  -- create a new array
---begin
---  b.name := name;
---  b.blocklvl := blocklvl;
---  b.firstIndex := first;
---  b.lastIndex := last;
---  b.indType := ind;
---  if first <= last then
---     b.offset := arrayElementID( stringList.length( arrayElements )+1 );
---  else
---     b.offset := 0;
---  end if;
---  begin
---    arrayList.Queue( bushArrays, b );
---  exception when storage_error =>
---      err( "out of memory" );
---      id := 0;
---      return;
---  end;
---  id := arrayID( arrayList.length( bushArrays ) );
---  for i in 1..last-first+1 loop
---      stringList.Queue( arrayElements, Null_Unbounded_String );
---  end loop;
---  if trace then
---     put_trace( to_string( name ) & " declared as array #" & id'img );
---     put_trace( "There are" & stringList.length( arrayElements )'img & " array elements declared by all arrays" );
---  end if;
---  exception when storage_error =>
---      err( "out of memory" );
---      lastElement := arrayElementID( stringList.length( arrayElements ) );
---      for i in b.offset..lastElement loop
---          stringList.Clear( arrayElements, stringList.AListIndex( i ) );
---      end loop;
---      b.offset := 0;
---      id := 0;
---      return;
---end declareArray;
-
 procedure clearResource( id : resHandleID ) is
   rp : resPtr;
 begin
@@ -235,31 +182,6 @@ begin
   resHandleList.clear( resHandles, long_integer( id ) );
 end clearResource;
 
---procedure clearArray( id : arrayID ) is
----- delete an array and deallocate any memory
---  b : bushArray;
---begin
---  b.offset := arrayElementID'last;
---  arrayList.Find( bushArrays, long_integer( id ), b );
---  if b.offset = arrayElementID'last then
---     err( "internal error: destroyArray: already destroyed or bad id" );
---     return;
---  end if;
---  if not b.isType then
---     if b.lastIndex >= b.firstIndex then
---        for i in reverse b.offset..b.offset+arrayElementID( b.lastIndex-b.firstIndex) loop
---            stringList.Clear( arrayElements, stringList.AListIndex( i ) );
---        end loop;
---     end if;
---  end if;
---  -- Deleting the array record will change the array index numbers since
---  -- we are using linked lists.
---  -- arrayList.clear( bushArrays, long_integer( id ) );
---  if trace then
---     put_trace( "There are" & stringList.length( arrayElements )'img & " remaining array elements declared by all arrays" );
---  end if;
---end clearArray;
-
 procedure pullResourceBlock( blocklvl : block ) is
   rp : resPtr;
 begin
@@ -276,39 +198,6 @@ begin
      put_trace( "There are" & resHandleList.length( resHandles )'img & " resources allocated" );
   end if;
 end pullResourceBlock;
-
---procedure pullArrayBlock( blocklvl : block ) is
----- called by scanner.pullBlock, discard all arrays and memory declared
----- by them.
---  b : bushArray;
---  best : bushArray;
---  lastElement : arrayElementID;
---begin
---  best.offset := 0;                                        -- assume none
---  for i in reverse 1..arrayList.length( bushArrays ) loop  -- look thru arrays
---      arrayList.Find( bushArrays, i, b );                  -- next array
---      exit when b.blocklvl < blocklvl;                     -- completed block?
---      if b.offset > 0 then                                 -- not a null array?
---         best := b;                                        -- delete this too
---      end if;
---      arrayList.Clear( bushArrays, i );                    -- destroy array rec
---      if trace then
---         put_trace( to_string( b.name ) & " array deallocated" );
---      end if;
---  end loop;
---  if best.offset > 0 then                                  -- dealloc elements
-     --put_trace( "Starting with array " & to_string( best.name ) );
-     --put_trace( "First element to be discarded is" & best.offset'img );
-     --put_trace( "Last element to be discarded is" & stringList.length( arrayElements )'img );
---     lastElement := arrayElementID( stringList.length( arrayElements ) );
---     for e in reverse best.offset..lastElement loop
---         stringList.Clear( arrayElements, stringList.AListIndex( e ) );
---     end loop;
---  end if;
---  if trace then
---     put_trace( "There are" & stringList.length( arrayElements )'img & " array elements declared by all arrays" );
---  end if;
---end pullArrayBlock;
 
 end scanner_res;
 
