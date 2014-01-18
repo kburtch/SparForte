@@ -333,13 +333,15 @@ begin
            -- special handling since they're not easily visible
            put( "anonymous array" );
            begin
-             put( firstBound( arrayID( to_numeric( kind.value ) ) )'img );
+             -- put( firstBound( arrayID( to_numeric( kind.value ) ) )'img );
+             put( identifiers( getBaseType( ident.kind ) ).firstBound'img );
            exception when others =>
              put( " unknown" );
            end;
            put( " .." );
            begin
-             put( lastBound( arrayID( to_numeric( kind.value ) ) )'img );
+             -- put( lastBound( arrayID( to_numeric( kind.value ) ) )'img );
+             put( identifiers( getBaseType( ident.kind ) ).lastBound'img );
            exception when others =>
              put( " unknown" );
            end;
@@ -362,14 +364,30 @@ begin
            put( kind.name );
         elsif ident.list and (ident.class = typeClass or ident.class = subClass) then
            put( "array" );
+           declare
+              base : identifier := id;
            begin
-             put( firstBound( arrayID( to_numeric( ident.value ) ) )'img );
+              -- with an array, the kind is the element type.  Subclasses are renamings.
+              -- bounds are attached to the base type only.
+              if ident.class = subClass then
+                 base := getBaseType( id );
+              end if;
+             --put( firstBound( arrayID( to_numeric( ident.value ) ) )'img );
+              put( identifiers( base ).firstBound'img );
            exception when others =>
              put( " unknown" );
            end;
            put( " .." );
+           declare
+              base : identifier := id;
            begin
-             put( lastBound( arrayID( to_numeric( ident.value ) ) )'img );
+              -- with an array, the kind is the element type.  Subclasses are renamings.
+              -- bounds are attached to the base type only.
+              if ident.class = subClass then
+                 base := getBaseType( id );
+              end if;
+             --put( lastBound( arrayID( to_numeric( ident.value ) ) )'img );
+              put( identifiers( base ).lastBound'img );
            exception when others =>
              put( " unknown" );
            end;

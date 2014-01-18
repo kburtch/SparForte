@@ -67,7 +67,7 @@ begin
    if ref.index = 0 then
       value := identifiers( ref.id ).value;
    else
-      value := arrayElement( ref.a_id, ref.index );
+      --value := arrayElement( ref.a_id, ref.index );
       value := identifiers( ref.id ).avalue( ref.index ); -- NEWARRAY
    end if;
 end GetParameterValue;
