@@ -2768,7 +2768,7 @@ begin
         -- Note: You can't discard the array type: others may be using it.
         -- Destroying an array will also shift the other array id numbers
         -- since they are in a linked list!
-        clearArray( arrayID( to_numeric( identifiers( id ).value ) ) );
+        null; --clearArray( arrayID( to_numeric( identifiers( id ).value ) ) );
      elsif identifiers( id ).export and identifiers( id ).method = local_memcache then
          -- if memcache, export before deleting
          begin
@@ -2790,7 +2790,7 @@ begin
      return true;                                               -- delete ok
   end if;                                                       -- else
   if identifiers( id ).list and identifiers( id ).class = varClass then
-     clearArray( arrayID( to_numeric( identifiers( id ).value ) ) );
+     null; -- clearArray( arrayID( to_numeric( identifiers( id ).value ) ) );
   elsif identifiers( id ).resource and identifiers( id ).class = varClass then
      null;
      -- deleting a single resource is not allowed because the id is the index
@@ -2844,6 +2844,7 @@ begin
   identifiers( id ).limit  := false;
   identifiers( id ).inspect := false;
   identifiers( id ).class  := otherClass;
+  -- TODO: avalue not released on unset.  it is left to be released on reuse
   return true;                                                  -- delete ok
 end deleteIdent;
 

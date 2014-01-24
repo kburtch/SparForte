@@ -2495,6 +2495,7 @@ begin
               identifiers( anonType ).value := null_unbounded_string;
               identifiers( anonType ).firstBound := long_integer( to_numeric( ab1 ) ); -- NEWARRAY
               identifiers( anonType ).lastBound  := long_integer( to_numeric( ab2 ) ); -- NEWARRAY
+              identifiers( anonType ).genKind    := kind1;
            end if;
         end if;
      end if;
@@ -3208,9 +3209,24 @@ begin
      end if;
      ParseIdentifier( parent_id );                         -- parent type name
      if class_ok( parent_id, typeClass, subClass ) then    -- not a type?
-        if isExecutingCommand or syntax_check then         -- OK to do it?
-          identifiers( newtype_id ).kind := parent_id;     -- define the type
-          identifiers( newtype_id ).class := typeClass;
+        if isExecutingCommand then                         -- OK to do it?
+           identifiers( newtype_id ).kind := parent_id;    -- define the type
+           identifiers( newtype_id ).class := typeClass;
+           identifiers( newtype_id ).genKind :=            -- copy index type
+             identifiers( parent_id ).genKind;             -- / generic type
+           if identifiers( parent_id ).list then           -- an array?
+              identifiers( newtype_id ).list := true;      -- this also array
+              identifiers( newtype_id ).firstBound :=      -- copy first bnd
+                 identifiers( parent_id ).firstBound;
+              identifiers( newtype_id ).lastBound :=       -- copy last bnd
+                 identifiers( parent_id ).lastBound;
+           end if;
+        elsif syntax_check then                            -- syntax check?
+           identifiers( newtype_id ).kind := parent_id;    -- assign subtype
+           identifiers( newtype_id ).class := subClass;    -- subtype class
+           if identifiers( parent_id ).list then           -- an array?
+              identifiers( newtype_id ).list := true;      -- this also array
+           end if;
         else                                               -- otherwise
           b := deleteIdent( newtype_id );                  -- discard new type
         end if;
@@ -3230,11 +3246,26 @@ begin
    expect( is_t );                                         -- "is"
    ParseIdentifier( parent_id );                           -- old type
    if class_ok( parent_id, typeClass, subClass ) then      -- not a type?
-      if isExecutingCommand or syntax_check then              -- OK to execute?
-         identifiers( newtype_id ).kind := parent_id;         -- assign subtype
-         identifiers( newtype_id ).class := subClass;         -- subtype class
-      else                                                    -- otherwise
-         b := deleteIdent( newtype_id );                      -- discard subtype
+      if isExecutingCommand then                           -- OK to execute?
+         identifiers( newtype_id ).kind := parent_id;      -- assign subtype
+         identifiers( newtype_id ).class := subClass;      -- subtype class
+         identifiers( newtype_id ).genKind :=              -- copy index type
+             identifiers( parent_id ).genKind;             -- / generic type
+         if identifiers( parent_id ).list then             -- an array?
+            identifiers( newtype_id ).list := true;        -- this also array
+            identifiers( newtype_id ).firstBound :=        -- copy first bnd
+               identifiers( parent_id ).firstBound;
+            identifiers( newtype_id ).lastBound :=         -- copy last bnd
+               identifiers( parent_id ).lastBound;
+         end if;
+      elsif syntax_check then                              -- syntax check?
+         identifiers( newtype_id ).kind := parent_id;      -- assign subtype
+         identifiers( newtype_id ).class := subClass;      -- subtype class
+         if identifiers( parent_id ).list then             -- an array?
+            identifiers( newtype_id ).list := true;        -- this also array
+         end if;
+      else                                                 -- otherwise
+         b := deleteIdent( newtype_id );                   -- discard subtype
       end if;
    end if;
 end ParseSubtype;

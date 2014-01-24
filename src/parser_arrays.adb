@@ -57,7 +57,7 @@ procedure ParseArraysFirst( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: arrays.first( arraytypeorvar );
   -- Source: arraytypeorvar'first
   var_id   : identifier;
-  array_id : arrayID;
+  --array_id : arrayID;
 begin
   expect( arrays_first_t );
   expect( symbol_t, "(" );
@@ -73,14 +73,28 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     kind := indexType( array_id );
-     f := to_unbounded_string( long_integer'image( firstBound( array_id ) ) );
+     if identifiers( var_id ).class = subClass or identifiers( var_id ).class = typeClass then
+        f := to_unbounded_string( long_integer'image( identifiers( var_id ).firstBound ) );
+     else
+        begin
+           f := to_unbounded_string( long_integer'image( identifiers( var_id ).aValue'first ) );
+        exception when CONSTRAINT_ERROR =>
+           err( "internal error: constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+        when STORAGE_ERROR =>
+           err( "internal error : storage error raised in ParseFactor" );
+        end;
+     end if;
+     kind := identifiers( var_id ).genKind;
+     --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     --kind := indexType( array_id );
+     --f := to_unbounded_string( long_integer'image( firstBound( array_id ) ) );
   elsif syntax_check then
      kind := universal_t; -- type is unknown during syntax check
   else                     -- exiting block, etc. still need type info...
-     array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     kind := indexType( array_id );
+     kind := identifiers( var_id ).genKind;
+     --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     --kind := indexType( array_id );
   end if;
 end ParseArraysFirst;
 
@@ -88,12 +102,13 @@ procedure ParseArraysLast( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: arrays.last( arraytypeorvar );
   -- Source: arraytypeorvar'last
   var_id   : identifier;
-  array_id : arrayID;
+  --array_id : arrayID;
 begin
   expect( arrays_last_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
+  if identifiers( var_id ).class = typeClass or
+     identifiers( var_id ).class = subClass then
      var_id := getBaseType( var_id );
      if not identifiers( var_id ).list then
         err( "Array or array type expected" );
@@ -103,14 +118,28 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     kind := indexType( array_id );
-     f := to_unbounded_string( long_integer'image( lastBound( array_id ) ) );
+     if identifiers( var_id ).class = subClass or identifiers( var_id ).class = typeClass then
+        f := to_unbounded_string( long_integer'image( identifiers( var_id ).lastBound ) );
+     else
+        begin
+           f := to_unbounded_string( long_integer'image( identifiers( var_id ).aValue'last ) );
+        exception when CONSTRAINT_ERROR =>
+           err( "internal error: constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+        when STORAGE_ERROR =>
+           err( "internal error : storage error raised in ParseFactor" );
+        end;
+     end if;
+     kind := identifiers( var_id ).genKind;
+     --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     --kind := indexType( array_id );
+     --f := to_unbounded_string( long_integer'image( lastBound( array_id ) ) );
   elsif syntax_check then
      kind := universal_t; -- type is unknown during syntax check
   else                     -- exiting block, etc. still need type info...
-     array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     kind := indexType( array_id );
+     kind := identifiers( var_id ).genKind;
+     --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     --kind := indexType( array_id );
   end if;
 end ParseArraysLast;
 
@@ -118,7 +147,7 @@ procedure ParseArraysLength( f : out unbounded_string; kind : out identifier ) i
   -- Syntax: arrays.length( arraytypeorvar );
   -- Source: arraytypeorvar'length
   var_id   : identifier;
-  array_id : arrayID;
+  -- array_id : arrayID;
 begin
   kind := natural_t;
   expect( arrays_length_t );
@@ -134,8 +163,13 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     f := to_unbounded_string( long_integer'image( lastBound( array_id ) - firstBound( array_id ) + 1 ) );
+     if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
+        f := to_unbounded_string( long_integer'image( identifiers( var_id ).lastBound - identifiers( var_id ).firstBound + 1 ) );
+     else
+        f := to_unbounded_string( long_integer'image( identifiers( var_id ).avalue'length ) );
+     end if;
+     -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     -- f := to_unbounded_string( long_integer'image( lastBound( array_id ) - firstBound( array_id ) + 1 ) );
   end if;
 end ParseArraysLength;
 
@@ -151,6 +185,7 @@ end ParseArraysLength;
 arrayIdBeingSorted     : arrayID;
 offsetArrayBeingSorted : long_integer;
 ZeroElement            : unbounded_string;
+arrayBeingSortedId     : identifier;
 
 procedure moveElement( From, To : natural ) is
   data : unbounded_string;
@@ -158,12 +193,14 @@ begin
   if From = 0 then
      data := ZeroElement;
   else
-     data := arrayElement( arrayIdBeingSorted, long_integer(From)+offsetArrayBeingSorted);
+     -- data := arrayElement( arrayIdBeingSorted, long_integer(From)+offsetArrayBeingSorted);
+     data := identifiers( arrayBeingSortedId ).avalue( long_integer(From)+offsetArrayBeingSorted );
   end if;
   if To = 0 then
      ZeroElement := data;
   else
-     assignElement( arrayIdBeingSorted, long_integer(To)+offsetArrayBeingSorted, data );
+     -- assignElement( arrayIdBeingSorted, long_integer(To)+offsetArrayBeingSorted, data );
+     identifiers( arrayBeingSortedId ).avalue( long_integer(To)+offsetArrayBeingSorted ) := data;
    end if;
 end moveElement;
 
@@ -173,12 +210,14 @@ begin
   if Op1 = 0 then
      data1 := ZeroElement;
   else
-     data1 := arrayElement( arrayIdBeingSorted, long_integer( Op1 )+offsetArrayBeingSorted);
+     data1 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op1 )+offsetArrayBeingSorted );
+     --data1 := arrayElement( arrayIdBeingSorted, long_integer( Op1 )+offsetArrayBeingSorted);
   end if;
   if Op2 = 0 then
      data2 := ZeroElement;
   else
-     data2 := arrayElement( arrayIdBeingSorted, long_integer( Op2 )+offsetArrayBeingSorted);
+     --data2 := arrayElement( arrayIdBeingSorted, long_integer( Op2 )+offsetArrayBeingSorted);
+     data2 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op2 )+offsetArrayBeingSorted );
   end if;
   return data1 < data2;
 end Lt_string;
@@ -189,12 +228,14 @@ begin
   if Op1 = 0 then
      data1 := ZeroElement;
   else
-     data1 := arrayElement( arrayIdBeingSorted, long_integer( Op1 )+offsetArrayBeingSorted);
+     -- data1 := arrayElement( arrayIdBeingSorted, long_integer( Op1 )+offsetArrayBeingSorted);
+     data1 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op1 )+offsetArrayBeingSorted );
   end if;
   if Op2 = 0 then
      data2 := ZeroElement;
   else
-     data2 := arrayElement( arrayIdBeingSorted, long_integer( Op2 )+offsetArrayBeingSorted);
+     -- data2 := arrayElement( arrayIdBeingSorted, long_integer( Op2 )+offsetArrayBeingSorted);
+     data2 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op2 )+offsetArrayBeingSorted );
   end if;
   return data1 > data2;
 end Lt_string_descending;
@@ -205,12 +246,14 @@ begin
   if Op1 = 0 then
      data1 := ZeroElement;
   else
-     data1 := arrayElement( arrayIdBeingSorted, long_integer( Op1 )+offsetArrayBeingSorted);
+     -- data1 := arrayElement( arrayIdBeingSorted, long_integer( Op1 )+offsetArrayBeingSorted);
+     data1 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op1 )+offsetArrayBeingSorted );
   end if;
   if Op2 = 0 then
      data2 := ZeroElement;
   else
-     data2 := arrayElement( arrayIdBeingSorted, long_integer( Op2 )+offsetArrayBeingSorted);
+     -- data2 := arrayElement( arrayIdBeingSorted, long_integer( Op2 )+offsetArrayBeingSorted);
+     data2 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op2 )+offsetArrayBeingSorted );
   end if;
   return to_numeric( data1 ) < to_numeric( data2 );
 end Lt_numeric;
@@ -221,12 +264,14 @@ begin
   if Op1 = 0 then
      data1 := ZeroElement;
   else
-     data1 := arrayElement( arrayIdBeingSorted, long_integer( Op1 )+offsetArrayBeingSorted);
+     -- data1 := arrayElement( arrayIdBeingSorted, long_integer( Op1 )+offsetArrayBeingSorted);
+     data1 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op1 )+offsetArrayBeingSorted );
   end if;
   if Op2 = 0 then
      data2 := ZeroElement;
   else
-     data2 := arrayElement( arrayIdBeingSorted, long_integer( Op2 )+offsetArrayBeingSorted);
+     -- data2 := arrayElement( arrayIdBeingSorted, long_integer( Op2 )+offsetArrayBeingSorted);
+     data2 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op2 )+offsetArrayBeingSorted );
   end if;
   return to_numeric( data1 ) > to_numeric( data2 );
 end Lt_numeric_descending;
@@ -250,9 +295,12 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := firstBound( arrayIdBeingSorted );
-     last  := lastBound( arrayIdBeingSorted );
+     arrayBeingSortedId := var_id;
+     -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
+     -- first := firstBound( arrayIdBeingSorted );
+     -- last  := lastBound( arrayIdBeingSorted );
+     first := identifiers( var_id ).avalue'first;
+     last  := identifiers( var_id ).avalue'last;
      offsetArrayBeingSorted := first-1;
      kind := getUniType( identifiers( var_id ).kind );
      if kind = uni_string_t or kind = universal_t then
@@ -284,9 +332,12 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := firstBound( arrayIdBeingSorted );
-     last  := lastBound( arrayIdBeingSorted );
+     arrayBeingSortedId := var_id;
+     -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
+     -- first := firstBound( arrayIdBeingSorted );
+     -- last  := lastBound( arrayIdBeingSorted );
+     first := identifiers( var_id ).avalue'first;
+     last  := identifiers( var_id ).avalue'last;
      offsetArrayBeingSorted := first-1;
      kind := getUniType( identifiers( var_id ).kind );
      if kind = uni_string_t or kind = universal_t then
@@ -318,9 +369,12 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := firstBound( arrayIdBeingSorted );
-     last  := lastBound( arrayIdBeingSorted );
+     arrayBeingSortedId := var_id;
+     -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
+     -- first := firstBound( arrayIdBeingSorted );
+     -- last  := lastBound( arrayIdBeingSorted );
+     first := identifiers( var_id ).avalue'first;
+     last  := identifiers( var_id ).avalue'last;
      offsetArrayBeingSorted := first-1;
      kind := getUniType( identifiers( var_id ).kind );
      if kind = uni_string_t or kind = universal_t then
@@ -352,9 +406,12 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := firstBound( arrayIdBeingSorted );
-     last  := lastBound( arrayIdBeingSorted );
+     arrayBeingSortedId := var_id;
+     -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
+     -- first := firstBound( arrayIdBeingSorted );
+     -- last  := lastBound( arrayIdBeingSorted );
+     first := identifiers( var_id ).avalue'first;
+     last  := identifiers( var_id ).avalue'last;
      offsetArrayBeingSorted := first-1;
      kind := getUniType( identifiers( var_id ).kind );
      if kind = uni_string_t or kind = universal_t then
@@ -369,196 +426,186 @@ end ParseArraysHeapSortDescending;
 
 procedure ParseArraysShuffle is
   var_id : identifier;
-  first, last : long_integer;
-  newpos : natural;
+  -- first, last : long_integer;
+  newpos : long_integer;
   len    : long_integer;
-  array_id : arrayID;
+  -- array_id : arrayID;
+  tmp : unbounded_string;
 begin
   expect( arrays_shuffle_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-  --   var_id := getBaseType( var_id );
-  --   if not identifiers( var_id ).list then
-  --      err( "Array or array type expected" );
-  --   end if;
-  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := firstBound( array_id );
-     last  := lastBound( array_id );
-     len   := last-first+1;
-     for i in 1..len loop
-       newpos := natural( 1.0 + long_float'truncation( long_float( len ) *
+     -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     -- first := firstBound( array_id );
+     -- last  := lastBound( array_id );
+     len   := identifiers( var_id ).avalue'length;
+     for i in identifiers( var_id ).avalue'range loop
+         newpos := long_integer( long_float'truncation( long_float( len ) *
              long_float( Ada.Numerics.Float_Random.Random( random_generator
 ) ) ) );
-
-         moveElement( integer(i), 0 );
-         moveElement( integer(newpos), integer(i) );
-         moveElement( 0, integer(newpos) );
+         newpos := newpos + identifiers( var_id ).avalue'first;
+         tmp := identifiers( var_id ).avalue( i );
+         identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( newpos );
+         identifiers( var_id ).avalue( newpos ) := tmp;
+         -- moveElement( integer(i), 0 );
+         -- moveElement( integer(newpos), integer(i) );
+         -- moveElement( 0, integer(newpos) );
      end loop;
   end if;
 end ParseArraysShuffle;
 
 procedure ParseArraysFlip is
   var_id : identifier;
-  first, last : long_integer;
-  newpos : natural;
-  len    : long_integer;
-  array_id : arrayID;
+  -- first, last : long_integer;
+  newpos : long_integer;
+  last   : long_integer;
+  -- array_id : arrayID;
+  tmp    : unbounded_string;
 begin
   expect( arrays_flip_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-  --   var_id := getBaseType( var_id );
-  --   if not identifiers( var_id ).list then
-  --      err( "Array or array type expected" );
-  --   end if;
-  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+     err( "Array expected" );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := firstBound( array_id );
-     last  := lastBound( array_id );
-     len   := last-first+1;
-     for i in 1..len loop
-         newpos := natural( len - i );
-         moveElement( integer(i), 0 );
-         moveElement( integer(newpos), integer(i) );
-         moveElement( 0, integer(newpos) );
+     --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     --first := firstBound( array_id );
+     --last  := lastBound( array_id );
+     --len   := last-first+1;
+     last    := identifiers( var_id ).avalue'last;
+     for i in identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last/2 loop
+         newpos := long_integer( last - i + 1 );
+         tmp := identifiers( var_id ).avalue( i );
+         identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( newpos );
+         identifiers( var_id ).avalue( newpos ) := tmp;
+         -- moveElement( integer(i), 0 );
+         -- moveElement( integer(newpos), integer(i) );
+         -- moveElement( 0, integer(newpos) );
      end loop;
   end if;
 end ParseArraysFlip;
 
 procedure ParseArraysShiftRight is
   var_id : identifier;
-  first, last : long_integer;
-  len    : long_integer;
+  --first, last : long_integer;
+  --len    : long_integer;
 begin
   expect( arrays_shift_right_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-  --   var_id := getBaseType( var_id );
-  --   if not identifiers( var_id ).list then
-  --      err( "Array expected" );
-  --   end if;
-  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array expected" );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := firstBound( arrayIdBeingSorted );
-     last  := lastBound( arrayIdBeingSorted );
-     len   := last-first+1;
-     offsetArrayBeingSorted := first-1;
-     for i in reverse 1..len-1 loop
-         moveElement( integer(i), integer(i+1) );
+     --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
+     --first := firstBound( arrayIdBeingSorted );
+     --last  := lastBound( arrayIdBeingSorted );
+     --len   := last-first+1;
+     --offsetArrayBeingSorted := first-1;
+     for i in reverse identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
+         identifiers( var_id ).avalue( i+1 ) := identifiers( var_id ).avalue( i );
+         --moveElement( integer(i), integer(i+1) );
      end loop;
   end if;
 end ParseArraysShiftRight;
 
 procedure ParseArraysShiftLeft is
   var_id : identifier;
-  first, last : long_integer;
-  len    : long_integer;
+  --first, last : long_integer;
+  --len    : long_integer;
 begin
   expect( arrays_shift_left_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-  --   var_id := getBaseType( var_id );
-  --   if not identifiers( var_id ).list then
-  --      err( "Array or array type expected" );
-  --   end if;
-  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := firstBound( arrayIdBeingSorted );
-     last  := lastBound( arrayIdBeingSorted );
-     len   := last-first+1;
-     offsetArrayBeingSorted := first-1;
-     for i in 1..len-1 loop
-         moveElement( integer(i+1), integer(i) );
+     --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
+     --first := firstBound( arrayIdBeingSorted );
+     --last  := lastBound( arrayIdBeingSorted );
+     --len   := last-first+1;
+     --offsetArrayBeingSorted := first-1;
+     for i in identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
+         identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( i+1 );
+         --moveElement( integer(i+1), integer(i) );
      end loop;
   end if;
 end ParseArraysShiftLeft;
 
 procedure ParseArraysRotateRight is
   var_id : identifier;
-  first, last : long_integer;
-  len    : long_integer;
+  -- first, last : long_integer;
+  -- len    : long_integer;
+  tmp    : unbounded_string;
 begin
   expect( arrays_rotate_right_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-  --   var_id := getBaseType( var_id );
-  --   if not identifiers( var_id ).list then
-  --      err( "Array or array type expected" );
-  --   end if;
-  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := firstBound( arrayIdBeingSorted );
-     last  := lastBound( arrayIdBeingSorted );
-     len   := last-first+1;
-     offsetArrayBeingSorted := first-1;
-     moveElement( integer( len ), 0 );
-     for i in reverse 1..len-1 loop
-         moveElement( integer(i), integer(i+1) );
-     end loop;
-     moveElement( 0, 1 );
+     -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
+     -- first := firstBound( arrayIdBeingSorted );
+     -- last  := lastBound( arrayIdBeingSorted );
+     -- len   := last-first+1;
+     -- offsetArrayBeingSorted := first-1;
+     -- moveElement( integer( len ), 0 );
+     if identifiers( var_id ).avalue'length > 0 then
+        tmp := identifiers( var_id ).avalue( identifiers( var_id ).avalue'last );
+        for i in reverse identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
+            identifiers( var_id ).avalue( i+1 ) := identifiers( var_id ).avalue( i );
+            -- moveElement( integer(i), integer(i+1) );
+        end loop;
+        identifiers( var_id ).avalue( identifiers( var_id ).avalue'first ) := tmp;
+     end if;
+     --moveElement( 0, 1 );
   end if;
 end ParseArraysRotateRight;
 
 procedure ParseArraysRotateLeft is
   var_id : identifier;
-  first, last : long_integer;
-  len    : long_integer;
+  --first, last : long_integer;
+  --len    : long_integer;
+  tmp : unbounded_string;
 begin
   expect( arrays_rotate_left_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-  --   var_id := getBaseType( var_id );
-  --   if not identifiers( var_id ).list then
-  --      err( "Array or array type expected" );
-  --   end if;
-  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := firstBound( arrayIdBeingSorted );
-     last  := lastBound( arrayIdBeingSorted );
-     len   := last-first+1;
-     offsetArrayBeingSorted := first-1;
-     moveElement( 1, 0 );
-     for i in 1..len-1 loop
-         moveElement( integer(i+1), integer(i) );
-     end loop;
-     moveElement( 0, integer( len ) );
+     --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
+     --first := firstBound( arrayIdBeingSorted );
+     --last  := lastBound( arrayIdBeingSorted );
+     --len   := last-first+1;
+     --offsetArrayBeingSorted := first-1;
+     --moveElement( 1, 0 );
+     --for i in 1..len-1 loop
+         --moveElement( integer(i+1), integer(i) );
+     --end loop;
+     --moveElement( 0, integer( len ) );
+     if identifiers( var_id ).avalue'length > 0 then
+        tmp := identifiers( var_id ).avalue( identifiers( var_id ).avalue'first );
+        for i in identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
+            identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( i+1 );
+            -- moveElement( integer(i), integer(i+1) );
+        end loop;
+        identifiers( var_id ).avalue( identifiers( var_id ).avalue'last ) := tmp;
+     end if;
   end if;
 end ParseArraysRotateLeft;
 
