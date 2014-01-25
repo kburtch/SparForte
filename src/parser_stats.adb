@@ -39,6 +39,8 @@ use  ada.numerics.long_elementary_functions,
      parser,
      parser_aux;
 
+with ada.text_io; use ada.text_io;
+
 package body parser_stats is
 
 
@@ -67,20 +69,25 @@ begin
      begin
         first := identifiers( var_id ).avalue'first;
         last  := identifiers( var_id ).avalue'last;
-        max_string := identifiers( var_id ).avalue( first );
-        max := to_numeric( max_string );
-        for i in first+1..last loop
-            if to_numeric( identifiers( var_id ).avalue( i ) ) > max then
-               max_string := identifiers( var_id ).avalue( i );
-               max := to_numeric( max_string );
-            end if;
-        end loop;
+        if last > first then
+           max_string := identifiers( var_id ).avalue( first );
+           max := to_numeric( max_string );
+           for i in first+1..last loop
+               if to_numeric( identifiers( var_id ).avalue( i ) ) > max then
+                  max_string := identifiers( var_id ).avalue( i );
+                  max := to_numeric( max_string );
+               end if;
+           end loop;
+           f := max_string;
+        else
+           f := to_unbounded_string( 0 );
+           err( "array is empty" );
+        end if;
      exception when CONSTRAINT_ERROR =>
         err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
      when STORAGE_ERROR =>
         err( "internal error : storage error raised when maxing array" );
      end;
-     f := max_string;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
   elsif syntax_check then
      kind := universal_t; -- type is not known during syntax check
@@ -108,20 +115,25 @@ begin
      begin
         first := identifiers( var_id ).avalue'first;
         last  := identifiers( var_id ).avalue'last;
-        min_string := identifiers( var_id ).avalue( first );
-        min := to_numeric( min_string );
-        for i in first+1..last loop
-            if to_numeric( identifiers( var_id ).avalue( i ) ) < min then
-               min_string := identifiers( var_id ).avalue( i );
-               min := to_numeric( min_string );
-            end if;
-        end loop;
+        if last > first then
+           min_string := identifiers( var_id ).avalue( first );
+           min := to_numeric( min_string );
+           for i in first+1..last loop
+               if to_numeric( identifiers( var_id ).avalue( i ) ) < min then
+                  min_string := identifiers( var_id ).avalue( i );
+                  min := to_numeric( min_string );
+               end if;
+           end loop;
+           f := min_string;
+        else
+           f := to_unbounded_string( 0 );
+           err( "array is empty" );
+        end if;
      exception when CONSTRAINT_ERROR =>
         err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
      when STORAGE_ERROR =>
         err( "internal error : storage error raised when minning array" );
      end;
-     f := min_string;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
   elsif syntax_check then
      kind := universal_t; -- type is not known during syntax check
@@ -149,15 +161,20 @@ begin
         first := identifiers( var_id ).avalue'first;
         last  := identifiers( var_id ).avalue'last;
         sum := 0.0;
-        for i in first..last loop
-            sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
-        end loop;
+        if last > first then
+           for i in first..last loop
+               sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
+           end loop;
+           f := to_unbounded_string( sum );
+        else
+           f := to_unbounded_string( 0 );
+           err( "array is empty" );
+        end if;
      exception when CONSTRAINT_ERROR =>
         err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
      when STORAGE_ERROR =>
         err( "internal error : storage error raised when minning array" );
      end;
-     f := to_unbounded_string( sum );
      kind   := identifiers( identifiers( var_id ).kind ).kind;
   elsif syntax_check then
      kind := universal_t; -- type is not known during syntax check
@@ -182,20 +199,25 @@ begin
   end if;
   if isExecutingCommand then
      --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := identifiers( var_id ).avalue'first;
-     last  := identifiers( var_id ).avalue'last;
-     len   := last-first+1;
-     sum := 0.0;
      begin
-        for i in first..last loop
-            sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
-        end loop;
+        first := identifiers( var_id ).avalue'first;
+        last  := identifiers( var_id ).avalue'last;
+        len   := last-first+1;
+        sum := 0.0;
+        if last > first then
+           for i in first..last loop
+               sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
+           end loop;
+           f := to_unbounded_string( sum / long_float( len ) );
+        else
+           f := to_unbounded_string(0);
+           err( "array is empty" );
+        end if;
      exception when CONSTRAINT_ERROR =>
         err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
      when STORAGE_ERROR =>
         err( "internal error : storage error raised when summing array" );
      end;
-     f := to_unbounded_string( sum / long_float( len ) );
      kind   := identifiers( identifiers( var_id ).kind ).kind;
   elsif syntax_check then
      kind := universal_t; -- type is not known during syntax check
@@ -223,26 +245,31 @@ begin
   end if;
   if isExecutingCommand then
      -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := identifiers( var_id ).avalue'first;
-     last  := identifiers( var_id ).avalue'last;
-     len   := last-first+1;
-     sum := 0.0;
      begin
-        for i in first..last loop
-            sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
-        end loop;
-        mean := sum / long_float( len );
-        sum_diff_sq := 0.0;
-        for i in first..last loop
-            diff := to_numeric( identifiers( var_id ).avalue( i ) ) - mean;
-            sum_diff_sq := sum_diff_sq + diff * diff;
-        end loop;
+        first := identifiers( var_id ).avalue'first;
+        last  := identifiers( var_id ).avalue'last;
+        len   := last-first+1;
+        sum := 0.0;
+        if last > first then
+           for i in first..last loop
+               sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
+           end loop;
+           mean := sum / long_float( len );
+           sum_diff_sq := 0.0;
+           for i in first..last loop
+               diff := to_numeric( identifiers( var_id ).avalue( i ) ) - mean;
+               sum_diff_sq := sum_diff_sq + diff * diff;
+           end loop;
+           f := to_unbounded_string( sum_diff_sq / long_float( len-1 ) );
+        else
+           f := to_unbounded_string( 0 );
+           err( "array is empty" );
+        end if;
      exception when CONSTRAINT_ERROR =>
         err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
      when STORAGE_ERROR =>
         err( "internal error : storage error raised when calculating variance" );
      end;
-     f := to_unbounded_string( sum_diff_sq / long_float( len-1 ) );
      -- kind   := identifiers( var_id ).kind;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
   elsif syntax_check then
@@ -271,20 +298,25 @@ begin
   end if;
   if isExecutingCommand then
      -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := identifiers( var_id ).avalue'first;
-     last  := identifiers( var_id ).avalue'last;
-     len   := last-first+1;
-     sum := 0.0;
-     for i in first..last loop
-         sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
-     end loop;
-     mean := sum / long_float( len );
-     sum_diff_sq := 0.0;
-     for i in first..last loop
-         diff := to_numeric( identifiers( var_id ).avalue( i ) ) - mean;
-         sum_diff_sq := sum_diff_sq + diff * diff;
-     end loop;
-     f := to_unbounded_string( sqrt( sum_diff_sq / long_float( len-1 ) ) );
+     if last > first then
+        first := identifiers( var_id ).avalue'first;
+        last  := identifiers( var_id ).avalue'last;
+        len   := last-first+1;
+        sum := 0.0;
+        for i in first..last loop
+            sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
+        end loop;
+        mean := sum / long_float( len );
+        sum_diff_sq := 0.0;
+        for i in first..last loop
+            diff := to_numeric( identifiers( var_id ).avalue( i ) ) - mean;
+            sum_diff_sq := sum_diff_sq + diff * diff;
+        end loop;
+        f := to_unbounded_string( sqrt( sum_diff_sq / long_float( len-1 ) ) );
+     else
+        f := to_unbounded_string( 0 );
+        err( "array is empty" );
+     end if;
      -- kind   := identifiers( var_id ).kind;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
   elsif syntax_check then

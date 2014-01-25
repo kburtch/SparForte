@@ -1039,8 +1039,43 @@ pragma assert( sa1(1) = 5 );
 sa2 : shortarray := sa1;
 pragma assert( sa2(1) = 5 );
 
+-- null array
+
 type nullarray is array(1..0) of integer;
 nularr : nullarray;
+
+-- type of an array type
+
+type arrtype2 is new arrtype;
+typed2a : arrtype2;
+pragma assert( arrays.first( typed2a ) = 1900 );
+pragma assert( arrays.last( typed2a ) = 1999 );
+pragma assert( arrays.length( typed2a ) = 100 );
+
+-- subtype of an array type
+
+subtype subbedarray is arrtype;
+suba1 : subbedarray;
+pragma assert( arrays.first( suba1 ) = 1900 );
+pragma assert( arrays.last( suba1 ) = 1999 );
+pragma assert( arrays.length( suba1 ) = 100 );
+
+-- array attributes
+
+pragma assert( arrays.first( arrtype ) = 1900 );
+pragma assert( arrays.first( typedarray ) = 1900 );
+pragma assert( arrays.last( arrtype ) = 1999 );
+pragma assert( arrays.last( typedarray ) = 1999 );
+pragma assert( arrays.length( arrtype ) = 100 );
+pragma assert( arrays.length( typedarray ) = 100 );
+pragma assert( arrays.first( nullarray ) = 1 );
+pragma assert( arrays.first( nularr ) = 1 );
+pragma assert( arrays.last( nullarray ) = 0 );
+pragma assert( arrays.last( nularr ) = 0 );
+pragma assert( arrays.length( nullarray ) = 0 );
+pragma assert( arrays.length( nularr ) = 0 );
+
+-- enum arrays
 
 type arrayenum is (aenum1, aenum2, aenum3 );
 type longerarray is array(aenum1..aenum3) of integer;
@@ -2582,7 +2617,7 @@ declare
 begin
   raise exc3;
   exception when exc3 =>
-    pragma assert( exceptions.exception_name = "exc" );
+    pragma assert( exceptions.exception_name = "exc3" );
     pragma assert( exceptions.exception_status_code = 2 );
     pragma assert( strings.index( exceptions.exception_info, "foobar" ) > 0 );
 end;
@@ -2592,7 +2627,7 @@ declare
 begin
   raise exc4 with "new message";
   exception when exc4 =>
-    pragma assert( exceptions.exception_name = "exc" );
+    pragma assert( exceptions.exception_name = "exc4" );
     pragma assert( exceptions.exception_status_code = 3 );
     pragma assert( strings.index( exceptions.exception_info, "new message" ) > 0 );
 end;
