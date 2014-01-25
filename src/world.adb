@@ -32,8 +32,8 @@ with system,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
     gnat.source_info,
-    bush_os,
-    scanner_arrays;
+    bush_os;
+    -- scanner_arrays;
 use ada.text_io,
     ada.command_line,
     ada.command_line.environment,
@@ -41,8 +41,8 @@ use ada.text_io,
     ada.strings.unbounded,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
-    bush_os,
-    scanner_arrays;
+    bush_os;
+    -- scanner_arrays;
 
 pragma Optimize( time );
 
@@ -649,5 +649,27 @@ begin
      SetClusterType( distributedMemcacheCluster, normal );
   end if;
 end checkAndInitializeDistributedMemcacheCluster;
+
+--  GET IDENTIFIER CLASS NAME
+--
+-- Return a string description of the class
+
+function getIdentifierClassImage( c : anIdentifierClass ) return string is
+begin
+  case c is
+  when constClass       => return "constant";
+  when subClass         => return "subtype";
+  when typeClass        => return "type";
+  when funcClass        => return "built-in function";
+  when userFuncClass    => return "user-defined function";
+  when procClass        => return "built-in procedure";
+  when userProcClass    => return "user-defined procedure";
+  when taskClass        => return "task";
+  when mainProgramClass => return "main program";
+  when exceptionClass   => return "exception";
+  when varClass         => return "variable";
+  when otherClass       => return "other class";
+  end case;
+end getIdentifierClassImage;
 
 end world;

@@ -434,7 +434,7 @@ procedure ParseOutParameter( ref : out reference; defaultType : identifier ) is
   -- syntax: identifier [ (index) ]
   expr_kind  : identifier;
   expr_value : unbounded_string;
-  array_id2  : arrayID;
+  -- array_id2  : arrayID;
   arrayIndex : long_integer;
   isNew      : boolean := false;
 begin
@@ -477,12 +477,19 @@ begin
             err( "exception raised" );
             arrayIndex := 0;
          end;
-         array_id2 := arrayID( to_numeric(      -- array_id2=reference
-           identifiers( ref.id ).value ) );     -- to the array table
-         if indexTypeOK( array_id2, expr_kind ) then -- check and access array
-            if inBounds( array_id2, arrayIndex ) then
-                ref.a_id  := array_id2;
-                ref.index := arrayIndex;
+         -- array_id2 := arrayID( to_numeric(      -- array_id2=reference
+         --   identifiers( ref.id ).value ) );     -- to the array table
+         -- if indexTypeOK( array_id2, expr_kind ) then -- check and access array
+         --    if inBounds( array_id2, arrayIndex ) then
+         --        ref.a_id  := array_id2;
+         --        ref.index := arrayIndex;
+         --    end if;
+         -- end if;
+         if baseTypesOK( identifiers( ref.id ).genKind, expr_kind ) then -- TODO: probably needs a better error message
+            if arrayIndex not in identifiers( ref.id ).avalue'range then
+               err( "array index " & to_string( trim( expr_value, ada.strings.both ) ) & " not in" & identifiers( ref.id ).avalue'first'img & " .." & identifiers( ref.id ).avalue'last'img );
+            else
+              ref.index := arrayIndex;
             end if;
          end if;
       end if;
@@ -573,7 +580,7 @@ procedure ParseInOutParameter( ref : out reference ) is
   -- syntax: identifier [ (index) ]
   expr_kind : identifier;
   expr_value : unbounded_string;
-  array_id2 : arrayID;
+  -- array_id2 : arrayID;
   arrayIndex: long_integer;
 begin
   ParseIdentifier( ref.id );
@@ -599,12 +606,19 @@ begin
             err( "exception raised" );
             arrayIndex := 0;
          end;
-         array_id2 := arrayID( to_numeric(      -- array_id2=reference
-           identifiers( ref.id ).value ) );     -- to the array table
-         if indexTypeOK( array_id2, expr_kind ) then -- check and access array
-            if inBounds( array_id2, arrayIndex ) then
-                ref.a_id  := array_id2;
-                ref.index := arrayIndex;
+         -- array_id2 := arrayID( to_numeric(      -- array_id2=reference
+         --   identifiers( ref.id ).value ) );     -- to the array table
+         -- if indexTypeOK( array_id2, expr_kind ) then -- check and access array
+         --    if inBounds( array_id2, arrayIndex ) then
+         --        ref.a_id  := array_id2;
+         --        ref.index := arrayIndex;
+         --    end if;
+         -- end if;
+         if baseTypesOK( identifiers( ref.id ).genKind, expr_kind ) then -- TODO: probably needs a better error message
+            if arrayIndex not in identifiers( ref.id ).avalue'range then
+               err( "array index " & to_string( trim( expr_value, ada.strings.both ) ) & " not in" & identifiers( ref.id ).avalue'first'img & " .." & identifiers( ref.id ).avalue'last'img );
+            else
+              ref.index := arrayIndex;
             end if;
          end if;
       end if;
@@ -618,7 +632,8 @@ begin
 
      -- ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
      ref.kind := identifiers( ref.id ).kind;
-     for i in 1..integer'value( to_string( identifiers( ref.kind ).value ) ) loop         for j in 1..identifiers_top-1 loop
+     for i in 1..integer'value( to_string( identifiers( ref.kind ).value ) ) loop
+        for j in 1..identifiers_top-1 loop
              if identifiers( j ).field_of = ref.kind then
                 if integer'value( to_string( identifiers( j ).value )) = i then
                    declare

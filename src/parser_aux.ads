@@ -25,13 +25,13 @@ with ada.strings.unbounded,
      bush_os,
      world,
      scanner,
-     scanner_arrays,
+     -- scanner_arrays,
      parser_params;
 use  ada.strings.unbounded,
      bush_os,
      world,
      scanner,
-     scanner_arrays,
+     -- scanner_arrays,
      parser_params;
 
 package parser_aux is

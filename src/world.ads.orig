@@ -233,6 +233,8 @@ type anIdentifierClass is ( constClass, subClass, typeClass, funcClass,
   userFuncClass, procClass, userProcClass, taskClass, mainProgramClass,
   exceptionClass, varClass, otherClass );
 
+function getIdentifierClassImage( c : anIdentifierClass ) return string;
+
 ------------------------------------------------------------------------------
 --
 -- Import/Export Methods

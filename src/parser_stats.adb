@@ -28,14 +28,14 @@ with gnat.bubble_sort_a,
      bush_os,
      string_util,
      world,
-     scanner_arrays,
+     -- scanner_arrays,
      parser,
      parser_aux;
 use  ada.numerics.long_elementary_functions,
      bush_os,
      string_util,
      world,
-     scanner_arrays,
+     -- scanner_arrays,
      parser,
      parser_aux;
 
@@ -49,36 +49,37 @@ package body parser_stats is
 procedure ParseStatsMax( f : out unbounded_string; kind : out identifier ) is
   var_id : identifier;
   first, last : long_integer;
-  array_id : arrayID;
+  -- array_id : arrayID;
   max : long_float;
   max_string : unbounded_string;
 begin
   expect( stats_max_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-     var_id := getBaseType( var_id );
-     if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
-     end if;
-  elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
+     err( "Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := firstBound( array_id );
-     last  := lastBound( array_id );
-     max_string := arrayElement( array_id, first);
-     max := to_numeric( max_string );
-     for i in first+1..last loop
-         if to_numeric( arrayElement( array_id, i) ) > max then
-            max_string := arrayElement( array_id, i);
-            max := to_numeric( max_string );
-         end if;
-     end loop;
+     -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     begin
+        first := identifiers( var_id ).avalue'first;
+        last  := identifiers( var_id ).avalue'last;
+        max_string := identifiers( var_id ).avalue( first );
+        max := to_numeric( max_string );
+        for i in first+1..last loop
+            if to_numeric( identifiers( var_id ).avalue( i ) ) > max then
+               max_string := identifiers( var_id ).avalue( i );
+               max := to_numeric( max_string );
+            end if;
+        end loop;
+     exception when CONSTRAINT_ERROR =>
+        err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+     when STORAGE_ERROR =>
+        err( "internal error : storage error raised when maxing array" );
+     end;
      f := max_string;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
   elsif syntax_check then
@@ -89,36 +90,37 @@ end ParseStatsMax;
 procedure ParseStatsMin( f : out unbounded_string; kind : out identifier ) is
   var_id : identifier;
   first, last : long_integer;
-  array_id : arrayID;
+  -- array_id : arrayID;
   min : long_float;
   min_string : unbounded_string;
 begin
   expect( stats_min_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-     var_id := getBaseType( var_id );
-     if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
-     end if;
-  elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
+     err( "Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := firstBound( array_id );
-     last  := lastBound( array_id );
-     min_string := arrayElement( array_id, first);
-     min := to_numeric( min_string );
-     for i in first+1..last loop
-         if to_numeric( arrayElement( array_id, i) ) < min then
-            min_string := arrayElement( array_id, i);
-            min := to_numeric( min_string );
-         end if;
-     end loop;
+     -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     begin
+        first := identifiers( var_id ).avalue'first;
+        last  := identifiers( var_id ).avalue'last;
+        min_string := identifiers( var_id ).avalue( first );
+        min := to_numeric( min_string );
+        for i in first+1..last loop
+            if to_numeric( identifiers( var_id ).avalue( i ) ) < min then
+               min_string := identifiers( var_id ).avalue( i );
+               min := to_numeric( min_string );
+            end if;
+        end loop;
+     exception when CONSTRAINT_ERROR =>
+        err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+     when STORAGE_ERROR =>
+        err( "internal error : storage error raised when minning array" );
+     end;
      f := min_string;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
   elsif syntax_check then
@@ -127,34 +129,34 @@ begin
 end ParseStatsMin;
 
 procedure ParseStatsSum( f : out unbounded_string; kind : out identifier ) is
--- should really be in a stats package
   var_id : identifier;
   first, last : long_integer;
-  array_id : arrayID;
+  -- array_id : arrayID;
   sum : long_float;
 begin
   expect( stats_sum_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-     var_id := getBaseType( var_id );
-     if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
-     end if;
-  elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
+     err( "Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := firstBound( array_id );
-     last  := lastBound( array_id );
-     sum := 0.0;
-     for i in first..last loop
-         sum := sum + to_numeric( arrayElement( array_id, i) );
-     end loop;
+     -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     begin
+        first := identifiers( var_id ).avalue'first;
+        last  := identifiers( var_id ).avalue'last;
+        sum := 0.0;
+        for i in first..last loop
+            sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
+        end loop;
+     exception when CONSTRAINT_ERROR =>
+        err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+     when STORAGE_ERROR =>
+        err( "internal error : storage error raised when minning array" );
+     end;
      f := to_unbounded_string( sum );
      kind   := identifiers( identifiers( var_id ).kind ).kind;
   elsif syntax_check then
@@ -166,32 +168,33 @@ procedure ParseStatsAverage( f : out unbounded_string; kind : out identifier ) i
   var_id : identifier;
   first, last : long_integer;
   len    : long_integer;
-  array_id : arrayID;
+  --array_id : arrayID;
   sum : long_float;
 begin
   expect( stats_average_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-     var_id := getBaseType( var_id );
-     if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
-     end if;
-  elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
+     err( "Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := firstBound( array_id );
-     last  := lastBound( array_id );
+     --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     first := identifiers( var_id ).avalue'first;
+     last  := identifiers( var_id ).avalue'last;
      len   := last-first+1;
      sum := 0.0;
-     for i in first..last loop
-         sum := sum + to_numeric( arrayElement( array_id, i) );
-     end loop;
+     begin
+        for i in first..last loop
+            sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
+        end loop;
+     exception when CONSTRAINT_ERROR =>
+        err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+     when STORAGE_ERROR =>
+        err( "internal error : storage error raised when summing array" );
+     end;
      f := to_unbounded_string( sum / long_float( len ) );
      kind   := identifiers( identifiers( var_id ).kind ).kind;
   elsif syntax_check then
@@ -203,7 +206,7 @@ procedure ParseStatsVariance( f : out unbounded_string; kind : out identifier ) 
   var_id   : identifier;
   first, last : long_integer;
   len      : long_integer;
-  array_id : arrayID;
+  -- array_id : arrayID;
   sum      : long_float;
   diff     : long_float;
   mean     : long_float;
@@ -212,32 +215,33 @@ begin
   expect( stats_variance_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-     var_id := getBaseType( var_id );
-     if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
-     end if;
-  elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
+     err( "Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := firstBound( array_id );
-     last  := lastBound( array_id );
+     -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     first := identifiers( var_id ).avalue'first;
+     last  := identifiers( var_id ).avalue'last;
      len   := last-first+1;
      sum := 0.0;
-     for i in first..last loop
-         sum := sum + to_numeric( arrayElement( array_id, i) );
-     end loop;
-     mean := sum / long_float( len );
-     sum_diff_sq := 0.0;
-     for i in first..last loop
-         diff := to_numeric( arrayElement( array_id, i ) ) - mean;
-         sum_diff_sq := sum_diff_sq + diff * diff;
-     end loop;
+     begin
+        for i in first..last loop
+            sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
+        end loop;
+        mean := sum / long_float( len );
+        sum_diff_sq := 0.0;
+        for i in first..last loop
+            diff := to_numeric( identifiers( var_id ).avalue( i ) ) - mean;
+            sum_diff_sq := sum_diff_sq + diff * diff;
+        end loop;
+     exception when CONSTRAINT_ERROR =>
+        err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+     when STORAGE_ERROR =>
+        err( "internal error : storage error raised when calculating variance" );
+     end;
      f := to_unbounded_string( sum_diff_sq / long_float( len-1 ) );
      -- kind   := identifiers( var_id ).kind;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
@@ -250,7 +254,7 @@ procedure ParseStatsStandardDeviation( f : out unbounded_string; kind : out iden
   var_id   : identifier;
   first, last : long_integer;
   len      : long_integer;
-  array_id : arrayID;
+  -- array_id : arrayID;
   sum      : long_float;
   diff     : long_float;
   mean     : long_float;
@@ -259,30 +263,25 @@ begin
   expect( stats_standard_deviation_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-     var_id := getBaseType( var_id );
-     if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
-     end if;
-  elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
+     err( "Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := firstBound( array_id );
-     last  := lastBound( array_id );
+     -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     first := identifiers( var_id ).avalue'first;
+     last  := identifiers( var_id ).avalue'last;
      len   := last-first+1;
      sum := 0.0;
      for i in first..last loop
-         sum := sum + to_numeric( arrayElement( array_id, i) );
+         sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
      end loop;
      mean := sum / long_float( len );
      sum_diff_sq := 0.0;
      for i in first..last loop
-         diff := to_numeric( arrayElement( array_id, i ) ) - mean;
+         diff := to_numeric( identifiers( var_id ).avalue( i ) ) - mean;
          sum_diff_sq := sum_diff_sq + diff * diff;
      end loop;
      f := to_unbounded_string( sqrt( sum_diff_sq / long_float( len-1 ) ) );

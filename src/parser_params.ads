@@ -23,13 +23,14 @@
 
 with ada.strings.unbounded,
      ada.numerics.float_random,
-     world,
-     scanner_arrays;
+     world;
      -- parser_aux;
 use  ada.strings.unbounded,
-     world,
-     scanner_arrays;
+     world;
+     -- scanner_arrays;
      -- parser_aux;
+-- with scanner_arrays;
+-- use  scanner_arrays;
 
 package parser_params is
 
@@ -39,7 +40,7 @@ package parser_params is
 
 type reference is record
      id    : identifier;             -- the identifier
-     a_id  : arrayID;                -- the array (if an array)
+     -- a_id  : arrayID;                -- the array (if an array)
      index : long_integer := 0;      -- the array index (if an array)
      kind  : identifier;             -- the type name
 end record;

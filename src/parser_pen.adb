@@ -33,7 +33,7 @@ with system,
     world,
     scanner,
     string_util,
-    scanner_arrays,
+    -- scanner_arrays,
     parser_aux,
     parser_params,
     parser;
@@ -45,7 +45,7 @@ use pen,
     world,
     scanner,
     string_util,
-    scanner_arrays,
+    -- scanner_arrays,
     parser_aux,
     parser_params,
     parser,
@@ -1765,10 +1765,11 @@ end ParsePenFade;
 procedure ParsePenPlot is
   -- Syntax: pen.plot( c, a );
   -- Source: Pen.Plot
+-- THIS IS INCOMPLETE
   canvas_id : identifier;
   array_var_id : identifier;
   first, last : long_integer;
-  array_id : arrayID;
+  -- array_id : arrayID;
 begin
   expect( pen_plot_t );
   expect( symbol_t, "(" );
@@ -1784,15 +1785,15 @@ begin
      end if;
   end if;
   if isExecutingCommand then
-     array_id := arrayID( to_numeric( identifiers( array_var_id ).value ) );
-     first := firstBound( array_id );
-     last  := lastBound( array_id );
+     -- array_id := arrayID( to_numeric( identifiers( array_var_id ).value ) );
+     first := identifiers( array_var_id ).avalue'first;
+     last  := identifiers( array_var_id ).avalue'last;
      declare
         values : plotValues( first..last );
      begin
         -- copy values into an Ada array
         for i in first..last loop
-            values(i) := to_numeric( arrayElement( array_id, i) );
+            values(i) := to_numeric( identifiers( array_var_id ).avalue( i ) );
         end loop;
         Plot( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ), values );
      exception when others =>

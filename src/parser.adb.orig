@@ -503,7 +503,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
   -- if the identifier is volatile, reload the value from the environment
   castType  : identifier;
   array_id  : identifier;
-  array_id2 : arrayID;
+  -- array_id2 : arrayID;
   arrayIndex: long_integer;
   type aUniOp is ( noOp, doPlus, doMinus, doNot );
   uniOp : aUniOp := noOp;
@@ -1586,9 +1586,7 @@ begin
               --end if;
               -- TODO: make a utility function for doing all this.
               if baseTypesOK( identifiers( array_id ).genKind, kind ) then -- TODO: probably needs a better error message
-                 if identifiers( array_id ).avalue'first > arrayIndex then -- DEBUG
-                    err( "array index " & to_string( trim( f, ada.strings.both ) ) & " not in" & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
-                 elsif identifiers( array_id ).avalue'last < arrayIndex then
+                 if arrayIndex not in identifiers( array_id ).avalue'range then -- DEBUG
                     err( "array index " &  to_string( trim( f, ada.strings.both ) ) & " not in" & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
                  end if;
               end if;
@@ -2399,11 +2397,13 @@ begin
 -- put_line( "internal error: target array last bound doesn't match: " & identifiers( array_id ).avalue'last'img & " vs " &  lastIndex'img );
                  err( "internal error: target array last bound doesn't match: " & identifiers( array_id ).avalue'last'img & " vs " &  lastIndex'img );
               elsif not error_found then
-                 for i in arrayIndex..lastIndex loop                 -- do the copy
+                 identifiers( array_id ).avalue.all := identifiers( second_array_id ).avalue.all;
+                 --for i in arrayIndex..lastIndex loop                 -- do the copy
 -- put_line( i'img & " for " & arrayIndex'img & " .. " & lastIndex'img ); -- DEBUG NEWARRAY
-                     identifiers( array_id ).avalue( i ) := expr_value; -- NEWARRAY
+                 --    expr_value := identifiers( second_array_id ).avalue( i );
+                 --    identifiers( array_id ).avalue( i ) := expr_value; -- NEWARRAY
 -- put_line( "OK - no exception raised" );
-                 end loop;
+                 --end loop;
               end if;
            exception when CONSTRAINT_ERROR =>
               err( "constraint_error : index out of range " & identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
@@ -2835,7 +2835,7 @@ begin
           elsif token /= symbol_t and identifiers( token ).value /= ";" then
              err( "with or ';' expected" );
           end if;
-          if not error_found then
+          --if not error_found then -- TODO: this doesn't look right. commenting out
              findException( var_name, id );
              if id = eof_t then
                 declareException( id, var_name, default_message, exception_status_code ); -- declare var
@@ -2843,7 +2843,7 @@ begin
                 err( "exception " & optional_bold( to_string( var_name ) ) &
                      " already exists in a greater scope" );
              end if;
-          end if;
+          --end if;
        end;
      end if;
      return; -- done
@@ -3057,7 +3057,7 @@ end ParseRecordTypePart;
 
 procedure ParseArrayTypePart( newtype_id : identifier ) is
    -- Syntax: type = "array(exp1..exp2) of element-type"
-   type_id     : arrayID;
+   --type_id     : arrayID;
    ab1         : unbounded_string; -- low array bound
    kind1       : identifier;
    ab2         : unbounded_string; -- high array bound
@@ -3114,7 +3114,7 @@ begin
          --           last => long_integer( to_numeric( ab2 ) ),
          --           ind => kind1,
          --           blocklvl => blocks_top );
-         identifiers( newtype_id ).value := to_unbounded_string( type_id'img );
+         -- identifiers( newtype_id ).value := to_unbounded_string( type_id'img );
          identifiers( newtype_id ).firstBound := long_integer( to_numeric( ab1 ) ); -- NEWARRAY
          identifiers( newtype_id ).lastBound := long_integer( to_numeric( ab2 ) ); -- NEWARRAY
       end if;
@@ -4657,7 +4657,7 @@ begin
      err( "re-raise is not in an exception handler" );
   else
      if identifiers( token ).class /= exceptionClass then
-        err( optional_bold( to_string( identifiers( token ).name ) ) & " is not an exception" );
+        err( optional_bold( to_string( identifiers( token ).name ) ) & " is a " & getIdentifierClassImage( identifiers( token ).class ) & " not an exception" );
      else
         ParseIdentifier( id );
         if token = with_t then
@@ -4871,7 +4871,8 @@ begin
              end if;
           end if;
        else
-          err( optional_bold( to_string( identifiers( token ).name ) ) & " is not an exception" );
+put_token; -- DEBUG
+          err( optional_bold( to_string( identifiers( token ).name ) ) & " is a " & getIdentifierClassImage( identifiers( token ).class ) & " not an exception" );
           exit;
        end if;
     else
@@ -6763,7 +6764,7 @@ procedure ParseAssignment is
   right_type : identifier;
   index_value: unbounded_string;
   index_kind : identifier;
-  array_id   : arrayID;
+  -- array_id   : arrayID;
   arrayIndex : long_integer;
 begin
   if inputMode = interactive or inputMode = breakout then

@@ -1073,25 +1073,25 @@ pragma assert( lae = aenum3 );
 n := arrays.length( la2 );
 pragma assert( n = 3 );
 arrays.flip( la1 );
-pragma assert( la1(aenum3) = 3 );
+pragma assert( la1(aenum1) = 3 );
 pragma assert( la1(aenum2) = 2 );
-pragma assert( la1(aenum1) = 1 );
-arrays.rotate_left( la1 );
 pragma assert( la1(aenum3) = 1 );
-pragma assert( la1(aenum2) = 3 );
+arrays.rotate_left( la1 );
 pragma assert( la1(aenum1) = 2 );
+pragma assert( la1(aenum2) = 1 );
+pragma assert( la1(aenum3) = 3 );
 arrays.rotate_right( la1 );
-pragma assert( la1(aenum3) = 3 );
+pragma assert( la1(aenum1) = 3 );
 pragma assert( la1(aenum2) = 2 );
-pragma assert( la1(aenum1) = 1 );
+pragma assert( la1(aenum3) = 1 );
 arrays.shift_left( la1 );
-pragma assert( la1(aenum3) = 3 );
-pragma assert( la1(aenum2) = 3 );
 pragma assert( la1(aenum1) = 2 );
+pragma assert( la1(aenum2) = 1 );
+pragma assert( la1(aenum3) = 1 );
 arrays.shift_right( la1 );
-pragma assert( la1(aenum3) = 3 );
-pragma assert( la1(aenum2) = 2 );
 pragma assert( la1(aenum1) = 2 );
+pragma assert( la1(aenum2) = 2 );
+pragma assert( la1(aenum3) = 1 );
 arrays.shuffle( la1 );
 -- can't do much to test shuffle
 -- make sure null array doesn't crash
@@ -2562,36 +2562,36 @@ begin
 end;
 
 declare
-  exc : exception;
+  exc1 : exception;
 begin
-  raise exc;
-  exception when exc =>
+  raise exc1;
+  exception when exc1 =>
     null;
 end;
 
 declare
-  exc : exception with "foobar" use 2;
+  exc2 : exception with "foobar" use 2;
 begin
-  raise exc;
-  exception when exc =>
+  raise exc2;
+  exception when exc2 =>
     null;
 end;
 
 declare
-  exc : exception with "foobar" use 2;
+  exc3 : exception with "foobar" use 2;
 begin
-  raise exc;
-  exception when exc =>
+  raise exc3;
+  exception when exc3 =>
     pragma assert( exceptions.exception_name = "exc" );
     pragma assert( exceptions.exception_status_code = 2 );
     pragma assert( strings.index( exceptions.exception_info, "foobar" ) > 0 );
 end;
 
 declare
-  exc : exception with "foobar" use 3;
+  exc4 : exception with "foobar" use 3;
 begin
-  raise exc with "new message";
-  exception when exc =>
+  raise exc4 with "new message";
+  exception when exc4 =>
     pragma assert( exceptions.exception_name = "exc" );
     pragma assert( exceptions.exception_status_code = 3 );
     pragma assert( strings.index( exceptions.exception_info, "new message" ) > 0 );
@@ -2600,15 +2600,15 @@ end;
 -- exc is ok if the outer exc is not an exception
 
 declare
-  exc : integer;
+  exc5 : integer;
 begin
   declare
-    exc : exception;
+    exc5 : exception;
   begin
     null;
-  exception when exc => null;
+  exception when exc5 => null;
   end;
-  exc := 0;
+  exc5 := 0;
 end;
 
 declare

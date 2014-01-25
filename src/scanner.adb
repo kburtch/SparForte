@@ -42,7 +42,7 @@ with system,
     user_io,
     string_util,
     software_models,
-    scanner_arrays,
+    -- scanner_arrays,
     parser_os,
     parser_arrays,
     parser_enums,
@@ -86,7 +86,7 @@ use ada.text_io,
     user_io,
     string_util,
     software_models,
-    scanner_arrays,
+    -- scanner_arrays,
     parser_os,
     parser_arrays,
     parser_enums,
@@ -742,6 +742,11 @@ begin
   err_exception.name := null_unbounded_string;            -- not an exception
   last_status := 0;
   --token := eof_t;                                             -- stop parser
+
+  -- Show the message in the trace
+  if traceOpt then
+     put_trace( "error: " & msg );
+  end if;
 end err;
 
 
@@ -878,6 +883,11 @@ begin
   end if;
   error_found := true;                                          -- flag error
   --token := eof_t;                                             -- stop parser
+
+  -- Show the message in the trace
+  if traceOpt then
+     put_trace( "exception: " & msg );
+  end if;
 end raise_exception;
 
 
@@ -1074,7 +1084,7 @@ begin
      if syntax_check and not error_found and not done then
         checkIdentifiersInCurrentBlock;
      end if;
-     pullArrayBlock( blocks_top );                              -- do any a's
+     -- pullArrayBlock( blocks_top );                              -- do any a's
      pullResourceBlock( blocks_top );                           -- do any r's
      blocks_top := blocks_top - 1;                              -- pop stack
      identifiers_top := blocks( blocks_top ).identifiers_top;   -- pop decl's
@@ -1231,7 +1241,7 @@ begin
   -- Deallocate arrays and resources before the symbol and block tables
   -- is cleared
 
-  pullArrayBlock( 1 );
+  -- pullArrayBlock( 1 );
   pullResourceBlock( 1 );
 
   -- Clear the block and identifier symbol table, just in case the
@@ -3114,16 +3124,18 @@ procedure DoArrayToJson( result : out unbounded_string; source_var_id : identifi
   source_len    : long_integer;
   item          : unbounded_string;
   encoded_item  : unbounded_string;
-  sourceArrayId : arrayID;
+  -- sourceArrayId : arrayID;
   kind          : identifier;
   elementKind   : identifier;
   data          : unbounded_string;
 begin
   -- look up the array information
 
-     sourceArrayId := arrayID( to_numeric( identifiers( source_var_id ).value ) );
-     source_first := firstBound( sourceArrayID );
-     source_last  := lastBound( sourceArrayID );
+     -- sourceArrayId := arrayID( to_numeric( identifiers( source_var_id ).value ) );
+     -- source_first := firstBound( sourceArrayID );
+     -- source_last  := lastBound( sourceArrayID );
+     source_first := identifiers( source_var_id ).avalue'first;
+     source_last  := identifiers( source_var_id ).avalue'last;
      source_len   := source_last - source_first + 1;
      kind := getUniType( identifiers( source_var_id ).kind );
      elementKind := getBaseType( identifiers( identifiers( source_var_id ).kind ).kind );
@@ -3136,7 +3148,8 @@ begin
         begin
            result := to_unbounded_string( "[" );
            for arrayElementPos in source_first..source_last loop
-               data := arrayElement( sourceArrayId, arrayElementPos );
+               -- data := arrayElement( sourceArrayId, arrayElementPos );
+               data := identifiers( source_var_id ).avalue( arrayElementPos );
                enum_val := integer( to_numeric( data ) );
                if enum_val = 0 then
                   item := to_unbounded_string( "false" );
@@ -3155,7 +3168,8 @@ begin
      elsif kind = uni_string_t then
         result := to_unbounded_string( "[" );
         for arrayElementPos in source_first..source_last loop
-           data := arrayElement( sourceArrayId, arrayElementPos );
+           -- data := arrayElement( sourceArrayId, arrayElementPos );
+           data := identifiers( source_var_id ).avalue( arrayElementPos );
            if elementKind = json_string_t then
               -- if it's a JSON string, just copy the data
               result := result & data;
@@ -3173,7 +3187,8 @@ begin
 
         result := to_unbounded_string( "[" );
         for arrayElementPos in source_first..source_last loop
-           data := arrayElement( sourceArrayId, arrayElementPos );
+           -- data := arrayElement( sourceArrayId, arrayElementPos );
+           data := identifiers( source_var_id ).avalue( arrayElementPos );
            if element( data, 1 ) = ' ' then
               delete( data, 1, 1 );
            end if;
@@ -3186,6 +3201,10 @@ begin
         -- this should not happen
         err( "unsupported array type" );
      end if;
+exception when CONSTRAINT_ERROR =>
+  err( "internal error: constraint_error" );
+when STORAGE_ERROR =>
+  err( "internal error : storage error raised in ParseFactor" );
 end DoArrayToJson;
 
 
@@ -3203,7 +3222,7 @@ procedure DoJsonToArray( target_var_id : identifier; source_val : unbounded_stri
   sourceLen     : long_integer;
   item          : unbounded_string;
   decoded_item  : unbounded_string;
-  targetArrayId : arrayID;
+  -- targetArrayId : arrayID;
   arrayElement  : long_integer;
   kind          : identifier;
   elementKind   : identifier;
@@ -3212,12 +3231,14 @@ procedure DoJsonToArray( target_var_id : identifier; source_val : unbounded_stri
   inQuotes      : boolean;
 begin
   -- look up the array information
-     targetArrayId := arrayID( to_numeric( identifiers( target_var_id ).value ) );
-     target_first := firstBound( targetArrayID );
-     target_last  := lastBound( targetArrayID );
-     target_len   := target_last - target_first + 1;
-     kind := getUniType( identifiers( target_var_id ).kind );
-     elementKind := getBaseType( identifiers( identifiers( target_var_id ).kind ).kind );
+  -- targetArrayId := arrayID( to_numeric( identifiers( target_var_id ).value ) );
+  -- target_first := firstBound( targetArrayID );
+  -- target_last  := lastBound( targetArrayID );
+  target_first := identifiers( target_var_id ).avalue'first;
+  target_last  := identifiers( target_var_id ).avalue'last;
+  target_len   := target_last - target_first + 1;
+  kind := getUniType( identifiers( target_var_id ).kind );
+  elementKind := getBaseType( identifiers( identifiers( target_var_id ).kind ).kind );
 
      -- basic JSon validation.  Important to verify it isn't a record.
      declare
@@ -3307,11 +3328,13 @@ begin
                ch := element( source_val, i );
                if ch = ',' or ch = ']' then
                   if item = "false" then
-                     assignElement( targetArrayId, arrayElement, to_unbounded_string( "0" ) );
+                     -- assignElement( targetArrayId, arrayElement, to_unbounded_string( "0" ) );
+                     identifiers( target_var_id ).avalue( arrayElement ) := to_unbounded_string( "0" );
                      arrayElement := arrayElement + 1;
                      item := null_unbounded_string;
                   elsif item = "true" then
-                     assignElement( targetArrayId, arrayElement, to_unbounded_string( "1" ) );
+                     -- assignElement( targetArrayId, arrayElement, to_unbounded_string( "1" ) );
+                     identifiers( target_var_id ).avalue( arrayElement ) := to_unbounded_string( "1" );
                      arrayElement := arrayElement + 1;
                      item := null_unbounded_string;
                   else
@@ -3358,7 +3381,8 @@ begin
                              " is out of range for " &
                              optional_bold( to_string( identifiers( elementKind ).name ) ) );
                      else
-                        assignElement( targetArrayId, arrayElement, ' ' & item );
+                        -- assignElement( targetArrayId, arrayElement, ' ' & item );
+                        identifiers( target_var_id ).avalue( arrayElement ) := ' ' & item;
                         arrayElement := arrayElement + 1;
                         item := null_unbounded_string;
                      end if;
@@ -3397,7 +3421,8 @@ begin
                    end if;
                end if;
 
-               assignElement( targetArrayId, arrayElement, item );
+               -- assignElement( targetArrayId, arrayElement, item );
+               identifiers( target_var_id ).avalue( arrayElement ) := item;
                arrayElement := arrayElement + 1;
                item := null_unbounded_string;
             else
@@ -3449,7 +3474,8 @@ begin
                    end if;
                end if;
 
-               assignElement( targetArrayId, arrayElement, decoded_item );
+               -- assignElement( targetArrayId, arrayElement, decoded_item );
+               identifiers( target_var_id ).avalue( arrayElement ) := decoded_item;
                arrayElement := arrayElement + 1;
                item := null_unbounded_string;
                --else
@@ -3491,7 +3517,8 @@ begin
                if not ok then
                   err( optional_bold( "JSON number value" ) & " expected in string """ & to_string( toEscaped( item ) ) & """" );
                end if;
-               assignElement( targetArrayId, arrayElement, item );
+               -- assignElement( targetArrayId, arrayElement, item );
+               identifiers( target_var_id ).avalue( arrayElement ) := item;
                arrayElement := arrayElement + 1;
                skipJSONWhitespace( source_val, i );
                if i <= length( source_val ) then
@@ -3514,6 +3541,10 @@ begin
         -- this should not happen
         err( "unsupported array type" );
      end if;
+exception when CONSTRAINT_ERROR =>
+  err( "internal error: constraint_error" );
+when STORAGE_ERROR =>
+  err( "internal error : storage error raised in ParseFactor" );
 end DoJsonToArray;
 
 

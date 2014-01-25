@@ -29,7 +29,7 @@ with gnat.bubble_sort_a,
      user_io,
      world,
      scanner,
-     scanner_arrays,
+     -- scanner_arrays,
      parser,
      parser_aux,
      parser_params;
@@ -38,7 +38,7 @@ use  bush_os,
      user_io,
      world,
      scanner,
-     scanner_arrays,
+     -- scanner_arrays,
      parser,
      parser_aux,
      parser_params;
@@ -182,7 +182,7 @@ end ParseArraysLength;
 -- work with long_integer arrays on some platforms...assuming peole would
 -- have such friggin' huge arrays in the first place.
 
-arrayIdBeingSorted     : arrayID;
+--arrayIdBeingSorted     : arrayID;
 offsetArrayBeingSorted : long_integer;
 ZeroElement            : unbounded_string;
 arrayBeingSortedId     : identifier;
@@ -444,26 +444,32 @@ begin
      -- first := firstBound( array_id );
      -- last  := lastBound( array_id );
      len   := identifiers( var_id ).avalue'length;
-     for i in identifiers( var_id ).avalue'range loop
-         newpos := long_integer( long_float'truncation( long_float( len ) *
-             long_float( Ada.Numerics.Float_Random.Random( random_generator
+     begin
+        for i in identifiers( var_id ).avalue'range loop
+            newpos := long_integer( long_float'truncation( long_float( len ) *
+                long_float( Ada.Numerics.Float_Random.Random( random_generator
 ) ) ) );
-         newpos := newpos + identifiers( var_id ).avalue'first;
-         tmp := identifiers( var_id ).avalue( i );
-         identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( newpos );
-         identifiers( var_id ).avalue( newpos ) := tmp;
-         -- moveElement( integer(i), 0 );
-         -- moveElement( integer(newpos), integer(i) );
-         -- moveElement( 0, integer(newpos) );
-     end loop;
+            newpos := newpos + identifiers( var_id ).avalue'first;
+            tmp := identifiers( var_id ).avalue( i );
+            identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( newpos );
+            identifiers( var_id ).avalue( newpos ) := tmp;
+            -- moveElement( integer(i), 0 );
+            -- moveElement( integer(newpos), integer(i) );
+            -- moveElement( 0, integer(newpos) );
+        end loop;
+     exception when CONSTRAINT_ERROR =>
+        err( "internal error : index out of range when shuffling range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+     when STORAGE_ERROR =>
+        err( "internal error : storage error raised when shuffling array" );
+     end;
   end if;
 end ParseArraysShuffle;
 
 procedure ParseArraysFlip is
   var_id : identifier;
-  -- first, last : long_integer;
+  first, last, len : long_integer;
+  oldpos : long_integer;
   newpos : long_integer;
-  last   : long_integer;
   -- array_id : arrayID;
   tmp    : unbounded_string;
 begin
@@ -479,16 +485,27 @@ begin
      --first := firstBound( array_id );
      --last  := lastBound( array_id );
      --len   := last-first+1;
+     first   := identifiers( var_id ).avalue'first;
      last    := identifiers( var_id ).avalue'last;
-     for i in identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last/2 loop
-         newpos := long_integer( last - i + 1 );
-         tmp := identifiers( var_id ).avalue( i );
-         identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( newpos );
-         identifiers( var_id ).avalue( newpos ) := tmp;
-         -- moveElement( integer(i), 0 );
-         -- moveElement( integer(newpos), integer(i) );
-         -- moveElement( 0, integer(newpos) );
-     end loop;
+     len     := identifiers( var_id ).avalue'length;
+     begin
+        if last > first then
+           for i in 0..len/2 loop
+               oldpos := long_integer( first + i );
+               newpos := long_integer( last - i );
+               tmp := identifiers( var_id ).avalue( oldpos );
+               identifiers( var_id ).avalue( oldpos ) := identifiers( var_id ).avalue( newpos );
+               identifiers( var_id ).avalue( newpos ) := tmp;
+               -- moveElement( integer(i), 0 );
+               -- moveElement( integer(newpos), integer(i) );
+               -- moveElement( 0, integer(newpos) );
+           end loop;
+        end if;
+     exception when CONSTRAINT_ERROR =>
+        err( "internal error : index out of range when copying" & oldpos'img & " and" & newpos'img & " in" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+     when STORAGE_ERROR =>
+        err( "internal error : storage error raised when flipping arrays" );
+     end;
   end if;
 end ParseArraysFlip;
 
@@ -510,10 +527,16 @@ begin
      --last  := lastBound( arrayIdBeingSorted );
      --len   := last-first+1;
      --offsetArrayBeingSorted := first-1;
-     for i in reverse identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
-         identifiers( var_id ).avalue( i+1 ) := identifiers( var_id ).avalue( i );
-         --moveElement( integer(i), integer(i+1) );
-     end loop;
+     begin
+        for i in reverse identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
+            identifiers( var_id ).avalue( i+1 ) := identifiers( var_id ).avalue( i );
+            --moveElement( integer(i), integer(i+1) );
+        end loop;
+     exception when CONSTRAINT_ERROR =>
+        err( "internal error : index out of range when shifting range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+     when STORAGE_ERROR =>
+        err( "internal error : storage error raised when shifting array" );
+     end;
   end if;
 end ParseArraysShiftRight;
 
@@ -535,10 +558,16 @@ begin
      --last  := lastBound( arrayIdBeingSorted );
      --len   := last-first+1;
      --offsetArrayBeingSorted := first-1;
-     for i in identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
-         identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( i+1 );
-         --moveElement( integer(i+1), integer(i) );
-     end loop;
+     begin
+        for i in identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
+            identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( i+1 );
+            --moveElement( integer(i+1), integer(i) );
+        end loop;
+     exception when CONSTRAINT_ERROR =>
+        err( "internal error : index out of range when shifting range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+     when STORAGE_ERROR =>
+        err( "internal error : storage error raised when shifting array" );
+     end;
   end if;
 end ParseArraysShiftLeft;
 
@@ -562,15 +591,21 @@ begin
      -- len   := last-first+1;
      -- offsetArrayBeingSorted := first-1;
      -- moveElement( integer( len ), 0 );
-     if identifiers( var_id ).avalue'length > 0 then
-        tmp := identifiers( var_id ).avalue( identifiers( var_id ).avalue'last );
-        for i in reverse identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
-            identifiers( var_id ).avalue( i+1 ) := identifiers( var_id ).avalue( i );
-            -- moveElement( integer(i), integer(i+1) );
-        end loop;
-        identifiers( var_id ).avalue( identifiers( var_id ).avalue'first ) := tmp;
-     end if;
-     --moveElement( 0, 1 );
+     begin
+        if identifiers( var_id ).avalue'length > 0 then
+           tmp := identifiers( var_id ).avalue( identifiers( var_id ).avalue'last );
+           for i in reverse identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
+               identifiers( var_id ).avalue( i+1 ) := identifiers( var_id ).avalue( i );
+               -- moveElement( integer(i), integer(i+1) );
+           end loop;
+           identifiers( var_id ).avalue( identifiers( var_id ).avalue'first ) := tmp;
+        end if;
+        --moveElement( 0, 1 );
+     exception when CONSTRAINT_ERROR =>
+        err( "internal error : index out of range when rotating range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+     when STORAGE_ERROR =>
+        err( "internal error : storage error raised when rotating array" );
+     end;
   end if;
 end ParseArraysRotateRight;
 
@@ -598,14 +633,20 @@ begin
          --moveElement( integer(i+1), integer(i) );
      --end loop;
      --moveElement( 0, integer( len ) );
-     if identifiers( var_id ).avalue'length > 0 then
-        tmp := identifiers( var_id ).avalue( identifiers( var_id ).avalue'first );
-        for i in identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
-            identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( i+1 );
-            -- moveElement( integer(i), integer(i+1) );
-        end loop;
-        identifiers( var_id ).avalue( identifiers( var_id ).avalue'last ) := tmp;
-     end if;
+     begin
+        if identifiers( var_id ).avalue'length > 0 then
+           tmp := identifiers( var_id ).avalue( identifiers( var_id ).avalue'first );
+           for i in identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
+               identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( i+1 );
+               -- moveElement( integer(i), integer(i+1) );
+           end loop;
+           identifiers( var_id ).avalue( identifiers( var_id ).avalue'last ) := tmp;
+        end if;
+     exception when CONSTRAINT_ERROR =>
+        err( "internal error : index out of range when rotating range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+     when STORAGE_ERROR =>
+        err( "internal error : storage error raised when rotating array" );
+     end;
   end if;
 end ParseArraysRotateLeft;
 
