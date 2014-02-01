@@ -26,16 +26,20 @@ with gen_list,
      Ada.Strings.Unbounded,
      Ada.Containers.Doubly_Linked_Lists,
      Unchecked_Deallocation,
+     Interfaces.C,
      Gnat.Directory_Operations,
      Gnat.Dynamic_HTables,
 #if MYSQL
      APQ.MySQL.Client,
 #end if;
+     bush_os.opengl,
      world;
 use  world,
      Ada.Numerics.Long_Complex_Types,
      Ada.Strings.Unbounded,
-     Gnat.Directory_Operations;
+     Interfaces.C,
+     Gnat.Directory_Operations,
+     bush_os.opengl;
 
 package scanner_res is
 
@@ -67,10 +71,25 @@ type aResourceType is (
    pen_canvas,
    doubly_linked_string_list,
    doubly_linked_string_list_cursor,
-   dynamic_string_hash_table
+   dynamic_string_hash_table,
+   gl_byte_array,
+   gl_short_array,
+   gl_int_array,
+   gl_float_array,
+   gl_double_array
 );
 
+
+--- Resource Defnitions
+--
+-- Generic instantiations or other resources that are not directly available
+-- from the packages used
+
+-- Doubly Linked String Lists
+
 package doubly_linked_string_lists is new Ada.Containers.Doubly_Linked_Lists( unbounded_string );
+
+-- Dynamic String Hash Tables
 
 --type Hash_Position is new long_integer range 0.. 4_294_967_295; -- 2^32-1
 type Hash_Position is new integer range 0.. 65_535; -- 2^32-1
@@ -87,7 +106,7 @@ package dynamic_string_hash_tables is
       "="
 );
 
--- Resource Handle
+--- Resource Handle
 --
 -- A variant record for different types of resources.  This includes the
 -- resource (typically a record of some kind), the block level in the
@@ -134,6 +153,16 @@ type resHandle( rt : aResourceType ) is record
           dlslCursor : doubly_linked_string_lists.Cursor;
      when dynamic_string_hash_table =>
           dsht : dynamic_string_hash_tables.Instance;
+     when gl_byte_array =>
+          gl_ba : GL_Byte_Array_Ptr;
+     when gl_short_array =>
+          gl_sa : GL_Short_Array_Ptr;
+     when gl_int_array =>
+          gl_ia : GL_Int_Array_Ptr;
+     when gl_float_array =>
+          gl_fa : GL_Float_Array_Ptr;
+     when gl_double_array =>
+          gl_da : GL_Double_Array_Ptr;
      when none => null;
      end case;
 

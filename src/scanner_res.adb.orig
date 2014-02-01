@@ -145,6 +145,16 @@ begin
        put_line( "doubly linked list cursor" );
   when dynamic_string_hash_table =>
        put_line( "dynamic hash table" );
+  when gl_byte_array  =>
+       put_line( "OpenGL byte array" );
+  when gl_short_array  =>
+       put_line( "OpenGL short array" );
+  when gl_int_array =>
+       put_line( "OpenGL int array" );
+  when gl_float_array  =>
+       put_line( "OpenGL float array" );
+  when gl_double_array  =>
+       put_line( "OpenGL doubly array" );
   when none =>
        put_line( "undefined resource" );
   when others =>
