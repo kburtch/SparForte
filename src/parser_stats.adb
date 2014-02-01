@@ -298,11 +298,11 @@ begin
   end if;
   if isExecutingCommand then
      -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     first := identifiers( var_id ).avalue'first;
+     last  := identifiers( var_id ).avalue'last;
+     len   := last-first+1;
+     sum := 0.0;
      if last > first then
-        first := identifiers( var_id ).avalue'first;
-        last  := identifiers( var_id ).avalue'last;
-        len   := last-first+1;
-        sum := 0.0;
         for i in first..last loop
             sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
         end loop;

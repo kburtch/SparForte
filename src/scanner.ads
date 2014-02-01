@@ -29,12 +29,10 @@ with system,
   ada.strings.unbounded,
   script_io,
   world,
-  scanner_arrays,
   scanner_res;
 use ada.strings.unbounded,
   script_io,
   world,
-  scanner_arrays,
   scanner_res;
 
 package scanner is

@@ -23,10 +23,10 @@
 
 with Interfaces.C,
     ada.strings.unbounded,
-    bush_os, world, scanner, scanner_arrays, parser_aux;
+    bush_os, world, scanner, parser_aux;
 use Interfaces.C,
     ada.strings.unbounded,
-    bush_os, world, scanner, scanner_arrays, parser_aux;
+    bush_os, world, scanner, parser_aux;
 
 package parser is
 
