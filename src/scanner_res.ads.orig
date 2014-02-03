@@ -154,15 +154,15 @@ type resHandle( rt : aResourceType ) is record
      when dynamic_string_hash_table =>
           dsht : dynamic_string_hash_tables.Instance;
      when gl_byte_array =>
-          gl_ba : GL_Byte_Array_Ptr;
+          gl_ba : GL_Byte_Array_Access;
      when gl_short_array =>
-          gl_sa : GL_Short_Array_Ptr;
+          gl_sa : GL_Short_Array_Access;
      when gl_int_array =>
-          gl_ia : GL_Int_Array_Ptr;
+          gl_ia : GL_Int_Array_Access;
      when gl_float_array =>
-          gl_fa : GL_Float_Array_Ptr;
+          gl_fa : GL_Float_Array_Access;
      when gl_double_array =>
-          gl_da : GL_Double_Array_Ptr;
+          gl_da : GL_Double_Array_Access;
      when none => null;
      end case;
 

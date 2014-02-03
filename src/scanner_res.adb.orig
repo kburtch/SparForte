@@ -188,6 +188,16 @@ begin
      doubly_linked_string_lists.clear( rp.dlslList );
   elsif rp.rt = dynamic_string_hash_table then
      dynamic_string_hash_tables.reset( rp.dsht );
+  elsif rp.rt = gl_byte_array then
+     Free( rp.gl_ba );
+  elsif rp.rt = gl_short_array then
+     Free( rp.gl_sa );
+  elsif rp.rt = gl_int_array then
+     Free( rp.gl_ia );
+  elsif rp.rt = gl_float_array then
+     Free( rp.gl_fa );
+  elsif rp.rt = gl_double_array then
+     Free( rp.gl_da );
   end if;
   resHandleList.clear( resHandles, long_integer( id ) );
 end clearResource;

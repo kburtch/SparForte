@@ -32,6 +32,7 @@ with system,
     user_io,
     world,
     scanner,
+    scanner_res,
     string_util,
     -- scanner_arrays,
     parser_aux,
@@ -44,6 +45,7 @@ use pen,
     user_io,
     world,
     scanner,
+    scanner_res,
     string_util,
     -- scanner_arrays,
     parser_aux,
@@ -15090,6 +15092,26 @@ begin
   end if;
 end ParsePengluUnProject4;
 
+---
+
+procedure ParsePenNewGLByteArray is
+  -- Syntax: pen.new_gl_byte_array( a, n );
+  -- Ada:    N/A
+  resId    : resHandleId;
+  ref      : reference;
+  len_expr : unbounded_string;
+  len_kind : identifier;
+begin
+  expect( pen_new_gl_byte_array_t );
+  ParseFirstOutParameter( ref, pen_gl_byte_array_id_t ); -- TODO
+  baseTypesOK( ref.kind, pen_gl_byte_array_id_t );
+  ParseLastNumericParameter( len_expr, len_kind, natural_t );
+  if isExecutingCommand then
+     identifiers( ref.id ).resource := true;
+     declareResource( resId, gl_short_array, blocks_top );
+     AssignParameter( ref, to_unbounded_string( resId ) );
+  end if;
+end ParsePenNewGLByteArray;
 
 -- These are split from StartupPen (see StartupPen)
 
@@ -17672,6 +17694,9 @@ begin
   declareProcedure( pen_glutessvertex_t, "pen.glutessvertex" );
   declareFunction(  pen_gluunproject_t, "pen.gluunproject" );
   declareFunction(  pen_gluunproject4_t, "pen.gluunproject4" );
+
+  declareIdent( pen_gl_byte_array_id_t,  "pen.gl_byte_array_id_t", positive_t, typeClass );
+  declareProcedure( pen_new_gl_byte_array_t, "pen.new_gl_byte_array", ParsePenNewGLByteArray'access );
 
 end StartupPen;
 

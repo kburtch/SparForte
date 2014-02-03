@@ -122,6 +122,7 @@ package GL_Short_Array_Conv is new
      system.address_to_access_conversions( short_array );
 subtype GL_Short_Array_Ptr is System.Address;
 subtype GL_Short_Array_Access is GL_Short_Array_Conv.object_pointer;
+procedure free is new Ada.Unchecked_Deallocation( short_array, GL_Short_Array_Access );
 pragma warnings( on );
 
 type short_vertex_2d is new short_array( 0..1 );

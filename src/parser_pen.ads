@@ -2134,6 +2134,10 @@ pen_glutessvertex_t : identifier;
 pen_gluunproject_t : identifier;
 pen_gluunproject4_t : identifier;
 
+
+pen_gl_byte_array_id_t: identifier;
+pen_new_gl_byte_array_t : identifier;
+
 ------------------------------------------------------------------------------
 -- HOUSEKEEPING
 ------------------------------------------------------------------------------
