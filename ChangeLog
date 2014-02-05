@@ -58,6 +58,18 @@ CHANGES SINCE 1.4
 
 13. New: type and subtype can create derived array types.
 
-??. Around parser.adb 5812: doesn't allow mixing of param types in a pipeline.
+14. Fix: optional template file paths now working again.
+
+15. Fix: errors processing template files are now being displayed again.
+
+16. Fix: processing template files with a main program does not discard the main program variables prior to processing the template.
+
+17. Fix: extra newline no longer appears when <?spar tag is at the end of line in a template file.
+
+17. Fix: unused variable checks suppressed for scripts with templates.
+
+18. New Examples: dynamic_css and dynamic_css2.
+
+??. Around parser.adb 5812: doesn't allow mixing of shell and adascript parameters in a pipeline.  Fix this??
 
 

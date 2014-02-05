@@ -328,6 +328,12 @@ begin
                   put( to_string( tag ) );          -- output template text
                end if;
             end if;
+            if end_of_line( f ) then                -- EOL?
+              -- lineno := lineno + 1;              -- template line
+              if last_status = 0 then               -- we are outputting?
+                 new_line;                          -- output a line feed
+              end if;
+            end if;
          elsif ch = bushStartTag( tagCount ) then   -- but if last matches
             mode := gatheringScript;                -- look for a script
             tagCount := 0;                          -- forget tag
@@ -338,12 +344,12 @@ begin
             if last_status = 0 then                 -- we are outputting?
                put( to_string( tag ) );             -- output template text
             end if;
-         end if;
-         if end_of_line( f ) then                   -- EOL?
-              -- lineno := lineno + 1;                 -- template line
+            if end_of_line( f ) then                -- EOL?
+              -- lineno := lineno + 1;              -- template line
               if last_status = 0 then               -- we are outputting?
                  new_line;                          -- output a line feed
               end if;
+            end if;
          end if;
 
       ----------------------------------------------------------------------

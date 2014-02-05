@@ -160,6 +160,8 @@ suppress_word_quoting            : boolean := false; -- pragma suppress
 type templateTypes is (noTemplate, htmlTemplate, textTemplate,
 cssTemplate, jsTemplate, jsonTemplate, wmlTemplate, xmlTemplate );
 
+hasTemplate               : boolean := false; -- has a pragma template
+                                              -- (to disable unused var checks)
 processingTemplate        : boolean := false; -- pragma tempate
 unrestrictedTemplate      : boolean := false; -- pragma unrestricted_t
 templatePath              : unbounded_string; -- template path

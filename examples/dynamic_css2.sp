@@ -1,6 +1,6 @@
 #!/usr/local/bin/spar
 
-procedure dynamic_css is
+procedure dynamic_css2 is
 
    pragma annotate( summary, "dynamic_css" )
                  @( description, "A simple example of dynamically generating CSS." )
@@ -20,6 +20,7 @@ procedure dynamic_css is
    -- </body>
    -- </html>
 
+   pragma template( css );
    pragma restriction( no_external_commands );
 
    -- CSS Substitution Variables
@@ -28,22 +29,9 @@ procedure dynamic_css is
    normal_font : constant string := "12px arial";
 
 begin
-
-   -- HTTP Header
-
-   put( "Content-type: text/css" & ASCII.CR & ASCII.LF );
-   put( ASCII.CR & ASCII.LF );
-
-   -- CSS Content
-
-   ? "body {";
-   ? "  margin: 0;";
-   ? "  padding: 0;";
-   ? "  background-color: " & color & ";";
-   ? "  font: " & normal_font & ";";
-   ? "}";
-
-end dynamic_css;
+   null;
+end dynamic_css2;
 
 -- vim: ft=spar
+
 

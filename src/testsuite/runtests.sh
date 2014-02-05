@@ -230,6 +230,91 @@ if [ "$1" != "-b" ] ; then
    good_test "goodtest2.bush"
 fi
 
+echo
+echo "Testing web templates..."
+
+cd templates
+
+EXPECTED="Content-type: text/html
+
+OK"
+
+function test_template {
+  echo "$1 ..."
+  TMP=`../../spar $1`
+  STATUS=$?
+  if [ $STATUS -ne 0 ] ; then
+     echo "template $1 failed - status code $STATUS"
+     return $STATUS
+  fi
+  if [ "$TMP" != "$2" ] ; then
+     echo "expected output did not match - '$TMP' vs '$2'"
+     return $STATUS
+  fi
+}
+readonly -f test_template
+
+test_template "template1" "$EXPECTED"
+RESULT=$?
+if [ $RESULT -ne 0 ] ; then
+   exit $RESULT
+fi
+test_template "template2" "$EXPECTED"
+RESULT=$?
+if [ $RESULT -ne 0 ] ; then
+   exit $RESULT
+fi
+test_template "template3" "$EXPECTED"
+RESULT=$?
+if [ $RESULT -ne 0 ] ; then
+   exit $RESULT
+fi
+
+# status code output suppression
+
+EXPECTED="Content-type: text/html"
+
+test_template "template4" "$EXPECTED"
+RESULT=$?
+if [ $RESULT -ne 0 ] ; then
+   exit $RESULT
+fi
+
+EXPECTED="Content-type: text/css
+
+body {
+  font: 12px arial;
+}"
+
+test_template "template5" "$EXPECTED"
+RESULT=$?
+if [ $RESULT -ne 0 ] ; then
+   exit $RESULT
+fi
+
+EXPECTED='Content-type: application/json
+
+{"message":"OK"}'
+
+test_template "template6" "$EXPECTED"
+RESULT=$?
+if [ $RESULT -ne 0 ] ; then
+   exit $RESULT
+fi
+
+EXPECTED="Content-type: text/html
+
+OK"
+
+test_template "template7" "$EXPECTED"
+RESULT=$?
+if [ $RESULT -ne 0 ] ; then
+   exit $RESULT
+fi
+
+cd - 2>/dev/null
+echo "OK"
+
 # Search testsuite* directories and run bad tests stored there
 
 echo

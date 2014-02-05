@@ -1,12 +1,12 @@
-<HEAD><TITLE>dynamic_css.sp</TITLE></HEAD>
+<HEAD><TITLE>dynamic_css2.sp</TITLE></HEAD>
 <BODY>
-<HR><DIV ALIGN="center"><H1> File : dynamic_css.sp </H1></DIV><HR>
+<HR><DIV ALIGN="center"><H1> File : dynamic_css2.sp </H1></DIV><HR>
 <DIV ALIGN="center">
 <TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
 <TR>
 <TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
 <PRE>
-$ spar dynamic_css.sp
+$ spar dynamic_css2.sp
 Content-type: text/css
 
 body {
@@ -25,7 +25,7 @@ body {
 <PRE>
 #!/usr/local/bin/spar
 
-<b>procedure</b> dynamic_css <b>is</b>
+<b>procedure</b> dynamic_css2 <b>is</b>
 
    <b>pragma</b> annotate( summary, "dynamic_css" )
                  @( description, "A simple example of dynamically generating CSS." )
@@ -45,6 +45,7 @@ body {
    <FONT COLOR=green><EM>-- &lt;/body&gt;</EM></FONT>
    <FONT COLOR=green><EM>-- &lt;/html&gt;</EM></FONT>
 
+   <b>pragma</b> template( css );
    <b>pragma</b> restriction( no_external_commands );
 
    <FONT COLOR=green><EM>-- CSS Substitution Variables</EM></FONT>
@@ -53,24 +54,18 @@ body {
    normal_font : <b>constant</b> string := "12px arial";
 
 <b>begin</b>
+   <b>null</b>;
+<b>end</b> dynamic_css2;
 
-   <FONT COLOR=green><EM>-- HTTP Header</EM></FONT>
-
-   put( "Content-type: text/css" &amp; ASCII.CR &amp; ASCII.LF )
-     @( ASCII.CR &amp; ASCII.LF );
-
-   <FONT COLOR=green><EM>-- CSS Content</EM></FONT>
-
-   ? "body {";
-   @ "  margin: 0;"
-   @ "  padding: 0;"
-   @ "  background-color: " &amp; color &amp; ";"
-   @ "  font: " &amp; normal_font &amp; ";"
-   @ "}";
-
-<b>end</b> dynamic_css;
-
-<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
-
+</PRE>
+<HR>
+<PRE>
+body {
+  margin: 0;
+  padding: 0;
+  background-color: &lt;?spar put( color ); ?&gt;;
+  font: &lt;?spar put( normal_font ); ?&gt;;
+}
 </PRE></BODY></HTML>
+

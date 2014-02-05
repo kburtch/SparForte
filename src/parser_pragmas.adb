@@ -573,10 +573,13 @@ begin
         if token = symbol_t and identifiers( token ).value = "," then
            expect( symbol_t, "," );
            expect( strlit_t );
+           var_id := strlit_t;
         else
            var_id := eof_t;
         end if;
      end if;
+     -- Mark this script as having a template to disable unused variable checks
+     hasTemplate := true;
      gccOpt := true;
   when test =>                               -- pragma test
      expr_val := identifiers( token ).value;
@@ -956,7 +959,7 @@ begin
         elsif templateType = xmlTemplate then
            cgi.put_cgi_header( "Content-type: text/xml" );
         elsif templateType = wmlTemplate then
-            cgi.put_cgi_header( "Content-type: text/vnd.wap.wml" );
+           cgi.put_cgi_header( "Content-type: text/vnd.wap.wml" );
         end if;
      when test =>
         if testOpt then

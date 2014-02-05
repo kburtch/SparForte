@@ -951,6 +951,7 @@ begin
 --else
    --put_line( "checkSoftwareModelRequirements: no block" ); -- DEBUG
 --end if;
+  if not hasTemplate then
   for i in reverse blocks(blocks_top-1).identifiers_top..identifiers_top-1 loop
 --put( " id:" ); put( i'img ); -- DEBUG
 --put_line( " " & to_string( identifiers( i ).name ) ); -- DEBUG
@@ -982,6 +983,7 @@ begin
 -- TODO declaration line would be helpful if two identifiers have the same
 -- name.
   end loop;
+  end if;
 end checkIdentifiersInCurrentBlock;
 
 
@@ -994,25 +996,30 @@ end checkIdentifiersInCurrentBlock;
 -- is in testing mode.  If a software model is set, check the used
 -- identifiers against the software model and record requirments that were
 -- met.  This should only be run during the syntax check.
+--
+-- This only runs if not processing a template because the variables may be
+-- used in the template file.  TODO: can this both work?
 -----------------------------------------------------------------------------
 
 procedure checkIdentifiersForSimpleScripts is
 begin
    --put_line( "checkSoftwareModelRequirementsForSimpleScripts: no block" ); -- DEBUG
-  for i in reverse predefined_top..identifiers_top-1 loop
+  if not hasTemplate then
+     for i in reverse predefined_top..identifiers_top-1 loop
 --put( " id:" ); put( i'img ); -- DEBUG
 --put_line( " " & to_string( identifiers( i ).name ) ); -- DEBUG
-      if identifiers( i ).wasReferenced then
+         if identifiers( i ).wasReferenced then
 --put( " REF'D: " ); put_identifier( i ); -- DEBUG
          -- TODO: Refactor out
-         if softwareModelSet then
-            recordSoftwareModelRequirements( i );
-         end if;
+            if softwareModelSet then
+               recordSoftwareModelRequirements( i );
+            end if;
 -- TODO: should this be dropped altogether?
-      elsif boolean( testOpt ) or identifiers( i ).class = varClass then
-          err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
-      end if;
-  end loop;
+         elsif boolean( testOpt ) or identifiers( i ).class = varClass then
+             err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+         end if;
+     end loop;
+  end if;
 end checkIdentifiersForSimpleScripts;
 
 

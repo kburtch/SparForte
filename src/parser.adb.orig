@@ -7893,7 +7893,11 @@ begin
   if token = exception_t then
      ParseExceptionHandler;
   end if;
-  pullBlock;
+  -- If we are processing a web template, we can't pull the block because it
+  -- would destroy the global variables used by the template.
+  if not hasTemplate then
+     pullBlock;
+  end if;
   expect( end_t );
   expect( program_id );
 end ParseMainProgram;
@@ -8465,6 +8469,15 @@ begin
         -- when others =>
        --  err( "unable to open template " & optional_bold( to_string( templatePath ) ) );
         end;
+        if error_found then
+           put_line( standard_error, fullErrorMessage );
+        end if;
+        -- if there was a formal script with a main program, the main program
+        -- block is left un-pulled for use by the template.  We can now
+        -- pull it.
+        if blocks_top /= block'first then
+           pullBlock;
+        end if;
      end if;
   end if;
 
