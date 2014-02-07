@@ -580,7 +580,6 @@ begin
      end if;
      -- Mark this script as having a template to disable unused variable checks
      hasTemplate := true;
-     gccOpt := true;
   when test =>                               -- pragma test
      expr_val := identifiers( token ).value;
      expect( backlit_t );

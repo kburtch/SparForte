@@ -303,6 +303,8 @@ end record;
 -- error_type    : anExceptionType;                       -- type of exception
 err_message      : unbounded_string;                     -- last error message
 fullErrorMessage : unbounded_string;                -- same with location info
+fullTemplateErrorMessage : unbounded_string;        -- same with location info
+                                                      -- in format of template
 err_exception    : declaration;           -- the exception else eof_t for none
 -- err_exception must be a declaration because it can be propogated out of
 -- the exception declaration scope

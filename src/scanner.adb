@@ -617,7 +617,96 @@ procedure err( msg : string ) is
   lineno   : natural;
   fileno   : natural;
   outLine  : unbounded_string;
+  gccOutLine : unbounded_string; -- DEBUG
   sfr      : aSourceFile;
+  needGccVersion : boolean := false;
+
+     function getErrorPositionString return unbounded_string is -- DEBUG
+        errorPosition : unbounded_string;
+     begin
+       errorPosition := to_unbounded_string( (firstPos-1) * "&nbsp;" );               -- indent
+       errorPosition := outLine & '^';                            -- token start
+       if lastpos > firstpos then                                 -- multi chars?
+            errorPosition := errorPosition & to_string( (lastpos-firstPos-1) * "-" );
+          errorPosition := errorPosition & '^';                   -- token end
+       end if;
+       errorPosition := errorPosition & ' ';                      -- token start
+       return errorPosition;
+     end getErrorPositionString;
+
+     function getTraceback return unbounded_string is -- DEBUG
+        tbString : unbounded_string;
+     begin
+        if blocks_top > blocks'first then                     -- in a block?
+           for i in reverse blocks'first..blocks_top-1 loop
+               if i /= blocks_top-1 then
+                  tbString := tbString & " in ";
+               end if;
+               tbString := tbString & ToEscaped( blocks( i ).blockName );
+           end loop;
+        else
+           tbString := to_unbounded_string( "in script" );
+        end if;
+        return tbString;
+    end getTraceback;
+
+    function convertToHTML( oldString : unbounded_string ) return unbounded_string is
+       s : unbounded_string := oldString;
+       p : natural;
+       timeout : natural;
+    begin
+
+       -- replace end-of-lines / spaces
+       -- do this first as the spans we may insert have spaces
+
+       p := 1;
+       while p <= length( s ) loop
+          if element( s, p ) = ASCII.LF then
+             delete( s, p, p );
+             insert( s, p, "<br>" );
+          elsif element( s, p ) = ' ' then
+             delete( s, p, p );
+             insert( s, p, "&nbsp;" );
+          end if;
+          p := p + 1;
+       end loop;
+
+       -- replace boldface on
+
+       timeout := 0;
+       loop
+          p := index( s, to_string( term( bold ) ) );
+       exit when p = 0 or timeout = 10;
+          delete( s, p, p - 1 + length( term( bold ) ) );
+          insert( s, p, "<span style=""font-weight:bold"">" );
+          timeout := timeout + 1;
+       end loop;
+
+       -- replace inverse on
+
+       timeout := 0;
+       loop
+          p := index( s, to_string( term( inverse ) ) );
+       exit when p = 0 or timeout = 10;
+          delete( s, p, p - 1 + length( term( inverse ) ) );
+          insert( s, p, "<span style=""font-style:italic"">" );
+          timeout := timeout + 1;
+       end loop;
+
+       -- replace boldface/inverse off
+
+       timeout := 0;
+       loop
+          p := index( s, to_string( term( normal ) ) );
+       exit when p = 0 or timeout = 10;
+          delete( s, p, p - 1 + length( term( normal ) ) );
+          insert( s, p, "</span>" );
+          timeout := timeout + 1;
+       end loop;
+
+       return s;
+    end convertToHTML;
+
 begin
 
   -- Already displayed one error or script is complete?
@@ -627,12 +716,15 @@ begin
      return;
   end if;
 
+  needGccVersion := boolean( gccOpt ) or hasTemplate;
+
   -- Decode a copy of the command line to show the error.  Also returns
   -- the current token position and the line number.
 
   getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
 
   fullErrorMessage := null_unbounded_string;
+  fullTemplateErrorMessage := null_unbounded_string;
 
   -- If in a script (that is, a non-interactive input mode) then
   -- show the location and traceback.  Otherwise, don't bother.
@@ -643,8 +735,11 @@ begin
   -- blanks form the location information.  Use outLine to generate a full
   -- line of text because individual Put's are shown as individual lines
   -- in Apache's error logs for templates...a real mess.
+  --
+  -- In the case of templates, we need both the Gcc version and the non-Gcc
+  -- version of the error message.
 
-     if gccOpt then                                    -- gcc style?
+     if needGccVersion then                            -- gcc style?
         lineStr := to_unbounded_string( lineno'img );  -- remove leading
         if length( lineStr ) > 0 then                  -- space (if any)
            if element( lineStr, 1 ) = ' ' then
@@ -658,37 +753,35 @@ begin
            end if;
         end if;
         sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-        outLine := sfr.name
+        gccOutLine := sfr.name
           & ":" & lineStr
           & ":" & firstposStr
           & ":";                  -- no traceback
-     else
+        gccOutLine := gccOutLine & ' ';                                  -- token start
+        gccOutLine := gccOutLine & msg;
+     end if;
 
   -- If not gcc option, show the location and traceback
 
-        sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-        outLine := sfr.name               -- otherwise
-          & ":" & lineno'img
-          & ":" & firstpos'img
-          & ": ";
+     sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
+     outLine := sfr.name               -- otherwise
+        & ":" & lineno'img
+        & ":" & firstpos'img
+        & ": ";
 
-        if blocks_top > blocks'first then                     -- in a block?
-           for i in reverse blocks'first..blocks_top-1 loop
-               if i /= blocks_top-1 then
-                  outLine := outLine & " in ";
-               end if;
-               outLine := outLine & ToEscaped( blocks( i ).blockName );
-           end loop;
-           fullErrorMessage := outLine & ASCII.LF;
-           --put( standard_error, outLine );
-           outLine := null_unbounded_string;
-        else
-           outLine := outLine & "script";
-           fullErrorMessage := outLine & ASCII.LF;
-           --put( standard_error, outLine );
-           outLine := null_unbounded_string;
-        end if;
-        --New_Line( standard_error );
+     if blocks_top > blocks'first then                     -- in a block?
+        for i in reverse blocks'first..blocks_top-1 loop
+            if i /= blocks_top-1 then
+               outLine := outLine & " in ";
+            end if;
+            outLine := outLine & ToEscaped( blocks( i ).blockName );
+        end loop;
+        fullErrorMessage := outLine & ASCII.LF;
+        outLine := null_unbounded_string;
+     else
+        outLine := outLine & "in script";
+        fullErrorMessage := outLine & ASCII.LF;
+        outLine := null_unbounded_string;
      end if;
   end if;
 
@@ -696,48 +789,67 @@ begin
   -- the error.  Otherwise, just add the error to the location information.
   -- Output only full lines to avoid messy Apache error logs.
 
-  if not gccOpt then
+  -- Normal: Draw The Current Line
 
-     -- Normal: Draw The Current Line
-
-     -- TODO: use correct newline (this is Linux)
-     fullErrorMessage := fullErrorMessage & toEscaped( cmdline );
-     --put_line( standard_error, toEscaped( cmdline ) );          -- current line
-
-     -- Normal: Draw Error Pointer
-
-     outLine := outLine & to_string( (firstPos-1) * " " );               -- indent
-     outLine := outLine & '^';                                  -- token start
-     if lastpos > firstpos then                                 -- multi chars?
-        outLine := outLine & to_string( (lastpos-firstPos-1) * "-" );
-        outLine := outLine & '^';                               -- token end
-     end if;
-     outLine := outLine & ' ';                                  -- token start
-  end if;
-  outLine := outLine & msg;
   -- TODO: use correct newline (this is Linux)
-  fullErrorMessage := fullErrorMessage & ASCII.LF & outLine;
+  fullErrorMessage := fullErrorMessage & toEscaped( cmdline );
+  --put_line( standard_error, toEscaped( cmdline ) );          -- current line
+
+  -- Normal: Draw Error Pointer
+
+  outLine := outLine & to_string( (firstPos-1) * " " );               -- indent
+  outLine := outLine & '^';                                  -- token start
+  if lastpos > firstpos then                                 -- multi chars?
+     outLine := outLine & to_string( (lastpos-firstPos-1) * "-" );
+     outLine := outLine & '^';                               -- token end
+  end if;
+  outLine := outLine & ' ';                                  -- token start
+  outLine := outLine & msg;
+
+
+  -- Even for a template, if the user selected gccOpt specifically,
+  -- use it.
+
+  -- TODO: use correct newline (this is Linux/UNIX)
+  -- TODO: escaping message for web characters (without breaking
+  -- span tags, etc.)
+
+  if gccOpt then
+     fullErrorMessage := gccOutLine;
+  else
+     fullErrorMessage := fullErrorMessage & ASCII.LF & outLine;
+  end if;
   --put_line( standard_error, outLine );                          -- error msg
 
   -- If we're in a template and in debug mode, put the error message on the
-  -- web page.
+  -- web page.  We will supply the full error message (including location ).
 
-  -- TODO: update this for HTML5
-  if boolean( debugOpt ) and processingTemplate then
-     put( "<table cellspacing=1 cellpadding=2 border=1 summary=""SparForte Error"">" );
-     put( "<tr>" );
-     put( "<td bgcolor=""grey"">" );
-     put( "<font face=""courier"" color=""white"" size=""2"">" );
-     put( "&nbsp;<i>SparForte</i>&nbsp;" );
-     put( "</font></td>" );
-     put( "<td bgcolor=""white""" );
-     put( "<font face=""courier"" color=""black"" size=""2"">" );
-     put( "&nbsp;<b>" & outLine & "</b>&nbsp;" );
-     put( "</font></td>" );
-     put( "</table>" );
-     put( "<br />" );
-     new_line;
+  if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
+     case templateType is
+     when htmlTemplate | wmlTemplate =>
+        fullTemplateErrorMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
+           "<div style=""float:left;font: 32px Times New Roman,serif; font-style:italic; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#00529B; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">i</div>" &
+           "<div style=""float:left;font: 12px Courier New,Courier,monospace; color: #00529B; background-color: transparent"">" &
+           "<p style=""font: 14px Verdana,Arial,Helvetica,sans-serif; font-weight:bold"">SparForte says</p>" &
+           "<p>" & convertToHTML( fullErrorMessage ) & "</p>" &
+           "</div>" &
+           "</div>" &
+           "<br />";
+     when cssTemplate | jsTemplate =>
+        fullTemplateErrorMessage := "/* SparForte Message" & fullErrorMessage &  " */";
+     when xmlTemplate =>
+        fullTemplateErrorMessage := "<!-- SparForte Message" & fullErrorMessage & " -->";
+     when noTemplate | textTemplate | jsonTemplate =>
+        fullTemplateErrorMessage := fullErrorMessage;
+     end case;
+     -- In the case of the template, the error output must always
+     -- be in gcc format (a single line) for the web server log.
+     --
+     -- This affects exception handling since HTML output for template
+     -- will differ from error message in exceptions package.
+     fullErrorMessage := gccOutLine;
   end if;
+
   error_found := true;                                          -- flag error
   err_exception.name := null_unbounded_string;            -- not an exception
   last_status := 0;
@@ -863,24 +975,28 @@ begin
   --put_line( standard_error, outLine );                          -- error msg
 
   -- If we're in a template and in debug mode, put the error message on the
-  -- web page.
+  -- web page.  We will supply the full error message (including location ).
 
-  -- TODO: update for HTML5
-  if boolean( debugOpt ) and processingTemplate then
-     put( "<table cellspacing=1 cellpadding=2 border=1 summary=""SparForte Exception"">" );
-     put( "<tr>" );
-     put( "<td bgcolor=""grey"">" );
-     put( "<font face=""courier"" color=""white"" size=""2"">" );
-     put( "&nbsp;<i>SparForte</i>&nbsp;" );
-     put( "</font></td>" );
-     put( "<td bgcolor=""white""" );
-     put( "<font face=""courier"" color=""black"" size=""2"">" );
-     put( "&nbsp;<b>" & outLine & "</b>&nbsp;" );
-     put( "</font></td>" );
-     put( "</table>" );
-     put( "<br />" );
-     new_line;
+  if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
+     case templateType is
+     when htmlTemplate | wmlTemplate =>
+        fullTemplateErrorMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #9F6000; background-color: #FEEFB3; width:100%; overflow:auto"">" &
+           "<div style=""float:left;font: 32px Times New Roman,serif; font-style:italic; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#9f6000; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">!</div>" &
+           "<div style=""float:left;font: 12px Courier New,Courier,monospace; color: #9F6000; background-color: transparent"">" &
+           "<p style=""font: 14px Verdana,Arial,Helvetica,sans-serif; font-weight:bold"">SparForte Message</p>" &
+           "<p>" & fullErrorMessage & "</p>" &
+           "</div>" &
+           "</div>" &
+           "<br />";
+     when cssTemplate | jsTemplate =>
+        fullTemplateErrorMessage := "/* SparForte Message" & fullErrorMessage &  " */";
+     when xmlTemplate =>
+        fullTemplateErrorMessage := "<!-- SparForte Message" & fullErrorMessage & " -->";
+     when noTemplate | textTemplate | jsonTemplate =>
+        fullTemplateErrorMessage := fullErrorMessage;
+     end case;
   end if;
+
   error_found := true;                                          -- flag error
   --token := eof_t;                                             -- stop parser
 

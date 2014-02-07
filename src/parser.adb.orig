@@ -8425,8 +8425,13 @@ begin
      -- display any error message
      if error_found then
         put_line( standard_error, fullErrorMessage );
+        -- may or may not have a template at this point, so check
+        if hasTemplate then
+           put_line( fullTemplateErrorMessage );
+        end if;
      end if;
      if length( depreciatedMsg ) > 0 then            -- pragma depreciated?
+        -- TODO: this won't show up on a web template debug message
         put( standard_error, scriptFilePath );       -- show the message
         put( standard_error, ":" );                  -- as a warning
         put( standard_error, getLineNo'img );
@@ -8435,6 +8440,7 @@ begin
      end if;
      if restriction_annotations_not_optional and not annotationsFound then
         -- pragma restriction( annotations_not_optional )
+        -- TODO: this won't show up on a web template debug message
         put( standard_error, scriptFilePath );       -- show the message
         put( standard_error, ":" );                  -- as a warning
         put( standard_error, getLineNo'img );
@@ -8443,13 +8449,14 @@ begin
      end if;
      if restriction_no_annotate_todos and annotationTodoFound then
         -- pragma restriction( annotations_no_todos )
+        -- TODO: this won't show up on a web template debug message
         put( standard_error, scriptFilePath );       -- show the message
         put( standard_error, ":" );                  -- as a warning
         put( standard_error, getLineNo'img );
         put( standard_error, ":" );
         put_line( standard_error, "annotation todo found but none expected" );
      end if;
-     if processingTemplate then                      -- doing a template
+     if processingTemplate and not error_found then  -- doing a template
         if verboseOpt then
            Put_Trace( "Processing template " & to_string( templatePath ) );
         end if;
@@ -8471,6 +8478,8 @@ begin
         end;
         if error_found then
            put_line( standard_error, fullErrorMessage );
+           -- always has template if we get here
+           put_line( fullTemplateErrorMessage );
         end if;
         -- if there was a formal script with a main program, the main program
         -- block is left un-pulled for use by the template.  We can now
