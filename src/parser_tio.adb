@@ -1271,8 +1271,9 @@ begin
         -- For universal numeric, represent it as an integer string if possible
         -- to make it human-readable.
         declare
-           val : long_float := to_numeric( expr_val );
+           val : long_float; -- := to_numeric( expr_val );
         begin
+           val := to_numeric( expr_val );
            -- Within the range of a SparForte integer and no decimal (e.g.
            -- casting results in the same value?
            if long_float( val ) >= long_float( integerOutputType'first+0.9 ) and
@@ -1281,6 +1282,12 @@ begin
                  expr_val := to_unbounded_string( val );
               end if;
            end if;
+        exception when ada.strings.index_error =>
+           -- since this is an expression, this could be something else but
+           -- it is almost always this
+           err( "numeric variable has no value" );
+        when others =>
+           err( "exception raised" );
         end;
      end if;
      Put_Line( expr_val );

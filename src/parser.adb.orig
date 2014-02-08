@@ -1692,7 +1692,7 @@ begin
               exception when program_error =>
                  err( "program_error exception raised" );
                  term := null_unbounded_string;
-               when others =>
+              when others =>
                  err( "exception raised" );
                  term := null_unbounded_string;
               end;
@@ -2226,6 +2226,9 @@ begin
               exception when program_error =>
                  err( "program_error exception raised" );
                  re1 := null_unbounded_string;
+              when ada.strings.index_error =>
+                 err( "variable was not intialized" );
+                 re1 := null_unbounded_string;
               when others =>
                  err( "exception raised" );
                  re1 := null_unbounded_string;
@@ -2241,6 +2244,9 @@ begin
               exception when program_error =>
                  err( "program_error exception raised" );
                  re1 := null_unbounded_string;
+              when ada.strings.index_error =>
+                 err( "variable was not intialized" );
+                 re1 := null_unbounded_string;
               when others =>
                  err( "exception raised" );
                  re1 := null_unbounded_string;
@@ -2255,6 +2261,9 @@ begin
                 end if;
               exception when program_error =>
                  err( "program_error exception raised" );
+                 re1 := null_unbounded_string;
+              when ada.strings.index_error =>
+                 err( "variable was not intialized" );
                  re1 := null_unbounded_string;
               when others =>
                  err( "exception raised" );

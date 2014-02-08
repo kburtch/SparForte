@@ -768,7 +768,8 @@ begin
   fullTemplateErrorMessage := null_unbounded_string;
 
   -- If in a script (that is, a non-interactive input mode) then
-  -- include the location and traceback.  Otherwise, don't bother.
+  -- show the location and traceback.  Otherwise, if we're just at
+  -- the command prompt, don't bother with the location/traceback.
 
   if inputMode /= interactive and inputMode /= breakout then
 
@@ -951,7 +952,8 @@ begin
   getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
 
   -- If in a script (that is, a non-interactive input mode) then
-  -- show the location and traceback.  Otherwise, don't bother.
+  -- show the location and traceback.  Otherwise, if we're just at
+  -- the command prompt, don't bother with the location/traceback.
 
   if inputMode /= interactive and inputMode /= breakout then
 
@@ -2914,7 +2916,9 @@ begin
      kind = long_long_integer_t then
      begin
        roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
-     exception when others =>
+     exception when constraint_error =>
+       err( "a variable has no value or a value is out-of-range" );
+     when others =>
        err( "exception raised" );
      end;
      str := to_unbounded_string( long_long_integer'image( roundedVal ) );
@@ -2923,7 +2927,9 @@ begin
   elsif kind = natural_t then
      begin
        roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
-     exception when others =>
+     exception when constraint_error =>
+       err( "a variable has no value or a value is out-of-range" );
+     when others =>
        err( "exception raised" );
      end;
      if roundedVal < 0 then
@@ -2939,7 +2945,9 @@ begin
   elsif kind = positive_t then
      begin
        roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
-     exception when others =>
+     exception when constraint_error =>
+       err( "a variable has no value or a value is out-of-range" );
+     when others =>
        err( "exception raised" );
      end;
      if roundedVal <= 0 then
