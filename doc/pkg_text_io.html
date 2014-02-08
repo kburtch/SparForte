@@ -57,10 +57,8 @@ when invoking these subroutines.</p>
   <a href="#name">s := name( f )</a>              <a href="#new_line">new_line [(f)]</a>      <a href="#open">open( f, m, p )</a>
   <a href="#put">put( [f,] e [, p] )</a>         <a href="#put_line">put_line( [f,] e )</a>  <a href="#reset">reset( f [, m] )</a>
   <a href="#set_error">set_error( f )</a>              <a href="#set_input">set_input( f )</a>      <a href="#set_output">set_output( f )</a>
-  <a href="#skip_line">skip_line( [f] )</a>
-delete( f )
-is_open( f )
-mode( f )
+  <a href="#skip_line">skip_line( [f] )</a>            <a href="#get_immediate">get_immediate( c [,b] )</a>
+  <a href="#delete">delete( f )</a>                 <a href="#is_open">is_open( f )</a>        <a href="#mode">mode( f )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -414,6 +412,53 @@ out_file
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Get_Line, Ada.Strings.Unbounded.Text_IO.Get<br>PHP: fgetc</p></td>
+</tr>
+</table>
+
+<a name="get_immediate"></a><h3>get_immediate( c, [b] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Read the first character from a line on standard input and return it as c.  Don't display the character.  Return immediately if there's no data when b is true.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">get_immediate( ch );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+<tr>
+<td><span>c</span></td>
+<td><span>out</span></td>
+<td><span>character</span></td>
+<td><span>required</span></td>
+<td><span>the character read</span></td>
+</tr>
+<tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>false</span></td>
+<td><span>true to return immediately</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>Reading past end of file will raise an exception</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#end_of_file">end_of_file</a><br><a href="#end_of_line">end_of_line</a><br><a href="#get_line">get_line</a><br><a href="#inkey">inkey</a><br><a href="#skip_line">skip_line</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Text_IO.Get_Immediate</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This function is incomplete.  It was introduced in SparForte 1.5<br>Displaying the character is turned off when get_immediate is executed so if a user types a character before get_immediate is executed, it will still appear.</p></td>
 </tr>
 </table>
 

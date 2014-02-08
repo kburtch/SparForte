@@ -142,7 +142,7 @@ command.</p>
 
 <p>This would result in a web page similar to</p>
 <hr>
-<h3>Users on the System</h3>
+<p style="font-weight: bold;font-size: 14px">Users on the System</p>
 There are 4 users on the system.
 <hr>
 <p>The &lt;?spar...?&gt; tag can contain any kind of SparForte script and
@@ -179,9 +179,14 @@ able to run commands with the authority of the web server.</p>
     </tr>
   </tbody>
 </table>
-<p>Like most CGI scripting languages, an error messages are written to
-the web server error log. If a page doesn't display properly, check the
-error log for possible problems.</p>
+
+<p>If an error occurs, it will be written to the web server error log.
+In most cases, it will also be written to the web page.  If you think
+an error occurred but don't see it on the web page, check the error log.</p>
+
+<p>On the web page, errors will appear something like this:</p>
+
+<div style="border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"><div style="float:left;font: 32px Times New Roman,serif; font-style:italic; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#00529B; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px">i</div><div style="float:left;font: 12px Courier New,Courier,monospace; color: #00529B; background-color: transparent"><p style="font: 14px Verdana,Arial,Helvetica,sans-serif; font-weight:bold">SparForte says</p><p>/srv/www/cgi-bin/t_tmpl.sp:&nbsp;13:&nbsp;10:&nbsp;in&nbsp;script<br>&nbsp;i1&nbsp;:=&nbsp;j1;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^&nbsp;type&nbsp;<span style="font-weight:bold">i</span>&nbsp;is&nbsp;not&nbsp;compatible&nbsp;with&nbsp;type&nbsp;<span style="font-weight:bold">j</span></p></div></div><br />
 
 <h3>Securing Your Web Site</h3>
 

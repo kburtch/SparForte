@@ -375,11 +375,16 @@ name of the script.  If an alternate file path is included in the pragma,
 that file is used as the template instead. A HTTP header is written and
 SparForte parses the template along with any embedded scripts. For security,
 the embedded scripts in the template will be run in a restricted shell and
-with the no_external_commands restriction. Errors are shown in --gcc-errors
-format using the line number in the template as the line number for the
+with the no_external_commands restriction. Errors shown in the output are
+affected by --gcc-errors, but errors written to standard error are always
+in --gcc-errors.  Errors occurring in a template are shown
+using the line number in the template as the line number for the
 error.  The first parameter is the template type: "css" (a style sheet),
 "html" (HTML web page), "js" (Javascript script), "json" (JSON encoded
-text), "text" (plain text), "wml" (WML text) or "xml" (XML text).</li>
+text), "text" (plain text), "wml" (WML text) or "xml" (XML text).
+The position of this pragma affects how errors are reported: SparForte
+doesn't know the script has a template until this pragma is read so
+while it can be placed anywhere it is best to place it early in a script.</li>
   <li> <b>pragma unchecked_import( shell | cgi | local_memcache | memcache, var )</b> -
 import a variable.  For shell, from the O/S environment.  For cgi
 and if pragma template/unrestricted_template was used previously,

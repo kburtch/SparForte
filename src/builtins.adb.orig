@@ -1195,25 +1195,26 @@ procedure helpMain is
 begin
      Put_Line( "The following topics are available:" );
      New_Line;
-     Put_Line( "  arrays            exit            mode                skip_line        " );
-     Put_Line( "  calendar          expressions     mysql               sound            " );
-     Put_Line( "  case              files           mysqlm              source_info      " );
-     Put_Line( "  cd                for             name                stats            " );
-     Put_Line( "  cgi               function        new_line            step             " );
-     Put_Line( "  clear             get             null                strings          " );
-     Put_Line( "  close             get_line        numerics            strings.match    " );
-     Put_Line( "  command_line      gnat.crc32      open                subtype          " );
-     Put_Line( "  create            history         os                  System           " );
-     Put_Line( "  db                if              pen                 trace            " );
-     Put_Line( "  declare           inkey           pragma              type             " );
-     Put_Line( "  delay             is_open         procedure           typeset          " );
-     Put_Line( "  delete            jobs            put                 units            " );
-     Put_Line( "  directory_operations keys         put_line            unset                " );
-     Put_Line( "  end_of_file       line            raise               variables        " );
-     Put_Line( "  end_of_line       logout          reset               wait             " );
-     Put_Line( "  enums             loop            records             while            " );
-     Put_Line( "  env               memcache        return              ""?""            " );
-     Put_Line( "  exceptions                        set_input           gnat.cgi         " );
+     Put_Line( "  arrays            enums           logout              return           " );
+     Put_Line( "  calendar          env             loop                set_input        " );
+     Put_Line( "  case              exceptions      memcache            skip_line        " );
+     Put_Line( "  cd                exit            mode                sound            " );
+     Put_Line( "  cgi               expressions     mysql               source_info      " );
+     Put_Line( "  chains            files           mysqlm              stats            " );
+     Put_Line( "  clear             for             name                step             " );
+     Put_Line( "  close             function        new_line            strings          " );
+     Put_Line( "  command_line      get             null                strings.match    " );
+     Put_Line( "  create            get_immediate   numerics            subtype          " );
+     Put_Line( "  db                get_line        open                System           " );
+     Put_Line( "  declare           gnat.cgi        os                  trace            " );
+     Put_Line( "  delay             gnat.crc32      pen                 type             " );
+     Put_Line( "  delete            history         pragma              typeset              " );
+     Put_Line( "  directory_operations if           procedure           units            " );
+     Put_Line( "  doubly_linked_lists inkey         put                 unset            " );
+     Put_Line( "  dynamic_hash_tables is_open       put_line            variables        " );
+     Put_Line( "  end_of_file       jobs            raise               wait             " );
+     Put_Line( "  end_of_line       keys            reset               while            " );
+     Put_Line( "                    line            records             ""?""                 " );
      New_Line;
      Put_Line( "You can also type an O/S word or a SparForte script name." );
 end helpMain;
@@ -1528,6 +1529,9 @@ begin
      Put_Line( "  url_decode                 url_encode( s )            html_encode( s )" );
      Put_Line( "  set_cookie( k,v,e,p,d,s )  cookie_value( p )          cookie_count" );
      discardUnusedIdentifier( token );
+  elsif helpTopic = "chains" then
+     Put_Line( "  p := chains.chain_count        e := chains.chain_context " );
+     Put_Line( "  b := chains.in_chain" );
   elsif helpTopic = "clear" then
      Put_Line( "clear - reset tty device and clear the screen" );
   elsif helpTopic = "close" then
@@ -1669,6 +1673,9 @@ begin
   elsif helpTopic = "get" then
      Put_Line( "get - read a character from a line of text" );
      Put_Line( "  get ([file,] ch)" );
+  elsif helpTopic = "get_immediate" then
+     Put_Line( "get_immediate - read a character from a line of text" );
+     Put_Line( "  get_immediate (ch [, b]) - b is true if non-blocking" );
   elsif helpTopic = "get_line" then
      Put_Line( "get_line - read a line of text" );
      Put_Line( "  var := get_line [ (file) ]" );
