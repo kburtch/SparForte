@@ -78,7 +78,9 @@ CHANGES SINCE 1.4
 
 22. Change: cgi script HTML error messages appear in all software development cycle settings except maintenance, or debug mode, or maintnance plus debug mode.  The message has been updated to newer HTML standards.  gcc-style errors is now selectable: it affects the display on the web page but errors logged to the server will still be gcc-style.
 
-23. Change: different cgi script templates produce error messages in formats suitable for the template type.
+23. Change: different cgi script templates produce error messages in formats suitable for the template type.  Same for exceptions.
+
+24. Fix: raise at the end of a simple script no longer causes an unreachable code error.
 
 ??. Around parser.adb 5812: doesn't allow mixing of shell and adascript parameters in a pipeline.  Fix this??
 
