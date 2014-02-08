@@ -4685,13 +4685,13 @@ begin
         err_exception.deleted := false;
         if length( with_text ) > 0 then
            raise_exception( "raised " &
-                to_string( identifiers( id ).name ) &
+                optional_bold( to_string( identifiers( id ).name ) ) &
                 ": " &
                 to_string( with_text )
            );
         else
            raise_exception( "raised " &
-                to_string( identifiers( id ).name )
+                optional_bold( to_string( identifiers( id ).name ) )
            );
         end if;
         -- set the exit status
@@ -7672,7 +7672,8 @@ begin
         begin
           markScanner( atSemicolon );
           getNextToken; -- skip semicolon
-          if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
+          -- eof_t because a raise might be the last line in a simple script
+          if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t and token /= eof_t then
              err( "unreachable code" );
           end if;
           resumeScanning( atSemicolon ); -- restore original position
