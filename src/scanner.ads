@@ -175,6 +175,8 @@ procedure err( msg : string );
 
 procedure raise_exception( msg : string );
 
+procedure warn( msg : string );
+
 ------------------------------------------------------------------------------
 -- Saving/Restoring Positions/Scripts
 --

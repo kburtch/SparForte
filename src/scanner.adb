@@ -1088,6 +1088,43 @@ begin
 end raise_exception;
 
 
+--  WARN
+--
+-- Issue a warning.  This is done immediately, is not formatted by gcc-style
+-- preference and is not stored.
+-----------------------------------------------------------------------------
+
+procedure warn( msg : string ) is
+  location : unbounded_string;
+  fullMsg  : unbounded_string;
+begin
+  location := scriptFilePath & ":" & getLineNo'img & ": ";
+  fullMsg  := location & "warning--" & msg;
+
+  put_line( standard_error, fullMsg );
+
+  if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
+     case templateType is
+     when htmlTemplate | wmlTemplate =>
+        put( "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
+           "<div style=""float:left;font: 32px Times New Roman,serif; font-style:italic; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#00529B; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">i</div>" &
+           "<div style=""float:left;font: 12px Courier New,Courier,monospace; color: #00529B; background-color: transparent"">" &
+           "<p style=""font: 14px Verdana,Arial,Helvetica,sans-serif; font-weight:bold"">" & templateErrorHeader & "</p>" &
+           "<p>" & convertToHTML( fullMsg ) & "</p>" &
+           "</div>" &
+           "</div>" &
+           "<br />" );
+     when cssTemplate | jsTemplate =>
+        put( "/* " & templateErrorHeader & " " & convertToPlainText( fullMsg ) &  " */" );
+     when xmlTemplate =>
+        put( "<!-- " & templateErrorHeader & " " & convertToPlainText( fullMsg ) & " -->" );
+     when noTemplate | textTemplate | jsonTemplate =>
+        put( convertToPlainText( fullMsg ) );
+     end case;
+  end if;
+end warn;
+
+
 -----------------------------------------------------------------------------
 -- ERR PREVIOUS
 --

@@ -86,6 +86,8 @@ CHANGES SINCE 1.4
 
 26. Change: uninitialized variables in expressions now give an unitialized variable error messages instead of general "exception raised" error message.
 
+27. Fix: end of script warnings (like pragma deprecated/depreciated) now appear as messages when template files are used.
+
 
 ??. Around parser.adb 5812: doesn't allow mixing of shell and adascript parameters in a pipeline.  Fix this??
 

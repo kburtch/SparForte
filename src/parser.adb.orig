@@ -8441,30 +8441,15 @@ begin
         end if;
      end if;
      if length( depreciatedMsg ) > 0 then            -- pragma depreciated?
-        -- TODO: this won't show up on a web template debug message
-        put( standard_error, scriptFilePath );       -- show the message
-        put( standard_error, ":" );                  -- as a warning
-        put( standard_error, getLineNo'img );
-        put( standard_error, ":" );
-        put_line( standard_error, "warning--" & depreciatedMsg );
+        warn( to_string( depreciatedMsg ) );
      end if;
      if restriction_annotations_not_optional and not annotationsFound then
         -- pragma restriction( annotations_not_optional )
-        -- TODO: this won't show up on a web template debug message
-        put( standard_error, scriptFilePath );       -- show the message
-        put( standard_error, ":" );                  -- as a warning
-        put( standard_error, getLineNo'img );
-        put( standard_error, ":" );
-        put_line( standard_error, "annotations are required but missing" );
+        warn( "annotations are required but missing" );
      end if;
      if restriction_no_annotate_todos and annotationTodoFound then
         -- pragma restriction( annotations_no_todos )
-        -- TODO: this won't show up on a web template debug message
-        put( standard_error, scriptFilePath );       -- show the message
-        put( standard_error, ":" );                  -- as a warning
-        put( standard_error, getLineNo'img );
-        put( standard_error, ":" );
-        put_line( standard_error, "annotation todo found but none expected" );
+        warn( "annotation todo found but none expected" );
      end if;
      if processingTemplate and not error_found then  -- doing a template
         if verboseOpt then
