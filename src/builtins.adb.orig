@@ -1432,6 +1432,10 @@ begin
        "restriction( no_unused_identifiers ) - " &
          "stricter unused tests" );
      Put_Line( "  " & bold( "pragma" ) & " " &
+       "session_export_script( `commands` ) - commands to export session variables" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
+       "session_import_script( `commands` ) - commands to import session variables" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
        "software_model( model_name )" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "suppress( word_quoting )" );

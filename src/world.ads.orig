@@ -135,6 +135,9 @@ sourceFiles : SourceFilesList.List;
 commandLineSource : constant string := "Command";
 -- name for a "script" (command) typed at the command prompt
 
+sessionImportScript   : unbounded_string := null_unbounded_string;
+sessionExportScript   : unbounded_string := null_unbounded_string;
+
 ------------------------------------------------------------------------------
 -- Exceptions
 ------------------------------------------------------------------------------
@@ -242,7 +245,7 @@ function getIdentifierClassImage( c : anIdentifierClass ) return string;
 -- Import/Export Methods
 -- Note: http_cgi to avoid ambiguity over "cgi" package name
 
-type anImportMethod is ( none, shell, http_cgi, local_memcache, memcache );
+type anImportMethod is ( none, shell, http_cgi, local_memcache, memcache, session );
 type anImportMapping is ( none, json );
 
 ------------------------------------------------------------------------------

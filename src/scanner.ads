@@ -239,7 +239,7 @@ procedure pullBlock;
 procedure topOfBlock;
 -- return to the top of the current block, read that line
 
-procedure GetFullParentUnitName( fullUnitName : out unbounded_string );
+procedure GetFullParentUnitName( fullUnitName : out unbounded_string; unique : out boolean );
 -- return the full (dotted) name of the parent subprogram (e.g. proc )
 
 function isLocal( id : identifier ) return boolean;

@@ -80,13 +80,19 @@ CHANGES SINCE 1.4
 
 23. Change: different cgi script templates produce error messages in formats suitable for the template type.  Same for exceptions.
 
-24. Fix: raise at the end of a simple script no longer causes an unreachable code error.
+24. Fix: raise at the end of a simple script no longer causes an unreachable code error. [can this be restored after the other changes I made?]
 
 25. Fix: uninitialized numeric variables no longer crash "?" but are reported as an approprate error.
 
 26. Change: uninitialized variables in expressions now give an unitialized variable error messages instead of general "exception raised" error message.
 
 27. Fix: end of script warnings (like pragma deprecated/depreciated) now appear as messages when template files are used.
+
+28. Fix: deleteIdent function refactored to eliminate inconsistent variable exporting.
+
+29. New: session variables callbacks.  pragma session_import_script, pragma session_export_script, new session import/export type.
+
+30. New: array variables may be deleted with unset.  However, anonymous array types will linger until the end of block.
 
 
 ??. Around parser.adb 5812: doesn't allow mixing of shell and adascript parameters in a pipeline.  Fix this??

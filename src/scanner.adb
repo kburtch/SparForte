@@ -43,6 +43,7 @@ with system,
     string_util,
     software_models,
     -- scanner_arrays,
+    parser,
     parser_os,
     parser_arrays,
     parser_enums,
@@ -87,6 +88,7 @@ use ada.text_io,
     string_util,
     software_models,
     -- scanner_arrays,
+    parser,
     parser_os,
     parser_arrays,
     parser_enums,
@@ -271,11 +273,12 @@ begin
 
      if ident.import or ident.export then
         case ident.method is
-        when http_cgi  => put( "HTTP CGI " );
-        when local_memcache  => put( "local memcache " );
-        when memcache  => put( "memcache " );
-        when shell => put( "shell environment " );
-        when others => put( "unknown " );
+        when http_cgi       => put( "HTTP CGI " );
+        when local_memcache => put( "local memcache " );
+        when memcache       => put( "memcache " );
+        when shell          => put( "shell environment " );
+        when session        => put( "session " );
+        when others         => put( "unknown " );
         end case;
         if ident.mapping = json then
            put( "json " );
@@ -1363,11 +1366,39 @@ begin
   end if;
 end topOfBlock;
 
-procedure GetFullParentUnitName( fullUnitName : out unbounded_string ) is
--- return the full (dotted) name of the parent subprogram (e.g. proc )
+-----------------------------------------------------------------------------
+-- GET FULL PARENT UNIT NAME
+--
+-- Return the full (dotted) name of the scope (i.e. what you would prefix
+-- to identify a variable).  Be aware that some blocks like declare have a
+-- space in the name.
+-- Unique is true if the scope path doesn't contain an anonymous block
+-- (that is, a declare block, which has no name) in the path.  This is
+-- because two anonymous blocks in the same scope may have two variables
+-- with the same name: they would produce the same path but would not be
+-- the same variable.
+-- At the time of writing, this was created but never used anywhere.
+-----------------------------------------------------------------------------
+
+procedure GetFullParentUnitName( fullUnitName : out unbounded_string; unique : out boolean ) is
+  b : block := blocks'first;
 begin
-  fullUnitName := to_unbounded_string( "unknown" ); -- done to suppress warning that parameter isn't used
-  put_line( standard_error, "GetFullParentUnitName : not yet written" );
+  unique := true;
+  if blocks_top = blocks'first then
+     fullUnitName := to_unbounded_string( "script" );
+  end if;
+  for b in blocks'first..blocks_top -1 loop
+      if blocks( b ).newScope then
+         if length( fullUnitName ) = 0 then
+            fullUnitName := blocks( b ).blockName;
+         else
+            fullUnitName := fullUnitName & "." & blocks( b ).blockName;
+         end if;
+         if blocks( b ).blockName = "declare block" then
+            unique := false;
+         end if;
+      end if;
+  end loop;
 end GetFullParentUnitName;
 
 -----------------------------------------------------------------------------
@@ -2412,6 +2443,8 @@ begin
      Get( distributedMemcacheCluster,
           identifiers( id ).name,
           importedStringValue );
+  elsif identifiers( id ).method = session then
+     err( "session variables may not be refreshed" );
   else
      key := identifiers( id ).name & "=";                        -- look for this
      for i in 1..Environment_Count loop                          -- all env vars
@@ -3010,87 +3043,117 @@ end castToType;
 
 function deleteIdent( id : identifier ) return boolean is
 -- Delete a keyword / identifier from the symbol table
+-- TODO: Exporting should be refactored so it is not duplicated
    tempStr : unbounded_string;
+
+  function ConvertValueToJson( id : identifier ) return unbounded_string is
+    -- convert the value to json.  assumes you checked that it needs to be
+  begin
+    tempStr := identifiers( id ).value;
+    if getUniType( identifiers( id ).kind ) = uni_string_t then
+       tempStr := DoStringToJson( tempStr );
+    elsif identifiers( id ).list then
+       DoArrayToJSON( tempStr, id );
+    elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_record_t then
+       DoRecordToJSON( tempStr, id );
+    elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then
+        null; -- for numbers, JSON is as-is
+    else
+        err( "json export not yet written for this type" );
+    end if;
+    return tempStr;
+  end ConvertValueToJson;
+
+  procedure ExportValue( id : identifier ) is
+    -- export a value before deleting.
+  begin
+    case identifiers( id ).method is
+    when local_memcache =>
+        begin
+           if identifiers( id ).mapping = json then
+              Set( localMemcacheCluster,
+                   identifiers( id ).name,
+                   ConvertValueToJSon( id ) );
+           else
+              Set( localMemcacheCluster,
+                   identifiers( id ).name,
+                   identifiers( id ).value );
+           end if;
+        exception when others => null;
+        end;
+    when memcache =>
+        begin
+           if identifiers( id ).mapping = json then
+              Set( distributedMemcacheCluster,
+                   identifiers( id ).name,
+                   ConvertValueToJSon( id ) );
+           else
+              Set( distributedMemcacheCluster,
+                   identifiers( id ).name,
+                   identifiers( id ).value );
+           end if;
+        exception when others => null;
+        end;
+    when session =>
+        if length( sessionExportScript ) = 0 then
+           err( "session export script not defined" );
+        else
+           declare
+             temp1_t : identifier;
+             temp2_t : identifier;
+             b : boolean;
+           begin
+             declareStandardConstant( temp1_t, "sparforte_session_variable_name", string_t, to_string( identifiers( id ).name ) );
+             if identifiers( id ).mapping = json then
+                declareStandardConstant( temp2_t, "sparforte_session_variable_value", string_t, to_string( ConvertValueToJson( id ) ) );
+             else
+                declareStandardConstant( temp2_t, "sparforte_session_variable_value", string_t, to_string( identifiers( id ).value ) );
+             end if;
+             CompileAndRun( sessionExportScript, 1, false );
+             b := deleteIdent( temp2_t );  -- recursion, ignore result
+             b := deleteIdent( temp1_t );  -- recursion, ignore result
+           end;
+        end if;
+    when others =>
+        err( "internal error: unexpected export mapping in ExportValue" );
+    end case;
+  end ExportValue;
+
 begin
   if id >= identifiers_top then                                 -- id > top?
      return false;                                              -- delete fail
   elsif identifiers( id ).deleted then                          -- flagged?
      return false;                                              -- delete fail
+  elsif identifiers( id ).resource and identifiers( id ).class = varClass then
+     return false;                                              -- delete fail
+        -- deleting a single resource is not allowed because the id is the index
+        -- into the list of reousrces.
   elsif id = identifiers_top-1 then                             -- last id?
      --kind := identifiers( id ).kind;
-     -- if we're using json, then we're not actually exporting the
-     -- array value but the json string representing the array
-     -- don't delete array types, just array vars.
-     if identifiers( id ).list and identifiers( id ).class = varClass then
-        -- Note: You can't discard the array type: others may be using it.
-        -- Destroying an array will also shift the other array id numbers
-        -- since they are in a linked list!
-        null; --clearArray( arrayID( to_numeric( identifiers( id ).value ) ) );
-     elsif identifiers( id ).export and identifiers( id ).method = local_memcache then
-         -- if memcache, export before deleting
-         begin
-            Set( localMemcacheCluster,
-                 identifiers( id ).name,
-                 identifiers( id ).value );
-         exception when others => null;
-         end;
-     elsif identifiers( id ).export and identifiers( id ).method = memcache then
-         -- if memcache, export before deleting
-         begin
-            Set( distributedMemcacheCluster,
-                 identifiers( id ).name,
-                 identifiers( id ).value );
-         exception when others => null;
-         end;
+     if identifiers( id ).export then
+        ExportValue( id );
      end if;
-     identifiers_top := identifiers_top - 1;                    -- pull stack
+     -- TODO: destroying a variable with an anonymous array doesn't destroy
+     -- the anonymous array type.  Since the user cannot name the type, 
+     -- it will linger until the block is destroyed.
+     identifiers_top := identifiers_top - 1;                -- pull stack
      return true;                                               -- delete ok
   end if;                                                       -- else
-  if identifiers( id ).list and identifiers( id ).class = varClass then
-     null; -- clearArray( arrayID( to_numeric( identifiers( id ).value ) ) );
-  elsif identifiers( id ).resource and identifiers( id ).class = varClass then
-     null;
-     -- deleting a single resource is not allowed because the id is the index
-     -- into the list of reousrces.
-     -- clearResource( resHandleID( long_integer( to_numeric( identifiers( id ).value ) ) ) );
-  elsif identifiers( id ).export then
-     tempStr := identifiers( id ).value;
-     if identifiers( id ).method = local_memcache or identifiers( id ).method = memcache then
-        if identifiers( id ).mapping = json then
-           if getUniType( identifiers( id ).kind ) = uni_string_t then
-              tempStr := DoStringToJson( tempStr );
-           elsif identifiers( id ).list then
-              DoArrayToJSON( tempStr, id );
-           elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_record_t then
-              DoRecordToJSON( tempStr, id );
-           elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then
-               null; -- for numbers, JSON is as-is
-           else
-               err( "json export not yet written for this type" );
-           end if;
-        end if;
-        if identifiers( id ).method = local_memcache then
-           begin
-              Set( localMemcacheCluster,
-                   identifiers( id ).name,
-                   tempStr );
-           exception when others => null;
-           end;
-        elsif identifiers( id ).method = memcache then
-           begin
-              Set( distributedMemcacheCluster,
-                   identifiers( id ).name,
-                   tempStr );
-           exception when others => null;
-           end;
-        end if;
-     end if;
+
+  -- If not the top-most identifier, then you can't just pull
+  -- the top of the stack
+
+  if identifiers( id ).export then
+     ExportValue( id );
   end if;
 
+  -- TODO: destroying a variable with an anonymous array doesn't destroy
+  -- the anonymous array type.  Since the user cannot name the type, 
+  -- it will linger until the block is destroyed.
   identifiers( id ).deleted := true;                            -- flag it
   -- When a variable with the same name is encountered, it will be
   -- reinitialized with a Kind of new but these will remain unchanged.
-  -- Reset these to defaults to avoid confusing Bush...
+  -- Reset these to defaults to avoid confusing SparForte...
   identifiers( id ).import := false;                            -- clear these
   identifiers( id ).export := false;
   identifiers( id ).method := none;

@@ -77,7 +77,9 @@ type aPragmaKind is ( ada_95, asserting, annotate, debug, debug_on,
      restriction, restriction_annotations, restriction_auto,
      restriction_unused,
      restriction_external, restriction_memcache, restriction_mysql,
-     restriction_postgresql, restriction_todos, software_model,
+     restriction_postgresql, restriction_todos,
+     session_export_script, session_import_script,
+     software_model,
      suppress, suppress_word_quoting, template, test, test_result,
      unchecked_import, unchecked_import_json,
      uninspect_var, unrestricted_template, volatile, unknown_pragma );
@@ -135,6 +137,10 @@ begin
   elsif name = "restrictions" then
      discardUnusedIdentifier( token );
      err( "pragma restriction not restrictions" );
+  elsif name = "session_export_script" then
+     pragmaKind := session_export_script;
+  elsif name = "session_import_script" then
+     pragmaKind := session_import_script;
   elsif name = "software_model" then
      pragmaKind := software_model;
   elsif name = "suppress" then
@@ -235,10 +241,16 @@ begin
      getNextToken;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
+  elsif name = "session" then
+     importKind := name_unbounded;
+     discardUnusedIdentifier( token );
+     getNextToken;
+     expect( symbol_t, "," );
+     ParseIdentifier( var_id );
   else
      importKind := null_unbounded_string;
      discardUnusedIdentifier( token );
-     err( "only 'shell', 'local_memcache', 'memcache' convention supported" );
+     err( "only 'cgi', 'shell', 'local_memcache', 'memcache', 'session' convention supported" );
   end if;
 end ParseImportKind;
 
@@ -269,10 +281,16 @@ begin
      getNextToken;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
+  elsif name = "session" then
+     exportKind := name_unbounded;
+     discardUnusedIdentifier( token );
+     getNextToken;
+     expect( symbol_t, "," );
+     ParseIdentifier( var_id );
   else
      exportKind := null_unbounded_string;
      discardUnusedIdentifier( token );
-     err( "only 'shell', 'local_memcache', 'memcache' convention supported" );
+     err( "only 'shell', 'local_memcache', 'memcache', 'session' convention supported" );
   end if;
 end ParseExportKind;
 
@@ -553,7 +571,13 @@ begin
      ParseLicenseKind( expr_val );
   when software_model =>                     -- pragma software_model
      ParseSoftwareModelName( expr_val );
-  when suppress =>                        -- pragma restriction
+  when session_export_script =>              -- pragma session_export_script
+     expr_val := identifiers( token ).value;
+     expect( backlit_t );
+  when session_import_script =>              -- pragma session_import_script
+     expr_val := identifiers( token ).value;
+     expect( backlit_t );
+  when suppress =>                           -- pragma restriction
      if identifiers( token ).name = "word_quoting" then
         discardUnusedIdentifier( token );
         getNextToken;
@@ -698,8 +722,12 @@ begin
            elsif exportType = "cgi" then
               -- this should have been caught earlier
               err( "cgi variables cannot be exported" );
-           else
+           elsif exportType = "session" then
+              identifiers( var_id ).method := session;
+           elsif exportType = "shell" then
               identifiers( var_id ).method := shell;
+           else
+              err( "unexpected export method" );
            end if;
         end if;
      when gcc_errors =>
@@ -806,9 +834,52 @@ begin
                          " in the cgi variables" );
                   end if;
               end;
-           --elsif not processingTemplate and importType = "cgi" then
-           --    err( "import type cgi must be used in a template" );
-           --    identifiers( var_id ).import := false;
+           elsif importType = "session" then
+              if length( sessionImportScript ) = 0 then
+                 err( "session import script not defined" );
+              else
+                 declare
+                   temp1_t    : identifier;
+                   temp2_t    : identifier;
+                   importValue: unbounded_string;
+                   b          : boolean;
+                 begin
+                   -- TODO: full prefix is a good idea but should be done with
+                   -- a separate pragma for consistency.
+                   -- GetFullParentUnitName( prefix );
+                   declareStandardConstant( temp1_t,
+                      "sparforte_session_variable_name", string_t,
+                      to_string( identifiers( var_id ).name ) );
+                   declareIdent( temp2_t,
+                      "sparforte_session_variable_value", string_t );
+                   if not error_found then
+                      CompileAndRun( sessionImportScript, 1, false );
+                      importValue := identifiers( temp2_t ).value;
+                      b := deleteIdent( temp2_t );
+                      b := deleteIdent( temp1_t );
+                      case identifiers( var_id ).mapping is
+                      when json =>
+                         if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
+                            DoJsonToString( identifiers( var_id ).value, importValue );
+                         elsif identifiers( var_id ).list then                           -- array
+                            DoJsonToArray( var_id, importValue );
+                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
+                            DoJsonToRecord( var_id, importValue );
+                         elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
+                            DoJsonToNumber( importValue, identifiers( var_id ).value );
+                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_enumerated_t then -- enum
+                            DoJsonToNumber( importValue, identifiers( var_id ).value );
+                         else
+                            err( "internal error: unexpected import translation type" );
+                         end if;
+                      when none =>
+                         identifiers( var_id ).value := importValue;
+                      when others =>
+                         err( "internal error: unexpected mapping type" );
+                      end case;
+                   end if;
+                 end;
+              end if;
            else
 --               identifiers( var_id ).method := shell;
                 refreshVolatile( var_id );
@@ -881,6 +952,18 @@ begin
         restriction_no_annotate_todos := true;
      when promptChange =>
         promptScript := expr_val;
+     when session_export_script =>
+        if length( sessionExportScript ) = 0 then
+           sessionExportScript := expr_val;
+        else
+           err( "session_export_script is already defined" );
+        end if;
+     when session_import_script =>
+        if length( sessionImportScript ) = 0 then
+           sessionImportScript := expr_val;
+        else
+           err( "session_import_script is already defined" );
+        end if;
      when software_model =>
         if softwareModelSet then
            err( "software model already set" );
@@ -1093,6 +1176,10 @@ begin
                      end if;
                   end if;
               end;
+           elsif importType = "session" then
+              identifiers( var_id ).import := true;
+              identifiers( var_id ).method := session;
+              err( "session import not yet implemented" );
            --elsif not processingTemplate and importType = "cgi" then
            --    err( "import type cgi must be used in a template" );
            else
