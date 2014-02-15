@@ -848,10 +848,10 @@ begin
                    -- a separate pragma for consistency.
                    -- GetFullParentUnitName( prefix );
                    declareStandardConstant( temp1_t,
-                      "sparforte_session_variable_name", string_t,
+                      "session_variable_name", string_t,
                       to_string( identifiers( var_id ).name ) );
                    declareIdent( temp2_t,
-                      "sparforte_session_variable_value", string_t );
+                      "session_variable_value", string_t );
                    if not error_found then
                       CompileAndRun( sessionImportScript, 1, false );
                       importValue := identifiers( temp2_t ).value;

@@ -90,7 +90,7 @@ CHANGES SINCE 1.4
 
 28. Fix: deleteIdent function refactored to eliminate inconsistent variable exporting.
 
-29. New: session variables callbacks.  pragma session_import_script, pragma session_export_script, new session import/export type. [Docs needed] [tests needed]
+29. New: session variables callbacks.  pragma session_import_script, pragma session_export_script, new session import/export type. [tests needed]
 
 30. New: array variables may be deleted with unset.  However, anonymous array types will linger until the end of block.
 

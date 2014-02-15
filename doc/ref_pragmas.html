@@ -55,8 +55,8 @@ environment.</p>
   <b>pragma</b> assert( condition )
   <b>pragma</b> debug( `commands` )
   <b>pragma</b> depreciated/deprecated( "newscript" )
-  <b>pragma</b> export( shell | local_memcache | memcache , var )
-  <b>pragma</b> export_json( shell | local_memcache | memcache , var )
+  <b>pragma</b> export( shell | local_memcache | memcache | session , var )
+  <b>pragma</b> export_json( shell | local_memcache | memcache | session , var )
   <b>pragma</b> gcc_errors
   <b>pragma</b> import( shell | cgi | local_memcache | memcache, var )
   <b>pragma</b> import_json( shell | cgi | local_memcache | memcache, var )
@@ -66,20 +66,22 @@ environment.</p>
   <b>pragma</b> license( license_name [, extra] )
   <b>pragma</b> no_command_hash
   <b>pragma</b> prompt_script( `commands` )
-  <b>pragma</b> restriction( annotations_not_optional )
   <b>pragma</b> restriction( no_annotate_todos )
+  <b>pragma</b> restriction( annotations_not_optional )
   <b>pragma</b> restriction( no_auto_declarations )
   <b>pragma</b> restriction( no_external_commands )
   <b>pragma</b> restriction( no_memcache )
   <b>pragma</b> restriction( no_mysql_database )
   <b>pragma</b> restriction( no_postgresql_database )
-  <b>pragma</b> restriction( no_unused_enumerated_items )
+  <b>pragma</b> restriction( no_unused_identifiers )
+  <b>pragma</b> session_export_script( `commands` )
+  <b>pragma</b> session_import_script( `commands` )
   <b>pragma</b> software_model( model_name )
   <b>pragma</b> suppress( word_quoting )
   <b>pragma</b> template( css|html|js|json|text|wml|xml [, path] )
-  <b>pragma</b> test( `commands` )
+  <b>pragma</b> test( condition )
   <b>pragma</b> test_result( condition )
-  <b>pragma</b> unchecked_import( shell | cgi | local_memcache | memcache, var )
+  <b>pragma</b> unchecked_import( shell | cgi | local_memcache | memcache | session, var )
   <b>pragma</b> uninspect( var )
   <b>pragma</b> unrestricted_template( css|html|js|json|text|wml|xml [, path] )
   <b>pragma</b> volatile( var )
@@ -346,12 +348,12 @@ command on a script.  Type type of annotation field can be:
 interacts with other software.</p>
 
 <ul>
-  <li> <b>pragma export( shell | local_memcache | memcache, var )</b> -
+  <li> <b>pragma export( shell | local_memcache | memcache | session, var )</b> -
 export a string variable to the O/S environment or memcached.</li>
-  <li> <b>pragma export_json( shell | local_memcache | memcache, var )</b> -
+  <li> <b>pragma export_json( shell | local_memcache | memcache | session, var )</b> -
 export a string, numeric, enumerated item,  array or record variable
 as a JSON string to the O/S environment or memcached.</li>
-  <li> <b>pragma import( shell | cgi | local_memcache | memcache, var )</b> -
+  <li> <b>pragma import( shell | cgi | local_memcache | memcache | session, var )</b> -
 import a variable.  For shell, from the O/S environment.  For cgi
 and if pragma template/unrestricted_template was used previously,
 a HTTP CGI variable from the O/S environment.  For local_memcache,
@@ -359,7 +361,7 @@ get the value of the variable from a memcached server running on
 locahost port 11211.  Put the value in the SparForte variable.
 If the environment variable doesn't exist, then
 the SparForte will report an error (see unchecked_import).</li>
-  <li> <b>pragma import_json( shell | cgi | local_memcache | memcache, var )</b> -
+  <li> <b>pragma import_json( shell | cgi | local_memcache | memcache | session, var )</b> -
 import a JSON string, converting it to a string, numeric, enumerated item,
 array or record variable.</li>
   <li><span style="font-weight: bold;">pragma no_command_hash</span> -
@@ -368,6 +370,8 @@ it.&nbsp; This pragma forces SparForte to search for the location of the
 command, ignoring the previous location.<br>
   <li> <b>pragma register_memcache_server( host, port )</b> - add a
 memcache server which will be used with memcache method imports/exports</li>
+  <li> <b>pragma session_export_script( `script` )</b> - define a callback to write a session variable.  The callback will be run as required by the language for all session export variables.  Two temporary variables, session_variable_name and session_variable_value will be defined for the script to use.</li>
+  <li> <b>pragma session_import_script( `script` )</b> - define a callback to read a session variable.  The callback will be run as required by the language for all session import variables.  Two temporary variables, session_variable_name and session_variable_value will be defined for the script to use.  Update the value in session_variable_value.</li>
   <li> <b>pragma template( css|html|js|json|text|wml|xml [, template] )</b> - SparForte
 will act like a template processor (like PHP). When the script finishes
 executing, SparForte will open a file called "file.tmpl" where file is the
@@ -393,7 +397,7 @@ get the value of the variable from a memcached server running on
 locahost port 11211.  Put the value in the SparForte variable.
 If the import variable doesn't exist, then
 the SparForte variable is unchanged.</li>
-  <li> <b>pragma unchecked_import_json( shell | cgi | local_memcache | memcache, var )</b> - the same as import_json execpt that there is no existence check.
+  <li> <b>pragma unchecked_import_json( shell | cgi | local_memcache | memcache | session, var )</b> - the same as import_json execpt that there is no existence check.
 If the import variable doesn't exist, then
 the SparForte variable is unchanged.</li>
   <li> <b>pragma unrestricted_template( css|html|js|json|text|wml|xml [, template] )</b> -
@@ -546,6 +550,43 @@ has no meaningful effect: the CGI variables will not change while in
 a template.</p>
 
 <p>You can also read CGI variables using the CGI package.</p>
+
+<h3>Session Variables</h3>
+
+<p>Session variables are variables that specific to a user's session.
+These are typically used to define session for web applications.</p>
+
+<p>Since session variables can be stored in many different ways (files or
+databases, for example), AdaScript does not implement the storage
+mechanism.  Instead, it will run user callback scripts whenever it
+needs to read or write a session variable.  The scripts are responsible
+for loading or saving the variable.</p>
+
+<p>For a typical web application, you will want create and manage
+some kind of session identifier, the variable name, value and when
+the session was started (so you can automatically expire old sessions.)</p>
+
+<p>To use session variables, define the import and export callback
+scripts using <b>pragma session_export_script</b> and <b>pragma
+session_import_script</b>.  There can be only one callback of each
+type in a program.  Defining a session variable before these are
+defined may cause an error.</p>
+
+<p>When the callbacks are run, two temporary variables are created:
+session_variable_name and session_variable_value.
+The first contains the name of the variable to be updated.  The
+second contains the current value (on export) or can be written to
+to save the value (on import).</p>
+
+<p>Then create your session variables using an import-type or
+export-type pragma, using a import method of "session".</p>
+
+<p><b>pragma unchecked_import</b> behaves the same as <b>pragma
+import</b> since SparForte isn't able to check itself for the
+variable's existence.</p>
+
+<p><b>pragma volatile</b> can be used to re-read the value whenever
+the variable is referenced.</p>
 
 <h3>Local Memcache Variables</h3>
 

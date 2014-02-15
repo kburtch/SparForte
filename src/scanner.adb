@@ -2444,7 +2444,26 @@ begin
           identifiers( id ).name,
           importedStringValue );
   elsif identifiers( id ).method = session then
-     err( "session variables may not be refreshed" );
+     declare
+        temp1_t    : identifier;
+        temp2_t    : identifier;
+        b          : boolean;
+     begin
+        -- TODO: full prefix is a good idea but should be done with
+        -- a separate pragma for consistency.
+        -- GetFullParentUnitName( prefix );
+        declareStandardConstant( temp1_t,
+           "session_variable_name", string_t,
+           to_string( identifiers( id ).name ) );
+        declareIdent( temp2_t,
+          "session_variable_value", string_t );
+        if not error_found then
+           CompileAndRun( sessionImportScript, 1, false );
+           importedStringValue := identifiers( temp2_t ).value;
+           b := deleteIdent( temp2_t );
+           b := deleteIdent( temp1_t );
+        end if;
+     end;
   else
      key := identifiers( id ).name & "=";                        -- look for this
      for i in 1..Environment_Count loop                          -- all env vars
@@ -3103,11 +3122,11 @@ function deleteIdent( id : identifier ) return boolean is
              temp2_t : identifier;
              b : boolean;
            begin
-             declareStandardConstant( temp1_t, "sparforte_session_variable_name", string_t, to_string( identifiers( id ).name ) );
+             declareStandardConstant( temp1_t, "session_variable_name", string_t, to_string( identifiers( id ).name ) );
              if identifiers( id ).mapping = json then
-                declareStandardConstant( temp2_t, "sparforte_session_variable_value", string_t, to_string( ConvertValueToJson( id ) ) );
+                declareStandardConstant( temp2_t, "session_variable_value", string_t, to_string( ConvertValueToJson( id ) ) );
              else
-                declareStandardConstant( temp2_t, "sparforte_session_variable_value", string_t, to_string( identifiers( id ).value ) );
+                declareStandardConstant( temp2_t, "session_variable_value", string_t, to_string( identifiers( id ).value ) );
              end if;
              CompileAndRun( sessionExportScript, 1, false );
              b := deleteIdent( temp2_t );  -- recursion, ignore result
@@ -3134,7 +3153,7 @@ begin
         ExportValue( id );
      end if;
      -- TODO: destroying a variable with an anonymous array doesn't destroy
-     -- the anonymous array type.  Since the user cannot name the type, 
+     -- the anonymous array type.  Since the user cannot name the type,
      -- it will linger until the block is destroyed.
      identifiers_top := identifiers_top - 1;                -- pull stack
      return true;                                               -- delete ok
@@ -3148,7 +3167,7 @@ begin
   end if;
 
   -- TODO: destroying a variable with an anonymous array doesn't destroy
-  -- the anonymous array type.  Since the user cannot name the type, 
+  -- the anonymous array type.  Since the user cannot name the type,
   -- it will linger until the block is destroyed.
   identifiers( id ).deleted := true;                            -- flag it
   -- When a variable with the same name is encountered, it will be

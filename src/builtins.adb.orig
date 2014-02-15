@@ -1386,15 +1386,15 @@ begin
      Put_Line( "  " & bold( "pragma" ) & " " &
        "depreciated/deprecated( ""newscript"" ) - report script as obsolete by newscript" );
      Put_Line( "  " & bold( "pragma" ) & " " &
-       "export( shell | local_memcache | memcache , var ) - export a variable" );
+       "export( shell | local_memcache | memcache | session , var ) - export a variable" );
      Put_Line( "  " & bold( "pragma" ) & " " &
-       "export_json( shell | local_memcache | memcache , var )" );
+       "export_json( shell | local_memcache | memcache | session , var )" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "gcc_errors - same as --gcc-errors" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "import( shell | cgi | local_memcache | memcache, var ) - import a variable" );
      Put_Line( "  " & bold( "pragma" ) & " " &
-       "pragma import_json( shell | cgi | local_memcache | memcache, var )" );
+       "import_json( shell | cgi | local_memcache | memcache, var )" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "inspect( var ) - perform 'env var' on --break breakout" );
      Put_Line( "  " & bold( "pragma" ) & " " &
@@ -1446,7 +1446,7 @@ begin
      Put_Line( "  " & bold( "pragma" ) & " " &
        "test_result( condition ) - with --test, display warning on condition failure" );
      Put_Line( "  " & bold( "pragma" ) & " " &
-       "unchecked_import( shell | cgi | local_memcache | memcache, var ) - import without checking for existence" );
+       "unchecked_import( shell | cgi | local_memcache | memcache | session, var ) - import without checking for existence" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "uninspect( var ) - undo pragma inspect" );
      Put_Line( "  " & bold( "pragma" ) & " " &
