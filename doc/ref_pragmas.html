@@ -51,21 +51,26 @@ environment.</p>
         <div class="code">
 <pre>
   <b>pragma</b> ada_95
+  <b>pragma</b> advise( from, message )
   <b>pragma</b> annotate( [type,]"text" )
   <b>pragma</b> assert( condition )
+  <b>pragma</b> clarify( from, message )
   <b>pragma</b> debug( `commands` )
   <b>pragma</b> depreciated/deprecated( "newscript" )
+  <b>pragma</b> dispute( from, message )
   <b>pragma</b> export( shell | local_memcache | memcache | session , var )
   <b>pragma</b> export_json( shell | local_memcache | memcache | session , var )
   <b>pragma</b> gcc_errors
-  <b>pragma</b> import( shell | cgi | local_memcache | memcache, var )
-  <b>pragma</b> import_json( shell | cgi | local_memcache | memcache, var )
+  <b>pragma</b> import( shell | cgi | local_memcache | memcache | session, var )
+  <b>pragma</b> import_json( shell | cgi | local_memcache | memcache | session, var )
   <b>pragma</b> inspect( var )
   <b>pragma</b> inspection_peek
   <b>pragma</b> inspection_point
   <b>pragma</b> license( license_name [, extra] )
   <b>pragma</b> no_command_hash
   <b>pragma</b> prompt_script( `commands` )
+  <b>pragma</b> propose( from, message )
+  <b>pragma</b> refactor( from, message )
   <b>pragma</b> restriction( no_annotate_todos )
   <b>pragma</b> restriction( annotations_not_optional )
   <b>pragma</b> restriction( no_auto_declarations )
@@ -334,13 +339,30 @@ command on a script.  Type type of annotation field can be:
 <li><b>modified</b> - when the script was last modified</li>
 <li><b>param</b> - description of a parameter to the script</li>
 <li><b>return</b> - return value</li>
-<li><b>see_also</b> - a reference to another document or script</li>
+<li><b>see_also</b> - a eeference to another document or script</li>
 <li><b>summary</b> - a short description of what the script does</li>
 <li><b>todo</b> - unfinished work</li>
 <li><b>version</b> - the version of the script</li>
 </ul></li>
 </ul>
 <p>Annotations are used by the help command to produce documentation.</p>
+
+<h4>Teamwork Pragmas</h4>
+
+<p>These pragmas assist in team communication and code reviews.  They
+act as comments and have no effect on the executing of the program.</p>
+
+<ul>
+<li><b>advise</b> - a request by a developer for assistance or advice from another developer or the team</li>
+<li><b>clarify</b> - a request for clarification or explanation to a developer or the team</li>
+<li><b>dispute</b> - a disagreement by a programmer to be discussed by the team</li>
+<li><b>propose</b> - suggest discussion on a new feature or another program change</li>
+<li><b>refactor</b> - a request to optimize existing, working programming, or the removal of dead/obsolete programming</li>
+</ul>
+
+<p>These pragmas all take two parameters.  The first identifies who placed
+the pragma (a variable of type team.programmer).  The second is a string
+literal containing the message.</p>
 
 <h4>Interfacing Pragmas</h4>
 

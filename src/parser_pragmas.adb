@@ -44,7 +44,8 @@ with system,
     signal_flags,
     jobs, -- for clearCommandHash
     parser_aux,
-    parser;
+    parser,
+    parser_team;
 use ada.text_io,
     ada.text_io.editing,
     ada.command_line,
@@ -66,23 +67,59 @@ use ada.text_io,
     signal_flags,
     jobs,
     parser_aux,
-    parser;
+    parser,
+    parser_team;
 
 package body parser_pragmas is
 
-type aPragmaKind is ( ada_95, asserting, annotate, debug, debug_on,
-     depreciated, export, export_json, gcc_errors, import, import_json,
-     inspection, inspect_var, license, noCommandHash, peek, promptChange,
+type aPragmaKind is (
+     ada_95,
+     advise,
+     asserting,
+     annotate,
+     clarify,
+     debug,
+     debug_on,
+     depreciated,
+     dispute,
+     export,
+     export_json,
+     gcc_errors,
+     import,
+     import_json,
+     inspection,
+     inspect_var,
+     license,
+     noCommandHash,
+     peek,
+     promptChange,
+     propose,
+     refactor,
      register_memcache_server,
-     restriction, restriction_annotations, restriction_auto,
+     restriction,
+     restriction_annotations,
+     restriction_auto,
      restriction_unused,
-     restriction_external, restriction_memcache, restriction_mysql,
-     restriction_postgresql, restriction_todos,
-     session_export_script, session_import_script,
+     restriction_external,
+     restriction_memcache,
+     restriction_mysql,
+     restriction_postgresql,
+     restriction_todos,
+     session_export_script,
+     session_import_script,
      software_model,
-     suppress, suppress_word_quoting, template, test, test_result,
-     unchecked_import, unchecked_import_json,
-     uninspect_var, unrestricted_template, volatile, unknown_pragma );
+     suppress,
+     suppress_word_quoting,
+     template,
+     test,
+     test_result,
+     unchecked_import,
+     unchecked_import_json,
+     uninspect_var,
+     unrestricted_template,
+     volatile,
+     unknown_pragma
+   );
 
 --  PARSE PRAGMA KIND
 --
@@ -98,16 +135,22 @@ begin
       err( "pragma name missing" );
   elsif name = "ada_95" then
      pragmaKind := ada_95;
+  elsif name = "advise" then
+     pragmaKind :=  advise;
   elsif name = "assert" then
      pragmaKind :=  asserting;
   elsif name = "debug" then
      pragmaKind :=  debug;
   elsif name = "annotate" then
      pragmaKind :=  annotate;
+  elsif name = "clarify" then
+     pragmaKind :=  clarify;
   elsif name = "deprecated" then
      pragmaKind :=  depreciated;
   elsif name = "depreciated" then
      pragmaKind :=  depreciated;
+  elsif name = "dispute" then
+     pragmaKind :=  dispute;
   elsif name = "export" then
      pragmaKind := export;
   elsif name = "export_json" then
@@ -130,6 +173,10 @@ begin
      pragmaKind := noCommandHash;
   elsif name = "prompt_script" then
      pragmaKind := promptChange;
+  elsif name = "propose" then
+     pragmaKind := propose;
+  elsif name = "refactor" then
+     pragmaKind := refactor;
   elsif name = "register_memcache_server" then
      pragmaKind := register_memcache_server;
   elsif name = "restriction" then
@@ -493,10 +540,24 @@ begin
   case pragmaKind is
   when ada_95 =>                             -- pragma ada_95
      null;
+  when advise =>                             -- pragma advise
+     expr_val := identifiers( token ).value;
+     if baseTypesOK( identifiers( token ).kind, team_programmer_t ) then
+        getNextToken;
+        expect( symbol_t, "," );
+        expect( strlit_t );
+     end if;
   when asserting =>                          -- pragma assert
      ParseExpression( expr_val, var_id );
   when annotate =>                           -- pragma annotate
      ParseAnnotateKind;
+  when clarify =>                            -- pragma clarify
+     expr_val := identifiers( token ).value;
+     if baseTypesOK( identifiers( token ).kind, team_programmer_t ) then
+        getNextToken;
+        expect( symbol_t, "," );
+        expect( strlit_t );
+     end if;
   when debug =>                              -- pragma debug
      expr_val := identifiers( token ).value;
      expect( backlit_t );
@@ -505,6 +566,13 @@ begin
   when depreciated =>                           -- pragma depreciated
      expr_val := identifiers( token ).value;
      expect( strlit_t );
+  when dispute =>                               -- pragma dispute
+     expr_val := identifiers( token ).value;
+     if baseTypesOK( identifiers( token ).kind, team_programmer_t ) then
+        getNextToken;
+        expect( symbol_t, "," );
+        expect( strlit_t );
+     end if;
   when export | export_json =>                  -- pragma export/json
      ParseExportKind( var_id, exportType );
   when import | unchecked_import | import_json | unchecked_import_json =>
@@ -521,6 +589,20 @@ begin
   when promptChange =>                       -- pragma prompt_script
      expr_val := identifiers( token ).value;
      expect( backlit_t );
+  when propose =>                           -- pragma refactor
+     expr_val := identifiers( token ).value;
+     if baseTypesOK( identifiers( token ).kind, team_programmer_t ) then
+        getNextToken;
+        expect( symbol_t, "," );
+        expect( strlit_t );
+     end if;
+  when refactor =>                           -- pragma refactor
+     expr_val := identifiers( token ).value;
+     if baseTypesOK( identifiers( token ).kind, team_programmer_t ) then
+        getNextToken;
+        expect( symbol_t, "," );
+        expect( strlit_t );
+     end if;
   when register_memcache_server =>           -- pragma register_memcache_server
      expr_val := identifiers( token ).value;
      expect( strlit_t );
@@ -653,6 +735,8 @@ begin
      case pragmaKind is
      when ada_95 =>
         onlyAda95 := true;
+     when advise =>
+        null;
      when asserting =>
         if debugOpt or testOpt then
            if not syntax_check then   -- has no meaning during syntax check
@@ -664,6 +748,8 @@ begin
            end if;
         end if;
      when annotate =>
+        null;
+     when clarify =>
         null;
      when debug =>
         if debugOpt then
@@ -685,6 +771,8 @@ begin
         -- later, this should create a list of depreciation message
         -- for now, only the entire script is depreciated
         depreciatedMsg := "This script made obsolete by " & expr_val & '.';
+     when dispute =>
+        null;
      when export | export_json  =>
         if pragmaKind = export_json then
            identifiers( var_id ).mapping := json;
@@ -923,6 +1011,10 @@ begin
             end if;
         end loop;
         -- put_line( getStackTrace );
+     when propose =>
+        null;
+     when refactor =>
+        null;
      when register_memcache_server =>
          checkAndInitializeDistributedMemcacheCluster;
          begin
