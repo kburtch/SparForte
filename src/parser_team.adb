@@ -117,7 +117,7 @@ begin
   identifiers(  team_prog_roles_t ).field_of := team_programmer_t;
   identifiers(  team_prog_roles_t ).value := to_unbounded_string( "16" );
 
-  declareIdent( team_prog_active_t, "team.programmer.active", string_t, subClass );
+  declareIdent( team_prog_active_t, "team.programmer.active", boolean_t, subClass );
   identifiers(  team_prog_active_t ).field_of := team_programmer_t;
   identifiers(  team_prog_active_t ).value := to_unbounded_string( "17" );
 
