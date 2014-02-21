@@ -50,76 +50,82 @@ package body parser_team is
 procedure StartupTeam is
 begin
 
-  declareIdent( team_programmer_t, "team.programmer", root_record_t, typeClass );
-  identifiers( team_programmer_t ).value := to_unbounded_string( "17" );
+  declareIdent( team_member_t, "team.member", root_record_t, typeClass );
+  identifiers( team_member_t ).value := to_unbounded_string( "17" );
 
-  declareIdent( team_prog_desc_t, "team.programmer.description", string_t, subClass );
-  identifiers(  team_prog_desc_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_desc_t ).value := to_unbounded_string( "1" );
+  declareIdent( team_member_desc_t, "team.member.description", string_t, subClass );
+  identifiers(  team_member_desc_t ).field_of := team_member_t;
+  identifiers(  team_member_desc_t ).value := to_unbounded_string( "1" );
 
-  declareIdent( team_prog_skills_t, "team.programmer.skills", string_t, subClass );
-  identifiers(  team_prog_skills_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_skills_t ).value := to_unbounded_string( "2" );
+  declareIdent( team_member_skills_t, "team.member.skills", string_t, subClass );
+  identifiers(  team_member_skills_t ).field_of := team_member_t;
+  identifiers(  team_member_skills_t ).value := to_unbounded_string( "2" );
 
-  declareIdent( team_prog_lang_t, "team.programmer.lang", string_t, subClass );
-  identifiers(  team_prog_lang_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_lang_t ).value := to_unbounded_string( "3" );
+  declareIdent( team_member_lang_t, "team.member.lang", string_t, subClass );
+  identifiers(  team_member_lang_t ).field_of := team_member_t;
+  identifiers(  team_member_lang_t ).value := to_unbounded_string( "3" );
 
-  declareIdent( team_prog_id_t, "team.programmer.id", natural_t, subClass );
-  identifiers(  team_prog_id_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_id_t ).value := to_unbounded_string( "4" );
+  declareIdent( team_member_id_t, "team.member.id", natural_t, subClass );
+  identifiers(  team_member_id_t ).field_of := team_member_t;
+  identifiers(  team_member_id_t ).value := to_unbounded_string( "4" );
 
-  declareIdent( team_prog_prefcontact_t, "team.programmer.preferred_contact", string_t, subClass );
-  identifiers(  team_prog_prefcontact_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_prefcontact_t ).value := to_unbounded_string( "5" );
+  declareIdent( team_member_prefcontact_t, "team.member.preferred_contact", string_t, subClass );
+  identifiers(  team_member_prefcontact_t ).field_of := team_member_t;
+  identifiers(  team_member_prefcontact_t ).value := to_unbounded_string( "5" );
 
-  declareIdent( team_prog_email_t, "team.programmer.email", string_t, subClass );
-  identifiers(  team_prog_email_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_email_t ).value := to_unbounded_string( "6" );
+  declareIdent( team_member_email_t, "team.member.email", string_t, subClass );
+  identifiers(  team_member_email_t ).field_of := team_member_t;
+  identifiers(  team_member_email_t ).value := to_unbounded_string( "6" );
 
-  declareIdent( team_prog_sec_email_t, "team.programmer.secondary_email", string_t, subClass );
-  identifiers(  team_prog_sec_email_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_sec_email_t ).value := to_unbounded_string( "7" );
+  declareIdent( team_member_sec_email_t, "team.member.secondary_email", string_t, subClass );
+  identifiers(  team_member_sec_email_t ).field_of := team_member_t;
+  identifiers(  team_member_sec_email_t ).value := to_unbounded_string( "7" );
 
-  declareIdent( team_prog_prefname_t, "team.programmer.preferred_name", string_t, subClass );
-  identifiers(  team_prog_prefname_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_prefname_t ).value := to_unbounded_string( "8" );
+  declareIdent( team_member_prefname_t, "team.member.preferred_name", string_t, subClass );
+  identifiers(  team_member_prefname_t ).field_of := team_member_t;
+  identifiers(  team_member_prefname_t ).value := to_unbounded_string( "8" );
 
-  declareIdent( team_prog_full_t, "team.programmer.full_name", string_t, subClass );
-  identifiers(  team_prog_full_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_full_t ).value := to_unbounded_string( "9" );
+  declareIdent( team_member_full_t, "team.member.full_name", string_t, subClass );
+  identifiers(  team_member_full_t ).field_of := team_member_t;
+  identifiers(  team_member_full_t ).value := to_unbounded_string( "9" );
 
-  declareIdent( team_prog_chair_t, "team.programmer.chair", string_t, subClass );
-  identifiers(  team_prog_chair_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_chair_t ).value := to_unbounded_string( "10" );
+  declareIdent( team_member_chair_t, "team.member.chair", string_t, subClass );
+  identifiers(  team_member_chair_t ).field_of := team_member_t;
+  identifiers(  team_member_chair_t ).value := to_unbounded_string( "10" );
 
-  declareIdent( team_prog_nickname_t, "team.programmer.nickname", string_t, subClass );
-  identifiers(  team_prog_nickname_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_nickname_t ).value := to_unbounded_string( "11" );
+  declareIdent( team_member_nickname_t, "team.member.nickname", string_t, subClass );
+  identifiers(  team_member_nickname_t ).field_of := team_member_t;
+  identifiers(  team_member_nickname_t ).value := to_unbounded_string( "11" );
 
-  declareIdent( team_prog_business_phone_t, "team.programmer.business_phone", string_t, subClass );
-  identifiers(  team_prog_business_phone_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_business_phone_t ).value := to_unbounded_string( "12" );
+  declareIdent( team_member_business_phone_t, "team.member.business_phone", string_t, subClass );
+  identifiers(  team_member_business_phone_t ).field_of := team_member_t;
+  identifiers(  team_member_business_phone_t ).value := to_unbounded_string( "12" );
 
-  declareIdent( team_prog_messenging_t, "team.programmer.messenging", string_t, subClass );
-  identifiers(  team_prog_messenging_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_messenging_t ).value := to_unbounded_string( "13" );
+  declareIdent( team_member_messenging_t, "team.member.messenging", string_t, subClass );
+  identifiers(  team_member_messenging_t ).field_of := team_member_t;
+  identifiers(  team_member_messenging_t ).value := to_unbounded_string( "13" );
 
-  declareIdent( team_prog_teams_t, "team.programmer.teams", string_t, subClass );
-  identifiers(  team_prog_teams_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_teams_t ).value := to_unbounded_string( "14" );
+  declareIdent( team_member_teams_t, "team.member.teams", string_t, subClass );
+  identifiers(  team_member_teams_t ).field_of := team_member_t;
+  identifiers(  team_member_teams_t ).value := to_unbounded_string( "14" );
 
-  declareIdent( team_prog_manager_t, "team.programmer.manager", string_t, subClass );
-  identifiers(  team_prog_manager_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_manager_t ).value := to_unbounded_string( "15" );
+  declareIdent( team_member_manager_t, "team.member.manager", string_t, subClass );
+  identifiers(  team_member_manager_t ).field_of := team_member_t;
+  identifiers(  team_member_manager_t ).value := to_unbounded_string( "15" );
 
-  declareIdent( team_prog_roles_t, "team.programmer.roles", string_t, subClass );
-  identifiers(  team_prog_roles_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_roles_t ).value := to_unbounded_string( "16" );
+  declareIdent( team_member_roles_t, "team.member.roles", string_t, subClass );
+  identifiers(  team_member_roles_t ).field_of := team_member_t;
+  identifiers(  team_member_roles_t ).value := to_unbounded_string( "16" );
 
-  declareIdent( team_prog_active_t, "team.programmer.active", boolean_t, subClass );
-  identifiers(  team_prog_active_t ).field_of := team_programmer_t;
-  identifiers(  team_prog_active_t ).value := to_unbounded_string( "17" );
+  declareIdent( team_member_active_t, "team.member.active", boolean_t, subClass );
+  identifiers(  team_member_active_t ).field_of := team_member_t;
+  identifiers(  team_member_active_t ).value := to_unbounded_string( "17" );
+
+  declareIdent( team_work_measure_t, "team.work_measure", root_enumerated_t, typeClass );
+  declareStandardConstant( team_work_measure_hours_t, "work_measure.hours", team_work_measure_t, "0" );
+  declareStandardConstant( team_work_measure_fpoints_t, "work_measure.function_points", team_work_measure_t, "1" );
+  declareStandardConstant( team_work_measure_spoints_t, "work_measure.story_points", team_work_measure_t, "2" );
+  declareStandardConstant( team_work_measure_sloc_t, "work_measure.lines_of_code", team_work_measure_t, "3" );
 
 end StartupTeam;
 

@@ -71,7 +71,8 @@ with system,
     parser_chains,
     parser_doubly,
     parser_dht,
-    parser_team;
+    parser_team,
+    parser_sessions;
 use ada.text_io,
     ada.integer_text_io,
     ada.command_line,
@@ -117,7 +118,8 @@ use ada.text_io,
     parser_chains,
     parser_doubly,
     parser_dht,
-    parser_team;
+    parser_team,
+    parser_sessions;
 
 pragma Optimize( time );
 
@@ -1323,6 +1325,7 @@ end pushBlock;
 -----------------------------------------------------------------------------
 
 procedure pullBlock is
+  b : boolean;
 begin
   if blocks_top = block'first then                              -- no blocks?
      raise block_table_overflow;                                -- raise err
@@ -1333,6 +1336,10 @@ begin
      -- pullArrayBlock( blocks_top );                              -- do any a's
      pullResourceBlock( blocks_top );                           -- do any r's
      blocks_top := blocks_top - 1;                              -- pop stack
+     -- delete the identifiers, exporting if necessary
+     for i in reverse blocks( blocks_top ).identifiers_top .. identifiers_top-1 loop
+         b := deleteIdent( i );
+     end loop;
      identifiers_top := blocks( blocks_top ).identifiers_top;   -- pop decl's
   end if;
 end pullBlock;
@@ -1485,6 +1492,7 @@ end dumpSymbolTable;
 procedure shutdownScanner is
 begin
 
+  ShutdownSessions;
   ShutdownTeam;
   ShutdownDHT;
   ShutdownDoubly;
@@ -2158,6 +2166,7 @@ begin
   StartupDoubly;
   StartupDHT;
   StartupTeam;
+  StartupSessions;
 
   -- Declare all Environment Variables
   --
@@ -2451,21 +2460,30 @@ begin
      declare
         temp1_t    : identifier;
         temp2_t    : identifier;
-        b          : boolean;
+        -- b          : boolean;
      begin
         -- TODO: full prefix is a good idea but should be done with
         -- a separate pragma for consistency.
         -- GetFullParentUnitName( prefix );
-        declareStandardConstant( temp1_t,
-           "session_variable_name", string_t,
-           to_string( identifiers( id ).name ) );
-        declareIdent( temp2_t,
-          "session_variable_value", string_t );
+        --declareStandardConstant( temp1_t,
+        --   "session_variable_name", string_t,
+        --   to_string( identifiers( id ).name ) );
+        --declareIdent( temp2_t,
+        --  "session_variable_value", string_t );
+        findIdent( sessions_session_variable_name_str, temp1_t );
+        if temp1_t /= eof_t then
+           identifiers( temp1_t ).value := identifiers( id ).name;
+        end if;
+        findIdent( sessions_session_variable_value_str, temp2_t );
+        if temp2_t /= eof_t then
+           -- temp2_t could be rendered a constant for the export script
+           identifiers( temp2_t ).value := identifiers( id ).name;
+        end if;
         if not error_found then
            CompileAndRun( sessionImportScript, 1, false );
            importedStringValue := identifiers( temp2_t ).value;
-           b := deleteIdent( temp2_t );
-           b := deleteIdent( temp1_t );
+           -- b := deleteIdent( temp2_t );
+           -- b := deleteIdent( temp1_t );
         end if;
      end;
   else
@@ -3124,17 +3142,34 @@ function deleteIdent( id : identifier ) return boolean is
            declare
              temp1_t : identifier;
              temp2_t : identifier;
-             b : boolean;
+             -- b : boolean;
            begin
-             declareStandardConstant( temp1_t, "session_variable_name", string_t, to_string( identifiers( id ).name ) );
-             if identifiers( id ).mapping = json then
-                declareStandardConstant( temp2_t, "session_variable_value", string_t, to_string( ConvertValueToJson( id ) ) );
-             else
-                declareStandardConstant( temp2_t, "session_variable_value", string_t, to_string( identifiers( id ).value ) );
+             findIdent( sessions_session_variable_name_str, temp1_t );
+             if temp1_t /= eof_t then
+                identifiers( temp1_t ).value := identifiers( id ).name;
              end if;
+             findIdent( sessions_session_variable_value_str, temp2_t );
+             if temp2_t /= eof_t then
+                -- temp2_t could be rendered a constant for the export script
+                if identifiers( id ).mapping = json then
+                  identifiers( temp2_t ).value := ConvertValueToJson( id );
+                else
+                  identifiers( temp2_t ).value := identifiers( id ).value;
+                end if;
+             --    declareStandardConstant( temp2_t, "session_variable_value", string_t, to_string( ConvertValueToJson( id ) ) );
+             -- else
+             --    declareStandardConstant( temp2_t, "session_variable_value", string_t, to_string( identifiers( id ).value ) );
+             -- end if;
+             end if;
+             -- declareStandardConstant( temp1_t, "session_variable_name", string_t, to_string( identifiers( id ).name ) );
+             -- if identifiers( id ).mapping = json then
+             --    declareStandardConstant( temp2_t, "session_variable_value", string_t, to_string( ConvertValueToJson( id ) ) );
+             -- else
+             --    declareStandardConstant( temp2_t, "session_variable_value", string_t, to_string( identifiers( id ).value ) );
+             -- end if;
              CompileAndRun( sessionExportScript, 1, false );
-             b := deleteIdent( temp2_t );  -- recursion, ignore result
-             b := deleteIdent( temp1_t );  -- recursion, ignore result
+             -- b := deleteIdent( temp2_t );  -- recursion, ignore result
+             -- b := deleteIdent( temp1_t );  -- recursion, ignore result
            end;
         end if;
     when others =>

@@ -96,7 +96,9 @@ CHANGES SINCE 1.4
 
 31. New: team package.  Contains the team.programmer record.  [docs] [tests]
 
-32. New: teamwork pragmas.  pragma advise, clarify, dispute, propose, refactor.
+32. New: teamwork pragmas.  pragma advise, blocked, clarify, dispute, propose, refactor.
+
+33. Fix: fixed more problems with variable exporting when a block is pulled.
 
 ??. Around parser.adb 5812: doesn't allow mixing of shell and adascript parameters in a pipeline.  Fix this??
 

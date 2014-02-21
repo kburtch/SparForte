@@ -354,6 +354,7 @@ act as comments and have no effect on the executing of the program.</p>
 
 <ul>
 <li><b>advise</b> - a request by a developer for assistance or advice from another developer or the team</li>
+<li><b>blocked</b> - the developer informs the team that progress is blocked pending the completion of another requirements or availability of a resource</li>
 <li><b>clarify</b> - a request for clarification or explanation to a developer or the team</li>
 <li><b>dispute</b> - a disagreement by a programmer to be discussed by the team</li>
 <li><b>propose</b> - suggest discussion on a new feature or another program change</li>
@@ -361,8 +362,11 @@ act as comments and have no effect on the executing of the program.</p>
 </ul>
 
 <p>These pragmas all take two parameters.  The first identifies who placed
-the pragma (a variable of type team.programmer).  The second is a string
+the pragma (a variable of type team.member).  The second is a string
 literal containing the message.</p>
+
+<p>During a code review, new work can be marked in the source code
+with <b>pragma todo</b>.</p>
 
 <h4>Interfacing Pragmas</h4>
 
@@ -411,7 +415,7 @@ text), "text" (plain text), "wml" (WML text) or "xml" (XML text).
 The position of this pragma affects how errors are reported: SparForte
 doesn't know the script has a template until this pragma is read so
 while it can be placed anywhere it is best to place it early in a script.</li>
-  <li> <b>pragma unchecked_import( shell | cgi | local_memcache | memcache, var )</b> -
+  <li> <b>pragma unchecked_import( shell | cgi | local_memcache | memcache | session, var )</b> -
 import a variable.  For shell, from the O/S environment.  For cgi
 and if pragma template/unrestricted_template was used previously,
 a HTTP CGI variable from the O/S environment.  For local_memcache,
@@ -592,10 +596,13 @@ the session was started (so you can automatically expire old sessions.)</p>
 scripts using <b>pragma session_export_script</b> and <b>pragma
 session_import_script</b>.  There can be only one callback of each
 type in a program.  Defining a session variable before these are
-defined may cause an error.</p>
+defined may cause an error.  Keep in mind these callbacks may be
+executed for global variables before the main program is run,
+or before all variables are intialized.</p>
 
-<p>When the callbacks are run, two temporary variables are created:
-session_variable_name and session_variable_value.
+<p>When the callbacks are run, there are two variables in
+the sessions package that are used as parameters:
+sessions.session_variable_name and sessions.session_variable_value.
 The first contains the name of the variable to be updated.  The
 second contains the current value (on export) or can be written to
 to save the value (on import).</p>

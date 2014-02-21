@@ -72,11 +72,14 @@ use ada.text_io,
 
 package body parser_pragmas is
 
+-- Types of Pragmas
+
 type aPragmaKind is (
      ada_95,
      advise,
      asserting,
      annotate,
+     blocked,
      clarify,
      debug,
      debug_on,
@@ -143,6 +146,8 @@ begin
      pragmaKind :=  debug;
   elsif name = "annotate" then
      pragmaKind :=  annotate;
+  elsif name = "blocked" then
+     pragmaKind :=  blocked;
   elsif name = "clarify" then
      pragmaKind :=  clarify;
   elsif name = "deprecated" then
@@ -542,7 +547,7 @@ begin
      null;
   when advise =>                             -- pragma advise
      expr_val := identifiers( token ).value;
-     if baseTypesOK( identifiers( token ).kind, team_programmer_t ) then
+     if baseTypesOK( identifiers( token ).kind, team_member_t ) then
         getNextToken;
         expect( symbol_t, "," );
         expect( strlit_t );
@@ -551,9 +556,16 @@ begin
      ParseExpression( expr_val, var_id );
   when annotate =>                           -- pragma annotate
      ParseAnnotateKind;
+  when blocked =>                            -- pragma clarify
+     expr_val := identifiers( token ).value;
+     if baseTypesOK( identifiers( token ).kind, team_member_t ) then
+        getNextToken;
+        expect( symbol_t, "," );
+        expect( strlit_t );
+     end if;
   when clarify =>                            -- pragma clarify
      expr_val := identifiers( token ).value;
-     if baseTypesOK( identifiers( token ).kind, team_programmer_t ) then
+     if baseTypesOK( identifiers( token ).kind, team_member_t ) then
         getNextToken;
         expect( symbol_t, "," );
         expect( strlit_t );
@@ -568,7 +580,7 @@ begin
      expect( strlit_t );
   when dispute =>                               -- pragma dispute
      expr_val := identifiers( token ).value;
-     if baseTypesOK( identifiers( token ).kind, team_programmer_t ) then
+     if baseTypesOK( identifiers( token ).kind, team_member_t ) then
         getNextToken;
         expect( symbol_t, "," );
         expect( strlit_t );
@@ -591,14 +603,14 @@ begin
      expect( backlit_t );
   when propose =>                           -- pragma refactor
      expr_val := identifiers( token ).value;
-     if baseTypesOK( identifiers( token ).kind, team_programmer_t ) then
+     if baseTypesOK( identifiers( token ).kind, team_member_t ) then
         getNextToken;
         expect( symbol_t, "," );
         expect( strlit_t );
      end if;
   when refactor =>                           -- pragma refactor
      expr_val := identifiers( token ).value;
-     if baseTypesOK( identifiers( token ).kind, team_programmer_t ) then
+     if baseTypesOK( identifiers( token ).kind, team_member_t ) then
         getNextToken;
         expect( symbol_t, "," );
         expect( strlit_t );
@@ -748,6 +760,8 @@ begin
            end if;
         end if;
      when annotate =>
+        null;
+     when blocked =>
         null;
      when clarify =>
         null;
@@ -930,21 +944,26 @@ begin
                    temp1_t    : identifier;
                    temp2_t    : identifier;
                    importValue: unbounded_string;
-                   b          : boolean;
+                   --b          : boolean;
                  begin
                    -- TODO: full prefix is a good idea but should be done with
                    -- a separate pragma for consistency.
                    -- GetFullParentUnitName( prefix );
-                   declareStandardConstant( temp1_t,
-                      "session_variable_name", string_t,
-                      to_string( identifiers( var_id ).name ) );
-                   declareIdent( temp2_t,
-                      "session_variable_value", string_t );
-                   if not error_found then
+                   --declareStandardConstant( temp1_t,
+                   --   "session_variable_name", string_t,
+                   --   to_string( identifiers( var_id ).name ) );
+                   --declareIdent( temp2_t,
+                   --   "session_variable_value", string_t );
+                   --if not error_found then
+                   findIdent( sessions_session_variable_name_str, temp1_t );
+                   findIdent( sessions_session_variable_value_str, temp2_t );
+                   if temp1_t /= eof_t then
+                      identifiers( temp1_t ).value := identifiers( var_id ).name;
+                   end if;
                       CompileAndRun( sessionImportScript, 1, false );
                       importValue := identifiers( temp2_t ).value;
-                      b := deleteIdent( temp2_t );
-                      b := deleteIdent( temp1_t );
+                   --   b := deleteIdent( temp2_t );
+                   --   b := deleteIdent( temp1_t );
                       case identifiers( var_id ).mapping is
                       when json =>
                          if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
@@ -965,7 +984,7 @@ begin
                       when others =>
                          err( "internal error: unexpected mapping type" );
                       end case;
-                   end if;
+                   --end if;
                  end;
               end if;
            else

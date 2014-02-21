@@ -54,11 +54,11 @@ random_generator : ada.numerics.float_random.generator;
 -- Unbounded String Constants
 ------------------------------------------------------------------------------
 
---chain_count_str   : constant unbounded_string := to_unbounded_string( "SPARFORTE_CHAIN_COUNT" );
---last_in_chain_str : constant unbounded_string := to_unbounded_string( "SPARFORTE_LAST_IN_CHAIN" );
 chain_count_str   : constant unbounded_string := to_unbounded_string( "chain count" );
 last_in_chain_str : constant unbounded_string := to_unbounded_string( "last in chain" );
 return_value_str  : constant unbounded_string := to_unbounded_string( "return value" );
+sessions_session_variable_name_str : constant unbounded_string := to_unbounded_string( "sessions.session_variable_name" );
+sessions_session_variable_value_str : constant unbounded_string := to_unbounded_string( "sessions.session_variable_value" );
 
 
 --

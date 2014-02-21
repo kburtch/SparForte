@@ -1384,6 +1384,8 @@ begin
      Put_Line( "  " & bold( "pragma" ) & " " &
        "assert( condition ) - with --debug/--test, terminate program on condition fail" );
      Put_Line( "  " & bold( "pragma" ) & " " &
+       "blocked( from, message ) - announce programmer progress blocked" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
        "clarify( from, message ) - request programmer clarification" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "debug( `commands` ) - with --debug, execute debug commands" );
