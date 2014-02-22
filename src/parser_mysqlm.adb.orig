@@ -61,6 +61,29 @@ package body parser_mysqlm is
 
 #if MYSQL
 
+-- Utilities
+--
+-- findConnection and findQuery are to avoid throwing exceptions
+-- on uninitialized resources, giving a meaningful error instead.
+
+procedure findConnection( connectExpr : unbounded_string; connection : in out resPtr ) is
+begin
+  if length( connectExpr ) = 0 then
+     err( optional_bold( "new_connnection" ) & " has not been called to initialize the connection" );
+  else
+     findResource( to_resource_id( connectExpr ), connection );
+  end if;
+end findConnection;
+
+procedure findQuery( queryExpr : unbounded_string; query : in out resPtr ) is
+begin
+  if length( queryExpr ) = 0 then
+     err( optional_bold( "new_query" ) & " has not been called to initialize the query" );
+  else
+     findResource( to_resource_id( queryExpr ), query );
+  end if;
+end findQuery;
+
 procedure ParseMySQLMConnect is
   -- Syntax: mysqlm.connect( C, dbname [,user ,passwd [,host [,port ] ] ] );
   connectExpr : unbounded_string;
@@ -104,7 +127,7 @@ begin
         err( "not allowed with " & bold( "pragma restriction( no_mysql_database )" ) );
      end if;
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
        begin
          Set_DB_Name( connection.C, to_string( dbnameExpr ) );
        exception when others =>
@@ -191,7 +214,7 @@ begin
   ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
        result := to_unbounded_string( integer'image( Database_Type'pos( Engine_Of( connection.C ) ) ) );
        if length( result ) > 0 then
           if element( result, 1 ) = ' ' then
@@ -239,7 +262,7 @@ begin
   if isExecutingCommand then
      result := to_bush_boolean( true );
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        Clear( query.Q );
        if hasAfter then
           Prepare( query.Q, to_string( sqlExpr ), to_string( afterExpr ) );
@@ -280,7 +303,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        if hasAfter then
           Prepare( query.Q, to_string( sqlExpr ), to_string( afterExpr ) );
        else
@@ -320,7 +343,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        if hasAfter then
           Append( query.Q, to_string( sqlExpr ), to_string( afterExpr ) );
        else
@@ -352,7 +375,7 @@ begin
   ParseLastStringParameter( sqlExpr, sqlType, string_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        Append_Line( query.Q, to_string( sqlExpr ) );
      exception when others =>
        err( "exception raised" );
@@ -392,8 +415,8 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
-       findResource( to_resource_id( queryExpr ), query );
+       findConnection( connectExpr, connection );
+       findQuery( queryExpr, query );
        if hasAfter then
           Append_Quoted( query.Q, connection.C, to_string( sqlExpr ), to_string( afterExpr ) );
        else
@@ -426,8 +449,8 @@ begin
   ParseLastNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
-       findResource( to_resource_id( queryExpr ), query );
+       findConnection( connectExpr, connection );
+       findQuery( queryExpr, query );
        Execute( query.Q, connection.C );
      exception when not_connected =>
        err( "not connected" );
@@ -470,8 +493,8 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( queryExpr ), query );
-       findResource( to_resource_id( connectExpr ), connection );
+       findQuery( queryExpr, query );
+       findConnection( connectExpr, connection );
        if hasMsg then
           Execute_Checked( query.Q, connection.C, to_string( msgExpr ) );
        else
@@ -518,7 +541,7 @@ begin
   ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( connectExpr ), connection );
+        findConnection( connectExpr, connection );
         Disconnect( connection.C );
      exception when not_connected =>
         err( "no database connection" );
@@ -548,7 +571,7 @@ begin
   ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
        result := to_bush_boolean( is_connected( connection.C ) );
      exception when others =>
        result := to_bush_boolean( false );
@@ -574,7 +597,7 @@ begin
   ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
        Reset( connection.C );
      exception when others =>
        err( "exception was raised" );
@@ -601,7 +624,7 @@ begin
   ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
        result := to_unbounded_string( Error_Message( connection.C ) );
      exception when others =>
        err( "exception was raised" );
@@ -642,7 +665,7 @@ begin
   ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
        result := to_bush_boolean( In_Abort_State( connection.C ) );
      exception when not_connected =>
        err( "not connected" );
@@ -671,7 +694,7 @@ begin
   ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
        result := to_unbounded_string( Options( connection.C ) );
      exception when others =>
        err( "exception was raised" );
@@ -702,7 +725,7 @@ begin
      declare
        rollback : boolean := rollExpr = to_unbounded_string( "1" );
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
        Set_Rollback_On_Finalize( connection.C, rollback );
      exception when others =>
        err( "exception was raised" );
@@ -729,7 +752,7 @@ begin
   ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
        result := to_bush_boolean( Will_Rollback_On_Finalize( connection.C ) );
      exception when others =>
        err( "exception was raised" );
@@ -768,7 +791,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
        if hasMode then
           Open_DB_Trace( connection.C, to_string( fnameExpr ), traceMode );
        else
@@ -804,7 +827,7 @@ begin
   ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
        Close_DB_Trace( connection.C );
      exception when others =>
        err( "exception was raised" );
@@ -835,7 +858,7 @@ begin
      declare
        traceback : boolean := traceExpr = to_unbounded_string( "1" );
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
        Set_Trace( connection.C, traceback );
      exception when others =>
        err( "exception was raised" );
@@ -862,7 +885,7 @@ begin
   ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
        result := to_bush_boolean( Is_Trace( connection.C ) );
      exception when others =>
        err( "exception was raised" );
@@ -888,7 +911,7 @@ begin
   ParseSingleNumericParameter( queryExpr, queryType, mysqlm_query_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        Clear( query.Q );
      exception when CONSTRAINT_ERROR =>
        err( "constraint error exception" );
@@ -926,7 +949,7 @@ begin
      declare
        raise_them : boolean := raiseExpr = to_unbounded_string( "1" );
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        Raise_Exceptions( query.Q, raise_them );
      exception when others =>
        err( "exception was raised" );
@@ -962,7 +985,7 @@ begin
      declare
        report_them : boolean := reportExpr = to_unbounded_string( "1" );
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        Report_Errors( query.Q, report_them );
      exception when others =>
        err( "exception was raised" );
@@ -992,8 +1015,8 @@ begin
   ParseLastNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( queryExpr ), query );
-       findResource( to_resource_id( connectExpr ), connection );
+       findQuery( queryExpr, query );
+       findConnection( connectExpr, connection );
        Begin_Work( query.Q, connection.C );
      exception when abort_state =>
        err( "in abort state" );
@@ -1027,8 +1050,8 @@ begin
   ParseLastNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
-       findResource( to_resource_id( queryExpr ), query );
+       findConnection( connectExpr, connection );
+       findQuery( queryExpr, query );
        Rollback_Work( query.Q, connection.C );
      exception when abort_state =>
        err( "in abort state" );
@@ -1062,8 +1085,8 @@ begin
   ParseLastNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
-       findResource( to_resource_id( queryExpr ), query );
+       findConnection( connectExpr, connection );
+       findQuery( queryExpr, query );
        Commit_Work( query.Q, connection.C );
      exception when abort_state =>
        err( "in abort state" );
@@ -1093,7 +1116,7 @@ begin
   ParseSingleNumericParameter( queryExpr, queryType, mysqlm_query_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        Rewind( query.Q );
      exception when others =>
        err( "exception was raised" );
@@ -1127,7 +1150,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        if haveIndex then
           Fetch( query.Q, Tuple_Index_Type( to_numeric( expr_val ) ) );
        else
@@ -1162,7 +1185,7 @@ begin
   ParseSingleNumericParameter( queryExpr, queryType, mysqlm_query_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        result := to_bush_boolean( End_Of_Query( query.Q ) );
      exception when others =>
        err( "exception was raised" );
@@ -1189,7 +1212,7 @@ begin
   ParseSingleNumericParameter( queryExpr, queryType, mysqlm_query_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        result := to_unbounded_string( Tuple_Index_Type'image( Tuple( query.Q ) ) );
      exception when no_tuple =>
        err( "no tuple" );
@@ -1218,7 +1241,7 @@ begin
   ParseSingleNumericParameter( queryExpr, queryType, mysqlm_query_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        result := to_unbounded_string( Tuple_Count_Type'image( Tuples( query.Q ) ) );
      exception when no_result =>
        err( "no result" );
@@ -1247,7 +1270,7 @@ begin
   ParseSingleNumericParameter( queryExpr, queryType, mysqlm_query_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        result := to_unbounded_string( Natural'image( Columns( query.Q ) ) );
      exception when no_result =>
        err( "no result" );
@@ -1279,7 +1302,7 @@ begin
   ParseLastNumericParameter( exprVal, exprType, mysqlm_column_index_type_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        result := to_unbounded_string(
           Column_Name( query.Q, Column_Index_Type( to_numeric( exprVal ) ) )
        );
@@ -1313,7 +1336,7 @@ begin
   ParseLastStringParameter( exprVal, exprType, string_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        result := to_unbounded_string( Column_Index_Type'image(
            Column_Index( query.Q, to_string( exprVal ) )
        ) );
@@ -1375,7 +1398,7 @@ begin
   ParseLastNumericParameter( exprVal, exprType, mysqlm_column_index_type_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        result := to_bush_boolean(
           Is_Null( query.Q,
           Column_Index_Type( to_numeric( exprVal ) ) )
@@ -1412,7 +1435,7 @@ begin
   ParseLastNumericParameter( exprVal, exprType, mysqlm_column_index_type_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( queryExpr ), query );
+       findQuery( queryExpr, query );
        result := Value( query.Q, Column_Index_Type( to_numeric( exprVal ) ) );
      exception when no_tuple =>
        err( "no tuple" );
@@ -1615,8 +1638,8 @@ begin
   ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
   ParseLastNumericParameter( connectionExpr, connectionType, mysqlm_connection_t );
   if isExecutingCommand then
-     findResource( to_resource_id( connectionExpr ), connection );
-     findResource( to_resource_id( queryExpr ), query );
+     findConnection( connectionExpr, connection );
+     findQuery( queryExpr, query );
      MySQLMShowIt( Q => query.Q, C => connection );
   end if;
 end ParseMySQLMShow;
@@ -1795,7 +1818,7 @@ begin
   ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
        --dbname := to_unbounded_string( DB_Name( connection.C ) );
      if is_connected( connection.C ) then
         -- Show tablename and kind, lookup owner from another table.
@@ -2019,7 +2042,7 @@ begin
   ParseLastStringParameter( exprVal, exprType, string_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
      if is_connected( connection.C ) then
         -- Find column name, type, type length, not null and default flags
         -- Don't show dropped columns, columns with system types (oid, etc).
@@ -2301,7 +2324,7 @@ begin
   ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
      if is_connected( connection.C ) then
 
         -- Privileges are unique to a particular database engine
@@ -2507,7 +2530,7 @@ begin
   ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( connectExpr ), connection );
+       findConnection( connectExpr, connection );
      if is_connected( connection.C ) then
         -- Show tablename and kind, lookup owner from another table.
         -- Don't show tables owned by postgres (user 1), TOAST tables or indexes
@@ -2808,8 +2831,8 @@ begin
        elementKind : identifier;
      begin
        -- get the resources
-       findResource( to_resource_id( connectionExpr ), connection );
-       findResource( to_resource_id( queryExpr ), query );
+       findConnection( connectionExpr, connection );
+       findQuery( queryExpr, query );
 
        -- fetch the next row
        Fetch( query.q );
@@ -2946,8 +2969,8 @@ begin
        firstField : boolean := true;
      begin
        -- get the resources
-       findResource( to_resource_id( connectionExpr ), connection );
-       findResource( to_resource_id( queryExpr ), query );
+       findConnection( connectionExpr, connection );
+       findQuery( queryExpr, query );
 
        append( query.Q, " (" );
 
@@ -3067,8 +3090,8 @@ begin
        firstField : boolean := true;
      begin
        -- get the resources
-       findResource( to_resource_id( connectionExpr ), connection );
-       findResource( to_resource_id( queryExpr ), query );
+       findConnection( connectionExpr, connection );
+       findQuery( queryExpr, query );
 
        Append( query.Q, " SET " );
        -- The basic logic is copied from DoRecordToJson()

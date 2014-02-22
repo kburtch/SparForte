@@ -94,11 +94,13 @@ CHANGES SINCE 1.4
 
 30. New: array variables may be deleted with unset.  However, anonymous array types will linger until the end of block.
 
-31. New: team package.  Contains the team.programmer record.  [docs] [tests]
+31. New: team package.  Contains the team.member record.  [docs] [tests]
 
 32. New: teamwork pragmas.  pragma advise, blocked, clarify, dispute, propose, refactor.
 
 33. Fix: fixed more problems with variable exporting when a block is pulled.
+
+34. Change: uninitialized connections and queries in mysqlm give a meaningful error message instead of throwing an exception.
 
 ??. Around parser.adb 5812: doesn't allow mixing of shell and adascript parameters in a pipeline.  Fix this??
 
