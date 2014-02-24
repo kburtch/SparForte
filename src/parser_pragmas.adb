@@ -697,7 +697,27 @@ begin
         end if;
      end if;
      -- Mark this script as having a template to disable unused variable checks
+     -- We need the type of template so interpret it now.
      hasTemplate := true;
+     templateHeader.templateType := noTemplate;
+     -- http://www.webmaster-toolkit.com/mime-types.shtml
+     if expr_val = "html" then
+        templateHeader.templateType := htmlTemplate;
+     elsif expr_val = "css" then
+        templateHeader.templateType := cssTemplate;
+     elsif expr_val = "js" then
+        templateHeader.templateType := jsTemplate;
+     elsif expr_val = "json" then
+        templateHeader.templateType := jsonTemplate;
+     elsif expr_val = "text" then
+        templateHeader.templateType := textTemplate;
+     elsif expr_val = "wml" then
+        templateHeader.templateType := wmlTemplate;
+     elsif expr_val = "xml" then
+        templateHeader.templateType := xmlTemplate; -- text/xml
+     else
+        err( "unknown template type" );
+     end if;
   when test =>                               -- pragma test
      expr_val := identifiers( token ).value;
      expect( backlit_t );
@@ -1094,25 +1114,6 @@ begin
      when suppress_word_quoting =>
         null; -- only applies in syntax check
      when template | unrestricted_template =>
-        templateType := noTemplate;
-        -- http://www.webmaster-toolkit.com/mime-types.shtml
-        if expr_val = "html" then
-           templateType := htmlTemplate;
-        elsif expr_val = "css" then
-           templateType := cssTemplate;
-        elsif expr_val = "js" then
-           templateType := jsTemplate;
-        elsif expr_val = "json" then
-           templateType := jsonTemplate;
-        elsif expr_val = "text" then
-           templateType := textTemplate;
-        elsif expr_val = "wml" then
-           templateType := wmlTemplate;
-        elsif expr_val = "xml" then
-           templateType := xmlTemplate; -- text/xml
-        else
-           err( "unknown template type" );
-        end if;
         if processingTemplate then
            err( "template already used" );
         elsif inputMode = interactive or inputMode = breakout then
@@ -1135,25 +1136,7 @@ begin
         if pragmaKind = unrestricted_template then
            unrestrictedTemplate := true;
         end if;
-        -- Always output CGI header as soon as possible to avoid a HTTP/500
-        -- error.  Give the web server a minimal header to return to the
-        -- browser in case something goes wrong later that would prevent
-        -- the header from being sent.
-        if templateType = htmlTemplate then
-           cgi.put_cgi_header( "Content-type: text/html" );
-        elsif templateType = cssTemplate then
-            cgi.put_cgi_header( "Content-type: text/css" );
-        elsif templateType = jsTemplate then
-            cgi.put_cgi_header( "Content-type: application/x-javascript" );
-        elsif templateType = jsonTemplate then
-            cgi.put_cgi_header( "Content-type: application/json" );
-        elsif templateType = textTemplate then
-           cgi.put_cgi_header( "Content-type: text/plain" );
-        elsif templateType = xmlTemplate then
-           cgi.put_cgi_header( "Content-type: text/xml" );
-        elsif templateType = wmlTemplate then
-           cgi.put_cgi_header( "Content-type: text/vnd.wap.wml" );
-        end if;
+        putTemplateHeader( templateHeader );
      when test =>
         if testOpt then
            if not syntax_check then

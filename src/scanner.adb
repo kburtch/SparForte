@@ -875,7 +875,7 @@ begin
   -- mode, create an error message only if debug is enabled.
 
   if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
-     case templateType is
+     case templateHeader.templateType is
      when htmlTemplate | wmlTemplate =>
         fullTemplateErrorMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
            "<div style=""float:left;font: 32px Times New Roman,serif; font-style:italic; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#00529B; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">i</div>" &
@@ -1051,7 +1051,7 @@ begin
   -- independent
 
   if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
-     case templateType is
+     case templateHeader.templateType is
      when htmlTemplate | wmlTemplate =>
         fullTemplateErrorMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #9F6000; background-color: #FEEFB3; width:100%; overflow:auto"">" &
            "<div style=""float:left;font: 32px Times New Roman,serif; font-weight:bold; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#9f6000; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">!</div>" &
@@ -1111,7 +1111,7 @@ begin
   put_line( standard_error, fullMsg );
 
   if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
-     case templateType is
+     case templateHeader.templateType is
      when htmlTemplate | wmlTemplate =>
         put( "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
            "<div style=""float:left;font: 32px Times New Roman,serif; font-style:italic; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#00529B; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">i</div>" &

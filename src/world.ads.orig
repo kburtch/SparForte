@@ -163,19 +163,38 @@ suppress_word_quoting            : boolean := false; -- pragma suppress
 type templateTypes is (noTemplate, htmlTemplate, textTemplate,
 cssTemplate, jsTemplate, jsonTemplate, wmlTemplate, xmlTemplate );
 
-hasTemplate               : boolean := false; -- has a pragma template
-                                              -- (to disable unused var checks)
-processingTemplate        : boolean := false; -- pragma tempate
-unrestrictedTemplate      : boolean := false; -- pragma unrestricted_t
-templatePath              : unbounded_string; -- template path
-templateType              : templateTypes;
-
 depreciatedMsg   : unbounded_string := null_unbounded_string; -- pragma dep.
 annotationsFound : boolean := false; -- pragma annotations_not_optional
 annotationTodoFound : boolean := false; -- pragma annotations_no_todo
 licenseSet       : boolean := false;
 softwareModelSet : boolean := false;
 softwareModelReq : softwareModelPtr := null;
+
+------------------------------------------------------------------------------
+-- Templates
+--
+-- These are set by pragma template, etc.
+------------------------------------------------------------------------------
+
+type httpStatusCodes is new natural range 100..505;
+
+type templateHeaders is record
+     templateType  : TemplateTypes;
+     status        : httpStatusCodes;
+     contentLength : unbounded_string;
+     expires       : unbounded_string;
+     location      : unbounded_string;
+     pragmaString  : unbounded_string;
+     cookieString  : unbounded_string;
+     templateHeaderSent : boolean := false;
+end record;
+
+hasTemplate          : boolean := false; -- has a pragma template
+processingTemplate   : boolean := false; -- pragma tempate
+unrestrictedTemplate : boolean := false; -- pragma unrestricted_t
+templatePath         : unbounded_string; -- template path
+
+templateHeader       : templateHeaders;
 
 ------------------------------------------------------------------------------
 -- Command Line Options
@@ -732,5 +751,20 @@ procedure checkAndInitializeLocalMemcacheCluster;
 distributedMemcacheCluster : aMemcacheCluster;
 
 procedure checkAndInitializeDistributedMemcacheCluster;
+
+-----------------------------------------------------------------------------
+-- HTTP
+-----------------------------------------------------------------------------
+
+--  PUT TEMPLATE HEADER
+--
+-- Output the template header.  Mark it as sent so it isn't sent
+-- twice.  This will likely be replaced in the future.
+--
+-- A bad status results in HTTP 500.  A bad content type results in text.
+-- In both cases, a message is written to standard error.
+-----------------------------------------------------------------------------
+
+procedure putTemplateHeader( header : templateHeaders );
 
 end world;

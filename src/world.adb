@@ -672,4 +672,109 @@ begin
   end case;
 end getIdentifierClassImage;
 
+
+--  PUT TEMPLATE HEADER
+--
+-- Output the template header.  Mark it as sent so it isn't sent
+-- twice.  This will likely be replaced in the future.
+--
+-- A bad status results in HTTP 500.  A bad content type results in text.
+-- In both cases, a message is written to standard error.
+-----------------------------------------------------------------------------
+
+procedure putTemplateHeader( header : templateHeaders ) is
+  s : unbounded_string;
+begin
+  if header.templateHeaderSent then
+     return;
+  end if;
+
+  s := to_unbounded_string( "HTTP/1.1" & header.status'img & " " );
+  case header.status is
+  when 100 => s := s & "Continue";
+  when 200 => s := s & "OK";
+  when 201 => s := s & "Created";
+  when 202 => s := s & "Accepted";
+  when 203 => s := s & "Non-Authoritative";
+  when 204 => s := s & "No Content";
+  when 205 => s := s & "Reset Content";
+  when 206 => s := s & "Partial Content";
+  when 300 => s := s & "Multiple Choices";
+  when 301 => s := s & "Moved Permanently";
+  when 302 => s := s & "Found";
+  when 303 => s := s & "See Other";
+  when 304 => s := s & "Not Modified";
+  when 305 => s := s & "Use Proxy";
+  when 307 => s := s & "Temporary Redirect";
+  when 400 => s := s & "Bad Request";
+  when 401 => s := s & "Unauthorized";
+  when 403 => s := s & "Forbidden";
+  when 404 => s := s & "Not Found";
+  when 405 => s := s & "Method Not Allowed";
+  when 406 => s := s & "Not Acceptable";
+  when 407 => s := s & "Proxy Authentication Required";
+  when 408 => s := s & "Request Timeout";
+  when 409 => s := s & "Conflict";
+  when 410 => s := s & "Gone";
+  when 411 => s := s & "Length Required";
+  when 412 => s := s & "Precondition Failed";
+  when 413 => s := s & "Request Entity Too Large";
+  when 414 => s := s & "Request-URI Too Long";
+  when 415 => s := s & "Unsupported Media Type";
+  when 416 => s := s & "Requested Range Not Satisfiable";
+  when 417 => s := s & "Expectation Failed";
+  when 500 => s := s & "Internal Server Error";
+  when 501 => s := s & "Not Implemented";
+  when 502 => s := s & "Bad Gateway";
+  when 503 => s := s & "Service Unavailable";
+  when 504 => s := s & "Gateway Timeout";
+  when 505 => s := s & "HTTP Version Not Supported";
+  when others => -- includes 500
+     put_line( standard_error, "internal error: unknown http status" );
+     s := to_unbounded_string( "HTTP/1.1 500 Internal Server Error" );
+  end case;
+  put( s & ASCII.CR & ASCII.LF );
+
+  s := to_unbounded_string( "Content-type: " );
+  case header.templateType is
+  when htmlTemplate => s := s & "text/html";
+  when cssTemplate  => s := s & "text/css";
+  when jsTemplate   => s := s & "application/x-javascript";
+  when jsonTemplate => s := s & "application/json";
+  when textTemplate => s := s & "text/plain";
+  when xmlTemplate  => s := s & "text/xml";
+  when wmlTemplate  => s := s & "text/vnd.wap.wml";
+  when others => -- includes textTemplate
+     put_line( standard_error, "internal error: unknown template type" );
+     s := to_unbounded_string( "Content-type: text/plain" );
+  end case;
+  put( s & ASCII.CR & ASCII.LF );
+
+  -- Other fields (to be filled in later)
+
+  if length( header.contentLength ) > 0 then
+     put( "Content-length: " & header.contentLength & ASCII.CR & ASCII.LF );
+  end if;
+
+  if length( header.expires ) > 0 then
+     put( "Expires: " & header.expires & ASCII.CR & ASCII.LF );
+  end if;
+
+  if length( header.location ) > 0 then
+     put( "Location: " & header.location & ASCII.CR & ASCII.LF );
+  end if;
+
+  if length( header.pragmaString ) > 0 then
+     put( "Pragma: " & header.pragmaString & ASCII.CR & ASCII.LF );
+  end if;
+
+  if length( header.cookieString ) > 0 then
+     put( "Set-Cookie: " & header.pragmaString & ASCII.CR & ASCII.LF );
+  end if;
+  -- The HTTP header ends with a blank line
+
+  put( ASCII.CR & ASCII.LF );
+
+end putTemplateHeader;
+
 end world;
