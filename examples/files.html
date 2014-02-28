@@ -1,9 +1,26 @@
 <HEAD>
 <TITLE>SparForte Source Code Treasury</TITLE>
         <link rel="StyleSheet" type="text/css" media="screen" href="../doc/art/sparforte.css">
+<script>
+  function toggle( thing, show, hide ) {
+     var myThing = document.getElementById( thing );
+     var myShow  = document.getElementById( thing + "_show"  );
+     var myHide  = document.getElementById( thing + "_hide"  );
+     if ( myThing.style.display != 'none' ) {
+        myThing.style.display = 'none';
+        myShow.style.display  = 'inline';
+        myHide.style.display  = 'none';
+     } else {
+        myThing.style.display = 'block';
+        myShow.style.display  = 'none';
+        myHide.style.display  = 'inline';
+     }
+  }
+</script>
 </HEAD>
 <BODY>
-<h3>Tutorials</h3>
+<H3 TITLE="click to show/hide" onclick="toggle( 'tutorials' )"><SPAN id="tutorials_show" style="display:none" >[+]</SPAN><SPAN id="tutorials_hide" >[-]</SPAN> Tutorials</H3>
+<DIV id="tutorials">
 <UL COMPACT TYPE=DISC>
 <LI><A HREF=hello.html TARGET=main>hello.sp</A></LI>
 <LI><A HREF=aligncols.html TARGET=main>aligncols.sp</A></LI>
@@ -24,7 +41,9 @@
 <LI><A HREF=radices.html TARGET=main>radices.sp</A></LI>
 <LI><A HREF=stringcase.html TARGET=main>stringcase.sp</A></LI>
 </UL>
-<h3>Algorithms</h3>
+</DIV>
+<H3 TITLE="click to show/hide" onclick="toggle( 'algorithms' )"><SPAN id="algorithms_show" >[+]</SPAN><SPAN id="algorithms_hide" style="display:none" >[-]</SPAN> Algorithms</H3>
+<DIV id="algorithms" style="display:none">
 <UL COMPACT TYPE=DISC>
 <LI><A HREF=arraysum.html TARGET=main>arraysum.sp</A></LI>
 <LI><A HREF=best_shuffle.html TARGET=main>best_shuffle.sp</A></LI>
@@ -48,11 +67,15 @@
 <LI><A HREF=shuffle.html TARGET=main>shuffle.sp</A></LI>
 <LI><A HREF=sieve.html TARGET=main>sieve.sp</A></LI>
 </UL>
-<h3>Database</h3>
+</DIV>
+<H3 TITLE="click to show/hide" onclick="toggle( 'databases' )"><SPAN id="databases_show" >[+]</SPAN><SPAN id="databases_hide" style="display:none" >[-]</SPAN> Databases</H3>
+<DIV id="databases" style="display:none">
 <UL COMPACT TYPE=DISC>
 <LI><A HREF=database.html TARGET=main>database.sp</A></LI>
 </UL>
-<h3>Entertainment</h3>
+</DIV>
+<H3 TITLE="click to show/hide" onclick="toggle( 'entertain' )"><SPAN id="entertain_show" >[+]</SPAN><SPAN id="entertain_hide" style="display:none" >[-]</SPAN> Entertainment</H3>
+<DIV id="entertain" style="display:none">
 <UL COMPACT TYPE=DISC>
 <LI><A HREF=8ball.html TARGET=main>8ball.sp</A></LI>
 <LI><A HREF=bottles.html TARGET=main>bottles.sp</A></LI>
@@ -62,7 +85,9 @@
 <LI><A HREF=poetry.html TARGET=main>poetry.sp</A></LI>
 <LI><A HREF=rot13.html TARGET=main>rot13.sp</A></LI>
 </UL>
-<h3>Games</h3>
+</DIV>
+<H3 TITLE="click to show/hide" onclick="toggle( 'games' )"><SPAN id="games_show" >[+]</SPAN><SPAN id="games_hide" style="display:none" >[-]</SPAN> Games</H3>
+<DIV id="games" style="display:none">
 <UL COMPACT TYPE=DISC>
 <LI><A HREF=bjack.html TARGET=main>bjack.sp</A></LI>
 <LI><A HREF=camel.html TARGET=main>camel.sp</A></LI>
@@ -71,7 +96,9 @@
 <LI><A HREF=quest.html TARGET=main>quest.sp</A></LI>
 <LI><A HREF=wumpus.html TARGET=main>wumpus.sp</A></LI>
 </UL>
-<h3>Multimedia</h3>
+</div>
+<H3 TITLE="click to show/hide" onclick="toggle( 'multimedia' )"><SPAN id="multimedia_show" >[+]</SPAN><SPAN id="multimedia_hide" style="display:none" >[-]</SPAN> Multimedia</H3>
+<DIV id="multimedia" style="display:none">
 <UL COMPACT TYPE=DISC>
 <LI><A HREF=audio.html TARGET=main>audio.sp</A></LI>
 <LI><A HREF=chessboard.html TARGET=main>chessboard.sp</A></LI>
@@ -81,8 +108,9 @@
 <LI><A HREF=opengl_second.html TARGET=main>opengl_second.sp</A></LI>
 <LI><A HREF=weave.html TARGET=main>weave.sp</A></LI>
 </UL>
-</UL>
-<h3>Puzzles</h3>
+</div>
+<H3 TITLE="click to show/hide" onclick="toggle( 'puzzles' )"><SPAN id="puzzles_show" >[+]</SPAN><SPAN id="puzzles_hide" style="display:none" >[-]</SPAN> Puzzles</H3>
+<DIV id="puzzles" style="display:none">
 <UL COMPACT TYPE=DISC>
 <LI><A HREF=doors.html TARGET=main>doors.sp</A></LI>
 <LI><A HREF=factorial.html TARGET=main>factorial.sp</A></LI>
@@ -92,7 +120,9 @@
 <LI><A HREF=monty.html TARGET=main>monty.sp</A></LI>
 <LI><A HREF=yuletide.html TARGET=main>yuletide.sp</A></LI>
 </UL>
-<h3>Scripting</h3>
+</div>
+<H3 TITLE="click to show/hide" onclick="toggle( 'scripting' )"><SPAN id="scripting_show" >[+]</SPAN><SPAN id="scripting_hide" style="display:none" >[-]</SPAN> Scripting</H3>
+<DIV id="scripting" style="display:none">
 <UL COMPACT TYPE=DISC>
 <LI><A HREF=archive.html TARGET=main>archive.sp</A></LI>
 <LI><A HREF=bases.html TARGET=main>bases.sp</A></LI>
@@ -106,7 +136,9 @@
 <LI><A HREF=whattime.html TARGET=main>whattime.sp</A></LI>
 <LI><A HREF=yorn.html TARGET=main>yorn.sp</A></LI>
 </UL>
-<h3>Utilities</h3>
+</div>
+<H3 TITLE="click to show/hide" onclick="toggle( 'utilities' )"><SPAN id="utilities_show" >[+]</SPAN><SPAN id="utilities_hide" style="display:none" >[-]</SPAN> Utilities</H3>
+<DIV id="utilities" style="display:none">
 <UL COMPACT TYPE=DISC>
 <LI><A HREF=attention.html TARGET=main>attention.sp</A></LI>
 <LI><A HREF=cecho.html TARGET=main>cecho.sp</A></LI>
@@ -121,7 +153,9 @@
 <LI><A HREF=title.html TARGET=main>title.sp</A></LI>
 <LI><A HREF=validate_name.html TARGET=main>validate_name.sp</A></LI>
 </UL>
-<h3>Web Templates / CGI</h3>
+</div>
+<H3 TITLE="click to show/hide" onclick="toggle( 'cgi' )"><SPAN id="cgi_show" >[+]</SPAN><SPAN id="cgi_hide" style="display:none" >[-]</SPAN> Web Templates / CGI</H3>
+<DIV id="cgi" style="display:none">
 <UL COMPACT TYPE=DISC>
 <LI><A HREF=dynamic_css.html TARGET=main>dynamic_css.sp</A></LI>
 <LI><A HREF=dynamic_css2.html TARGET=main>dynamic_css2.sp</A></LI>
@@ -130,6 +164,7 @@
 <LI><A HREF=minimal_cgi.html TARGET=main>minimal_cgi.sp</A></LI>
 <LI><A HREF=random.html TARGET=main>random.cgi</A></LI>
 </UL>
+</div>
 <CENTER>
 <a href="#top"><img src="../doc/art/up_arrow.png" border="0" width="24" height="27" alt="[Back to Top]"></a>
 </CENTER>
