@@ -438,6 +438,8 @@ procedure replaceScriptWithFragment( bytecode : unbounded_string );
 procedure insertInclude( includeName : unbounded_string );
 -- insert an include file or separate subunit into the byte code after the current position.
 
+procedure setTemplateName;
+-- set the name of the template file in place of the main program
 
 ------------------------------------------------------------------------------
 PRIVATE

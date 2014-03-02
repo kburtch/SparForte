@@ -7405,4 +7405,21 @@ begin
   end if;
 end insertInclude;
 
+
+-----------------------------------------------------------------------------
+--  SET TEMPLATE NAME
+--
+-- Replace the name of the main program with the name of the template
+-- file so that error messages have the template file name.
+--
+-- This should probably be something more elegant.
+
+procedure setTemplateName is
+  sfr        : aSourceFile;
+begin
+  sourceFilesList.Find( sourceFiles, 1, sfr );
+  sfr.name := templatePath;
+  sourceFilesList.Replace( sourceFiles, 1, sfr );
+end setTemplateName;
+
 end scanner;
