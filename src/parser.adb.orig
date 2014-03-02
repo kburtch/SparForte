@@ -8434,9 +8434,10 @@ begin
      end if;
      -- display any error message
      if error_found then
-        if hastemplate then -- DEBUG
-           cgi.put_cgi_header( "Content-type: text/html" );
-        end if;
+        putTemplateHeader( templateHeader );
+        --if hastemplate then -- DEBUG
+        --   putTemplateHeader( templateHeader ); -- cgi.put_cgi_header( "Content-type: text/html" );
+        --end if;
         put_line( standard_error, fullErrorMessage );
         -- may or may not have a template at this point, so check
         if hasTemplate then
@@ -8444,14 +8445,17 @@ begin
         end if;
      end if;
      if length( depreciatedMsg ) > 0 then            -- pragma depreciated?
+        putTemplateHeader( templateHeader );
         warn( to_string( depreciatedMsg ) );
      end if;
      if restriction_annotations_not_optional and not annotationsFound then
         -- pragma restriction( annotations_not_optional )
+        putTemplateHeader( templateHeader );
         warn( "annotations are required but missing" );
      end if;
      if restriction_no_annotate_todos and annotationTodoFound then
         -- pragma restriction( annotations_no_todos )
+        putTemplateHeader( templateHeader );
         warn( "annotation todo found but none expected" );
      end if;
      if processingTemplate and not error_found then  -- doing a template
@@ -8459,6 +8463,7 @@ begin
            Put_Trace( "Processing template " & to_string( templatePath ) );
         end if;
         begin
+           putTemplateHeader( templateHeader );
            processTemplate;
         exception
         when STATUS_ERROR =>
