@@ -700,6 +700,7 @@ begin
      -- We need the type of template so interpret it now.
      hasTemplate := true;
      templateHeader.templateType := noTemplate;
+     templateHeader.status := 200;
      -- http://www.webmaster-toolkit.com/mime-types.shtml
      if expr_val = "html" then
         templateHeader.templateType := htmlTemplate;

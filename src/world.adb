@@ -689,7 +689,10 @@ begin
      return;
   end if;
 
-  s := to_unbounded_string( "HTTP/1.1" & header.status'img & " " );
+  -- CGI programs cannot directly return HTTP 404.  Instead, it must use
+  -- a Status: header
+
+  s := to_unbounded_string( "Status: " & header.status'img & " " );
   case header.status is
   when 100 => s := s & "Continue";
   when 200 => s := s & "OK";
@@ -733,9 +736,11 @@ begin
      put_line( standard_error, "internal error: unknown http status" );
      s := to_unbounded_string( "HTTP/1.1 500 Internal Server Error" );
   end case;
-  put( s & ASCII.CR & ASCII.LF );
+  s := s & ASCII.CR & ASCII.LF;
 
-  s := to_unbounded_string( "Content-type: " );
+--  put( s & ASCII.CR & ASCII.LF );
+
+  s := s & to_unbounded_string( "Content-type: " );
   case header.templateType is
   when htmlTemplate => s := s & "text/html";
   when cssTemplate  => s := s & "text/css";
@@ -748,32 +753,34 @@ begin
      put_line( standard_error, "internal error: unknown template type" );
      s := to_unbounded_string( "Content-type: text/plain" );
   end case;
-  put( s & ASCII.CR & ASCII.LF );
+  s := s & ASCII.CR & ASCII.LF;
+  -- put( s & ASCII.CR & ASCII.LF );
 
   -- Other fields (to be filled in later)
 
   if length( header.contentLength ) > 0 then
-     put( "Content-length: " & header.contentLength & ASCII.CR & ASCII.LF );
+     s := s & "Content-length: " & header.contentLength & ASCII.CR & ASCII.LF;
   end if;
 
   if length( header.expires ) > 0 then
-     put( "Expires: " & header.expires & ASCII.CR & ASCII.LF );
+     s := s & "Expires: " & header.expires & ASCII.CR & ASCII.LF;
   end if;
 
   if length( header.location ) > 0 then
-     put( "Location: " & header.location & ASCII.CR & ASCII.LF );
+     s := s & "Location: " & header.location & ASCII.CR & ASCII.LF;
   end if;
 
   if length( header.pragmaString ) > 0 then
-     put( "Pragma: " & header.pragmaString & ASCII.CR & ASCII.LF );
+     s := s & "Pragma: " & header.pragmaString & ASCII.CR & ASCII.LF;
   end if;
 
   if length( header.cookieString ) > 0 then
-     put( "Set-Cookie: " & header.pragmaString & ASCII.CR & ASCII.LF );
+     s := s & "Set-Cookie: " & header.pragmaString & ASCII.CR & ASCII.LF;
   end if;
+
   -- The HTTP header ends with a blank line
 
-  put( ASCII.CR & ASCII.LF );
+  put( s & ASCII.CR & ASCII.LF );
 
 end putTemplateHeader;
 
