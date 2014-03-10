@@ -102,6 +102,8 @@ CHANGES SINCE 1.4
 
 34. Change: uninitialized connections and queries in mysqlm give a meaningful error message instead of throwing an exception.
 
+35. Change: style issues for non-meaningful names expanded to include amount, const, info, input, output, result, variable and variables.
+
 ??. Around parser.adb 5812: doesn't allow mixing of shell and adascript parameters in a pipeline.  Fix this??
 
 

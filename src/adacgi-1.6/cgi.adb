@@ -777,6 +777,8 @@ begin -- read_cookie
   else
     Cookie_Data:= null;
   end if;
+exception when end_error =>
+  put_line( standard_error, "cgi: error reading cookie past end of file" );
 end Read_Cookie;
 
 
@@ -843,6 +845,8 @@ begin
    Parsing_Errors_Occurred := False;
  end if;
 
+exception when end_error =>
+  put_line( standard_error, "cgi: error reading cgi data past end of file" );
 end Initialize;
 
 -- This library automatically parses CGI and cookie input on program start.

@@ -292,6 +292,7 @@ begin
    end if;
    scriptFilePath := templatePath;
    open( f, in_file, to_string( templatePath ) );   -- open the template
+   setTemplateName;
    while not end_of_file( f ) loop                  -- while text to do
       get( f, ch );                                 -- get next character
 

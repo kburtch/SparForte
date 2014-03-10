@@ -51,7 +51,7 @@ procedure StartupTeam is
 begin
 
   declareIdent( team_member_t, "team.member", root_record_t, typeClass );
-  identifiers( team_member_t ).value := to_unbounded_string( "17" );
+  identifiers( team_member_t ).value := to_unbounded_string( "18" );
 
   declareIdent( team_member_desc_t, "team.member.description", string_t, subClass );
   identifiers(  team_member_desc_t ).field_of := team_member_t;
@@ -121,11 +121,23 @@ begin
   identifiers(  team_member_active_t ).field_of := team_member_t;
   identifiers(  team_member_active_t ).value := to_unbounded_string( "17" );
 
+  declareIdent( team_member_active_t, "team.member.is_team", boolean_t, subClass );
+  identifiers(  team_member_active_t ).field_of := team_member_t;
+  identifiers(  team_member_active_t ).value := to_unbounded_string( "18" );
+
   declareIdent( team_work_measure_t, "team.work_measure", root_enumerated_t, typeClass );
-  declareStandardConstant( team_work_measure_hours_t, "work_measure.hours", team_work_measure_t, "0" );
-  declareStandardConstant( team_work_measure_fpoints_t, "work_measure.function_points", team_work_measure_t, "1" );
-  declareStandardConstant( team_work_measure_spoints_t, "work_measure.story_points", team_work_measure_t, "2" );
-  declareStandardConstant( team_work_measure_sloc_t, "work_measure.lines_of_code", team_work_measure_t, "3" );
+  declareStandardConstant( team_work_measure_unknown_t, "work_measure.unknown", team_work_measure_t, "0" );
+  declareStandardConstant( team_work_measure_hours_t, "work_measure.hours", team_work_measure_t, "1" );
+  declareStandardConstant( team_work_measure_fpoints_t, "work_measure.function_points", team_work_measure_t, "2" );
+  declareStandardConstant( team_work_measure_spoints_t, "work_measure.story_points", team_work_measure_t, "3" );
+  declareStandardConstant( team_work_measure_sloc_t, "work_measure.lines_of_code", team_work_measure_t, "4" );
+  declareStandardConstant( team_work_measure_size_t, "work_measure.size", team_work_measure_t, "5" );
+
+  declareIdent( team_work_priority_t, "team.work_priority", root_enumerated_t, typeClass );
+  declareStandardConstant( team_work_priority_unknown_t, "work_priority.unknown", team_work_priority_t, "0" );
+  declareStandardConstant( team_work_priority_level_t, "work_priority.level", team_work_priority_t, "1" );
+  declareStandardConstant( team_work_priority_severity_t, "work_priority.severity", team_work_priority_t, "2" );
+  declareStandardConstant( team_work_priority_risk_t, "work_priority.risk", team_work_priority_t, "3" );
 
 end StartupTeam;
 

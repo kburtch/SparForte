@@ -361,12 +361,56 @@ act as comments and have no effect on the executing of the program.</p>
 <li><b>refactor</b> - a request to optimize existing, working programming, or the removal of dead/obsolete programming</li>
 </ul>
 
-<p>These pragmas all take two parameters.  The first identifies who placed
-the pragma (a variable of type team.member).  The second is a string
+<p>These pragmas all take three parameters.  The first identifies who placed
+the pragma (a variable of type team.member).  The second is the person to whom
+it is addressed (a variable of type team.member).  The third is a string
 literal containing the message.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+&nbsp;&nbsp;team : team.member;<br />
+&nbsp;&nbsp;amy  : team.member;<br />
+&nbsp;&nbsp;ken  : team.member;<br />
+&nbsp;&nbsp;...<br />
+&nbsp;&nbsp;pragma advise( ken, team, "i need some advice on memcached" );<br />&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: An example of pragma advise</span>
+        </div>
+        </div>
+        </center>
 
 <p>During a code review, new work can be marked in the source code
 with <b>pragma todo</b>.</p>
+
+<ul>
+<li>The first parameter is the person to whom the task is assigned</li>
+<li>The second parameter is a string literal describing the task</li>
+<li>The third parameter is the unit of work (of type team.work_measure)</li>
+<li>The fourth parameter is the amount of work</li>
+<li>The fifth parameter is the unit of priority (of the type team.work_priority)</li>
+<li>The sixth parameter is the priority rating</li>
+</ul>
+
+        <center>
+        <div class="code">
+                <p class="code">
+&nbsp;&nbsp;team : team.member;<br />
+&nbsp;&nbsp;amy  : team.member;<br />
+&nbsp;&nbsp;ken  : team.member;<br />
+&nbsp;&nbsp;...<br />
+&nbsp;&nbsp;pragma todo( amy, "save the user session state", work_measure.story_points, 2, work_priority.severity, 3 );<br />&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: An example of pragma todo</span>
+        </div>
+        </div>
+        </center>
+
+<p>work_measure.size must use a string literal with a legitimate size ( "s", "m", etc.).</p>
+<p>work_priority.level must use a character literal with a legitimate level ( 'l', 'm', etc.).</p>
+<p>work_priority.severity must be in the range 1..5</p>
+<p>work_measure.unknown or work_priority.unknown must have an amount/ranking of zero.</p>
+<p>Negative values are not allowed.</p>
 
 <h4>Interfacing Pragmas</h4>
 

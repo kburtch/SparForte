@@ -48,12 +48,21 @@ team_member_teams_t       : identifier;
 team_member_manager_t     : identifier;
 team_member_roles_t       : identifier;
 team_member_active_t      : identifier;
+team_member_is_team_t     : identifier;
 
 team_work_measure_t         : identifier;
+team_work_measure_unknown_t : identifier;
 team_work_measure_hours_t   : identifier;
 team_work_measure_fpoints_t : identifier;
 team_work_measure_spoints_t : identifier;
 team_work_measure_sloc_t    : identifier;
+team_work_measure_size_t    : identifier;
+
+team_work_priority_t        : identifier;
+team_work_priority_unknown_t : identifier;
+team_work_priority_level_t   : identifier;
+team_work_priority_severity_t : identifier;
+team_work_priority_risk_t    : identifier;
 
 -----------------------------------------------------------------------------
 -- HOUSEKEEPING

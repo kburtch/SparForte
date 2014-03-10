@@ -682,12 +682,14 @@ end getIdentifierClassImage;
 -- In both cases, a message is written to standard error.
 -----------------------------------------------------------------------------
 
-procedure putTemplateHeader( header : templateHeaders ) is
+procedure putTemplateHeader( header : in out templateHeaders ) is
   s : unbounded_string;
 begin
+
   if header.templateHeaderSent then
      return;
   end if;
+  header.templateHeaderSent := true;
 
   -- CGI programs cannot directly return HTTP 404.  Instead, it must use
   -- a Status: header

@@ -70,10 +70,11 @@ use  interfaces.c,
 
 package body builtins is
 
--- for help commadn
-  HTMLOutput : boolean := false;
-  MANOutput  : boolean := false;
-  LicenseOutput  : boolean := false;
+-- for help command
+  HTMLOutput    : boolean := false;
+  MANOutput     : boolean := false;
+  LicenseOutput : boolean := false;
+  TodoOutput    : boolean := false;
 
 -----------------------------------------------------------------------------
 --  FIND PWD
@@ -833,6 +834,31 @@ end vm;
                   put_line( to_string( info ) );
                end if;
             end if;
+         elsif pragmaKind = to_unbounded_string( "todo" ) then
+            if token = symbol_t and identifiers( token ).value = "(" then
+               getNextToken;
+               info := identifiers( token ).name; -- name
+               getNextToken;
+               expect( symbol_t, "," );
+               info := info & ",""" & identifiers( token ).value & """"; -- message
+               getNextToken;
+               expect( symbol_t, "," );
+               info := info & "," & identifiers( token ).name; -- measure
+               getNextToken;
+               expect( symbol_t, "," );
+               info := info & "," & identifiers( token ).value; -- unit
+               getNextToken;
+               expect( symbol_t, "," );
+               info := info & "," & identifiers( token ).name; -- priority
+               getNextToken;
+               expect( symbol_t, "," );
+               info := info & "," & identifiers( token ).value; -- unit
+               getNextToken;
+               expect( symbol_t, ")" );
+               if todoOutput then
+                  put_line( to_string( info ) );
+               end if;
+            end if;
          elsif pragmaKind = to_unbounded_string( "annotate" ) then
             if token = symbol_t and identifiers( token ).value = "(" then
                getNextToken;
@@ -1378,7 +1404,7 @@ begin
      Put_Line( "  " & bold( "pragma" ) & " " &
        "ada_95 - enforce Ada 95 restrictions" );
      Put_Line( "  " & bold( "pragma" ) & " " &
-       "advise( from, message ) - request team advice/assistance" );
+       "advise( from, to, message ) - request team advice/assistance" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "annotate( [type,]""text"" ) - embed a comment for help command" );
      Put_Line( "  " & bold( "pragma" ) & " " &
@@ -1386,13 +1412,13 @@ begin
      Put_Line( "  " & bold( "pragma" ) & " " &
        "blocked( from, message ) - announce programmer progress blocked" );
      Put_Line( "  " & bold( "pragma" ) & " " &
-       "clarify( from, message ) - request programmer clarification" );
+       "clarify( from, to, message ) - request programmer clarification" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "debug( `commands` ) - with --debug, execute debug commands" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "depreciated/deprecated( ""newscript"" ) - report script as obsolete by newscript" );
      Put_Line( "  " & bold( "pragma" ) & " " &
-       "dispute( from, message ) - request program review" );
+       "dispute( from, to, message ) - request program review" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "export( shell | local_memcache | memcache | session , var ) - export a variable" );
      Put_Line( "  " & bold( "pragma" ) & " " &
@@ -1416,9 +1442,9 @@ begin
      Put_Line( "  " & bold( "pragma" ) & " " &
        "prompt_script( `commands` ) - commands to draw command prompt" );
      Put_Line( "  " & bold( "pragma" ) & " " &
-       "propose( from, message ) - suggest a change to a program" );
+       "propose( from, to, message ) - suggest a change to a program" );
      Put_Line( "  " & bold( "pragma" ) & " " &
-       "refactor( from, message ) - request programmer optimize program" );
+       "refactor( from, to, message ) - request programmer optimize program" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "restriction( no_annotate_todos ) - " &
          "must not have annotate/todo" );
@@ -1458,6 +1484,8 @@ begin
      Put_Line( "  " & bold( "pragma" ) & " " &
        "test_result( condition ) - with --test, display warning on condition failure" );
      Put_Line( "  " & bold( "pragma" ) & " " &
+       "todo( to, message, work, units, priority, units ) - task assignment/estimation" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
        "unchecked_import( shell | cgi | local_memcache | memcache | session, var ) - import without checking for existence" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "uninspect( var ) - undo pragma inspect" );
@@ -1492,7 +1520,15 @@ begin
            delete( helpTopic, length( helpTopic ), length( helpTopic ) );
         end if;
      elsif helpTopic = "-l" then
-        LicenseOUtput := true;
+        LicenseOutput := true;
+        if ap'length = 1 then
+           helpTopic := null_unbounded_string;
+        else
+           helpTopic := to_unbounded_string( ap( 2 ).all );
+           delete( helpTopic, length( helpTopic ), length( helpTopic ) );
+        end if;
+     elsif helpTopic = "-t" then
+        TodoOutput := true;
         if ap'length = 1 then
            helpTopic := null_unbounded_string;
         else

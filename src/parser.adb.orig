@@ -116,7 +116,22 @@ package body parser is
 
 lowercase_l : unbounded_string := to_unbounded_string( "l" );
 uppercase_o : unbounded_string := to_unbounded_string( "O" );
-nonmeaningful_words : unbounded_string := to_unbounded_string( " blah data equals stuff thing things whatever whatnot whatsoever value values " );
+
+-- NON-MEANINGFUL WORDS
+--
+-- This is a list of vague, ambiguous words that don't make good variable or
+-- function names.  Traditional words like "foobar" are deliberately not in
+-- this list because they are often used in examples.
+
+nonmeaningful_words : unbounded_string := to_unbounded_string( " blah amount const data equals info input output result stuff thing things whatever whatnot whatsoever value values variable variables " );
+
+-- CONFUSING PROGRAM WORDS
+--
+-- These are words that, if used as the name of a program, will result in
+-- confusion.  This means names that are also Linux/UNIX commands.  "Test"
+-- is especially bad since typing "test" (the Linux command) results in
+-- no output, making it look like the program didn't run.
+
 confusingprogram_words : unbounded_string := to_unbounded_string( " eval exec read test " );
 
 chain_count_str : unbounded_string := to_unbounded_string( "chain count" );
@@ -8434,7 +8449,9 @@ begin
      end if;
      -- display any error message
      if error_found then
-        putTemplateHeader( templateHeader );
+        if hasTemplate then
+           putTemplateHeader( templateHeader );
+        end if;
         --if hastemplate then -- DEBUG
         --   putTemplateHeader( templateHeader ); -- cgi.put_cgi_header( "Content-type: text/html" );
         --end if;
@@ -8445,17 +8462,23 @@ begin
         end if;
      end if;
      if length( depreciatedMsg ) > 0 then            -- pragma depreciated?
-        putTemplateHeader( templateHeader );
+        if hasTemplate then
+           putTemplateHeader( templateHeader );
+        end if;
         warn( to_string( depreciatedMsg ) );
      end if;
      if restriction_annotations_not_optional and not annotationsFound then
         -- pragma restriction( annotations_not_optional )
-        putTemplateHeader( templateHeader );
+        if hasTemplate then
+           putTemplateHeader( templateHeader );
+        end if;
         warn( "annotations are required but missing" );
      end if;
      if restriction_no_annotate_todos and annotationTodoFound then
         -- pragma restriction( annotations_no_todos )
-        putTemplateHeader( templateHeader );
+        if hasTemplate then
+           putTemplateHeader( templateHeader );
+        end if;
         warn( "annotation todo found but none expected" );
      end if;
      if processingTemplate and not error_found then  -- doing a template

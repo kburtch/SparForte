@@ -765,6 +765,6 @@ procedure checkAndInitializeDistributedMemcacheCluster;
 -- In both cases, a message is written to standard error.
 -----------------------------------------------------------------------------
 
-procedure putTemplateHeader( header : templateHeaders );
+procedure putTemplateHeader( header : in out templateHeaders );
 
 end world;

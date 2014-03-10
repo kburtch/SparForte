@@ -116,6 +116,7 @@ type aPragmaKind is (
      template,
      test,
      test_result,
+     todo,
      unchecked_import,
      unchecked_import_json,
      uninspect_var,
@@ -203,6 +204,8 @@ begin
      pragmaKind :=  test;
   elsif name = "test_result" then
      pragmaKind :=  test_result;
+  elsif name = "todo" then
+     pragmaKind :=  todo;
   elsif name = "unchecked_import" then
      pragmaKind := unchecked_import;
   elsif name = "unchecked_import_json" then
@@ -546,29 +549,38 @@ begin
   when ada_95 =>                             -- pragma ada_95
      null;
   when advise =>                             -- pragma advise
-     expr_val := identifiers( token ).value;
-     if baseTypesOK( identifiers( token ).kind, team_member_t ) then
-        getNextToken;
+     ParseIdentifier( var_id );
+     if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
         expect( symbol_t, "," );
-        expect( strlit_t );
+        ParseIdentifier( var_id );
+        if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+           expect( symbol_t, "," );
+           expect( strlit_t );
+        end if;
      end if;
   when asserting =>                          -- pragma assert
      ParseExpression( expr_val, var_id );
   when annotate =>                           -- pragma annotate
      ParseAnnotateKind;
   when blocked =>                            -- pragma clarify
-     expr_val := identifiers( token ).value;
-     if baseTypesOK( identifiers( token ).kind, team_member_t ) then
-        getNextToken;
+     ParseIdentifier( var_id );
+     if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
         expect( symbol_t, "," );
-        expect( strlit_t );
+        ParseIdentifier( var_id );
+        if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+           expect( symbol_t, "," );
+           expect( strlit_t );
+        end if;
      end if;
   when clarify =>                            -- pragma clarify
-     expr_val := identifiers( token ).value;
-     if baseTypesOK( identifiers( token ).kind, team_member_t ) then
-        getNextToken;
+     ParseIdentifier( var_id );
+     if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
         expect( symbol_t, "," );
-        expect( strlit_t );
+        ParseIdentifier( var_id );
+        if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+           expect( symbol_t, "," );
+           expect( strlit_t );
+        end if;
      end if;
   when debug =>                              -- pragma debug
      expr_val := identifiers( token ).value;
@@ -579,11 +591,14 @@ begin
      expr_val := identifiers( token ).value;
      expect( strlit_t );
   when dispute =>                               -- pragma dispute
-     expr_val := identifiers( token ).value;
-     if baseTypesOK( identifiers( token ).kind, team_member_t ) then
-        getNextToken;
+     ParseIdentifier( var_id );
+     if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
         expect( symbol_t, "," );
-        expect( strlit_t );
+        ParseIdentifier( var_id );
+        if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+           expect( symbol_t, "," );
+           expect( strlit_t );
+        end if;
      end if;
   when export | export_json =>                  -- pragma export/json
      ParseExportKind( var_id, exportType );
@@ -602,18 +617,24 @@ begin
      expr_val := identifiers( token ).value;
      expect( backlit_t );
   when propose =>                           -- pragma refactor
-     expr_val := identifiers( token ).value;
-     if baseTypesOK( identifiers( token ).kind, team_member_t ) then
-        getNextToken;
+     ParseIdentifier( var_id );
+     if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
         expect( symbol_t, "," );
-        expect( strlit_t );
+        ParseIdentifier( var_id );
+        if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+           expect( symbol_t, "," );
+           expect( strlit_t );
+        end if;
      end if;
   when refactor =>                           -- pragma refactor
-     expr_val := identifiers( token ).value;
-     if baseTypesOK( identifiers( token ).kind, team_member_t ) then
-        getNextToken;
+     ParseIdentifier( var_id );
+     if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
         expect( symbol_t, "," );
-        expect( strlit_t );
+        ParseIdentifier( var_id );
+        if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+           expect( symbol_t, "," );
+           expect( strlit_t );
+        end if;
      end if;
   when register_memcache_server =>           -- pragma register_memcache_server
      expr_val := identifiers( token ).value;
@@ -737,6 +758,63 @@ begin
         else
            ParseExpression( expr_val, var_id );
         end if;
+     end;
+  when todo =>                               -- pragma to-do
+     -- we don't need to save anything because this is an informational
+     -- pragma.  The syntax is rather complicated.  This runs during
+     -- the syntax check so we are limited to using literals (unless
+     -- we create a new static expression feature).  Here, we're doing
+     -- syntax checking.
+     -- example: pragma to-do( me, "something", work_measure.story_points, 2, work_priority.level, 'l' );
+     declare
+       unused_bool : boolean;
+     begin
+     ParseIdentifier( var_id );              -- the person
+     unused_bool := baseTypesOK( identifiers( var_id ).kind, team_member_t );
+     expect( symbol_t, "," );
+     expr_val := identifiers( token ).value;
+     expect( strlit_t );
+     expect( symbol_t, "," );
+     ParseIdentifier( var_id );              -- the work estimate measure
+     unused_bool := baseTypesOK( identifiers( var_id ).kind, team_work_measure_t );
+     expect( symbol_t, "," );
+     if var_id = team_work_measure_unknown_t then  -- the work estimate
+        expect( number_t, " 0" );
+     elsif var_id = team_work_measure_size_t then
+        if identifiers( token ).value /= "s" and
+           identifiers( token ).value /= "m" and
+           identifiers( token ).value /= "l" and
+           identifiers( token ).value /= "xl" then
+           err( "expected ""s"", ""m"", ""l"" or ""xl""" );
+        end if;
+       expect( strlit_t );
+     else
+       expect( number_t );
+     end if;
+     expect( symbol_t, "," );
+     ParseIdentifier( var_id );              -- the priority type
+     unused_bool := baseTypesOK( identifiers( var_id ).kind, team_work_priority_t );
+     expect( symbol_t, "," );
+     if var_id = team_work_priority_unknown_t then  -- the work estimate
+        expect( number_t, " 0" );
+     elsif var_id = team_work_priority_level_t then
+        if identifiers( token ).value /= "l" and
+           identifiers( token ).value /= "m" and
+           identifiers( token ).value /= "h" then
+           err( "expected 'l', 'm' or 'h'" );
+        end if;
+        expect( charlit_t );
+     elsif var_id = team_work_priority_severity_t then
+        if identifiers( token ).value < " 1" or
+           identifiers( token ).value > " 5" then
+           err( "expected 1..5" );
+        end if;
+        expect( number_t );
+     elsif var_id = team_work_priority_risk_t then
+        expect( number_t );
+     else
+        expect( number_t );
+     end if;
      end;
   when uninspect_var =>                      -- pragma uninspect
      ParseIdentifier( var_id );
@@ -1170,6 +1248,8 @@ begin
               end if;
            end if;
         end if;
+     when todo =>
+        null;
      when unchecked_import | unchecked_import_json =>
         -- Check for a reasonable identifier type
         if pragmaKind = unchecked_import_json then
