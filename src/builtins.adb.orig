@@ -43,6 +43,7 @@ with interfaces.c,
      parser_aux,
      parser_db,
      parser_mysql,
+     parser_team,
      parser;  -- for pragma annotate
 use  interfaces.c,
      ada.text_io,
@@ -66,6 +67,7 @@ use  interfaces.c,
      parser_aux,
      parser_db,
      parser_mysql,
+     parser_team,
      parser;  -- for pragma annotate
 
 package body builtins is
@@ -807,6 +809,20 @@ end vm;
        last_tag    : unbounded_string;
        closeResult : int;
 
+       -- to-do's
+       todoTotal          : natural := 0;
+       workMeasureUnknown : natural := 0;
+       workMeasureHours   : natural := 0;
+       workMeasureFpoints : natural := 0;
+       workMeasureSpoints : natural := 0;
+       workMeasureSloc    : natural := 0;
+       workMeasureSizeS   : natural := 0;
+       workMeasureSizeM   : natural := 0;
+       workMeasureSizeL   : natural := 0;
+       workMeasureSizeXL  : natural := 0;
+       measure : identifier;
+       units   : unbounded_string;
+
        function ParsePragmaKindAsHelp return unbounded_string is
           pragmaKind : unbounded_string;
        begin
@@ -836,6 +852,7 @@ end vm;
             end if;
          elsif pragmaKind = to_unbounded_string( "todo" ) then
             if token = symbol_t and identifiers( token ).value = "(" then
+               todoTotal := todoTotal + 1;
                getNextToken;
                info := identifiers( token ).name; -- name
                getNextToken;
@@ -844,15 +861,42 @@ end vm;
                getNextToken;
                expect( symbol_t, "," );
                info := info & "," & identifiers( token ).name; -- measure
+               measure := token;
                getNextToken;
                expect( symbol_t, "," );
                info := info & "," & identifiers( token ).value; -- unit
+               units := identifiers( token ).value;
+               -- calculate work by measure
+               if measure = team_work_measure_unknown_t then
+                  workMeasureUnknown := workMeasureUnknown + 1;
+               elsif measure = team_work_measure_hours_t then
+                  workMeasureHours   := workMeasureHours + natural( to_numeric( units ) );
+               elsif measure = team_work_measure_fpoints_t then
+                  workMeasureFpoints := workMeasureFpoints + natural( to_numeric( units ) );
+               elsif measure = team_work_measure_spoints_t then
+                  workMeasureSpoints := workMeasureSpoints + natural( to_numeric( units ) );
+               elsif measure = team_work_measure_sloc_t then
+                  workMeasureSloc    := workMeasureSloc + natural( to_numeric( units ) );
+               elsif measure = team_work_measure_size_t and units = "s" then
+                  workMeasureSizeS   := workMeasureSizeS + 1;
+               elsif measure = team_work_measure_size_t and units = "m" then
+                  workMeasureSizeM   := workMeasureSizeM + 1;
+               elsif measure = team_work_measure_size_t and units = "l" then
+                  workMeasureSizeL   := workMeasureSizeL + 1;
+               elsif measure = team_work_measure_size_t and units = "xl" then
+                  workMeasureSizeXL   := workMeasureSizeXL + 1;
+               else
+                  null; -- DEBUG
+               end if;
                getNextToken;
                expect( symbol_t, "," );
                info := info & "," & identifiers( token ).name; -- priority
                getNextToken;
                expect( symbol_t, "," );
                info := info & "," & identifiers( token ).value; -- unit
+               getNextToken;
+               expect( symbol_t, "," );
+               info := info & ",""" & identifiers( token ).value & """"; -- ticket
                getNextToken;
                expect( symbol_t, ")" );
                if todoOutput then
@@ -1198,6 +1242,44 @@ end vm;
 
           if HTMLoutput then
              put_line( "</p><p><i>Generated " & to_string( genDate ) & "</i><br></p>" );
+          elsif TodoOutput then
+             -- produce summary
+             if todoTotal > 0 then
+                new_line;
+                put_line( "Amount of Work" );
+                new_line;
+                if workMeasureUnknown > 0 then
+                   put_line( "Unknown:" & workMeasureUnknown'img );
+                end if;
+                if workMeasureHours > 0 then
+                   put_line( "Hours:" & workMeasureHours'img );
+                end if;
+                if workMeasureFpoints > 0 then
+                   put_line( "Function Points:" & workMeasureFpoints'img );
+                end if;
+                if workMeasureSpoints > 0 then
+                   put_line( "Story Points:" & workMeasureSpoints'img );
+                end if;
+                if workMeasureSloc > 0 then
+                   put_line( "Lines-of-Code:" & workMeasureSloc'img );
+                end if;
+                if workMeasureSizeS > 0 then
+                   put_line( "Small:" & workMeasureSizeS'img );
+                end if;
+                if workMeasureSizeM > 0 then
+                   put_line( "Medium:" & workMeasureSizeM'img );
+                end if;
+                if workMeasureSizeL > 0 then
+                   put_line( "Large:" & workMeasureSizeL'img );
+                end if;
+                if workMeasureSizeXL > 0 then
+                   put_line( "Extra Large:" & workMeasureSizeXL'img );
+                end if;
+                new_line;
+                put_line( "Number of To-Do Items:" & todoTotal'img );
+             end if;
+          else
+             put_line( "No todo's found" );
           end if;
         end if;
 <<retryclose>> closeResult := close( scriptFile );
