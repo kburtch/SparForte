@@ -119,6 +119,9 @@ procedure Split( s : unbounded_string; left, right : out unbounded_string;
 width : natural );
 -- gracefully split s into left and right near split position width
 
+function ToCSV( s : unbounded_string ) return unbounded_string;
+-- convert s to CSV
+
 ------------------------------------------------------------------------------
 -- String Field Handling
 ------------------------------------------------------------------------------

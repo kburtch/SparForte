@@ -131,7 +131,7 @@ tail                 |                            | identifier of the type new
 </center>
 &nbsp;<br>
 
-<p><b>help [-h|-m|-l] [command or script]</b></p>
+<p><b>help [-c|-h|-m|-l|-t] [command or script]</b></p>
 <center>
 <table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
 <tr>
@@ -140,7 +140,9 @@ tail                 |                            | identifier of the type new
 annotate) in a script.  When showing annotations, -h will show the annotations
 in HTML, -m as a Linux man page and, with no options, SparForte will show the
 annotations as plain text.  With -l, SparForte will show the script license as
-set with pragma license.</p>
+set with pragma license.  With -c, the teamwork pragmas will be shown in CSV
+format.  With -t, the todo pragmas will be shown in CSV format and with a
+work summary.</p>
 <p><u>Examples</u>:</p>
 
 <pre>
@@ -161,6 +163,9 @@ Usage: bjack
 <u>Bash equivalent</u>: <tt>help</tt><br>
 <u>Perl equivalent</u>: <tt>perldoc</tt><br>
 <u>PHP  equivalent</u>: <tt>phpdoc</tt><br>
+
+<p><b>Implementation Note</b>: help -c and -t are experimental and the
+output may change to improve their effectiveness.</p>
 
 </td>
 </tr>

@@ -77,6 +77,7 @@ package body builtins is
   MANOutput     : boolean := false;
   LicenseOutput : boolean := false;
   TodoOutput    : boolean := false;
+  CollabOutput  : boolean := false;
 
 -----------------------------------------------------------------------------
 --  FIND PWD
@@ -810,18 +811,40 @@ end vm;
        closeResult : int;
 
        -- to-do's
-       todoTotal          : natural := 0;
-       workMeasureUnknown : natural := 0;
-       workMeasureHours   : natural := 0;
-       workMeasureFpoints : natural := 0;
-       workMeasureSpoints : natural := 0;
-       workMeasureSloc    : natural := 0;
-       workMeasureSizeS   : natural := 0;
-       workMeasureSizeM   : natural := 0;
-       workMeasureSizeL   : natural := 0;
-       workMeasureSizeXL  : natural := 0;
+       todoTotal                : natural := 0;
+       workMeasureCntUnknown    : natural := 0;
+       workMeasureCntHours      : natural := 0;
+       workMeasureCntFpoints    : natural := 0;
+       workMeasureCntSpoints    : natural := 0;
+       workMeasureCntSloc       : natural := 0;
+       workMeasureCntSizeS      : natural := 0;
+       workMeasureCntSizeM      : natural := 0;
+       workMeasureCntSizeL      : natural := 0;
+       workMeasureCntSizeXL     : natural := 0;
+       workPriorityCntUnknown   : natural := 0;
+       workPriorityCntLevelL    : natural := 0;
+       workPriorityCntLevelM    : natural := 0;
+       workPriorityCntLevelH    : natural := 0;
+       workPriorityCntSeverity1 : natural := 0;
+       workPriorityCntSeverity2 : natural := 0;
+       workPriorityCntSeverity3 : natural := 0;
+       workPriorityCntSeverity4 : natural := 0;
+       workPriorityCntSeverity5 : natural := 0;
+       workPriorityCntRisk      : natural := 0;
        measure : identifier;
        units   : unbounded_string;
+
+       -- repeatedly used strings, converted to unbounded_strings
+
+       advise_str   : constant unbounded_string := to_unbounded_string( "advise" );
+       license_str  : constant unbounded_string := to_unbounded_string( "license" );
+       todo_str     : constant unbounded_string := to_unbounded_string( "todo" );
+       blocked_str  : constant unbounded_string := to_unbounded_string( "blocked" );
+       clarify_str  : constant unbounded_string := to_unbounded_string( "clarify" );
+       dispute_str  : constant unbounded_string := to_unbounded_string( "dispute" );
+       propose_str  : constant unbounded_string := to_unbounded_string( "propose" );
+       annotate_str : constant unbounded_string := to_unbounded_string( "propose" );
+       refactor_str : constant unbounded_string := to_unbounded_string( "refactor" );
 
        function ParsePragmaKindAsHelp return unbounded_string is
           pragmaKind : unbounded_string;
@@ -834,7 +857,7 @@ end vm;
 
        procedure ParsePragmaStatementAsHelp( pragmaKind : unbounded_string ) is
        begin
-         if pragmaKind = to_unbounded_string( "license" ) then
+         if pragmaKind = license_str then
             if token = symbol_t and identifiers( token ).value = "(" then
                getNextToken;
                info := identifiers( token ).name;
@@ -850,14 +873,14 @@ end vm;
                   put_line( to_string( info ) );
                end if;
             end if;
-         elsif pragmaKind = to_unbounded_string( "todo" ) then
+         elsif pragmaKind = todo_str then
             if token = symbol_t and identifiers( token ).value = "(" then
                todoTotal := todoTotal + 1;
                getNextToken;
                info := identifiers( token ).name; -- name
                getNextToken;
                expect( symbol_t, "," );
-               info := info & ",""" & identifiers( token ).value & """"; -- message
+               info := info & "," & ToCSV( identifiers( token ).value ); -- message
                getNextToken;
                expect( symbol_t, "," );
                info := info & "," & identifiers( token ).name; -- measure
@@ -868,42 +891,91 @@ end vm;
                units := identifiers( token ).value;
                -- calculate work by measure
                if measure = team_work_measure_unknown_t then
-                  workMeasureUnknown := workMeasureUnknown + 1;
+                  workMeasureCntUnknown := workMeasureCntUnknown + 1;
                elsif measure = team_work_measure_hours_t then
-                  workMeasureHours   := workMeasureHours + natural( to_numeric( units ) );
+                  workMeasureCntHours   := workMeasureCntHours + natural( to_numeric( units ) );
                elsif measure = team_work_measure_fpoints_t then
-                  workMeasureFpoints := workMeasureFpoints + natural( to_numeric( units ) );
+                  workMeasureCntFpoints := workMeasureCntFpoints + natural( to_numeric( units ) );
                elsif measure = team_work_measure_spoints_t then
-                  workMeasureSpoints := workMeasureSpoints + natural( to_numeric( units ) );
+                  workMeasureCntSpoints := workMeasureCntSpoints + natural( to_numeric( units ) );
                elsif measure = team_work_measure_sloc_t then
-                  workMeasureSloc    := workMeasureSloc + natural( to_numeric( units ) );
+                  workMeasureCntSloc    := workMeasureCntSloc + natural( to_numeric( units ) );
                elsif measure = team_work_measure_size_t and units = "s" then
-                  workMeasureSizeS   := workMeasureSizeS + 1;
+                  workMeasureCntSizeS   := workMeasureCntSizeS + 1;
                elsif measure = team_work_measure_size_t and units = "m" then
-                  workMeasureSizeM   := workMeasureSizeM + 1;
+                  workMeasureCntSizeM   := workMeasureCntSizeM + 1;
                elsif measure = team_work_measure_size_t and units = "l" then
-                  workMeasureSizeL   := workMeasureSizeL + 1;
+                  workMeasureCntSizeL   := workMeasureCntSizeL + 1;
                elsif measure = team_work_measure_size_t and units = "xl" then
-                  workMeasureSizeXL   := workMeasureSizeXL + 1;
+                  workMeasureCntSizeXL   := workMeasureCntSizeXL + 1;
                else
                   null; -- DEBUG
                end if;
                getNextToken;
                expect( symbol_t, "," );
                info := info & "," & identifiers( token ).name; -- priority
+               measure := token;
                getNextToken;
                expect( symbol_t, "," );
                info := info & "," & identifiers( token ).value; -- unit
+               units := identifiers( token ).value;
+               if measure = team_work_priority_unknown_t then
+                  workPriorityCntUnknown := workPriorityCntUnknown + 1;
+               elsif measure = team_work_priority_level_t and units = "l" then
+                  workPriorityCntLevelL := workPriorityCntLevelL + 1;
+               elsif measure = team_work_priority_level_t and units = "m" then
+                  workPriorityCntLevelM := workPriorityCntLevelM + 1;
+               elsif measure = team_work_priority_level_t and units = "h" then
+                  workPriorityCntLevelH := workPriorityCntLevelH + 1;
+               elsif measure = team_work_priority_severity_t and units = " 1" then
+                  workPriorityCntSeverity1 := workPriorityCntSeverity1 + 1;
+               elsif measure = team_work_priority_severity_t and units = " 2" then
+                  workPriorityCntSeverity2 := workPriorityCntSeverity2 + 1;
+               elsif measure = team_work_priority_severity_t and units = " 3" then
+                  workPriorityCntSeverity3 := workPriorityCntSeverity3 + 1;
+               elsif measure = team_work_priority_severity_t and units = " 4" then
+                  workPriorityCntSeverity4 := workPriorityCntSeverity4 + 1;
+               elsif measure = team_work_priority_severity_t and units = " 5" then
+                  workPriorityCntSeverity5 := workPriorityCntSeverity5 + 1;
+               elsif measure = team_work_priority_risk_t then
+                  workPriorityCntRisk := workPriorityCntRisk + natural( to_numeric( units ) );
+               else
+                  null; -- DEBUG
+               end if;
                getNextToken;
-               expect( symbol_t, "," );
-               info := info & ",""" & identifiers( token ).value & """"; -- ticket
-               getNextToken;
+               -- ticket is optional
+               if token = symbol_t and identifiers( token ).value = "," then
+                  expect( symbol_t, "," );
+                  info := info & "," & ToCSV( identifiers( token ).value );
+                  getNextToken;
+               end if;
                expect( symbol_t, ")" );
-               if todoOutput then
+               if TodoOutput then
                   put_line( to_string( info ) );
                end if;
             end if;
-         elsif pragmaKind = to_unbounded_string( "annotate" ) then
+         elsif pragmaKind = advise_str or
+               pragmaKind = blocked_str or
+               pragmaKind = clarify_str or
+               pragmaKind = dispute_str or
+               pragmaKind = propose_str or
+               pragmaKind = refactor_str then
+            if token = symbol_t and identifiers( token ).value = "(" then
+               getNextToken;
+               info := pragmaKind & "," & identifiers( token ).name; -- name
+               getNextToken;
+               expect( symbol_t, "," );
+               info := info & "," & identifiers( token ).name; -- name
+               getNextToken;
+               expect( symbol_t, "," );
+               info := info & "," & ToCSV( identifiers( token ).value ); -- message
+               getNextToken;
+               expect( symbol_t, ")" );
+               if CollabOutput then
+                  put_line( to_string( info ) );
+               end if;
+            end if;
+         elsif pragmaKind = annotate_str then
             if token = symbol_t and identifiers( token ).value = "(" then
                getNextToken;
                if identifiers( token ).name = to_unbounded_string( "author" ) then
@@ -1248,38 +1320,73 @@ end vm;
                 new_line;
                 put_line( "Amount of Work" );
                 new_line;
-                if workMeasureUnknown > 0 then
-                   put_line( "Unknown:" & workMeasureUnknown'img );
+                if workMeasureCntUnknown > 0 then
+                   put_line( "Unknown:" & workMeasureCntUnknown'img );
                 end if;
-                if workMeasureHours > 0 then
-                   put_line( "Hours:" & workMeasureHours'img );
+                if workMeasureCntHours > 0 then
+                   put_line( "Hours:" & workMeasureCntHours'img );
                 end if;
-                if workMeasureFpoints > 0 then
-                   put_line( "Function Points:" & workMeasureFpoints'img );
+                if workMeasureCntFpoints > 0 then
+                   put_line( "Function Points:" & workMeasureCntFpoints'img );
                 end if;
-                if workMeasureSpoints > 0 then
-                   put_line( "Story Points:" & workMeasureSpoints'img );
+                if workMeasureCntSpoints > 0 then
+                   put_line( "Story Points:" & workMeasureCntSpoints'img );
                 end if;
-                if workMeasureSloc > 0 then
-                   put_line( "Lines-of-Code:" & workMeasureSloc'img );
+                if workMeasureCntSloc > 0 then
+                   put_line( "Lines-of-Code:" & workMeasureCntSloc'img );
                 end if;
-                if workMeasureSizeS > 0 then
-                   put_line( "Small:" & workMeasureSizeS'img );
+                if workMeasureCntSizeS > 0 then
+                   put_line( "Small:" & workMeasureCntSizeS'img );
                 end if;
-                if workMeasureSizeM > 0 then
-                   put_line( "Medium:" & workMeasureSizeM'img );
+                if workMeasureCntSizeM > 0 then
+                   put_line( "Medium:" & workMeasureCntSizeM'img );
                 end if;
-                if workMeasureSizeL > 0 then
-                   put_line( "Large:" & workMeasureSizeL'img );
+                if workMeasureCntSizeL > 0 then
+                   put_line( "Large:" & workMeasureCntSizeL'img );
                 end if;
-                if workMeasureSizeXL > 0 then
-                   put_line( "Extra Large:" & workMeasureSizeXL'img );
+                if workMeasureCntSizeXL > 0 then
+                   put_line( "Extra Large:" & workMeasureCntSizeXL'img );
                 end if;
+
+                new_line;
+                put_line( "Priorities of  Work" );
+                new_line;
+                if workPriorityCntUnknown > 0 then
+                   put_line( "Unknown:" & workPriorityCntUnknown'img );
+                end if;
+                if workPriorityCntLevelL > 0 then
+                   put_line( "Low:" & workPriorityCntLevelL'img );
+                end if;
+                if workPriorityCntLevelM > 0 then
+                   put_line( "Medium:" & workPriorityCntLevelM'img );
+                end if;
+                if workPriorityCntLevelH > 0 then
+                   put_line( "High:" & workPriorityCntLevelH'img );
+                end if;
+                if workPriorityCntSeverity1 > 0 then
+                   put_line( "Severity 1:" & workPriorityCntSeverity1'img );
+                end if;
+                if workPriorityCntSeverity2 > 0 then
+                   put_line( "Severity 2:" & workPriorityCntSeverity2'img );
+                end if;
+                if workPriorityCntSeverity3 > 0 then
+                   put_line( "Severity 3:" & workPriorityCntSeverity3'img );
+                end if;
+                if workPriorityCntSeverity4 > 0 then
+                   put_line( "Severity 4:" & workPriorityCntSeverity4'img );
+                end if;
+                if workPriorityCntSeverity5 > 0 then
+                   put_line( "Severity 5:" & workPriorityCntSeverity5'img );
+                end if;
+                if workPriorityCntRisk > 0 then
+                   put_line( "Risk:" & workPriorityCntRisk'img );
+                end if;
+
                 new_line;
                 put_line( "Number of To-Do Items:" & todoTotal'img );
+             else
+                put_line( "No todo's found" );
              end if;
-          else
-             put_line( "No todo's found" );
           end if;
         end if;
 <<retryclose>> closeResult := close( scriptFile );
@@ -1583,9 +1690,15 @@ begin
   if ap'length = 0 then
      helpTopic := null_unbounded_string;
   else
+     -- TODO: an enum type
+     HTMLOutput    := false;
+     MANOutput     := false;
+     LicenseOutput := false;
+     TodoOutput    := false;
+     CollabOutput  := false;
      helpTopic := to_unbounded_string( ap( 1 ).all );
      delete( helpTopic, length( helpTopic ), length( helpTopic ) );
-     if helpTopic = "-h" then
+     if helpTopic = "-h" then      -- script help (html)
         HTMLOutput := true;
         if ap'length = 1 then
            helpTopic := null_unbounded_string;
@@ -1593,7 +1706,7 @@ begin
            helpTopic := to_unbounded_string( ap( 2 ).all );
            delete( helpTopic, length( helpTopic ), length( helpTopic ) );
         end if;
-     elsif helpTopic = "-m" then
+     elsif helpTopic = "-m" then      -- script help (man page)
         MANOutput := true;
         if ap'length = 1 then
            helpTopic := null_unbounded_string;
@@ -1601,7 +1714,7 @@ begin
            helpTopic := to_unbounded_string( ap( 2 ).all );
            delete( helpTopic, length( helpTopic ), length( helpTopic ) );
         end if;
-     elsif helpTopic = "-l" then
+     elsif helpTopic = "-l" then      -- script licenses
         LicenseOutput := true;
         if ap'length = 1 then
            helpTopic := null_unbounded_string;
@@ -1609,8 +1722,16 @@ begin
            helpTopic := to_unbounded_string( ap( 2 ).all );
            delete( helpTopic, length( helpTopic ), length( helpTopic ) );
         end if;
-     elsif helpTopic = "-t" then
+     elsif helpTopic = "-t" then      -- to-do's
         TodoOutput := true;
+        if ap'length = 1 then
+           helpTopic := null_unbounded_string;
+        else
+           helpTopic := to_unbounded_string( ap( 2 ).all );
+           delete( helpTopic, length( helpTopic ), length( helpTopic ) );
+        end if;
+     elsif helpTopic = "-c" then       -- collaboration
+        CollabOutput := true;
         if ap'length = 1 then
            helpTopic := null_unbounded_string;
         else
@@ -1842,10 +1963,12 @@ begin
      Put_Line( "  s := gnat.cgi.debug.text_output" );
      Put_Line( "  s := gnat.cgi.debug.html_output" );
   elsif helpTopic = "help" then
-     Put_Line( "help - show help or script annotations" );
+     Put_Line( "help - show help or script annotations / documentation" );
+     Put_Line( "  -c - show collaboration pragmas" );
      Put_Line( "  -h - HTML output" );
-     Put_Line( "  -m - UNIX manual page output" );
      Put_Line( "  -l - show script license" );
+     Put_Line( "  -m - UNIX manual page output" );
+     Put_Line( "  -t - show todo pragmas and summarize" );
   elsif helpTopic = "history" then
      Put_Line( "history - list or clear the command line history" );
      Put_Line( "  history -c" );

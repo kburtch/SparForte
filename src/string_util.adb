@@ -522,6 +522,33 @@ begin
   right := to_unbounded_string( slice( s, i+1, length( s ) ) );
 end Split;
 
+function ToCSV( s : unbounded_string ) return unbounded_string is
+-- convert s to CSV.  For our purposes, only all numbers will not be quoted.
+  csv : unbounded_string;
+  needsQuotes : boolean := false;
+  ch : character;
+begin
+  for i in 1..length( s ) loop
+      ch := element( s, i );
+      if not ( is_digit( ch ) or ch = '.' ) then
+         needsQuotes := true;
+      end if;
+      if ch = ASCII.Quotation then
+         csv := csv & ASCII.Quotation & ASCII.Quotation;
+      else
+         csv := csv & ch;
+      end if;
+  end loop;
+  -- just to make it clear there's no data, quote it
+  if length( csv ) = 0 then
+     needsQuotes := true;
+  end if;
+  if needsQuotes then
+     csv := ASCII.Quotation & csv & ASCII.Quotation;
+  end if;
+  return csv;
+end ToCSV;
+
 
 ------------------------------------------------------------------------------
 -- String Field Handling

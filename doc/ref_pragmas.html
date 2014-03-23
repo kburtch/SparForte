@@ -84,6 +84,7 @@ environment.</p>
   <b>pragma</b> software_model( model_name )
   <b>pragma</b> suppress( word_quoting )
   <b>pragma</b> template( css|html|js|json|text|wml|xml [, path] )
+  <b>pragma</b> todo( to, story, measure, units, priority, units [, ticket] )
   <b>pragma</b> test( condition )
   <b>pragma</b> test_result( condition )
   <b>pragma</b> unchecked_import( shell | cgi | local_memcache | memcache | session, var )
@@ -390,6 +391,7 @@ with <b>pragma todo</b>.</p>
 <li>The fourth parameter is the amount of work</li>
 <li>The fifth parameter is the unit of priority (of the type team.work_priority)</li>
 <li>The sixth parameter is the priority rating</li>
+<li>The seventh parameter, optional, is the ticket id for an external work tracking system.</li>
 </ul>
 
         <center>
@@ -411,6 +413,11 @@ with <b>pragma todo</b>.</p>
 <p>work_priority.severity must be in the range 1..5</p>
 <p>work_measure.unknown or work_priority.unknown must have an amount/ranking of zero.</p>
 <p>Negative values are not allowed.</p>
+
+<p>Teamwork and work estimation pragmas can be displayed using the <b>help</b> command.</p>
+
+<p><b>Implementation Note</b>: This feature is experimental.  The parameters
+may be changed to improve these features.</p>
 
 <h4>Interfacing Pragmas</h4>
 

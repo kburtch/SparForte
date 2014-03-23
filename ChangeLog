@@ -104,6 +104,7 @@ CHANGES SINCE 1.4
 
 35. Change: style issues for non-meaningful names expanded to include amount, const, info, input, output, result, variable and variables.
 
-??. Around parser.adb 5812: doesn't allow mixing of shell and adascript parameters in a pipeline.  Fix this??
+36. Fix: previous help options no longer linger to another help command invocation.
 
+37. help -t shows todo pragmas and summary of work. help -c shows teamwork pragmas.
 

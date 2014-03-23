@@ -815,8 +815,11 @@ begin
        else
           expect( number_t );
        end if;
-       expect( symbol_t, "," );
-       expect( strlit_t );
+       -- optional ticket id
+       if token = symbol_t and identifiers( token ).value = "," then
+          expect( symbol_t, "," );
+          expect( strlit_t );
+       end if;
      end;
   when uninspect_var =>                      -- pragma uninspect
      ParseIdentifier( var_id );
