@@ -99,7 +99,11 @@ begin
   expect( symbol_t, "," );
   ParseIdentifier( genKindId );
   if class_ok( genKindId, typeClass, subClass ) then
-      null;
+     if identifiers( genKindId ).list then
+        err( "element type should be a scalar type" );
+     elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+        err( "element type should be a scalar type" );
+     end if;
   end if;
   identifiers( ref.id ).genKind := genKindId;
   expect( symbol_t, ")" );

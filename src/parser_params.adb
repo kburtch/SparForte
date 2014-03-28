@@ -190,8 +190,8 @@ begin
   --if isExecutingCommand then
   --   expr_val := castToType( expr_val, expected_type );
   --end if;
-  expect( symbol_t, ")" );
   discard_result := baseTypesOk( identifiers( param_id ).kind, expected_type );
+  expect( symbol_t, ")" );
 end ParseLastInOutParameter;
 
 
@@ -458,10 +458,14 @@ begin
      ParseIdentifier( ref.id );
   end if;
 
+  -- Some sensible defaults for fields we will fill in
+
+  ref.index := 0;
+  ref.kind := eof_t;
+
   -- If this is an array reference, read the index value.  Check that
   -- the index value is within the index bounds for the array.
 
-  ref.index := 0;
   if identifiers( ref.id ).list then        -- array variable?
      ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
      expect( symbol_t, "(" );

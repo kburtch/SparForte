@@ -180,7 +180,11 @@ begin
   expect( symbol_t, "," );
   ParseIdentifier( genKindId );
   if class_ok( genKindId, typeClass, subClass ) then
-      null;
+     if identifiers( genKindId ).list then
+        err( "element type should be a scalar type" );
+     elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+        err( "element type should be a scalar type" );
+     end if;
   end if;
   identifiers( ref.id ).genKind := genKindId;
   expect( symbol_t, ")" );
@@ -276,7 +280,9 @@ begin
        else
           Doubly_Linked_String_Lists.Append( theList.dlslList, itemExpr );
        end if;
-     exception when storage_error =>
+     exception when constraint_error =>
+       err( "append count must be a natural integer" );
+     when storage_error =>
        err( "storage error raised" );
      end;
   end if;
@@ -315,7 +321,9 @@ begin
        else
           Doubly_Linked_String_Lists.Prepend( theList.dlslList, itemExpr );
        end if;
-     exception when storage_error =>
+     exception when constraint_error =>
+       err( "append count must be a natural integer" );
+     when storage_error =>
        err( "storage error raised" );
      end;
   end if;
@@ -641,7 +649,7 @@ begin
           Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr );
        end if;
      exception when program_error =>
-       err( "internal error: program_error raised" );
+       err( "the cursor refers to the wrong list" );
      when storage_error =>
        err( "storage_error raised" );
      end;
@@ -736,7 +744,7 @@ begin
           Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, theSecondCursor.dlslCursor );
        end if;
      exception when program_error =>
-       err( "internal error: program_error raised" );
+       err( "the cursor refers to the wrong list" );
      when storage_error =>
        err( "storage_error raised" );
      end;
@@ -963,6 +971,8 @@ begin
        Doubly_Linked_String_Lists.Swap( theList.dlslList, theFirstCursor.dlslCursor, theSecondCursor.dlslCursor );
      exception when constraint_error =>
        err( "cursor has no element" );
+     when program_error =>
+       err( "a cursor refers to the wrong list" );
      end;
   end if;
 end ParseDoublySwap;
@@ -992,6 +1002,8 @@ begin
        Doubly_Linked_String_Lists.Swap_Links( theList.dlslList, theFirstCursor.dlslCursor, theSecondCursor.dlslCursor );
      exception when constraint_error =>
        err( "cursor has no element" );
+     when program_error =>
+       err( "a cursor refers to the wrong list" );
      end;
   end if;
 end ParseDoublySwapLinks;
