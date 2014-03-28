@@ -41,7 +41,6 @@
 --with Text_IO; use Text_IO; -- for debugging
 
 package body gen_list is
-  pragma optimize( space );
   pragma suppress( all_checks );
 
 NullList : List := (null,null,0,null,0,null);
