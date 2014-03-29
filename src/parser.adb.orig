@@ -4113,10 +4113,18 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
                pattern,
                to_unbounded_string( fileName( 1..fileNameLen ) ) ) );
          else
-            shellWordList.Queue( list, aShellWord'(
-               normalWord,
-               pattern,
-               to_unbounded_string( dirpath & directory_delimiter & fileName( 1..fileNameLen ) ) ) );
+            -- root directory?  no need to add directory delimiter
+            if dirpath'length = 1 and dirpath(1) = directory_delimiter then
+               shellWordList.Queue( list, aShellWord'(
+                  normalWord,
+                  pattern,
+                  to_unbounded_string( dirpath & fileName( 1..fileNameLen ) ) ) );
+            else
+               shellWordList.Queue( list, aShellWord'(
+                  normalWord,
+                  pattern,
+                  to_unbounded_string( dirpath & directory_delimiter & fileName( 1..fileNameLen ) ) ) );
+            end if;
          end if;
          found := true;
       end if;
