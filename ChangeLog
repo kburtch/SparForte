@@ -108,3 +108,5 @@ CHANGES SINCE 1.4
 
 37. help -t shows todo pragmas and summary of work. help -c shows teamwork pragmas.
 
+38. Fix: pathname expansion of shell words no longer double slash when the directory is a single slash.
+
