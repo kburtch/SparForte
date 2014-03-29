@@ -649,7 +649,7 @@ begin
           Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr );
        end if;
      exception when program_error =>
-       err( "the cursor refers to the wrong list" );
+       err( "the cursor refers to a different list" );
      when storage_error =>
        err( "storage_error raised" );
      end;
@@ -744,7 +744,7 @@ begin
           Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, theSecondCursor.dlslCursor );
        end if;
      exception when program_error =>
-       err( "the cursor refers to the wrong list" );
+       err( "the cursor refers to a different list" );
      when storage_error =>
        err( "storage_error raised" );
      end;
@@ -970,9 +970,9 @@ begin
        findResource( to_resource_id( identifiers( secondCursId ).value ), theSecondCursor );
        Doubly_Linked_String_Lists.Swap( theList.dlslList, theFirstCursor.dlslCursor, theSecondCursor.dlslCursor );
      exception when constraint_error =>
-       err( "cursor has no element" );
+       err( "a cursor has no element" );
      when program_error =>
-       err( "a cursor refers to the wrong list" );
+       err( "a cursor refers to a different list" );
      end;
   end if;
 end ParseDoublySwap;
@@ -1001,9 +1001,9 @@ begin
        findResource( to_resource_id( identifiers( secondCursId ).value ), theSecondCursor );
        Doubly_Linked_String_Lists.Swap_Links( theList.dlslList, theFirstCursor.dlslCursor, theSecondCursor.dlslCursor );
      exception when constraint_error =>
-       err( "cursor has no element" );
+       err( "a cursor has no element" );
      when program_error =>
-       err( "a cursor refers to the wrong list" );
+       err( "a cursor refers to a different list" );
      end;
   end if;
 end ParseDoublySwapLinks;
