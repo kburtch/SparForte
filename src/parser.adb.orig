@@ -4487,14 +4487,16 @@ begin
 
   -- process special characters
 
-  for i in 1..length( word ) loop
+  --for i in 1..length( word ) loop
+      --if Element( word, i ) = '~' then                      -- leading tilda?
+  if length( word ) > 0 then
+     if Element( word, 1 ) = '~' then                      -- leading tilda?
+        findIdent( to_unbounded_string( "HOME" ), temp_id ); -- find HOME var
+        pattern := identifiers( temp_id ).value;          -- replace w/HOME
+     end if;
+  end if;
 
-      if Element( word, i ) = '~' then                      -- leading tilda?
-         findIdent( to_unbounded_string( "HOME" ), temp_id ); -- find HOME var
-         pattern := identifiers( temp_id ).value;          -- replace w/HOME
-      end if;
-
-  end loop;
+  --end loop;
 
   -- Perform pathname expansion.  This also queues the words in the word
   -- list.  If a syntax check, we don't want to actually scan the disk

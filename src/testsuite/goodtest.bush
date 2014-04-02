@@ -2304,7 +2304,7 @@ pragma assert( s = "~" );
 
 -- pathname expansion with a single / as directory
 
-s := `echo /tmp`;
+s := `echo /tmp ;`;
 pragma assert( s = "/tmp" );
 
 

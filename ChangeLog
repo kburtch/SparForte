@@ -110,3 +110,5 @@ CHANGES SINCE 1.4
 
 38. Fix: pathname expansion of shell words no longer double slash when the directory is a single slash.
 
+39. Fix: pathname expansion of tilde no longer intermittently happens in the middle of a shell word.
+
