@@ -2302,6 +2302,11 @@ pragma assert( s = "~" );
 s  := `echo "~";`;
 pragma assert( s = "~" );
 
+-- pathname expansion with a single / as directory
+
+s := `echo /tmp`;
+pragma assert( s = "/tmp" );
+
 
 -- advanced text_io
 
