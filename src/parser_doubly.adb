@@ -633,8 +633,10 @@ begin
   if token = symbol_t and identifiers( token ).value = "," then
      ParseLastNumericParameter( cntExpr, cntType );
      hasCnt := true;
-  else
+  elsif token = symbol_t and identifiers( token ).value = ")" then
      expect( symbol_t, ")" );
+  else
+     err( ", or ) expected" );
   end if;
   if isExecutingCommand then
      declare
@@ -694,12 +696,14 @@ begin
      ParseOutParameter( ref, doubly_cursor_t );
      baseTypesOK( ref.kind, doubly_cursor_t );
      identifiers( ref.id ).genKind := identifiers( listId ).genKind;
-     -- A curor may be followed by an optional count
+     -- A cursor may be followed by an optional count
      if token = symbol_t and identifiers( token ).value = "," then
         ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
         hasCnt := true;
-     else
+     elsif token = symbol_t and identifiers( token ).value = ")" then
         expect( symbol_t, ")" );
+     else
+        err( ", or ) expected" );
      end if;
   else
      -- If it's a new item value, check the generic item type and
@@ -715,8 +719,10 @@ begin
      if token = symbol_t and identifiers( token ).value = "," then
         ParseLastNumericParameter( cntExpr, cntType );
         hasCnt := true;
-     else
+     elsif token = symbol_t and identifiers( token ).value = ")" then
         expect( symbol_t, ")" );
+     else
+        err( ", or ) expected" );
      end if;
   end if;
 
@@ -1070,25 +1076,37 @@ begin
        -- doubly_linked_list.splice( l1, c, l2 );
 
        if not hasCurs2 and hasSourceId then
-          Doubly_Linked_String_Lists.Splice(
-              theTargetList.dlslList,
-              theCursor.dlslCursor,
-              theSourceList.dlslList );
+          begin
+             Doubly_Linked_String_Lists.Splice(
+                 theTargetList.dlslList,
+                 theCursor.dlslCursor,
+                 theSourceList.dlslList );
+          exception when program_error =>
+             err( "a cursor refers to a different list" );
+          end;
 
        -- doubly_linked_list.splice( l1, c, l2, c2 );
        elsif hasCurs2 and hasSourceId then
-          Doubly_Linked_String_Lists.Splice(
-              theTargetList.dlslList,
-              theCursor.dlslCursor,
-              theSourceList.dlslList,
-              theSecondCursor.dlslCursor );
+          begin
+             Doubly_Linked_String_Lists.Splice(
+                 theTargetList.dlslList,
+                 theCursor.dlslCursor,
+                 theSourceList.dlslList,
+                 theSecondCursor.dlslCursor );
+          exception when program_error =>
+             err( "a cursor refers to a different list" );
+          end;
 
        -- doubly_linked_list.splice( l1, c, c2 );
        elsif hasCurs2 and not hasSourceId then
-          Doubly_Linked_String_Lists.Splice(
-              theTargetList.dlslList,
-              theCursor.dlslCursor,
-              theSecondCursor.dlslCursor );
+          begin
+             Doubly_Linked_String_Lists.Splice(
+                 theTargetList.dlslList,
+                 theCursor.dlslCursor,
+                 theSecondCursor.dlslCursor );
+          exception when program_error =>
+             err( "a cursor refers to a different list" );
+          end;
 
        else
           err( "internal error: unexpected splice variation" );
