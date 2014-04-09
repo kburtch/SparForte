@@ -1081,7 +1081,9 @@ begin
                  theTargetList.dlslList,
                  theCursor.dlslCursor,
                  theSourceList.dlslList );
-          exception when program_error =>
+          exception when constraint_error =>
+             err( "a cursor has no element" );
+          when program_error =>
              err( "a cursor refers to a different list" );
           end;
 
@@ -1093,7 +1095,9 @@ begin
                  theCursor.dlslCursor,
                  theSourceList.dlslList,
                  theSecondCursor.dlslCursor );
-          exception when program_error =>
+          exception when constraint_error =>
+             err( "a cursor has no element" );
+          when program_error =>
              err( "a cursor refers to a different list" );
           end;
 
@@ -1104,7 +1108,9 @@ begin
                  theTargetList.dlslList,
                  theCursor.dlslCursor,
                  theSecondCursor.dlslCursor );
-          exception when program_error =>
+          exception when constraint_error =>
+             err( "a cursor has no element" );
+          when program_error =>
              err( "a cursor refers to a different list" );
           end;
 

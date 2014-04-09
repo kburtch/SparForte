@@ -432,9 +432,12 @@ begin
   ParseNextStringParameter( keyExpr, keyType, uni_string_t );
   if token = symbol_t and identifiers( token ).value = "," then
      hasAmt := true;
-     ParseNextNumericParameter( amtExpr, amtType, natural_t );
+     ParseLastNumericParameter( amtExpr, amtType, natural_t );
+  elsif token = symbol_t and identifiers( token ).value = ")" then
+     expect( symbol_t, ")" );
+  else
+     err( ", or ) expected" );
   end if;
-  expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value ), theTable );
@@ -442,7 +445,7 @@ begin
        if oldItem /= null_unbounded_string then
           oldItemValue := to_numeric( oldItem );
           if hasAmt then
-             Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr, to_unbounded_string( oldItemValue + to_numeric( amtExpr ) ) );
+             Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr, to_unbounded_string( oldItemValue + long_float( natural( to_numeric( amtExpr ) ) ) ) );
           else
              Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr, to_unbounded_string( oldItemValue + 1.0 ) );
           end if;
@@ -479,9 +482,12 @@ begin
   ParseNextStringParameter( keyExpr, keyType, uni_string_t );
   if token = symbol_t and identifiers( token ).value = "," then
      hasAmt := true;
-     ParseNextNumericParameter( amtExpr, amtType, natural_t );
+     ParseLastNumericParameter( amtExpr, amtType, natural_t );
+  elsif token = symbol_t and identifiers( token ).value = ")" then
+     expect( symbol_t, ")" );
+  else
+     err( ", or ) expected" );
   end if;
-  expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value ), theTable );
@@ -489,7 +495,7 @@ begin
        if oldItem /= null_unbounded_string then
           oldItemValue := to_numeric( oldItem );
           if hasAmt then
-             Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr, to_unbounded_string( oldItemValue - to_numeric( amtExpr ) ) );
+             Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr, to_unbounded_string( oldItemValue - long_float( natural( to_numeric( amtExpr ) ) ) ) );
           else
              Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr, to_unbounded_string( oldItemValue - 1.0 ) );
           end if;
