@@ -3,5 +3,5 @@
 FOOBAR : integer:= 0;
 pragma export_json( shell, FOOBAR );
 
-../../spar import_json_integer_string.bush ; -- should fail when executed
+../spar testsuite008_misc/import_json_integer_string.bush ; -- should fail when executed
 
