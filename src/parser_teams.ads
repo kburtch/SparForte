@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- Team Package Parser                                                      --
+-- Teams Package Parser                                                     --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
@@ -24,52 +24,52 @@
 with ada.strings.unbounded, world, scanner;
 use  ada.strings.unbounded, world, scanner;
 
-package parser_team is
+package parser_teams is
 
 ------------------------------------------------------------------------------
--- Team package identifiers
+-- Teams package identifiers
 ------------------------------------------------------------------------------
 
-team_member_t       : identifier;
-team_member_desc_t        : identifier;
-team_member_skills_t      : identifier;
-team_member_lang_t        : identifier;
-team_member_id_t          : identifier;
-team_member_prefcontact_t : identifier;
-team_member_email_t       : identifier;
-team_member_sec_email_t   : identifier;
-team_member_prefname_t    : identifier;
-team_member_full_t        : identifier;
-team_member_chair_t       : identifier;
-team_member_nickname_t    : identifier;
-team_member_business_phone_t : identifier;
-team_member_messenging_t  : identifier;
-team_member_teams_t       : identifier;
-team_member_manager_t     : identifier;
-team_member_roles_t       : identifier;
-team_member_active_t      : identifier;
-team_member_is_team_t     : identifier;
+teams_member_t       : identifier;
+teams_member_desc_t        : identifier;
+teams_member_skills_t      : identifier;
+teams_member_lang_t        : identifier;
+teams_member_id_t          : identifier;
+teams_member_prefcontact_t : identifier;
+teams_member_email_t       : identifier;
+teams_member_sec_email_t   : identifier;
+teams_member_prefname_t    : identifier;
+teams_member_full_t        : identifier;
+teams_member_chair_t       : identifier;
+teams_member_nickname_t    : identifier;
+teams_member_business_phone_t : identifier;
+teams_member_messenging_t  : identifier;
+teams_member_teams_t       : identifier;
+teams_member_manager_t     : identifier;
+teams_member_roles_t       : identifier;
+teams_member_active_t      : identifier;
+teams_member_is_team_t     : identifier;
 
-team_work_measure_t         : identifier;
-team_work_measure_unknown_t : identifier;
-team_work_measure_hours_t   : identifier;
-team_work_measure_fpoints_t : identifier;
-team_work_measure_spoints_t : identifier;
-team_work_measure_sloc_t    : identifier;
-team_work_measure_size_t    : identifier;
+teams_work_measure_t         : identifier;
+teams_work_measure_unknown_t : identifier;
+teams_work_measure_hours_t   : identifier;
+teams_work_measure_fpoints_t : identifier;
+teams_work_measure_spoints_t : identifier;
+teams_work_measure_sloc_t    : identifier;
+teams_work_measure_size_t    : identifier;
 
-team_work_priority_t        : identifier;
-team_work_priority_unknown_t : identifier;
-team_work_priority_level_t   : identifier;
-team_work_priority_severity_t : identifier;
-team_work_priority_risk_t    : identifier;
+teams_work_priority_t        : identifier;
+teams_work_priority_unknown_t : identifier;
+teams_work_priority_level_t   : identifier;
+teams_work_priority_severity_t : identifier;
+teams_work_priority_risk_t    : identifier;
 
 -----------------------------------------------------------------------------
 -- HOUSEKEEPING
 ------------------------------------------------------------------------------
 
-procedure StartupTeam;
-procedure ShutdownTeam;
+procedure StartupTeams;
+procedure ShutdownTeams;
 
 ------------------------------------------------------------------------------
 -- PARSE THE RECORDS PACKAGE
@@ -78,4 +78,4 @@ procedure ShutdownTeam;
 --procedure ParseRecordsToJson;
 --procedure ParseRecordsToRecord;
 
-end parser_team;
+end parser_teams;

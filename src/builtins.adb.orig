@@ -43,7 +43,7 @@ with interfaces.c,
      parser_aux,
      parser_db,
      parser_mysql,
-     parser_team,
+     parser_teams,
      parser;  -- for pragma annotate
 use  interfaces.c,
      ada.text_io,
@@ -67,7 +67,7 @@ use  interfaces.c,
      parser_aux,
      parser_db,
      parser_mysql,
-     parser_team,
+     parser_teams,
      parser;  -- for pragma annotate
 
 package body builtins is
@@ -890,23 +890,23 @@ end vm;
                info := info & "," & identifiers( token ).value; -- unit
                units := identifiers( token ).value;
                -- calculate work by measure
-               if measure = team_work_measure_unknown_t then
+               if measure = teams_work_measure_unknown_t then
                   workMeasureCntUnknown := workMeasureCntUnknown + 1;
-               elsif measure = team_work_measure_hours_t then
+               elsif measure = teams_work_measure_hours_t then
                   workMeasureCntHours   := workMeasureCntHours + natural( to_numeric( units ) );
-               elsif measure = team_work_measure_fpoints_t then
+               elsif measure = teams_work_measure_fpoints_t then
                   workMeasureCntFpoints := workMeasureCntFpoints + natural( to_numeric( units ) );
-               elsif measure = team_work_measure_spoints_t then
+               elsif measure = teams_work_measure_spoints_t then
                   workMeasureCntSpoints := workMeasureCntSpoints + natural( to_numeric( units ) );
-               elsif measure = team_work_measure_sloc_t then
+               elsif measure = teams_work_measure_sloc_t then
                   workMeasureCntSloc    := workMeasureCntSloc + natural( to_numeric( units ) );
-               elsif measure = team_work_measure_size_t and units = "s" then
+               elsif measure = teams_work_measure_size_t and units = "s" then
                   workMeasureCntSizeS   := workMeasureCntSizeS + 1;
-               elsif measure = team_work_measure_size_t and units = "m" then
+               elsif measure = teams_work_measure_size_t and units = "m" then
                   workMeasureCntSizeM   := workMeasureCntSizeM + 1;
-               elsif measure = team_work_measure_size_t and units = "l" then
+               elsif measure = teams_work_measure_size_t and units = "l" then
                   workMeasureCntSizeL   := workMeasureCntSizeL + 1;
-               elsif measure = team_work_measure_size_t and units = "xl" then
+               elsif measure = teams_work_measure_size_t and units = "xl" then
                   workMeasureCntSizeXL   := workMeasureCntSizeXL + 1;
                else
                   null; -- DEBUG
@@ -919,25 +919,25 @@ end vm;
                expect( symbol_t, "," );
                info := info & "," & identifiers( token ).value; -- unit
                units := identifiers( token ).value;
-               if measure = team_work_priority_unknown_t then
+               if measure = teams_work_priority_unknown_t then
                   workPriorityCntUnknown := workPriorityCntUnknown + 1;
-               elsif measure = team_work_priority_level_t and units = "l" then
+               elsif measure = teams_work_priority_level_t and units = "l" then
                   workPriorityCntLevelL := workPriorityCntLevelL + 1;
-               elsif measure = team_work_priority_level_t and units = "m" then
+               elsif measure = teams_work_priority_level_t and units = "m" then
                   workPriorityCntLevelM := workPriorityCntLevelM + 1;
-               elsif measure = team_work_priority_level_t and units = "h" then
+               elsif measure = teams_work_priority_level_t and units = "h" then
                   workPriorityCntLevelH := workPriorityCntLevelH + 1;
-               elsif measure = team_work_priority_severity_t and units = " 1" then
+               elsif measure = teams_work_priority_severity_t and units = " 1" then
                   workPriorityCntSeverity1 := workPriorityCntSeverity1 + 1;
-               elsif measure = team_work_priority_severity_t and units = " 2" then
+               elsif measure = teams_work_priority_severity_t and units = " 2" then
                   workPriorityCntSeverity2 := workPriorityCntSeverity2 + 1;
-               elsif measure = team_work_priority_severity_t and units = " 3" then
+               elsif measure = teams_work_priority_severity_t and units = " 3" then
                   workPriorityCntSeverity3 := workPriorityCntSeverity3 + 1;
-               elsif measure = team_work_priority_severity_t and units = " 4" then
+               elsif measure = teams_work_priority_severity_t and units = " 4" then
                   workPriorityCntSeverity4 := workPriorityCntSeverity4 + 1;
-               elsif measure = team_work_priority_severity_t and units = " 5" then
+               elsif measure = teams_work_priority_severity_t and units = " 5" then
                   workPriorityCntSeverity5 := workPriorityCntSeverity5 + 1;
-               elsif measure = team_work_priority_risk_t then
+               elsif measure = teams_work_priority_risk_t then
                   workPriorityCntRisk := workPriorityCntRisk + natural( to_numeric( units ) );
                else
                   null; -- DEBUG
@@ -1847,7 +1847,7 @@ begin
      Put_Line( "assign( l1, l2 )                                       clear( l )" );
      Put_Line( "b := contains( l, e )                                  delete( l, c [,n] )" );
      Put_Line( "delete_first( l [,n] )                                 delete_last( l [,n] )" );
-     Put_Line( "disassemble( s, l [,d] )                               e := element( c )" );
+     Put_Line( "disassemble( s, l [,d [,f] ] )                         e := element( c )" );
      Put_Line( "find( l, e, c )                                        first( l, c )" );
      Put_Line( "e := first_element( l )                                flip( l )" );
      Put_Line( "b := has_element( c )" );

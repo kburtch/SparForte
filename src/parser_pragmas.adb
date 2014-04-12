@@ -45,7 +45,7 @@ with system,
     jobs, -- for clearCommandHash
     parser_aux,
     parser,
-    parser_team;
+    parser_teams;
 use ada.text_io,
     ada.text_io.editing,
     ada.command_line,
@@ -68,7 +68,7 @@ use ada.text_io,
     jobs,
     parser_aux,
     parser,
-    parser_team;
+    parser_teams;
 
 package body parser_pragmas is
 
@@ -550,10 +550,10 @@ begin
      null;
   when advise =>                             -- pragma advise
      ParseIdentifier( var_id );
-     if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+     if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
         expect( symbol_t, "," );
         ParseIdentifier( var_id );
-        if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+        if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expect( symbol_t, "," );
            expect( strlit_t );
         end if;
@@ -564,20 +564,20 @@ begin
      ParseAnnotateKind;
   when blocked =>                            -- pragma clarify
      ParseIdentifier( var_id );
-     if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+     if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
         expect( symbol_t, "," );
         ParseIdentifier( var_id );
-        if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+        if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expect( symbol_t, "," );
            expect( strlit_t );
         end if;
      end if;
   when clarify =>                            -- pragma clarify
      ParseIdentifier( var_id );
-     if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+     if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
         expect( symbol_t, "," );
         ParseIdentifier( var_id );
-        if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+        if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expect( symbol_t, "," );
            expect( strlit_t );
         end if;
@@ -592,10 +592,10 @@ begin
      expect( strlit_t );
   when dispute =>                               -- pragma dispute
      ParseIdentifier( var_id );
-     if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+     if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
         expect( symbol_t, "," );
         ParseIdentifier( var_id );
-        if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+        if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expect( symbol_t, "," );
            expect( strlit_t );
         end if;
@@ -618,20 +618,20 @@ begin
      expect( backlit_t );
   when propose =>                           -- pragma refactor
      ParseIdentifier( var_id );
-     if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+     if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
         expect( symbol_t, "," );
         ParseIdentifier( var_id );
-        if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+        if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expect( symbol_t, "," );
            expect( strlit_t );
         end if;
      end if;
   when refactor =>                           -- pragma refactor
      ParseIdentifier( var_id );
-     if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+     if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
         expect( symbol_t, "," );
         ParseIdentifier( var_id );
-        if baseTypesOK( identifiers( var_id ).kind, team_member_t ) then
+        if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expect( symbol_t, "," );
            expect( strlit_t );
         end if;
@@ -770,17 +770,17 @@ begin
        unused_bool : boolean;
      begin
        ParseIdentifier( var_id );              -- the person
-       unused_bool := baseTypesOK( identifiers( var_id ).kind, team_member_t );
+       unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_member_t );
        expect( symbol_t, "," );
        --expr_val := identifiers( token ).value;
        expect( strlit_t );
        expect( symbol_t, "," );
        ParseIdentifier( var_id );              -- the work estimate measure
-       unused_bool := baseTypesOK( identifiers( var_id ).kind, team_work_measure_t );
+       unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_work_measure_t );
        expect( symbol_t, "," );
-       if var_id = team_work_measure_unknown_t then  -- the work estimate
+       if var_id = teams_work_measure_unknown_t then  -- the work estimate
           expect( number_t, " 0" );
-       elsif var_id = team_work_measure_size_t then
+       elsif var_id = teams_work_measure_size_t then
           if identifiers( token ).value /= "s" and
              identifiers( token ).value /= "m" and
              identifiers( token ).value /= "l" and
@@ -793,24 +793,24 @@ begin
        end if;
        expect( symbol_t, "," );
        ParseIdentifier( var_id );              -- the priority type
-       unused_bool := baseTypesOK( identifiers( var_id ).kind, team_work_priority_t );
+       unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_work_priority_t );
        expect( symbol_t, "," );
-       if var_id = team_work_priority_unknown_t then  -- the work estimate
+       if var_id = teams_work_priority_unknown_t then  -- the work estimate
           expect( number_t, " 0" );
-       elsif var_id = team_work_priority_level_t then
+       elsif var_id = teams_work_priority_level_t then
           if identifiers( token ).value /= "l" and
              identifiers( token ).value /= "m" and
              identifiers( token ).value /= "h" then
              err( "expected 'l', 'm' or 'h'" );
           end if;
           expect( charlit_t );
-       elsif var_id = team_work_priority_severity_t then
+       elsif var_id = teams_work_priority_severity_t then
           if identifiers( token ).value < " 1" or
              identifiers( token ).value > " 5" then
              err( "expected 1..5" );
           end if;
           expect( number_t );
-       elsif var_id = team_work_priority_risk_t then
+       elsif var_id = teams_work_priority_risk_t then
           expect( number_t );
        else
           expect( number_t );

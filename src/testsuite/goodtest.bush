@@ -936,8 +936,8 @@ pragma assert( FOOBAR2 = "foobar" );
 FOOBAR3 : string;
 FOOBAR4 : string;
 
-team : team.member;
-ken  : team.member;
+team : teams.member;
+ken  : teams.member;
 
 pragma advise( ken, team, "i need some advice" );
 pragma blocked( ken, team, "stuck on some task" );
@@ -967,6 +967,25 @@ pragma todo( ken, "some task 17", work_measure.unknown, 0, work_priority.severit
 pragma todo( ken, "some task 18", work_measure.unknown, 0, work_priority.risk, 35, "ID 16" );
 
 pragma todo( ken, "some task 18", work_measure.unknown, 0, work_priority.unknown, 0 );
+
+-- team member fields
+
+ken.description := "my description";
+ken.skills := "my skills";
+ken.lang := "my lang";
+ken.id := 1;
+ken.preferred_contact := "my pc";
+ken.email := "k@b";
+ken.secondary_email := "k@b2";
+ken.preferred_name := "gonzo";
+ken.full_name := "Ken Burtch";
+ken.chair := "3rd from door";
+ken.nickname := "master of magic";
+ken.business_phone := "(555) 555-5555";
+ken.messenging := "skype: foobar";
+ken.teams := "architecture";
+ken.roles := "senior architect";
+ken.active := true;
 
 -- pragma block
 
@@ -2305,6 +2324,7 @@ pragma assert( s = "~" );
 -- pathname expansion with a single / as directory
 
 s := `echo /tmp ;`;
+? s;
 pragma assert( s = "/tmp" );
 
 
@@ -3440,6 +3460,91 @@ begin
   dynamic_hash_tables.get_next( t, s, eof );
   pragma assert( eof );
 
+end;
+
+-- Assemble
+
+declare
+  s : string;
+  sl : doubly_linked_lists.list;
+begin
+  doubly_linked_lists.new_list( sl, string );
+  doubly_linked_lists.clear( sl );
+  doubly_linked_lists.append( sl, "ABC" );
+  doubly_linked_lists.append( sl, "DEF" );
+  doubly_linked_lists.append( sl, "GHI" );
+  s := doubly_linked_lists.assemble( sl );
+
+  -- This should be os independent
+  pragma assert( s = "ABC" & ASCII.LF & "DEF" & ASCII.LF & "GHI" );
+
+  s := doubly_linked_lists.assemble( sl, "ab" );
+  pragma assert( s = "ABCabDEFabGHI" );
+
+  s := doubly_linked_lists.assemble( sl, "ab", "cd" );
+  pragma assert( s = "ABCabDEFabGHIcd" );
+
+  doubly_linked_lists.clear( sl );
+  s := doubly_linked_lists.assemble( sl );
+  pragma assert( s = "" );
+
+  doubly_linked_lists.clear( sl );
+  s := doubly_linked_lists.assemble( sl, ASCII.LF, "foo" );
+  pragma assert( s = "foo" );
+end;
+
+-- Disassemble
+
+declare
+  s : string;
+  sl : doubly_linked_lists.list;
+  sc : doubly_linked_lists.cursor;
+begin
+  doubly_linked_lists.new_list( sl, string );
+  doubly_linked_lists.new_cursor( sc, string );
+
+  s := "ABC" & ASCII.LF & "DEF" & ASCII.LF & "GHI";
+  doubly_linked_lists.disassemble( s, sl, ASCII.LF, "GHI" );
+  doubly_linked_lists.first( sl, sc );
+  pragma assert( strings.to_escaped( doubly_linked_lists.element( sc ) ) = "ABC" );
+  doubly_linked_lists.next( sc );
+  pragma assert( strings.to_escaped( doubly_linked_lists.element( sc ) ) = "DEF" );
+  doubly_linked_lists.next( sc );
+  pragma assert( not doubly_linked_lists.has_element( sc ) );
+
+  doubly_linked_lists.clear( sl );
+  s := "ABC";
+  doubly_linked_lists.disassemble( s, sl );
+  doubly_linked_lists.first( sl, sc );
+  pragma assert( strings.to_escaped( doubly_linked_lists.element( sc ) ) = "ABC" );
+  doubly_linked_lists.next( sc );
+  pragma assert( not doubly_linked_lists.has_element( sc ) );
+
+  doubly_linked_lists.clear( sl );
+  s := "ABC";
+  doubly_linked_lists.disassemble( s, sl, ASCII.LF, "XYZ" );
+  doubly_linked_lists.first( sl, sc );
+  pragma assert( strings.to_escaped( doubly_linked_lists.element( sc ) ) = "ABC" );
+  doubly_linked_lists.next( sc );
+  pragma assert( not doubly_linked_lists.has_element( sc ) );
+
+  doubly_linked_lists.clear( sl );
+  s := "ABCabDEFabGHIab";
+  doubly_linked_lists.disassemble( s, sl, "ab" );
+  doubly_linked_lists.first( sl, sc );
+  pragma assert( strings.to_escaped( doubly_linked_lists.element( sc ) ) = "ABC" );
+  doubly_linked_lists.next( sc );
+  pragma assert( strings.to_escaped( doubly_linked_lists.element( sc ) ) = "DEF" );
+  doubly_linked_lists.next( sc );
+  pragma assert( strings.to_escaped( doubly_linked_lists.element( sc ) ) = "GHI" );
+  doubly_linked_lists.next( sc );
+  pragma assert( not doubly_linked_lists.has_element( sc ) );
+
+  doubly_linked_lists.clear( sl );
+  s := "";
+  doubly_linked_lists.disassemble( s, sl );
+  doubly_linked_lists.first( sl, sc );
+  pragma assert( not doubly_linked_lists.has_element( sc ) );
 end;
 
 -- Pragma ada_95 tests

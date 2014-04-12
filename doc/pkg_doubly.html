@@ -57,7 +57,7 @@ to create and manage ordered, unindexed, linked lists.</p>
   <a href="#doubly_linked_lists.assign">assign( l1, l2 )</a>                                       <a href="#doubly_linked_lists.clear">clear( l )</a>
   <a href="#doubly_linked_lists.contains">b := contains( l, e )</a>                                  <a href="#doubly_linked_lists.delete">delete( l, c [,n] )</a>
   <a href="#doubly_linked_lists.delete_first">delete_first( l [,n] )</a>                                 <a href="#doubly_linked_lists.delete_last">delete_last( l [,n] )</a>
-  <a href="#doubly_linked_lists.disassemble">disassemble( s, l [,d] )</a>                               <a href="#doubly_linked_lists.element">e := element( c )</a>
+  <a href="#doubly_linked_lists.disassemble">disassemble( s, l [,d [,f] ] )</a>                         <a href="#doubly_linked_lists.element">e := element( c )</a>
   <a href="#doubly_linked_lists.find">find( l, e, c )</a>                                        <a href="#doubly_linked_lists.first">first( l, c )</a>
   <a href="#doubly_linked_lists.first_element">e := first_element( l )</a>                                <a href="#doubly_linked_lists.flip">flip( l )</a>
   <a href="#doubly_linked_lists.has_element">b := has_element( c )</a>
@@ -173,9 +173,11 @@ An exception is raised if out of memory</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Apply strings.image to each element in the list.  Concatenate the strings together, separated by delimiter string d and ending with optional string f.</p>
+<td><p>Apply strings.image to each element in the list.  Concatenate the strings together to form a new string,
+separated by delimiter string d and ending with optional string f.  An list will result in an empty string
+(but f will be appended even if the string is empty).</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">put_line( doubly_linked_lists.assemble( l ) );</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">echo( doubly_linked_lists.assemble( lines ) ) | wc;</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -507,9 +509,9 @@ An exception is raised if out of memory</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>[NOT DONE]Apply strings.value to each element in the list.  Concatenate the strings together, separated by delimiter string d and ending with optional string f.</p>
+<td><p>Convert the string to a list of strings.  Each string is deliminted by string d (default line feed) and optional string f will be removed from the end of the string before processing.  An empty string will result in an empty list.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">put_line( doubly_linked_lists.assemble( l ) );</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.disassemble( `ls;`, lines ) );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >

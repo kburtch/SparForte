@@ -10,5 +10,5 @@ FOOBAR.i := 1;
 FOOBAR.j := 2;
 pragma export_json( shell, FOOBAR );
 
-../../spar import_json_record_array.bush ; -- should fail when executed
+../spar testsuite008_misc/import_json_record_array.bush ; -- should fail when executed
 

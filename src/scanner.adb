@@ -71,7 +71,7 @@ with system,
     parser_chains,
     parser_doubly,
     parser_dht,
-    parser_team,
+    parser_teams,
     parser_sessions;
 use ada.text_io,
     ada.integer_text_io,
@@ -118,7 +118,7 @@ use ada.text_io,
     parser_chains,
     parser_doubly,
     parser_dht,
-    parser_team,
+    parser_teams,
     parser_sessions;
 
 pragma Optimize( time );
@@ -1493,7 +1493,7 @@ procedure shutdownScanner is
 begin
 
   ShutdownSessions;
-  ShutdownTeam;
+  ShutdownTeams;
   ShutdownDHT;
   ShutdownDoubly;
   ShutdownChains;
@@ -2165,7 +2165,7 @@ begin
   StartupChains;
   StartupDoubly;
   StartupDHT;
-  StartupTeam;
+  StartupTeams;
   StartupSessions;
 
   -- Declare all Environment Variables
