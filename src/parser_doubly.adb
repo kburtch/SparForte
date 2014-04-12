@@ -1081,7 +1081,9 @@ begin
                  theTargetList.dlslList,
                  theCursor.dlslCursor,
                  theSourceList.dlslList );
-          exception when program_error =>
+          exception when constraint_error =>
+             err( "a cursor has no element" );
+          when program_error =>
              err( "a cursor refers to a different list" );
           end;
 
@@ -1093,7 +1095,9 @@ begin
                  theCursor.dlslCursor,
                  theSourceList.dlslList,
                  theSecondCursor.dlslCursor );
-          exception when program_error =>
+          exception when constraint_error =>
+             err( "a cursor has no element" );
+          when program_error =>
              err( "a cursor refers to a different list" );
           end;
 
@@ -1104,7 +1108,9 @@ begin
                  theTargetList.dlslList,
                  theCursor.dlslCursor,
                  theSecondCursor.dlslCursor );
-          exception when program_error =>
+          exception when constraint_error =>
+             err( "a cursor has no element" );
+          when program_error =>
              err( "a cursor refers to a different list" );
           end;
 
@@ -1138,7 +1144,7 @@ end ParseDoublyHasElement;
 -----------------------------------------------------------------------------
 
 procedure ParseDoublyAssemble( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := doubly_linked_lists.assemble( l [,d [,f]] );
+  -- Syntax: s := doubly_linked_lists.assemble( l [,d [,f]] );
   -- Ada:    N/A
   -- This should run faster than if the user did it themselves in a script.
   -- As a shell language, this is useful for passing data to a pipeline
@@ -1171,6 +1177,7 @@ begin
   if isExecutingCommand then
      begin
        if not hasDelim then
+          -- TODO: the eol delimiter should be based on the operating system
           delimExpr := to_unbounded_string( "" & ASCII.LF );
        end if;
        findResource( to_resource_id( identifiers( listId ).value ), theList );
@@ -1193,14 +1200,41 @@ begin
 end ParseDoublyAssemble;
 
 procedure ParseDoublyDisassemble is
+  -- Syntax: doubly_linked_lists.dissemble( s, l [,d [,f]] );
+  -- Ada:    N/A
+  -- The reverse of assemble.  Take a string and convert it to a list of
+  -- strings.  Strip off the final suffix, if it exists.  Use d as the
+  -- element delimiter (will not be included in the list element.  The
+  -- default of d is ASCII.LF.
+  -- This should run faster than if the user did it themselves in a script.
+  -- As a shell language, this is useful for processing data received from
+  -- a shell command.
   -- TODO: not done
-  strExpr : unbounded_string;
-  strType : identifier;
-  listId  : identifier;
+  strExpr   : unbounded_string;
+  strType   : identifier;
+  listId    : identifier;
+  delimExpr : unbounded_string;
+  delimType : identifier;
+  hasDelim  : boolean := false;
+  finalExpr : unbounded_string;
+  finalType : identifier;
+  hasFinal  : boolean := false;
 begin
   expect( doubly_disassemble_t );
   ParseFirstStringParameter( strExpr, strType, uni_string_t );
-  ParseLastListParameter( listId );
+  ParseNextListParameter( listId );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseNextStringParameter( delimExpr, delimType, uni_string_t );
+     hasDelim := true;
+     if token = symbol_t and identifiers( token ).value = "," then
+        ParseLastStringParameter( finalExpr, finalType, uni_string_t );
+        hasFinal := true;
+     else
+        expect( symbol_t, ")" );
+     end if;
+  else
+     expect( symbol_t, ")" );
+  end if;
   if isExecutingCommand then
      declare
        ch : character;
@@ -1208,18 +1242,45 @@ begin
        l  : natural := length( strExpr );
        tempStr : unbounded_string;
        theList : resPtr;
+       delimPos : natural;
+       delimLen : positive;
      begin
+       -- default delimiter if none supplied
+       if not hasDelim then
+          -- TODO: the eol delimiter should be based on the operating system
+          delimExpr := null_unbounded_string & ASCII.LF;
+       end if;
+       -- remove final part, if it exists and is defined
+       if hasFinal then
+          if l > length( finalExpr ) then
+             if unbounded_slice( strExpr, l - length( finalExpr ) + 1, l ) = finalExpr then
+                delete( strExpr, l - length( finalExpr ) + 1, l );
+             end if;
+             l := length( strExpr ); -- new length
+          end if;
+       end if;
+       delimLen := length( delimExpr );
+       delimPos := 0;
+       -- generate the list items
        findResource( to_resource_id( identifiers( listId ).value ), theList );
        while l >= i loop
           ch := element( strExpr, i );
-          if ch = ASCII.LF then
-             Doubly_Linked_String_Lists.Append( theList.dlslList, tempStr );
-             tempStr := null_unbounded_string;
-          else
-             tempStr := tempStr & ch;
+          if ch = element( delimExpr, delimPos+1 ) then                           -- looking at delim?
+             tempStr := tempStr & ch;                                             -- add chr to running string
+             delimPos := delimPos + 1;                                            -- advance counter
+             if delimPos = delimLen then                                                -- found delimiter?
+                Delete( tempstr, length( tempStr ) - delimLen + 1, length( tempStr ) ); -- remove delimiter
+                Doubly_Linked_String_Lists.Append( theList.dlslList, tempStr );   -- put string in list
+                tempStr := null_unbounded_string;                                 -- reset the running string
+                delimPos := 0;                                                    -- and the delim posn
+             end if;
+          else                                                                       -- not the delim?
+             tempStr := tempStr & ch;                                                -- add chr to running string
+             delimPos := 0;                                                          -- reset delim posn
           end if;
           i := i + 1;
        end loop;
+       -- anything left, just append.
        if length( tempStr ) > 0 then
           Doubly_Linked_String_Lists.Append( theList.dlslList, tempStr );
        end if;
