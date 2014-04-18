@@ -2187,6 +2187,12 @@ begin
      Put_Line( "  System.Restricted_Shell       System.Script_License" );
      Put_Line( "  System.Script_Software_Model  System.System_Version" );
      discardUnusedIdentifier( token );
+  elsif helpTopic = "teams" then
+     Put_Line( "teams - the development team package" );
+     New_Line;
+     Put_Line( "  teams.member - a team member" );
+     Put_Line( "  teams.work_measure - the measure of work effort" );
+     Put_Line( "  teams.work_priority - the measure of work priority" );
   elsif helpTopic = "trace" then
      Put_Line( "trace - show verbose debugging information" );
      Put_Line( "  " & bold( "trace" ) & " " &

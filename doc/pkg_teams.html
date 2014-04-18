@@ -4,11 +4,11 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <META NAME="description" CONTENT="SparForte language documentation">
-	<title>SparForte - Packages - Enums</title>
+	<title>SparForte - Packages - Teams</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 	<link rel="index" href="packages.html" />
-	<link rel="prev" href="pkg_dirops.html" />
-	<link rel="next" href="pkg_exceptions.html" />
+	<link rel="prev" href="pkg_system.html" />
+	<link rel="next" href="pkg_units.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -29,7 +29,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="pkg_dht.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_exceptions.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_system.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_text_io.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -41,201 +41,63 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-<h2><a NAME="4.22"></a>Enums Package</h2>
+<h2><a NAME="4.2"></a>Teams</h2>
+<p>The teams package defines data structures of development teams, such as
+team members, priorities and time estimate methods.</p>
 
-<p>The SparForte built-in enums package provides subprograms to manipulate
-enumerated values or values.</p>
+<p><u>GCC Ada Equivalent</u>: N/A<br>
 
-<p><u>GCC Ada Equivalent</u>: enumerated attributes<br>
+<p>There are three prdefined data structures in the teams package.</p>
 
-        <center>
-        <div class="code">
+<p><b>teams.member</b> defines a person on a team (or the team itself):</p>
+
 <pre>
-  <a href="#enums.first">e := first( t )</a>            <a href="#enums.last">e := last( t )</a>            <a href="#enums.pred">e := pred( e2 )</a>      
-  <a href="#enums.succ">e := succ( e2 )</a>
+  <b>type</b> teams.member <b>is</b> <b>record</b>
+       description       : string;   -- description of person
+       skills            : string;   -- description of skills
+       lang              : string;   -- contact languages
+       id                : natural;  -- id number
+       preferred_contact : string;   -- preferred communication method
+       email             : string;   -- primiary email address
+       secondary_email   : string;   -- secondary email address
+       preferred_name    : string;   -- preferred name
+       full_name         : string;   -- complete name
+       chair             : string;   -- where they sit
+       nickname          : string;   -- nickname
+       business_phone    : string;   -- business phone number
+       messenging        : string;   -- messenging service/id
+       teams             : string;   -- teams belonging to
+       roles             : string;   -- roles on the teams
+       active            : boolean;  -- true if currently active member
+       is_team           : boolean;  -- true if this is a team/group, rather
+                                     -- than an individual
+  <b>end</b> <b>record</b>;
 </pre>
-        &nbsp;<br>
-        <div class="code_caption">
-        <b>Help Command</b>: Contents of the enums package
-        </div>
-        </div>
-        </center>
 
-<a name="enums.first"></a><h3>e := enums.first( t )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Return the first (lowest) item of the enumerated type.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">e := enums.first( boolean ); -- returns false</span></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>t</span></td>
-<td><span>in</span></td>
-<td><span>enumerated type</span></td>
-<td><span>required</span></td>
-<td><span>the enumerated type</span></td>
-</tr>
-<tr>
-<td><span>e</span></td>
-<td><span>return value</span></td>
-<td><span>enumerated item</span></td>
-<td><span>required</span></td>
-<td><span>the enumerated type's first item</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: 'first attribute</p></td>
-</tr>
-</table>
+<p>Project priorities are specified using the enumerated type
+<b>teams.work_priority</b>:</p>
 
-<a name="enums.last"></a><h3>e := enums.last( t )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Return the last (highest) item of the enumerated type.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">e := enums.last( boolean ); -- returns true</span></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>t</span></td>
-<td><span>in</span></td>
-<td><span>enumerated type</span></td>
-<td><span>required</span></td>
-<td><span>the enumerated type</span></td>
-</tr>
-<tr>
-<td><span>e</span></td>
-<td><span>return value</span></td>
-<td><span>enumerated item</span></td>
-<td><span>required</span></td>
-<td><span>the enumerated type's last item</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: 'last attribute</p></td>
-</tr>
-</table>
+<ul>
+<li><b>work_priority.unknown</b> - the priority is unknown</li>
+<li><b>work_priority.level</b> - the priority is 'l' (low), 'm' (medium) or 'h' (high)</li>
+<li><b>work_priority.severity</b> - the priority is a level number, 1..5</li>
+<li><b>work_priority.risk</b> - - the priority is a number representing risk</li>;
+</ul>
 
-<a name="enums.pred"></a><h3>e := enums.pred( e2 )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Return the previous (lower ordinal) item of the enumerated type.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">e := enums.pred( true ); -- returns false</span></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>e2</span></td>
-<td><span>in</span></td>
-<td><span>enumerated item</span></td>
-<td><span>required</span></td>
-<td><span>the enumerated item</span></td>
-</tr>
-<tr>
-<td><span>e</span></td>
-<td><span>return value</span></td>
-<td><span>enumerated item</span></td>
-<td><span>required</span></td>
-<td><span>the enumerated item predecessor to e2</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: 'pred attribute</p></td>
-</tr>
-</table>
 
-<a name="enums.succ"></a><h3>e := enums.succ( e2 )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Return the successor (higher ordinal) item of the enumerated type.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">e := enums.succ( false ); -- returns true</span></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>e2</span></td>
-<td><span>in</span></td>
-<td><span>enumerated item</span></td>
-<td><span>required</span></td>
-<td><span>the enumerated item</span></td>
-</tr>
-<tr>
-<td><span>e</span></td>
-<td><span>return value</span></td>
-<td><span>enumerated item</span></td>
-<td><span>required</span></td>
-<td><span>the enumerated item succssor to e2</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: 'succ attribute</p></td>
-</tr>
-</table>
+<p>Project time estimates are specified using the enumerated type
+<b>teams.work_measure</b>:</p>
+
+<ul>
+<li><b>work_measure.unknown</b> - the work measure is unknown</li>
+<li><b>work_measure.hours</b> - the measure is a natural number of hours</li>
+<li><b>work_measure.function_points</b> - the measure is a natural number of function points</li>
+<li><b>work_measure.story_points</b> - the measure is a natural number of story points</li>
+<li><b>work_measure.lines_of_code</b> - the measure is a natural number of lines-of-code</li>
+<li><b>work_measure.size</b> - the measure is a 's' (small), 'm' (medium), 'l' (large) or 'xl' (extra large)</li>
+</ul>
+
+<p>See the pragmas section in the reference for more information on how these types are used.</p>
 
 &nbsp;<br>
 
@@ -251,7 +113,7 @@ enumerated values or values.</p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_doubly.html">&nbsp;doubly_linked...</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_dht.html">&nbsp;dynamic_hash_...</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;<b>enums</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_exceptions.html">&nbsp;exceptions</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_gnat_cgi.html">&nbsp;gnat.cgi</a></p>
@@ -271,9 +133,11 @@ enumerated values or values.</p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;stats</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_strings.html">&nbsp;strings</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_teams.html">&nbsp;teams</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_teams.html">&nbsp;<b>teams</b></a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
+</a></p>
+
 			</td>
 		</tr>
 		<tr>
