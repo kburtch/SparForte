@@ -821,11 +821,21 @@ begin
  elsif Request_Method_Text = "POST" then
     Actual_CGI_Method := Post;
     declare
-      Raw_Data_String : String(1 ..
-                         Integer'Value(Get_Environment("CONTENT_LENGTH")));
+      content_length : integer := Integer'Value(Get_Environment("CONTENT_LENGTH"));
+      Raw_Data_String : String(1 .. content_length );
+      content_count : integer := 0;
+ch : character;
     begin
-      Get(Raw_Data_String);
+      -- this is slow but lets me check for errors
+      -- Get(Raw_Data_String);
+      for i in 1..Integer'Value(Get_Environment("CONTENT_LENGTH")) loop
+          Get( ch );
+          Raw_Data_String(i) := ch;
+          content_count := i;
+      end loop;
       Raw_Data := To_Unbounded_String(Raw_Data_String);
+    exception when end_error =>
+      put_line( standard_error, "adacgi: END_ERROR reading POST data on standard input, expected" & content_length'img & " bytes but read" & content_count'img );
     end;
  else
     Actual_CGI_Method := Unknown;
@@ -845,8 +855,6 @@ begin
    Parsing_Errors_Occurred := False;
  end if;
 
-exception when end_error =>
-  put_line( standard_error, "cgi: error reading cgi data past end of file" );
 end Initialize;
 
 -- This library automatically parses CGI and cookie input on program start.
