@@ -83,8 +83,8 @@ environment.</p>
   <b>pragma</b> session_import_script( `commands` )
   <b>pragma</b> software_model( model_name )
   <b>pragma</b> suppress( word_quoting )
-  <b>pragma</b> suppress( low_priority_todos_on_release )
   <b>pragma</b> suppress( all_todos_on_release )
+  <b>pragma</b> suppress( low_priority_todos_on_release )
   <b>pragma</b> template( css|html|js|json|text|wml|xml [, path] )
   <b>pragma</b> todo( to, story, measure, units, priority, units [, ticket] )
   <b>pragma</b> test( condition )
@@ -264,6 +264,13 @@ be:<br>
 </ul>
 Only one software model is permitted.  The name can be read from the
 System package.</li>
+<li><b>pragma suppress( low_priority_todos_on_release )</b> - allow
+a project with low priority pragma todo's to pass in testing and
+maintenance SDLC modes.  Otherwise, any todo's with non-zero
+priorities or sizes are not allowed in these modes.</li>
+<li><b>pragma suppress( all_todos_on_release )</b> - allow
+all todo's to pass in testing and maintenance SDLC modes.  This
+was mainly added to aid testing the language.</li>
 </ul><br>
 
 <h4>Debugging Pragmas</h4>
@@ -304,13 +311,6 @@ extra shell words.  However, when porting shell scripts, it can be helpful
 to allow unquoted expansions. (e.g. "echo $HOME" will no longer be
 reported as an error.)
 </li>
-<li><b>pragma suppress( low_priority_todos_on_release )</b> - allow
-a project with low priority pragma todo's to pass in testing and
-maintenance SDLC modes.  Otherwise, any todo's with non-zero
-priorities or sizes are not allowed in these modes.</li>
-<li><b>pragma suppress( all_todos_on_release )</b> - allow
-all todo's to pass in testing and
-maintenance SDLC modes.</p>
   <li> <b>pragma test( `commands` )</b> -
 these are a set of testing commands to run when test mode (the --test
 option) is used.  For example, this can be used to help with unit testing.
