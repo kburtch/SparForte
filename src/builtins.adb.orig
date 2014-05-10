@@ -831,6 +831,9 @@ end vm;
        workPriorityCntSeverity4 : natural := 0;
        workPriorityCntSeverity5 : natural := 0;
        workPriorityCntRisk      : natural := 0;
+       workPriorityCntCVSSMinor : natural := 0;
+       workPriorityCntCVSSMajor : natural := 0;
+       workPriorityCntCVSSCrit  : natural := 0;
        measure : identifier;
        units   : unbounded_string;
 
@@ -939,6 +942,19 @@ end vm;
                   workPriorityCntSeverity5 := workPriorityCntSeverity5 + 1;
                elsif measure = teams_work_priority_risk_t then
                   workPriorityCntRisk := workPriorityCntRisk + natural( to_numeric( units ) );
+               elsif measure = teams_work_priority_cvss_t then
+                  declare
+                    u : long_float;
+                  begin
+                    u := to_numeric( units );
+                    if u < 4.0 then
+                      workPriorityCntCVSSMinor := workPriorityCntCVSSMinor + 1;
+                    elsif u < 7.0 then
+                      workPriorityCntCVSSMajor := workPriorityCntCVSSMajor + 1;
+                    else
+                      workPriorityCntCVSSCrit  := workPriorityCntCVSSCrit  + 1;
+                    end if;
+                  end;
                else
                   null; -- DEBUG
                end if;
@@ -1381,6 +1397,15 @@ end vm;
                 if workPriorityCntRisk > 0 then
                    put_line( "Risk:" & workPriorityCntRisk'img );
                 end if;
+                if workPriorityCntCVSSMinor > 0 then
+                   put_line( "CVSS Minor:" & workPriorityCntCVSSMinor'img );
+                end if;
+                if workPriorityCntCVSSMajor > 0 then
+                   put_line( "CVSS Major:" & workPriorityCntCVSSMajor'img );
+                end if;
+                if workPriorityCntCVSSCrit > 0 then
+                   put_line( "CVSS Critical:" & workPriorityCntCVSSCrit'img );
+                end if;
 
                 new_line;
                 put_line( "Number of To-Do Items:" & todoTotal'img );
@@ -1665,7 +1690,11 @@ begin
      Put_Line( "  " & bold( "pragma" ) & " " &
        "software_model( model_name )" );
      Put_Line( "  " & bold( "pragma" ) & " " &
-       "suppress( word_quoting )" );
+       "suppress( word_quoting ) - allow shell 'barewords'" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
+       "suppress( all_priority_todos_for_release ) - all todo's allowed late in SDLC" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
+       "suppress( low_priority_todos_for_release ) - low priority allowed late in SDLC" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "template( css|html|js|json|text|wml|xml [, path] ) - script is acting as a template processor" );
      Put_Line( "  " & bold( "pragma" ) & " " &

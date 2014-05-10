@@ -113,6 +113,8 @@ type aPragmaKind is (
      software_model,
      suppress,
      suppress_word_quoting,
+     suppress_low_priority_todos,
+     suppress_all_todos,
      template,
      test,
      test_result,
@@ -697,6 +699,14 @@ begin
         discardUnusedIdentifier( token );
         getNextToken;
         pragmaKind := suppress_word_quoting;
+     elsif identifiers( token ).name = "low_priority_todos_for_release" then
+        discardUnusedIdentifier( token );
+        getNextToken;
+        pragmaKind := suppress_low_priority_todos;
+     elsif identifiers( token ).name = "all_todos_for_release" then
+        discardUnusedIdentifier( token );
+        getNextToken;
+        pragmaKind := suppress_all_todos;
      else
         discardUnusedIdentifier( token );
         err( "unknown error type" );
@@ -768,6 +778,7 @@ begin
      -- example: pragma to-do( me, "something", work_measure.story_points, 2, work_priority.level, 'l', "ticket" );
      declare
        unused_bool : boolean;
+       work_estimate_unknown : boolean;
      begin
        ParseIdentifier( var_id );              -- the person
        unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_member_t );
@@ -775,11 +786,19 @@ begin
        --expr_val := identifiers( token ).value;
        expect( strlit_t );
        expect( symbol_t, "," );
-       ParseIdentifier( var_id );              -- the work estimate measure
+
+       -- pragma to-do: the work estimate measure
+
+       ParseIdentifier( var_id );
        unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_work_measure_t );
        expect( symbol_t, "," );
-       if var_id = teams_work_measure_unknown_t then  -- the work estimate
+       work_estimate_unknown := false;
+
+       -- pragma to-do: the work estimate value
+
+       if var_id = teams_work_measure_unknown_t then
           expect( number_t, " 0" );
+          work_estimate_unknown := true;
        elsif var_id = teams_work_measure_size_t then
           if identifiers( token ).value /= "s" and
              identifiers( token ).value /= "m" and
@@ -788,14 +807,25 @@ begin
              err( "expected ""s"", ""m"", ""l"" or ""xl""" );
           end if;
          expect( strlit_t );
-       else
+       elsif var_id = teams_work_measure_hours_t or
+             var_id = teams_work_measure_fpoints_t or
+             var_id = teams_work_measure_spoints_t or
+             var_id = teams_work_measure_sloc_t then
          expect( number_t );
+       else
+          err( "internal error: don't know how to handle this type of work measure value" );
        end if;
        expect( symbol_t, "," );
-       ParseIdentifier( var_id );              -- the priority type
+
+       -- pragma to-do: the work priority measure
+
+       ParseIdentifier( var_id );
        unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_work_priority_t );
        expect( symbol_t, "," );
-       if var_id = teams_work_priority_unknown_t then  -- the work estimate
+
+       -- pragma to-do: the work priority value
+
+       if var_id = teams_work_priority_unknown_t then
           expect( number_t, " 0" );
        elsif var_id = teams_work_priority_level_t then
           if identifiers( token ).value /= "l" and
@@ -803,17 +833,64 @@ begin
              identifiers( token ).value /= "h" then
              err( "expected 'l', 'm' or 'h'" );
           end if;
+          if not work_estimate_unknown and not allowAllTodosForRelease then
+             if boolean( testOpt ) or boolean( maintenanceOpt ) then
+                if allowLowPriorityTodosForRelease and identifiers( token ).value = "l" then
+                   null;
+                else
+                   err( "priority todo task not yet completed" );
+                end if;
+             end if;
+          end if;
           expect( charlit_t );
        elsif var_id = teams_work_priority_severity_t then
           if identifiers( token ).value < " 1" or
              identifiers( token ).value > " 5" then
              err( "expected 1..5" );
           end if;
+          if not work_estimate_unknown and not allowAllTodosForRelease then
+             if boolean( testOpt ) or boolean( maintenanceOpt ) then
+                if allowLowPriorityTodosForRelease and identifiers( token ).value < " 2" then
+                   null;
+                else
+                   err( "priority todo task not yet completed" );
+                end if;
+             end if;
+          end if;
           expect( number_t );
        elsif var_id = teams_work_priority_risk_t then
+          if not work_estimate_unknown and not allowAllTodosForRelease then
+             if boolean( testOpt ) or boolean( maintenanceOpt ) then
+                -- any financial risk
+                if identifiers( token ).value /= " 0" then
+                   err( "priority todo task not yet completed" );
+                end if;
+             end if;
+          end if;
+          expect( number_t );
+       elsif var_id = teams_work_priority_cvss_t then
+          declare
+             v1 : long_float;
+          begin
+             v1 := to_numeric( identifiers( token ).value );
+             if v1 < 0.0 or v1 > 10.0 then
+                err( "expected 1..10" );
+             end if;
+             -- CVSS 2 says a score of 3.9 or lower is low risk
+             if not work_estimate_unknown and not allowAllTodosForRelease then
+                if boolean( testOpt ) or boolean( maintenanceOpt ) then
+                   if allowLowPriorityTodosForRelease and v1 < 4.0 then
+                      null;
+                   elsif v1 > 0.0 then
+                      err( "priority todo task not yet completed" );
+                   end if;
+                end if;
+             end if;
+          exception when others => null;
+          end;
           expect( number_t );
        else
-          expect( number_t );
+          err( "internal error: don't know how to handle this type of work priority value" );
        end if;
        -- optional ticket id
        if token = symbol_t and identifiers( token ).value = "," then
@@ -837,13 +914,20 @@ begin
 
   -- Execute the pragma
 
-  -- this pragma only affects syntax checking
+  -- this pragma only affects syntax checking.  syntax checking doesn't
+  -- happen at the command prompt.
   if syntax_check then
      if pragmaKind = restriction_unused then
         restriction_no_unused_identifiers := true;
      end if;
      if pragmaKind = suppress_word_quoting then
         world.suppress_word_quoting := true;
+     end if;
+     if pragmaKind = suppress_low_priority_todos then
+        allowLowPriorityTodosForRelease := true;
+     end if;
+     if pragmaKind = suppress_all_todos then
+        allowAllTodosForRelease := true;
      end if;
   end if;
 
@@ -1196,6 +1280,10 @@ begin
           end;
         end if;
      when suppress_word_quoting =>
+        null; -- only applies in syntax check
+     when suppress_low_priority_todos =>
+        null; -- only applies in syntax check
+     when suppress_all_todos =>
         null; -- only applies in syntax check
      when template | unrestricted_template =>
         if processingTemplate then

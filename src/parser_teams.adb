@@ -138,6 +138,7 @@ begin
   declareStandardConstant( teams_work_priority_level_t, "work_priority.level", teams_work_priority_t, "1" );
   declareStandardConstant( teams_work_priority_severity_t, "work_priority.severity", teams_work_priority_t, "2" );
   declareStandardConstant( teams_work_priority_risk_t, "work_priority.risk", teams_work_priority_t, "3" );
+  declareStandardConstant( teams_work_priority_cvss_t, "work_priority.cvss", teams_work_priority_t, "4" );
 
 end StartupTeams;
 

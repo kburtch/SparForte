@@ -63,6 +63,7 @@ teams_work_priority_unknown_t : identifier;
 teams_work_priority_level_t   : identifier;
 teams_work_priority_severity_t : identifier;
 teams_work_priority_risk_t    : identifier;
+teams_work_priority_cvss_t    : identifier;
 
 -----------------------------------------------------------------------------
 -- HOUSEKEEPING

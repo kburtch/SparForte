@@ -946,6 +946,7 @@ pragma dispute( team, ken, "question some design" );
 pragma propose( team, ken, "suggest some solution" );
 pragma refactor( team, ken, "cleanup some code" );
 
+pragma suppress( all_todos_for_release );
 pragma todo( ken, "some task 1", work_measure.unknown, 0, work_priority.level, 'l', "ID 1" );
 pragma todo( ken, "some task 2", work_measure.hours, 2, work_priority.level, 'l', "ID 1" );
 pragma todo( ken, "some task 3", work_measure.function_points, 3, work_priority.level, 'l', "ID 1" );
@@ -965,6 +966,7 @@ pragma todo( ken, "some task 15", work_measure.unknown, 0, work_priority.severit
 pragma todo( ken, "some task 16", work_measure.unknown, 0, work_priority.severity, 4, "ID 14" );
 pragma todo( ken, "some task 17", work_measure.unknown, 0, work_priority.severity, 5, "ID 15" );
 pragma todo( ken, "some task 18", work_measure.unknown, 0, work_priority.risk, 35, "ID 16" );
+pragma todo( ken, "some task 19", work_measure.unknown, 0, work_priority.cvss, 5.5, "ID 17" );
 
 pragma todo( ken, "some task 18", work_measure.unknown, 0, work_priority.unknown, 0 );
 

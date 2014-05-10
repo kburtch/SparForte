@@ -159,6 +159,8 @@ restriction_no_mysql_database    : boolean := false; -- pragma restriction
 restriction_no_postgresql_database: boolean := false; -- pragma restriction
 no_command_hash                  : boolean := false; -- pragma restriction
 suppress_word_quoting            : boolean := false; -- pragma suppress
+allowLowPriorityTodosForRelease  : boolean := false; -- pragma suppress
+allowAllTodosForRelease          : boolean := false; -- pragma suppress
 
 type templateTypes is (noTemplate, htmlTemplate, textTemplate,
 cssTemplate, jsTemplate, jsonTemplate, wmlTemplate, xmlTemplate );

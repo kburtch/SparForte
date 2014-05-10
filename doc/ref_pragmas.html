@@ -83,6 +83,8 @@ environment.</p>
   <b>pragma</b> session_import_script( `commands` )
   <b>pragma</b> software_model( model_name )
   <b>pragma</b> suppress( word_quoting )
+  <b>pragma</b> suppress( low_priority_todos_on_release )
+  <b>pragma</b> suppress( all_todos_on_release )
   <b>pragma</b> template( css|html|js|json|text|wml|xml [, path] )
   <b>pragma</b> todo( to, story, measure, units, priority, units [, ticket] )
   <b>pragma</b> test( condition )
@@ -302,6 +304,13 @@ extra shell words.  However, when porting shell scripts, it can be helpful
 to allow unquoted expansions. (e.g. "echo $HOME" will no longer be
 reported as an error.)
 </li>
+<li><b>pragma suppress( low_priority_todos_on_release )</b> - allow
+a project with low priority pragma todo's to pass in testing and
+maintenance SDLC modes.  Otherwise, any todo's with non-zero
+priorities or sizes are not allowed in these modes.</li>
+<li><b>pragma suppress( all_todos_on_release )</b> - allow
+all todo's to pass in testing and
+maintenance SDLC modes.</p>
   <li> <b>pragma test( `commands` )</b> -
 these are a set of testing commands to run when test mode (the --test
 option) is used.  For example, this can be used to help with unit testing.
@@ -411,8 +420,23 @@ with <b>pragma todo</b>.</p>
 <p>work_measure.size must use a string literal with a legitimate size ( "s", "m", etc.).</p>
 <p>work_priority.level must use a character literal with a legitimate level ( 'l', 'm', etc.).</p>
 <p>work_priority.severity must be in the range 1..5</p>
+<p>work_priority.risk is a natural amount of money</p>
+<p>work_priority.cvss is a float score in the range 0.0..10.0</p>
 <p>work_measure.unknown or work_priority.unknown must have an amount/ranking of zero.</p>
 <p>Negative values are not allowed.</p>
+
+<p>For the SDLC, test mode or maintenance mode will report an error ("priority todo task not yet completed")
+for any todo with a known size and priority that isn't finished.  If you use pragma suppress( low_priority_todos_for_release ),
+only moderate or high priority todo's will produce this error.  These are todo's with:</p>
+
+<ul>
+<li>a priority level greater than low</li>
+<li>a priority severity greater than 2</li>
+<li>a priority risk greater than 0 (AdaScript doesn't know how much finanical risk is acceptable)</li>
+<li>a priority CVSS score greater than 4.0</li>
+</ul>
+
+<p>pragma suppress( all_todos_for_release ) stops checking for all todo's.</p>
 
 <p>Teamwork and work estimation pragmas can be displayed using the <b>help</b> command.</p>
 

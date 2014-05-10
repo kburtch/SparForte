@@ -1,6 +1,6 @@
 For the latest news, visit the Linux Cafe at the PegaSoft web site. 
 
-SparForte 1.5's focus was on REST, DB, OpenGL
+SparForte 1.5's focus was on REST, DB, OpenGL.  This was changed to business features.
 
 CHANGES SINCE 1.4
 
@@ -111,4 +111,10 @@ CHANGES SINCE 1.4
 38. Fix: pathname expansion of shell words no longer double slash when the directory is a single slash.
 
 39. Fix: pathname expansion of tilde no longer intermittently happens in the middle of a shell word.
+
+40. New: teams package has a new work priority type: work_priority.cvss
+
+41. New: pragma todo's checked during late SDLC stages.
+
+42. New: pragma suppress( low_priority_todos_for_release ) and suppress( all_todos_for_release ).  Allow low-priority todo's in late SDLC stages.
 

@@ -399,9 +399,97 @@ not been completed by other team members.</li>
 <li>SparForte can verify before you start writing executable code that your design has no errors.</li>
 </ul>
 
+<h3>Planning and Estimation</h3>
+
+<p>Whether you are doing waterfall or agile software development, planning
+work and estimating time are standard practices.  SparForte
+has planning and estimation features that integrate these practices
+into your projects.</p>
+
+<p>First, define your team members using teams.member records near
+the top of your project.  Also create a team member for the team itself.
+This will be used to identify who is working on a task.  If nobody
+is working on a task, just assign it to the team.</p>
+
+<p>Use <span style="font-weight: bold;">pragma todo</span> to mark places in a program where work needs
+to be done.  With this pragma, you can assign the work to a team member,
+provide a description and record the estimated effort and the priority of
+the work.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">
+team : teams.member;<br>
+fred_smith : teams.member;<br>
+...<br>
+<span style="font-weight: bold;">function</span> get_stock_holdings <span style="font-weight: bold;">return</span> float <span style="font-weight: bold;">is</span><br>
+&nbsp;&nbsp;<span style="font-weight: bold;">pragma</span> todo( team, "create get_stock_holdings", work_measure.story_points, 5, work_priority.level, 'm' );;<br>
+<span style="font-weight: bold;">begin</span><br>
+&nbsp;&nbsp;<span style="font-weight: bold;">return</span> 0;<br>
+<span style="font-weight: bold;">end</span> get_stock_holdings;<br>&nbsp;<br>
+        </p>
+        <div class="code_caption">
+        <span style="font-weight: bold;">Example</span>: Example of Work Estimation
+        </div>
+        </div>
+        </center>
+
+<p>In this example, get_stock_holdings is stubbed (that is, a place
+holder) that hasn't been completed.  It's a medium priority task that
+has an estimated effort of 5 story points.  It has been assigned to
+the team because no one has started the work.</p>
+
+<p>If Fred Smith starts to work on this function, he assigns it to
+himself.  There's a ticket in the work tracking system, so he adds
+the ticket id to the pragma.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">
+&nbsp;&nbsp;<span style="font-weight: bold;">pragma</span> todo( fred_smith, "create get_stock_holdings", work_measure.story_points, 5, work_priority.level, 'm', "DEV-3742" );</p>
+        </div>
+        </center>
+
+<p>There are several other work measures and priority types.  You can
+choose the one most suited to your project.  SparForte verifies the
+syntax, data types and values in the todo.</p>
+
+<p>Once a task is completed, Fred will delete the pragma todo.</p>
+
+<p>In testing or maintenance modes, SparForte will confirm that all todo's
+have been completed and the project is ready for release.  (Low priority
+tasks can optionally be permitted with <span style="font-weight: bold;">pragma suppress</span>).
+This way, missing functionality or outstanding bugs are treated
+as serious errors, just like serious syntax errors.</p>
+
+<p>The team may be working on a long-term project with interim releases.
+In these releases, there will be todo's that are not finished.  In this
+case, set the size estimate to unknown.  SparForte will treat these as
+tasks that have not been started and will not ignore these for
+release purposes.</p>
+
+<p>The <span style="font-weight: bold;">help -t</span> command will scan a project and create an unfinished
+work report.  The start of the report is a list of outstanding tasks in
+CSV format.  These can
+be imported into a spreadsheet or any ticket system supporting CSV
+imports.  The end of the report is a summary of the oustanding tasks.
+This summary can be used, for example, to create burn-down charts if  you
+are using Scrum.</p>
+
+<h3>Team Collaboration During Development</h3>
+
+<p>SparForte has features for team communication.  Acting like a messenging
+system within the project, team members can propose changes, request
+assistance and so forth.  This is particularily useful in open source
+projects or teams with geographically remote members.</p>
+
+<p>The help command will display these messages, which can be filtered
+with a command like <span style="font-weight: bold;">grep</span> and <span style="font-weight: bold;">sort</span> to see the ones you are
+interested in..</p>
+
 <h3>Debugging</h3>
 
-<p>The <b>trace</b> command will show each line of a script as
+<p>The <span style="font-weight: bold;">trace</span> command will show each line of a script as
 SparForte reads it.</p>
 
 <p>There are two pragmas for debugging.&nbsp; <span
