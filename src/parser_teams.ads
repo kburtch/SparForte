@@ -60,6 +60,7 @@ teams_work_measure_size_t    : identifier;
 
 teams_work_priority_t        : identifier;
 teams_work_priority_unknown_t : identifier;
+teams_work_priority_completed_t : identifier;
 teams_work_priority_level_t   : identifier;
 teams_work_priority_severity_t : identifier;
 teams_work_priority_risk_t    : identifier;

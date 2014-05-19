@@ -4703,6 +4703,9 @@ begin
            if uniTypesOK( withTextType, uni_string_t ) then
               null;
            end if;
+           if token = use_t then
+              err( optional_bold( "use" ) & " may only be used in exception declaration" );
+           end if;
         elsif token /= symbol_t and identifiers( token ).value /= ";" then
            err( "with or ';' expected" );
         end if;

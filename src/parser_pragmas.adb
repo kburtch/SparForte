@@ -827,6 +827,8 @@ begin
 
        if var_id = teams_work_priority_unknown_t then
           expect( number_t, " 0" );
+       elsif var_id = teams_work_priority_completed_t then
+          expect( number_t, " 0" );
        elsif var_id = teams_work_priority_level_t then
           if identifiers( token ).value /= "l" and
              identifiers( token ).value /= "m" and

@@ -94,7 +94,7 @@ CHANGES SINCE 1.4
 
 30. New: array variables may be deleted with unset.  However, anonymous array types will linger until the end of block.
 
-31. New: teams package.  Contains the team.member record.  [docs] [tests]
+31. New: teams package.  Contains the teams.member record.
 
 32. New: teamwork pragmas.  pragma advise, blocked, clarify, dispute, propose, refactor.
 
@@ -116,5 +116,5 @@ CHANGES SINCE 1.4
 
 41. New: pragma todo's checked during late SDLC stages.
 
-42. New: pragma suppress( low_priority_todos_for_release ) and suppress( all_todos_for_release ).  Allow low-priority todo's in late SDLC stages.
+42. New: pragma suppress( low_priority_todos_for_release ) and suppress( all_todos_for_release ).  Allow low-priority todo's in late SDLC stages.  New teams_priority.completed priority.
 

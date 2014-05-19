@@ -41,7 +41,7 @@ use ada.text_io,
    parser,
    signal_flags;
 
-pragma Optimize( space );
+-- pragma Optimize( space );
 
 procedure spar is
   term_id : identifier;

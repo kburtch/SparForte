@@ -834,6 +834,7 @@ end vm;
        workPriorityCntCVSSMinor : natural := 0;
        workPriorityCntCVSSMajor : natural := 0;
        workPriorityCntCVSSCrit  : natural := 0;
+       workPriorityCompleted    : natural := 0;
        measure : identifier;
        units   : unbounded_string;
 
@@ -942,6 +943,8 @@ end vm;
                   workPriorityCntSeverity5 := workPriorityCntSeverity5 + 1;
                elsif measure = teams_work_priority_risk_t then
                   workPriorityCntRisk := workPriorityCntRisk + natural( to_numeric( units ) );
+               elsif measure = teams_work_priority_completed_t then
+                  workPriorityCompleted := workPriorityCompleted + 1;
                elsif measure = teams_work_priority_cvss_t then
                   declare
                     u : long_float;
@@ -1369,6 +1372,9 @@ end vm;
                 new_line;
                 if workPriorityCntUnknown > 0 then
                    put_line( "Unknown:" & workPriorityCntUnknown'img );
+                end if;
+                if workPriorityCompleted > 0 then
+                   put_line( "Completed:" & workPriorityCompleted'img );
                 end if;
                 if workPriorityCntLevelL > 0 then
                    put_line( "Low:" & workPriorityCntLevelL'img );
