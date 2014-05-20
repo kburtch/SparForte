@@ -189,7 +189,7 @@ procedure draco_ii is
     water := 20;
     creature_here := false;
     quest_bonus := 0;
-    
+
     round := 0;
 
     case level is
@@ -417,7 +417,7 @@ begin
        if creature_hp < 10 then
           put_line( tty_inverse & "Blood gushes from its wounds" & tty_normal );
        end if;
-  
+
        -- Creature attack
 
        declare

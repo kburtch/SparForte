@@ -38,10 +38,10 @@ procedure combinations is
     end loop;
     return c;
   end get_last_combination;
-  
+
   combination : string := get_first_combination;
   last_combination : string := get_last_combination;
-  
+
   item : natural; -- a number from the combination
   bad : boolean; -- true if we know a value is too big
   s : string;    -- a temp string for deleting leading space

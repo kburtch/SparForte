@@ -44,22 +44,21 @@ $ spar fibonacci 7
     <b>return</b> sum;
   <b>end</b> fib;
 
-  param  : integer := numerics.value( $1 );
+  fib_pos : integer := numerics.value( $1 );
 
 <b>begin</b>
-  <b>if</b> param &lt; 0 <b>then</b>
+  <b>if</b> fib_pos &lt; 0 <b>then</b>
      put_line( standard_error, source_info.source_location &amp; ": number must be &gt;= 0" );
      command_line.set_exit_status( 192 );
      <b>return</b>;
   <b>end</b> <b>if</b>;
-  <b>if</b> param = 0 <b>then</b>
+  <b>if</b> fib_pos = 0 <b>then</b>
      ? 0;
      <b>return</b>;
   <b>end</b> <b>if</b>;
-  ? fib( natural( param ) );
+  ? fib( natural( fib_pos ) );
 <b>end</b> fibonacci;
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
-
 </PRE></BODY></HTML>

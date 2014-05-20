@@ -41,7 +41,7 @@ procedure dateformat is
    end Day_Image;
    Today : calendar.time := calendar.clock;
 begin
-   --put_line( 
+   --put_line(
    --Put_Line (Image (Today) (1..10));
 
    put( calendar.year( Today ), "9999" ) @( "-" )

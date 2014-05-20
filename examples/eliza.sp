@@ -187,7 +187,7 @@ else
          begin
            k := 1;
            while k < positive( num_multi ) loop
-	       testword := strings.field( multi_keywords, k, delimiter ); 
+	       testword := strings.field( multi_keywords, k, delimiter );
 	       if strings.index( i, ' ' & testword & ' ' ) > 0 then
 	          response_pos := numerics.value( strings.field( multi_keywords, k+1, delimiter ) );
 	          exit;

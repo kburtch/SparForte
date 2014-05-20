@@ -117,7 +117,7 @@ begin
       file_name & "-" &
       strings.trim( strings.image( calendar.year( calendar.clock ) ), trim_end.left ) & ":" &
       strings.trim( strings.image( calendar.month( calendar.clock ) ), trim_end.left ) & ":" &
-      strings.trim( strings.image( calendar.day( calendar.clock ) ), trim_end.left ) & 
+      strings.trim( strings.image( calendar.day( calendar.clock ) ), trim_end.left ) &
       ".tgz";
 
     -- If the file is readable, back it up using the tar command

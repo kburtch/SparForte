@@ -102,7 +102,7 @@ CHANGES SINCE 1.4
 
 34. Change: uninitialized connections and queries in mysqlm give a meaningful error message instead of throwing an exception.
 
-35. Change: style issues for non-meaningful names expanded to include amount, const, info, input, output, result, variable and variables.
+35. Change: style issues for non-meaningful names expanded to include amount, const, func, info, input, output, parm/s, param/s, proc,variable and variables.  Left result in.
 
 36. Fix: previous help options no longer linger to another help command invocation.
 
@@ -117,4 +117,8 @@ CHANGES SINCE 1.4
 41. New: pragma todo's checked during late SDLC stages.
 
 42. New: pragma suppress( low_priority_todos_for_release ) and suppress( all_todos_for_release ).  Allow low-priority todo's in late SDLC stages.  New teams_priority.completed priority.
+
+43. Fix: Using @ with ? no longer results in an infinite loop, locking up SparForte.
+
+44. Change: Example programs updated: chomp, chomp2, count_statements, factorial, fibonacci, filecopy, file_creation.
 

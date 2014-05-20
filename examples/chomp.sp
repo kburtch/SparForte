@@ -24,9 +24,9 @@ verbose : boolean := false;
 
 -- Files
 
-input      : file_type;
+inputfile  : file_type;
 sourcepath : string;
-output     : file_type;
+outputfile : file_type;
 targetpath : string;
 
 -- Misc
@@ -143,12 +143,12 @@ end if;
 
 -- Do it
 
-create( output, out_file, targetpath );
-open( input, in_file, sourcepath );
-while not end_of_file( input ) loop
+create( outputfile, out_file, targetpath );
+open( inputfile, in_file, sourcepath );
+while not end_of_file( inputfile ) loop
    -- strip end-of-line terminators
    -- Note: SparForte should do this automatically.
-   textline := get_line( input );
+   textline := get_line( inputfile );
    if verbose then
       put( standard_error, "<< " );
       put_line( standard_error, strings.to_escaped( textline ) );
@@ -192,9 +192,9 @@ while not end_of_file( input ) loop
   end if;
   len := strings.length( textline );
   out_cnt := @+len;
-  put( output, textline ); -- NOT put_line
+  put( outputfile, textline ); -- NOT put_line
 end loop;
-close( input ) @ ( output );
+close( inputfile ) @ ( outputfile );
 
 if verbose then
    put( standard_error, "Wrote" ) @ ( standard_error, out_cnt );

@@ -235,7 +235,7 @@ loop
              put_line( "Computer: bust" );
           end if;
           status := done;
-       end if;       
+       end if;
        delay 0.5; -- suspense
     elsif status = done then
        new_line;

@@ -27,21 +27,21 @@ $ spar factorial 5
 <b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> factorial <b>is</b>
-  param  : integer := numerics.value( $1 );
+  fact_pos : integer := numerics.value( $1 );
   result : natural;
   count  : natural;
 <b>begin</b>
-  <b>if</b> param &lt; 0 <b>then</b>
+  <b>if</b> fact_pos &lt; 0 <b>then</b>
      put_line( standard_error, source_info.source_location &amp; ": number must be &gt;= 0" );
      command_line.set_exit_status( 192 );
      <b>return</b>;
   <b>end</b> <b>if</b>;
-  <b>if</b> param = 0 <b>then</b>
+  <b>if</b> fact_pos = 0 <b>then</b>
      ? 0;
      <b>return</b>;
   <b>end</b> <b>if</b>;
-  result := natural( param );
-  count  := natural( param - 1 );
+  result := natural( fact_pos );
+  count  := natural( fact_pos - 1 );
   <b>for</b> i <b>in</b> <b>reverse</b> 1..count <b>loop</b>
       result := @ * i;
   <b>end</b> <b>loop</b>;

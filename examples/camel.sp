@@ -196,7 +196,7 @@ loop
             put_line( "Luckily the local sheik has agreed to their ransom----" );
             put_line( "demands.....but........watch for the pygmies!!!!!!" );
             status := captured;
-         elsif scene in 51..240 then 
+         elsif scene in 51..240 then
             thirst := 4;
             canteen := 6;
             new_line;

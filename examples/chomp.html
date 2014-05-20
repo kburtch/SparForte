@@ -28,9 +28,9 @@ verbose : boolean := false;
 
 <FONT COLOR=green><EM>-- Files</EM></FONT>
 
-input      : file_type;
+inputfile  : file_type;
 sourcepath : string;
-output     : file_type;
+outputfile : file_type;
 targetpath : string;
 
 <FONT COLOR=green><EM>-- Misc</EM></FONT>
@@ -134,8 +134,8 @@ out_cnt    : natural := 0;
 
 <FONT COLOR=green><EM>-- Check files</EM></FONT>
 
-sourcepath := command_line.argument(command_line.argument_count-1);
-targetpath := command_line.argument(command_line.argument_count);
+sourcepath := command_line.argument(positive(command_line.argument_count)-1);
+targetpath := command_line.argument(positive(command_line.argument_count));
 <b>if</b> <b>not</b> files.is_readable_file( sourcepath ) <b>then</b>
    put( standard_error, source_info.file )
      @( standard_error, ":" )
@@ -147,12 +147,12 @@ targetpath := command_line.argument(command_line.argument_count);
 
 <FONT COLOR=green><EM>-- Do it</EM></FONT>
 
-create( output, out_file, targetpath );
-open( input, in_file, sourcepath );
-<b>while</b> <b>not</b> end_of_file( input ) <b>loop</b>
+create( outputfile, out_file, targetpath );
+open( inputfile, in_file, sourcepath );
+<b>while</b> <b>not</b> end_of_file( inputfile ) <b>loop</b>
    <FONT COLOR=green><EM>-- strip end-of-line terminators</EM></FONT>
    <FONT COLOR=green><EM>-- Note: SparForte should do this automatically.</EM></FONT>
-   textline := get_line( input );
+   textline := get_line( inputfile );
    <b>if</b> verbose <b>then</b>
       put( standard_error, "&lt;&lt; " );
       put_line( standard_error, strings.to_escaped( textline ) );
@@ -196,9 +196,9 @@ open( input, in_file, sourcepath );
   <b>end</b> <b>if</b>;
   len := strings.length( textline );
   out_cnt := @+len;
-  put( output, textline ); <FONT COLOR=green><EM>-- NOT put_line</EM></FONT>
+  put( outputfile, textline ); <FONT COLOR=green><EM>-- NOT put_line</EM></FONT>
 <b>end</b> <b>loop</b>;
-close( input ) @ ( output );
+close( inputfile ) @ ( outputfile );
 
 <b>if</b> verbose <b>then</b>
    put( standard_error, "Wrote" ) @ ( standard_error, out_cnt );
@@ -208,5 +208,4 @@ command_line.set_exit_status( 0 );
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
-
 </PRE></BODY></HTML>

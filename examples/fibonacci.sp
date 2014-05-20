@@ -25,19 +25,19 @@ procedure fibonacci is
     return sum;
   end fib;
 
-  param  : integer := numerics.value( $1 );
+  fib_pos : integer := numerics.value( $1 );
 
 begin
-  if param < 0 then
+  if fib_pos < 0 then
      put_line( standard_error, source_info.source_location & ": number must be >= 0" );
      command_line.set_exit_status( 192 );
      return;
   end if;
-  if param = 0 then
+  if fib_pos = 0 then
      ? 0;
      return;
   end if;
-  ? fib( natural( param ) );
+  ? fib( natural( fib_pos ) );
 end fibonacci;
 
 -- VIM editor formatting instructions

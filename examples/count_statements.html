@@ -13,7 +13,7 @@
 
 <b>pragma</b> restriction( no_external_commands );
 
-<b>procedure</b> count_statements <b>is</b> 
+<b>procedure</b> count_statements <b>is</b>
 
   FILE_NAME_TO_CHECK  : string;
 
@@ -34,27 +34,27 @@
 
   <FONT COLOR=green><EM>--  There are exotic cases for which this will give the wrong answer</EM></FONT>
 
-    INPUT   : file_type;
+    INPUTFILE: file_type;
     C       : character := ' ';
     LINES   : integer := 0;
     LEVEL   : integer := 0;
 
   <b>begin</b>
 
-    open (INPUT, in_file, FILE_NAME);
+    open (INPUTFILE, in_file, FILE_NAME);
 
     <b>loop</b>
-      <b>exit</b> <b>when</b> end_of_file( INPUT );
-      get (INPUT, C);
+      <b>exit</b> <b>when</b> end_of_file( INPUTFILE );
+      get (INPUTFILE, C);
 
       <FONT COLOR=green><EM>--  Check for comment on the line</EM></FONT>
       <b>if</b> C = '-' <b>then</b>
-        <b>exit</b> <b>when</b> end_of_file( INPUT );
-        get (INPUT, C);
+        <b>exit</b> <b>when</b> end_of_file( INPUTFILE );
+        get (INPUTFILE, C);
         <FONT COLOR=green><EM>--  Which is signaled by the '-' following a '-'</EM></FONT>
         <b>if</b> C = '-' <b>then</b>
           <FONT COLOR=green><EM>--  Then just skip the rest of the line and go to the next</EM></FONT>
-          skip_line (INPUT);
+          skip_line (INPUTFILE);
         <b>end</b> <b>if</b>;
       <b>end</b> <b>if</b>;
 
@@ -70,8 +70,8 @@
           LEVEL := @ + 1;
           <FONT COLOR=green><EM>--  Read ahead until the whole construct is closed, LEVEL = 0</EM></FONT>
           <b>while</b> LEVEL &gt; 0 <b>loop</b>
-            <b>exit</b> <b>when</b> end_of_file( INPUT );
-            get (INPUT, C);
+            <b>exit</b> <b>when</b> end_of_file( INPUTFILE );
+            get (INPUTFILE, C);
             <b>if</b> C = '(' <b>then</b>
               <FONT COLOR=green><EM>--  Increase the level if another '(' is found</EM></FONT>
               LEVEL := @ + 1;
@@ -86,8 +86,8 @@
           <FONT COLOR=green><EM>--  Treat them in parallel, one must lead off</EM></FONT>
           <b>if</b> C = '"' <b>then</b>
             <b>loop</b>
-              <b>exit</b> <b>when</b> end_of_file( INPUT );
-              get (INPUT, C);
+              <b>exit</b> <b>when</b> end_of_file( INPUTFILE );
+              get (INPUTFILE, C);
               <FONT COLOR=green><EM>--  Loop until the close comes</EM></FONT>
               <FONT COLOR=green><EM>--  If there is a doubled character it just starts again</EM></FONT>
               <b>exit</b> <b>when</b> C = '"';
@@ -95,8 +95,8 @@
           <FONT COLOR=green><EM>--  The '%' is handled exactly the same way as '"'</EM></FONT>
           <b>elsif</b> C = '`' <b>then</b>
             <b>loop</b>
-              <b>exit</b> <b>when</b> end_of_file( INPUT );
-              get (INPUT, C);
+              <b>exit</b> <b>when</b> end_of_file( INPUTFILE );
+              get (INPUTFILE, C);
               <FONT COLOR=green><EM>--  Loop until the close comes</EM></FONT>
               <FONT COLOR=green><EM>--  If there is a doubled character it just starts again</EM></FONT>
               <b>exit</b> <b>when</b> C = '`';
@@ -104,14 +104,14 @@
           <FONT COLOR=green><EM>--  The '%' is handled exactly the same way as '"'</EM></FONT>
           <b>elsif</b> C = '%' <b>then</b>
             <b>loop</b>
-              <b>exit</b> <b>when</b> end_of_file( INPUT );
-              get (INPUT, C);
+              <b>exit</b> <b>when</b> end_of_file( INPUTFILE );
+              get (INPUTFILE, C);
               <b>exit</b> <b>when</b> C = '%';
             <b>end</b> <b>loop</b>;
           <b>elsif</b> C = ''' <b>then</b>
             <b>loop</b>
-              <b>exit</b> <b>when</b> end_of_file( INPUT );
-              get (INPUT, C);
+              <b>exit</b> <b>when</b> end_of_file( INPUTFILE );
+              get (INPUTFILE, C);
               <FONT COLOR=green><EM>--  Loop until the close comes</EM></FONT>
               <FONT COLOR=green><EM>--  If there is a doubled character it just starts again</EM></FONT>
               <b>exit</b> <b>when</b> C = ''';
@@ -140,11 +140,10 @@
   FILE_NAME_TO_CHECK := get_line;
   new_line; new_line;
   put (LOC (FILE_NAME_TO_CHECK));
-  put (" STATEMENTS IN SCRIPT " ) @ (FILE_NAME_TO_CHECK); 
-  new_line; 
+  put (" STATEMENTS IN SCRIPT " ) @ (FILE_NAME_TO_CHECK);
+  new_line;
 <b>end</b> count_statements;
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
-
 </PRE></BODY></HTML>
