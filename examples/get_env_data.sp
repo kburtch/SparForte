@@ -80,7 +80,7 @@ is
         Min                             : integer ;
         Sec                             : integer ;
         The_Time                        : string ;
- 
+
             procedure
         fix_time
         is

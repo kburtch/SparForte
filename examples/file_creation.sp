@@ -16,13 +16,11 @@ procedure file_creation is
 begin
    create (file_handle, out_file, "output.txt");
    close (file_handle);
-   -- directory_operations/create_directory is not implemented in Bush.
-   mkdir "docs";
+   directory_operations.make_dir( "docs" );
 
    create (file_handle, out_file, "/output.txt");
    close (file_handle);
-   -- directory_operations/create_directory is not implemented in Bush.
-   mkdir "/docs";
+   directory_operations.make_dir( "/docs" );
 end file_creation;
 
 -- VIM editor formatting instructions

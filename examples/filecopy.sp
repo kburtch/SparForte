@@ -25,15 +25,15 @@ begin
   pragma restriction( no_external_commands );
 
   declare
-    input : file_type;
-    output : file_type;
+    inputfile : file_type;
+    outputfile : file_type;
   begin
-    create( output, out_file, "output.txt" );
-    open( input, in_file, "input.txt" );
-    while not end_of_file( input ) loop
-       put_line( output, get_line( input ) );
+    create( outputfile, out_file, "output.txt" );
+    open( inputfile, in_file, "input.txt" );
+    while not end_of_file( inputfile ) loop
+       put_line( outputfile, get_line( inputfile ) );
     end loop;
-    close( input ) @ ( output );
+    close( inputfile ) @ ( outputfile );
   end;
 
 end filecopy;

@@ -121,9 +121,10 @@ uppercase_o : unbounded_string := to_unbounded_string( "O" );
 --
 -- This is a list of vague, ambiguous words that don't make good variable or
 -- function names.  Traditional words like "foobar" are deliberately not in
--- this list because they are often used in examples.
+-- this list because they are often used in examples.  "result" is often
+-- used in functions so is not included.
 
-nonmeaningful_words : unbounded_string := to_unbounded_string( " blah amount const data equals info input output result stuff thing things whatever whatnot whatsoever value values variable variables " );
+nonmeaningful_words : unbounded_string := to_unbounded_string( " blah amount const data func proc equals info input output parm param parms params stuff thing things whatever whatnot whatsoever value values variable variables " );
 
 -- CONFUSING PROGRAM WORDS
 --
@@ -7039,6 +7040,7 @@ procedure ParseGeneralStatement is
   eof_flag   : boolean := false;
   term_id    : identifier;
   startToken : identifier;
+  itself_question : boolean;
 begin
 
   -- mark start of line (prior to breakout test which will change token
@@ -7046,7 +7048,7 @@ begin
 
   startToken := Token;
   markScanner( cmdStart );
-  --put( "PGS: " ); put_token; -- DEBUG
+  -- put( "PGS: " ); put_token; -- DEBUG
 
   -- interrupt handling
 
@@ -7083,6 +7085,7 @@ begin
 
   itself := identifiers( token ).value;
   itself_type := token;
+  itself_question := false;
 
   if Token = command_t then
      err( "Bourne shell command command not implemented" );
@@ -7137,6 +7140,11 @@ begin
   --elsif Token = put_line_t then
   --   ParsePutLine;
   elsif token = symbol_t and identifiers( token ).value = "?" then
+     -- To implement "itself" with the "?" is difficult because
+     -- "?" is a symbol and "@" is a symbol, so trying to look
+     -- up the symbol value to determine if is "?" is not possible.
+     -- So we flag this as a special case.
+     itself_question := true;
      ParseQuestion;
   --elsif Token = put_t then
   --   ParsePut;
@@ -7851,6 +7859,11 @@ begin
         --elsif class_ok( itself_type, procClass ) then -- lift this?
         else
            token := itself_type;
+           -- question is a special case.  See ParseQuestion call above.
+           if itself_question then
+              itself_question := false;
+              identifiers( token ).value := to_unbounded_string( "?" );
+           end if;
            if identifiers( token ).class = varClass then
               -- not a procedure or keyword? restore value
               identifiers( token ).value := itself;

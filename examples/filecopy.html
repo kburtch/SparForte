@@ -29,15 +29,15 @@
   <b>pragma</b> restriction( no_external_commands );
 
   <b>declare</b>
-    input : file_type;
-    output : file_type;
+    inputfile : file_type;
+    outputfile : file_type;
   <b>begin</b>
-    create( output, out_file, "output.txt" );
-    open( input, in_file, "input.txt" );
-    <b>while</b> <b>not</b> end_of_file( input ) <b>loop</b>
-       put_line( output, get_line( input ) );
+    create( outputfile, out_file, "output.txt" );
+    open( inputfile, in_file, "input.txt" );
+    <b>while</b> <b>not</b> end_of_file( inputfile ) <b>loop</b>
+       put_line( outputfile, get_line( inputfile ) );
     <b>end</b> <b>loop</b>;
-    close( input ) @ ( output );
+    close( inputfile ) @ ( outputfile );
   <b>end</b>;
 
 <b>end</b> filecopy;

@@ -26,7 +26,7 @@ procedure gss is
   sum : integer := 0;
 
 begin
- 
+
  for start in arrays.first(a)..length-1 loop
      sum := 0;
      for finish in start..length-1 loop
@@ -41,7 +41,7 @@ begin
 
   for i in beginmax..endmax loop
       ? a(i);
-  end loop; 
+  end loop;
 
 end gss;
 

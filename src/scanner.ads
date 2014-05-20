@@ -453,7 +453,7 @@ type aScannerState is record
      cmdpos  : natural;          -- cmdpos value
      lineno  : aLineNumber;      -- line number
      itself  : unbounded_string;   -- copy of the identifier declaration
-     itself_type : identifier;         -- type of @ or procedure identifier
+     itself_type : identifier;        -- type of @ or procedure identifier
      last_output : unbounded_string;   -- result of last output
      last_output_type : identifier;    -- type of last output
      err_exception : declaration;      -- exception occurrence (if any)

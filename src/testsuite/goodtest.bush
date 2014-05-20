@@ -902,6 +902,10 @@ put_line( standard_error, "standard error" );
 new_line;
 put( 123.45, "####9.99" );
 pragma assert( % = " $123.45" );
+? "a test";
+pragma assert( % = "a test" );
+? "another test";
+pragma assert( % = "another test" );
 
 -- null statement
 
