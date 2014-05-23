@@ -120,5 +120,7 @@ CHANGES SINCE 1.4
 
 43. Fix: Using @ with ? no longer results in an infinite loop, locking up SparForte.
 
-44. Change: Example programs updated: chomp, chomp2, count_statements, factorial, fibonacci, filecopy, file_creation.
+44. Change: Example programs updated: chomp, chomp2, count_statements, factorial, fibonacci, filecopy, file_creation, int_sort, roman_numerals.
+
+45. Fix: shell and http_cgi variables no longer try to save value when exported variable is destroyed.
 
