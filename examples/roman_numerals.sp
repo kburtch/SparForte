@@ -17,7 +17,7 @@ procedure roman_numerals is
   subtype RomanNumeralType is string;
 
 --------------------------------------------------------------------------------
-  
+
    -- Function for checking Valid Input from the user
    -- This function returns a boolean value
 
@@ -53,7 +53,7 @@ procedure roman_numerals is
       -- This will never happen
       return false;
    end ValidRomanNumeral;
-   
+
 --------------------------------------------------------------------------------
 
    function RomanToNatural (RomanNumeral : RomanNumeralType) return natural is
@@ -63,21 +63,21 @@ procedure roman_numerals is
       First  : integer:=0;
       Next : integer:=0;
 
-     
+
    begin --RomanToNatural
-      
+
       -- Loop to process the appropriate value from the user
       loop
 
          if CurrentPosition > positive( strings.length( RomanNumeral ) ) then
             exit;
          elsif strings.element( RomanNumeral, CurrentPosition) = 'M' then
-            Num_Value := 1000;      
+            Num_Value := 1000;
          elsif strings.element( RomanNumeral, CurrentPosition) = 'D' then
             Num_Value := 500;
          elsif strings.element( RomanNumeral, CurrentPosition) = 'C' then
             Num_Value := 100;
-         elsif strings.element( RomanNumeral, CurrentPosition) = 'L' then    
+         elsif strings.element( RomanNumeral, CurrentPosition) = 'L' then
             Num_Value := 50;
          elsif strings.element( RomanNumeral, CurrentPosition) = 'X' then
             Num_Value := 10;
@@ -86,54 +86,53 @@ procedure roman_numerals is
          elsif strings.element( RomanNumeral, CurrentPosition) = 'I' then
             Num_Value := 1;
          end if;
-                       
+
          -- If this is the first character then store the value
          -- of it in the variable 'First'
 
          if CurrentPosition = 1 then
-            First := Num_Value;        
-         end if;   
-         
+            First := Num_Value;
+         end if;
+
          Next := Num_Value; -- Store the second value in this variable(2nd iteration)
-         
+
          -- This is for the second Iteration. Check if the second value
          -- is greater than the first value and perform the nescassary
-         -- steps. 
+         -- steps.
          if First < Next then
             Result := natural(Next - First) +Result - natural(First);
          else
             Result := Result + natural(Next);
-      end if;   
-      
+      end if;
+
      -- Assign the value of first to next
-     -- for comparison in later cases 
-     First := Next;      
-      
+     -- for comparison in later cases
+     First := Next;
+
      CurrentPosition := CurrentPosition + 1; -- Increment the counter Variable
 
-    
-    end loop; -- End the loop here  
-    
+    end loop; -- End the loop here
+
     return Result; -- Return the final result to where function is being called
-    
+
    end RomanToNatural; -- End the function
 
 --------------------------------------------------------------------------------
 
    -- This Function Gets a valid choice from the user
-   -- The user can chooose to perform arithmetic operations on the 
-   -- Roman numerals. The choices are 1 through 4. 
+   -- The user can chooose to perform arithmetic operations on the
+   -- Roman numerals. The choices are 1 through 4.
    -- Will keep looping till the user gives correct Choice
 
    function GetValidChoice return integer is
     ValidChoice : integer;
-    Choice : integer:=1; 
-       
+    Choice : integer:=1;
+
     begin
-       
+
       loop
          new_line;
-         put("Please choose one of the following operations to be performed:");   
+         put("Please choose one of the following operations to be performed:");
          new_line;
          put("1) Add the two Roman Numerals.");
          new_line;
@@ -146,127 +145,127 @@ procedure roman_numerals is
          put("----------------------------------------------------");
          new_line;
          put("Please enter choice: ");
-         Choice := numerics.value( get_line );         
+         Choice := numerics.value( get_line );
          if (Choice>0) or (Choice<=4) then
             exit;
-         else 
-            new_line;         
-            put("Please enter Valid Choice.");   
+         else
             new_line;
-         end if;      
-      
+            put("Please enter Valid Choice.");
+            new_line;
+         end if;
+
       end loop;
-      
+
     ValidChoice := Choice;
     return ValidChoice;
-     
+
    end GetValidChoice;
 
 --------------------------------------------------------------------------------
-   
+
    -- This procedure process the valid choice and performs the
    -- nescassary calculations on the Two user inputs
    function ProcessChoice(UserInput1 : natural;
                            UserInput2 : natural;
                            Choice     : integer ) return natural is
-     Output : natural;
+     Result : natural;
      -- Wrote this procedure in the morning
-     -- what this essentially does is 
+     -- what this essentially does is
      -- it takes in userinput1 and userinput2 and Choice as IN Variables
      -- According to the user's specified choice we can then compute the possible
-     -- values and return Output
-     -- This value of output will the in turn be stored in a variable called 
+     -- values and return Result
+     -- This value of output will the in turn be stored in a variable called
      -- FinalInteger
-      
+
       -- declare variables here
-      
+
       Plus     : natural:=0;
       Minus    : natural:=0;
       Multiply : natural:=0;
       Divide   : natural:=0;
-      
-      
+
+
       begin -- ProcessChoice
-      
+
       -- Start checking for user choice and perform nescassary action
-            
+
       if (Choice = 1) then
-      
+
          Plus := UserInput1 + UserInput2;
-         Output := Plus;
-         
+         Result := Plus;
+
       elsif (Choice = 2) then
-         
+
          Minus := UserInput1 - UserInput2;
-         Output := Minus;
-         
+         Result := Minus;
+
       elsif (Choice = 3) then
-         
+
          Multiply := UserInput1 * UserInput2;
-         Output := Multiply;
-         
+         Result := Multiply;
+
       elsif (Choice = 4) then
-         
+
          Divide := UserInput1 / UserInput2;
-         Output := Divide;
+         Result := Divide;
       else
-         put("SOMETHING HAS GONE WRONG");       
-         
-      end if;   
- 
-      return Output;
+         put("SOMETHING HAS GONE WRONG");
+
+      end if;
+
+      return Result;
    end ProcessChoice;
 
 -------------------------------------------------------------------------
 
    procedure ConvertBack(ConvertWhat : natural) is
-         
+
      Num_Value : natural;
-     
-    begin  
-        
+
+    begin
+
      Num_Value := ConvertWhat;
      for I in 1..20 loop
         if Num_Value<=4000 and Num_Value>=1 then
-        
+
                while Num_Value>=1000 loop
-               
-                  put( "M" );             
+
+                  put( "M" );
                   Num_Value:=Num_Value - 1000;
-                  
+
                end loop;
-               
+
                while Num_Value>=500 loop
-               
+
                   put( "D" );
-                  Num_Value:=Num_Value - 500;  
+                  Num_Value:=Num_Value - 500;
                end loop;
-               
+
                while Num_Value>=100 loop
                   put( "C" );
                   Num_Value:=Num_Value - 100;
                end loop;
-               
+
                while Num_Value>=50 loop
                   put( "L" );
                   Num_Value:=Num_Value - 50;
                end loop;
-               
+
                while Num_Value>=10 loop
                   put( "X" );
                   Num_Value:=Num_Value - 10;
                end loop;
-               
+
                while Num_Value>=5 loop
                   put( "V" );
                   Num_Value:=Num_Value - 5;
                end loop;
-               
+
                while Num_Value>=1 loop
                   put( "I" );
                   Num_Value:=Num_Value - 1;
-               end loop;                                 
-               
+               end loop;
+
             end if;
          end loop;
          new_line;
@@ -276,25 +275,25 @@ procedure roman_numerals is
 
   RomanNumeral1 : RomanNumeralType;
   RomanNumeral2 : RomanNumeralType;
-  
+
   FinalInteger : natural:=0;
 
   Input1 : natural:=0;
   Input2 : natural:=0;
- 
+
   UserChoice : integer:=0;
 
 begin -- Procedure Roman
-  
+
   put("Welcome to the Roman Numeral Calculator program:");
   new_line;
   new_line;
-  
+
   -- Get the valid roman numeral from the user
   -- This function returns two integer values in RomanInteger1 and RomanInteger2
-  -- These values are the corresponding integer values of the entered roman numerals 
+  -- These values are the corresponding integer values of the entered roman numerals
 
-  loop 
+  loop
      put( "Please enter the FIRST Roman numeral: ");
      RomanNumeral1 := get_line;
 
@@ -305,7 +304,7 @@ begin -- Procedure Roman
         if ValidRomanNumeral(RomanNumeral2) then
            exit;
         end if;
-     end if;      
+     end if;
 
     put( "Please make sure BOTH the Roman Numerals are valid and try again");
     new_line;
@@ -320,9 +319,9 @@ begin -- Procedure Roman
 
   put( "Final Result is: " );
 
-  ConvertBack(FinalInteger);   
+  ConvertBack(FinalInteger);
 
-end roman_numerals; 
+end roman_numerals;
 
 -- VIM editor formatting instructions
 -- vim: ft=spar

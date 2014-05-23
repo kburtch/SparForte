@@ -13,12 +13,12 @@ pragma license( unrestricted );
 pragma restriction( no_external_commands );
 
 procedure nonsquares is
- 
+
    function is_non_square (n : positive) return positive is
    begin
       return n + positive (numerics.rounding(numerics.sqrt (long_float (n))));
    end is_non_square;
- 
+
    i : positive;
 begin
    for n in 1..22 loop -- First 22 non-squares

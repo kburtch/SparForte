@@ -77,7 +77,7 @@ begin
   -- Try...
 
   best_size   := numerics.value( `stat -c '%s' "$source_path";` );
-  best_method := c_none; 
+  best_method := c_none;
 
   if files.is_executable( compress ) then
      "$compress" "-c" "$source_path" > "/tmp/temp.out";

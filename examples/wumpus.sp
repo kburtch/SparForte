@@ -305,7 +305,7 @@ loop
          player_room := numerics.value( get_line );
          exit when player_room >= 1 and player_room <= 20;
        end loop;
-     
+
        -- *** CHECK IF LEGAL MOVE ***
 
        if player_room = room(player) then

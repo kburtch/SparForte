@@ -314,7 +314,7 @@ begin
        end case;
     end loop;
     new_line;
-    put_line( new_poem ); 
+    put_line( new_poem );
     put_line( "Another poem? (y/n)" );
     reply := get_line;
     exit when reply = "n" or reply = "N";

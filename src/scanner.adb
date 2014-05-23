@@ -3172,6 +3172,10 @@ function deleteIdent( id : identifier ) return boolean is
              -- b := deleteIdent( temp1_t );  -- recursion, ignore result
            end;
         end if;
+    when shell =>
+        null; -- does not save on variable destruction
+    when http_cgi =>
+        null; -- does not save on variable destruction
     when others =>
         err( "internal error: unexpected export mapping in ExportValue" );
     end case;

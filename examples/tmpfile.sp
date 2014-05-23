@@ -29,7 +29,7 @@ begin
    ? "Reading a temporary file";
    reset( temp, in_file);
    contents := get_line( temp );
-   put_line( "File contains: " & contents );  
+   put_line( "File contains: " & contents );
 
    ? "Discarding a temporary file";
    close( temp );

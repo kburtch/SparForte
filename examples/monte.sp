@@ -19,7 +19,7 @@ pragma license( unrestricted );
 pragma restriction( no_external_commands );
 
 procedure monte is
- 
+
    function pi_estimate (throws : positive) return float is
       inside : natural := 0;
    begin

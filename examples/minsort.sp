@@ -38,7 +38,7 @@ begin
 -- Start with the lowest array position and try to find a better value
 -- for this position.  Continue for all positions (except that last
 -- because it will be sorted when last-1 is sorted)
-  
+
   for i in arrays.first(num_data)..data_cnt-1 loop
     best_value := num_data(i);
     best := i;

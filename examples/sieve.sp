@@ -17,15 +17,15 @@ pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
-procedure sieve is 
+procedure sieve is
    last_bool : constant positive := 20;
    type bool_array is array(2..last_bool) of boolean;
    a : bool_array;
- 
-   test_num : positive;  
+
+   test_num : positive;
    -- limit    : positive := positive(numerics.sqrt(float(arrays.last(a))));
 
-   --n : positive := 2;  
+   --n : positive := 2;
 begin
    for i in arrays.first(a)..last_bool loop
      a(i) := true;
@@ -40,7 +40,7 @@ begin
         end loop;
      end if;
    end loop;
- 
+
    for i in arrays.first(a)..last_bool loop
      if a(i) then
        put_line(i);
