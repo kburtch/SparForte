@@ -39,11 +39,11 @@ $ spar int_sort
 
 <b>procedure</b> int_sort <b>is</b>
   <b>type</b> int_array <b>is</b> <b>array</b> (1..9) <b>of</b> integer;
-  values : int_array := (0,1,8,2,7,3,6,4,5);
+  int_values : int_array := (0,1,8,2,7,3,6,4,5);
 <b>begin</b>
-  arrays.heap_sort( values );
-  <b>for</b> i <b>in</b> arrays.first( values )..arrays.last( values ) <b>loop</b>
-    ? values(i);
+  arrays.heap_sort( int_values );
+  <b>for</b> i <b>in</b> arrays.first( int_values )..arrays.last( int_values ) <b>loop</b>
+    ? int_values(i);
   <b>end</b> <b>loop</b>;
 <b>end</b> int_sort;
 

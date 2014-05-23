@@ -48,7 +48,7 @@ Final Result is: XXXII
   <b>subtype</b> RomanNumeralType <b>is</b> string;
 
 <FONT COLOR=green><EM>--------------------------------------------------------------------------------</EM></FONT>
-  
+
    <FONT COLOR=green><EM>-- Function for checking Valid Input from the user</EM></FONT>
    <FONT COLOR=green><EM>-- This function returns a boolean value</EM></FONT>
 
@@ -84,7 +84,7 @@ Final Result is: XXXII
       <FONT COLOR=green><EM>-- This will never happen</EM></FONT>
       <b>return</b> false;
    <b>end</b> ValidRomanNumeral;
-   
+
 <FONT COLOR=green><EM>--------------------------------------------------------------------------------</EM></FONT>
 
    <b>function</b> RomanToNatural (RomanNumeral : RomanNumeralType) <b>return</b> natural <b>is</b>
@@ -94,21 +94,21 @@ Final Result is: XXXII
       First  : integer:=0;
       Next : integer:=0;
 
-     
+
    <b>begin</b> <FONT COLOR=green><EM>--RomanToNatural</EM></FONT>
-      
+
       <FONT COLOR=green><EM>-- Loop to process the appropriate value from the user</EM></FONT>
       <b>loop</b>
 
          <b>if</b> CurrentPosition &gt; positive( strings.length( RomanNumeral ) ) <b>then</b>
             <b>exit</b>;
          <b>elsif</b> strings.element( RomanNumeral, CurrentPosition) = 'M' <b>then</b>
-            Num_Value := 1000;      
+            Num_Value := 1000;
          <b>elsif</b> strings.element( RomanNumeral, CurrentPosition) = 'D' <b>then</b>
             Num_Value := 500;
          <b>elsif</b> strings.element( RomanNumeral, CurrentPosition) = 'C' <b>then</b>
             Num_Value := 100;
-         <b>elsif</b> strings.element( RomanNumeral, CurrentPosition) = 'L' <b>then</b>    
+         <b>elsif</b> strings.element( RomanNumeral, CurrentPosition) = 'L' <b>then</b>
             Num_Value := 50;
          <b>elsif</b> strings.element( RomanNumeral, CurrentPosition) = 'X' <b>then</b>
             Num_Value := 10;
@@ -117,54 +117,53 @@ Final Result is: XXXII
          <b>elsif</b> strings.element( RomanNumeral, CurrentPosition) = 'I' <b>then</b>
             Num_Value := 1;
          <b>end</b> <b>if</b>;
-                       
+
          <FONT COLOR=green><EM>-- If this is the first character then store the value</EM></FONT>
          <FONT COLOR=green><EM>-- of it in the variable 'First'</EM></FONT>
 
          <b>if</b> CurrentPosition = 1 <b>then</b>
-            First := Num_Value;        
-         <b>end</b> <b>if</b>;   
-         
+            First := Num_Value;
+         <b>end</b> <b>if</b>;
+
          Next := Num_Value; <FONT COLOR=green><EM>-- Store the second value in this variable(2nd iteration)</EM></FONT>
-         
+
          <FONT COLOR=green><EM>-- This is for the second Iteration. Check if the second value</EM></FONT>
          <FONT COLOR=green><EM>-- is greater than the first value and perform the nescassary</EM></FONT>
-         <FONT COLOR=green><EM>-- steps. </EM></FONT>
+         <FONT COLOR=green><EM>-- steps.</EM></FONT>
          <b>if</b> First &lt; Next <b>then</b>
             Result := natural(Next - First) +Result - natural(First);
          <b>else</b>
             Result := Result + natural(Next);
-      <b>end</b> <b>if</b>;   
-      
+      <b>end</b> <b>if</b>;
+
      <FONT COLOR=green><EM>-- Assign the value of first to next</EM></FONT>
-     <FONT COLOR=green><EM>-- for comparison in later cases </EM></FONT>
-     First := Next;      
-      
+     <FONT COLOR=green><EM>-- for comparison in later cases</EM></FONT>
+     First := Next;
+
      CurrentPosition := CurrentPosition + 1; <FONT COLOR=green><EM>-- Increment the counter Variable</EM></FONT>
 
-    
-    <b>end</b> <b>loop</b>; <FONT COLOR=green><EM>-- End the loop here  </EM></FONT>
-    
+    <b>end</b> <b>loop</b>; <FONT COLOR=green><EM>-- End the loop here</EM></FONT>
+
     <b>return</b> Result; <FONT COLOR=green><EM>-- Return the final result to where function is being called</EM></FONT>
-    
+
    <b>end</b> RomanToNatural; <FONT COLOR=green><EM>-- End the function</EM></FONT>
 
 <FONT COLOR=green><EM>--------------------------------------------------------------------------------</EM></FONT>
 
    <FONT COLOR=green><EM>-- This Function Gets a valid choice from the user</EM></FONT>
-   <FONT COLOR=green><EM>-- The user can chooose to perform arithmetic operations on the </EM></FONT>
-   <FONT COLOR=green><EM>-- Roman numerals. The choices are 1 through 4. </EM></FONT>
+   <FONT COLOR=green><EM>-- The user can chooose to perform arithmetic operations on the</EM></FONT>
+   <FONT COLOR=green><EM>-- Roman numerals. The choices are 1 through 4.</EM></FONT>
    <FONT COLOR=green><EM>-- Will keep looping till the user gives correct Choice</EM></FONT>
 
    <b>function</b> GetValidChoice <b>return</b> integer <b>is</b>
     ValidChoice : integer;
-    Choice : integer:=1; 
-       
+    Choice : integer:=1;
+
     <b>begin</b>
-       
+
       <b>loop</b>
          new_line;
-         put("Please choose one of the following operations to be performed:");   
+         put("Please choose one of the following operations to be performed:");
          new_line;
          put("1) Add the two Roman Numerals.");
          new_line;
@@ -177,127 +176,127 @@ Final Result is: XXXII
          put("<FONT COLOR=green><EM>----------------------------------------------------");</EM></FONT>
          new_line;
          put("Please enter choice: ");
-         Choice := numerics.value( get_line );         
+         Choice := numerics.value( get_line );
          <b>if</b> (Choice&gt;0) <b>or</b> (Choice&lt;=4) <b>then</b>
             <b>exit</b>;
-         <b>else</b> 
-            new_line;         
-            put("Please enter Valid Choice.");   
+         <b>else</b>
             new_line;
-         <b>end</b> <b>if</b>;      
-      
+            put("Please enter Valid Choice.");
+            new_line;
+         <b>end</b> <b>if</b>;
+
       <b>end</b> <b>loop</b>;
-      
+
     ValidChoice := Choice;
     <b>return</b> ValidChoice;
-     
+
    <b>end</b> GetValidChoice;
 
 <FONT COLOR=green><EM>--------------------------------------------------------------------------------</EM></FONT>
-   
+
    <FONT COLOR=green><EM>-- This procedure process the valid choice and performs the</EM></FONT>
    <FONT COLOR=green><EM>-- nescassary calculations on the Two user inputs</EM></FONT>
    <b>function</b> ProcessChoice(UserInput1 : natural;
                            UserInput2 : natural;
                            Choice     : integer ) <b>return</b> natural <b>is</b>
-     Output : natural;
+     Result : natural;
      <FONT COLOR=green><EM>-- Wrote this procedure in the morning</EM></FONT>
-     <FONT COLOR=green><EM>-- what this essentially does is </EM></FONT>
+     <FONT COLOR=green><EM>-- what this essentially does is</EM></FONT>
      <FONT COLOR=green><EM>-- it takes in userinput1 and userinput2 and Choice as IN Variables</EM></FONT>
      <FONT COLOR=green><EM>-- According to the user's specified choice we can then compute the possible</EM></FONT>
-     <FONT COLOR=green><EM>-- values and return Output</EM></FONT>
-     <FONT COLOR=green><EM>-- This value of output will the in turn be stored in a variable called </EM></FONT>
+     <FONT COLOR=green><EM>-- values and return Result</EM></FONT>
+     <FONT COLOR=green><EM>-- This value of output will the in turn be stored in a variable called</EM></FONT>
      <FONT COLOR=green><EM>-- FinalInteger</EM></FONT>
-      
+
       <FONT COLOR=green><EM>-- declare variables here</EM></FONT>
-      
+
       Plus     : natural:=0;
       Minus    : natural:=0;
       Multiply : natural:=0;
       Divide   : natural:=0;
-      
-      
+
+
       <b>begin</b> <FONT COLOR=green><EM>-- ProcessChoice</EM></FONT>
-      
+
       <FONT COLOR=green><EM>-- Start checking for user choice and perform nescassary action</EM></FONT>
-            
+
       <b>if</b> (Choice = 1) <b>then</b>
-      
+
          Plus := UserInput1 + UserInput2;
-         Output := Plus;
-         
+         Result := Plus;
+
       <b>elsif</b> (Choice = 2) <b>then</b>
-         
+
          Minus := UserInput1 - UserInput2;
-         Output := Minus;
-         
+         Result := Minus;
+
       <b>elsif</b> (Choice = 3) <b>then</b>
-         
+
          Multiply := UserInput1 * UserInput2;
-         Output := Multiply;
-         
+         Result := Multiply;
+
       <b>elsif</b> (Choice = 4) <b>then</b>
-         
+
          Divide := UserInput1 / UserInput2;
-         Output := Divide;
+         Result := Divide;
       <b>else</b>
-         put("SOMETHING HAS GONE WRONG");       
-         
-      <b>end</b> <b>if</b>;   
- 
-      <b>return</b> Output;
+         put("SOMETHING HAS GONE WRONG");
+
+      <b>end</b> <b>if</b>;
+
+      <b>return</b> Result;
    <b>end</b> ProcessChoice;
 
 <FONT COLOR=green><EM>-------------------------------------------------------------------------</EM></FONT>
 
    <b>procedure</b> ConvertBack(ConvertWhat : natural) <b>is</b>
-         
+
      Num_Value : natural;
-     
-    <b>begin</b>  
-        
+
+    <b>begin</b>
+
      Num_Value := ConvertWhat;
      <b>for</b> I <b>in</b> 1..20 <b>loop</b>
         <b>if</b> Num_Value&lt;=4000 <b>and</b> Num_Value&gt;=1 <b>then</b>
-        
+
                <b>while</b> Num_Value&gt;=1000 <b>loop</b>
-               
-                  put( "M" );             
+
+                  put( "M" );
                   Num_Value:=Num_Value - 1000;
-                  
+
                <b>end</b> <b>loop</b>;
-               
+
                <b>while</b> Num_Value&gt;=500 <b>loop</b>
-               
+
                   put( "D" );
-                  Num_Value:=Num_Value - 500;  
+                  Num_Value:=Num_Value - 500;
                <b>end</b> <b>loop</b>;
-               
+
                <b>while</b> Num_Value&gt;=100 <b>loop</b>
                   put( "C" );
                   Num_Value:=Num_Value - 100;
                <b>end</b> <b>loop</b>;
-               
+
                <b>while</b> Num_Value&gt;=50 <b>loop</b>
                   put( "L" );
                   Num_Value:=Num_Value - 50;
                <b>end</b> <b>loop</b>;
-               
+
                <b>while</b> Num_Value&gt;=10 <b>loop</b>
                   put( "X" );
                   Num_Value:=Num_Value - 10;
                <b>end</b> <b>loop</b>;
-               
+
                <b>while</b> Num_Value&gt;=5 <b>loop</b>
                   put( "V" );
                   Num_Value:=Num_Value - 5;
                <b>end</b> <b>loop</b>;
-               
+
                <b>while</b> Num_Value&gt;=1 <b>loop</b>
                   put( "I" );
                   Num_Value:=Num_Value - 1;
-               <b>end</b> <b>loop</b>;                                 
-               
+               <b>end</b> <b>loop</b>;
+
             <b>end</b> <b>if</b>;
          <b>end</b> <b>loop</b>;
          new_line;
@@ -307,25 +306,25 @@ Final Result is: XXXII
 
   RomanNumeral1 : RomanNumeralType;
   RomanNumeral2 : RomanNumeralType;
-  
+
   FinalInteger : natural:=0;
 
   Input1 : natural:=0;
   Input2 : natural:=0;
- 
+
   UserChoice : integer:=0;
 
 <b>begin</b> <FONT COLOR=green><EM>-- Procedure Roman</EM></FONT>
-  
+
   put("Welcome to the Roman Numeral Calculator program:");
   new_line;
   new_line;
-  
+
   <FONT COLOR=green><EM>-- Get the valid roman numeral from the user</EM></FONT>
   <FONT COLOR=green><EM>-- This function returns two integer values in RomanInteger1 and RomanInteger2</EM></FONT>
-  <FONT COLOR=green><EM>-- These values are the corresponding integer values of the entered roman numerals </EM></FONT>
+  <FONT COLOR=green><EM>-- These values are the corresponding integer values of the entered roman numerals</EM></FONT>
 
-  <b>loop</b> 
+  <b>loop</b>
      put( "Please enter the FIRST Roman numeral: ");
      RomanNumeral1 := get_line;
 
@@ -336,7 +335,7 @@ Final Result is: XXXII
         <b>if</b> ValidRomanNumeral(RomanNumeral2) <b>then</b>
            <b>exit</b>;
         <b>end</b> <b>if</b>;
-     <b>end</b> <b>if</b>;      
+     <b>end</b> <b>if</b>;
 
     put( "Please make sure BOTH the Roman Numerals are valid and try again");
     new_line;
@@ -351,9 +350,9 @@ Final Result is: XXXII
 
   put( "Final Result is: " );
 
-  ConvertBack(FinalInteger);   
+  ConvertBack(FinalInteger);
 
-<b>end</b> roman_numerals; 
+<b>end</b> roman_numerals;
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
