@@ -124,3 +124,10 @@ CHANGES SINCE 1.4
 
 45. Fix: shell and http_cgi variables no longer try to save value when exported variable is destroyed.
 
+46. New: /etc/sparforte_policy file for global script architecture policies.
+
+47: Fix: error messages for include/policy file permissions no longer say "include file" but make clear what file has the permission issues.
+
+- errors in profile file: what happens?
+
+

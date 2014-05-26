@@ -521,6 +521,27 @@ following conditions:</p>
 reported and the profile file will not be run.  The login session will
 be aborted.</p>
 
+<h2>Policy Files</h2>
+
+<p>When SparForte runs a script, it checks for the existence of a
+file called "/etc/sparforte_policy".  This is a system-wide initialization
+file, similar to a profile file.  It's purpose is to setup any architectural
+pragmas, constants, and other shared declarations common to all scripts
+on a server.  The policy file is not executed for interactive sessions.</p>
+
+<p>SparForte checks this file before opening it.  It must meet the
+following conditions:</p>
+
+<ul>
+<li>It must be a regular file (that is, not a directory or other special-purpose file)</li>
+<li>The file permissions must allow the file to be read by the user</li>
+<li>The file permissions must not allow others to write to the file (for security purposes)</li>
+<li>It must not be empty</li>
+</ul>
+
+<p>If a policy file exists but doesn't meet these conditions, an error is
+reported and the file will not be run.  The script will be aborted.</p>
+
 <br>&nbsp;
 
 			</td>

@@ -8005,6 +8005,39 @@ end parse;
 
 
 ------------------------------------------------------------------------------
+-- PARSE POLICY
+--
+-- Switch to a new set of policy commands.  For a policy file, this should
+-- only be pragmas.   It is up to the caller to restore the scanner state.
+------------------------------------------------------------------------------
+
+procedure parsePolicy is
+begin
+  if not error_found then
+     cmdpos := firstScriptCommandOffset;
+     token := identifiers'first;                -- dummy, replaced by g_n_t
+     getNextToken;                              -- load first token
+     while (not error_found and not done) loop
+        if token = pragma_t then
+           ParsePragma;
+           expectSemicolon;
+        elsif token = null_t then
+           expect( null_t );
+           expectSemicolon;
+        else
+           exit;
+        end if;
+     end loop;
+     if token /= eof_t then                     -- unexpected token?
+        expect( pragma_t );                     -- say what we expect
+     else
+        expect( eof_t );                        -- should be nothing else
+     end if;
+  end if;
+end parsePolicy;
+
+
+------------------------------------------------------------------------------
 -- PARSE NEW COMMANDS
 --
 -- Switch to a new set of commands.  This is used for user-defined procedures,
@@ -8159,8 +8192,117 @@ begin
 end interactiveSession;
 
 
+--  INTERPRET POLICY
+--
 ------------------------------------------------------------------------------
--- INTERPRET SCRIPT
+
+procedure interpretPolicy( policyPath : string ) is
+  alreadyCompiled : boolean := false;
+  oldScriptFilePath : unbounded_string;
+  firstLine : aliased unbounded_string;
+  res : int;
+begin
+  if verboseOpt then
+     Put_Trace( "Executing Global Policy" );
+  end if;
+  --if syntax_check then
+  --   if verboseOpt then
+  --      Put_Trace( "Checking Syntax" );
+  --   end if;
+  --else
+  --   if verboseOpt then
+  --      Put_Trace( "Executing Script" );
+  --   end if;
+  --end if;
+  inputMode := fromScriptFile;                     -- running a script
+  if execOpt then                                  -- -e?
+     if verboseOpt then
+        Put_Trace( "Compiling Byte Code" );
+     end if;
+     sourceFilesList.Clear( SourceFiles );
+     sourceFilesList.Queue( SourceFiles, aSourceFile'(pos => 0, name => to_unbounded_string (commandLineSource) ) );
+     scriptFilePath := to_unbounded_string( commandLineSource ); -- script name
+     compileCommand( to_unbounded_string( policyPath ) ); -- path is really script
+  else                                             -- else path is a path
+    oldScriptFilePath := scriptFilePath;
+    scriptFilePath := to_unbounded_string( policyPath ); -- script name
+    if syntax_check then
+       -- only register source files during the syntax check, when files
+       -- (including include files) are loaded
+       sourceFilesList.Clear( SourceFiles );
+       sourceFilesList.Queue( SourceFiles, aSourceFile'(pos => 0, name => scriptFilePath) );
+    end if;
+    scriptFile := open( policyPath & ASCII.NUL, 0, 660 ); -- open script
+    -- If this procedure is called twice during a regular script run, once
+    -- for the syntax check and once to execute.  If the script name
+    -- is the same, don't compile it a second time: assume that the
+    -- byte code is good and proceed to parsing.
+    alreadyCompiled := scriptFilePath = oldScriptFilePath;
+
+    if scriptFile > 0 then                           -- good?
+       error_found := false;                         -- no error found
+       exit_block := false;                          -- not exit-ing a block
+       if not LineRead( firstLine'access ) then        -- read first line
+          put_line( standard_error, "unable to read first line of script" );
+          error_found := true;
+          goto error;                                -- and interpreting
+       end if;
+       if not alreadyCompiled then
+       -- This was script = null but that breaks code if this procedure
+       -- is called twice with different files (e.g. loading profiles).
+       --if script = null then
+          if verboseOpt then
+             Put_Trace( "Compiling Byte Code" );
+          end if;
+          compileScript( firstline );
+       --end if;
+       end if;
+    end if;
+  end if;
+  if (scriptFile > 0 or boolean(execOpt)) and not done then -- file open or -e?
+     parsePolicy;
+  elsif C_errno = 2 then                             -- file not found?
+     put_line( standard_error, "unable to open policy file '" &
+       policyPath & "' : file not found" );
+       error_found := true;
+  elsif C_errno /= 0 then                          -- some other error?
+     -- use /= 0 in case user aborts with control-c
+     put_line( standard_error, "unable to open policy file '" &
+       policyPath & "' : " & OSerror( C_errno ) );
+       error_found := true;
+  end if;
+<<error>>
+  if error_found then                              -- was there an error?
+     if last_status = 0 then                       -- no last command status?
+        set_exit_status( Failure );                -- just set to 1
+        if trace then
+           put_trace("Script exit status is" & failure'img );
+        end if;
+     else                                          -- otherwise
+        set_exit_status( exit_status( last_status ) ); -- return last status
+        if trace then
+           put_trace("Script exit status is" & last_status'img );
+        end if;
+     end if;
+  else                                             -- no error?
+     set_exit_status( 0 );                         -- return no error
+     if trace then                                 -- -x? show 0 exit status
+        put_trace("Script exit status is 0" );
+     end if;
+  end if;
+  if not execOpt then                              -- not -e?
+<<retry>> res := close( scriptFile );              -- close the script file
+     if res < 0 then
+        if C_errno = EINTR then
+           goto retry;
+        end if;
+     end if;
+  end if;
+
+end interpretPolicy;
+
+
+--  INTERPRET SCRIPT
 --
 -- Load a script, compile byte code, perform a syntax check (if needed) and
 -- execute the script (if needed).  If -e, scriptPath is a string of commands.
@@ -8169,10 +8311,10 @@ end interactiveSession;
 -- scriptPath: a script to run, or a string of commands (-e).
 ------------------------------------------------------------------------------
 
-procedure BUSH_interpretScript( C_scriptPath : C_path ) is
+procedure SPAR_interpretScript( C_scriptPath : C_path ) is
 begin
   interpretScript( To_Ada( C_scriptPath ) );
-end BUSH_interpretScript;
+end SPAR_interpretScript;
 
 procedure interpretScript( scriptPath : string ) is
   alreadyCompiled : boolean := false;
@@ -8301,10 +8443,10 @@ end interpretScript;
 -- commandString: a string of uncompressed commands (e.g. from -e).
 ------------------------------------------------------------------------------
 
-procedure BUSH_interpretCommands( C_commandString : C_cmds ) is
+procedure SPAR_interpretCommands( C_commandString : C_cmds ) is
 begin
    interpretCommands( To_Ada( C_commandString ) );
-end BUSH_interpretCommands;
+end SPAR_interpretCommands;
 
 procedure interpretCommands( commandString : string ) is
 begin
@@ -8351,8 +8493,12 @@ begin
 end interpretCommands;
 
 
+--  SET STANDARD VARIABLES
+--
+-- Define variables that cannot be setup by the scanner.
+------------------------------------------------------------------------------
+
 procedure SetStandardVariables is
-  -- Define variables that cannot be setup by the scanner.
 begin
 
   -- Standard_Input, Standard_Output and Standard_Error have the
@@ -8378,6 +8524,60 @@ begin
 end SetStandardVariables;
 
 
+------------------------------------------------------------------------------
+-- Startup Files
+------------------------------------------------------------------------------
+
+
+--  DO GLOBAL POLICY
+--
+-- Run /etc/sparforte_policy for enforcing architectural policies.
+--
+-- I decided against a per-project policy file because such files should be
+-- in a project's home directory and read-only the the developers.  It
+-- would be difficult to load a policy based on the script name as different
+-- scripts could share the same name.  I can revisit this later.
+------------------------------------------------------------------------------
+
+procedure doGlobalPolicy is
+  save_rshOpt  : commandLineOption;              -- for executing policy
+  save_execOpt : commandLineOption;              -- for executing policy
+  res  : int;
+  path : string := "/etc/sparforte_policy";
+begin
+  save_rshOpt := rshOpt;                         -- if restricted shell
+  save_execOpt := execOpt;                       -- if cmd line script
+  rshOpt := false;                               -- turn off for profile
+  scriptFile := open( path & ASCII.NUL, 0, 660 ); -- open script
+  if scriptFile > 0 then                         -- good?
+<<retry>> res := close( scriptFile );            -- close test fd
+     if res < 0 then
+        if C_errno = EINTR then
+           goto retry;
+        end if;
+     end if;
+  end if;
+  if C_errno /= ENOENT then
+     if C_errno = 0 and C_is_includable_file( path & ASCII.NUL ) then
+        interpretPolicy( path ); -- run policy script
+     else
+        err( "global policy file " & optional_bold( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
+        raise BAD_PROFILE;
+     end if;
+  end if;
+  if error_found then
+     put_line( standard_error, fullErrorMessage );
+  end if;
+  rshOpt := save_rshOpt;                          -- restore rsh setting
+  execOpt := save_execOpt;                        -- restore -e setting
+end doGlobalPolicy;
+
+
+--  DO GLOBAL PROFILE
+--
+-- Run /etc/sparforte_profile for setting up interactive scripts
+------------------------------------------------------------------------------
+
 procedure doGlobalProfile is
   save_rshOpt  : commandLineOption;              -- for executing profile
   save_execOpt : commandLineOption;              -- for executing profile
@@ -8400,13 +8600,19 @@ begin
      if C_errno = 0 and C_is_includable_file( path & ASCII.NUL ) then
         interpretScript( path ); -- run login script
      else
-        err( "include file " & optional_bold( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
+        err( "global profile file " & optional_bold( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
         raise BAD_PROFILE;
      end if;
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
 end doGlobalProfile;
+
+
+--  DO LOCAL PROFILE
+--
+-- Run ~/.sparforte_profile for setting up interactive scripts
+------------------------------------------------------------------------------
 
 procedure doLocalProfile is
   save_rshOpt  : commandLineOption;              -- for executing profile
@@ -8438,7 +8644,7 @@ begin
         if C_errno = 0 and C_is_includable_file( to_string( profilePath ) & ASCII.NUL ) then
            interpretScript( to_string( profilePath ) ); -- do profile
         else
-           err( "include file " & optional_bold( to_string( profilePath ) ) & " is either not readable, is world writable, is not a regular file or is empty" );
+           err( "local profile file " & optional_bold( to_string( profilePath ) ) & " is either not readable, is world writable, is not a regular file or is empty" );
            raise BAD_PROFILE;
         end if;
      end if;
@@ -8446,6 +8652,21 @@ begin
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
 end doLocalProfile;
+
+
+------------------------------------------------------------------------------
+-- Starting the Script Interpreter
+------------------------------------------------------------------------------
+
+
+--  CHECK AND INTERPRET SCRIPT
+--
+-- Perform a syntax check and run the script.  Display any post-run errors
+-- and set the exit status.
+--
+-- Use Interpret instead to load profiles/policies or start an interactive
+-- session.
+------------------------------------------------------------------------------
 
 procedure checkAndInterpretScript( fullScriptPath : string ) is
 begin
@@ -8481,7 +8702,6 @@ begin
         --if hastemplate then -- DEBUG
         --   putTemplateHeader( templateHeader ); -- cgi.put_cgi_header( "Content-type: text/html" );
         --end if;
-        put_line( standard_error, fullErrorMessage );
         -- may or may not have a template at this point, so check
         if hasTemplate then
            put_line( fullTemplateErrorMessage );
@@ -8574,7 +8794,10 @@ begin
      end if;
      interactiveSession;                                -- start the session
   else
-     checkAndInterpretScript( Argument( OptionOffset ) );
+     doGlobalPolicy;                                -- architecture policies
+     if not error_found then
+        checkAndInterpretScript( Argument( OptionOffset ) );
+     end if;
   end if;
 
 end interpret;

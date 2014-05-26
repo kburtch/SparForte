@@ -106,12 +106,12 @@ procedure interpret;
 type C_path is new char_array(0..1024);
 type C_cmds is new char_array(0..32768);
 
-procedure BUSH_interpretScript( C_scriptPath : C_path );
-pragma export( C, BUSH_interpretScript, "BUSH_interpretScript" );
+procedure SPAR_interpretScript( C_scriptPath : C_path );
+pragma export( C, SPAR_interpretScript, "BUSH_interpretScript" );
 
 -- run the indicated script
-procedure BUSH_interpretCommands( C_commandString : C_cmds );
-pragma export( C, BUSH_interpretCommands, "BUSH_interpretCommands" );
+procedure SPAR_interpretCommands( C_commandString : C_cmds );
+pragma export( C, SPAR_interpretCommands, "BUSH_interpretCommands" );
 
 ------------------------------------------------------------------------------
 -- HOUSEKEEPING
