@@ -8336,13 +8336,11 @@ begin
      if verboseOpt then
         Put_Trace( "Compiling Byte Code" );
      end if;
-     -- put( ASCII.ESC & "]2;" & "bush" & ASCII.BEL  ); -- xterm window title
      sourceFilesList.Clear( SourceFiles );
      sourceFilesList.Queue( SourceFiles, aSourceFile'(pos => 0, name => to_unbounded_string (commandLineSource) ) );
      scriptFilePath := to_unbounded_string( commandLineSource ); -- script name
      compileCommand( to_unbounded_string( ScriptPath ) ); -- path is really script
   else                                             -- else path is a path
-    --put( ASCII.ESC & "]2;" & scriptPath & ASCII.BEL  ); -- xterm window title
     oldScriptFilePath := scriptFilePath;
     scriptFilePath := to_unbounded_string( scriptPath ); -- script name
     if syntax_check then
@@ -8429,7 +8427,6 @@ begin
         end if;
      end if;
   end if;
-
 end interpretScript;
 
 
@@ -8439,6 +8436,7 @@ end interpretScript;
 -- Compile string of commands into byte code, perform a syntax check (if
 -- needed) and execute the script (if needed).
 -- This is run by parse, as the command line options dictate.
+-- This will output error messages.
 --
 -- commandString: a string of uncompressed commands (e.g. from -e).
 ------------------------------------------------------------------------------
@@ -8473,6 +8471,12 @@ begin
   compileCommand( commandString );
   parse;
   if error_found then                              -- was there an error?
+     put_line( standard_error, fullErrorMessage );
+     -- may or may not have a template at this point, so check
+     if hasTemplate then
+        putTemplateHeader( templateHeader );
+        put_line( fullTemplateErrorMessage );
+     end if;
      if last_status = 0 then                       -- no last command status?
         set_exit_status( Failure );                -- just set to 1
         if trace then
@@ -8531,7 +8535,8 @@ end SetStandardVariables;
 
 --  DO GLOBAL POLICY
 --
--- Run /etc/sparforte_policy for enforcing architectural policies.
+-- Run /etc/sparforte_policy for enforcing architectural policies.  Displays
+-- any error message.
 --
 -- I decided against a per-project policy file because such files should be
 -- in a project's home directory and read-only the the developers.  It
@@ -8559,6 +8564,7 @@ begin
   end if;
   if C_errno /= ENOENT then
      if C_errno = 0 and C_is_includable_file( path & ASCII.NUL ) then
+        sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( path ) ) ) );
         interpretPolicy( path ); -- run policy script
      else
         err( "global policy file " & optional_bold( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
@@ -8575,7 +8581,8 @@ end doGlobalPolicy;
 
 --  DO GLOBAL PROFILE
 --
--- Run /etc/sparforte_profile for setting up interactive scripts
+-- Run /etc/sparforte_profile for setting up interactive scripts.  Displays
+-- any error message.
 ------------------------------------------------------------------------------
 
 procedure doGlobalProfile is
@@ -8598,11 +8605,15 @@ begin
   end if;
   if C_errno /= ENOENT then
      if C_errno = 0 and C_is_includable_file( path & ASCII.NUL ) then
+        sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( path ) ) ) );
         interpretScript( path ); -- run login script
      else
         err( "global profile file " & optional_bold( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
         raise BAD_PROFILE;
      end if;
+  end if;
+  if error_found then
+     put_line( standard_error, fullErrorMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -8611,7 +8622,8 @@ end doGlobalProfile;
 
 --  DO LOCAL PROFILE
 --
--- Run ~/.sparforte_profile for setting up interactive scripts
+-- Run ~/.sparforte_profile for setting up interactive scripts.  Displays
+-- any error message.
 ------------------------------------------------------------------------------
 
 procedure doLocalProfile is
@@ -8642,12 +8654,16 @@ begin
      end if;
      if C_errno /= ENOENT then
         if C_errno = 0 and C_is_includable_file( to_string( profilePath ) & ASCII.NUL ) then
+           sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( profilePath ) ) );
            interpretScript( to_string( profilePath ) ); -- do profile
         else
            err( "local profile file " & optional_bold( to_string( profilePath ) ) & " is either not readable, is world writable, is not a regular file or is empty" );
            raise BAD_PROFILE;
         end if;
      end if;
+  end if;
+  if error_found then
+     put_line( standard_error, fullErrorMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -8696,14 +8712,10 @@ begin
      end if;
      -- display any error message
      if error_found then
-        if hasTemplate then
-           putTemplateHeader( templateHeader );
-        end if;
-        --if hastemplate then -- DEBUG
-        --   putTemplateHeader( templateHeader ); -- cgi.put_cgi_header( "Content-type: text/html" );
-        --end if;
+        put_line( standard_error, fullErrorMessage );
         -- may or may not have a template at this point, so check
         if hasTemplate then
+           putTemplateHeader( templateHeader );
            put_line( fullTemplateErrorMessage );
         end if;
      end if;
@@ -8786,7 +8798,9 @@ begin
   if optionOffset = 0 then                       -- no arguments or '-'?
      if isLoginShell then                        -- login shell? find profile
         doGlobalProfile;
-        doLocalProfile;
+        if not error_found then
+           doLocalProfile;
+        end if;
      end if;
      inputMode := interactive;                          -- we're interactive
      if traceOpt then                                   -- -x / --trace?
