@@ -46,10 +46,33 @@ tutorial discusses how execute statements and delcarations can be
 organized.  It also discusses how scripts can evolve and grow under
 SparForte.</p>
 
-<h3>Setting Your Architecture Your Constraints</h3>
+<h3>Setting Your Architecture Constraints</h3>
 
-<p>Create an /etc/sparforte_policy file containing the architectural
-constraints for your project.</p>
+<p>If you're working with architects, or with your company has
+architectural policies, you can start a new project by creating
+or updating the SparForte global policy file.  This is the file
+that contains the pragmas that will be applied to all projects
+on a server.  Create an /etc/sparforte_policy file and describe
+the architectural constraints for your project.</p>
+
+<p>For example, if you are working in a company that uses the
+Ada programming language a lot, you may want to make all
+SparForte scripts conform as closely as possible to Ada to
+make it easier to reuse program code.  You could make that
+a global policy by putting <b>pragma ada_95</b> into the
+global policy file.</p>
+
+        <center>
+        <div class="code">
+        <p class="code"><b>pragma</b> <b>is</b><br>
+        &nbsp;&nbsp;ada_95;<br>
+        <b>end</b> <b>pragma</b>;<br>&nbsp;<br>
+        </p>
+        <div class="code_caption">
+        <b>Example</b>: A Simple /etc/sparforte_policy file</span>
+        </div>
+        </div>
+        </center>
 
 <h3>Structuring a Script</h3>
 

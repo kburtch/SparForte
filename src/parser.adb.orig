@@ -8017,6 +8017,17 @@ begin
      cmdpos := firstScriptCommandOffset;
      token := identifiers'first;                -- dummy, replaced by g_n_t
      getNextToken;                              -- load first token
+     -- todo: "policy" is not a reserved word yet because we've maxed out
+     -- the reserved words.  In the meantime, treated it like a pragma name.
+     -- except that this throws off the byte-code compiler.  it doesn't know
+     -- what policy is so it treats it as a shell command.
+     --if identifiers( token ).name = "policy" then
+     --   discardUnusedIdentifier( token );
+     --   getNextToken;
+     --else
+     --   err( "policy expected" );
+     --end if;
+     --expect( is_t );
      while (not error_found and not done) loop
         if token = pragma_t then
            ParsePragma;
@@ -8028,6 +8039,15 @@ begin
            exit;
         end if;
      end loop;
+     -- todo: "policy" is not a reserved word yet because we've maxed out
+     -- the reserved words.  In the meantime, treated it like a pragma name.
+     -- expect( end_t );
+     --if identifiers( token ).name = "policy" then
+     --   discardUnusedIdentifier( token );
+     --   getNextToken;
+     --else
+     --   err( "policy expected" );
+     --end if;
      if token /= eof_t then                     -- unexpected token?
         expect( pragma_t );                     -- say what we expect
      else
