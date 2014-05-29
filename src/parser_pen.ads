@@ -2134,9 +2134,27 @@ pen_glutessvertex_t : identifier;
 pen_gluunproject_t : identifier;
 pen_gluunproject4_t : identifier;
 
+-- C resources
 
-pen_gl_byte_array_id_t: identifier;
+pen_gl_byte_array_t: identifier;
 pen_new_gl_byte_array_t : identifier;
+pen_set_gl_byte_array_t: identifier;
+
+pen_gl_short_array_t: identifier;
+pen_new_gl_short_array_t : identifier;
+pen_set_gl_short_array_t: identifier;
+
+pen_gl_int_array_t: identifier;
+pen_new_gl_int_array_t : identifier;
+pen_set_gl_int_array_t: identifier;
+
+pen_gl_float_array_t: identifier;
+pen_new_gl_float_array_t : identifier;
+pen_set_gl_float_array_t: identifier;
+
+pen_gl_double_array_t: identifier;
+pen_new_gl_double_array_t : identifier;
+pen_set_gl_double_array_t: identifier;
 
 ------------------------------------------------------------------------------
 -- HOUSEKEEPING

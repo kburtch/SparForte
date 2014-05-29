@@ -3716,21 +3716,21 @@ end ParsePenglVertex4s;
 procedure ParsePenglVertex2dv is
   -- Syntax: glVertex2dv( v : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glVertex2dv
-  v_val  : unbounded_string;
---  v_type : identifier;
+  id       : identifier;
+  theArray : resPtr;
 begin
-  err( "Not yet implemented" );
   expect( pen_glvertex2dv_t );
-  -- TODO: must be a 2 value sparforte array
-  --ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  ParseSingleInOutParameter( id, pen_gl_double_array_t ); -- x : GLdouble
   if isExecutingCommand then
     declare
-      param_array : GL_Double_Array_Access := new double_array( 0..1 );
-      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
+      param_ptr   : GL_Double_Array_Ptr;
     begin
-      -- TODO: load sparforte array into the array param_array
+      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      param_ptr := GL_Double_Array_Conv.To_Address( theArray.gl_da );
       glVertex2dv( param_ptr );
-    exception when others =>
+    exception when storage_error =>
+      err( "storage error raised" );
+    when others =>
       err( "exception raised" );
     end;
   end if;
@@ -3739,21 +3739,21 @@ end ParsePenglVertex2dv;
 procedure ParsePenglVertex2fv is
   -- Syntax: glVertex2fv( v : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glVertex2fv
-  v_val  : unbounded_string;
---  v_type : identifier;
+  id       : identifier;
+  theArray : resPtr;
 begin
-  err( "Not yet implemented" );
   expect( pen_glvertex2fv_t );
-  -- TODO: must be a 2 value sparforte array
-  --ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  ParseSingleInOutParameter( id, pen_gl_float_array_t ); -- x : GLfloat
   if isExecutingCommand then
     declare
-      param_array : GL_Float_Array_Access := new float_array( 0..1 );
-      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
+      param_ptr   : GL_Float_Array_Ptr;
     begin
-      -- TODO: load sparforte array into the array param_array
+      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      param_ptr := GL_Float_Array_Conv.To_Address( theArray.gl_fa );
       glVertex2fv( param_ptr );
-    exception when others =>
+    exception when storage_error =>
+      err( "storage error raised" );
+    when others =>
       err( "exception raised" );
     end;
   end if;
@@ -3762,21 +3762,21 @@ end ParsePenglVertex2fv;
 procedure ParsePenglVertex2iv is
   -- Syntax: glVertex2iv( v : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glVertex2iv
-  v_val  : unbounded_string;
---  v_type : identifier;
+  id       : identifier;
+  theArray : resPtr;
 begin
-  err( "Not yet implemented" );
   expect( pen_glvertex2iv_t );
-  -- TODO: must be a 2 value sparforte array
-  --ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  ParseSingleInOutParameter( id, pen_gl_int_array_t ); -- x : GLint
   if isExecutingCommand then
     declare
-      param_array : GL_Int_Array_Access := new int_array( 0..1 );
-      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
+      param_ptr   : GL_Int_Array_Ptr;
     begin
-      -- TODO: load sparforte array into the array param_array
+      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      param_ptr := GL_Int_Array_Conv.To_Address( theArray.gl_ia );
       glVertex2iv( param_ptr );
-    exception when others =>
+    exception when storage_error =>
+      err( "storage error raised" );
+    when others =>
       err( "exception raised" );
     end;
   end if;
@@ -3785,21 +3785,21 @@ end ParsePenglVertex2iv;
 procedure ParsePenglVertex2sv is
   -- Syntax: glVertex2sv( v : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glVertex2sv
-  v_val  : unbounded_string;
---  v_type : identifier;
+  id       : identifier;
+  theArray : resPtr;
 begin
-  err( "Not yet implemented" );
   expect( pen_glvertex2sv_t );
-  -- TODO: must be a 2 value sparforte array
-  --ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  ParseSingleInOutParameter( id, pen_gl_short_array_t ); -- x : GLshort
   if isExecutingCommand then
     declare
-      param_array : GL_Short_Array_Access := new short_array( 0..1 );
-      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
+      param_ptr   : GL_Short_Array_Ptr;
     begin
-      -- TODO: load sparforte array into the array param_array
+      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      param_ptr := GL_Short_Array_Conv.To_Address( theArray.gl_sa );
       glVertex2sv( param_ptr );
-    exception when others =>
+    exception when storage_error =>
+      err( "storage error raised" );
+    when others =>
       err( "exception raised" );
     end;
   end if;
@@ -3808,21 +3808,21 @@ end ParsePenglVertex2sv;
 procedure ParsePenglVertex3dv is
   -- Syntax: glVertex3dv( v : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glVertex3dv
-  v_val  : unbounded_string;
---  v_type : identifier;
+  id       : identifier;
+  theArray : resPtr;
 begin
-  err( "Not yet implemented" );
   expect( pen_glvertex3dv_t );
-  -- TODO: must be a 3 value sparforte array
-  --ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  ParseSingleInOutParameter( id, pen_gl_double_array_t ); -- x : GLdouble
   if isExecutingCommand then
     declare
-      param_array : GL_Double_Array_Access := new double_array( 0..2 );
-      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
+      param_ptr   : GL_Double_Array_Ptr;
     begin
-      -- TODO: load sparforte array into the array param_array
+      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      param_ptr := GL_Double_Array_Conv.To_Address( theArray.gl_da );
       glVertex3dv( param_ptr );
-    exception when others =>
+    exception when storage_error =>
+      err( "storage error raised" );
+    when others =>
       err( "exception raised" );
     end;
   end if;
@@ -3831,21 +3831,21 @@ end ParsePenglVertex3dv;
 procedure ParsePenglVertex3fv is
   -- Syntax: glVertex3fv( v : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glVertex3fv
-  v_val  : unbounded_string;
---  v_type : identifier;
+  id       : identifier;
+  theArray : resPtr;
 begin
-  err( "Not yet implemented" );
   expect( pen_glvertex3fv_t );
-  -- TODO: must be a 3 value sparforte array
-  --ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  ParseSingleInOutParameter( id, pen_gl_float_array_t ); -- x : GLint
   if isExecutingCommand then
     declare
-      param_array : GL_Float_Array_Access := new float_array( 0..2 );
-      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
+      param_ptr   : GL_Float_Array_Ptr;
     begin
-      -- TODO: load sparforte array into the array param_array
+      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      param_ptr := GL_Float_Array_Conv.To_Address( theArray.gl_fa );
       glVertex3fv( param_ptr );
-    exception when others =>
+    exception when storage_error =>
+      err( "storage error raised" );
+    when others =>
       err( "exception raised" );
     end;
   end if;
@@ -3854,21 +3854,21 @@ end ParsePenglVertex3fv;
 procedure ParsePenglVertex3iv is
   -- Syntax: glVertex3iv( v : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glVertex3iv
-  v_val  : unbounded_string;
---  v_type : identifier;
+  id       : identifier;
+  theArray : resPtr;
 begin
-  err( "Not yet implemented" );
   expect( pen_glvertex3iv_t );
-  -- TODO: must be a 3 value sparforte array
-  --ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  ParseSingleInOutParameter( id, pen_gl_int_array_t ); -- x : GLint
   if isExecutingCommand then
     declare
-      param_array : GL_Int_Array_Access := new int_array( 0..2 );
-      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
+      param_ptr   : GL_Int_Array_Ptr;
     begin
-      -- TODO: load sparforte array into the array param_array
-      glVertex3iv( GL_Int_Array_Ptr( param_ptr ) );
-    exception when others =>
+      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      param_ptr := GL_Int_Array_Conv.To_Address( theArray.gl_ia );
+      glVertex3iv( param_ptr );
+    exception when storage_error =>
+      err( "storage error raised" );
+    when others =>
       err( "exception raised" );
     end;
   end if;
@@ -3877,21 +3877,21 @@ end ParsePenglVertex3iv;
 procedure ParsePenglVertex3sv is
   -- Syntax: glVertex3sv( v : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glVertex3sv
-  v_val  : unbounded_string;
---  v_type : identifier;
+  id       : identifier;
+  theArray : resPtr;
 begin
-  err( "Not yet implemented" );
   expect( pen_glvertex3sv_t );
-  -- TODO: must be a 3 value sparforte array
-  --ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  ParseSingleInOutParameter( id, pen_gl_short_array_t ); -- x : GLshort
   if isExecutingCommand then
     declare
-      param_array : GL_Short_Array_Access := new short_array( 0..2 );
-      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
+      param_ptr   : GL_Short_Array_Ptr;
     begin
-      -- TODO: load sparforte array into the array param_array
+      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      param_ptr := GL_Short_Array_Conv.To_Address( theArray.gl_sa );
       glVertex3sv( param_ptr );
-    exception when others =>
+    exception when storage_error =>
+      err( "storage error raised" );
+    when others =>
       err( "exception raised" );
     end;
   end if;
@@ -3900,21 +3900,21 @@ end ParsePenglVertex3sv;
 procedure ParsePenglVertex4dv is
   -- Syntax: glVertex4dv( v : GL_Double_Array_Ptr );
   -- Source: bush_os.opengl.glVertex4dv
-  v_val  : unbounded_string;
---  v_type : identifier;
+  id       : identifier;
+  theArray : resPtr;
 begin
-  err( "Not yet implemented" );
   expect( pen_glvertex4dv_t );
-  -- TODO: must be a 4 value sparforte array
-  --ParseSingleNumericParameter( v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
+  ParseSingleInOutParameter( id, pen_gl_double_array_t ); -- x : GLdouble
   if isExecutingCommand then
     declare
-      param_array : GL_Double_Array_Access := new double_array( 0..3 );
-      param_ptr   : GL_Double_Array_Ptr := GL_Double_Array_Conv.To_Address( param_array );
+      param_ptr   : GL_Double_Array_Ptr;
     begin
-      -- TODO: load sparforte array into the array param_array
+      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      param_ptr := GL_Double_Array_Conv.To_Address( theArray.gl_da );
       glVertex4dv( param_ptr );
-    exception when others =>
+    exception when storage_error =>
+      err( "storage error raised" );
+    when others =>
       err( "exception raised" );
     end;
   end if;
@@ -3923,21 +3923,21 @@ end ParsePenglVertex4dv;
 procedure ParsePenglVertex4fv is
   -- Syntax: glVertex4fv( v : GL_Float_Array_Ptr );
   -- Source: bush_os.opengl.glVertex4fv
-  v_val  : unbounded_string;
---  v_type : identifier;
+  id       : identifier;
+  theArray : resPtr;
 begin
-  err( "Not yet implemented" );
   expect( pen_glvertex4fv_t );
-  -- TODO: must be a 4 value sparforte array
-  --ParseSingleNumericParameter( v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
+  ParseSingleInOutParameter( id, pen_gl_float_array_t ); -- x : GLfloat
   if isExecutingCommand then
     declare
-      param_array : GL_Float_Array_Access := new float_array( 0..3 );
-      param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
+      param_ptr   : GL_Float_Array_Ptr;
     begin
-      -- TODO: load sparforte array into the array param_array
+      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      param_ptr := GL_Float_Array_Conv.To_Address( theArray.gl_fa );
       glVertex4fv( param_ptr );
-    exception when others =>
+    exception when storage_error =>
+      err( "storage error raised" );
+    when others =>
       err( "exception raised" );
     end;
   end if;
@@ -3946,21 +3946,21 @@ end ParsePenglVertex4fv;
 procedure ParsePenglVertex4iv is
   -- Syntax: glVertex4iv( v : GL_Int_Array_Ptr );
   -- Source: bush_os.opengl.glVertex4iv
-  v_val  : unbounded_string;
---  v_type : identifier;
+  id       : identifier;
+  theArray : resPtr;
 begin
-  err( "Not yet implemented" );
   expect( pen_glvertex4iv_t );
-  -- TODO: must be a 4 value sparforte array
-  --ParseSingleNumericParameter( v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
+  ParseSingleInOutParameter( id, pen_gl_int_array_t ); -- x : GLint
   if isExecutingCommand then
     declare
-      param_array : GL_Int_Array_Access := new int_array( 0..3 );
-      param_ptr   : GL_Int_Array_Ptr := GL_Int_Array_Conv.To_Address( param_array );
+      param_ptr   : GL_Int_Array_Ptr;
     begin
-      -- TODO: load sparforte array into the array param_array
-      glVertex4iv( GL_Int_Array_Ptr( param_ptr ) );
-    exception when others =>
+      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      param_ptr := GL_Int_Array_Conv.To_Address( theArray.gl_ia );
+      glVertex4iv( param_ptr );
+    exception when storage_error =>
+      err( "storage error raised" );
+    when others =>
       err( "exception raised" );
     end;
   end if;
@@ -3969,21 +3969,21 @@ end ParsePenglVertex4iv;
 procedure ParsePenglVertex4sv is
   -- Syntax: glVertex4sv( v : GL_Short_Array_Ptr );
   -- Source: bush_os.opengl.glVertex4sv
-  v_val  : unbounded_string;
---  v_type : identifier;
+  id       : identifier;
+  theArray : resPtr;
 begin
-  err( "Not yet implemented" );
   expect( pen_glvertex4sv_t );
-  -- TODO: must be a 4 value sparforte array
-  --ParseSingleNumericParameter( v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
+  ParseSingleInOutParameter( id, pen_gl_short_array_t ); -- x : GLshort
   if isExecutingCommand then
     declare
-      param_array : GL_Short_Array_Access := new short_array( 0..3 );
-      param_ptr   : GL_Short_Array_Ptr := GL_Short_Array_Conv.To_Address( param_array );
+      param_ptr   : GL_Short_Array_Ptr;
     begin
-      -- TODO: load sparforte array into the array param_array
+      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      param_ptr := GL_Short_Array_Conv.To_Address( theArray.gl_sa );
       glVertex4sv( param_ptr );
-    exception when others =>
+    exception when storage_error =>
+      err( "storage error raised" );
+    when others =>
       err( "exception raised" );
     end;
   end if;
@@ -15092,7 +15092,7 @@ begin
   end if;
 end ParsePengluUnProject4;
 
----
+--- C Resources
 
 procedure ParsePenNewGLByteArray is
   -- Syntax: pen.new_gl_byte_array( a, n );
@@ -15101,17 +15101,254 @@ procedure ParsePenNewGLByteArray is
   ref      : reference;
   len_expr : unbounded_string;
   len_kind : identifier;
+  len      : size_t;
 begin
   expect( pen_new_gl_byte_array_t );
-  ParseFirstOutParameter( ref, pen_gl_byte_array_id_t ); -- TODO
-  baseTypesOK( ref.kind, pen_gl_byte_array_id_t );
+  ParseFirstOutParameter( ref, pen_gl_byte_array_t );
+  baseTypesOK( ref.kind, pen_gl_byte_array_t );
   ParseLastNumericParameter( len_expr, len_kind, natural_t );
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, gl_short_array, blocks_top );
+     len := size_t( to_numeric( len_expr ) );
+     declareResource( resId, gl_byte_array, blocks_top, len );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParsePenNewGLByteArray;
+
+procedure ParsePenSetGLByteArray is
+  -- TODO: we could use an easier way to get data in and out
+  -- pen.set_gl_byte_array( a, p, v );
+  a_id        : identifier;
+  pos_val     : unbounded_string;
+  pos_type    : identifier;
+  newval_val  : unbounded_string;
+  newval_type : identifier;
+  theArray    : resPtr;
+  array_pos   : size_t;
+  array_val   : GLbyte;
+begin
+  expect( pen_set_gl_byte_array_t );
+  ParseFirstInOutParameter( a_id, pen_gl_byte_array_t );
+  ParseNextNumericParameter( pos_val, pos_type, natural_t );
+  ParseLastNumericParameter( newval_val, newval_type, pen_glbyte_t );
+  if isExecutingCommand then
+     array_pos := size_t( to_numeric( pos_val ) );
+     array_val := GLbyte( to_numeric( newval_val ) );
+     findResource( to_resource_id( identifiers( a_id ).value ), theArray );
+     if array_pos not in theArray.gl_ba'range then
+        err( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_ba'first ) & " .." & size_t'image( theArray.gl_ba'last ) );
+     else
+        theArray.gl_ba( array_pos ) := array_val;
+     end if;
+  end if;
+  exception when others =>
+    err( "constraint error" );
+end ParsePenSetGLByteArray;
+
+procedure ParsePenNewGLIntArray is
+  -- Syntax: pen.new_gl_int_array( a, n );
+  -- Ada:    N/A
+  resId    : resHandleId;
+  ref      : reference;
+  len_expr : unbounded_string;
+  len_kind : identifier;
+  len      : size_t;
+begin
+  expect( pen_new_gl_int_array_t );
+  ParseFirstOutParameter( ref, pen_gl_int_array_t );
+  baseTypesOK( ref.kind, pen_gl_int_array_t );
+  ParseLastNumericParameter( len_expr, len_kind, natural_t );
+  if isExecutingCommand then
+     identifiers( ref.id ).resource := true;
+     len := size_t( to_numeric( len_expr ) );
+     declareResource( resId, gl_int_array, blocks_top, len );
+     AssignParameter( ref, to_unbounded_string( resId ) );
+  end if;
+end ParsePenNewGLIntArray;
+
+procedure ParsePenSetGLIntArray is
+  -- TODO: we could use an easier way to get data in and out
+  -- pen.set_gl_int_array( a, p, v );
+  a_id        : identifier;
+  pos_val     : unbounded_string;
+  pos_type    : identifier;
+  newval_val  : unbounded_string;
+  newval_type : identifier;
+  theArray    : resPtr;
+  array_pos   : size_t;
+  array_val   : GLint;
+begin
+  expect( pen_set_gl_int_array_t );
+  ParseFirstInOutParameter( a_id, pen_gl_int_array_t );
+  ParseNextNumericParameter( pos_val, pos_type, natural_t );
+  ParseLastNumericParameter( newval_val, newval_type, pen_glint_t );
+  if isExecutingCommand then
+     array_pos := size_t( to_numeric( pos_val ) );
+     array_val := GLint( to_numeric( newval_val ) );
+     findResource( to_resource_id( identifiers( a_id ).value ), theArray );
+     if array_pos not in theArray.gl_ia'range then
+        err( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_ia'first ) & " .." & size_t'image( theArray.gl_ia'last ) );
+     else
+        theArray.gl_ia( array_pos ) := array_val;
+     end if;
+  end if;
+  exception when others =>
+    err( "constraint error" );
+end ParsePenSetGLIntArray;
+
+procedure ParsePenNewGLShortArray is
+  -- Syntax: pen.new_gl_short_array( a, n );
+  -- Ada:    N/A
+  -- todo : should be pairs/triplets/quads
+  resId    : resHandleId;
+  ref      : reference;
+  len_expr : unbounded_string;
+  len_kind : identifier;
+  len      : size_t;
+begin
+  expect( pen_new_gl_short_array_t );
+  ParseFirstOutParameter( ref, pen_gl_short_array_t );
+  baseTypesOK( ref.kind, pen_gl_short_array_t );
+  ParseLastNumericParameter( len_expr, len_kind, natural_t );
+  if isExecutingCommand then
+     identifiers( ref.id ).resource := true;
+     len := size_t( to_numeric( len_expr ) );
+     declareResource( resId, gl_short_array, blocks_top, len );
+     AssignParameter( ref, to_unbounded_string( resId ) );
+  end if;
+end ParsePenNewGLShortArray;
+
+procedure ParsePenSetGLShortArray is
+  -- TODO: we could use an easier way to get data in and out
+  -- pen.set_gl_short_array( a, p, v );
+  a_id        : identifier;
+  pos_val     : unbounded_string;
+  pos_type    : identifier;
+  newval_val  : unbounded_string;
+  newval_type : identifier;
+  theArray    : resPtr;
+  array_pos   : size_t;
+  array_val   : GLshort;
+begin
+  expect( pen_set_gl_short_array_t );
+  ParseFirstInOutParameter( a_id, pen_gl_short_array_t );
+  ParseNextNumericParameter( pos_val, pos_type, natural_t );
+  ParseLastNumericParameter( newval_val, newval_type, pen_glshort_t );
+  if isExecutingCommand then
+     array_pos := size_t( to_numeric( pos_val ) );
+     array_val := GLShort( to_numeric( newval_val ) );
+     findResource( to_resource_id( identifiers( a_id ).value ), theArray );
+     if array_pos not in theArray.gl_sa'range then
+        err( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_sa'first ) & " .." & size_t'image( theArray.gl_sa'last ) );
+     else
+        theArray.gl_sa( array_pos ) := array_val;
+     end if;
+  end if;
+  exception when others =>
+    err( "constraint error" );
+end ParsePenSetGLShortArray;
+
+procedure ParsePenNewGLFloatArray is
+  -- Syntax: pen.new_gl_float_array( a, n );
+  -- Ada:    N/A
+  resId    : resHandleId;
+  ref      : reference;
+  len_expr : unbounded_string;
+  len_kind : identifier;
+  len      : size_t;
+begin
+  expect( pen_new_gl_float_array_t );
+  ParseFirstOutParameter( ref, pen_gl_float_array_t );
+  baseTypesOK( ref.kind, pen_gl_float_array_t );
+  ParseLastNumericParameter( len_expr, len_kind, natural_t );
+  if isExecutingCommand then
+     identifiers( ref.id ).resource := true;
+     len := size_t( to_numeric( len_expr ) );
+     declareResource( resId, gl_float_array, blocks_top, len );
+     AssignParameter( ref, to_unbounded_string( resId ) );
+  end if;
+end ParsePenNewGLFloatArray;
+
+procedure ParsePenSetGLFloatArray is
+  -- TODO: we could use an easier way to get data in and out
+  -- pen.set_gl_int_array( a, p, v );
+  a_id        : identifier;
+  pos_val     : unbounded_string;
+  pos_type    : identifier;
+  newval_val  : unbounded_string;
+  newval_type : identifier;
+  theArray    : resPtr;
+  array_pos   : size_t;
+  array_val   : GLfloat;
+begin
+  expect( pen_set_gl_float_array_t );
+  ParseFirstInOutParameter( a_id, pen_gl_float_array_t );
+  ParseNextNumericParameter( pos_val, pos_type, natural_t );
+  ParseLastNumericParameter( newval_val, newval_type, pen_glfloat_t );
+  if isExecutingCommand then
+     array_pos := size_t( to_numeric( pos_val ) );
+     array_val := GLfloat( to_numeric( newval_val ) );
+     findResource( to_resource_id( identifiers( a_id ).value ), theArray );
+     if array_pos not in theArray.gl_fa'range then
+        err( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_fa'first ) & " .." & size_t'image( theArray.gl_fa'last ) );
+     else
+        theArray.gl_fa( array_pos ) := array_val;
+     end if;
+  end if;
+  exception when others =>
+    err( "constraint error" );
+end ParsePenSetGLFloatArray;
+
+procedure ParsePenNewGLDoubleArray is
+  -- Syntax: pen.new_gl_double_array( a, n );
+  -- Ada:    N/A
+  resId    : resHandleId;
+  ref      : reference;
+  len_expr : unbounded_string;
+  len_kind : identifier;
+  len      : size_t;
+begin
+  expect( pen_new_gl_double_array_t );
+  ParseFirstOutParameter( ref, pen_gl_double_array_t );
+  baseTypesOK( ref.kind, pen_gl_double_array_t );
+  ParseLastNumericParameter( len_expr, len_kind, natural_t );
+  if isExecutingCommand then
+     identifiers( ref.id ).resource := true;
+     len := size_t( to_numeric( len_expr ) );
+     declareResource( resId, gl_double_array, blocks_top, len );
+     AssignParameter( ref, to_unbounded_string( resId ) );
+  end if;
+end ParsePenNewGLDoubleArray;
+
+procedure ParsePenSetGLDoubleArray is
+  -- TODO: we could use an easier way to get data in and out
+  -- pen.set_gl_double_array( a, p, v );
+  a_id        : identifier;
+  pos_val     : unbounded_string;
+  pos_type    : identifier;
+  newval_val  : unbounded_string;
+  newval_type : identifier;
+  theArray    : resPtr;
+  array_pos   : size_t;
+  array_val   : GLdouble;
+begin
+  expect( pen_set_gl_double_array_t );
+  ParseFirstInOutParameter( a_id, pen_gl_double_array_t );
+  ParseNextNumericParameter( pos_val, pos_type, natural_t );
+  ParseLastNumericParameter( newval_val, newval_type, pen_gldouble_t );
+  if isExecutingCommand then
+     array_pos := size_t( to_numeric( pos_val ) );
+     array_val := GLdouble( to_numeric( newval_val ) );
+     findResource( to_resource_id( identifiers( a_id ).value ), theArray );
+     if array_pos not in theArray.gl_da'range then
+        err( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_da'first ) & " .." & size_t'image( theArray.gl_da'last ) );
+     else
+        theArray.gl_da( array_pos ) := array_val;
+     end if;
+  end if;
+  exception when others =>
+    err( "constraint error" );
+end ParsePenSetGLDoubleArray;
 
 -- These are split from StartupPen (see StartupPen)
 
@@ -17256,18 +17493,18 @@ begin
   declareProcedure( pen_glvertex4f_t, "pen.glvertex4f", ParsePenglVertex4f'access );
   declareProcedure( pen_glvertex4i_t, "pen.glvertex4i", ParsePenglVertex4i'access );
   declareProcedure( pen_glvertex4s_t, "pen.glvertex4s", ParsePenglVertex4s'access );
-  declareProcedure( pen_glvertex2dv_t, "pen.glvertex2dv" );
-  declareProcedure( pen_glvertex2fv_t, "pen.glvertex2fv" );
-  declareProcedure( pen_glvertex2iv_t, "pen.glvertex2iv" );
-  declareProcedure( pen_glvertex2sv_t, "pen.glvertex2sv" );
-  declareProcedure( pen_glvertex3dv_t, "pen.glvertex3dv" );
-  declareProcedure( pen_glvertex3fv_t, "pen.glvertex3fv" );
-  declareProcedure( pen_glvertex3iv_t, "pen.glvertex3iv" );
-  declareProcedure( pen_glvertex3sv_t, "pen.glvertex3sv" );
-  declareProcedure( pen_glvertex4dv_t, "pen.glvertex4dv" );
-  declareProcedure( pen_glvertex4fv_t, "pen.glvertex4fv" );
-  declareProcedure( pen_glvertex4iv_t, "pen.glvertex4iv" );
-  declareProcedure( pen_glvertex4sv_t, "pen.glvertex4sv" );
+  declareProcedure( pen_glvertex2dv_t, "pen.glvertex2dv", ParsePenglVertex2dv'access );
+  declareProcedure( pen_glvertex2fv_t, "pen.glvertex2fv", ParsePenglVertex2fv'access );
+  declareProcedure( pen_glvertex2iv_t, "pen.glvertex2iv", ParsePenglVertex2iv'access );
+  declareProcedure( pen_glvertex2sv_t, "pen.glvertex2sv", ParsePenglVertex2sv'access );
+  declareProcedure( pen_glvertex3dv_t, "pen.glvertex3dv", ParsePenglVertex3dv'access );
+  declareProcedure( pen_glvertex3fv_t, "pen.glvertex3fv", ParsePenglVertex3fv'access );
+  declareProcedure( pen_glvertex3iv_t, "pen.glvertex3iv", ParsePenglVertex3iv'access );
+  declareProcedure( pen_glvertex3sv_t, "pen.glvertex3sv", ParsePenglVertex3sv'access );
+  declareProcedure( pen_glvertex4dv_t, "pen.glvertex4dv", ParsePenglVertex4dv'access );
+  declareProcedure( pen_glvertex4fv_t, "pen.glvertex4fv", ParsePenglVertex4fv'access );
+  declareProcedure( pen_glvertex4iv_t, "pen.glvertex4iv", ParsePenglVertex4iv'access );
+  declareProcedure( pen_glvertex4sv_t, "pen.glvertex4sv", ParsePenglVertex4sv'access );
   declareProcedure( pen_glnormal3b_t, "pen.glnormal3b" );
   declareProcedure( pen_glnormal3d_t, "pen.glnormal3d" );
   declareProcedure( pen_glnormal3f_t, "pen.glnormal3f" );
@@ -17695,8 +17932,21 @@ begin
   declareFunction(  pen_gluunproject_t, "pen.gluunproject" );
   declareFunction(  pen_gluunproject4_t, "pen.gluunproject4" );
 
-  declareIdent( pen_gl_byte_array_id_t,  "pen.gl_byte_array_id_t", positive_t, typeClass );
+  declareIdent( pen_gl_byte_array_t,  "pen.gl_byte_array", positive_t, typeClass );
   declareProcedure( pen_new_gl_byte_array_t, "pen.new_gl_byte_array", ParsePenNewGLByteArray'access );
+  declareProcedure( pen_set_gl_byte_array_t, "pen.set_gl_byte_array", ParsePenSetGLByteArray'access );
+  declareIdent( pen_gl_short_array_t,  "pen.gl_short_array", positive_t, typeClass );
+  declareProcedure( pen_new_gl_short_array_t, "pen.new_gl_short_array", ParsePenNewGLShortArray'access );
+  declareProcedure( pen_set_gl_short_array_t, "pen.set_gl_short_array", ParsePenSetGLShortArray'access );
+  declareIdent( pen_gl_int_array_t,  "pen.gl_int_array", positive_t, typeClass );
+  declareProcedure( pen_new_gl_int_array_t, "pen.new_gl_int_array", ParsePenNewGLIntArray'access );
+  declareProcedure( pen_set_gl_int_array_t, "pen.set_gl_int_array", ParsePenSetGLIntArray'access );
+  declareIdent( pen_gl_float_array_t,  "pen.gl_float_array", positive_t, typeClass );
+  declareProcedure( pen_new_gl_float_array_t, "pen.new_gl_float_array", ParsePenNewGLFloatArray'access );
+  declareProcedure( pen_set_gl_float_array_t, "pen.set_gl_float_array", ParsePenSetGLFloatArray'access );
+  declareIdent( pen_gl_double_array_t,  "pen.gl_double_array", positive_t, typeClass );
+  declareProcedure( pen_new_gl_double_array_t, "pen.new_gl_double_array", ParsePenNewGLDoubleArray'access );
+  declareProcedure( pen_set_gl_double_array_t, "pen.set_gl_double_array", ParsePenSetGLDoubleArray'access );
 
 end StartupPen;
 

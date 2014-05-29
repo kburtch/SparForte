@@ -80,11 +80,27 @@ end String_Hash;
 -- block table.  Returns 0 if the resource could not be allocated.
 -----------------------------------------------------------------------------
 
-procedure declareResource( id : out resHandleID; rt : aResourceType; blocklvl : block ) is
+procedure declareResource( id : out resHandleID; rt : aResourceType; blocklvl : block; max_length : size_t := 0 ) is
   rp : resPtr;
 begin
   rp := new resHandle( rt );
   rp.blocklvl := blocklvl;
+
+  case rt is
+  when gl_byte_array =>
+     rp.gl_ba := new Byte_Array( 0..max_length );
+  when gl_short_array =>
+     rp.gl_sa := new Short_Array( 0..max_length );
+  when gl_int_array =>
+     rp.gl_ia := new Int_Array( 0..max_length );
+  when gl_float_array =>
+     rp.gl_fa := new Float_Array( 0..max_length );
+  when gl_double_array =>
+     rp.gl_da := new Double_Array( 0..max_length );
+  when others =>
+    null;
+  end case;
+
   begin
     resHandleList.Queue( resHandles, rp );
   exception when storage_error =>

@@ -190,7 +190,7 @@ pragma inline( to_unbounded_string );
 function to_resource_id( val : unbounded_string ) return resHandleID;
 pragma inline( to_resource_id );
 
-procedure declareResource( id : out resHandleID; rt : aResourceType; blocklvl : block );
+procedure declareResource( id : out resHandleID; rt : aResourceType; blocklvl : block; max_length : size_t := 0 );
 -- create a resource
 
 procedure findResource( id : resHandleID; rp : out resPtr );
