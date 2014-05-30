@@ -973,6 +973,8 @@ fi
 # this is for world.ads. APQ=true if either DB is installed
 if [ ! -z "$NEEDS_APQ" ] ; then
    GNATPREP_OPTS="$GNATPREP_OPTS -DAPQ=true"
+else
+   GNATPREP_OPTS="$GNATPREP_OPTS -DAPQ=false"
 fi
 
 echo "Updating...world.ads"

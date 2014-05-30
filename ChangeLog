@@ -128,6 +128,6 @@ CHANGES SINCE 1.4
 
 47: Fix: error messages for include/policy file permissions no longer say "include file" but make clear what file has the permission issues.
 
-- errors in profile file: what happens?
+48. Fix: compilation errors when disabling all database types during configuration fixed.
 
 

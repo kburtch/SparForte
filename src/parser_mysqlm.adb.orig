@@ -232,54 +232,54 @@ end ParseMySQLMEngineOf;
 procedure ParseMySQLMEngineOf( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
-#if MYSQL
-
-procedure ParseMySQLMPrepare( result : out unbounded_string ) is
--- TODO: this not implemented
-  -- Syntax: r := mysql.prepare( query, sqlstmt [,after] );
-  sqlExpr   : unbounded_string;
-  sqlType   : identifier;
-  afterExpr : unbounded_string;
-  afterType : identifier;
-  hasAfter  : boolean := false;
-  queryExpr : unbounded_string;
-  queryType : identifier;
-  query : resPtr;
-begin
-  expect( mysqlm_prepare_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
-  ParseExpression( sqlExpr, sqlType );
-  if baseTypesOK( string_t, sqlType ) then
-     if token = symbol_t and identifiers( token ).value = "," then
-        expect( symbol_t, "," );
-        ParseExpression( afterExpr, afterType );
-        if baseTypesOK( string_t, sqlType ) then
-           hasAfter := true;
-        end if;
-     end if;
-  end if;
-  expect( symbol_t, ")" );
-  if isExecutingCommand then
-     result := to_bush_boolean( true );
-     begin
-       findQuery( queryExpr, query );
-       Clear( query.Q );
-       if hasAfter then
-          Prepare( query.Q, to_string( sqlExpr ), to_string( afterExpr ) );
-       else
-          Prepare( query.Q, to_string( sqlExpr ) );
-       end if;
-     exception when others =>
-       result := to_bush_boolean( false );
-     end;
-  end if;
-end ParseMySQLMPrepare;
-
-#else
-
-procedure ParseMySQLMPrepare( result : out unbounded_string ) renames not_configured;
-
-#end if;
+--#if MYSQL
+--
+--procedure ParseMySQLMPrepare( result : out unbounded_string ) is
+---- TODO: this not implemented
+--  -- Syntax: r := mysql.prepare( query, sqlstmt [,after] );
+--  sqlExpr   : unbounded_string;
+--  sqlType   : identifier;
+--  afterExpr : unbounded_string;
+--  afterType : identifier;
+--  hasAfter  : boolean := false;
+--  queryExpr : unbounded_string;
+--  queryType : identifier;
+--  query : resPtr;
+--begin
+--  expect( mysqlm_prepare_t );
+--  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
+--  ParseExpression( sqlExpr, sqlType );
+--  if baseTypesOK( string_t, sqlType ) then
+--     if token = symbol_t and identifiers( token ).value = "," then
+--        expect( symbol_t, "," );
+--        ParseExpression( afterExpr, afterType );
+--        if baseTypesOK( string_t, sqlType ) then
+--           hasAfter := true;
+--        end if;
+--     end if;
+--  end if;
+--  expect( symbol_t, ")" );
+--  if isExecutingCommand then
+--     result := to_bush_boolean( true );
+--     begin
+--       findQuery( queryExpr, query );
+--       Clear( query.Q );
+--       if hasAfter then
+--          Prepare( query.Q, to_string( sqlExpr ), to_string( afterExpr ) );
+--       else
+--          Prepare( query.Q, to_string( sqlExpr ) );
+--       end if;
+--     exception when others =>
+--       result := to_bush_boolean( false );
+--     end;
+--  end if;
+--end ParseMySQLMPrepare;
+--
+--#else
+--
+--procedure ParseMySQLMPrepare( result : out unbounded_string ) renames not_configured;
+--
+--#end if;
 #if MYSQL
 
 procedure ParseMySQLMPrepare is
