@@ -29,18 +29,27 @@ CHANGES SINCE 1.4
    pen.glrasterpos2f,         pen.glrasterpos2i,   pen.glrasterpos2s,
    pen.glrasterpos3d,         pen.glrasterpos3f,   pen.glrasterpos3i,
    pen.glrasterpos3s,         pen.glrasterpos4d,   pen.glrasterpos4f,
-   pen.glrasterpos4i,         pen.glrasterpos4s,
+   pen.glrasterpos4i,         pen.glrasterpos4s,   pen.glvertex2dv,
+   pen.glvertex2fv,           pen.glvertex2iv,     pen.glvertex2sv,
+   pen.glvertex3dv,           pen.glvertex3fv,     pen.glvertex3iv,
+   pen.glvertex3sv,           pen.glvertex4dv,     pen.glvertex4fv,
+   pen.glvertex4iv,           pen.glvertex4sv,
 
 3. New: OpenGL extension functions
-   pen.gl_new_screen_canvas,  pen.glcolor3,        pen.glcolor4
+   pen.gl_new_screen_canvas,  pen.glcolor3,        pen.glcolor4,
+   pen.new_gl_byte_array,     pen.new_gl_short_array,
+   pen.new_gl_int_array,      pen.new_gl_float_array,
+   pen.new_go.double_array,   pen.set_gl_byte_array,
+   pen.set_gl_short_array,    pen.set_gl_int_array,
+   pen.set_gl_float_array,    pen.set_gl_double_array,
 
 4. New: get_immediate.  Not fully working, doesn't support files. [testing needed] [docs needed].
 
-5. New: exception declarations.  "exception" may be followed by "with" and include a default message and use for a status code.  The extension is not allowed with pragma ada_95. [testing needed]
+5. New: exception declarations.  "exception" may be followed by "with" and include a default message and use for a status code.  The extension is not allowed with pragma ada_95. 
 
-4. New: exception handlers accept exception names. [testing needed] 
+4. New: exception handlers accept exception names.
 
-5. New: raise command (beside re-raising in handlers).  The exception may be followed by "with" and a message, as in Ada 2005.  The extension is not allowed with pragma ada_95. [testing needed] 
+5. New: raise command (beside re-raising in handlers).  The exception may be followed by "with" and a message, as in Ada 2005.  The extension is not allowed with pragma ada_95.
 
 6. New: exceptions package.  exceptions.exception_name, exceptions.exception_info, exceptions.exception_status_code.
 
@@ -129,5 +138,4 @@ CHANGES SINCE 1.4
 47: Fix: error messages for include/policy file permissions no longer say "include file" but make clear what file has the permission issues.
 
 48. Fix: compilation errors when disabling all database types during configuration fixed.
-
 
