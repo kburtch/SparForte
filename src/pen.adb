@@ -1828,6 +1828,9 @@ begin
      put_line( standard_error, "newScreenCanvas: failed for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
   end if;
   newcanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
+  -- This is a kludge.  The first frame will not draw unless this is called
+  -- once at the start.  Not sure why.  KB: 14/06/02
+  SDL_GL_SwapBuffers;
   newcanvas.kind := screen;
   newcanvas.drawingType := opengl;
   newCanvas.name := to_unbounded_string( "Untitled SparForte Screen Canvas" );
@@ -1924,6 +1927,9 @@ begin
   if newCanvas.surface_ptr = null then
      put_line( standard_error, "newWindowCanvas: failed for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
   end if;
+  -- This is a kludge.  The first frame will not draw unless this is called
+  -- once at the start.  Not sure why.  KB: 14/06/02
+  SDL_GL_SwapBuffers;
   newCanvas.kind := window;
   newcanvas.drawingType := opengl;
   newCanvas.name := to_unbounded_string( "Untitled SparForte Window Canvas" );

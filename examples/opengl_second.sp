@@ -36,7 +36,6 @@ begin
 
   pen.glviewport( 0, 0, width, height );
   pen.glmatrixmode( pen.gl_projection );
-  pen.glloadidentity;
   pen.gluperspective( 45, width/height, 0.1, 100 );
   pen.glmatrixmode( pen.gl_modelview );
 

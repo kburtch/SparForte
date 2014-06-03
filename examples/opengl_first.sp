@@ -42,6 +42,9 @@ begin
   -- Clear the canvas
 
   pen.glclear( pen.gl_color_buffer_bit or pen.gl_depth_buffer_bit );
+
+  -- Start at the center
+
   pen.glloadidentity;
 
   -- Move left and back
@@ -68,6 +71,7 @@ begin
 
   -- Display the scene
 
+  pen.reveal_now( c );
   pen.reveal_now( c );
 
   -- Wait to close
