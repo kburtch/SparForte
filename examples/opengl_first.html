@@ -57,6 +57,9 @@
   <FONT COLOR=green><EM>-- Clear the canvas</EM></FONT>
 
   pen.glclear( pen.gl_color_buffer_bit <b>or</b> pen.gl_depth_buffer_bit );
+
+  <FONT COLOR=green><EM>-- Start at the center</EM></FONT>
+
   pen.glloadidentity;
 
   <FONT COLOR=green><EM>-- Move left and back</EM></FONT>
@@ -84,6 +87,7 @@
   <FONT COLOR=green><EM>-- Display the scene</EM></FONT>
 
   pen.reveal_now( c );
+  pen.reveal_now( c );
 
   <FONT COLOR=green><EM>-- Wait to close</EM></FONT>
 
@@ -92,6 +96,7 @@
   pen.close_canvas( c );
 
 <b>end</b> opengl_first;
+
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
