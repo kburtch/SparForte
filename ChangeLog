@@ -139,3 +139,5 @@ CHANGES SINCE 1.4
 
 48. Fix: compilation errors when disabling all database types during configuration fixed.
 
+49. New: /etc/sparforte_config file for global script administration declarations.
+

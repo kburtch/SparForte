@@ -9024,6 +9024,7 @@ begin
      interactiveSession;                                -- start the session
   else
      doGlobalPolicy;                                -- architecture policies
+     doGlobalConfig;                                -- sysadmin configs
      if not error_found then
         checkAndInterpretScript( Argument( OptionOffset ) );
      end if;
