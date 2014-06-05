@@ -143,3 +143,5 @@ CHANGES SINCE 1.4
 
 50. Fix: "; @" in a pragma chain no longer puts the interpreter into an infinite loop, now reports correct error.
 
+51. New: /etc/sparforte_config file for global script administration declarations.
+

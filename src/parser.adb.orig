@@ -8082,14 +8082,9 @@ begin
      --   err( "config expected" );
      --end if;
      --expect( is_t );
-     while (not error_found and not done) loop
-        if token = pragma_t then
-           ParseDeclarations;
-           expectSemicolon;
-        else
-           exit;
-        end if;
-     end loop;
+     if not error_found and not done then
+        ParseDeclarations;
+     end if;
      -- todo: "config" is not a reserved word yet because we've maxed out
      -- the reserved words.  In the meantime, treated it like a pragma name.
      -- expect( end_t );
@@ -8352,11 +8347,6 @@ begin
            put_trace("Script exit status is" & last_status'img );
         end if;
      end if;
-  else                                             -- no error?
-     set_exit_status( 0 );                         -- return no error
-     if trace then                                 -- -x? show 0 exit status
-        put_trace("Script exit status is 0" );
-     end if;
   end if;
   if not execOpt then                              -- not -e?
 <<retry>> res := close( scriptFile );              -- close the script file
@@ -8380,6 +8370,7 @@ procedure interpretConfig( configPath : string ) is
   oldScriptFilePath : unbounded_string;
   firstLine : aliased unbounded_string;
   res : int;
+  old_identifiers_top : identifier := identifiers_top;
 begin
   if verboseOpt then
      Put_Trace( "Executing Global Config" );
@@ -8455,10 +8446,17 @@ begin
         end if;
      end if;
   else                                             -- no error?
-     set_exit_status( 0 );                         -- return no error
-     if trace then                                 -- -x? show 0 exit status
-        put_trace("Script exit status is 0" );
-     end if;
+     -- treat all the identifiers declared in the configuration as used
+     -- as programmers may have no say in when the are declared of if
+     -- their program uses them yet
+     for i in old_identifiers_top..identifiers_top-1 loop
+         put_trace( "global config declared " & to_string( identifiers( i ).name ) );
+         identifiers( i ).wasReferenced := true;
+     end loop;
+     --set_exit_status( 0 );                         -- return no error
+     --if trace then                                 -- -x? show 0 exit status
+     --   put_trace("Script exit status is 0" );
+     --end if;
   end if;
   if not execOpt then                              -- not -e?
 <<retry>> res := close( scriptFile );              -- close the script file
@@ -8769,6 +8767,7 @@ begin
   save_rshOpt := rshOpt;                         -- if restricted shell
   save_execOpt := execOpt;                       -- if cmd line script
   rshOpt := false;                               -- turn off for profile
+  C_reset_errno;
   scriptFile := open( path & ASCII.NUL, 0, 660 ); -- open script
   if scriptFile > 0 then                         -- good?
 <<retry>> res := close( scriptFile );            -- close test fd
@@ -8810,6 +8809,7 @@ begin
   save_rshOpt := rshOpt;                         -- if restricted shell
   save_execOpt := execOpt;                       -- if cmd line script
   rshOpt := false;                               -- turn off for profile
+  C_reset_errno;
   scriptFile := open( path & ASCII.NUL, 0, 660 ); -- open script
   if scriptFile > 0 then                         -- good?
 <<retry>> res := close( scriptFile );            -- close test fd
@@ -8859,6 +8859,7 @@ begin
         profilePath := profilePath & "/";
      end if;
      profilePath := profilePath & ".sparforte_profile";
+     C_reset_errno;
      scriptFile := open( to_string( profilePath ) & ASCII.NUL, 0, 660 ); -- open script
      if scriptFile > 0 then                       -- profile opened OK?
 <<retry>> res := close( scriptFile );               -- close test fd

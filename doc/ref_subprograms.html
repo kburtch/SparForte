@@ -521,13 +521,16 @@ following conditions:</p>
 reported and the profile file will not be run.  The login session will
 be aborted.</p>
 
-<h2>Policy Files</h2>
+<h2>Global Policy File</h2>
 
-<p>When SparForte runs a script, it checks for the existence of a
-file called "/etc/sparforte_policy".  This is a system-wide initialization
+<p>When SparForte runs a script, it searches for a file
+called "/etc/sparforte_policy".  This is a system-wide initialization
 file, similar to a profile file.  It's purpose is to setup any architectural
 pragmas, constants, and other shared declarations common to all scripts
-on a server.  The policy file is not executed for interactive sessions.</p>
+on a server.  The policy file is not executed for interactive sessions.
+The file is indended to be used by architects who maintain the standards
+and integration of different computer systems, separating their concerns
+from those of the programmers.</p>
 
 <p>SparForte checks this file before opening it.  It must meet the
 following conditions:</p>
@@ -542,7 +545,8 @@ following conditions:</p>
 <p>If a policy file exists but doesn't meet these conditions, an error is
 reported and the file will not be run.  The script will be aborted.</p>
 
-<p>A policy file may only contain <b>pragma</b>'s.</p>
+<p>A policy file may only contain <b>pragma</b>'s.  It cannot contain
+include files.</p>
 
         <center>
         <div class="code">
@@ -556,6 +560,58 @@ reported and the file will not be run.  The script will be aborted.</p>
         </div>
         </div>
         </center>
+
+<p>There are currently no project-specific policy files.</p>
+
+<h2>Global Configuration File</h2>
+
+<p>After running any global policy file, SparForte searches for a file called
+"/etc/sparforte_config".  This is a system-wide initialization file
+used to set up any system administration information such as server names,
+login credentials for services (such as databases) and so forth.
+The configuration file is not executed for interactive sessions.  The
+file is intended to be used by system administrators who must maintain
+different enviroments, separating their concerns from those of the
+programmers.</p>
+
+<p>SparForte checks this file before opening it.  It must meet the
+following conditions:</p>
+
+<ul>
+<li>It must be a regular file (that is, not a directory or other special-purpose file)</li>
+<li>The file permissions must allow the file to be read by the user</li>
+<li>The file permissions must not allow others to write to the file (for security purposes)</li>
+<li>It must not be empty</li>
+</ul>
+
+<p>If a configuration file exists but doesn't meet these conditions, an error is
+reported and the file will not be run.  The script will be aborted.</p>
+
+<p>A configuration file may only contain declarations.  That is, it may contain
+variable declarations, constant declarations, type declarations, pragmas,
+function declarations or procedure declarations&mdash;anything which can be
+created in the declaration section of a subprogram.  However, the content
+is mostly likely to be a group of constants.  It cannot contain include
+files.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">-- Database settings for this server<br>
+        db_host     : <b>constant</b> string := "db1.ourcompany.com";<br>
+        db_username : <b>constant</b> string := "webapp";<br>
+        db_password : <b>constant</b> string := "secret";<br>&nbsp;<br>
+        </p>
+        <div class="code_caption">
+        <b>Example</b>: A Simple /etc/sparforte_config file</span>
+        </div>
+        </div>
+        </center>
+
+<p>SparForte will not report an error if there are any unused variables from
+the configuration file.   It is assumed that some declarations will not be
+used in some scripts.</p>
+
+<p>There are currently no project-specific configuration files.</p>
 
 <br>&nbsp;
 
