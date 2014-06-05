@@ -919,10 +919,21 @@ begin
   ParseLastListParameter( sourceListId );
   genTypesOk( identifiers( targetListId ).genKind, identifiers( sourceListId ).genKind );
   if isExecutingCommand then
+     declare
+       sourceCursor : doubly_linked_string_lists.Cursor;
      begin
        findResource( to_resource_id( identifiers( targetListId ).value ), theTargetList );
        findResource( to_resource_id( identifiers( sourceListId ).value ), theSourceList );
-       Doubly_Linked_String_Lists.Assign( theTargetList.dlslList, theSourceList.dlslList );
+       -- this is only available starting in GCC Ada 4.7 or 4.8 or newer
+       --Doubly_Linked_String_Lists.Assign( theTargetList.dlslList, theSourceList.dlslList );
+       -- we'll write our own
+       sourceCursor := doubly_linked_string_lists.First( theSourceList.dlslList );
+       doubly_linked_string_lists.Clear( theTargetList.dlslList );
+       for i in 1..doubly_linked_string_lists.Length( theSourceList.dlslList ) loop
+          doubly_linked_string_lists.Append( theTargetList.dlslList,
+             doubly_linked_string_lists.Element( sourceCursor ) );
+          doubly_linked_string_lists.Next( sourceCursor );
+       end loop;
      end;
   end if;
 end ParseDoublyAssign;

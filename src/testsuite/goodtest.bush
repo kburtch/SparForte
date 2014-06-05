@@ -2922,7 +2922,7 @@ env js;
 
 -- doubly_linked_lists positive tests
 
--- Basic Assign
+-- Basic Assign (GCC Ada 4.7/8+)
 
 declare
   l1 : doubly_linked_lists.list;
@@ -2950,7 +2950,7 @@ declare
 begin
   doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.new_list( l2, integer );
-  doubly_linked_lists.assign( l1, l2 );
+  doubly_linked_lists.move( l1, l2 );
 end;
 
 -- Basic Is_Empty

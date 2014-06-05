@@ -7777,7 +7777,8 @@ begin
      eof_flag := true;
      -- a script could be a single comment without a ;
   elsif Token = symbol_t and identifiers( token ).value = "@" then
-     err( "@ must appear after a command or in an assignment expression" );
+     err( "@ must appear after a command or pragma or in an assignment expression" );
+           getNextToken;
   elsif Token = symbol_t and identifiers( token ).value = ";" then
      err( "statement expected" );
   elsif not identifiers( Token ).deleted and identifiers( Token ).list then     -- array variable

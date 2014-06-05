@@ -697,7 +697,7 @@ if [ -z "$TMP" ] ; then
    TMP=`/sbin/ldconfig -r 2>/dev/null | grep libSDL_ttf`
    if [ -z "$TMP" ] ; then
       echo "no"
-      echo "No version of the Simple DirectMedia Layer truetype font library (libSDL_Image) was found"
+      echo "No version of the Simple DirectMedia Layer truetype font library (libSDL_ttf) was found"
       echo "This is a third-party  library not normally included with libSDL."
       echo "Fedora users can install it using this command: yum install SDL_ttf"
       echo "If you have installed libSDL_ttf, you may need to use ldconfig (as"
@@ -809,7 +809,7 @@ else
             echo "no"
             echo
             echo "SparForte requires GNU make.  GNU make normally has a gmake alias"
-            echo "but some systems (like Debian/Linux, Cygwin) do not include the"
+            echo "but some systems (like Debian/Unbuntu, Cygwin) do not include the"
             echo "alias.  If your system calls gmake by another name (such as"
             echo "'make') use the --make option."
             echo

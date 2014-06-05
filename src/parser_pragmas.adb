@@ -1510,7 +1510,7 @@ begin
      -- examine the name of the pragma and return a pragma kind matching the
      -- name
      pragmaKind := parsePragmaKind;
-     while token /= eof_t and token /= end_t loop
+     while token /= eof_t and token /= end_t and not error_found loop
         -- an error check
         ParsePragmaStatement( pragmaKind );
         if token = symbol_t and identifiers( symbol_t ).value = to_unbounded_string( "@" ) then
@@ -1542,7 +1542,7 @@ begin
         if token = symbol_t and identifiers( symbol_t ).value = to_unbounded_string( "(" ) then
            err( "'@' or ';' expected" );
         end if;
-        exit when done or token = eof_t or (token = symbol_t and identifiers( symbol_t ).value /= to_unbounded_string( "@" ) );
+        exit when done or error_found or token = eof_t or (token = symbol_t and identifiers( symbol_t ).value /= to_unbounded_string( "@" ) );
         if onlyAda95 then
            err( "@ is not allowed with " & optional_bold( "pragma ada_95" ) );
         end if;

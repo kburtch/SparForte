@@ -141,3 +141,7 @@ CHANGES SINCE 1.4
 
 49. New: /etc/sparforte_config file for global script administration declarations.
 
+50. New: New example programs opengl_first (created earlier), opengl_second (created earlier), randdev, randuni.
+
+51. Fix: "; @" in a pragma chain no longer puts the interpreter into an infinite loop, now reports correct error.
+

@@ -239,7 +239,7 @@ EXPECTED="Content-type: text/html
 
 OK"
 
-function test_template {
+test_template() {
   echo "$1 ..."
   TMP=`../../spar $1`
   STATUS=$?
@@ -252,7 +252,6 @@ function test_template {
      return $STATUS
   fi
 }
-readonly -f test_template
 
 test_template "template1" "$EXPECTED"
 RESULT=$?
