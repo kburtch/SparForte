@@ -8058,6 +8058,52 @@ end parsePolicy;
 
 
 ------------------------------------------------------------------------------
+-- PARSE CONFIG
+--
+-- Switch to a new set of config commands.  For a config file, this should
+-- only be declarations.   It is up to the caller to restore the scanner state.
+------------------------------------------------------------------------------
+
+procedure parseConfig is
+begin
+  if not error_found then
+     cmdpos := firstScriptCommandOffset;
+     token := identifiers'first;                -- dummy, replaced by g_n_t
+     getNextToken;                              -- load first token
+     -- todo: "config" is not a reserved word yet because we've maxed out
+     -- the reserved words.  In the meantime, treated it like a pragma name.
+     -- except that this throws off the byte-code compiler.  it doesn't know
+     -- what config is so it treats it as a shell command.
+     --if identifiers( token ).name = "policy" then
+     --   discardUnusedIdentifier( token );
+     --   getNextToken;
+     --else
+     --   err( "config expected" );
+     --end if;
+     --expect( is_t );
+     while (not error_found and not done) loop
+        if token = pragma_t then
+           ParseDeclarations;
+           expectSemicolon;
+        else
+           exit;
+        end if;
+     end loop;
+     -- todo: "config" is not a reserved word yet because we've maxed out
+     -- the reserved words.  In the meantime, treated it like a pragma name.
+     -- expect( end_t );
+     --if identifiers( token ).name = "config" then
+     --   discardUnusedIdentifier( token );
+     --   getNextToken;
+     --else
+     --   err( "config expected" );
+     --end if;
+     expect( eof_t );                        -- should be nothing else
+  end if;
+end parseConfig;
+
+
+------------------------------------------------------------------------------
 -- PARSE NEW COMMANDS
 --
 -- Switch to a new set of commands.  This is used for user-defined procedures,
@@ -8214,6 +8260,7 @@ end interactiveSession;
 
 --  INTERPRET POLICY
 --
+-- Run a policy file.
 ------------------------------------------------------------------------------
 
 procedure interpretPolicy( policyPath : string ) is
@@ -8320,6 +8367,107 @@ begin
   end if;
 
 end interpretPolicy;
+
+
+--  INTERPRET CONFIG
+--
+-- Run a configuration file.
+------------------------------------------------------------------------------
+
+procedure interpretConfig( configPath : string ) is
+  alreadyCompiled : boolean := false;
+  oldScriptFilePath : unbounded_string;
+  firstLine : aliased unbounded_string;
+  res : int;
+begin
+  if verboseOpt then
+     Put_Trace( "Executing Global Config" );
+  end if;
+  inputMode := fromScriptFile;                     -- running a script
+  if execOpt then                                  -- -e?
+     if verboseOpt then
+        Put_Trace( "Compiling Byte Code" );
+     end if;
+     sourceFilesList.Clear( SourceFiles );
+     sourceFilesList.Queue( SourceFiles, aSourceFile'(pos => 0, name => to_unbounded_string (commandLineSource) ) );
+     scriptFilePath := to_unbounded_string( commandLineSource ); -- script name
+     compileCommand( to_unbounded_string( configPath ) ); -- path is really script
+  else                                             -- else path is a path
+    oldScriptFilePath := scriptFilePath;
+    scriptFilePath := to_unbounded_string( configPath ); -- script name
+    if syntax_check then
+       -- only register source files during the syntax check, when files
+       -- (including include files) are loaded
+       sourceFilesList.Clear( SourceFiles );
+       sourceFilesList.Queue( SourceFiles, aSourceFile'(pos => 0, name => scriptFilePath) );
+    end if;
+    scriptFile := open( configPath & ASCII.NUL, 0, 660 ); -- open script
+    -- If this procedure is called twice during a regular script run, once
+    -- for the syntax check and once to execute.  If the script name
+    -- is the same, don't compile it a second time: assume that the
+    -- byte code is good and proceed to parsing.
+    alreadyCompiled := scriptFilePath = oldScriptFilePath;
+
+    if scriptFile > 0 then                           -- good?
+       error_found := false;                         -- no error found
+       exit_block := false;                          -- not exit-ing a block
+       if not LineRead( firstLine'access ) then        -- read first line
+          put_line( standard_error, "unable to read first line of script" );
+          error_found := true;
+          goto error;                                -- and interpreting
+       end if;
+       if not alreadyCompiled then
+       -- This was script = null but that breaks code if this procedure
+       -- is called twice with different files (e.g. loading profiles).
+       --if script = null then
+          if verboseOpt then
+             Put_Trace( "Compiling Byte Code" );
+          end if;
+          compileScript( firstline );
+       --end if;
+       end if;
+    end if;
+  end if;
+  if (scriptFile > 0 or boolean(execOpt)) and not done then -- file open or -e?
+     parseConfig;
+  elsif C_errno = 2 then                             -- file not found?
+     put_line( standard_error, "unable to open config file '" &
+       configPath & "' : file not found" );
+       error_found := true;
+  elsif C_errno /= 0 then                          -- some other error?
+     -- use /= 0 in case user aborts with control-c
+     put_line( standard_error, "unable to open config file '" &
+       configPath & "' : " & OSerror( C_errno ) );
+       error_found := true;
+  end if;
+<<error>>
+  if error_found then                              -- was there an error?
+     if last_status = 0 then                       -- no last command status?
+        set_exit_status( Failure );                -- just set to 1
+        if trace then
+           put_trace("Script exit status is" & failure'img );
+        end if;
+     else                                          -- otherwise
+        set_exit_status( exit_status( last_status ) ); -- return last status
+        if trace then
+           put_trace("Script exit status is" & last_status'img );
+        end if;
+     end if;
+  else                                             -- no error?
+     set_exit_status( 0 );                         -- return no error
+     if trace then                                 -- -x? show 0 exit status
+        put_trace("Script exit status is 0" );
+     end if;
+  end if;
+  if not execOpt then                              -- not -e?
+<<retry>> res := close( scriptFile );              -- close the script file
+     if res < 0 then
+        if C_errno = EINTR then
+           goto retry;
+        end if;
+     end if;
+  end if;
+end interpretConfig;
 
 
 --  INTERPRET SCRIPT
@@ -8597,6 +8745,53 @@ begin
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
 end doGlobalPolicy;
+
+
+--  DO GLOBAL CONFIG
+--
+-- Run /etc/sparforte_config for declaring configuration options.  Displays
+-- any error message.
+--
+-- I decided against a per-project config file because such files should be
+-- in a project's home directory and read-only the the developers.  It
+-- would be difficult to load a config based on the script name as different
+-- scripts could share the same name.  Also, configs could reflect the SDLC
+-- stage.  I can revisit this later.
+------------------------------------------------------------------------------
+
+procedure doGlobalConfig is
+  save_rshOpt  : commandLineOption;              -- for executing config
+  save_execOpt : commandLineOption;              -- for executing config
+  res  : int;
+  path : string := "/etc/sparforte_config";
+begin
+  save_rshOpt := rshOpt;                         -- if restricted shell
+  save_execOpt := execOpt;                       -- if cmd line script
+  rshOpt := false;                               -- turn off for profile
+  scriptFile := open( path & ASCII.NUL, 0, 660 ); -- open script
+  if scriptFile > 0 then                         -- good?
+<<retry>> res := close( scriptFile );            -- close test fd
+     if res < 0 then
+        if C_errno = EINTR then
+           goto retry;
+        end if;
+     end if;
+  end if;
+  if C_errno /= ENOENT then
+     if C_errno = 0 and C_is_includable_file( path & ASCII.NUL ) then
+        sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( path ) ) ) );
+        interpretConfig( path ); -- run config script
+     else
+        err( "global config file " & optional_bold( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
+        raise BAD_PROFILE;
+     end if;
+  end if;
+  if error_found then
+     put_line( standard_error, fullErrorMessage );
+  end if;
+  rshOpt := save_rshOpt;                          -- restore rsh setting
+  execOpt := save_execOpt;                        -- restore -e setting
+end doGlobalConfig;
 
 
 --  DO GLOBAL PROFILE
