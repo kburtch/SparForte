@@ -234,6 +234,17 @@ Type "gmake help" for a list of all options.  There are more options in the
 src directory makefile.
 
 
+SPECIFIC DISTRIBUTIONS
+
+* Fedora 20
+
+  - edit src/GNUmakfile (created by configure)
+  - remove -lpgcommon
+  - create symbolic links for SDL_ttf and SDL_image
+    ln -s /usr/lib64/libSDL_ttf-2.0.so.0 /usr/lib64/libSDL_ttf.so
+    ln -s /usr/lib64/libSDL_image-2.0.so.0 /usr/lib64/libSDL_image.so
+    ldconfig
+
 CREATING A LAUNCHER (DESKTOP ICON)
 
 If you are using Gnome desktop, right-click and select create launcher.
