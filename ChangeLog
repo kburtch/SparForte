@@ -145,3 +145,5 @@ CHANGES SINCE 1.4
 
 51. New: /etc/sparforte_config file for global script administration declarations.
 
+52. Fix: Added locale to set command in APQ configuration script so that it works with non-English locales (not tested).
+
