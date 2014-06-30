@@ -3,9 +3,9 @@
 #
 # For environment variables that affect this script, see the INSTALL file.
 #
-# This Bourne shell script was written on Bash.  It isn't supposed to depend
-# on BASH but I haven't tested it on other shells so your results may vary.
-
+# This Bourne shell script was written on Bash but should support most
+# Bourne shell variants, including ksh.  FreeBSD will fail using the
+# default tcsh (which is based on csh and is not Bourne shell compatible).
 #set -eu
 
 PREFIX="/usr/local"
@@ -109,6 +109,7 @@ PKGCONFIG="pkg-config"
 echo -n "checking for pkg_config... "
 (exec $PKGCONFIG --version >/dev/null 2>/dev/null)
 if [ $? -ne 0 ] ; then
+   PKGCONFIG=""
    echo "no"
 else
    echo "yes"
@@ -188,6 +189,9 @@ elif [ "$ARCH" = "i586" ] ; then
 elif [ "$ARCH" = "i686" ] ; then
    CPU_ARCH="i386"
 elif [ "$ARCH" = "athlon" ] ; then # Intel-ish
+   CPU_ARCH="i386"
+elif [ "$ARCH" = "amd64" ] ; then # FreeBSD 10
+   export ARCH="athlon64"
    CPU_ARCH="i386"
 # Intel 64-bit Pentium
 elif [ "$ARCH" = "x86_64" ] ; then
@@ -714,12 +718,13 @@ if [ -z "$TMP" ] ; then
 fi
 
 echo -n "configuring OpenGL (pkg-config)... "
-if [ -n "PKGCONFIG" ] ; then
+if [ -n "$PKGCONFIG" ] ; then
    MESALIBSTYPE=`(exec $PKGCONFIG --libs gl glu 2>/dev/null)`
+   TMP=$?
    MESALIBSTYPE=`echo "$MESALIBSTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
    MESAINCLTYPE=`(exec $PKGCONFIG --cflags gl glu 2>/dev/null)`
    MESAINCLTYPE=`echo "$MESAINCLTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
-   if [ $? -ne 0 ] ; then
+   if [ $TMP -ne 0 ] ; then
       MESALIBSTYPE=""
       MESAINCLTYPE=""
       echo "no"
@@ -732,7 +737,10 @@ if [ -n "PKGCONFIG" ] ; then
 else
    echo "no"
    echo
-   echo "Unable to configure OpenGL"
+   echo "guessing at OpenGL configation (may be incorrect)... "
+   MESALIBSTYPE="-lGLU\ -lGL\ \ "
+   MESAINCLTYPE="-I\/usr\/include\/libdrm\ \ "
+
 fi
 
 # Databases
@@ -855,42 +863,6 @@ else
 fi
 
 echo "SparForte is configured"
-
-# ADAVOX library
-
-#echo
-#sleep 3
-#echo "Configuring third-party ADAVOX (AU/WAV Sound Library)..."
-#sleep 1
-#
-# /dev/dsp
-#
-#echo
-#echo -n "adavox library: checking for OSS /dev/dsp... "
-#if [ -z "$NO_SOUND" ] ; then
-#   if test ! -z "$BASH" ; then
-#      test -a /dev/dsp
-#   else
-#      test -r /dev/dsp
-#   fi
-#   if [ $? -eq 0 ] ; then
-#      echo "yes"
-#   else
-#         echo "no"
-#         echo
-#         echo "ADAVOX requires /dev/dsp.  Create a /dev/dsp symlink to your real audio device"
-#         echo "(If you don't care about audio support, try ln -s /dev/null /dev/dsp) or use"
-#         echo "--without-sound)."
-#         exit 1
-#   fi
-#else
-#   echo "no"
-#fi
-#if [ -z "$NO_SOUND" ] ; then
-#   echo "ADAVOX library is configured"
-#else
-#   echo "ADAVOX library will not be used"
-#fi
 
 # APQ library
 
@@ -1096,26 +1068,25 @@ if [ -z "$HAS_POSTGRES" ] ; then
    fi
 fi
 if [ -z "$NO_SOUND" ] ; then
-   #if [ -z "$GSTREAMERFLAG" ] ; then
-   #   ADAVOXINCLSSUB='-I.\/ADAVOX-0.51\/bc -I.\/ADAVOX-0.51\/wc -I.\/ADAVOX-0.51\/main'
-   #   ADAVOXLIBSSUB='.\/ADAVOX-0.51\/wc\/cglue.o'
-   #   ADAVOXMAKESUB='$(MAKE) CPU=$(CPU) -C ADAVOX-0.51'
-   #else
-# TODO: detect pkg-config
+   if [ -n "$PKGCONFIG" ] ; then
       GSTREAMERLIBS=`pkg-config --cflags --libs gstreamer-0.10 2>/dev/null`
       if [ $? -ne 0 ] ; then
          GSTREAMERLIBS=`pkg-config --cflags --libs gstreamer-1.0 2>/dev/null`
       fi
       GSTREAMERLIBS=`echo "$GSTREAMERLIBS" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
-   #fi
-#else
-#   ADAVOXINCLSSUB=""
-#   ADAVOXLIBSSUB=""
-#   ADAVOXMAKESUB="@echo \"Disabled\""
+   else
+      # FreeBSD 10
+      TMP="/usr/local/include/gstreamer-0.10/"
+      if [ -d "$TMP" ] ; then
+         echo "warning: guessing a gstreamer config"
+         GSTREAMERLIBS="-I/usr/local/include/gstreamer-0.10/ -I/usr/local/include/glib-2.0/ -lgstreamer-0.10"
+         GSTREAMERLIBS=`echo "$GSTREAMERLIBS" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+      else
+         echo "unable to configure gstreamer"
+         exit 192
+      fi
+   fi
 fi
-ADAVOXINCLSSUB=""
-ADAVOXLIBSSUB=""
-ADAVOXMAKESUB="@echo \"Disabled\""
 
 PREFIX=`echo "$PREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 MANPREFIX=`echo "$MANPREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
@@ -1129,7 +1100,7 @@ touch c_gstreamer.c
 
 echo "Creating...src/GNUmakefile"
 
-sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/ADAVOXINCLSSUB/$ADAVOXINCLSSUB/g;s/ADAVOXLIBSSUB/$ADAVOXLIBSSUB/g;s/ADAVOXMAKESUB/$ADAVOXMAKESUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g;s/MESAINCLSUB/$MESAINCLTYPE/g;s/MESALIBSSUB/$MESALIBSTYPE/g" < GNUmakefile.orig > GNUmakefile
+sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g;s/MESAINCLSUB/$MESAINCLTYPE/g;s/MESALIBSSUB/$MESALIBSTYPE/g" < GNUmakefile.orig > GNUmakefile
 
 cd ..
 echo "Creating...GNUmakefile"
