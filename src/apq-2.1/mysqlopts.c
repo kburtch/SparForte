@@ -48,7 +48,7 @@ main(int argc,char **argv) {
 	for ( x=0; x<sizeof options/sizeof options[0]; ++x ) {
 		printf("      (\n");
 		printf("        Name       => \"%-18.18s\",\n",options[x].name);
-		printf("        Length     => %d,\n",strlen(options[x].name));
+		printf("        Length     => %d,\n",(int)strlen(options[x].name));
 		printf("        MySQL_Enum => %u,\n",options[x].value);
 		printf("        Argument   => %s\n",options[x].atype);
 		printf("      )%s\n",x+1==(sizeof options/sizeof options[0])?"":",");

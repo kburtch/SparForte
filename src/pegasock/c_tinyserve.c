@@ -14,7 +14,7 @@
 
 // Configuration constants
 
-#define SOCKET_BUFFER_MAX 255
+#define SOCKET_BUFFER_MAX 256
 // limited by kernel parameter SOMAXCONN 
 // /proc/sys/net/core/somaxconn (default 128)
 // http://publib.boulder.ibm.com/infocenter/wasinfo/v6r0/index.jsp?topic=/com.ibm.websphere.express.doc/info/exp/ae/tprf_tunelinux.html
@@ -462,7 +462,7 @@ void get_client_message( int socket_client ) {
   socket_error = 0;
 
 retry:
-  bytes_read = recv( socket_client, socket_buffer, SOCKET_BUFFER_MAX+1, 0 );
+  bytes_read = recv( socket_client, socket_buffer, SOCKET_BUFFER_MAX, 0 );
   if ( bytes_read < 0 ) {
      // handle errors.  If EINTR, retrun so that, as much as possible, the
      // data is read.  Other errors, set the Ada error code.
