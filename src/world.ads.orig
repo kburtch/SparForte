@@ -416,7 +416,6 @@ generic_t  : identifier;
 goto_t     : identifier;
 if_t       : identifier;
 in_t       : identifier;
-interface_t : identifier; -- Ada 2005
 is_t       : identifier;
 limited_t  : identifier;
 loop_t     : identifier;
@@ -427,7 +426,6 @@ null_t     : identifier;
 of_t       : identifier;
 or_t       : identifier;
 others_t   : identifier;
--- overriding_t : identifier; -- Ada 2005
 out_t      : identifier;
 package_t  : identifier;
 pragma_t   : identifier;
@@ -444,10 +442,7 @@ return_t   : identifier;
 reverse_t  : identifier;
 select_t   : identifier;
 separate_t : identifier;
--- some_t  : identifier; -- Ada 2012 but I need to modify the symbol table
--- to accept more keywords to fit this in.  Update docs when I do.
 subtype_t  : identifier;
--- synchronized_t : identifier; -- Ada 2005
 tagged_t   : identifier;
 task_t     : identifier;
 terminate_t : identifier;
@@ -492,6 +487,13 @@ insert_t : identifier;
 -- delete_t : identifier; (shared with Ada delete declared above)
 -- select_t : identifier; (shared with Ada select declared above)
 update_t : identifier;
+
+-- Additional keywords not used by SparForte but are in Ada
+
+interface_t    : identifier; -- Ada 2005
+overriding_t   : identifier; -- Ada 2005
+synchronized_t : identifier; -- Ada 2005
+some_t         : identifier; -- Ada 2012
 
 ------------------------------------------------------------------------------
 -- Other internal identifiers

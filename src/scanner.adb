@@ -2437,6 +2437,13 @@ begin
   declareKeyword( update_t, "update" );
   declareKeyword( delete_t, "delete" );
 
+  -- Additional keywords not used by SparForte but are in Ada
+
+  declareKeyword( interface_t, "interface" );
+  declareKeyword( overriding_t, "overriding" );
+  declareKeyword( synchronized_t, "synchronized" );
+  declareKeyword( some_t, "some" );
+
   -- remember stack top for last keyword
 
   reserved_top := identifiers_top;

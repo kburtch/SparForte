@@ -1,6 +1,6 @@
 For the latest news, visit the Linux Cafe at the PegaSoft web site. 
 
-SparForte 1.6's focus was on ???.
+SparForte 2.0's focus was on ???.
 
 CHANGES SINCE 1.5
 
@@ -11,4 +11,8 @@ CHANGES SINCE 1.5
 3. New: Standard OpenGL functions (not documented yet)
 
 4. New: OpenGL extension functions
+
+5. Change: byte code changed - reserved word limit moved from 128 to 8192.
+
+6. New: reserved words interface, overriding, some, synchronized.  There are in Ada 2005, 2012 but are not used in SparForte.  Reserved for compatibility reasons.
 
