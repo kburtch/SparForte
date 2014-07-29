@@ -40,6 +40,7 @@ use ada.text_io,
    user_io,
    parser,
    signal_flags;
+with string_util; use string_util;
 
 -- pragma Optimize( space );
 

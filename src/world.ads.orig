@@ -45,7 +45,7 @@ package world is
 -- Global Variables / Flags
 ------------------------------------------------------------------------------
 
-version   : constant string := "1.5";
+version   : constant string := "2.0";
 copyright : constant string :=  " Copyright (c)2001-2014 Free Software Foundation";
 
 random_generator : ada.numerics.float_random.generator;
@@ -79,6 +79,8 @@ type identifier is new integer range 1..30_000; -- 1..2750;
 -- identifiers are identified by a unique number.  The upper bound indicates
 -- the number of identifiers that can be declared.
 
+subtype reservedWordRange is identifier range 1..8192;
+-- The limit of how many reserved words can be stored in the identifiers
 
 ------------------------------------------------------------------------------
 -- Modes
@@ -688,6 +690,22 @@ function toHighASCII( id : identifier ) return character;
 function toLowASCII( ch : character ) return character;
 function toLowASCII( id : identifier ) return character;
 -- subtract 128 from a character
+
+-- This is a two-character natural in the byte code with first byte
+-- having >= 128 and no zeros.  This is the maximum possible number
+-- of reserved words.
+
+subtype byteCodeIdentifier is positive range 1..8192;
+
+subtype byteCodeNatural    is natural;
+
+procedure toByteCode( id : reservedWordRange; ch1, ch2 : out character );
+function toByteCode( id : reservedWordRange ) return string;
+pragma inline( toByteCode );
+
+procedure toIdentifier( ch1, ch2 : character; id : out reservedWordRange; advance : out integer );
+pragma inline( toIdentifier );
+
 
 -----------------------------------------------------------------------------
 -- Shell Words

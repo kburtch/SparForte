@@ -208,7 +208,16 @@ begin
   Put_Line( "    Symbol Table pos =" & token'img );
   Put_Line( "    Instruction counter first/current/last =" &
     firstPos'img & "/" & cmdpos'img & "/" & lastPos'img );
-  Put_Line( "    Token type = " & identifiers( identifiers( token ).kind ).name );
+  if not identifiers( token ).kind'valid then
+     Put_Line( "    Token type = OUT-OF-RANGE VALUE" & identifiers( token ).kind'img );
+  else
+    begin
+       Put_Line( "    Token type = " & identifiers( identifiers( token ).kind ).name );
+    exception
+    when constraint_error =>
+      put_line( standard_error, "put_token: constraint_error raised on token type" );
+     end;
+  end if;
   Put_Line( "    Token value = '" & ToEscaped( identifiers( token ).value ) & "'" );
   Put( "    Token properties = " );
   if identifiers( token ).import then
@@ -243,6 +252,11 @@ begin
      Put( "(reserved keyword) " );
   end if;
   New_Line;
+exception
+  when constraint_error =>
+    put_line( standard_error, "put_token: constraint_error raised" );
+  when storage_error =>
+    put_line( standard_error, "put_token: storage_error raised" );
 end Put_Token;
 
 
@@ -1942,9 +1956,6 @@ end shutdownScanner;
   procedure declareStandardTypes is
   begin
 
-  declareIdent( variable_t, "root variable type", keyword_t );
-  declareIdent( uni_numeric_t, "universal_numeric", variable_t, typeClass );
-  declareIdent( uni_string_t, "universal_string", variable_t, typeClass );
   declareIdent( root_enumerated_t, "root enumerated", variable_t, typeClass );
   declareIdent( root_record_t, "root record", variable_t, typeClass );
   declareIdent( command_t, "command", variable_t, typeClass );
@@ -2078,30 +2089,6 @@ begin
   -- Predefined types
 
   declareStandardTypes;
-
-  -- Literals
-
-  declareIdent( backlit_t, "Backquote Literal", uni_string_t );
-  declareIdent( strlit_t, "String Literal", uni_string_t );
-  declareIdent( charlit_t, "Character Literal", uni_string_t );
-  declareIdent( number_t, "Numeric Literal", uni_numeric_t );
-  declareIdent( imm_delim_t, "", symbol_t );
-  immediate_word_delimiter := toHighASCII( imm_delim_t );
-  declareIdent( imm_sql_delim_t, "", symbol_t );
-  immediate_sql_word_delimiter := toHighASCII( imm_sql_delim_t );
-  declareIdent( word_t, "Word", uni_string_t );
-  declareIdent( sql_word_t, "SQL Word", uni_string_t );
-  declareIdent( char_escape_t, "", symbol_t );
-  high_ascii_escape := toHighASCII( char_escape_t );
-
-  -- VM Special Instructions
-
-  -- declareKeyword( load_nr_t, "[Load Numeric Register]" );
-  -- declareKeyword( load_sr_t, "[Load String Register]" );
-  -- declareKeyword( load_ir_t, "[Load Index Register]" );
-  -- declareKeyword( fetch_nr_t, "[Load Numeric Register]" );
-  -- declareKeyword( fetch_sr_t, "[Load String Register]" );
-  -- declareKeyword( fetch_ir_t, "[Load Index Register]" );
 
   -- Boolean enumerated
 
@@ -2274,6 +2261,9 @@ procedure startScanner is
      end loop;
   end saveInitialEnvironment;
 
+  discard_char : character;
+  --discard_adv  : integer;
+
 begin
 
   maxInteger := long_float( integerOutputType'last-0.9 );
@@ -2287,6 +2277,25 @@ begin
   -- all keywords
 
   declareKeyword( keyword_t, "_keyword" );
+
+  -- The end of file token (must be declared early, used in declarations)
+
+  -- eof_character := toHighASCII( identifiers_top );
+  declareKeyword( eof_t, "End of File" );
+  toByteCode( eof_t, eof_character, discard_char );
+  if discard_char /= ASCII.NUL then
+     put_line( standard_error, "internal error: eof_t is too high" );
+  end if;
+
+
+  -- VM Special Instructions
+
+  -- declareKeyword( load_nr_t, "[Load Numeric Register]" );
+  -- declareKeyword( load_sr_t, "[Load String Register]" );
+  -- declareKeyword( load_ir_t, "[Load Index Register]" );
+  -- declareKeyword( fetch_nr_t, "[Load Numeric Register]" );
+  -- declareKeyword( fetch_sr_t, "[Load String Register]" );
+  -- declareKeyword( fetch_ir_t, "[Load Index Register]" );
 
   -- Ada 95 keywords
 
@@ -2367,10 +2376,37 @@ begin
 
   declareKeyword( symbol_t, "Punctuation Symbol" );
 
-  -- The end of file token (must be declared early, used in declarations)
+  -- Universal Types
+  -- These must be declared here for use by the literals.  Other
+  -- standard types are declared later.
 
-  eof_character := toHighASCII( identifiers_top );
-  declareKeyword( eof_t, "End of File" );
+  declareIdent( variable_t, "root variable type", keyword_t );
+  declareIdent( uni_numeric_t, "universal_numeric", variable_t, typeClass );
+  declareIdent( uni_string_t, "universal_string", variable_t, typeClass );
+  -- Literals
+  -- These must be declared after the universal types
+
+  declareIdent( backlit_t, "Backquote Literal", uni_string_t );
+  declareIdent( strlit_t, "String Literal", uni_string_t );
+  declareIdent( charlit_t, "Character Literal", uni_string_t );
+  declareIdent( number_t, "Numeric Literal", uni_numeric_t );
+  declareIdent( imm_delim_t, "", symbol_t );
+  toByteCode( imm_delim_t, immediate_word_delimiter, discard_char );
+  if discard_char /= ASCII.NUL then
+     put_line( standard_error, "internal error: imm_delim_t is too high" );
+  end if;
+  declareIdent( imm_sql_delim_t, "", symbol_t );
+  toByteCode( imm_sql_delim_t, immediate_sql_word_delimiter, discard_char );
+  if discard_char /= ASCII.NUL then
+     put_line( standard_error, "internal error: imm_sql_delim_t is too high" );
+  end if;
+  declareIdent( word_t, "Word", uni_string_t );
+  declareIdent( sql_word_t, "SQL Word", uni_string_t );
+  declareIdent( char_escape_t, "", symbol_t );
+  toByteCode( char_escape_t, high_ascii_escape, discard_char );
+  if discard_char /= ASCII.NUL then
+     put_line( standard_error, "internal error: high_ascii_escape_t is too high" );
+  end if;
 
   -- No last output
 
@@ -2404,7 +2440,7 @@ begin
   -- remember stack top for last keyword
 
   reserved_top := identifiers_top;
-  if reserved_top > 255 then
+  if reserved_top > 8191 then
      put_line( standard_error, "Too many reserved words (limit 128)" );
      raise PROGRAM_ERROR;
   end if;
@@ -4351,6 +4387,10 @@ procedure getCommandLine ( cmdline : out unbounded_string;
   indent        : natural;
   len           : natural;
   is_escaping   : boolean;
+
+  i             : natural;
+  id            : identifier;
+  adv           : integer;
 begin
 
   -- Script unexpectedly null?  Print a message an let an exception be raised
@@ -4424,7 +4464,9 @@ begin
      token_firstpos := firstpos-line_firstpos+1;    -- position in
      token_lastpos := lastpos-line_firstpos+1;      -- returned string
      cmdline := null_unbounded_string;              -- begin decompression
-     for i in line_firstpos..line_lastpos loop      -- for bytes in script
+     --for i in line_firstpos..line_lastpos loop      -- for bytes in script
+     i := line_firstpos;
+     while i <= line_lastpos loop
          if script( i ) > ASCII.DEL then            -- a byte code? expand
             if script( i ) = high_ascii_escape then -- escaping
                if not is_escaping then
@@ -4433,10 +4475,14 @@ begin
                   cmdline := cmdline & script( i ); -- add it
                   is_escaping := false;             -- and no longer escape
                end if;
+               i := i + 1;
             else
                if not is_escaping then              -- not escaping?
-                  cmdline := cmdline & identifiers( character'pos( script(i) )-128 ).name;
-                  len := length( identifiers( character'pos( script(i) ) - 128 ).name );
+                  --cmdline := cmdline & identifiers( character'pos( script(i) )-128 ).name;
+                  --len := length( identifiers( character'pos( script(i) ) - 128 ).name );
+                  toIdentifier( script(i), script(i+1), id, adv );
+                  cmdline := cmdline & identifiers( id ).name;
+                  len := length( identifiers( id ).name );
                   if firstpos = lastpos and firstpos = i then -- tokenized keyword?
                      token_lastpos := token_lastpos + len-1; -- adjust end position
                   elsif lastpos > i then                     -- token shifted?
@@ -4445,13 +4491,16 @@ begin
                      token_firstpos := token_firstpos + len-1;
                      end if;
                   end if;
+                  i := i + adv;
                else
                   cmdline := cmdline & script( i );
                   is_escaping := false;
+                  i := i + 1;
                end if;
             end if;
          else                                             -- not a code?
             cmdline := cmdline & script( i );             -- just add
+            i := i + 1;
          end if;
      end loop;                                            -- for all codes
      token_firstpos := token_firstpos + indent;           -- adj token pos
@@ -4460,7 +4509,9 @@ begin
      token_firstpos := 1;                                 -- position at
      token_lastpos := 1;                                  -- first character
      cmdline := null_unbounded_string;                    -- same, without
-     for i in line_firstpos..line_lastpos loop            -- token stuff...
+     --for i in line_firstpos..line_lastpos loop            -- token stuff...
+     i := line_firstpos;
+     while i <= line_lastpos loop
          if script( i ) = ASCII.HT then                   -- embedded tab?
             while (length( cmdline )) mod 8 /= 0 loop     -- move to a column
                cmdline := cmdline & " ";                  -- of 8
@@ -4473,12 +4524,16 @@ begin
                   cmdline := cmdline & script( i );       -- add it
                   is_escaping := false;                   -- and not escape
                end if;
+               i := i + 1;
             else
                if not is_escaping then                    -- not escaping?
-                  cmdline := cmdline &
-                      identifiers( character'pos( script(i) )-128 ).name;
-                  len := length(
-                      identifiers( character'pos( script(i) ) - 128 ).name );
+                  --cmdline := cmdline &
+                  --    identifiers( character'pos( script(i) )-128 ).name;
+                  --len := length(
+                  --    identifiers( character'pos( script(i) ) - 128 ).name );
+                  toIdentifier( script(i), script(i+1), id, adv );
+                  cmdline := cmdline & identifiers( id ).name;
+                  len := length( identifiers( id ).name );
                   if firstpos = lastpos and firstpos = i then -- token keyword?
                      token_lastpos := token_lastpos + len-1;  -- adj end posn
                   elsif lastpos > i then                      -- token shifted?
@@ -4487,13 +4542,16 @@ begin
                         token_firstpos := token_firstpos + len-1;
                      end if;
                   end if;
+                  i := i + adv;
                else
                   cmdline := cmdline & script( i );
                   is_escaping := false;
+                  i := i + 1;
                end if;
             end if;
          else                                             -- other character?
             cmdline := cmdline & script( i );
+            i := i + 1;
          end if;
      end loop;
   end if;
@@ -4540,6 +4598,8 @@ procedure getNextToken is
   is_based_number : boolean; -- true if numeric literal has a base
   token_firstpos, token_lastpos, lineno, fileno : natural;
   sfr : aSourceFile;
+
+  adj : integer;
 
 begin
 
@@ -4594,6 +4654,7 @@ begin
 
   -- Immediate Words
 
+--put_line( "first char: " & toEscaped( to_unbounded_string( "" & ch ) ) ); -- DEBUG
   if  ch = eof_character then
       token := eof_t;
       return;
@@ -4686,8 +4747,10 @@ begin
   -- Check for a compressed keyword (represented with high bit set)
 
   elsif ch > ASCII.DEL then                                   -- > ASCII 127
-     token := identifier( character'pos( script( cmdpos ) ) - 128 );
-     cmdpos := cmdpos + 1;
+     -- token := identifier( character'pos( script( cmdpos ) ) - 128 );
+     -- cmdpos := cmdpos + 1;
+     toIdentifier( script( cmdpos ), script( cmdpos + 1 ), token , adj );
+     cmdpos := cmdpos + adj;
      -- special VM tokens here
      --
      -- load_nr: load value from numeric register.  Treat it like a number
@@ -5455,7 +5518,8 @@ begin
      lastpos := cmdpos+1;
      word := null_unbounded_string;
      if Element( command, cmdpos ) > ASCII.DEL then
-        word := word & toHighASCII( char_escape_t );
+        --word := word & toHighASCII( char_escape_t );
+        word := word & toByteCode( char_escape_t );
      end if;
      word := word & Element( command, cmdpos );
      if lastpos <= length( command ) then
@@ -5468,7 +5532,7 @@ begin
                     err_tokenize( "ASCII character not allowed", to_string( command ) );
                  end if;
                  if Element( command, lastpos ) > ASCII.DEL then
-                    word := word & toHighASCII( char_escape_t );
+                    word := word & toByteCode( char_escape_t );
                  end if;
               elsif Element( command, lastpos ) = '.' and then lastpos < length( command ) then
                  if Element( command, lastpos+1 ) = '.' then -- ".."
@@ -5507,7 +5571,7 @@ begin
        -- around...
      begin
        if id /= eof_t and id < reserved_top then
-          ci.compressedScript := ci.compressedScript & toHighASCII( id );
+          ci.compressedScript := ci.compressedScript & toByteCode( id );
        else
           ci.compressedScript := ci.compressedScript & word &
              immediate_word_delimiter;
@@ -5548,7 +5612,6 @@ procedure adaScriptStatementByteCode( ci : in out compressionInfo;
   tabAdjust : natural := 0;
 
 begin
-
   -- Tokenize keywords in the line.  This is very similar to getNextToken
   -- except tokens are stored in the compressed script instead of in a
   -- variables.  Keywords are stored as their symbol table position with
@@ -5605,7 +5668,7 @@ begin
      lastpos := cmdpos+1;
      word := null_unbounded_string;
      if Element( command, cmdpos ) > ASCII.DEL then
-        word := word & toHighASCII( char_escape_t );
+        word := word & toByteCode( char_escape_t );
      end if;
      word := word & Element( command, cmdpos );
      if lastpos <= length( command ) then
@@ -5618,7 +5681,7 @@ begin
                     err_tokenize( "ASCII character not allowed", to_string( command ) );
                  end if;
                  if Element( command, lastpos ) > ASCII.DEL then
-                    word := word & toHighASCII( char_escape_t );
+                    word := word & toByteCode( char_escape_t );
                  end if;
               elsif Element( command, lastpos ) = '.' and then lastpos < length( command ) then
                  if Element( command, lastpos+1 ) = '.' then -- ".."
@@ -5656,7 +5719,7 @@ begin
        -- around...
      begin
        if id /= eof_t and id < reserved_top then
-          ci.compressedScript := ci.compressedScript & toHighASCII( id );
+          ci.compressedScript := ci.compressedScript & toByteCode( id );
        else
           ci.compressedScript := ci.compressedScript & word &
              immediate_word_delimiter;
@@ -5745,7 +5808,7 @@ begin
         -- NORMAL CASE
         while Element( command, lastpos ) /= ''' loop       -- not literal end?
             if Element( command, lastpos ) > ASCII.DEL then -- hi ascii?
-               word := word & toHighASCII( char_escape_t ); -- escape it
+               word := word & toByteCode( char_escape_t ); -- escape it
             end if;
             word := word & Element( command, lastpos );     -- add letter
             lastpos := lastpos+1;                           -- advance one ch
@@ -5934,7 +5997,6 @@ procedure shellStatementByteCode( ci : in out compressionInfo;
   inBackQuotes   : boolean;
   inBackslash    : boolean;
 begin
-
   -- Tokenize shell words in the line.  This is very similar to getNextToken
   -- except tokens are stored in the compressed script instead of in a
   -- variables.  Keywords are stored as their symbol table position with
@@ -6101,8 +6163,8 @@ begin
     cmdpos := cmdpos + 1;
   end loop;
 
-  ci.compressedScript := ci.compressedScript & toHighASCII( imm_delim_t ) &
-     slice( command, firstpos, lastpos ) & toHighASCII( imm_delim_t );
+  ci.compressedScript := ci.compressedScript & toByteCode( imm_delim_t ) &
+     slice( command, firstpos, lastpos ) & toByteCode( imm_delim_t );
   goto next;
 
 end shellStatementByteCode;
@@ -6131,7 +6193,6 @@ procedure SQLStatementByteCode( ci : in out compressionInfo;
   inBackQuotes   : boolean;
   inBackslash    : boolean;
 begin
-
   -- Tokenize shell words in the line.  This is very similar to getNextToken
   -- except tokens are stored in the compressed script instead of in a
   -- variables.  Keywords are stored as their symbol table position with
@@ -6279,8 +6340,8 @@ begin
     cmdpos := cmdpos + 1;
   end loop;
 
-  ci.compressedScript := ci.compressedScript & toHighASCII( imm_sql_delim_t ) &
-     slice( command, firstpos, lastpos ) & toHighASCII( imm_sql_delim_t );
+  ci.compressedScript := ci.compressedScript & toByteCode( imm_sql_delim_t ) &
+     slice( command, firstpos, lastpos ) & toByteCode( imm_sql_delim_t );
   goto next;
 
 end SQLStatementByteCode;
@@ -6536,7 +6597,7 @@ begin
      lastpos := cmdpos+1;
      word := null_unbounded_string;
      if Element( command, cmdpos ) > ASCII.DEL then
-        word := word & toHighASCII( char_escape_t );
+        word := word & toByteCode( char_escape_t );
      end if;
      word := word & Element( command, cmdpos );
      if lastpos <= length( command ) then
@@ -6549,7 +6610,7 @@ begin
                     err_tokenize( "ASCII character not allowed", to_string( command ) );
                  end if;
                  if Element( command, lastpos ) > ASCII.DEL then
-                    word := word & toHighASCII( char_escape_t );
+                    word := word & toByteCode( char_escape_t );
                  end if;
               elsif Element( command, lastpos ) = '.' and then lastpos < length( command ) then
                  if Element( command, lastpos+1 ) = '.' then -- ".."
@@ -6576,7 +6637,7 @@ begin
      if id /= eof_t then                                   -- found it?
        if id < reserved_top then                           -- reserved word?
           ci.compressedScript := ci.compressedScript &     -- ASCII 128 +
-             toHighASCII( id );                            -- sym table pos
+             toByteCode( id );                            -- sym table pos
        else                                                -- should not occur
           ci.compressedScript := ci.compressedScript &     -- store store as an
              word & immediate_word_delimiter;              -- immediate word
@@ -6786,7 +6847,7 @@ begin
 
   -- Script Header: 2 bytes
 
-  ci.compressedScript := ci.compressedScript & ASCII.SOH; -- version 1
+  ci.compressedScript := ci.compressedScript & ASCII.STX; -- version 2
   ci.compressedScript := ci.compressedScript & ASCII.NUL; -- reserved
 
   -- EOF Leader Line: 6 bytes
@@ -6795,7 +6856,7 @@ begin
   ci.compressedScript := ci.compressedScript & ASCII.SOH; -- line number low
   ci.compressedScript := ci.compressedScript & ASCII.SOH; -- line number high
   ci.compressedScript := ci.compressedScript & ASCII.SOH; -- indent
-  ci.compressedScript := ci.compressedScript & toHighASCII( eof_t );
+  ci.compressedScript := ci.compressedScript & toByteCode( eof_t );
   ci.compressedScript := ci.compressedScript & ASCII.NUL; -- EOL marker
 
 end beginByteCode;
@@ -6817,7 +6878,7 @@ begin
   ci.compressedScript := ci.compressedScript & character'val( SourceLineNoLo+1 );
   ci.compressedScript := ci.compressedScript & character'val( SourceLineNoHi+1 );
   ci.compressedScript := ci.compressedScript & ASCII.SOH;
-  ci.compressedScript := ci.compressedScript & toHighASCII( eof_t );
+  ci.compressedScript := ci.compressedScript & toByteCode( eof_t );
   ci.compressedScript := ci.compressedScript & ASCII.NUL;
 end endByteCode;
 

@@ -513,7 +513,8 @@ function is_keyword( id : identifier ) return boolean is
 -- True if an AdaScript keyword.  Keywords are defined in the
 -- first part of the indentifier table.
 begin
-  return id < reserved_top;
+  --return id < reserved_top;
+  return id < keywords_top;
 end is_keyword;
 
 -----------------------------------------------------------------------------
@@ -547,6 +548,81 @@ begin
    return character'val( 128+integer(id) );
 end toHighASCII;
 
+--procedure toByteCode( n  : byteCodeNatural;   ch1, ch2 : out character ) is
+--begin
+--  ch1 := character'val( 128 + integer(n) mod 128 );
+--  ch2 := character'val( integer(n) / 128 + 1 );
+--exception when constraint_error =>
+--  put_line( standard_error, Gnat.Source_Info.Source_Location & ": Internal error: cannot encode natural number" & n'img );
+--  raise;
+--end toByteCode;
+
+-----------------------------------------------------------------------------
+-- TO BYTE CODE
+--
+-- Encodes an id number into one or two bytes.  Zero is reserved as the
+-- end-of-line marker.  The second byte may exceed ASCII 128.  When an
+-- identifier is one byte, ch2 is ASCII.NUL
+--
+-- First    Second Values   Comment
+--   1..127 -      -        reserved for ASCII
+-- 128..223 -      1..96    first 96 reserved identifiers, one byte
+-- 224..255 1..255 96..8192 values  remaining identifiers, two bytes
+--
+-- The objective is to allow for more than 128 reserved words, while at the
+-- same time, keeping the most common reserved words in a single byte.
+-----------------------------------------------------------------------------
+
+procedure toByteCode( id : reservedWordRange; ch1, ch2 : out character ) is
+begin
+  if id <= 96 then
+     ch1 := character'val( 128 + integer(id-1) );
+     ch2 := ASCII.NUL;
+  else
+     ch1 := character'val( 224 + ((integer(id-1)- 32) mod 32) );
+     ch2 := character'val( (integer(id-1)-32) / 32 + 1 );
+  end if;
+exception when constraint_error =>
+  ch1 := ASCII.DEL;
+  ch2 := ASCII.DEL;
+  put_line( standard_error, Gnat.Source_Info.Source_Location & ": Internal error: cannot encode natural number" & id'img );
+end toByteCode;
+
+function toByteCode( id : reservedWordRange ) return string is
+  ch1, ch2 : character;
+begin
+  toByteCode( id, ch1, ch2 );
+  if ch2 = ASCII.NUL then
+     return ch1 & "";
+  end if;
+  return ch1 & ch2;
+end toByteCode;
+
+-----------------------------------------------------------------------------
+-- TO IDENTIFIER
+--
+-- Decode a two-character byte code sequence into an identifier.  See
+-- toByteCode for the format the characters.  advance is the number of
+-- characters decoded (1 = ch1 only, 2 = both characters ).
+-----------------------------------------------------------------------------
+
+procedure toIdentifier( ch1, ch2 : character; id : out reservedWordRange; advance : out integer ) is
+  i1 : reservedWordRange := character'pos( ch1 );
+  i2 : reservedWordRange;
+begin
+  if i1 < 128 then
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Internal error: byte code sequence is not an identifier: " & i1'img );
+     advance := 1;
+  elsif i1 < 224 then
+     id := reservedWordRange( i1 - 127 );
+     advance := 1;
+  else
+     i2 := character'pos( ch2 );
+     id := reservedWordRange( i1 - 223 ) + 32 * reservedWordRange( i2 );
+     advance := 2;
+  end if;
+end toIdentifier;
+
 -----------------------------------------------------------------------------
 -- TO LOW ASCII
 --
@@ -577,6 +653,8 @@ begin
    end if;
    return character'val( integer(id)-128 );
 end toLowASCII;
+
+-----------------------------------------------------------------------------
 
 function ">"( left, right : aShellWord ) return boolean is
 begin

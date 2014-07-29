@@ -985,7 +985,14 @@ begin
        --result := trim( to_unbounded_string( to_numeric( expr_val ) ), left );
        result := to_unbounded_string( to_numeric( expr_val ) );
      end if;
-  exception when others =>
+  exception
+  when constraint_error =>
+     err( "constraint_error exception raised" );
+  when storage_error =>
+     err( "storage_error exception raised" );
+  when ada.strings.index_error =>
+     err( "ada.strings.index_error exception raised" );
+  when others =>
      err( "exception raised" );
   end;
 end ParseNumericsValue;

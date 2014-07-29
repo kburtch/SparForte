@@ -4909,7 +4909,6 @@ begin
              end if;
           end if;
        else
-put_token; -- DEBUG
           err( optional_bold( to_string( identifiers( token ).name ) ) & " is a " & getIdentifierClassImage( identifiers( token ).class ) & " not an exception" );
           exit;
        end if;
@@ -7048,7 +7047,7 @@ begin
 
   startToken := Token;
   markScanner( cmdStart );
-  -- put( "PGS: " ); put_token; -- DEBUG
+  --put( "PGS: " ); put_token; -- DEBUG
 
   -- interrupt handling
 
