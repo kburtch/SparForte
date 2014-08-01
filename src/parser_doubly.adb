@@ -33,6 +33,7 @@ with
     string_util,
     parser,
     parser_aux,
+    parser_containers,
     parser_params,
     bush_os;
 use
@@ -43,6 +44,7 @@ use
     parser,
     parser_aux,
     parser_params,
+    parser_containers,
     bush_os;
 
 package body parser_doubly is

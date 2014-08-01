@@ -16,3 +16,7 @@ CHANGES SINCE 1.5
 
 6. New: reserved words interface, overriding, some, synchronized.  There are in Ada 2005, 2012 but are not used in SparForte.  Reserved for compatibility reasons.
 
+7. Change: containers package was declared in parser_doubly now extracted into separate package.
+
+8. New: vectors (singly linked list) package. new_vector, clear, to_vector, capacity, reserve_capacity, length, set_length, is_empty [docs needed] [tests needed]
+

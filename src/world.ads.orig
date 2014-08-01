@@ -259,7 +259,7 @@ libraryPath : Unbounded_String;
 
 type anIdentifierClass is ( constClass, subClass, typeClass, funcClass,
   userFuncClass, procClass, userProcClass, taskClass, mainProgramClass,
-  exceptionClass, varClass, otherClass );
+  exceptionClass, varClass, namespaceClass, otherClass );
 
 function getIdentifierClassImage( c : anIdentifierClass ) return string;
 
@@ -289,6 +289,8 @@ procedure free is new unchecked_deallocation( storage, storagePtr );
 -- Identifier Declarations
 --
 ------------------------------------------------------------------------------
+type declaration;
+type declarationPtr is access all declaration;
 
 type declaration is record
      name     : unbounded_string                -- identifier name
@@ -316,9 +318,17 @@ type declaration is record
      procCB   : aBuiltinProcedureCallback := null;  -- built-in proc only
      funcCB   : aBuiltinFunctionCallback := null;  -- built-in func only
      genKind  : identifier;                     -- generic type (if any)
+     genKind2 : identifier;                     -- generic type (if any)
      firstBound : long_integer := 1;           -- first bound (array type only)
      lastBound  : long_integer := 0;            -- last bound (array type only)
      avalue   : storagePtr := null;             -- array value (array variable)
+
+     -- Namespaces
+
+     openNamespace : declarationPtr := null;  -- corresponding open (or null)
+     nextNamespace : declarationPtr := null;        -- next tag (descending)
+     parentNamespace : declarationPtr := null;            -- parent open tag
+
 end record;
 
 

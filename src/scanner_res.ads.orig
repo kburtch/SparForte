@@ -25,6 +25,7 @@ with gen_list,
      Ada.Numerics.Long_Complex_Types,
      Ada.Strings.Unbounded,
      Ada.Containers.Doubly_Linked_Lists,
+     Ada.Containers.Vectors,
      Unchecked_Deallocation,
      Interfaces.C,
      Gnat.Directory_Operations,
@@ -71,6 +72,8 @@ type aResourceType is (
    pen_canvas,
    doubly_linked_string_list,
    doubly_linked_string_list_cursor,
+   vector_string_list,
+   vector_string_list_cursor,
    dynamic_string_hash_table,
    gl_byte_array,
    gl_short_array,
@@ -84,6 +87,12 @@ type aResourceType is (
 --
 -- Generic instantiations or other resources that are not directly available
 -- from the packages used
+
+-- Singly Linked String Lists (Vectors)
+
+type vector_index is new natural;
+
+package vector_string_lists is new Ada.Containers.Vectors( vector_index, unbounded_string, "=" );
 
 -- Doubly Linked String Lists
 
@@ -147,6 +156,10 @@ type resHandle( rt : aResourceType ) is record
           dir : Dir_Type;
      when memcache_connection => null;
      when pen_canvas => null;
+     when vector_string_list =>
+          vslVector : vector_string_lists.Vector;
+     when vector_string_list_cursor =>
+          vslCursor : vector_string_lists.Cursor;
      when doubly_linked_string_list =>
           dlslList : doubly_linked_string_lists.List;
      when doubly_linked_string_list_cursor =>

@@ -69,6 +69,8 @@ with system,
     parser_gnat_cgi,
     parser_exceptions,
     parser_chains,
+    parser_containers,
+    parser_vectors,
     parser_doubly,
     parser_dht,
     parser_teams,
@@ -116,6 +118,8 @@ use ada.text_io,
     parser_gnat_cgi,
     parser_exceptions,
     parser_chains,
+    parser_containers,
+    parser_vectors,
     parser_doubly,
     parser_dht,
     parser_teams,
@@ -1510,6 +1514,8 @@ begin
   ShutdownTeams;
   ShutdownDHT;
   ShutdownDoubly;
+  ShutdownVectors;
+  ShutdownContainers;
   ShutdownChains;
   ShutdownExceptions;
   ShutdownGnatCGI;
@@ -2150,6 +2156,8 @@ begin
   StartupGnatCGI;
   StartupExceptions;
   StartupChains;
+  StartupContainers;
+  StartupVectors;
   StartupDoubly;
   StartupDHT;
   StartupTeams;

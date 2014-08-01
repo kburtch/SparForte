@@ -155,6 +155,10 @@ begin
        put_line( "memcache connection" );
   when pen_canvas =>
        put_line( "pen canvas" );
+  when vector_string_list =>
+       put_line( "vector/singly linked list" );
+  when vector_string_list_cursor =>
+       put_line( "vector/singly linked list cursor" );
   when doubly_linked_string_list =>
        put_line( "doubly linked list" );
   when doubly_linked_string_list_cursor =>
@@ -200,6 +204,8 @@ begin
      if is_open( rp.dir ) then
         close( rp.dir );
      end if;
+  elsif rp.rt = vector_string_list then
+     vector_string_lists.clear( rp.vslVector );
   elsif rp.rt = doubly_linked_string_list then
      doubly_linked_string_lists.clear( rp.dlslList );
   elsif rp.rt = dynamic_string_hash_table then

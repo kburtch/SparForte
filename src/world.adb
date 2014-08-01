@@ -183,6 +183,10 @@ begin
        procCB => null,
        funcCB => null,
        genKind => eof_t,
+       genKind2 => eof_t,
+       openNamespace => null,
+       nextNamespace => null,
+       parentNamespace => null,
        firstBound => 1,
        lastBound => 0,
        avalue => null
@@ -224,6 +228,10 @@ begin
        procCB => null,
        funcCB => null,
        genKind => eof_t,
+       genKind2 => eof_t,
+       openNamespace => null,
+       nextNamespace => null,
+       parentNamespace => null,
        firstBound => 1,
        lastBound => 0,
        avalue => null
@@ -337,6 +345,10 @@ begin
                  procCB => null,
                  funcCB => null,
                  genKind => eof_t,
+                 genKind2 => eof_t,
+                 openNamespace => null,
+                 nextNamespace => null,
+                 parentNamespace => null,
                  firstBound => 1,
                  lastBound => 0,
                  avalue => null
@@ -382,6 +394,10 @@ begin
        procCB => null,
        funcCB => null,
        genKind => eof_t,
+       genKind2 => eof_t,
+       openNamespace => null,
+       nextNamespace => null,
+       parentNamespace => null,
        firstBound => 1,
        lastBound => 0,
        avalue => null
@@ -442,6 +458,10 @@ begin
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,
+       genKind2 => eof_t,
+       openNamespace => null,
+       nextNamespace => null,
+       parentNamespace => null,
        firstBound => 1,
        lastBound => 0,
        avalue   => null
@@ -746,6 +766,7 @@ begin
   when mainProgramClass => return "main program";
   when exceptionClass   => return "exception";
   when varClass         => return "variable";
+  when namespaceClass   => return "namespace";
   when otherClass       => return "other class";
   end case;
 end getIdentifierClassImage;

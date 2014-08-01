@@ -27,13 +27,6 @@ use  ada.strings.unbounded, world;
 package parser_doubly is
 
 ------------------------------------------------------------------------------
--- Containers package identifiers
-------------------------------------------------------------------------------
-
-containers_count_type_t : identifier;
-containers_hash_type_t  : identifier;
-
-------------------------------------------------------------------------------
 -- Doubly Linked Lists package identifiers
 ------------------------------------------------------------------------------
 
