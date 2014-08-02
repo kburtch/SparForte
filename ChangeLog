@@ -8,7 +8,7 @@ CHANGES SINCE 1.5
 
 2. Fix: eliminated warnings on newer versions of gcc for tinyserver buffer and apq printf formatting one one line
 
-3. New: Standard OpenGL functions (not documented yet)
+3. New: Standard OpenGL functions (not documented yet) : glNormal3b, glNormal3d, glNormal3f, glNormal3i, glNormal3s, glIndexd, glIndexf, glIndexi, glIndexs, glRectd, glRectf, glRecti, glRects,
 
 4. New: OpenGL extension functions
 
