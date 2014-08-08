@@ -451,6 +451,114 @@ begin
   end if;
 end ParseVectorsPrepend;
 
+procedure ParseVectorsFirstIndex( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: n := first_index( v );
+  -- Ada:    n := first_index( v );
+  vectorId   : identifier;
+  theVector  : resPtr;
+begin
+  kind := boolean_t;
+  expect( vectors_first_index_t );
+  ParseSingleVectorParameter( vectorId );
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+-- TODO: leading space
+       result := to_unbounded_string( vector_index'image( Vector_String_Lists.First_Index( theVector.vslVector ) ) );
+     end;
+  end if;
+end ParseVectorsFirstIndex;
+
+procedure ParseVectorsLastIndex( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: n := first_index( v );
+  -- Ada:    n := first_index( v );
+  vectorId   : identifier;
+  theVector  : resPtr;
+begin
+  kind := boolean_t;
+  expect( vectors_last_index_t );
+  ParseSingleVectorParameter( vectorId );
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+-- TODO: leading space
+       result := to_unbounded_string( vector_index'image( Vector_String_Lists.Last_Index( theVector.vslVector ) ) );
+     end;
+  end if;
+end ParseVectorsLastIndex;
+
+procedure ParseVectorsElement( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: b := is_empty( v );
+  -- Ada:    e := element( c ) | element( v, i )
+  vectorId  : identifier;
+  theVector : resPtr;
+  idxExpr   : unbounded_string;
+  idxType   : identifier;
+  hasIdx    : boolean := false;
+begin
+  expect( vectors_element_t );
+  hasIdx := true;
+  ParseFirstVectorParameter( vectorId );
+  ParseLastNumericParameter( idxExpr, idxType, identifiers( vectorId ).genKind2 );
+  kind := identifiers( vectorId ).genKind;
+  if isExecutingCommand then
+     declare
+       idx : vector_index;
+     begin
+--put_line( to_string( idxExpr ) );
+       idx := vector_index( to_numeric( idxExpr ) );
+--put_line( idx'img );
+       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+--put_line( "HERE" );
+-- NOTE: Vector Lists stores internally a natural
+       result := Vector_String_Lists.Element( theVector.vslVector, idx );
+     exception when constraint_error =>
+       err( "index value out of range" );
+     when storage_error =>
+       err( "storage error raised" );
+     end;
+  end if;
+end ParseVectorsElement;
+
+procedure ParseVectorsFirstElement( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: e := first_element( v );
+  -- Ada:    e := first_element( v );
+  vectorId   : identifier;
+  theVector  : resPtr;
+begin
+  expect( vectors_first_element_t );
+  ParseSingleVectorParameter( vectorId );
+  kind := identifiers( vectorId ).genKind;
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       result := Vector_String_Lists.First_Element( theVector.vslVector );
+     exception when constraint_error =>
+       err( "vector is empty" );
+     end;
+  end if;
+end ParseVectorsFirstElement;
+
+procedure ParseVectorsLastElement( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: e := last_element( v );
+  -- Ada:    e := last_element( v );
+  vectorId   : identifier;
+  theVector  : resPtr;
+begin
+  expect( vectors_last_element_t );
+  ParseSingleVectorParameter( vectorId );
+  kind := identifiers( vectorId ).genKind;
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       result := Vector_String_Lists.Last_Element( theVector.vslVector );
+     exception when constraint_error =>
+       err( "vector is empty" );
+     end;
+  end if;
+end ParseVectorsLastElement;
+
+
 
 -----------------------------------------------------------------------------
 
@@ -469,6 +577,11 @@ begin
   declareFunction(  vectors_is_empty_t,  "vectors.is_empty",  ParseVectorsIsEmpty'access );
   declareProcedure( vectors_append_t,  "vectors.append",    ParseVectorsAppend'access );
   declareProcedure( vectors_prepend_t,  "vectors.prepend",    ParseVectorsPrepend'access );
+  declareFunction(  vectors_first_index_t,  "vectors.first_index",    ParseVectorsFirstIndex'access );
+  declareFunction(  vectors_last_index_t,  "vectors.last_index",    ParseVectorsLastIndex'access );
+  declareFunction(  vectors_element_t,  "vectors.element",    ParseVectorsElement'access );
+  declareFunction(  vectors_first_element_t,  "vectors.first_element",    ParseVectorsFirstElement'access );
+  declareFunction(  vectors_last_element_t,  "vectors.last_element",    ParseVectorsLastElement'access );
 end StartupVectors;
 
 procedure ShutdownVectors is

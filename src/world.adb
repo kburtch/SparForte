@@ -304,12 +304,19 @@ begin
     identifiers(id).deleted  := false;
 end updateFormalParameter;
 
+-- DECLARE ACTUAL PARAMETER
+--
+-- Declare an actual parameter (ie. param for proc.param) in the symbol
+-- table.  proc_id is the id for the subprogram owning the parameter.
+-- value is ?
+-- symbol_table_overflow exception is raised if there is no more
+-- space in the symbol table
+-----------------------------------------------------------------------------
+
 procedure declareActualParameter( id : out identifier;
-proc_id : identifier; parameterNumber : integer;
-value : unbounded_string ) is
--- parameterNumber : integer );
--- Declare an actual parameter (ie. param for proc.param).
-  paramName : unbounded_string;
+   proc_id : identifier; parameterNumber : integer;
+   value : unbounded_string ) is
+   paramName : unbounded_string;
 begin
   id := eof_t;
   for i in reverse reserved_top..identifiers_top-1 loop
@@ -359,10 +366,16 @@ begin
   end loop;
 end declareActualParameter;
 
-procedure declareReturnResult( id : out identifier; func_id : identifier ) is
+-- DECLARE RETURN RESULT
+--
 -- Declare space for a return result for a user-defined function.  This is
 -- effectively param 0 except that the value isn't zero...it's the return
 -- result.
+-- symbol_table_overflow exception is raised if there is no more
+-- space in the symbol table
+-----------------------------------------------------------------------------
+
+procedure declareReturnResult( id : out identifier; func_id : identifier ) is
   paramName : unbounded_string;
 begin
   paramName := "return result for " & identifiers( func_id ).name;
@@ -405,12 +418,16 @@ begin
   end if;
 end declareReturnResult;
 
-procedure findException( name : unbounded_string; id : out identifier ) is
+-- FIND EXCEPTION
+--
 -- search for a pre-existing exception with the same name
 -- while Ada allows two exceptions with the same name
 -- to overshadow each other, differentiating each other
 -- using dot notation, it's a hacky solution.  SparForte
 -- simply doesn't allow it.
+-----------------------------------------------------------------------------
+
+procedure findException( name : unbounded_string; id : out identifier ) is
 begin
   id := eof_t;                                                  -- assume bad
   for i in reverse 1..identifiers_top-1 loop                    -- from top
@@ -425,6 +442,14 @@ begin
   end loop;
 end findException;
 
+-- DECLARE EXCEPTION
+--
+-- Declare an exception in the symbol table, where name is the exception
+-- name.
+-- symbol_table_overflow exception is raised if there is no more
+-- space in the symbol table
+-----------------------------------------------------------------------------
+
 procedure declareException( id : out identifier; name : unbounded_string;
    default_message : unbounded_string; exception_status_code : anExceptionStatusCode ) is
 -- Declare an exception.  Check for the existence first with findException.
@@ -432,7 +457,6 @@ begin
   if identifiers_top = identifier'last then                     -- no room?
      raise symbol_table_overflow;                               -- raise error
   else                                                          -- otherwise
-     id := eof_t;                                               -- assume bad
      id := identifiers_top;                                  -- return id
      identifiers_top := identifiers_top+1;                   -- push stack
      if identifiers( id ).avalue /= null then
@@ -468,6 +492,224 @@ begin
      );
   end if;
 end declareException;
+
+-- DECLARE NAMESPACE
+--
+-- Declare a namespace entry in the symbol table, where name is the
+-- namespace or package name.  This namespace will be a child of the current
+-- namespace.  To open peer namespaces, the previous namespace must be closed
+-- first.
+-- symbol_table_overflow exception is raised if there is no more
+-- space in the symbol table
+-----------------------------------------------------------------------------
+
+procedure declareNamespace( name : string ) is
+  id : identifier;
+begin
+  if identifiers_top = Identifier'last then
+     raise symbol_table_overflow;
+  else
+     id := identifiers_top;                                  -- return id
+     identifiers_top := identifiers_top+1;                   -- push stack
+     if identifiers( id ).avalue /= null then
+        free( identifiers( id ).avalue );
+     end if;
+     identifiers( id ) := declaration'(                      -- define
+       name     => to_unbounded_string( name ),              -- identifier
+       kind     => identifiers'first,       -- TODO: this is a placeholder
+       value    => currentNamespace,
+       class    => namespaceClass,
+       import   => false,
+       method   => none,
+       mapping  => none,
+       export   => false,
+       volatile => false,
+       limit    => false,
+       list     => false,
+       resource => false,
+       field_of => eof_t,
+       inspect  => false,
+       deleted  => false,
+       wasReferenced => false,
+       procCB   => null,
+       funcCB   => null,
+       genKind  => eof_t,
+       genKind2 => eof_t,
+       openNamespace => null,
+       nextNamespace => null,
+       parentNamespace => currentNamespacePtr,
+       firstBound => 1,
+       lastBound => 0,
+       avalue   => null
+     );
+     currentNamespacePtr := identifiers( id )'access;
+
+     -- sym := identifiers_top;
+     --identifiers_top := identifiers_top + 1;
+     -- reallocateToken( token_id => sym, class => namespaceClass );
+     -- id := identifiers( sym );
+     --id.class := namespaceClass;
+     --currentNamespace := currentNamespace & "." & name;  -- OMIT?
+     --id.name := to_unbounded_string( name );
+     --id.kind := identifiers( Identifier'first );
+     --id.value := new storage( 1..1 );
+     --id.value(1) := currentNamespace;
+
+     --id.openNamespace := null;
+     --id.parentNamespace := currentNamespacePtr;
+     --id.nextNamespace := null;
+     -- even better if this is stored as a global someplace so remembers
+     -- last one?
+     --for tok in reverse identifiers'first..sym-1 loop
+     --    if identifiers( tok ).class = namespaceClass then
+     --       id.nextNamespace := identifiers( tok );
+     --       exit;
+     --    end if;
+     --end loop;
+     --id.nextNamespace := lastNamespace;
+     --lastNamespace := id;
+
+     --currentNamespacePtr := id;
+
+     -- DEBUGGING NAMESPACES
+     put_line( "declaring namespace " & to_string( currentNamespace ) ); -- DEBUG
+     if identifiers( id ).parentNamespace = null then
+        put_line( "   parent - NULL" ); -- DEBUG
+     else
+        put_line( "   parent - " & to_string( identifiers( id ).parentNamespace.value ) ); -- DEBUG
+     end if;
+          if identifiers( id ).nextNamespace = null then
+        put_line( "   next - NULL" ); -- DEBUG
+     else
+        put_line( "   next - " & to_string( identifiers( id ).nextNamespace.value ) ); -- DEBUG
+     end if;
+  end if;
+end declareNamespace;
+
+-- DECLARE NAMESPACE CLOSED
+--
+-- Declare a namespace entry in the symbol table, where name is the
+-- namespace or package name to be closed.
+-- symbol_table_overflow exception is raised if there is no more
+-- space in the symbol table
+-----------------------------------------------------------------------------
+
+procedure declareNamespaceClosed( name : string ) is
+  id : identifier;
+  nesting : integer;
+
+  --sym     : Identifier;
+  --id      : declarationPtr;
+  p       : declarationPtr;
+begin
+  if identifiers_top = Identifier'last then
+     raise symbol_table_overflow;
+  else
+     id := identifiers_top;                                  -- return id
+     identifiers_top := identifiers_top+1;                   -- push stack
+     if identifiers( id ).avalue /= null then
+        free( identifiers( id ).avalue );
+     end if;
+     identifiers( id ) := declaration'(                      -- define
+       name     => to_unbounded_string( name ),              -- identifier
+       kind     => identifiers'first,       -- TODO: this is a placeholder
+       value    => currentNamespace,
+       class    => namespaceClass,
+       import   => false,
+       method   => none,
+       mapping  => none,
+       export   => false,
+       volatile => false,
+       limit    => false,
+       list     => false,
+       resource => false,
+       field_of => eof_t,
+       inspect  => false,
+       deleted  => false,
+       wasReferenced => false,
+       procCB   => null,
+       funcCB   => null,
+       genKind  => eof_t,
+       genKind2 => eof_t,
+       openNamespace => null,
+       nextNamespace => lastNamespace,
+       parentNamespace => currentNamespacePtr,
+       firstBound => 1,
+       lastBound => 0,
+       avalue   => null
+     );
+     lastNamespace := identifiers( id )'access;
+---
+
+  --if identifiers_top = Identifier'last then
+  --   raise symbol_table_overflow;
+  --else
+  --   sym := identifiers_top;
+  --   identifiers_top := identifiers_top + 1;
+  --   reallocateToken( token_id => sym, class => namespaceClass );
+  --   id := identifiers( sym );
+  --   id.kind := identifiers( Identifier'first );
+  --   id.value := new storage( 1..1 );
+     --id.nextNamespace := null;
+     -- even better if this is stored as a global someplace so remembers
+     -- last one?
+     --for tok in reverse identifiers'first..sym-1 loop
+     --    if identifiers( tok ).class = namespaceClass then
+     --       id.nextNamespace := identifiers( tok );
+     --       exit;
+     --    end if;
+     --end loop;
+     --if tail( currentNamespace, name'length ) /= name then
+     --   put_line( "unexpected namespace to close: " & name );
+     --else
+     --   id.name := to_unbounded_string( name );
+     --   id.value(1) := currentNamespace;
+--put_line( "closing to " & to_string( currentNamespace ) ); -- DEBUG
+--        delete( currentNamespace, length( currentNamespace ) - name'length,
+--          length( currentNamespace ) );
+put_line( "   closing to namespace " & to_string( currentNamespace ) ); -- DEBUG
+--     end if;
+
+     --id.nextNamespace := lastNamespace;
+     --lastNamespace := id;
+
+     -- Find the corresponding open tag based on nesting level
+
+put_line( "   finding open tag..." ); -- DEBUG
+     nesting := -1;
+     p := identifiers( id )'access;
+     loop
+        p := p.nextNamespace;
+        exit when p = null;
+        if p.openNamespace = null then
+put_line( "   open tag " & to_string( p.name ) ); -- DEBUG
+           nesting := nesting + 1;
+        else
+put_line( "   close tag " & to_string( p.name ) ); -- DEBUG
+           nesting := nesting -1;
+        end if;
+        exit when nesting = 0;
+     end loop;
+     --if p /= null then
+put_line( "   open tag set to " & to_string( p.name ) ); -- DEBUG
+        identifiers( id ).openNamespace := p;
+     --end if;
+     identifiers( id ).parentNamespace := identifiers( id ).openNamespace.parentNamespace;
+put_line( "   open tag " & to_string( identifiers( id ).openNamespace.name ) ); -- DEBUG
+if identifiers( id ).parentNamespace = null then
+put_line( "   parent - NULL" ); -- DEBUG
+else
+put_line( "   parent - " & to_string( identifiers( id ).parentNamespace.value ) ); -- DEBUG
+end if;
+if identifiers( id ).nextNamespace = null then
+   put_line( "   next - NULL" ); -- DEBUG
+else
+   put_line( "   next - " & to_string( identifiers( id ).nextNamespace.value ) ); -- DEBUG
+end if;
+
+     currentNamespacePtr := identifiers( id ).parentNamespace;
+  end if;
+end declareNamespaceClosed;
 
 
 -- Type Conversions

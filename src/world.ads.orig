@@ -351,7 +351,7 @@ err_exception    : declaration;           -- the exception else eof_t for none
 --
 ------------------------------------------------------------------------------
 
-type identifiersArray is array ( identifier ) of declaration;
+type identifiersArray is array ( identifier ) of aliased declaration;
 
 identifiers     : identifiersArray;
 identifiers_top : identifier := identifier'first;
@@ -667,6 +667,14 @@ procedure init_env_ident( s : string );
 
 function is_keyword( id : identifier ) return boolean;
 -- TRUE if the identifier is a keyword
+
+-----------------------------------------------------------------------------
+-- Namespaces
+-----------------------------------------------------------------------------
+
+currentNamespace    : unbounded_string := to_unbounded_string( "UNDEFINED" );
+currentNamespacePtr : declarationPtr;
+lastNamespace       : declarationPtr;
 
 -----------------------------------------------------------------------------
 -- Type Representation
