@@ -81,6 +81,71 @@ end ParseLastVectorParameter;
 
 ------------------------------------------------------------------------------
 
+function toRealVectorIndex( vectorId : identifier; UserIdx : integer ) return vector_index is
+   kind  : identifier;
+   bkind : identifier;
+   ukind : identifier;
+   convertedIdx : vector_index;
+begin
+   kind := identifiers( vectorId ).genKind2;
+   ukind := getUniType( kind );
+   -- the index type is either a numeric or an enumerated
+   if ukind = uni_numeric_t then
+      -- for a numeric we need to know the subrange.  For a type with no
+      -- subrange, assume it starts at integer'first.  Remember that the
+      -- base type of natural will be integer, not natural.
+      bkind := getBaseType( kind );
+-- put_line( "userIdx = " & userIdx'img );
+-- put_line( "bkind = " & to_string( identifiers( bkind ).name ) );
+      if kind = natural_t or bkind = natural_t then
+-- put_line( "looks like a natural" );
+         convertedIdx := vector_index( UserIdx );
+      elsif kind = positive_t or bkind = positive_t then
+-- put_line( "looks like a positive" );
+         convertedIdx := vector_index( UserIdx-1 );
+      else
+-- put_line( "looks like a integer" );
+-- TODO: incorrect warning on constraint
+-- put_line( "long_integer => " & long_integer'image( long_integer( UserIdx-integer'first ) ) );
+         convertedIdx := vector_index( UserIdx-integer'first );
+-- put_line( "vector_index => " & convertedIdx'img );
+      end if;
+   else
+      -- for an enumerated, asuume it starts at zero
+      convertedIdx := vector_index( UserIdx );
+   end if;
+   return convertedIdx;
+end toRealVectorIndex;
+
+function toUserVectorIndex( vectorId : identifier; realIdx : vector_index ) return integer is
+   kind  : identifier;
+   bkind : identifier;
+   ukind : identifier;
+   convertedIdx : integer;
+begin
+   kind  := identifiers( vectorId ).genKind2;
+   ukind := getUniType( kind );
+   -- the index type is either a numeric or an enumerated
+   if ukind = uni_numeric_t then
+      -- for a numeric we need to know the subrange.  For a type with no
+      -- subrange, assume it starts at integer'first
+      bkind := getBaseType( kind );
+      if bkind = natural_t then
+         convertedIdx := integer( realIdx );
+      elsif bkind = positive_t then
+         convertedIdx := integer( realIdx )+1;
+      else
+         convertedIdx := integer(realIdx )+integer'first;
+      end if;
+   else
+      -- for an enumerated, asuume it starts at zero
+      convertedIdx := integer( realIdx );
+   end if;
+   return convertedIdx;
+end toUserVectorIndex;
+
+------------------------------------------------------------------------------
+
 procedure CheckCursorIsInitialized( cursId : identifier ) is
 begin
   if identifiers( cursId ).genKind = eof_t then
@@ -175,6 +240,74 @@ procedure ParseVectorsNewVector is
   ref : reference;
   genKindId : identifier;
   genKind2Id : identifier;
+  baseIndexKind : identifier;
+
+     function getIntegerBaseType( originalKind : identifier ) return identifier is
+        id : identifier := originalKind;
+     begin
+        if getUniType( id ) = uni_numeric_t then
+        -- dereference types to get the root type
+        -- getBaseType only dereferences subtypes
+           loop
+              exit when id = positive_t or
+                   id = natural_t or
+                   identifiers( id ).kind = uni_numeric_t;
+              id := identifiers( id ).kind;
+           end loop;
+        end if;
+        return id;
+     end getIntegerBaseType;
+
+     -- true
+
+
+     -- TODO: put in scanner
+     -- TODO: this does not handle derived types, only subtypes
+     -- All integer types will be treated as a standard integer
+     -- Integer - starting at -2147483648
+     -- Natural - 0
+     -- Positive - 1
+     -- Enumerated (including boolean)
+     -- The index must be a discrete integer or an enumerated type
+     function isDiscreteIntegerOrEnum( id : identifier ) return boolean is
+        indexBaseKind : identifier;
+        isDiscrete : boolean := false;
+     begin
+        indexBaseKind := getIntegerBaseType( genKind2Id );
+        if identifiers( genKind2Id ).list then
+           err( "index type should be a scalar type" );
+        elsif identifiers( getBaseType( genKind2Id ) ).kind = root_record_t then
+           err( "index type should be a scalar type" );
+        -- descrete type or character
+        elsif genKind2Id = natural_t or
+           genKind2Id = positive_t or
+           genKind2Id = natural_t or
+           genKind2Id = integer_t or
+           genKind2Id = short_short_integer_t or
+           genKind2Id = short_integer_t or
+           genKind2Id = long_integer_t or
+           genKind2Id = long_long_integer_t then
+           isDiscrete := true;
+        -- derived type of descrete type or character
+        elsif indexBaseKind = natural_t or
+           indexBaseKind = positive_t or
+           indexBaseKind = natural_t or
+           indexBaseKind = integer_t or
+           indexBaseKind = short_short_integer_t or
+           indexBaseKind = short_integer_t or
+           indexBaseKind = long_integer_t or
+           indexBaseKind = long_long_integer_t then
+           isDiscrete := true;
+        elsif getUniType( identifiers( genKind2Id ).kind ) = root_enumerated_t then
+           isDiscrete := true;
+        elsif getUniType( identifiers( genKind2Id ).kind ) = uni_string_t then
+           err( "index type should not be a string type (except character)" );
+        elsif getUniType( identifiers( genKind2Id ).kind ) = uni_numeric_t then
+           err( "index type should be a discrete numeric type" );
+        end if;
+        return isDiscrete;
+     end isDiscreteIntegerOrEnum;
+
 begin
   expect( vectors_new_vector_t );
   ParseFirstOutParameter( ref, vectors_vector_t );
@@ -182,12 +315,17 @@ begin
   expect( symbol_t, "," );
   ParseIdentifier( genKind2Id );
   if class_ok( genKind2Id, typeClass, subClass ) then
-     if identifiers( genKind2Id ).list then
-        err( "index type should be a scalar type" );
-     elsif identifiers( getBaseType( genKind2Id ) ).kind = root_record_t then
-        err( "index type should be a scalar type" );
-     elsif getUniType( identifiers( genKind2Id ).kind ) = uni_string_t then
-        err( "index type should not be a string type" );
+     -- Index must be natural / natural subtype or enumeraged
+     baseIndexKind := getIntegerBaseType( genKind2Id );
+     if genKind2Id = natural_t or baseIndexKind = natural_t then
+        null;
+     elsif getUniType( identifiers( genKind2Id ).kind ) = root_enumerated_t then
+        null;
+     elsif getUniType( genKind2Id ) = uni_string_t then
+        err( "index type should not be a string type (except character)" );
+     elsif getUniType( genKind2Id ) = uni_numeric_t then
+put_line( to_string( identifiers( baseIndexKind ).name ) );
+        err( "index type  should be a discrete numeric type" );
      end if;
   end if;
   identifiers( ref.id ).genKind2 := genKind2Id;
@@ -506,8 +644,9 @@ begin
        idx : vector_index;
      begin
 --put_line( to_string( idxExpr ) );
-       idx := vector_index( to_numeric( idxExpr ) );
 --put_line( idx'img );
+       idx := vector_index( to_numeric( idxExpr ) );
+       idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
        findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
 --put_line( "HERE" );
 -- NOTE: Vector Lists stores internally a natural
@@ -558,6 +697,172 @@ begin
   end if;
 end ParseVectorsLastElement;
 
+procedure ParseVectorsDeleteFirst is
+  -- Syntax: delete_first( v [,c] )
+  -- Ada:    delete_first( v [,c] )
+  vectorId  : identifier;
+  theVector : resPtr;
+  cntExpr   : unbounded_string;
+  cntType   : identifier;
+  hasCnt    : boolean := false;
+begin
+  expect( vectors_delete_first_t );
+  ParseFirstVectorParameter( vectorId );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
+     hasCnt := true;
+  else
+     expect( symbol_t, ")" );
+  end if;
+  if isExecutingCommand then
+     declare
+       cnt : Ada.Containers.Count_Type;
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       if hasCnt then
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+          Vector_String_Lists.Delete_First( theVector.vslVector, cnt );
+       else
+          Vector_String_Lists.Delete_First( theVector.vslVector );
+       end if;
+     exception when constraint_error =>
+       err( "count must be a natural integer" );
+     when storage_error =>
+       err( "storage error raised" );
+     end;
+  end if;
+end ParseVectorsDeleteFirst;
+
+procedure ParseVectorsDeleteLast is
+  -- Syntax: delete_last( v [,c] )
+  -- Ada:    delete_last( v [,c] )
+  vectorId  : identifier;
+  theVector : resPtr;
+  cntExpr   : unbounded_string;
+  cntType   : identifier;
+  hasCnt    : boolean := false;
+begin
+  expect( vectors_delete_last_t );
+  ParseFirstVectorParameter( vectorId );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
+     hasCnt := true;
+  else
+     expect( symbol_t, ")" );
+  end if;
+  if isExecutingCommand then
+     declare
+       cnt : Ada.Containers.Count_Type;
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       if hasCnt then
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+          Vector_String_Lists.Delete_Last( theVector.vslVector, cnt );
+       else
+          Vector_String_Lists.Delete_Last( theVector.vslVector );
+       end if;
+     exception when constraint_error =>
+       err( "count must be a natural integer" );
+     when storage_error =>
+       err( "storage error raised" );
+     end;
+  end if;
+end ParseVectorsDeleteLast;
+
+procedure ParseVectorsContains( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: b := contains( v, e )
+  -- Ada:    b := contains( v, e )
+  vectorId  : identifier;
+  theVector : resPtr;
+  itemExpr  : unbounded_string;
+  itemType  : identifier;
+begin
+  kind := boolean_t;
+  expect( vectors_contains_t );
+  ParseFirstVectorParameter( vectorId );
+  ParseLastGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind );
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       result := to_bush_boolean( Vector_String_Lists.Contains( theVector.vslVector, itemExpr ) );
+
+     end;
+  end if;
+end ParseVectorsContains;
+
+procedure ParseVectorsMove is
+  -- Syntax: move( v1, v2 );
+  -- Ada:    move( v1, v2 );
+  sourceVectorId   : identifier;
+  theSourceVector  : resPtr;
+  targetVectorId   : identifier;
+  theTargetVector  : resPtr;
+begin
+  expect( vectors_move_t );
+  ParseFirstVectorParameter( targetVectorId );
+  ParseLastVectorParameter( sourceVectorId );
+  genTypesOk( identifiers( targetVectorId ).genKind, identifiers( sourceVectorId ).genKind );
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( targetVectorId ).value ), theTargetVector );
+       findResource( to_resource_id( identifiers( sourceVectorId ).value ), theSourceVector );
+       Vector_String_Lists.Move( theTargetVector.vslVector, theSourceVector.vslVector );
+     end;
+  end if;
+end ParseVectorsMove;
+
+--procedure ParseVectorsAssign is
+--  -- Syntax: assign( v1, v2 );
+--  -- Ada:    assign( v1, v2 );
+--  sourceVectorId   : identifier;
+--  theSourceVector  : resPtr;
+--  targetVectorId   : identifier;
+--  theTargetVector  : resPtr;
+--begin
+--  expect( vectors_copy_t );
+--  ParseFirstVectorParameter( targetVectorId );
+--  ParseLastVectorParameter( sourceVectorId );
+--  genTypesOk( identifiers( targetVectorId ).genKind, identifiers( sourceVectorId ).genKind );
+--  if isExecutingCommand then
+--     begin
+--       findResource( to_resource_id( identifiers( targetVectorId ).value ), theTargetVector );
+--       findResource( to_resource_id( identifiers( sourceVectorId ).value ), theSourceVector );
+--       Vector_String_Lists.Copy( theTargetVector.vslVector, theSourceVector.vslVector );
+--     end;
+--  end if;
+--end ParseVectorsAssign;
+
+procedure ParseVectorsReverseElements is
+  -- Syntax: reverse_elements( v );
+  -- Ada:    reverse_elements( v );
+  vectorId  : identifier;
+  theVector : resPtr;
+begin
+  expect( vectors_reverse_elements_t );
+  ParseSingleVectorParameter( vectorId );
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       Vector_String_Lists.Reverse_Elements( theVector.vslVector );
+     end;
+  end if;
+end ParseVectorsReverseElements;
+
+procedure ParseVectorsFlip is
+  -- Syntax: flip( v );
+  -- Ada:    flip( v );
+  vectorId  : identifier;
+  theVector : resPtr;
+begin
+  expect( vectors_flip_t );
+  ParseSingleVectorParameter( vectorId );
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       Vector_String_Lists.Reverse_Elements( theVector.vslVector );
+     end;
+  end if;
+end ParseVectorsFlip;
 
 
 -----------------------------------------------------------------------------
@@ -582,6 +887,13 @@ begin
   declareFunction(  vectors_element_t,  "vectors.element",    ParseVectorsElement'access );
   declareFunction(  vectors_first_element_t,  "vectors.first_element",    ParseVectorsFirstElement'access );
   declareFunction(  vectors_last_element_t,  "vectors.last_element",    ParseVectorsLastElement'access );
+  declareProcedure( vectors_delete_first_t,  "vectors.delete_first",    ParseVectorsDeleteFirst'access );
+  declareProcedure( vectors_delete_last_t,  "vectors.delete_last",    ParseVectorsDeleteLast'access );
+  declareFunction(  vectors_contains_t,  "vectors.contains",    ParseVectorsContains'access );
+  declareProcedure( vectors_move_t,  "vectors.move",    ParseVectorsMove'access );
+  declareProcedure( vectors_reverse_elements_t,  "vectors.reverse_elements",    ParseVectorsReverseElements'access );
+  declareProcedure( vectors_flip_t,  "vectors.flip",    ParseVectorsFlip'access );
+--  declareProcedure( vectors_copy_t,  "vectors.copy",    ParseVectorsCopy'access );
 end StartupVectors;
 
 procedure ShutdownVectors is
