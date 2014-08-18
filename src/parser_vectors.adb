@@ -963,7 +963,6 @@ begin
 end ParseVectorsPrevious;
 
 
-
 -----------------------------------------------------------------------------
 
 procedure StartupVectors is
