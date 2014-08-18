@@ -49,10 +49,10 @@ package body parser_sessions is
 
 procedure StartupSessions is
 begin
-
+  declareNamespace( "sessions" );
   declareIdent( session_variable_name_t,  sessions_session_variable_name_str, string_t, varClass );
   declareIdent( session_variable_value_t, sessions_session_variable_value_str, string_t, varClass );
-
+  declareNamespaceClosed( "sessions" );
 end StartupSessions;
 
 procedure ShutdownSessions is

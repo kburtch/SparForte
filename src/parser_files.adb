@@ -397,6 +397,7 @@ end ParseFileLastAccessed;
 
 procedure StartupFiles is
 begin
+  declareNamespace( "files" );
   declareFunction( files_exists_t, "files.exists", ParseFileExists'access );
   declareFunction( files_is_absolute_path_t, "files.is_absolute_path", ParseIsAbsolutePath'access );
   declareFunction( files_is_regular_file_t, "files.is_regular_file", ParseIsRegularFile'access );
@@ -414,6 +415,7 @@ begin
   declareFunction( files_last_modified_t, "files.last_modified", ParseFileLastModified'access );
   declareFunction( files_last_changed_t, "files.last_changed", ParseFileLastChanged'access );
   declareFunction( files_last_accessed_t, "files.last_accessed", ParseFileLastAccessed'access );
+  declareNamespaceClosed( "files" );
 end StartupFiles;
 
 procedure ShutdownFiles is

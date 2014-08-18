@@ -1145,9 +1145,8 @@ end ParseHighreadFlush;
 
 procedure StartupMemcache is
 begin
-
   -- Memcache Package identifiers
-
+  declareNamespace( "memcache" );
   declareIdent( memcache_cluster_t, "memcache.memcache_cluster", long_integer_t, typeClass );
   declareIdent( memcache_cluster_type_t, "memcache.memcache_cluster_type", root_enumerated_t, typeClass );
   declareStandardConstant( memcache_cluster_type_normal_t, "memcache.memcache_cluster_type.normal", memcache_cluster_type_t, "0" );
@@ -1187,7 +1186,7 @@ begin
   declareFunction(  highread_stats_t, "memcache.highread.stats", ParseHighreadStats'access );
   declareFunction(  highread_version_t, "memcache.highread.version", ParseHighreadVersion'access );
   declareProcedure( highread_flush_t, "memcache.highread.flush", ParseHighreadFlush'access );
-
+  declareNamespaceClosed( "memcache" );
 end StartupMemcache;
 
 procedure ShutdownMemcache is

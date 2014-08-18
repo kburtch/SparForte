@@ -148,7 +148,7 @@ end ParseChainsChainCount;
 
 procedure StartupChains is
 begin
-
+  declareNamespace( "chains" );
   declareIdent( chain_context_t, "chains.context", root_enumerated_t, typeClass );
   declareStandardConstant( chains_context_first_t, "chains.context_first", chain_context_t, "0" );
   declareStandardConstant( chains_context_middle_t, "chains.context_middle", chain_context_t, "1" );
@@ -158,7 +158,7 @@ begin
   declareFunction( chains_in_chain_t, "chains.in_chain", ParseChainsInChain'access );
   declareFunction( chains_chain_context_t, "chains.chain_context", ParseChainsChainContext'access );
   declareFunction( chains_chain_count_t, "chains.chain_count",ParseChainsChainCount'access );
-
+  declareNamespaceClosed( "chains" );
 end StartupChains;
 
 procedure ShutdownChains is

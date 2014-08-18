@@ -2620,6 +2620,7 @@ end DoMySQLSQLStatement;
 
 procedure StartupMySQL is
 begin
+  declareNamespace( "mysql" );
   declareIdent( mysql_column_index_type_t, "mysql.column_index_type",
     positive_t, typeClass );
 
@@ -2718,6 +2719,7 @@ begin
 
   --declareFunction( dbi_prepare_t, "dbi.prepare" );
 
+  declareNamespaceClosed( "mysql" );
 end StartupMySQL;
 
 procedure ShutdownMySQL is

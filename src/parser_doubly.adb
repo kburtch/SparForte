@@ -1307,9 +1307,7 @@ end ParseDoublyDisassemble;
 
 procedure StartupDoubly is
 begin
-  -- These two are actually mod types but we don't support that yet
-  declareIdent( containers_count_type_t, "containers.count_type", natural_t, typeClass );
-  declareIdent( containers_hash_type_t, "containers.hash_type", natural_t, typeClass );
+  declareNamespace( "doubly_linked_lists" );
 
   declareIdent( doubly_list_t,   "doubly_linked_lists.list", positive_t, typeClass );
   declareIdent( doubly_cursor_t, "doubly_linked_lists.cursor", positive_t, typeClass );
@@ -1351,6 +1349,8 @@ begin
 
   declareFunction(  doubly_assemble_t, "doubly_linked_lists.assemble", ParseDoublyAssemble'access );
   declareProcedure( doubly_disassemble_t, "doubly_linked_lists.disassemble", ParseDoublyDisassemble'access );
+
+  declareNamespaceClosed( "doubly_linked_lists" );
 
   -- copy not implemented
   -- TODO: to array - we need to refactor arrays first, to json?

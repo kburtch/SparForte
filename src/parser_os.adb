@@ -67,8 +67,10 @@ end ParseOSStatus;
 
 procedure StartupSparOS is
 begin
+  declareNamespace( "os" );
   declareProcedure( os_system_t, "os.system", ParseOSSystem'access );
   declareFunction( os_status_t, "os.status", ParseOSStatus'access );
+  declareNamespaceClosed( "os" );
 end StartupSparOS;
 
 procedure ShutdownSparOS is

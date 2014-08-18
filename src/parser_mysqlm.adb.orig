@@ -3153,6 +3153,7 @@ procedure ParseMySQLMAppendForUpdate renames not_configured;
 
 procedure StartupMySQLM is
 begin
+  declareNamespace( "mysqlm" );
   declareIdent( mysqlm_connection_t, "mysqlm.connection",
     positive_t, typeClass );
 
@@ -3237,6 +3238,7 @@ begin
 
   --declareFunction( dbi_prepare_t, "dbi.prepare" );
 
+  declareNamespaceClosed( "mysqlm" );
 end StartupMySQLM;
 
 procedure ShutdownMySQLM is

@@ -17306,6 +17306,7 @@ end declarePenGLConstants;
 
 procedure StartupPen is
 begin
+  declareNamespace( "pen" );
   declarePenStandardTypes;
 
   -- declare pen package procedures and functions
@@ -17947,7 +17948,7 @@ begin
   declareIdent( pen_gl_double_array_t,  "pen.gl_double_array", positive_t, typeClass );
   declareProcedure( pen_new_gl_double_array_t, "pen.new_gl_double_array", ParsePenNewGLDoubleArray'access );
   declareProcedure( pen_set_gl_double_array_t, "pen.set_gl_double_array", ParsePenSetGLDoubleArray'access );
-
+  declareNamespaceClosed( "pen" );
 end StartupPen;
 
 

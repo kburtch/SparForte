@@ -722,6 +722,7 @@ end ParseArraysToJSON;
 
 procedure StartupArrays is
 begin
+  declareNamespace( "arrays" );
   declareFunction( arrays_first_t, "arrays.first", ParseArraysFirst'access );
   declareFunction( arrays_last_t, "arrays.last", ParseArraysLast'access );
   declareFunction( arrays_length_t, "arrays.length", ParseArraysLength'access );
@@ -737,6 +738,7 @@ begin
   declareProcedure( arrays_shift_right_t, "arrays.shift_right", ParseArraysShiftRight'access );
   declareProcedure( arrays_to_array_t, "arrays.to_array", ParseArraysToArray'access );
   declareProcedure( arrays_to_json_t, "arrays.to_json", ParseArraysToJSON'access );
+  declareNamespaceClosed( "arrays" );
 end StartupArrays;
 
 procedure ShutdownArrays is

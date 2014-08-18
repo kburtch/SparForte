@@ -94,8 +94,10 @@ end ParseRecordsToRecord;
 
 procedure StartupRecords is
 begin
+  declareNamespace( "records" );
   declareProcedure( records_to_json_t, "records.to_json", ParseRecordsToJSON'access );
   declareProcedure( records_to_record_t, "records.to_record", ParseRecordsToRecord'access );
+  declareNamespaceClosed( "records" );
 end StartupRecords;
 
 procedure ShutdownRecords is

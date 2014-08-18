@@ -215,10 +215,12 @@ end ParseEnumsSucc;
 
 procedure StartupEnums is
 begin
+  declareNamespace( "enums" );
   declareFunction( enums_first_t, "enums.first", ParseEnumsFirst'access );
   declareFunction( enums_last_t, "enums.last", ParseEnumsLast'access );
   declareFunction( enums_pred_t, "enums.pred", ParseEnumsPred'access );
   declareFunction( enums_succ_t, "enums.succ", ParseEnumsSucc'access );
+  declareNamespaceClosed( "enums" );
 end StartupEnums;
 
 procedure ShutdownEnums is

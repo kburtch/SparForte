@@ -287,6 +287,7 @@ end ParseCalDayOfWeek;
 
 procedure StartupCalendar is
 begin
+  declareNamespace( "calendar" );
   declareIdent( cal_time_t, "calendar.time", variable_t, typeClass );
   declareIdent( cal_year_number_t, "calendar.year_number", integer_t,
     typeClass );
@@ -307,6 +308,7 @@ begin
   declareFunction( cal_to_julian_t, "calendar.to_julian", ParseCalToJulian'access );
   declareFunction( cal_to_time_t, "calendar.to_time", ParseCalToTime'access );
   declareFunction( cal_day_of_week_t, "calendar.day_of_week", ParseCalDayOfWeek'access );
+  declareNamespaceClosed( "calendar" );
 end StartupCalendar;
 
 procedure ShutdownCalendar is

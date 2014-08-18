@@ -84,7 +84,7 @@ all: c_os.o c_scanner.o c_gstreamer.o
 	@echo "   http://www.pegasoft.ca/sparforte.html"
 	@echo "---------------------------------------------------------------"
 	@echo
-	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -gnat05 -gnatfaon -gnatybdh -fstack-check -c $(INCLUDE) spar
+	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -gnat05 -gnatfaoN -gnatybdh -fstack-check -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali ${GSTREAMERLIBS} c_os.o c_scanner.o c_gstreamer.o $(LIBS)
 	@echo

@@ -30,9 +30,11 @@ package body parser_containers is
 
 procedure StartupContainers is
 begin
+  declareNamespace( "containers" );
   -- These two are actually mod types but we don't support that yet
   declareIdent( containers_count_type_t, "containers.count_type", natural_t, typeClass );
   declareIdent( containers_hash_type_t, "containers.hash_type", natural_t, typeClass );
+  declareNamespaceClosed( "containers" );
 end StartupContainers;
 
 procedure ShutdownContainers is

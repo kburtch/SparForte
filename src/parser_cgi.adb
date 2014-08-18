@@ -765,6 +765,7 @@ end ParseCookie_Count;
 
 procedure StartupCGI is
 begin
+  declareNamespace( "cgi" );
   declareIdent( cgi_cgi_method_type_t, "cgi.cgi_method_type", root_enumerated_t,
     typeClass );
   declareStandardConstant( cgi_get_t, "cgi.get", cgi_cgi_method_type_t, "0" );
@@ -801,7 +802,7 @@ begin
   declareProcedure( cgi_set_cookie_t, "cgi.set_cookie", ParseSet_Cookie'access );
   declareFunction( cgi_cookie_value_t, "cgi.cookie_value", ParseCookie_Value'access );
   declareFunction( cgi_cookie_count_t, "cgi.cookie_count", ParseCookie_Count'access );
-
+  declareNamespaceClosed( "cgi" );
 end StartupCGI;
 
 procedure ShutdownCGI is

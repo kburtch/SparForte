@@ -49,7 +49,7 @@ package body parser_teams is
 
 procedure StartupTeams is
 begin
-
+  declareNamespace( "teams" );
   declareIdent( teams_member_t, "teams.member", root_record_t, typeClass );
   identifiers( teams_member_t ).value := to_unbounded_string( "18" );
 
@@ -141,6 +141,7 @@ begin
   declareStandardConstant( teams_work_priority_risk_t, "work_priority.risk", teams_work_priority_t, "4" );
   declareStandardConstant( teams_work_priority_cvss_t, "work_priority.cvss", teams_work_priority_t, "5" );
 
+  declareNamespaceClosed( "teams" );
 end StartupTeams;
 
 procedure ShutdownTeams is

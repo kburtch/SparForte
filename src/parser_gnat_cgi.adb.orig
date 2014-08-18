@@ -57,6 +57,7 @@ end ParseSingleStringExpression;
 
 procedure StartupGnatCGI is
 begin
+  declareNamespace( "gnat.cgi" );
 #if GCGI
   declareStandardConstant( gnat_cgi_default_header_t, "gnat.cgi.default_header", string_t, gnat.cgi.default_header );
 #else
@@ -129,7 +130,7 @@ begin
 
   declareFunction( gnat_cgi_debug_text_output_t, "gnat.cgi.debug.text_output", ParseGnatCGIDebugTextOutput'access );
   declareFunction( gnat_cgi_debug_html_output_t, "gnat.cgi.debug.html_output", ParseGnatCGIDebugHTMLOutput'access );
-
+  declareNamespaceClosed( "gnat.cgi" );
 end StartupGnatCGI;
 
 procedure ShutdownGnatCGI is

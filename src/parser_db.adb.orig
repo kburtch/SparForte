@@ -2130,6 +2130,7 @@ end DoSQLStatement;
 
 procedure StartupDB is
 begin
+  declareNamespace( "db" );
   declareIdent( db_column_index_type_t, "db.column_index_type",
     positive_t, typeClass );
 
@@ -2228,6 +2229,7 @@ begin
 
   --declareFunction( dbi_prepare_t, "dbi.prepare" );
 
+  declareNamespaceClosed( "db" );
 end StartupDB;
 
 procedure ShutdownDB is

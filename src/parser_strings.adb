@@ -1281,6 +1281,7 @@ end ParseStringsToJSON;
 
 procedure StartupStrings is
 begin
+  declareNamespace( "strings" );
   declareIdent( strings_alignment_t, "strings.alignment",
     root_enumerated_t, typeClass );
   declareStandardConstant( strings_alignment_left_t, "alignment.left",
@@ -1369,6 +1370,7 @@ begin
   declareProcedure( set_unbounded_string_t, "strings.set_unbounded_string", ParseStringsSetUnboundedString'access );
   declareFunction( unbounded_slice_t, "strings.unbounded_slice", ParseStringsUnboundedSlice'access );
   declareFunction( strings_to_json_t, "strings.to_json", ParseStringsToJSON'access );
+  declareNamespaceClosed( "strings" );
 end StartupStrings;
 
 procedure ShutdownStrings is

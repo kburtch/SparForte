@@ -513,6 +513,7 @@ end ParseDHTDecrement;
 
 procedure StartupDHT is
 begin
+  declareNamespace( "dynamic_hash_tables" );
   declareIdent( dht_table_t,   "dynamic_hash_tables.table", positive_t, typeClass );
 
   declareProcedure( dht_new_table_t, "dynamic_hash_tables.new_table", ParseDHTNewTable'access );
@@ -533,6 +534,8 @@ begin
 
   --declareProcedure( dht_assemble_t, "dynamic_hash_tables.", 'access );
   --declareProcedure( dht_disassemble_t, "dynamic_hash_tables.", 'access );
+
+  declareNamespaceClosed( "dynamic_hash_tables" );
 
   -- TODO: Add memcached functions
   -- TODO: enumerated items

@@ -1559,6 +1559,8 @@ end ParseNumericsMurmurHashOf;
 procedure StartupNumerics is
 begin
 
+  declareNamespace( "numerics" );
+
   -- Numerics Package identifiers
 
   declareFunction( random_t, "numerics.random", ParseNumericsRandom'access );
@@ -1649,6 +1651,7 @@ begin
   declareStandardConstant( numerics_sqrt_2_under_1_t, "numerics.sqrt_2_under_1", long_float_t,
       "0.70710678118654752440" );
 
+  declareNamespaceClosed( "numerics" );
 end StartupNumerics;
 
 procedure ShutdownNumerics is

@@ -46,6 +46,7 @@ discard_result : boolean;
 -- Parameter references
 ------------------------------------------------------------------------------
 
+pragma inline( AssignParameter );
 procedure AssignParameter( ref : in reference; value : unbounded_string ) is
   -- assign a value to the variable or array indicated by ref
   -- assign value to an out or in out parameter
@@ -59,8 +60,8 @@ begin
 exception when storage_error =>
    err( "internal error: storage error raised in AssignParameter" );
 end AssignParameter;
-pragma inline( AssignParameter );
 
+pragma inline( GetParameterValue );
 procedure GetParameterValue( ref : in reference; value : out unbounded_string ) is
 -- return the value of the variable or array indicated by ref
 begin
@@ -71,7 +72,6 @@ begin
       value := identifiers( ref.id ).avalue( ref.index ); -- NEWARRAY
    end if;
 end GetParameterValue;
-pragma inline( GetParameterValue );
 
 --  PARSE NEXT GEN ITEM PARAMETER
 --

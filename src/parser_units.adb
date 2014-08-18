@@ -698,6 +698,7 @@ end ParseUnitsMB2Bytes;
 
 procedure StartupUnits is
 begin
+  declareNamespace( "units" );
   declareFunction( units_inches2mm_t, "units.inches2mm", ParseUnitsInches2MM'access );
   declareFunction( units_feet2cm_t, "units.feet2cm", ParseUnitsFeet2CM'access );
   declareFunction( units_yards2m_t, "units.yards2m", ParseUnitsYards2M'access );
@@ -749,6 +750,7 @@ begin
   declareFunction( units_usfloz2cucm_t, "units.usfloz2cucm", ParseUnitsUSFlOz2CuCm'access );
   declareFunction( units_bytes2mb_t, "units.bytes2mb", ParseUnitsBytes2MB'access );
   declareFunction( units_mb2bytes_t, "units.mb2bytes", ParseUnitsMB2Bytes'access );
+  declareNamespaceClosed( "units" );
 end StartupUnits;
 
 procedure ShutdownUnits is

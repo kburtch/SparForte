@@ -334,6 +334,8 @@ begin
         put( "main program " );
      when exceptionClass =>
         put( "exception " );
+     when namespaceClass =>
+        put( "namespace " );
      when others =>
         put( "identifier of the type " );
      end case;
@@ -348,7 +350,7 @@ begin
      -- Failsafe: shouldn't be keyword, but just in case.
 
      if ident.kind = keyword_t then
-        if ident.class /= funcClass and ident.class /= procClass and ident.class /= userProcClass and ident.class /= userFuncClass and ident.class /= mainProgramClass then
+        if ident.class /= funcClass and ident.class /= procClass and ident.class /= userProcClass and ident.class /= userFuncClass and ident.class /= mainProgramClass and ident.class /= namespaceClass then
            put( "keyword" );
         end if;
      elsif ident.class = exceptionClass then
@@ -2295,6 +2297,9 @@ begin
      put_line( standard_error, "internal error: eof_t is too high" );
   end if;
 
+  -- Global Namespace
+
+  declareGlobalNamespace;
 
   -- VM Special Instructions
 

@@ -506,6 +506,7 @@ end declareException;
 procedure declareNamespace( name : string ) is
   id : identifier;
 begin
+--put_line( "opening namespace " & name ); -- DEBUG
   if identifiers_top = Identifier'last then
      raise symbol_table_overflow;
   else
@@ -535,14 +536,23 @@ begin
        funcCB   => null,
        genKind  => eof_t,
        genKind2 => eof_t,
-       openNamespace => null,
-       nextNamespace => null,
+       openNamespace => null, -- TODO
+       nextNamespace => lastNamespace,
        parentNamespace => currentNamespacePtr,
        firstBound => 1,
        lastBound => 0,
        avalue   => null
      );
+
+     -- The position of the last namespace tag (open or closed)
+     -- for setting the nextNamespace link
+     lastNamespace := identifiers( id )'access;
+
+     currentNamespace := identifiers( id ).name;
      currentNamespacePtr := identifiers( id )'access;
+
+     -- TODO: Find the corresponding open tag based on nesting level
+     -- do we need this here?
 
      -- sym := identifiers_top;
      --identifiers_top := identifiers_top + 1;
@@ -572,19 +582,28 @@ begin
      --currentNamespacePtr := id;
 
      -- DEBUGGING NAMESPACES
-     put_line( "declaring namespace " & to_string( currentNamespace ) ); -- DEBUG
-     if identifiers( id ).parentNamespace = null then
-        put_line( "   parent - NULL" ); -- DEBUG
-     else
-        put_line( "   parent - " & to_string( identifiers( id ).parentNamespace.value ) ); -- DEBUG
-     end if;
-          if identifiers( id ).nextNamespace = null then
-        put_line( "   next - NULL" ); -- DEBUG
-     else
-        put_line( "   next - " & to_string( identifiers( id ).nextNamespace.value ) ); -- DEBUG
-     end if;
+     --put_line( "declaring namespace " & to_string( currentNamespace ) ); -- DEBUG
+     --if identifiers( id ).parentNamespace = null then
+     --   put_line( "   parent - NULL" ); -- DEBUG
+     --elsif length( identifiers( id ).parentNamespace.name ) = 0 then
+     --   put_line( "   parent - global" ); -- DEBUG
+     --else
+     --   put_line( "   parent - " & to_string( identifiers( id ).parentNamespace.name ) ); -- DEBUG
+     --end if;
+     --if identifiers( id ).nextNamespace = null then
+     --   put_line( "   next - NULL" ); -- DEBUG
+     --elsif length( identifiers( id ).nextNamespace.name ) = 0 then
+     --   put_line( "   next - global" ); -- DEBUG
+     --else
+     --   put_line( "   next - " & to_string( identifiers( id ).nextNamespace.name ) ); -- DEBUG
+     --end if;
   end if;
 end declareNamespace;
+
+procedure declareGlobalNamespace is
+begin
+  declareNamespace( "" );
+end declareGlobalNamespace;
 
 -- DECLARE NAMESPACE CLOSED
 --
@@ -602,6 +621,7 @@ procedure declareNamespaceClosed( name : string ) is
   --id      : declarationPtr;
   p       : declarationPtr;
 begin
+--put_line( "closing namespace " & name ); -- DEBUG
   if identifiers_top = Identifier'last then
      raise symbol_table_overflow;
   else
@@ -613,7 +633,7 @@ begin
      identifiers( id ) := declaration'(                      -- define
        name     => to_unbounded_string( name ),              -- identifier
        kind     => identifiers'first,       -- TODO: this is a placeholder
-       value    => currentNamespace,
+       value    => currentNamespace,             -- the previous namespace
        class    => namespaceClass,
        import   => false,
        method   => none,
@@ -638,7 +658,12 @@ begin
        lastBound => 0,
        avalue   => null
      );
+--put_line( "   last namespace was " & to_string( currentNamespace ) ); -- DEBUG
+
+     -- The position of the last namespace tag (open or closed)
+     -- for setting the nextNamespace link
      lastNamespace := identifiers( id )'access;
+
 ---
 
   --if identifiers_top = Identifier'last then
@@ -667,45 +692,57 @@ begin
 --put_line( "closing to " & to_string( currentNamespace ) ); -- DEBUG
 --        delete( currentNamespace, length( currentNamespace ) - name'length,
 --          length( currentNamespace ) );
-put_line( "   closing to namespace " & to_string( currentNamespace ) ); -- DEBUG
+--put_line( "   closing to namespace " & to_string( currentNamespace ) ); -- DEBUG
 --     end if;
 
      --id.nextNamespace := lastNamespace;
      --lastNamespace := id;
 
      -- Find the corresponding open tag based on nesting level
+     --
+     -- if there is no openNamespace link, it is a close tag
 
-put_line( "   finding open tag..." ); -- DEBUG
+--     put_line( "   finding open tag..." ); -- DEBUG
      nesting := -1;
      p := identifiers( id )'access;
      loop
         p := p.nextNamespace;
         exit when p = null;
         if p.openNamespace = null then
-put_line( "   open tag " & to_string( p.name ) ); -- DEBUG
+--           put_line( "   open tag " & to_string( p.name ) ); -- DEBUG
            nesting := nesting + 1;
         else
-put_line( "   close tag " & to_string( p.name ) ); -- DEBUG
+--           put_line( "   close tag " & to_string( p.name ) ); -- DEBUG
            nesting := nesting -1;
         end if;
         exit when nesting = 0;
      end loop;
-     --if p /= null then
-put_line( "   open tag set to " & to_string( p.name ) ); -- DEBUG
+     if p /= null then
+--        if length( p.name ) = 0 then
+--           put_line( "   open tag set to global" ); -- DEBUG
+--        else
+--           put_line( "   open tag set to " & to_string( p.name ) ); -- DEBUG
+--        end if;
         identifiers( id ).openNamespace := p;
-     --end if;
+     else
+        put_line( "internal error: open namespace tag not found" );
+     end if;
      identifiers( id ).parentNamespace := identifiers( id ).openNamespace.parentNamespace;
-put_line( "   open tag " & to_string( identifiers( id ).openNamespace.name ) ); -- DEBUG
-if identifiers( id ).parentNamespace = null then
-put_line( "   parent - NULL" ); -- DEBUG
-else
-put_line( "   parent - " & to_string( identifiers( id ).parentNamespace.value ) ); -- DEBUG
-end if;
-if identifiers( id ).nextNamespace = null then
-   put_line( "   next - NULL" ); -- DEBUG
-else
-   put_line( "   next - " & to_string( identifiers( id ).nextNamespace.value ) ); -- DEBUG
-end if;
+--     put_line( "   open tag " & to_string( identifiers( id ).openNamespace.name ) ); -- DEBUG
+--     if identifiers( id ).parentNamespace = null then
+--        put_line( "   parent - NULL" ); -- DEBUG
+--     elsif length( identifiers( id ).parentNamespace.name ) = 0 then
+--        put_line( "   parent - global" ); -- DEBUG
+--     else
+--        put_line( "   parent - " & to_string( identifiers( id ).parentNamespace.name ) ); -- DEBUG
+--     end if;
+--     if identifiers( id ).nextNamespace = null then
+--        put_line( "   next - NULL" ); -- DEBUG
+--     elsif length( identifiers( id ).nextNamespace.name ) = 0 then
+--        put_line( "   next - global" ); -- DEBUG
+--     else
+--        put_line( "   next - " & to_string( identifiers( id ).nextNamespace.name ) ); -- DEBUG
+--     end if;
 
      currentNamespacePtr := identifiers( id ).parentNamespace;
   end if;

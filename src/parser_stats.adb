@@ -330,12 +330,14 @@ end ParseStatsStandardDeviation;
 
 procedure StartupStats is
 begin
+  declareNamespace( "stats" );
   declareFunction( stats_average_t, "stats.average", ParseStatsAverage'access );
   declareFunction( stats_max_t, "stats.max", ParseStatsMax'access );
   declareFunction( stats_min_t, "stats.min", ParseStatsMin'access );
   declareFunction( stats_standard_deviation_t, "stats.standard_deviation", ParseStatsStandardDeviation'access );
   declareFunction( stats_sum_t, "stats.sum", ParseStatsSum'access );
   declareFunction( stats_variance_t, "stats.variance", ParseStatsVariance'access );
+  declareNamespaceClosed( "stats" );
 end StartupStats;
 
 procedure ShutdownStats is

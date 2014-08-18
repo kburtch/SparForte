@@ -464,6 +464,7 @@ end ParseDirOpsRead;
 
 procedure StartupDirOps is
 begin
+  declareNamespace( "directory_operations" );
   declareIdent( dirops_dir_name_str_t, "directory_operations.dir_name_dir",
      string_t, subClass );
   declareIdent( dirops_dir_type_t, "directory_operations.dir_type_id",
@@ -504,6 +505,7 @@ begin
   declareProcedure( dirops_close_t, "directory_operations.close", ParseDirOpsClose'access );
   declareFunction( dirops_is_open_t, "directory_operations.is_open", ParseDirOpsIsOpen'access );
   declareProcedure( dirops_read_t, "directory_operations.read", ParseDirOpsRead'access );
+  declareNamespaceClosed( "directory_operations" );
 end StartupDirOps;
 
 procedure ShutdownDirOps is

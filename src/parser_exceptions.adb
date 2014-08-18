@@ -86,9 +86,11 @@ end ParseExceptionsExceptionStatusCode;
 
 procedure StartupExceptions is
 begin
+  declareNamespace( "exceptions" );
   declareFunction( exceptions_exception_name_t, "exceptions.exception_name", ParseExceptionsExceptionName'access );
   declareFunction( exceptions_exception_info_t, "exceptions.exception_info", ParseExceptionsExceptionInfo'access );
   declareFunction( exceptions_exception_status_code_t, "exceptions.exception_status_code", ParseExceptionsExceptionStatusCode'access );
+  declareNamespaceClosed( "exceptions" );
 end StartupExceptions;
 
 procedure ShutdownExceptions is

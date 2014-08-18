@@ -864,11 +864,111 @@ begin
   end if;
 end ParseVectorsFlip;
 
+procedure ParseVectorsNewCursor is
+  -- Syntax: vectors.new_cursor( c, t );
+  -- Ada:    N/A
+  resId : resHandleId;
+  ref : reference;
+  genKindId : identifier;
+begin
+  expect( vectors_new_cursor_t );
+  ParseFirstOutParameter( ref, vectors_cursor_t );
+  baseTypesOK( ref.kind, vectors_cursor_t );
+  expect( symbol_t, "," );
+  ParseIdentifier( genKindId );
+  if class_ok( genKindId, typeClass, subClass ) then
+      null;
+  end if;
+  identifiers( ref.id ).genKind := genKindId;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     identifiers( ref.id ).resource := true;
+     declareResource( resId, vector_string_list_cursor, blocks_top );
+     AssignParameter( ref, to_unbounded_string( resId ) );
+  end if;
+end ParseVectorsNewCursor;
+
+procedure ParseVectorsFirst is
+  -- Syntax: first( v, c );
+  -- Ada:    c := first( v );
+  vectorId   : identifier;
+  theVector  : resPtr;
+  cursId     : identifier;
+  theCursor  : resPtr;
+begin
+  expect( vectors_first_t );
+  ParseFirstVectorParameter( vectorId );
+  ParseLastCursorParameter( cursId );
+  genTypesOk( identifiers( vectorId ).genKind, identifiers( cursId ).genKind );
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       theCursor.vslCursor := Vector_String_Lists.First( theVector.vslVector );
+     end;
+  end if;
+end ParseVectorsFirst;
+
+procedure ParseVectorsLast is
+  -- Syntax: last( v, c );
+  -- Ada:    c := last( v );
+  vectorId   : identifier;
+  theVector  : resPtr;
+  cursId     : identifier;
+  theCursor  : resPtr;
+begin
+  expect( vectors_last_t );
+  ParseFirstVectorParameter( vectorId );
+  ParseLastCursorParameter( cursId );
+  genTypesOk( identifiers( vectorId ).genKind, identifiers( cursId ).genKind );
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       theCursor.vslCursor := Vector_String_Lists.Last( theVector.vslVector );
+     end;
+  end if;
+end ParseVectorsLast;
+
+procedure ParseVectorsNext is
+  -- Syntax: next( c );
+  -- Ada:    next( c );
+  cursId    : identifier;
+  theCursor : resPtr;
+begin
+  expect( vectors_next_t );
+  ParseSingleCursorParameter( cursId );
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       Vector_String_Lists.Next( theCursor.vslCursor );
+     end;
+  end if;
+end ParseVectorsNext;
+
+procedure ParseVectorsPrevious is
+  -- Syntax: previous( c );
+  -- Ada:    previous( c );
+  cursId    : identifier;
+  theCursor : resPtr;
+begin
+  expect( vectors_previous_t );
+  ParseSingleCursorParameter( cursId );
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       Vector_String_Lists.Previous( theCursor.vslCursor );
+     end;
+  end if;
+end ParseVectorsPrevious;
+
+
 
 -----------------------------------------------------------------------------
 
 procedure StartupVectors is
 begin
+  declareNamespace( "vectors" );
   declareIdent( vectors_vector_t, "vectors.vector", positive_t, typeClass );
   declareIdent( vectors_cursor_t, "vectors.cursor", positive_t, typeClass );
 
@@ -894,6 +994,12 @@ begin
   declareProcedure( vectors_reverse_elements_t,  "vectors.reverse_elements",    ParseVectorsReverseElements'access );
   declareProcedure( vectors_flip_t,  "vectors.flip",    ParseVectorsFlip'access );
 --  declareProcedure( vectors_copy_t,  "vectors.copy",    ParseVectorsCopy'access );
+  declareProcedure( vectors_new_cursor_t,  "vectors.new_cursor", ParseVectorsNewCursor'access );
+  declareProcedure( vectors_first_t,  "vectors.first", ParseVectorsFirst'access );
+  declareProcedure( vectors_last_t,  "vectors.last", ParseVectorsLast'access );
+  declareProcedure( vectors_next_t,  "vectors.next", ParseVectorsNext'access );
+  declareProcedure( vectors_previous_t,  "vectors.previous", ParseVectorsPrevious'access );
+  declareNamespaceClosed( "vectors" );
 end StartupVectors;
 
 procedure ShutdownVectors is

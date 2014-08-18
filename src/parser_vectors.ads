@@ -62,6 +62,11 @@ vectors_move_t          : identifier;
 vectors_copy_t          : identifier;
 vectors_reverse_elements_t : identifier;
 vectors_flip_t          : identifier;
+vectors_new_cursor_t    : identifier;
+vectors_first_t         : identifier;
+vectors_last_t          : identifier;
+vectors_next_t          : identifier;
+vectors_previous_t      : identifier;
 
 --doubly_new_cursor_t    : identifier;
 --doubly_first_t         : identifier;
