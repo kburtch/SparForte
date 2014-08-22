@@ -288,9 +288,10 @@ procedure free is new unchecked_deallocation( storage, storagePtr );
 ------------------------------------------------------------------------------
 -- Identifier Declarations
 --
+-- Optimization note: at least as of GNAT 4.6 on 64-bit Intel, using pointers
+-- is about 4 times slower on sequential searches than using array indexes.
 ------------------------------------------------------------------------------
 type declaration;
-type declarationPtr is access all declaration;
 
 type declaration is record
      name     : unbounded_string                -- identifier name
@@ -319,15 +320,15 @@ type declaration is record
      funcCB   : aBuiltinFunctionCallback := null;  -- built-in func only
      genKind  : identifier;                     -- generic type (if any)
      genKind2 : identifier;                     -- generic type (if any)
-     firstBound : long_integer := 1;           -- first bound (array type only)
+     firstBound : long_integer := 1;            -- first bound (array type only)
      lastBound  : long_integer := 0;            -- last bound (array type only)
      avalue   : storagePtr := null;             -- array value (array variable)
 
      -- Namespaces
 
-     openNamespace : declarationPtr := null;  -- corresponding open (or null)
-     nextNamespace : declarationPtr := null;        -- next tag (descending)
-     parentNamespace : declarationPtr := null;            -- parent open tag
+     openNamespace : identifier := identifier'first;       -- corresponding open (or null)
+     nextNamespace : identifier := identifier'first;       -- next tag (descending)
+     parentNamespace : identifier := identifier'first;     -- parent open tag
 
 end record;
 
@@ -351,7 +352,7 @@ err_exception    : declaration;           -- the exception else eof_t for none
 --
 ------------------------------------------------------------------------------
 
-type identifiersArray is array ( identifier ) of aliased declaration;
+type identifiersArray is array ( identifier ) of declaration;
 
 identifiers     : identifiersArray;
 identifiers_top : identifier := identifier'first;
@@ -675,11 +676,13 @@ function is_keyword( id : identifier ) return boolean;
 
 -----------------------------------------------------------------------------
 -- Namespaces
+--
+-- These are initialized in startScanner
 -----------------------------------------------------------------------------
 
-currentNamespace    : unbounded_string := to_unbounded_string( "UNDEFINED" );
-currentNamespacePtr : declarationPtr;
-lastNamespace       : declarationPtr;
+currentNamespace    : unbounded_string;
+currentNamespaceId  : identifier;
+lastNamespaceId     : identifier;
 
 -----------------------------------------------------------------------------
 -- Type Representation

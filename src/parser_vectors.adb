@@ -633,24 +633,44 @@ procedure ParseVectorsElement( result : out unbounded_string; kind : out identif
   idxExpr   : unbounded_string;
   idxType   : identifier;
   hasIdx    : boolean := false;
+  cursorId  : identifier;
+  theCursor : resPtr;
+  hasCursor : boolean := false;
+  res : boolean;
 begin
   expect( vectors_element_t );
   hasIdx := true;
-  ParseFirstVectorParameter( vectorId );
-  ParseLastNumericParameter( idxExpr, idxType, identifiers( vectorId ).genKind2 );
-  kind := identifiers( vectorId ).genKind;
+--  ParseLastNumericParameter( idxExpr, idxType, identifiers( vectorId ).genKind2 );
+  -- A cursor is a single identifier.  An index is an expression.
+  if identifiers( token ).kind = vectors_cursor_t then
+     hasCursor := true;
+     ParseIdentifier( cursorId );
+  else
+     ParseFirstVectorParameter( vectorId );
+     expect( symbol_t, "," );
+     ParseExpression( idxExpr, idxType );
+     res := baseTypesOK( idxType, identifiers( vectorId ).genKind2 );
+  end if;
+  expect( symbol_t, ")" );
   if isExecutingCommand then
      declare
        idx : vector_index;
      begin
 --put_line( to_string( idxExpr ) );
 --put_line( idx'img );
-       idx := vector_index( to_numeric( idxExpr ) );
-       idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       if hasCursor then
+         findResource( to_resource_id( identifiers( cursorId ).value ), theCursor );
+         kind := identifiers( cursorId ).genKind; -- TODO
+         result := Vector_String_Lists.Element( theCursor.vslCursor );
+       else
+         findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+         kind := identifiers( vectorId ).genKind;
+         idx := vector_index( to_numeric( idxExpr ) );
+         idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
+         result := Vector_String_Lists.Element( theVector.vslVector, idx );
+       end if;
 --put_line( "HERE" );
 -- NOTE: Vector Lists stores internally a natural
-       result := Vector_String_Lists.Element( theVector.vslVector, idx );
      exception when constraint_error =>
        err( "index value out of range" );
      when storage_error =>

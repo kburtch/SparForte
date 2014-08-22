@@ -133,17 +133,138 @@ end declareProcedure;
 procedure findIdent( name : unbounded_string; id : out identifier ) is
 -- Return the id of a keyword / identifier in the symbol table.  If
 -- it is not found, return the end-of-file token as the id
+  i      : identifier;
+  p      : identifier;
+  save_i : identifier;
+  dotPos : natural;
+  prefix : unbounded_string;
 begin
   id := eof_t;                                                  -- assume bad
-  for i in reverse 1..identifiers_top-1 loop                    -- from top
-      if i /= eof_t then
-         if identifiers( i ).name = name and not                -- exists and
-            identifiers( i ).deleted then                       -- not deleted?
-            id := i;                                            -- return id
-            exit;                                               -- we're done
-         end if;
+
+--put_line( "findIdent: " & to_string( name ) ); -- DEBUG
+
+  -- first, search the local namespace
+
+--put_line( "local search" ); -- DEBUG
+  i := identifiers_top-1;
+  while i /= eof_t loop
+      exit when identifiers( i ).class = namespaceClass;
+      if identifiers( i ).name = name and not                -- exists and
+         identifiers( i ).deleted then                       -- not deleted?
+         id := i;                                            -- return id
+         exit;                                               -- we're done
       end if;
+      i := i - 1;
   end loop;
+  save_i := i;
+
+  -- second, check for
+  -- note that in this version of SparForte, the prefix could be for a
+  -- record instead of a package
+  -- this only affects identifiers with a prefix
+
+  if id = eof_t then
+     if length( name ) > 1 then
+        dotPos := length( name ) - 1;
+        while dotPos > 1 loop
+           if element( name, dotPos ) = '.' then
+              prefix := unbounded_slice( name, 1, dotPos-1 );
+              exit;
+           else
+              dotPos := dotPos - 1;
+           end if;
+        end loop;
+     end if;
+-- put_line( "prefix = " & to_string( prefix ) ); -- debug
+
+     -- for this initial version, we are not assuming nested namespaces
+     -- we're only looking to speed up finding idents in built-in packages
+
+     p := save_i;                                                                 -- start after local
+     if length( prefix ) > 0 then                                               -- a id prefix?
+--put_line( "namespace search" ); -- DEBUG
+        while p > identifiers'first loop                                        -- while stuff
+           if identifiers( p ).class = namespaceClass then                      -- a ns?
+              -- if it is a closed namespace
+              if identifiers( p ).openNamespace /= identifiers'first then       -- a ns closed?
+--put_line( "closed namespace " & to_string( identifiers( p ).name ) ); -- DEBUG
+                 if identifiers( p ).name = prefix then -- TODO: value
+--put_line( "FOUND " & to_string( identifiers( p ).name ) ); -- DEBUG
+                    i := p-1;
+                    -- TODO: with open, this could be a for loop
+                    while i > identifiers'first loop
+                        exit when identifiers( i ).class = namespaceClass;
+                        if identifiers( i ).name = name and not                -- exists and
+                           identifiers( i ).deleted then                       -- not deleted?
+                           id := i;                                            -- return id
+                           goto found;                                         -- we're done
+                        end if;
+                        i := i - 1;                                            -- next id
+                    end loop;
+                    p := i;                                                    -- set pos
+                    exit when p = identifiers'first;                           -- bail if none
+                 else                                                          -- wrong ns?
+                    p := identifiers( p ).nextNamespace;                       -- skip it
+                    exit when p = identifiers'first;                           -- bail if none
+                 end if;
+              else                                                             -- open ns?
+                 p := identifiers( p ).nextNamespace;                          -- next ns
+                 exit when p = identifiers'first;                              -- bail if none
+              end if;
+           else                                                                -- global id?
+              p := p - 1;                                                      -- look for ns
+           end if;
+        end loop;
+     else
+--put_line( "global search" ); -- DEBUG
+        -- search for something without a prefix: skip namespace tags as they
+        -- only contain identifiers with a prefix.
+        while p > identifiers'first loop                                       -- while stuff
+           if identifiers( p ).class = namespaceClass then                     -- a ns?
+              if identifiers( p ).openNamespace /= identifiers'first then      -- a ns closed?
+                 p := identifiers( p ).nextNamespace;                          -- skip it
+                 exit when p = identifiers'first;                              -- bail if none
+              else                                                             -- open ns?
+                 p := p - 1;                                                   -- next id is global
+                 exit when p = identifiers'first;                              -- bail if none
+              end if;
+           else                                                                -- not a ns? then global
+              if identifiers( p ).name = name and not                          -- exists and
+                 identifiers( p ).deleted then                                 -- not deleted?
+--put_line( "FOUND global space " & to_string( identifiers( p ).name ) ); -- DEBUG
+                 id := p;                                                      -- return id
+                 goto found;                                                   -- we're done
+              end if;
+              p := p - 1;                                                      -- else next id
+           end if;
+        end loop;
+     end if;
+  end if;
+
+<<found>>
+
+  -- global namespace types like integer will be tested here
+
+  -- fallback
+  --
+  -- brute-force from where we left off in the local search,
+  -- searching everything
+  -- new variables, records, pragma names will trigger here
+  -- enums like direction.forward will go here since the prefix doesn't match the namespace tags
+
+  if id = eof_t then
+--put_line( standard_error, "brute force" ); -- DEBUG
+     for i in reverse 1..save_i loop                         -- from local ns
+         if i /= eof_t then
+            if identifiers( i ).name = name and not          -- exists and
+               identifiers( i ).deleted then                 -- not deleted?
+               id := i;                                      -- return id
+--put_line( standard_error, "internal error: brute force found " & to_string( name ) ); -- DEBUG
+               exit;                                         -- we're done
+            end if;
+         end if;
+     end loop;
+  end if;
 end findIdent;
 
 procedure init_env_ident( s : string ) is
@@ -184,9 +305,9 @@ begin
        funcCB => null,
        genKind => eof_t,
        genKind2 => eof_t,
-       openNamespace => null,
-       nextNamespace => null,
-       parentNamespace => null,
+       openNamespace => identifiers'first,
+       nextNamespace => identifiers'first,
+       parentNamespace => identifiers'first,
        firstBound => 1,
        lastBound => 0,
        avalue => null
@@ -229,9 +350,9 @@ begin
        funcCB => null,
        genKind => eof_t,
        genKind2 => eof_t,
-       openNamespace => null,
-       nextNamespace => null,
-       parentNamespace => null,
+       openNamespace => identifiers'first,
+       nextNamespace => identifiers'first,
+       parentNamespace => identifiers'first,
        firstBound => 1,
        lastBound => 0,
        avalue => null
@@ -353,9 +474,9 @@ begin
                  funcCB => null,
                  genKind => eof_t,
                  genKind2 => eof_t,
-                 openNamespace => null,
-                 nextNamespace => null,
-                 parentNamespace => null,
+                 openNamespace => identifiers'first,
+                 nextNamespace => identifiers'first,
+                 parentNamespace => identifiers'first,
                  firstBound => 1,
                  lastBound => 0,
                  avalue => null
@@ -408,9 +529,9 @@ begin
        funcCB => null,
        genKind => eof_t,
        genKind2 => eof_t,
-       openNamespace => null,
-       nextNamespace => null,
-       parentNamespace => null,
+       openNamespace => identifiers'first,
+       nextNamespace => identifiers'first,
+       parentNamespace => identifiers'first,
        firstBound => 1,
        lastBound => 0,
        avalue => null
@@ -483,9 +604,9 @@ begin
        funcCB   => null,
        genKind  => eof_t,
        genKind2 => eof_t,
-       openNamespace => null,
-       nextNamespace => null,
-       parentNamespace => null,
+       openNamespace => identifiers'first,
+       nextNamespace => identifiers'first,
+       parentNamespace => identifiers'first,
        firstBound => 1,
        lastBound => 0,
        avalue   => null
@@ -536,9 +657,9 @@ begin
        funcCB   => null,
        genKind  => eof_t,
        genKind2 => eof_t,
-       openNamespace => null, -- TODO
-       nextNamespace => lastNamespace,
-       parentNamespace => currentNamespacePtr,
+       openNamespace => identifiers'first, -- TODO
+       nextNamespace => lastNamespaceId,
+       parentNamespace => currentNamespaceId,
        firstBound => 1,
        lastBound => 0,
        avalue   => null
@@ -546,10 +667,10 @@ begin
 
      -- The position of the last namespace tag (open or closed)
      -- for setting the nextNamespace link
-     lastNamespace := identifiers( id )'access;
+     lastNamespaceId := id;
 
      currentNamespace := identifiers( id ).name;
-     currentNamespacePtr := identifiers( id )'access;
+     currentNamespaceId := id;
 
      -- TODO: Find the corresponding open tag based on nesting level
      -- do we need this here?
@@ -619,7 +740,8 @@ procedure declareNamespaceClosed( name : string ) is
 
   --sym     : Identifier;
   --id      : declarationPtr;
-  p       : declarationPtr;
+  --p       : declarationPtr;
+  p       : identifier;
 begin
 --put_line( "closing namespace " & name ); -- DEBUG
   if identifiers_top = Identifier'last then
@@ -651,9 +773,9 @@ begin
        funcCB   => null,
        genKind  => eof_t,
        genKind2 => eof_t,
-       openNamespace => null,
-       nextNamespace => lastNamespace,
-       parentNamespace => currentNamespacePtr,
+       openNamespace => identifiers'first, -- TODO
+       nextNamespace => lastNamespaceId,
+       parentNamespace => currentNamespaceId,
        firstBound => 1,
        lastBound => 0,
        avalue   => null
@@ -662,7 +784,7 @@ begin
 
      -- The position of the last namespace tag (open or closed)
      -- for setting the nextNamespace link
-     lastNamespace := identifiers( id )'access;
+     lastNamespaceId := id;
 
 ---
 
@@ -704,11 +826,11 @@ begin
 
 --     put_line( "   finding open tag..." ); -- DEBUG
      nesting := -1;
-     p := identifiers( id )'access;
+     p := id;
      loop
-        p := p.nextNamespace;
-        exit when p = null;
-        if p.openNamespace = null then
+        p := identifiers( p ).nextNamespace;
+        exit when p = identifiers'first;
+        if identifiers( p ).openNamespace = identifiers'first then
 --           put_line( "   open tag " & to_string( p.name ) ); -- DEBUG
            nesting := nesting + 1;
         else
@@ -717,7 +839,7 @@ begin
         end if;
         exit when nesting = 0;
      end loop;
-     if p /= null then
+     if p /= identifiers'first then
 --        if length( p.name ) = 0 then
 --           put_line( "   open tag set to global" ); -- DEBUG
 --        else
@@ -727,7 +849,7 @@ begin
      else
         put_line( "internal error: open namespace tag not found" );
      end if;
-     identifiers( id ).parentNamespace := identifiers( id ).openNamespace.parentNamespace;
+     identifiers( id ).parentNamespace := identifiers( identifiers( id ).openNamespace ).parentNamespace;
 --     put_line( "   open tag " & to_string( identifiers( id ).openNamespace.name ) ); -- DEBUG
 --     if identifiers( id ).parentNamespace = null then
 --        put_line( "   parent - NULL" ); -- DEBUG
@@ -744,7 +866,7 @@ begin
 --        put_line( "   next - " & to_string( identifiers( id ).nextNamespace.name ) ); -- DEBUG
 --     end if;
 
-     currentNamespacePtr := identifiers( id ).parentNamespace;
+     currentNamespaceId := identifiers( id ).parentNamespace;
   end if;
 end declareNamespaceClosed;
 

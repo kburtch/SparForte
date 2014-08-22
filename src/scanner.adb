@@ -1574,6 +1574,7 @@ end shutdownScanner;
 
   procedure declareASCIICharacters is
   begin
+     declareNamespace( "ASCII" );
      declareStandardConstant( "ASCII.NUL", character_t, "" & ASCII.NUL );
      declareStandardConstant( "ASCII.SOH", character_t, "" & ASCII.soh );
      declareStandardConstant( "ASCII.STX", character_t, "" & ASCII.stx );
@@ -1679,10 +1680,12 @@ end shutdownScanner;
      declareStandardConstant( "ASCII.UC_X",      character_t, "X" );
      declareStandardConstant( "ASCII.UC_Y",      character_t, "Y" );
      declareStandardConstant( "ASCII.UC_Z",      character_t, "Z" );
+     declareNamespaceClosed( "ASCII" );
   end declareASCIICharacters;
 
   procedure declareLatin1Characters is
   begin
+     declareNamespace( "Latin_1" );
 
      ------------------------
      -- Control Characters --
@@ -1959,6 +1962,7 @@ end shutdownScanner;
      declareStandardConstant( "Latin_1.LC_Y_Acute", character_t, "" & Character'Val (253));
      declareStandardConstant( "Latin_1.LC_Icelandic_Thorn", character_t, "" & Character'Val (254));
      declareStandardConstant( "Latin_1.LC_Y_Diaeresis", character_t, "" & Character'Val (255));
+     declareNamespaceClosed( "Latin_1" );
   end declareLatin1Characters;
 
   procedure declareStandardTypes is
@@ -2003,6 +2007,7 @@ end shutdownScanner;
 
   procedure declareStandardPackage is
   begin
+  declareNamespace( "System" );
   declareStandardConstant( "System.System_Name", uni_string_t, "SYSTEM_NAME_SPARFORTE" );
   declareStandardConstant( "System.Min_Int", uni_numeric_t, to_string( to_unbounded_string( long_float( integerOutputType'first+0.9 ) ) ) );
   -- out minimum integer is the limit of a long_float's mantissa.  should
@@ -2031,6 +2036,7 @@ end shutdownScanner;
   declareStandardConstant( "System.Script_License", uni_string_t, "" );
   declareStandardConstant( "System.Script_Software_Model", uni_string_t, "" );
   declareStandardConstant( "System.System_Version", uni_string_t, world.version );
+  declareNamespaceClosed( "System" );
   end declareStandardPackage;
 
 procedure resetScanner is
@@ -2093,6 +2099,12 @@ begin
   done := false;                                              -- not quitting
   trace := false;                                             -- not tracing
   cmdpos := 3;                                                -- first char
+
+  -- reset namespace
+
+  currentNamespace    := to_unbounded_string( "UNDEFINED" );
+  currentNamespaceId  := identifiers'first;
+  lastNamespaceId     := identifiers'first;
 
   -- Predefined types
 
@@ -4746,12 +4758,13 @@ begin
      end loop;
      id := eof_t;                                             -- assume not
      lastpos := lastpos - 1;                                  -- before delim
-     for i in reverse 1..identifiers_top-1 loop               -- search symbol
-         if identifiers( i ).name = word then                 -- table
-            id := i;
-            exit;
-         end if;
-     end loop;
+     findIdent( word, id );
+     --for i in reverse 1..identifiers_top-1 loop               -- search symbol
+     --    if identifiers( i ).name = word then                 -- table
+     --       id := i;
+     --       exit;
+     --    end if;
+     --end loop;
      if id = eof_t then                                       -- not found?
         declareIdent( token, word, new_t );                   -- declare it
      else                                                     -- otherwise
