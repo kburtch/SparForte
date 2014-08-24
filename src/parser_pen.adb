@@ -7116,6 +7116,9 @@ begin
   if isExecutingCommand then
     begin
       glLightf( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -7139,6 +7142,9 @@ begin
   if isExecutingCommand then
     begin
       glLighti( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -17468,8 +17474,8 @@ begin
   declareProcedure( pen_glmultmatrixf_t, "pen.glmultmatrixf" );
   declareProcedure( pen_glrotated_t, "pen.glrotated", ParsePenglRotated'access );
   declareProcedure( pen_glrotatef_t, "pen.glrotatef", ParsePenglRotatef'access );
-  declareProcedure( pen_glscaled_t, "pen.glscaled" );
-  declareProcedure( pen_glscalef_t, "pen.glscalef" );
+  declareProcedure( pen_glscaled_t, "pen.glscaled", ParsePenglScaled'access );
+  declareProcedure( pen_glscalef_t, "pen.glscalef", ParsePenglScalef'access );
   declareProcedure( pen_gltranslated_t, "pen.gltranslated", ParsePenglTranslated'access );
   declareProcedure( pen_gltranslatef_t, "pen.gltranslatef", ParsePenglTranslatef'access );
   declareFunction(  pen_glislist_t, "pen.glislist" );
@@ -17560,22 +17566,22 @@ begin
   declareProcedure( pen_glcolor4ubv_t, "pen.glcolor4ubv" );
   declareProcedure( pen_glcolor4uiv_t, "pen.glcolor4uiv" );
   declareProcedure( pen_glcolor4usv_t, "pen.glcolor4usv" );
-  declareProcedure( pen_gltexcoord1d_t, "pen.gltexcoord1d" );
-  declareProcedure( pen_gltexcoord1f_t, "pen.gltexcoord1f" );
-  declareProcedure( pen_gltexcoord1i_t, "pen.gltexcoord1i" );
-  declareProcedure( pen_gltexcoord1s_t, "pen.gltexcoord1s" );
-  declareProcedure( pen_gltexcoord2d_t, "pen.gltexcoord2d" );
-  declareProcedure( pen_gltexcoord2f_t, "pen.gltexcoord2f" );
-  declareProcedure( pen_gltexcoord2i_t, "pen.gltexcoord2i" );
-  declareProcedure( pen_gltexcoord2s_t, "pen.gltexcoord2s" );
-  declareProcedure( pen_gltexcoord3d_t, "pen.gltexcoord3d" );
-  declareProcedure( pen_gltexcoord3f_t, "pen.gltexcoord3f" );
-  declareProcedure( pen_gltexcoord3i_t, "pen.gltexcoord3i" );
-  declareProcedure( pen_gltexcoord3s_t, "pen.gltexcoord3s" );
-  declareProcedure( pen_gltexcoord4d_t, "pen.gltexcoord4d" );
-  declareProcedure( pen_gltexcoord4f_t, "pen.gltexcoord4f" );
-  declareProcedure( pen_gltexcoord4i_t, "pen.gltexcoord4i" );
-  declareProcedure( pen_gltexcoord4s_t, "pen.gltexcoord4s" );
+  declareProcedure( pen_gltexcoord1d_t, "pen.gltexcoord1d", ParsePenGlTexCoord1d'access );
+  declareProcedure( pen_gltexcoord1f_t, "pen.gltexcoord1f", ParsePenGlTexCoord1f'access );
+  declareProcedure( pen_gltexcoord1i_t, "pen.gltexcoord1i", ParsePenGlTexCoord1i'access );
+  declareProcedure( pen_gltexcoord1s_t, "pen.gltexcoord1s", ParsePenGlTexCoord1s'access );
+  declareProcedure( pen_gltexcoord2d_t, "pen.gltexcoord2d", ParsePenGlTexCoord2d'access );
+  declareProcedure( pen_gltexcoord2f_t, "pen.gltexcoord2f", ParsePenGlTexCoord2f'access );
+  declareProcedure( pen_gltexcoord2i_t, "pen.gltexcoord2i", ParsePenGlTexCoord2i'access );
+  declareProcedure( pen_gltexcoord2s_t, "pen.gltexcoord2s", ParsePenGlTexCoord2s'access );
+  declareProcedure( pen_gltexcoord3d_t, "pen.gltexcoord3d", ParsePenGlTexCoord3d'access );
+  declareProcedure( pen_gltexcoord3f_t, "pen.gltexcoord3f", ParsePenGlTexCoord3f'access );
+  declareProcedure( pen_gltexcoord3i_t, "pen.gltexcoord3i", ParsePenGlTexCoord3i'access );
+  declareProcedure( pen_gltexcoord3s_t, "pen.gltexcoord3s", ParsePenGlTexCoord3s'access );
+  declareProcedure( pen_gltexcoord4d_t, "pen.gltexcoord4d", ParsePenGlTexCoord4d'access );
+  declareProcedure( pen_gltexcoord4f_t, "pen.gltexcoord4f", ParsePenGlTexCoord4f'access );
+  declareProcedure( pen_gltexcoord4i_t, "pen.gltexcoord4i", ParsePenGlTexCoord4i'access );
+  declareProcedure( pen_gltexcoord4s_t, "pen.gltexcoord4s", ParsePenGlTexCoord4s'access );
   declareProcedure( pen_gltexcoord1dv_t, "pen.gltexcoord1dv" );
   declareProcedure( pen_gltexcoord1fv_t, "pen.gltexcoord1fv" );
   declareProcedure( pen_gltexcoord1iv_t, "pen.gltexcoord1iv" );
@@ -17636,8 +17642,8 @@ begin
   declareProcedure( pen_gldrawelements_t, "pen.gldrawelements" );
   declareProcedure( pen_glinterleavedarrays_t, "pen.glinterleavedarrays" );
   declareProcedure( pen_glshademodel_t, "pen.glshademodel", ParsePenglShadeModel'access );
-  declareProcedure( pen_gllightf_t, "pen.gllightf" );
-  declareProcedure( pen_gllighti_t, "pen.gllighti" );
+  declareProcedure( pen_gllightf_t, "pen.gllightf", ParsePenglLightf'access );
+  declareProcedure( pen_gllighti_t, "pen.gllighti", ParsePenglLighti'access );
   declareProcedure( pen_gllightfv_t, "pen.gllightfv" );
   declareProcedure( pen_gllightiv_t, "pen.gllightiv" );
   declareProcedure( pen_glgetlightfv_t, "pen.glgetlightfv" );

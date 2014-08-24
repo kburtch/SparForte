@@ -8,7 +8,7 @@ CHANGES SINCE 1.5
 
 2. Fix: eliminated warnings on newer versions of gcc for tinyserver buffer and apq printf formatting one one line
 
-3. New: Standard OpenGL functions (not documented yet) : glNormal3b, glNormal3d, glNormal3f, glNormal3i, glNormal3s, glIndexd, glIndexf, glIndexi, glIndexs, glRectd, glRectf, glRecti, glRects,
+3. New: Standard OpenGL functions (not documented yet) : glnormal3b, glnormal3d, glnormal3f, glnormal3i, glnormal3s, glindexd, glindexf, glindexi, glindexs, glrectd, glrectf, glrecti, glrects, gllightf, gllighti, gltexcoord1d, gltexcoord1f, gltexcoord1i, gltexcoord1s, gltexcoord2d, gltexcoord2f, gltexcoord2i, gltexcoord2s, gltexcoord3d, gltexcoord3f, gltexcoord3i, gltexcoord3s, gltexcoord4d, gltexcoord4f, gltexcoord4i, gltexcoord4s, glscaled, glscalef [not all tested] 
 
 4. New: OpenGL extension functions
 
@@ -20,4 +20,5 @@ CHANGES SINCE 1.5
 
 8. New: vectors (singly linked list) package. new_vector, clear, to_vector, capacity, reserve_capacity, length, set_length, is_empty, append, prepend, first_index, last_index, element [not finished], first_element, last_element, delete_first, delete_last, contains, move, reverse_elements, flip [docs needed] [tests needed]
 
+9. Change: new, faster identifier search function. [pen enums not modified for this]
 
