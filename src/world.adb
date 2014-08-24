@@ -52,6 +52,76 @@ localMemcacheClusterInitialized : boolean := false;
 distributedMemcacheClusterInitialized : boolean := false;
 -- flag: only initialize the memcache clusters once
 
+-----------------------------------------------------------------------------
+-- TINY HASH CACHE
+--
+-- This is a small hash table for caching identifier lookups by findIdent.
+-- The goal is to keep the table very small, and the hash function very
+-- fast and simple, to cache a subset of the most frequently accessed
+-- variables.
+--
+-- The cnt field is used to mark the age of an entry.  If cnt is different
+-- from the current cnt number, then the cache entry has expired.
+--
+-- To use the tiny id cache (with findIdent), each block must have its own
+-- cache.  Otherwise, with one global cache that is cleared on every block
+-- change, the cache contents get cleared so often that caching will not
+-- effective.
+--
+-- Since the block table is in the scanner, and findIdent is global, it
+-- would mean some source code restructuring to implement this cache.
+-----------------------------------------------------------------------------
+
+--procedure resetTinyHashCache is
+--begin
+--  if currentTinyHashCacheCnt = 1 then
+--     for i in actualHash'range loop
+--         tinyHashCache( i ).cnt := 0;
+--     end loop;
+--  end if;
+--  currentTinyHashCacheCnt := currentTinyHashCacheCnt + 1;
+--end resetTinyHashCache;
+--
+--procedure setTinyHashCache( s : unbounded_string; h : actualHash; id : identifier ) is
+--begin
+--   if id /= eof_t then
+--      if tinyHashCache( h ).cnt /= currentTinyHashCacheCnt then
+--         tinyHashCache( h ).key := s;
+--         tinyHashCache( h ).id  := id;
+--         tinyHashCache( h ).cnt := currentTinyHashCacheCnt;
+--put_line( "cache new - " & to_string( s ) & id'img );
+--      end if;
+--   end if;
+--end setTinyHashCache;
+
+--procedure getTinyHashCache( s : unbounded_string; id : out identifier ; h : out actualHash ) is
+--    l : natural;
+--   c1 : character;
+--   c2 : character;
+--begin
+--    l := length( s );
+--   c1 := element( s, 1 );
+--   c2 := element( s, l );
+--    h := actualhash(
+--           1 + (
+--             character'pos( c1 ) * 7 +
+--             character'pos( c2 ) * 11 +
+--             l * 17
+--           ) mod integer( actualHash'last )
+--         );
+--
+--    if tinyHashCache( h ).key = s then
+--       if tinyHashCache( h ).cnt = currentTinyHashCacheCnt then
+--          id := tinyHashCache( h ).id;
+--put_line( "cache hit - " & to_string( s ) & id'img );
+--       else
+--          id := eof_t;
+--       end if;
+--    else
+--       id := eof_t;
+--    end if;
+--end getTinyHashCache;
+
 --
 -- Symbol Table Utilities
 --
@@ -138,6 +208,7 @@ procedure findIdent( name : unbounded_string; id : out identifier ) is
   save_i : identifier;
   dotPos : natural;
   prefix : unbounded_string;
+  --h      : actualHash;
 begin
   id := eof_t;                                                  -- assume bad
 
@@ -175,6 +246,14 @@ begin
            end if;
         end loop;
      end if;
+
+    -- try the tiny hash cache
+
+    --getTinyHashCache( name, id, h );
+    --if id /= eof_t then
+    --   goto found;
+    --end if;
+
 -- put_line( "prefix = " & to_string( prefix ) ); -- debug
 
      -- for this initial version, we are not assuming nested namespaces
@@ -197,6 +276,7 @@ begin
                         if identifiers( i ).name = name and not                -- exists and
                            identifiers( i ).deleted then                       -- not deleted?
                            id := i;                                            -- return id
+                           --setTinyHashCache( name, h, id );
                            goto found;                                         -- we're done
                         end if;
                         i := i - 1;                                            -- next id
@@ -233,6 +313,7 @@ begin
                  identifiers( p ).deleted then                                 -- not deleted?
 --put_line( "FOUND global space " & to_string( identifiers( p ).name ) ); -- DEBUG
                  id := p;                                                      -- return id
+                 --setTinyHashCache( name, h, id );
                  goto found;                                                   -- we're done
               end if;
               p := p - 1;                                                      -- else next id

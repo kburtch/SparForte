@@ -1282,47 +1282,6 @@ end ParseStringsToJSON;
 procedure StartupStrings is
 begin
   declareNamespace( "strings" );
-  declareIdent( strings_alignment_t, "strings.alignment",
-    root_enumerated_t, typeClass );
-  declareStandardConstant( strings_alignment_left_t, "alignment.left",
-    strings_alignment_t, "0" );
-  declareStandardConstant( strings_alignment_right_t, "alignment.right",
-    strings_alignment_t, "1" );
-  declareStandardConstant( strings_alignment_center_t, "alignment.center",
-    strings_alignment_t, "2" );
-
-  declareIdent( strings_truncation_t, "strings.truncation",
-    root_enumerated_t, typeClass );
-  declareStandardConstant( strings_truncation_left_t, "truncation.left",
-    strings_truncation_t, "0" );
-  declareStandardConstant( strings_truncation_right_t, "truncation.right",
-    strings_truncation_t, "1" );
-  declareStandardConstant( strings_truncation_error_t, "truncation.error",
-    strings_truncation_t, "2" );
-
-  declareIdent( strings_membership_t, "strings.membership",
-    root_enumerated_t, typeClass );
-  declareStandardConstant( strings_membership_inside_t, "membership.inside",
-    strings_membership_t, "0" );
-  declareStandardConstant( strings_membership_outside_t, "membership.outside",
-    strings_membership_t, "1" );
-
-  declareIdent( strings_direction_t, "strings.direction",
-    root_enumerated_t, typeClass );
-  declareStandardConstant( strings_direction_forward_t, "direction.forward",
-    strings_direction_t, "0" );
-  declareStandardConstant( strings_direction_backward_t, "direction.backward",
-    strings_direction_t, "1" );
-
-  declareIdent( strings_trim_end_t, "strings.trim_end",
-    root_enumerated_t, typeClass );
-  declareStandardConstant( strings_trim_end_left_t, "trim_end.left",
-    strings_trim_end_t, "0" );
-  declareStandardConstant( strings_trim_end_right_t, "trim_end.right",
-    strings_trim_end_t, "1" );
-  declareStandardConstant( strings_trim_end_both_t, "trim_end.both",
-    strings_trim_end_t, "2" );
-
   declareFunction( glob_t, "strings.glob", ParseStringsGlob'access );
   declareFunction( match_t, "strings.match", ParseStringsMatch'access );
   declareFunction( element_t, "strings.element", ParseStringsElement'access );
@@ -1370,7 +1329,62 @@ begin
   declareProcedure( set_unbounded_string_t, "strings.set_unbounded_string", ParseStringsSetUnboundedString'access );
   declareFunction( unbounded_slice_t, "strings.unbounded_slice", ParseStringsUnboundedSlice'access );
   declareFunction( strings_to_json_t, "strings.to_json", ParseStringsToJSON'access );
+
+  -- enumerateds - values defined below
+  declareIdent( strings_alignment_t, "strings.alignment",
+    root_enumerated_t, typeClass );
+  declareIdent( strings_truncation_t, "strings.truncation",
+    root_enumerated_t, typeClass );
+  declareIdent( strings_membership_t, "strings.membership",
+    root_enumerated_t, typeClass );
+  declareIdent( strings_direction_t, "strings.direction",
+    root_enumerated_t, typeClass );
+  declareIdent( strings_trim_end_t, "strings.trim_end",
+    root_enumerated_t, typeClass );
+
   declareNamespaceClosed( "strings" );
+
+  declareNamespace( "alignment" );
+  declareStandardConstant( strings_alignment_left_t, "alignment.left",
+    strings_alignment_t, "0" );
+  declareStandardConstant( strings_alignment_right_t, "alignment.right",
+    strings_alignment_t, "1" );
+  declareStandardConstant( strings_alignment_center_t, "alignment.center",
+    strings_alignment_t, "2" );
+  declareNamespaceClosed( "alignment" );
+
+  declareNamespace( "truncation" );
+  declareStandardConstant( strings_truncation_left_t, "truncation.left",
+    strings_truncation_t, "0" );
+  declareStandardConstant( strings_truncation_right_t, "truncation.right",
+    strings_truncation_t, "1" );
+  declareStandardConstant( strings_truncation_error_t, "truncation.error",
+    strings_truncation_t, "2" );
+  declareNamespaceClosed( "truncation" );
+
+  declareNamespace( "membership" );
+  declareStandardConstant( strings_membership_inside_t, "membership.inside",
+    strings_membership_t, "0" );
+  declareStandardConstant( strings_membership_outside_t, "membership.outside",
+    strings_membership_t, "1" );
+  declareNamespaceClosed( "membership" );
+
+  declareNamespace( "direction" );
+  declareStandardConstant( strings_direction_forward_t, "direction.forward",
+    strings_direction_t, "0" );
+  declareStandardConstant( strings_direction_backward_t, "direction.backward",
+    strings_direction_t, "1" );
+  declareNamespaceClosed( "direction" );
+
+  declareNamespace( "trim_end" );
+  declareStandardConstant( strings_trim_end_left_t, "trim_end.left",
+    strings_trim_end_t, "0" );
+  declareStandardConstant( strings_trim_end_right_t, "trim_end.right",
+    strings_trim_end_t, "1" );
+  declareStandardConstant( strings_trim_end_both_t, "trim_end.both",
+    strings_trim_end_t, "2" );
+  declareNamespaceClosed( "trim_end" );
+
 end StartupStrings;
 
 procedure ShutdownStrings is

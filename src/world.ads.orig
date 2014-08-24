@@ -603,6 +603,29 @@ itself_type : identifier;         -- type of @ or procedure identifier
 last_output : unbounded_string;   -- result of last output
 last_output_type : identifier;    -- type of last output
 
+-----------------------------------------------------------------------------
+-- TINY HASH CACHE
+--
+-- A small identifier cache to speed up identifier symbol table lookups.
+-----------------------------------------------------------------------------
+
+--type tinyHashCacheEntry is record
+--     key : unbounded_string;
+--     id  : identifier;
+--     cnt : natural;
+--end record;
+--
+--type effectiveHash is new natural range 0..37;
+--subtype actualHash is effectiveHash range 1..37;
+--
+--type aTinyHashCache is array( actualHash ) of tinyHashCacheEntry;
+--
+--tinyHashCache : aTinyHashCache;
+--currentTinyHashCacheCnt : natural := 1;
+--
+--procedure resetTinyHashCache;
+--procedure getTinyHashCache( s : unbounded_string; id : out identifier ; h : out actualHash );
+
 ------------------------------------------------------------------------------
 -- Declarations
 ------------------------------------------------------------------------------

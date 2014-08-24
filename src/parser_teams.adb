@@ -126,22 +126,28 @@ begin
   identifiers(  teams_member_active_t ).value := to_unbounded_string( "18" );
 
   declareIdent( teams_work_measure_t, "teams.work_measure", root_enumerated_t, typeClass );
+  declareIdent( teams_work_priority_t, "teams.work_priority", root_enumerated_t, typeClass );
+
+  declareNamespaceClosed( "teams" );
+
+  declareNamespace( "work_measure" );
   declareStandardConstant( teams_work_measure_unknown_t, "work_measure.unknown", teams_work_measure_t, "0" );
   declareStandardConstant( teams_work_measure_hours_t, "work_measure.hours", teams_work_measure_t, "1" );
   declareStandardConstant( teams_work_measure_fpoints_t, "work_measure.function_points", teams_work_measure_t, "2" );
   declareStandardConstant( teams_work_measure_spoints_t, "work_measure.story_points", teams_work_measure_t, "3" );
   declareStandardConstant( teams_work_measure_sloc_t, "work_measure.lines_of_code", teams_work_measure_t, "4" );
   declareStandardConstant( teams_work_measure_size_t, "work_measure.size", teams_work_measure_t, "5" );
+  declareNamespaceClosed( "work_measure" );
 
-  declareIdent( teams_work_priority_t, "teams.work_priority", root_enumerated_t, typeClass );
+  declareNamespace( "work_priority" );
   declareStandardConstant( teams_work_priority_unknown_t, "work_priority.unknown", teams_work_priority_t, "0" );
   declareStandardConstant( teams_work_priority_completed_t, "work_priority.completed", teams_work_priority_t, "1" );
   declareStandardConstant( teams_work_priority_level_t, "work_priority.level", teams_work_priority_t, "2" );
   declareStandardConstant( teams_work_priority_severity_t, "work_priority.severity", teams_work_priority_t, "3" );
   declareStandardConstant( teams_work_priority_risk_t, "work_priority.risk", teams_work_priority_t, "4" );
   declareStandardConstant( teams_work_priority_cvss_t, "work_priority.cvss", teams_work_priority_t, "5" );
+  declareNamespaceClosed( "work_priority" );
 
-  declareNamespaceClosed( "teams" );
 end StartupTeams;
 
 procedure ShutdownTeams is

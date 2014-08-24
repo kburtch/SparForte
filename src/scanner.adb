@@ -180,7 +180,6 @@ sourceFileNo   : natural := 0;
 sourceLineNoLo : natural := 0;
 sourceLineNoHi : natural := 0;
 
-
 -----------------------------------------------------------------------------
 -- PUT TOKEN
 --
@@ -1331,6 +1330,11 @@ begin
         markScanner( block.state );                             -- scanner pos
      end;
      blocks_top := blocks_top + 1;                              -- push stack
+
+  -- Tiny Hash Cache
+
+  --resetTinyHashCache;
+
   end if;
 end pushBlock;
 
@@ -1361,6 +1365,11 @@ begin
          b := deleteIdent( i );
      end loop;
      identifiers_top := blocks( blocks_top ).identifiers_top;   -- pop decl's
+
+  -- Tiny Hash Cache
+
+  --resetTinyHashCache;
+
   end if;
 end pullBlock;
 
@@ -2105,6 +2114,10 @@ begin
   currentNamespace    := to_unbounded_string( "UNDEFINED" );
   currentNamespaceId  := identifiers'first;
   lastNamespaceId     := identifiers'first;
+
+  -- Tiny Hash Cache
+
+  --resetTinyHashCache;
 
   -- Predefined types
 
