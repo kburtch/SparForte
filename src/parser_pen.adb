@@ -2423,6 +2423,9 @@ begin
   if isExecutingCommand then
     begin
       glEnableClientState( GLenum( to_numeric( cap_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2440,6 +2443,9 @@ begin
   if isExecutingCommand then
     begin
       glDisableClientState( GLenum( to_numeric( cap_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2542,6 +2548,9 @@ begin
   if isExecutingCommand then
     begin
       glPushAttrib( GLbitfield( to_numeric( mask_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2556,6 +2565,9 @@ begin
   if isExecutingCommand then
     begin
       glPopAttrib;
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2756,6 +2768,9 @@ begin
   if isExecutingCommand then
     begin
       glDepthMask( GLboolean( to_numeric( flag_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -2776,6 +2791,9 @@ begin
   if isExecutingCommand then
     begin
       glDepthRange( GLclampd( to_numeric( near_val_val ) ), GLclampd( to_numeric( far_val_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -3166,6 +3184,9 @@ begin
   if isExecutingCommand then
     begin
       glScaled( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( z_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -7281,6 +7302,9 @@ begin
   if isExecutingCommand then
     begin
       glLightModelf( GLenum( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -7301,6 +7325,9 @@ begin
   if isExecutingCommand then
     begin
       glLightModeli( GLenum( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -7378,6 +7405,9 @@ begin
   if isExecutingCommand then
     begin
       glMaterialf( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -7401,6 +7431,9 @@ begin
   if isExecutingCommand then
     begin
       glMateriali( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -7541,6 +7574,9 @@ begin
   if isExecutingCommand then
     begin
       glColorMaterial( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( mode_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -7561,6 +7597,9 @@ begin
   if isExecutingCommand then
     begin
       glPixelZoom( GLfloat( to_numeric( xfactor_val ) ), GLfloat( to_numeric( yfactor_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -7581,6 +7620,9 @@ begin
   if isExecutingCommand then
     begin
       glPixelStoref( GLpixelmode( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -7601,6 +7643,9 @@ begin
   if isExecutingCommand then
     begin
       glPixelStorei( GLpixelmode( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -7621,6 +7666,9 @@ begin
   if isExecutingCommand then
     begin
       glPixelTransferf( GLpixelmode( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -7641,6 +7689,9 @@ begin
   if isExecutingCommand then
     begin
       glPixelTransferi( GLpixelmode( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -7973,6 +8024,9 @@ begin
   if isExecutingCommand then
     begin
       glStencilFunc( GLenum( to_numeric( func_val ) ), GLint( to_numeric( ref_val ) ), GLuint( to_numeric( mask_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -7990,6 +8044,9 @@ begin
   if isExecutingCommand then
     begin
       glStencilMask( GLuint( to_numeric( mask_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -8013,6 +8070,9 @@ begin
   if isExecutingCommand then
     begin
       glStencilOp( GLstencil( to_numeric( fail_val ) ), GLstencil( to_numeric( zfail_val ) ), GLstencil( to_numeric( zpass_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -8030,6 +8090,9 @@ begin
   if isExecutingCommand then
     begin
       glClearStencil( GLint( to_numeric( s_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -8053,6 +8116,9 @@ begin
   if isExecutingCommand then
     begin
       glTexGend( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLdouble( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -8076,6 +8142,9 @@ begin
   if isExecutingCommand then
     begin
       glTexGenf( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -8099,6 +8168,9 @@ begin
   if isExecutingCommand then
     begin
       glTexGeni( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -8296,6 +8368,9 @@ begin
   if isExecutingCommand then
     begin
       glTexEnvf( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -8319,6 +8394,9 @@ begin
   if isExecutingCommand then
     begin
       glTexEnvi( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -8458,6 +8536,9 @@ begin
   if isExecutingCommand then
     begin
       glTexParameterf( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -8481,6 +8562,9 @@ begin
   if isExecutingCommand then
     begin
       glTexParameteri( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -8857,6 +8941,9 @@ begin
   if isExecutingCommand then
     begin
       glBindTexture( GLtexturemapping( to_numeric( target_val ) ), GLuint( to_numeric( texture_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -9824,6 +9911,9 @@ begin
   if isExecutingCommand then
     begin
       glFogf( GLfog( to_numeric( pname_val ) ), GLfloat( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -9844,6 +9934,9 @@ begin
   if isExecutingCommand then
     begin
       glFogi( GLfog( to_numeric( pname_val ) ), GLint( to_numeric( param_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -9942,6 +10035,9 @@ begin
   if isExecutingCommand then
     begin
       glPassThrough( GLfloat( to_numeric( token_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -9982,6 +10078,9 @@ begin
   if isExecutingCommand then
     begin
       glInitNames;
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -9999,6 +10098,9 @@ begin
   if isExecutingCommand then
     begin
       glLoadName( GLuint( to_numeric( name_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -10016,6 +10118,9 @@ begin
   if isExecutingCommand then
     begin
       glPushName( GLuint( to_numeric( name_val ) ) );
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -10030,6 +10135,9 @@ begin
   if isExecutingCommand then
     begin
       glPopName;
+      if raiseGlExceptions then
+         check_opengl_err;
+      end if;
     exception when others =>
       err( "exception raised" );
     end;
@@ -17439,14 +17547,14 @@ begin
   declareProcedure( pen_glenable_t, "pen.glenable", ParsePenglEnable'access );
   declareProcedure( pen_gldisable_t, "pen.gldisable", ParsePenglDisable'access );
   declareFunction(  pen_glisenabled_t, "pen.glisenabled", ParsePenglIsEnabled'access );
-  declareProcedure( pen_glenableclientstate_t, "pen.glenableclientstate" );
-  declareProcedure( pen_gldisableclientstate_t, "pen.gldisableclientstate" );
+  declareProcedure( pen_glenableclientstate_t, "pen.glenableclientstate", ParsePenglEnableClientState'access );
+  declareProcedure( pen_gldisableclientstate_t, "pen.gldisableclientstate", ParsePenglDisableClientState'access );
   declareProcedure( pen_glgetbooleanv_t, "pen.glgetbooleanv" );
   declareProcedure( pen_glgetdoublev_t, "pen.glgetdoublev" );
   declareProcedure( pen_glgetfloatv_t, "pen.glgetfloatv" );
   declareProcedure( pen_glgetintegerv_t, "pen.glgetintegerv" );
-  declareProcedure( pen_glpushattrib_t, "pen.glpushattrib" );
-  declareProcedure( pen_glpopattrib_t, "pen.glpopattrib" );
+  declareProcedure( pen_glpushattrib_t, "pen.glpushattrib", ParsePenglPushAttrib'access );
+  declareProcedure( pen_glpopattrib_t, "pen.glpopattrib", ParsePenglPopAttrib'access );
   declareProcedure( pen_glpushclientattrib_t, "pen.glpushclientattrib" );
   declareProcedure( pen_glpopclientattrib_t, "pen.glpopclientattrib" );
   declareFunction(  pen_glrendermode_t, "pen.glrendermode" );
@@ -17457,8 +17565,8 @@ begin
   declareProcedure( pen_glhint_t, "pen.glhint", ParsePenglHint'access );
   declareProcedure( pen_glcleardepth_t, "pen.glcleardepth", ParsePenglClearDepth'access );
   declareProcedure( pen_gldepthfunc_t, "pen.gldepthfunc", ParsePenglDepthFunc'access );
-  declareProcedure( pen_gldepthmask_t, "pen.gldepthmask" );
-  declareProcedure( pen_gldepthrange_t, "pen.gldepthrange" );
+  declareProcedure( pen_gldepthmask_t, "pen.gldepthmask", ParsePenglDepthMask'access );
+  declareProcedure( pen_gldepthrange_t, "pen.gldepthrange", ParsePenglDepthRange'access );
   declareProcedure( pen_glclearaccum_t, "pen.glclearaccum" );
   declareProcedure( pen_glaccum_t, "pen.glaccum" );
   declareProcedure( pen_glmatrixmode_t, "pen.glmatrixmode", ParsePenglMatrixMode'access );
@@ -17648,22 +17756,22 @@ begin
   declareProcedure( pen_gllightiv_t, "pen.gllightiv" );
   declareProcedure( pen_glgetlightfv_t, "pen.glgetlightfv" );
   declareProcedure( pen_glgetlightiv_t, "pen.glgetlightiv" );
-  declareProcedure( pen_gllightmodelf_t, "pen.gllightmodelf" );
-  declareProcedure( pen_gllightmodeli_t, "pen.gllightmodeli" );
+  declareProcedure( pen_gllightmodelf_t, "pen.gllightmodelf", ParsePenglLightModelf'access );
+  declareProcedure( pen_gllightmodeli_t, "pen.gllightmodeli", ParsePenglLightModeli'access );
   declareProcedure( pen_gllightmodelfv_t, "pen.gllightmodelfv" );
   declareProcedure( pen_gllightmodeliv_t, "pen.gllightmodeliv" );
-  declareProcedure( pen_glmaterialf_t, "pen.glmaterialf" );
-  declareProcedure( pen_glmateriali_t, "pen.glmateriali" );
+  declareProcedure( pen_glmaterialf_t, "pen.glmaterialf", ParsePenglMaterialf'access );
+  declareProcedure( pen_glmateriali_t, "pen.glmateriali", ParsePenglMateriali'access );
   declareProcedure( pen_glmaterialfv_t, "pen.glmaterialfv" );
   declareProcedure( pen_glmaterialiv_t, "pen.glmaterialiv" );
   declareProcedure( pen_glgetmaterialfv_t, "pen.glgetmaterialfv" );
   declareProcedure( pen_glgetmaterialiv_t, "pen.glgetmaterialiv" );
-  declareProcedure( pen_glcolormaterial_t, "pen.glcolormaterial" );
-  declareProcedure( pen_glpixelzoom_t, "pen.glpixelzoom" );
-  declareProcedure( pen_glpixelstoref_t, "pen.glpixelstoref" );
-  declareProcedure( pen_glpixelstorei_t, "pen.glpixelstorei" );
-  declareProcedure( pen_glpixeltransferf_t, "pen.glpixeltransferf" );
-  declareProcedure( pen_glpixeltransferi_t, "pen.glpixeltransferi" );
+  declareProcedure( pen_glcolormaterial_t, "pen.glcolormaterial", ParsePenglColorMaterial'access );
+  declareProcedure( pen_glpixelzoom_t, "pen.glpixelzoom", ParsePenglPixelZoom'access );
+  declareProcedure( pen_glpixelstoref_t, "pen.glpixelstoref", ParsePenglPixelStoref'access );
+  declareProcedure( pen_glpixelstorei_t, "pen.glpixelstorei", ParsePenglPixelStorei'access );
+  declareProcedure( pen_glpixeltransferf_t, "pen.glpixeltransferf", ParsePenglPixelTransferf'access );
+  declareProcedure( pen_glpixeltransferi_t, "pen.glpixeltransferi", ParsePenglPixelTransferi'access );
   declareProcedure( pen_glpixelmapfv_t, "pen.glpixelmapfv" );
   declareProcedure( pen_glpixelmapuiv_t, "pen.glpixelmapuiv" );
   declareProcedure( pen_glpixelmapusv_t, "pen.glpixelmapusv" );
@@ -17674,27 +17782,27 @@ begin
   declareProcedure( pen_glreadpixels_t, "pen.glreadpixels" );
   declareProcedure( pen_gldrawpixels_t, "pen.gldrawpixels" );
   declareProcedure( pen_glcopypixels_t, "pen.glcopypixels" );
-  declareProcedure( pen_glstencilfunc_t, "pen.glstencilfunc" );
-  declareProcedure( pen_glstencilmask_t, "pen.glstencilmask" );
-  declareProcedure( pen_glstencilop_t, "pen.glstencilop" );
-  declareProcedure( pen_glclearstencil_t, "pen.glclearstencil" );
-  declareProcedure( pen_gltexgend_t, "pen.gltexgend" );
-  declareProcedure( pen_gltexgenf_t, "pen.gltexgenf" );
-  declareProcedure( pen_gltexgeni_t, "pen.gltexgeni" );
+  declareProcedure( pen_glstencilfunc_t, "pen.glstencilfunc", ParsePenglStencilFunc'access );
+  declareProcedure( pen_glstencilmask_t, "pen.glstencilmask", ParsePenglStencilMask'access );
+  declareProcedure( pen_glstencilop_t, "pen.glstencilop", ParsePenglStencilOp'access );
+  declareProcedure( pen_glclearstencil_t, "pen.glclearstencil", ParsePenglClearStencil'access );
+  declareProcedure( pen_gltexgend_t, "pen.gltexgend", ParsePenglTexGend'access );
+  declareProcedure( pen_gltexgenf_t, "pen.gltexgenf", ParsePenglTexGenf'access );
+  declareProcedure( pen_gltexgeni_t, "pen.gltexgeni", ParsePenglTexGeni'access );
   declareProcedure( pen_gltexgendv_t, "pen.gltexgendv" );
   declareProcedure( pen_gltexgenfv_t, "pen.gltexgenfv" );
   declareProcedure( pen_gltexgeniv_t, "pen.gltexgeniv" );
   declareProcedure( pen_glgettexgendv_t, "pen.glgettexgendv" );
   declareProcedure( pen_glgettexgenfv_t, "pen.glgettexgenfv" );
   declareProcedure( pen_glgettexgeniv_t, "pen.glgettexgeniv" );
-  declareProcedure( pen_gltexenvf_t, "pen.gltexenvf" );
-  declareProcedure( pen_gltexenvi_t, "pen.gltexenvi" );
+  declareProcedure( pen_gltexenvf_t, "pen.gltexenvf", ParsePenglTexEnvf'access );
+  declareProcedure( pen_gltexenvi_t, "pen.gltexenvi", ParsePenglTexEnvi'access );
   declareProcedure( pen_gltexenvfv_t, "pen.gltexenvfv" );
   declareProcedure( pen_gltexenviv_t, "pen.gltexenviv" );
   declareProcedure( pen_glgettexenvfv_t, "pen.glgettexenvfv" );
   declareProcedure( pen_glgettexenviv_t, "pen.glgettexenviv" );
-  declareProcedure( pen_gltexparameterf_t, "pen.gltexparameterf" );
-  declareProcedure( pen_gltexparameteri_t, "pen.gltexparameteri" );
+  declareProcedure( pen_gltexparameterf_t, "pen.gltexparameterf", ParsePenglTexParameterf'access );
+  declareProcedure( pen_gltexparameteri_t, "pen.gltexparameteri", ParsePenglTexParameteri'access );
   declareProcedure( pen_gltexparameterfv_t, "pen.gltexparameterfv" );
   declareProcedure( pen_gltexparameteriv_t, "pen.gltexparameteriv" );
   declareProcedure( pen_glgettexparameterfv_t, "pen.glgettexparameterfv" );
@@ -17706,7 +17814,7 @@ begin
   declareProcedure( pen_glgetteximage_t, "pen.glgetteximage" );
   declareProcedure( pen_glgentextures_t, "pen.glgentextures" );
   declareProcedure( pen_gldeletetextures_t, "pen.gldeletetextures" );
-  declareProcedure( pen_glbindtexture_t, "pen.glbindtexture" );
+  declareProcedure( pen_glbindtexture_t, "pen.glbindtexture", ParsePenglBindTexture'access );
   declareProcedure( pen_glprioritizetextures_t, "pen.glprioritizetextures" );
   declareFunction(  pen_glaretexturesresident_t, "pen.glaretexturesresident" );
   declareFunction(  pen_glistexture_t, "pen.glistexture" );
@@ -17739,17 +17847,17 @@ begin
   declareProcedure( pen_glevalpoint2_t, "pen.glevalpoint2" );
   declareProcedure( pen_glevalmesh1_t, "pen.glevalmesh1" );
   declareProcedure( pen_glevalmesh2_t, "pen.glevalmesh2" );
-  declareProcedure( pen_glfogf_t, "pen.glfogf" );
-  declareProcedure( pen_glfogi_t, "pen.glfogi" );
+  declareProcedure( pen_glfogf_t, "pen.glfogf", ParsePenglFogf'access );
+  declareProcedure( pen_glfogi_t, "pen.glfogi", ParsePenglFogi'access );
   declareProcedure( pen_glfogfv_t, "pen.glfogfv" );
   declareProcedure( pen_glfogiv_t, "pen.glfogiv" );
   declareProcedure( pen_glfeedbackbuffer_t, "pen.glfeedbackbuffer" );
-  declareProcedure( pen_glpassthrough_t, "pen.glpassthrough" );
+  declareProcedure( pen_glpassthrough_t, "pen.glpassthrough", ParsePenglPassThrough'access );
   declareProcedure( pen_glselectbuffer_t, "pen.glselectbuffer" );
-  declareProcedure( pen_glinitnames_t, "pen.glinitnames" );
-  declareProcedure( pen_glloadname_t, "pen.glloadname" );
-  declareProcedure( pen_glpushname_t, "pen.glpushname" );
-  declareProcedure( pen_glpopname_t, "pen.glpopname" );
+  declareProcedure( pen_glinitnames_t, "pen.glinitnames", ParsePenglInitNames'access );
+  declareProcedure( pen_glloadname_t, "pen.glloadname", ParsePenglLoadName'access );
+  declareProcedure( pen_glpushname_t, "pen.glpushname", ParsePenglPushName'access );
+  declareProcedure( pen_glpopname_t, "pen.glpopname", ParsePenglPopName'access );
   declareProcedure( pen_gldrawrangeelements_t, "pen.gldrawrangeelements" );
   declareProcedure( pen_glteximage3d_t, "pen.glteximage3d" );
   declareProcedure( pen_gltexsubimage3d_t, "pen.gltexsubimage3d" );
