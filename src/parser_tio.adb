@@ -1267,7 +1267,17 @@ begin
      end;
   end if;
   if isExecutingCommand then -- fix this for no output on error!
-     if getUniType( expr_type ) = uni_numeric_t then
+     -- this sould be moved to an image function
+     if getUniType( expr_type ) = root_enumerated_t then
+        for i in identifiers'first..identifiers_top-1 loop
+            if identifiers( i ).kind = expr_type then
+               if identifiers( i ).value = expr_val then
+                  expr_val := identifiers( i ).name;
+                  exit; -- first occurrence should be original enumerated value
+               end if;
+            end if;
+        end loop;
+     elsif getUniType( expr_type ) = uni_numeric_t then
         -- For universal numeric, represent it as an integer string if possible
         -- to make it human-readable.
         declare

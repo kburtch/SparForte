@@ -3193,7 +3193,8 @@ begin
          -- because they are needed to test types and interpret
          -- other statements
          if isExecutingCommand or syntax_check then        -- OK to do it?
-            identifiers( newtype_id ).class := constClass; -- it's a type
+            -- identifiers( newtype_id ).class := constClass; -- it's a type
+            identifiers( newtype_id ).class := enumClass;  -- it's a type
             -- normally, treat them as values and thus we don't care
             -- if they are used or not.  Unless user explicitly requests
             -- that they are tested.
@@ -3445,7 +3446,8 @@ begin
            end if;
         else                                             -- constant allowed
            ParseIdentifier( case_id );                         -- get the case
-           if identifiers( case_id ).class /= constClass then  -- is constant?
+           if identifiers( case_id ).class /= constClass       -- is constant
+              and identifiers( case_id ).class /= enumClass then -- or enum?
               err( "variable not allowed as a case" );         -- error if not
            elsif baseTypesOk( identifiers( test_id ).kind,
                  identifiers( case_id ).kind ) then            -- types good?

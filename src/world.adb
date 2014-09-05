@@ -1249,6 +1249,7 @@ begin
   when exceptionClass   => return "exception";
   when varClass         => return "variable";
   when namespaceClass   => return "namespace";
+  when enumClass        => return "enumerated item";
   when otherClass       => return "other class";
   end case;
 end getIdentifierClassImage;

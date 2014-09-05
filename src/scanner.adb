@@ -335,6 +335,8 @@ begin
         put( "exception " );
      when namespaceClass =>
         put( "namespace " );
+     when enumClass =>
+        put( "enumerated item of the type " );
      when others =>
         put( "identifier of the type " );
      end case;
@@ -434,9 +436,9 @@ begin
               put( kind.name );
            end if;
         end if;
-        if identifiers( ident.kind ).kind = root_enumerated_t then
-           put( " enumerated item" );
-        end if;
+        --if identifiers( ident.kind ).kind = root_enumerated_t then
+        --   put( " enumerated item" );
+        --end if;
      end if;
 end put_identifier_attributes;
 
@@ -515,14 +517,14 @@ begin
                 put( "'" );
                 put( ToEscaped( ident.value ) );
                 put( "'" );
+            elsif ident.class = enumClass then
+                put( '"' );
+                put( ToEscaped( ident.value ) );
+                put( '"' );
             elsif getUniType( ident.kind ) = root_enumerated_t then
                 for i in identifiers'first..identifiers_top-1 loop
                     if identifiers( i ).kind = ident.kind then
--- KLUDGE: even a constant is not an accurate way to identify if
--- something is a enum item or not because you could have a constant
--- variable.  But, counting from bottom of symbols, this is usually
--- correct.
-                       if identifiers( i ).class = constClass then
+                       if identifiers( i ).class = enumClass then
                           if identifiers( i ).value = ident.value then
                              put( ToEscaped( identifiers( i ).name ) );
                              exit;
@@ -2720,34 +2722,6 @@ begin
 
 end getBaseType;
 
-function getClassName( class : anIdentifierClass ) return string is
-  -- Look up an identifier class and return a string describing the
-  -- class (that is, "constant", "type", "variable", etc.)  Used
-  -- by class_ok when reporting errors.
-begin
-  if class = constClass then                                  -- constClass?
-     return "constant";                                       -- "constant"
-  elsif class = typeClass then                                -- typeClass?
-     return "type";                                           -- "type"
-  elsif class = subClass then                                 -- subClass?
-     return "subtype";                                        -- "subtype"
-  elsif class = funcClass then                                -- funcClass?
-     return "function";                                       -- "function"
-  elsif class = userFuncClass then                            -- funcClass?
-     return "function";                                       -- "function"
-  elsif class = procClass then                                -- procClass?
-     return "procedure";                                      -- "procedure"
-  elsif class = userProcClass then                            -- userProcClass?
-     return "procedure";                                      -- "procedure"
-  elsif class = taskClass then                                -- subClass?
-     return "task";                                           -- "task"
-  elsif class = exceptionClass then                           -- exceptionClass?
-     return "exception";                                      -- "exception"
-  else                                                        -- otherwise
-     return "variable";                                       -- "variable"
-  end if;
-end getClassName;
-
 function class_ok( id : identifier; class : anIdentifierClass ) return boolean is
   -- Check if identifier matches a certain class.  If the identifier is
   -- of another class, display an error message and return false.
@@ -2759,17 +2733,17 @@ begin
      elsif id = exception_t then
         err_previous( "an " & bold( "exception" ) &
            " is not a " &
-           getClassName( class ) );
+           getIdentifierClassImage( class ) );
      elsif id < reserved_top then
         err_previous( "a " & bold( "keyword" ) &
            " is not a " &
-           getClassName( class ) );
+           getIdentifierClassImage( class ) );
      else
         err_previous( bold( to_string( identifiers( id ).name ) ) &
            " is a " &
-           getClassName( identifiers( id ).class ) &
+           getIdentifierClassImage( identifiers( id ).class ) &
            ", not a " &
-           getClassName( class ) );
+           getIdentifierClassImage( class ) );
      end if;
      return false;
   end if;
@@ -2788,23 +2762,23 @@ begin
      elsif id = exception_t then
         err_previous( "an " & bold( "exception" ) &
            " is not a " &
-           getClassName( c1 ) &
+           getIdentifierClassImage( c1 ) &
            " or a " &
-           getClassName( c2 ) );
+           getIdentifierClassImage( c2 ) );
      elsif id < reserved_top then
         err_previous( "a " & bold( "keyword" ) &
            " is not a " &
-           getClassName( c1 ) &
+           getIdentifierClassImage( c1 ) &
            " or a " &
-           getClassName( c2 ) );
+           getIdentifierClassImage( c2 ) );
      else
         err_previous( bold( to_string( identifiers( id ).name ) ) &
            " is a " &
-           getClassName( identifiers( id ).class ) &
+           getIdentifierClassImage( identifiers( id ).class ) &
            ", not a " &
-           getClassName( c1 ) &
+           getIdentifierClassImage( c1 ) &
            " or a " &
-           getClassName( c2 ) );
+           getIdentifierClassImage( c2 ) );
      end if;
      return false;
   end if;
@@ -2823,29 +2797,29 @@ begin
      elsif id = exception_t then
         err_previous( "an " & bold( "exception" ) &
            " is not a " &
-           getClassName( c1 ) &
+           getIdentifierClassImage( c1 ) &
            ", " &
-           getClassName( c2 ) &
+           getIdentifierClassImage( c2 ) &
            " or a " &
-           getClassName( c3 ) );
+           getIdentifierClassImage( c3 ) );
      elsif id < reserved_top then
         err_previous( "a " & bold( "keyword" ) &
            " is not a " &
-           getClassName( c1 ) &
+           getIdentifierClassImage( c1 ) &
            ", " &
-           getClassName( c2 ) &
+           getIdentifierClassImage( c2 ) &
            " or a " &
-           getClassName( c3 ) );
+           getIdentifierClassImage( c3 ) );
      else
         err_previous( bold( to_string( identifiers( id ).name ) ) &
            " is a " &
-           getClassName( identifiers( id ).class ) &
+           getIdentifierClassImage( identifiers( id ).class ) &
            ", not a " &
-           getClassName( c1 ) &
+           getIdentifierClassImage( c1 ) &
            ", " &
-           getClassName( c2 ) &
+           getIdentifierClassImage( c2 ) &
            " or a " &
-           getClassName( c3 ) );
+           getIdentifierClassImage( c3 ) );
      end if;
      return false;
   end if;

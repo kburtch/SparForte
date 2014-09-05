@@ -67,6 +67,7 @@ vectors_first_t         : identifier;
 vectors_last_t          : identifier;
 vectors_next_t          : identifier;
 vectors_previous_t      : identifier;
+vectors_delete_t        : identifier;
 
 --doubly_new_cursor_t    : identifier;
 --doubly_first_t         : identifier;

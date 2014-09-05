@@ -255,11 +255,14 @@ libraryPath : Unbounded_String;
 --   userProcClass - a user-defined procedure
 --   taskClass     - a task
 --   exceptionClass - an exception
---   otherClass    - a variable (probably needs a more descriptive name)
+--   varClass      - a variable
+--   namespaceClass - a namespace marker
+--   enumClass     - an enumerated item
+--   otherClass    - an undefined class
 
 type anIdentifierClass is ( constClass, subClass, typeClass, funcClass,
   userFuncClass, procClass, userProcClass, taskClass, mainProgramClass,
-  exceptionClass, varClass, namespaceClass, otherClass );
+  exceptionClass, varClass, namespaceClass, enumClass, otherClass );
 
 function getIdentifierClassImage( c : anIdentifierClass ) return string;
 

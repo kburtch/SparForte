@@ -24,6 +24,7 @@
 with text_io;use text_io;
 with
     Ada.Containers,
+    user_io,
     world,
     scanner,
     scanner_res,
@@ -33,6 +34,7 @@ with
     parser_params,
     parser_containers;
 use
+    user_io,
     world,
     scanner,
     scanner_res,
@@ -626,30 +628,36 @@ begin
 end ParseVectorsLastIndex;
 
 procedure ParseVectorsElement( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := is_empty( v );
+  -- Syntax: e := element( c ) | element( v, i )
   -- Ada:    e := element( c ) | element( v, i )
   vectorId  : identifier;
   theVector : resPtr;
   idxExpr   : unbounded_string;
   idxType   : identifier;
-  hasIdx    : boolean := false;
   cursorId  : identifier;
   theCursor : resPtr;
   hasCursor : boolean := false;
   res : boolean;
 begin
   expect( vectors_element_t );
-  hasIdx := true;
 --  ParseLastNumericParameter( idxExpr, idxType, identifiers( vectorId ).genKind2 );
   -- A cursor is a single identifier.  An index is an expression.
+  expect( symbol_t, "(" );
   if identifiers( token ).kind = vectors_cursor_t then
      hasCursor := true;
      ParseIdentifier( cursorId );
-  else
-     ParseFirstVectorParameter( vectorId );
+     CheckCursorIsInitialized( cursorId );
+  elsif identifiers( token ).kind = vectors_vector_t then
+     ParseIdentifier( vectorId );
+     CheckVectorIsInitialized( vectorId );
      expect( symbol_t, "," );
      ParseExpression( idxExpr, idxType );
      res := baseTypesOK( idxType, identifiers( vectorId ).genKind2 );
+  else
+     err( optional_bold( "vectors.vector" ) &
+          " or " &
+          optional_bold( "vectors.cursor" ) &
+          " expected" );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -982,6 +990,69 @@ begin
   end if;
 end ParseVectorsPrevious;
 
+procedure ParseVectorsDelete is
+  -- Syntax: delete( v, c | i )
+  -- Ada:    delete( v, c | i )
+  vectorId  : identifier;
+  theVector : resPtr;
+  cursorId  : identifier;
+  theCursor : resPtr;
+  idxExpr   : unbounded_string;
+  idxType   : identifier;
+  hasIdx    : boolean := false;
+  idx       : Vector_String_Lists.Extended_Index;
+  cntExpr   : unbounded_string;
+  cntType   : identifier;
+  hasCnt    : boolean := false;
+  cnt       : Ada.Containers.Count_Type;
+begin
+  expect( vectors_delete_t );
+  ParseFirstVectorParameter( vectorId );
+  expect( symbol_t, "," );
+  if identifiers( token ).kind = vectors_cursor_t then
+     ParseIdentifier( cursorId );
+     CheckCursorIsInitialized( cursorId );
+  else
+     ParseNumericParameter( idxExpr, idxType, identifiers( vectorId ).genKind2 );
+     -- should be extended index
+     hasIdx := true;
+  end if;
+  if token = symbol_t and identifiers( token ).value = "," then
+     expect( symbol_t, "," );
+     ParseNumericParameter( cntExpr, cntType, containers_count_type_t );
+     hasCnt := true;
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     begin
+        findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+        if hasIdx then
+           if hasCnt then
+              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+              idx := Vector_String_Lists.Extended_Index( to_numeric( idxExpr ) );
+              Vector_String_Lists.Delete( theVector.vslVector, idx, cnt );
+           else
+              idx := Vector_String_Lists.Extended_Index( to_numeric( idxExpr ) );
+              Vector_String_Lists.Delete( theVector.vslVector, idx );
+           end if;
+        else
+           findResource( to_resource_id( identifiers( cursorId ).value ), theCursor );
+           if hasCnt then
+              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+              Vector_String_Lists.Delete( theVector.vslVector, theCursor.vslCursor, cnt );
+           else
+              Vector_String_Lists.Delete( theVector.vslVector, theCursor.vslCursor );
+           end if;
+        end if;
+     exception when constraint_error =>
+       err( "count must be a natural integer" );
+     when storage_error =>
+       err( "storage error raised" );
+     end;
+  end if;
+end ParseVectorsDelete;
+
+
 
 -----------------------------------------------------------------------------
 
@@ -1018,6 +1089,7 @@ begin
   declareProcedure( vectors_last_t,  "vectors.last", ParseVectorsLast'access );
   declareProcedure( vectors_next_t,  "vectors.next", ParseVectorsNext'access );
   declareProcedure( vectors_previous_t,  "vectors.previous", ParseVectorsPrevious'access );
+  declareProcedure( vectors_delete_t,  "vectors.delete", ParseVectorsDelete'access );
   declareNamespaceClosed( "vectors" );
 end StartupVectors;
 
