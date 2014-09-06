@@ -10,7 +10,7 @@ DISTDIR=apq-$(VERSION)
 DISTFILE=apq-$(VERSION).tar.gz
 
 #DBG=-g
-OPTZ=-O0
+OPTZ=-O1
 
 CC=gcc
 
