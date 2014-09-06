@@ -2127,8 +2127,8 @@ begin
 
   -- Boolean enumerated
 
-  declareStandardConstant( false_t, "false", boolean_t, "0" );
-  declareStandardConstant( true_t, "true", boolean_t, "1" );
+  declareStandardEnum( false_t, "false", boolean_t, "0" );
+  declareStandardEnum( true_t, "true", boolean_t, "1" );
 
   declareIdent( json_string_t, "json_string", string_t, typeClass );
 

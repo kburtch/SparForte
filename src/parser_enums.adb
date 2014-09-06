@@ -95,7 +95,7 @@ begin
      best := -1;
      for id in reverse keywords_top..identifiers_top loop
         if identifiers( id ).kind = var_id then
-           if identifiers( id ).class = constClass then
+           if identifiers( id ).class = enumClass then
               candidate := integer( to_numeric( identifiers( id ).value ) );
               if candidate > best then
                  best := candidate;
@@ -125,7 +125,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   kind := identifiers( var_id ).kind;
-  if identifiers( var_id ).class /= constClass then
+  if identifiers( var_id ).class /= enumClass then
      err( "Enumerated item expected" );
   else
      kind := getBaseType( identifiers( var_id ).kind );
@@ -163,7 +163,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   kind := identifiers( var_id ).kind;
-  if identifiers( var_id ).class /= constClass then
+  if identifiers( var_id ).class /= enumClass then
      err( "Enumerated item expected" );
   else
      kind := getBaseType( identifiers( var_id ).kind );
@@ -181,7 +181,7 @@ begin
         item := item + 1;
         for id in reverse keywords_top..identifiers_top loop
            if identifiers( id ).kind = kind then
-              if identifiers( id ).class = constClass then
+              if identifiers( id ).class = enumClass then
                  candidate := integer( to_numeric( identifiers( id ).value ) );
                  if candidate = item then
                     ok := true;

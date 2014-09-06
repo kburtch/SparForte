@@ -348,6 +348,30 @@ begin
   end if;
 end findIdent;
 
+-- FIND ENUM IMAGE
+--
+-- Find the name of the enumerated item of enumerated type kind with value
+-- val.
+
+procedure findEnumImage( val : unbounded_string; kind : identifier; name : out unbounded_string ) is
+  -- found : boolean := false;
+begin
+  for i in reverse identifiers'first..identifiers_top-1 loop
+      if identifiers( i ).class = enumClass then
+         if identifiers( i ).kind = kind then
+            if identifiers( i ).value = val then
+               name := identifiers( i ).name;
+               -- found := true;
+               exit;
+            end if;
+         end if;
+      end if;
+  end loop;
+  -- if not found then
+  --    name := null_unbounded_string;
+  -- end if;
+end findEnumImage;
+
 procedure init_env_ident( s : string ) is
 -- Declare an operating system environment variable. 's' is the
 -- variable string returned by get_env ("var=value" format).
@@ -482,6 +506,33 @@ procedure declareStandardConstant( name : string; kind : identifier;
 begin
    declareStandardConstant( discard_id, name, kind, value );    -- declare it
 end declareStandardConstant;
+
+procedure declareStandardEnum( id : out identifier;
+   name : string; kind : identifier; value : string ) is
+-- Declare a standard enum item in the symbol table.  The id is not
+-- returned since we don't change with constants once they are set.
+begin
+  if identifiers_top = identifier'last then                     -- no room?
+     raise symbol_table_overflow;                               -- raise error
+  else                                                          -- otherwise
+     declare
+       sc : declaration renames identifiers( identifiers_top );
+     begin
+       if sc.avalue /= null then
+          free( sc.avalue );
+       end if;
+       sc.name  := to_unbounded_string( name );                 -- define
+       sc.kind  := kind;                                        -- identifier
+       sc.value := to_unbounded_string( value );
+       sc.class := enumClass;
+       sc.field_of := eof_t;
+       -- since this is only called at startup, the default
+       -- values for the other fields should be OK
+     end;
+     id := identifiers_top;
+     identifiers_top := identifiers_top+1;                      -- push stack
+  end if;
+end declareStandardEnum;
 
 procedure updateFormalParameter( id : identifier; kind : identifier;
 proc_id : identifier; parameterNumber : integer ) is

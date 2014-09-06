@@ -664,6 +664,9 @@ procedure declareStandardConstant( name : string; kind : identifier;
   value : string );
 -- Alternative version: return the symbol table id
 
+procedure declareStandardEnum( id : out identifier;
+   name : string; kind : identifier; value : string );
+
 procedure updateFormalParameter( id : identifier; kind : identifier;
   proc_id : identifier; parameterNumber : integer );
 -- Update a formal parameter (ie. proc.param).  The id is not
@@ -693,6 +696,10 @@ procedure declareNamespaceClosed( name : string );
 
 procedure findIdent( name : unbounded_string; id : out identifier );
 -- find an identifier, eof_t if failed
+
+procedure findEnumImage( val : unbounded_string; kind : identifier; name : out unbounded_string );
+-- Find the name of the enumerated item of enumerated type kind with value
+-- val.
 
 procedure init_env_ident( s : string );
 -- initialize an environment variable

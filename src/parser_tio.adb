@@ -1125,14 +1125,7 @@ begin
   ParseExpression( expr_val, expr_type );
   -- this sould be moved to an image function
   if getUniType( expr_type ) = root_enumerated_t then
-     for i in identifiers'first..identifiers_top-1 loop
-         if identifiers( i ).kind = expr_type then
-            if identifiers( i ).value = expr_val then
-               expr_val := identifiers( i ).name;
-               exit; -- first occurrence should be original enumerated value
-            end if;
-         end if;
-     end loop;
+     findEnumImage( expr_val, expr_type, expr_val );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -1184,23 +1177,11 @@ begin
       return;
   end if;
   ParseExpression( expr_val, expr_type );
-  -- this sould be moved to an image function
-  -- this does not work: variables intercepted and displayed instead
   if getUniType( expr_type ) = root_enumerated_t then
-     for i in identifiers'first..identifiers_top-1 loop
-         if identifiers( i ).kind = expr_type then
--- KLUDGE: even a constant is not an accurate way to identify if
--- something is a enum item or not because you could have a constant
--- variable.  But, counting from bottom of symbols, this is usually
--- correct.
-            if identifiers( i ).class = constClass then
-               if identifiers( i ).value = expr_val then
-                  expr_val := identifiers( i ).name;
-                  exit;
-               end if;
-            end if;
-         end if;
-     end loop;
+     -- this will work during the syntax check but we don't need it
+     if isExecutingCommand then
+        findEnumImage( expr_val, expr_type, expr_val );
+     end if;
   -- pretty formating for ? and time values
   elsif getBaseType( expr_type ) = cal_time_t then
      declare
@@ -1269,14 +1250,7 @@ begin
   if isExecutingCommand then -- fix this for no output on error!
      -- this sould be moved to an image function
      if getUniType( expr_type ) = root_enumerated_t then
-        for i in identifiers'first..identifiers_top-1 loop
-            if identifiers( i ).kind = expr_type then
-               if identifiers( i ).value = expr_val then
-                  expr_val := identifiers( i ).name;
-                  exit; -- first occurrence should be original enumerated value
-               end if;
-            end if;
-        end loop;
+        findEnumImage( expr_val, expr_type, expr_val );
      elsif getUniType( expr_type ) = uni_numeric_t then
         -- For universal numeric, represent it as an integer string if possible
         -- to make it human-readable.
@@ -1346,16 +1320,8 @@ begin
      target_ref.id := standard_output_t;
   end if;
   ParseExpression( expr_val, expr_type );
-  -- this sould be moved to an image function
   if getUniType( expr_type ) = root_enumerated_t then
-     for i in identifiers'first..identifiers_top-1 loop
-         if identifiers( i ).kind = expr_type then
-            if identifiers( i ).value = expr_val then
-               expr_val := identifiers( i ).name;
-               exit; -- first occurrence should be original enumerated value
-            end if;
-         end if;
-     end loop;
+     findEnumImage( expr_val, expr_type, expr_val );
   end if;
   -- apply optional numeric formatting
   if token = symbol_t and identifiers( token ).value = "," then
