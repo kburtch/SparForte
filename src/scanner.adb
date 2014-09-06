@@ -3786,11 +3786,9 @@ begin
            begin
               for i in reverse keywords_top..identifiers_top-1  loop
                   if identifiers( i ).kind = elementKind then
-                     if identifiers( i ).class = constClass then
-                        if identifiers( i ).class = constClass then
-                           maxEnum := integer( to_numeric( identifiers( i ).value ) );
-                           exit;
-                        end if;
+                     if identifiers( i ).class = enumClass then
+                        maxEnum := integer( to_numeric( identifiers( i ).value ) );
+                        exit;
                      end if;
                   end if;
               end loop;
@@ -4200,11 +4198,9 @@ begin
                       begin
                         for i in reverse keywords_top..identifiers_top-1  loop
                             if identifiers( i ).kind = elementKind then
-                               if identifiers( i ).class = constClass then
-                                  if identifiers( i ).class = constClass then
-                                     maxEnum := integer( to_numeric( identifiers( i ).value ) );
-                                     exit;
-                                  end if;
+                               if identifiers( i ).class = enumClass then
+                                  maxEnum := integer( to_numeric( identifiers( i ).value ) );
+                                  exit;
                                end if;
                             end if;
                         end loop;

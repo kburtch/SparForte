@@ -40,3 +40,5 @@ CHANGES SINCE 1.5
 
 9. Change: new, faster identifier search function. [pen enums not modified for this]
 
+10. Fix: constants with enumerated values no longer confused with the enumerated value itself.  (e.g. b : boolean := true; ? true; will show "true" not "b").
+
