@@ -165,14 +165,6 @@ redirectErr2Out_string : constant unbounded_string := to_unbounded_string( "2>&1
 itself_string : constant unbounded_string := to_unbounded_string( "@" );
 --   itself, as an unbounded string
 
------------------------------------------------------------------------------
--- HIGH ASCII CHARACTERS
------------------------------------------------------------------------------
-
-immediate_word_delimiter : character;
-immediate_sql_word_delimiter : character;
-high_ascii_escape        : character;
-eof_character            : character;
 
 -----------------------------------------------------------------------------
 -- Current Source File Location
@@ -2286,9 +2278,6 @@ procedure startScanner is
      end loop;
   end saveInitialEnvironment;
 
-  discard_char : character;
-  --discard_adv  : integer;
-
 begin
 
   maxInteger := long_float( integerOutputType'last-0.9 );
@@ -2298,187 +2287,8 @@ begin
 
   clearHistory;
 
-  -- The first symbol is the keyword "type", the type of
-  -- all keywords
-
-  declareKeyword( keyword_t, "_keyword" );
-
-  -- The end of file token (must be declared early, used in declarations)
-
-  -- eof_character := toHighASCII( identifiers_top );
-  declareKeyword( eof_t, "End of File" );
-  toByteCode( eof_t, eof_character, discard_char );
-  if discard_char /= ASCII.NUL then
-     put_line( standard_error, "internal error: eof_t is too high" );
-  end if;
-
-  -- Global Namespace
-
-  declareGlobalNamespace;
-
-  -- VM Special Instructions
-
-  -- declareKeyword( load_nr_t, "[Load Numeric Register]" );
-  -- declareKeyword( load_sr_t, "[Load String Register]" );
-  -- declareKeyword( load_ir_t, "[Load Index Register]" );
-  -- declareKeyword( fetch_nr_t, "[Load Numeric Register]" );
-  -- declareKeyword( fetch_sr_t, "[Load String Register]" );
-  -- declareKeyword( fetch_ir_t, "[Load Index Register]" );
-
-  -- Ada 95 keywords
-
-  declareKeyword( abort_t, "abort" );
-  declareKeyword( abs_t, "abs" );
-  declareKeyword( abstract_t, "abstract" );
-  declareKeyword( accept_t, "accept" );
-  declareKeyword( access_t, "access" );
-  declareKeyword( aliased_t, "aliased" );
-  declareKeyword( all_t, "all" );
-  declareKeyword( and_t, "and" );
-  declareKeyword( array_t, "array" );
-  declareKeyword( at_t, "at" );
-  declareKeyword( begin_t, "begin" );
-  declareKeyword( body_t, "body" );
-  declareKeyword( case_t, "case" );
-  declareKeyword( constant_t, "constant" );
-  declareKeyword( declare_t, "declare" );
-  declareKeyword( delay_t, "delay" );
-  declareKeyword( delta_t, "delta" );
-  declareKeyword( digits_t, "digits" );
-  declareKeyword( do_t, "do" );
-  declareKeyword( else_t, "else" );
-  declareKeyword( elsif_t, "elsif" );
-  declareKeyword( end_t, "end" );
-  declareKeyword( entry_t, "entry" );
-  declareKeyword( exception_t, "exception" );
-  declareKeyword( exit_t, "exit" );
-  declareKeyword( for_t, "for" );
-  declareKeyword( function_t, "function" );
-  declareKeyword( generic_t, "generic" );
-  declareKeyword( goto_t, "goto" );
-  declareKeyword( if_t, "if" );
-  declareKeyword( in_t, "in" );
-  declareKeyword( interface_t, "interface" );
-  declareKeyword( is_t, "is" );
-  declareKeyword( limited_t, "limited" );
-  declareKeyword( loop_t, "loop" );
-  declareKeyword( mod_t, "mod" );
-  declareKeyword( new_t, "new" );
-  declareKeyword( not_t, "not" );
-  declareKeyword( null_t, "null" );
-  declareKeyword( of_t, "of" );
-  declareKeyword( or_t, "or" );
-  declareKeyword( others_t, "others" );
-  declareKeyword( out_t, "out" );
-  declareKeyword( package_t, "package" );
-  declareKeyword( pragma_t, "pragma" );
-  declareKeyword( private_t, "private" );
-  declareKeyword( procedure_t, "procedure" );
-  declareKeyword( protected_t, "protected" );
-  declareKeyword( raise_t, "raise" );
-  declareKeyword( range_t, "range" );
-  declareKeyword( record_t, "record" );
-  declareKeyword( rem_t, "rem" );
-  declareKeyword( renames_t, "renames" );
-  declareKeyword( requeue_t, "requeue" );
-  declareKeyword( return_t, "return" );
-  declareKeyword( reverse_t, "reverse" );
-  declareKeyword( select_t, "select" );
-  declareKeyword( separate_t, "separate" );
-  declareKeyword( subtype_t, "subtype" );
-  declareKeyword( tagged_t, "tagged" );
-  declareKeyword( task_t, "task" );
-  declareKeyword( terminate_t, "terminate" );
-  declareKeyword( then_t, "then" );
-  declareKeyword( type_t, "type" );
-  declareKeyword( until_t, "until" );
-  declareKeyword( use_t, "use" );
-  declareKeyword( when_t, "when" );
-  declareKeyword( while_t, "while" );
-  declareKeyword( with_t, "with" );
-  declareKeyword( xor_t, "xor" );
-
-  keywords_top := identifiers_top;
-
-  -- A punctuation symbol
-
-  declareKeyword( symbol_t, "Punctuation Symbol" );
-
-  -- Universal Types
-  -- These must be declared here for use by the literals.  Other
-  -- standard types are declared later.
-
-  declareIdent( variable_t, "root variable type", keyword_t );
-  declareIdent( uni_numeric_t, "universal_numeric", variable_t, typeClass );
-  declareIdent( uni_string_t, "universal_string", variable_t, typeClass );
-  -- Literals
-  -- These must be declared after the universal types
-
-  declareIdent( backlit_t, "Backquote Literal", uni_string_t );
-  declareIdent( strlit_t, "String Literal", uni_string_t );
-  declareIdent( charlit_t, "Character Literal", uni_string_t );
-  declareIdent( number_t, "Numeric Literal", uni_numeric_t );
-  declareIdent( imm_delim_t, "", symbol_t );
-  toByteCode( imm_delim_t, immediate_word_delimiter, discard_char );
-  if discard_char /= ASCII.NUL then
-     put_line( standard_error, "internal error: imm_delim_t is too high" );
-  end if;
-  declareIdent( imm_sql_delim_t, "", symbol_t );
-  toByteCode( imm_sql_delim_t, immediate_sql_word_delimiter, discard_char );
-  if discard_char /= ASCII.NUL then
-     put_line( standard_error, "internal error: imm_sql_delim_t is too high" );
-  end if;
-  declareIdent( word_t, "Word", uni_string_t );
-  declareIdent( sql_word_t, "SQL Word", uni_string_t );
-  declareIdent( char_escape_t, "", symbol_t );
-  toByteCode( char_escape_t, high_ascii_escape, discard_char );
-  if discard_char /= ASCII.NUL then
-     put_line( standard_error, "internal error: high_ascii_escape_t is too high" );
-  end if;
-
-  -- No last output
-
-  last_output_type := eof_t;
-
-  -- Built-in Bourne shell-type commands
-
-  declareProcedure( env_t, "env" );
-  declareProcedure( typeset_t, "typeset" );
-  declareProcedure( unset_t, "unset" );
-  declareProcedure( trace_t, "trace" );
-  declareProcedure( help_t, "help" );
-  declareProcedure( clear_t, "clear" );
-  declareProcedure( jobs_t, "jobs" );
-  declareProcedure( logout_t, "logout" );
-  declareProcedure( pwd_t, "pwd" );
-  declareProcedure( cd_t, "cd" );
-  declareProcedure( history_t, "history" );
-  declareProcedure( wait_t, "wait" );
-  declareProcedure( step_t, "step" );
-  -- declareKeyword( template_t, "template" );
-
-  -- SQL
-
-  declareKeyword( alter_t, "alter" );
-  declareKeyword( insert_t, "insert" );
-  declareKeyword( select_t, "select" );
-  declareKeyword( update_t, "update" );
-  declareKeyword( delete_t, "delete" );
-
-  -- Additional keywords not used by SparForte but are in Ada
-
-  declareKeyword( interface_t, "interface" );
-  declareKeyword( overriding_t, "overriding" );
-  declareKeyword( synchronized_t, "synchronized" );
-  declareKeyword( some_t, "some" );
-
-  -- remember stack top for last keyword
-
-  reserved_top := identifiers_top;
-  if reserved_top > 8191 then
-     put_line( standard_error, "Too many reserved words (limit 128)" );
-     raise PROGRAM_ERROR;
-  end if;
+  -- The keyword used to be defined here.  There are now defined in the
+  -- byte code compiler's startCompiler.
 
   -- Initialize all scanner variables and declare all other
   -- standard identifiers.
@@ -2487,6 +2297,10 @@ begin
 
   -- last predefind thing
   predefined_top := identifiers_top;
+
+  -- No last output
+
+  last_output_type := eof_t;
 
 end startScanner;
 

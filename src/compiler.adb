@@ -2397,8 +2397,244 @@ begin
 end copyByteCodeLines;
 
 procedure startCompiler is
+    discard_char : character;
 begin
-null;
+
+  -- SYMBOL TABLE
+  --
+  -- Initialize the start of the symbol table.
+  -- The compiler needs to identify and compress keywords so they must be
+  -- declared here, not in the scanner.
+  -- All keywords are assumed to compress to one byte by the scanner so
+  -- there is an upper limit to how many we can have.
+
+  -- KEYWORD TYPE
+  --
+  -- The first symbol is the keyword "type", the type of
+  -- all keywords
+
+  declareKeyword( keyword_t, "_keyword" );
+
+  -- END OF FILE
+  --
+  -- The end of file token (must be declared early, used in declarations)
+
+  -- eof_character := toHighASCII( identifiers_top );
+  declareKeyword( eof_t, "End of File" );
+  toByteCode( eof_t, eof_character, discard_char );
+  if discard_char /= ASCII.NUL then
+     put_line( standard_error, "internal error: eof_t is declared too late" );
+  end if;
+
+  -- Global Namespace
+
+  declareGlobalNamespace;
+
+  -- KEYWORDS
+  --
+  -- Ada 2012 keywords (that we use)
+
+  declareKeyword( abort_t, "abort" );
+  declareKeyword( abs_t, "abs" );
+  -- abstract
+  declareKeyword( accept_t, "accept" );
+  -- access
+  -- aliases
+  declareKeyword( all_t, "all" );
+  declareKeyword( and_t, "and" );
+  declareKeyword( array_t, "array" );
+  declareKeyword( at_t, "at" );
+  declareKeyword( begin_t, "begin" );
+  declareKeyword( body_t, "body" );
+  declareKeyword( case_t, "case" );
+  declareKeyword( constant_t, "constant" );
+  declareKeyword( declare_t, "declare" );
+  declareKeyword( delay_t, "delay" );
+  -- delta
+  -- digits
+  declareKeyword( do_t, "do" );
+  declareKeyword( else_t, "else" );
+  declareKeyword( elsif_t, "elsif" );
+  declareKeyword( end_t, "end" );
+  -- entry
+  declareKeyword( exception_t, "exception" );
+  declareKeyword( exit_t, "exit" );
+  declareKeyword( for_t, "for" );
+  declareKeyword( function_t, "function" );
+  -- generic
+  declareKeyword( goto_t, "goto" );
+  declareKeyword( if_t, "if" );
+  declareKeyword( in_t, "in" );
+  -- interface
+  declareKeyword( is_t, "is" );
+  declareKeyword( limited_t, "limited" );
+  declareKeyword( loop_t, "loop" );
+  declareKeyword( mod_t, "mod" );
+  declareKeyword( new_t, "new" );
+  declareKeyword( not_t, "not" );
+  declareKeyword( null_t, "null" );
+  declareKeyword( of_t, "of" );
+  declareKeyword( or_t, "or" );
+  declareKeyword( others_t, "others" );
+  declareKeyword( out_t, "out" );
+  -- overriding
+  declareKeyword( package_t, "package" );
+  declareKeyword( pragma_t, "pragma" );
+  declareKeyword( private_t, "private" );
+  declareKeyword( procedure_t, "procedure" );
+  -- protected
+  declareKeyword( raise_t, "raise" );
+  declareKeyword( range_t, "range" );
+  declareKeyword( record_t, "record" );
+  declareKeyword( rem_t, "rem" );
+  declareKeyword( renames_t, "renames" );
+  -- requeue
+  declareKeyword( return_t, "return" );
+  declareKeyword( reverse_t, "reverse" );
+  -- select
+  declareKeyword( separate_t, "separate" );
+  -- some
+  declareKeyword( subtype_t, "subtype" );
+  -- synchronized
+  -- tagged
+  declareKeyword( task_t, "task" );
+  -- terminate
+  declareKeyword( then_t, "then" );
+  declareKeyword( type_t, "type" );
+  -- until
+  declareKeyword( use_t, "use" );
+  declareKeyword( when_t, "when" );
+  declareKeyword( while_t, "while" );
+  declareKeyword( with_t, "with" );
+  declareKeyword( xor_t, "xor" );
+
+  -- This variable is for limiting searches of the symbol table.  Only
+  -- keywords below keyword_top, but there may be more keywords above it.
+
+  keywords_top := identifiers_top;
+
+  -- A punctuation symbol
+
+  declareKeyword( symbol_t, "Punctuation Symbol" );
+
+  -- Universal Types
+  --
+  -- These must be declared here for use by the literals.  Other
+  -- standard types are declared later.
+
+  declareIdent( variable_t, "root variable type", keyword_t );
+  declareIdent( uni_numeric_t, "universal_numeric", variable_t, typeClass );
+  declareIdent( uni_string_t, "universal_string", variable_t, typeClass );
+
+  -- Literals
+  --
+  -- These must be declared after the universal types
+
+  declareIdent( backlit_t, "Backquote Literal", uni_string_t );
+  declareIdent( strlit_t, "String Literal", uni_string_t );
+  declareIdent( charlit_t, "Character Literal", uni_string_t );
+  declareIdent( number_t, "Numeric Literal", uni_numeric_t );
+
+  -- Virtual Machine Special Codes
+  --
+  -- These entries in the symbol table will never be used.
+  -- Some of these are expected to compress to one-character codes.
+
+  declareIdent( imm_delim_t, "", symbol_t );
+  toByteCode( imm_delim_t, immediate_word_delimiter, discard_char );
+  if discard_char /= ASCII.NUL then
+     put_line( standard_error, "internal error: imm_delim_t is declared two late" );
+  end if;
+
+  declareIdent( imm_sql_delim_t, "", symbol_t );
+  toByteCode( imm_sql_delim_t, immediate_sql_word_delimiter, discard_char );
+  if discard_char /= ASCII.NUL then
+     put_line( standard_error, "internal error: imm_sql_delim_t is declared two late" );
+  end if;
+
+  declareIdent( char_escape_t, "", symbol_t );
+  toByteCode( char_escape_t, high_ascii_escape, discard_char );
+  if discard_char /= ASCII.NUL then
+     put_line( standard_error, "internal error: high_ascii_escape is declared two late" );
+  end if;
+
+  declareIdent( word_t, "Word", uni_string_t );
+  declareIdent( sql_word_t, "SQL Word", uni_string_t );
+
+  -- declareKeyword( load_nr_t, "[Load Numeric Register]" );
+  -- declareKeyword( load_sr_t, "[Load String Register]" );
+  -- declareKeyword( load_ir_t, "[Load Index Register]" );
+  -- declareKeyword( fetch_nr_t, "[Load Numeric Register]" );
+  -- declareKeyword( fetch_sr_t, "[Load String Register]" );
+  -- declareKeyword( fetch_ir_t, "[Load Index Register]" );
+
+  -- BOURNE SHELL
+  --
+  -- Built-in Bourne shell-type commands
+
+  declareProcedure( env_t, "env" );
+  declareProcedure( typeset_t, "typeset" );
+  declareProcedure( unset_t, "unset" );
+  declareProcedure( trace_t, "trace" );
+  declareProcedure( help_t, "help" );
+  declareProcedure( clear_t, "clear" );
+  declareProcedure( jobs_t, "jobs" );
+  declareProcedure( logout_t, "logout" );
+  declareProcedure( pwd_t, "pwd" );
+  declareProcedure( cd_t, "cd" );
+  declareProcedure( history_t, "history" );
+  declareProcedure( wait_t, "wait" );
+  declareProcedure( step_t, "step" );
+  -- declareKeyword( template_t, "template" );
+
+  -- SQL
+  --
+  -- SQL commands that can be used at the SparForte command prompt
+  -- These can be declared late as they (mostly) do not appear in scripts
+  -- (they can compress to two-byte codes).
+
+  declareKeyword( alter_t, "alter" );
+  declareKeyword( insert_t, "insert" );
+  declareKeyword( select_t, "select" ); -- doubles with Ada 95 select
+  declareKeyword( update_t, "update" );
+  declareKeyword( delete_t, "delete" ); -- doubles with text_io.delete
+
+  -- RESERVED
+  --
+  -- Additional keywords not currently used by SparForte but are in Ada.  We
+  -- reserve them.  However, we can declare them later than the other
+  -- keywords for performance purposes (they can compress to two-byte
+  -- codes).
+
+  declareKeyword( abstract_t, "abstract" ); -- Ada 95
+  declareKeyword( access_t, "access" );
+  declareKeyword( aliased_t, "aliased" ); -- Ada 95
+  declareKeyword( delta_t, "delta" );
+  declareKeyword( digits_t, "digits" );
+  declareKeyword( entry_t, "entry" );
+  declareKeyword( generic_t, "generic" );
+  declareKeyword( interface_t, "interface" );
+  declareKeyword( overriding_t, "overriding" );
+  declareKeyword( protected_t, "protected" ); -- Ada 95
+  declareKeyword( requeue_t, "requeue" ); -- Ada 95
+  declareKeyword( synchronized_t, "synchronized" );
+  declareKeyword( some_t, "some" );
+  declareKeyword( tagged_t, "tagged" );
+  declareKeyword( terminate_t, "terminate" );
+  declareKeyword( until_t, "until" ); -- Ada 95
+
+  -- remember stack top for last keyword
+
+  reserved_top := identifiers_top;
+
+  -- There is a limit to the maximum number of reserved words.  It used to be
+  -- 128 but now is 8191 so we shouldn't be anywhere close to the limit.
+
+  if reserved_top > 8191 then
+     put_line( standard_error, "Too many reserved words (limit 8191)" );
+     raise PROGRAM_ERROR;
+  end if;
+
 end startCompiler;
 
 procedure resetCompiler is

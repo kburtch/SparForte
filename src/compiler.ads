@@ -36,12 +36,15 @@ package compiler is
 
 -----------------------------------------------------------------------------
 -- HIGH ASCII CHARACTERS
+--
+-- These are the one-byte encoded characters for special VM opcodes.  They
+-- are published so the scanner's getNextToken.
 -----------------------------------------------------------------------------
 
-immediate_word_delimiter : character;
+immediate_word_delimiter     : character;
 immediate_sql_word_delimiter : character;
-high_ascii_escape        : character;
-eof_character            : character;
+high_ascii_escape            : character;
+eof_character                : character;
 
 ------------------------------------------------------------------------------
 -- Scanner Global Variables / Flags
