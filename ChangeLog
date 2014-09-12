@@ -42,3 +42,5 @@ CHANGES SINCE 1.5
 
 10. Fix: constants with enumerated values no longer confused with the enumerated value itself.  (e.g. b : boolean := true; ? true; will show "true" not "b").
 
+11. Split byte code compiler into a separate file, removing it from the scanner.
+
