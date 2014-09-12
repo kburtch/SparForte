@@ -26,13 +26,7 @@ with interfaces.c,
      ada.strings.unbounded.text_io,
      ada.strings.fixed,
      ada.calendar,
-#if POSTGRES
      APQ,
-#else
-#if MYSQL
-     APQ,
-#end if;
-#end if;
      bush_os,
      string_util,
      world,
@@ -51,13 +45,7 @@ use  interfaces.c,
      ada.strings.unbounded.text_io,
      ada.strings.fixed,
      ada.calendar,
-#if POSTGRES
      APQ,
-#else
-#if MYSQL
-     APQ,
-#end if;
-#end if;
      bush_os,
      string_util,
      world,
@@ -258,17 +246,9 @@ begin
      if not engineOpen then
         err( "no database connection open" );
      elsif currentEngine = Engine_PostgreSQL then
-#if POSTGRES
         DoSQLStatement( "alter " & tempStr );
-#else
-        err( "postgresql support not configured" );
-#end if;
      elsif currentEngine = Engine_MySQL then
-#if MYSQL
         DoMySQLSQLStatement( "alter " & tempStr );
-#else
-        err( "mysql support not configured" );
-#end if;
      else
         err( "internal error: unrecognized database engine" );
      end if;
@@ -313,17 +293,9 @@ begin
      if not engineOpen then
         err( "no database connection open" );
      elsif currentEngine = Engine_PostgreSQL then
-#if POSTGRES
         DoSQLStatement( "delete " & tempStr );
-#else
-        err( "postgres support not configured" );
-#end if;
      elsif currentEngine = Engine_MySQL then
-#if MYSQL
         DoMySQLSQLStatement( "delete " & tempStr );
-#else
-        err( "mysql support not configured" );
-#end if;
      else
         err( "internal error: unrecognized database engine" );
      end if;
@@ -433,17 +405,9 @@ begin
      if not engineOpen then
         err( "no database connection open" );
      elsif currentEngine = Engine_PostgreSQL then
-#if POSTGRES
         DoSQLStatement( "insert " & tempStr );
-#else
-        err( "postgres support not configured" );
-#end if;
      elsif currentEngine = Engine_MySQL then
-#if MYSQL
         DoMySQLSQLStatement( "insert " & tempStr );
-#else
-        err( "mysql support not configured" );
-#end if;
      else
         err( "internal error: unrecognized database engine" );
      end if;
@@ -531,17 +495,9 @@ begin
      if not engineOpen then
         err( "no database connection open" );
      elsif currentEngine = Engine_PostgreSQL then
-#if POSTGRES
         DoSQLSelect( "select " & tempStr );
-#else
-        err( "postgresql support not supported" );
-#end if;
      elsif currentEngine = Engine_MySQL then
-#if MYSQL
         DoMySQLSQLSelect( "select " & tempStr );
-#else
-        err( "mysql support not supported" );
-#end if;
      else
         err( "internal error: unrecognized database engine" );
      end if;
@@ -736,17 +692,9 @@ begin
      if not engineOpen then
         err( "no database connection open" );
      elsif currentEngine = Engine_PostgreSQL then
-#if POSTGRES
         DoSQLStatement( "update " & tempStr );
-#else
-        err( "postgresql support not supported" );
-#end if;
      elsif currentEngine = Engine_MySQL then
-#if MYSQL
         DoMySQLSQLStatement( "update " & tempStr );
-#else
-        err( "mysql support not supported" );
-#end if;
      else
         err( "internal error: unrecognized database engine" );
      end if;

@@ -26,12 +26,14 @@ with ada.text_io,
      string_util,
      script_io,
      user_io,
+     compiler,
      parser;
 use  ada.text_io,
      Interfaces.C,
      string_util,
      script_io,
      user_io,
+     compiler,
      parser;
 
 

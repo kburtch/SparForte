@@ -113,6 +113,9 @@ procedure put_inverse( s : string );
 procedure put_inverse( s : unbounded_string );
 -- ditto
 
+procedure put_trace( msg : string );
+-- display a trace message to standard error
+
 procedure displayVersionSplash;
 -- show --version version message
 

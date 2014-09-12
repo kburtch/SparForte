@@ -498,8 +498,8 @@ history_t  : identifier;  -- built-in history
 
 alter_t  : identifier;
 insert_t : identifier;
--- delete_t : identifier; (shared with Ada delete declared above)
--- select_t : identifier; (shared with Ada select declared above)
+delete_t : identifier; -- (shared with Ada.Text_IO delete)
+--select_t : identifier; -- (shared with Ada select declared above)
 update_t : identifier;
 
 -- Additional keywords not used by SparForte but are in Ada

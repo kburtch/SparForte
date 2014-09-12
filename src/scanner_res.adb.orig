@@ -21,8 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io, scanner;
-use  ada.text_io, scanner;
+with ada.text_io, user_io, scanner;
+use  ada.text_io, user_io, scanner;
 
 package body scanner_res is
 

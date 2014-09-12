@@ -130,7 +130,7 @@ mode_t     : identifier;  -- built-in text_io.mode
 set_input_t : identifier;  -- built-in text_io.set_input
 set_output_t : identifier;  -- built-in text_io.set_output
 reset_t    : identifier;  -- built-in text_io.reset
-delete_t   : identifier;  -- built-in text_io.delete
+--delete_t   : identifier;  -- built-in text_io.delete
 set_error_t : identifier;  -- built-in text_io.set_error
 get_immediate_t   : identifier; -- built-in text_io.get_immediate
 look_ahead_t      : identifier; -- built-in text_io.look_ahead

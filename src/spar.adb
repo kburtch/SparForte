@@ -22,24 +22,26 @@
 ------------------------------------------------------------------------------
 
 with ada.text_io,
+     ada.strings.unbounded.text_io,
+     ada.command_line,
+     bush_os,
+     world,
+     compiler,
+     scanner,
+     user_io,
+     parser,
+     signal_flags;
+use ada.text_io,
+    ada.strings.unbounded,
     ada.strings.unbounded.text_io,
     ada.command_line,
     bush_os,
     world,
+    compiler,
     scanner,
     user_io,
     parser,
     signal_flags;
-use ada.text_io,
-   ada.strings.unbounded,
-   ada.strings.unbounded.text_io,
-   ada.command_line,
-   bush_os,
-   world,
-   scanner,
-   user_io,
-   parser,
-   signal_flags;
 with string_util; use string_util;
 
 -- pragma Optimize( space );
@@ -247,6 +249,7 @@ begin
 
   -- initialize
 
+  startCompiler;
   startScanner;
   findIdent( to_unbounded_string( "TERM" ), term_id );
   checkDisplay( identifiers( term_id ).value );
@@ -267,6 +270,7 @@ begin
 
   shutdownParser;
   shutdownScanner;
+  shutdownCompiler;
   shutdownSignalFlags;
 
 end spar;
