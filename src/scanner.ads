@@ -29,10 +29,12 @@ with system,
   ada.strings.unbounded,
   script_io,
   world,
+  compiler,
   scanner_res;
 use ada.strings.unbounded,
   script_io,
   world,
+  compiler,
   scanner_res;
 
 package scanner is
@@ -53,25 +55,25 @@ optionOffset: natural := 0;     -- offset to script parameters
 -- Scripts
 ------------------------------------------------------------------------------
 
-type scriptPtr is access all string;
-procedure free is new ada.unchecked_deallocation( string, scriptPtr );
+--type scriptPtr is access all string;
+--procedure free is new ada.unchecked_deallocation( string, scriptPtr );
 -- A script is a dynamically allocated fixed string for speed.
 
-subtype aByteCodePosition is natural;
+--subtype aByteCodePosition is natural;
 -- Index into a script
 
-script     : scriptPtr := null;          -- current script / command
+--script     : scriptPtr := null;          -- current script / command
 
-cmdpos     : aByteCodePosition := 0;     -- next char to read
-firstpos   : aByteCodePosition := 0;     -- deliniates the last token
-lastpos    : aByteCodePosition := 0;     -- deliniates the last token
+--cmdpos     : aByteCodePosition := 0;     -- next char to read
+--firstpos   : aByteCodePosition := 0;     -- deliniates the last token
+--lastpos    : aByteCodePosition := 0;     -- deliniates the last token
 
-firstScriptCommandOffset : constant aByteCodePosition := 8;
+--firstScriptCommandOffset : constant aByteCodePosition := 8;
 --firstScriptCommandOffset : constant aByteCodePosition := 13;
 -- this is the first character of the first command.  however, we want
 -- the end of line of the header or else it won't trigger the
 -- trace output if trace is on.
-nextScriptCommandOffset  : constant aByteCodePosition := 5;
+--nextScriptCommandOffset  : constant aByteCodePosition := 5;
 -- position of first command is always 5 in from the top of the
 -- byte code (for now)
 
@@ -82,24 +84,6 @@ nextScriptCommandOffset  : constant aByteCodePosition := 5;
 -- keywords, predefined types, virtual machine instructions and other global
 -- identifiers are in the world package to make their values easily accessible
 ------------------------------------------------------------------------------
-
-
-------------------------------------------------------------------------------
--- Source_Info package identifiers
---
--- These will eventually be moved to the Source_Info parser
---
--- Most of these are constants known at startup, so they don't
--- have an identifier variable because we never have to refer to
--- them again.
-------------------------------------------------------------------------------
-
-source_info_file_t     : identifier; -- Gnat.Source_Info.File
-source_info_line_t     : identifier; -- Gnat.Source_Info.Line
-source_info_src_loc_t  : identifier; -- Gnat.Source_Info.Source_Location
-source_info_enc_ent_t  : identifier; -- Gnat.Source_Info.Enclosing_Entity
-source_info_script_size_t   : identifier; -- Bush-specific.  byte-code size
-source_info_symbol_table_size_t : identifier; -- Bush-specific
 
 
 ------------------------------------------------------------------------------
@@ -126,37 +110,6 @@ os_system_t       : identifier;
 os_status_t       : identifier;
 
 -- End of Identifier Declarations
-
-------------------------------------------------------------------------------
--- Virtual Machine (VM)
---
--- VMNR - Virtual Machine Numeric Registers (universal_numeric)
--- VMSR - Virtual Machine String Registers (universal_string)
--- VMIR - Virtual Machine Index Registers (holding identifier id's)
---
--- This is under development
-------------------------------------------------------------------------------
-
-subtype aVMRegister is integer range 0..64;
-noRegister : constant aVMRegister := aVMRegister'last;
--- 64 registers numbered 0 to 63, 64 indicates bad reg number
-
-type aVMNRNumber is new aVMRegister;
-type aVMSRNumber is new aVMRegister;
-type aVMIRNumber is new aVMRegister;
--- register id numbers
-
-type aVMNRBank is array( aVMNRNumber ) of unbounded_string;
-type aVMSRBank is array( aVMSRNumber ) of unbounded_string;
-type aVMIRBank is array( aVMIRNumber ) of identifier;
--- banks of registers
-
--- The Virutal Machine Registers
-
-VMNR : aVMNRBank; -- the numeric registers
-VMSR : aVMSRBank; -- the string registers
-VMIR : aVMIRBank; -- the index registers
-
 
 ------------------------------------------------------------------------------
 -- Scanner Subprograms
@@ -390,7 +343,7 @@ procedure Put_All_Identifiers;
 -- show all identifiers' name, value and attributes on standard output
 -- in tabular format (used by env)
 
-procedure Put_Trace( msg : string );
+--procedure Put_Trace( msg : string );
 -- put this string if trace is true (on)
 
 function inEnvironment( id : identifier ) return boolean;
@@ -399,27 +352,27 @@ function inEnvironment( id : identifier ) return boolean;
 procedure refreshVolatile( id : identifier );
 -- reload this identifier's value from the environment
 
-function getSourceFileName return unbounded_string;
+--function getSourceFileName return unbounded_string;
 -- Determine the current source file as stored against the byte code line.
 
-function getLineNo return natural;
+--function getLineNo return natural;
 -- Determine the current line number as stored against the byte code line.
 
-function getCommandLine return unbounded_string;
-procedure getCommandLine ( cmdline : out unbounded_string;
-  token_firstpos, token_lastpos, line_number, file_number : out natural );
+--function getCommandLine return unbounded_string;
+--procedure getCommandLine ( cmdline : out unbounded_string;
+--  token_firstpos, token_lastpos, line_number, file_number : out natural );
 -- de-tokenize and return the original command string
 
-procedure compileTemplate( command : unbounded_string; lineno : natural );
+--procedure compileTemplate( command : unbounded_string; lineno : natural );
 -- compile the template tag command(s) into byte code
 
-procedure compileCommand( command : unbounded_string;  firstLineNo : natural := 1 );
+--procedure compileCommand( command : unbounded_string;  firstLineNo : natural := 1 );
 -- compile the command into byte code
 
-procedure compileScript( firstLine : unbounded_string );
+--procedure compileScript( firstLine : unbounded_string );
 -- compile a script into byte code
 
-function copyByteCodeLines( point1, point2 : natural ) return string;
+--function copyByteCodeLines( point1, point2 : natural ) return string;
 -- copy the byte code lines containing point1 through point2
 
 -- function createUserDefinedByteCode( byteCode : string ) return
