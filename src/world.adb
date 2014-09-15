@@ -399,6 +399,7 @@ begin
        mapping  => none,
        export   => false,
        volatile => false,
+       pure     => false,
        limit    => false,
        list     => false,
        resource => false,
@@ -444,6 +445,7 @@ begin
        mapping  => none,
        export   => false,
        volatile => false,
+       pure     => false,
        limit    => false,
        list     => false,
        resource => false,
@@ -490,6 +492,7 @@ begin
        sc.kind  := kind;                                        -- identifier
        sc.value := to_unbounded_string( value );
        sc.class := constClass;
+       sc.pure  := true;                                        -- identifier
        sc.field_of := eof_t;
        -- since this is only called at startup, the default
        -- values for the other fields should be OK
@@ -525,6 +528,7 @@ begin
        sc.kind  := kind;                                        -- identifier
        sc.value := to_unbounded_string( value );
        sc.class := enumClass;
+       sc.pure  := true;                                        -- identifier
        sc.field_of := eof_t;
        -- since this is only called at startup, the default
        -- values for the other fields should be OK
@@ -550,6 +554,7 @@ begin
     identifiers(id).import   := false;
     identifiers(id).export   := false;
     identifiers(id).volatile := false;
+    identifiers(id).pure     := false;
     identifiers(id).limit    := false;
     identifiers(id).list     := false;
     identifiers(id).field_of := proc_id;
@@ -595,6 +600,7 @@ begin
                  mapping  => none,
                  export   => false,
                  volatile => false,
+                 pure     => false,
                  limit    => false,
                  list     => false,
                  resource => false,
@@ -650,6 +656,7 @@ begin
        mapping  => none,
        export   => false,
        volatile => false,
+       pure     => false,
        limit    => false,
        list     => false,
        resource => false,
@@ -725,6 +732,7 @@ begin
        mapping  => none,
        export   => false,
        volatile => false,
+       pure     => false,
        limit    => false,
        list     => false,
        resource => false,
@@ -778,6 +786,7 @@ begin
        mapping  => none,
        export   => false,
        volatile => false,
+       pure     => false,
        limit    => false,
        list     => false,
        resource => false,
@@ -894,6 +903,7 @@ begin
        mapping  => none,
        export   => false,
        volatile => false,
+       pure     => false,
        limit    => false,
        list     => false,
        resource => false,

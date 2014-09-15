@@ -507,14 +507,14 @@ exception when symbol_table_overflow =>
   done := true;   -- abort
 end ParseIdentifier;
 
-
------------------------------------
--- Expressions
------------------------------------
-
-
 procedure DoUserDefinedFunction( s : unbounded_string; result : out unbounded_string );
 -- forward declaration
+
+
+-----------------------------------------------------------------------------
+-- Expressions
+-----------------------------------------------------------------------------
+
 
 procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: factor = (expr) | "strlit" | numeric-lit | identifier | built-in fn
@@ -647,323 +647,13 @@ begin
         getNextToken;
      elsif identifiers( token ).funcCB /= null then         -- a callback?
         identifiers( token ).funcCB.all( f, kind );        -- run it
-     --elsif token = get_line_t then                        -- get line function
-     --   ParseGetLine( f );
-     --   kind := universal_t;
-     --elsif token = inkey_t then                           -- inkey function
-     --   ParseInkey( f );
-     --   kind := character_t;
-     --elsif token = end_of_file_t then                     -- end_of_file function
-     --   ParseEndOfFile( f );
-     --   kind := boolean_t;
-     --elsif token = end_of_line_t then                     -- end_of_line function
-     --   ParseEndOfLine( f );
-     --   kind := boolean_t;
-     --elsif token = line_t then                            -- line function
-     --   ParseLine( f );
-     --   kind := integer_t;   -- probably should be something more specific
-     --elsif token = name_t then                            -- name function
-     --   ParseName( f );
-     --   kind := uni_string_t;
-     --elsif token = mode_t then                            -- mode function
-     --   ParseMode( f );
-     --   kind := file_mode_t;
      elsif token = is_open_t then                         -- is_open function
         ParseIsOpen( t );
         f := identifiers( t ).value;
         kind := boolean_t;
-     --elsif token = element_t then                         -- element function
-     --   ParseStringsElement( f );
-     --   kind := character_t;
-     --elsif token = slice_t then                           -- slice function
-     --   ParseStringsSlice( f );
-     --   kind := string_t;
-     --elsif token = index_t then                           -- index function
-     --   ParseStringsIndex( f );
-     --   kind := natural_t;
-     --elsif token = index_non_blank_t then                 -- index_non_blank function
-     --   ParseStringsIndexNonBlank( f );
-     --   kind := natural_t;
-     --elsif token = count_t then                           -- count function
-     --   ParseStringsCount( f );
-     --   kind := natural_t;
-     --elsif token = replace_slice_t then                   -- replace_slice function
-     --   ParseStringsReplaceSlice( f );
-      --  kind := string_t;
-     --elsif token = strings_insert_t then                  -- insert function
-     --   ParseStringsInsert( f );
-     --   kind := string_t;
-     --elsif token = overwrite_t then                       -- overwrite function
-     --   ParseStringsOverwrite( f );
-     --   kind := string_t;
-     --elsif token = sdelete_t then                         -- delete function
-     --   ParseStringsDelete( f );
-     --   kind := string_t;
-     --elsif token = trim_t then                            -- trim function
-     --   ParseStringsTrim( f );
-     --   kind := string_t;
-     --elsif token = length_t then                          -- trim function
-     --   ParseStringsLength( f );
-     --   kind := natural_t;
-     --elsif token = head_t then                            -- head function
-     --   ParseStringsHead( f );
-     --   kind := string_t;
-     --elsif token = tail_t then                            -- tail function
-     --   ParseStringsTail( f );
-     --   kind := string_t;
-     --elsif token = field_t then                           -- field function
-     --   ParseStringsField( f );
-     --   kind := string_t;
-     --elsif token = csv_field_t then                       -- csv_field function
-     --   ParseStringsCSVField( f );
-     --   kind := string_t;
-     --elsif token = lookup_t then                          -- lookup function
-     --   ParseStringsLookup( f );
-     --   kind := string_t;
-     --elsif token = to_upper_t then                        -- to_upper function
-     --   ParseStringsToUpper( f, kind );
-     --elsif token = to_lower_t then                        -- to_lower function
-     --   ParseStringsToLower( f, kind );
-     --elsif token = to_proper_t then                       -- to_proper function
-     --   ParseStringsToProper( f, kind );
-     --elsif token = to_basic_t then                        -- to_basic function
-     --   ParseStringsToBasic( f, kind );
-     --elsif token = to_escaped_t then                      -- to_escaped function
-     --   ParseStringsToEscaped( f, kind );
-     --elsif token = mktemp_t then                          -- mktemp function
-     --   ParseStringsMkTemp( f );
-     --   kind := string_t;
-     --elsif token = unbounded_slice_t then                 -- unbounded_slice function
-     --   ParseStringsUnboundedSlice( f );
-     --   kind := unbounded_string_t;
-     --elsif token = val_t then                             -- val function
-     --   ParseStringsVal( f );
-     --   kind := character_t;
-     --elsif token = image_t then                           -- image function
-     --   ParseStringsImage( f );
-     --   kind := string_t;
-     --elsif token = glob_t then                            -- glob function
-     --   ParseStringsGlob( f );
-     --   kind := boolean_t;
-     --elsif token = match_t then                           -- match function
-     --   ParseStringsMatch( f );
-     --   kind := boolean_t;
-     --elsif token = to_string_t then                       -- to_string function
-     --   ParseStringsToString( f );
-     --   kind := string_t;
-     --elsif token = to_u_string_t then          -- to_unbounded_string function
-     --   ParseStringsToUString( f );
-     --   kind := unbounded_string_t;
-     --elsif token = is_control_t then                     -- is_control function
-     --   ParseStringsIsControl( f );
-     --   kind := boolean_t;
-     --elsif token = is_graphic_t then                     -- is_graphic function
-     --   ParseStringsIsGraphic( f );
-     --   kind := boolean_t;
-     --elsif token = is_letter_t then                      -- is_letter function
-     --   ParseStringsIsLetter( f );
-     --   kind := boolean_t;
-     --elsif token = is_lower_t then                       -- is_lower function
-     --   ParseStringsIsLower( f );
-     --   kind := boolean_t;
-     --elsif token = is_upper_t then                       -- is_upper function
-     --   ParseStringsIsUpper( f );
-     --   kind := boolean_t;
-     --elsif token = is_basic_t then                       -- is_basic function
-     --   ParseStringsIsBasic( f );
-     --   kind := boolean_t;
-     --elsif token = is_digit_t then                       -- is_digit function
-     --   ParseStringsIsDigit( f );
-     --   kind := boolean_t;
-     --elsif token = is_hex_digit_t then                -- is_hex_digit function
-     --   ParseStringsIsHexDigit( f );
-     --   kind := boolean_t;
-     --elsif token = is_alphanumeric_t then           -- is_alphanumeric function
-     --   ParseStringsIsAlphanumeric( f );
-     --   kind := boolean_t;
-     --elsif token = is_special_t then                     -- is_special function
-     --   ParseStringsIsSpecial( f );
-     --   kind := boolean_t;
-     --elsif token = is_slashed_date_t then            -- is_slashed_date function
-     --   ParseStringsIsSlashedDate( f );
-     --   kind := boolean_t;
-     --elsif token = is_fixed_t then                       -- is_fixed function
-     --   ParseStringsIsFixed( f );
-     --   kind := boolean_t;
-     --elsif token = is_typo_of_t then                      -- is_typo_of function
-     --   ParseStringsIsTypoOf( f );
-     --   kind := boolean_t;
-     --elsif token = strings_to_json_t then                 -- strings.to_json function
-     --   ParseStringsToJSON( f );
-     --   kind := json_string_t;
-     --elsif token = random_t then                          -- random function
-     --   ParseNumericsRandom( f );
-     --   kind := float_t;
-     --elsif token = shift_left_t then                      -- shift_left function
-     --   ParseNumericsShiftLeft( f );
-     --   kind := uni_numeric_t;
-     --elsif token = shift_right_t then                     -- shift_right function
-     --   ParseNumericsShiftRight( f );
-     --   kind := uni_numeric_t;
-     --elsif token = rotate_left_t then                     -- rotate_left function
-     --   ParseNumericsRotateLeft( f );
-     --   kind := uni_numeric_t;
-     --elsif token = rotate_right_t then                    -- rotate_right function
-     --   ParseNumericsRotateRight( f );
-     --   kind := uni_numeric_t;
-     --elsif token = shift_right_arith_t then               -- ASR function
-     --   ParseNumericsASR( f );
-     --   kind := uni_numeric_t;
      elsif token = abs_t then                             -- abs function
         ParseNumericsAbs( f );
         kind := uni_numeric_t;
-     --elsif token = sqrt_t then                            -- sqrt function
-     --   ParseNumericsSqrt( f );
-     --   kind := uni_numeric_t;
-     --elsif token = log_t then                             -- log function
-     --   ParseNumericsLog( f );
-     --   kind := uni_numeric_t;
-     --elsif token = exp_t then                             -- exp function
-     --   ParseNumericsExp( f );
-     --   kind := uni_numeric_t;
-     --elsif token = sin_t then                             -- sin function
-     --   ParseNumericsSin( f );
-     --   kind := uni_numeric_t;
-     --elsif token = cos_t then                             -- cos function
-     --   ParseNumericsCos( f );
-     --   kind := uni_numeric_t;
-     --elsif token = tan_t then                             -- tan function
-     --   ParseNumericsTan( f );
-     --   kind := uni_numeric_t;
-     --elsif token = cot_t then                             -- cot function
-     --   ParseNumericsCot( f );
-     --   kind := uni_numeric_t;
-     --elsif token = arcsin_t then                          -- arcsin function
-     --   ParseNumericsArcSin( f );
-     --   kind := uni_numeric_t;
-     --elsif token = arccos_t then                          -- arccos function
-     --   ParseNumericsArcCos( f );
-     --   kind := uni_numeric_t;
-     --elsif token = arctan_t then                          -- arctan function
-     --   ParseNumericsArcTan( f );
-     --   kind := uni_numeric_t;
-     --elsif token = arccot_t then                          -- arccot function
-     --   ParseNumericsArcCot( f );
-     --   kind := uni_numeric_t;
-     --elsif token = sinh_t then                            -- sinh function
-     --   ParseNumericsSinH( f );
-     --   kind := uni_numeric_t;
-     --elsif token = cosh_t then                            -- cosh function
-     --   ParseNumericsCosH( f );
-     --   kind := uni_numeric_t;
-     --elsif token = tanh_t then                            -- tanh function
-     --   ParseNumericsTanH( f );
-     --   kind := uni_numeric_t;
-     --elsif token = coth_t then                            -- coth function
-     --   ParseNumericsCotH( f );
-     --   kind := uni_numeric_t;
-     --elsif token = arcsinh_t then                         -- arcsinh function
-     --   ParseNumericsArcSinH( f );
-     --   kind := uni_numeric_t;
-     --elsif token = arccosh_t then                         -- arccosh function
-     --   ParseNumericsArcCosH( f );
-     --   kind := uni_numeric_t;
-     --elsif token = arctanh_t then                         -- arctanh function
-     --   ParseNumericsArcTanH( f );
-     --   kind := uni_numeric_t;
-     --elsif token = arccoth_t then                         -- arccoth function
-     --   ParseNumericsArcCotH( f );
-     --   kind := uni_numeric_t;
-     --elsif token = floor_t then                           -- floor function
-     --   ParseNumericsFloor( f );
-     --   kind := uni_numeric_t;
-     --elsif token = ceiling_t then                         -- ceiling function
-     --   ParseNumericsCeiling( f );
-     --   kind := uni_numeric_t;
-     --elsif token = rounding_t then                        -- rounding function
-     --   ParseNumericsRounding( f );
-     --   kind := uni_numeric_t;
-     --elsif token = unbiased_rounding_t then               -- unbiased rounding function
-     --   ParseNumericsUnbiasedRounding( f );
-     --   kind := uni_numeric_t;
-     --elsif token = truncation_t then                      -- truncation function
-     --   ParseNumericsTruncation( f );
-     --   kind := uni_numeric_t;
-     --elsif token = Remainder_t then                       -- remainder function
-     --   ParseNumericsRemainder( f );
-     --   kind := uni_numeric_t;
-     --elsif token = Exponent_t then                        -- exponent function
-     --   ParseNumericsExponent( f );
-     --   kind := uni_numeric_t;
-     --elsif token = Fraction_t then                        -- fraction function
-     --   ParseNumericsFraction( f );
-     --   kind := uni_numeric_t;
-     --elsif token = leading_part_t then                    -- leading part function
-     --   ParseNumericsLeadingPart( f );
-     --   kind := uni_numeric_t;
-     --elsif token = copy_sign_t then                       -- copy sign function
-     --   ParseNumericsCopySign( f );
-     --   kind := uni_numeric_t;
-     --elsif token = sturges_t then                         -- sturges function
-     --   ParseNumericsSturges( f );
-     --   kind := uni_numeric_t;
-     --elsif token = max_t then                             -- max function
-     --   ParseNumericsMax( f );
-     --   kind := uni_numeric_t;
-     --elsif token = min_t then                             -- min function
-     --   ParseNumericsMin( f );
-     --   kind := uni_numeric_t;
-     --elsif token = machine_t then                         -- machine function
-     --   ParseNumericsMachine( f );
-     --   kind := uni_numeric_t;
-     --elsif token = scaling_t then                         -- scaling function
-     --   ParseNumericsScaling( f );
-     --   kind := uni_numeric_t;
-     --elsif token = value_t then                           -- value function
-     --   ParseNumericsValue( f );
-     --   kind := uni_numeric_t;
-     --elsif token = pos_t then                             -- pos function
-     --   ParseNumericsPos( f );
-     --   kind := positive_t;
-     --elsif token = numerics_md5_t then                    -- md5 function
-     --   ParseNumericsMd5( f );
-     --   kind := string_t;
-     --elsif token = serial_t then                          -- serial function
-     --   ParseNumericsSerial( f );
-     --   kind := natural_t;
-     --elsif token = rnd_t then                             -- rnd function
-     --   ParseNumericsRnd( f );
-     --   kind := positive_t;
-     --elsif token = odd_t then                             -- odd function
-     --   ParseNumericsOdd( f );
-     --   kind := boolean_t;
-     --elsif token = even_t then                            -- even function
-     --   ParseNumericsEven( f );
-     --   kind := boolean_t;
-     --elsif token = numerics_re_t then                     -- complex re
-     --   ParseNumericsRe( f );
-     --   kind := long_float_t;
-     --elsif token = numerics_im_t then                     -- complex im
-     --   ParseNumericsIm( f );
-     --   kind := long_float_t;
-     --elsif token = numerics_modulus_t then                -- complex modulus
-     --   ParseNumericsModulus( f );
-     --   kind := long_float_t;
-     --elsif token = numerics_argument_t then               -- complex argument
-     --   ParseNumericsArgument( f );
-     --   kind := long_float_t;
-     --elsif token = hash_of_t then                         -- hash_of
-     --   ParseNumericsHashOf( f );
-     --   kind := natural_t;
-     --elsif token = sdbm_hash_of_t then                    -- sdbm_hash_of
-     --   ParseNumericsSdbmHashOf( f );
-     --   kind := natural_t;
-     --elsif token = fnv_hash_of_t then                     -- fnv_hash_of
-     --   ParseNumericsFnvHashOf( f );
-     --   kind := natural_t;
-     --elsif token = murmur_hash_of_t then                  -- murmur_hash_of
-     --   ParseNumericsMurmurHashOf( f );
-     --   kind := natural_t;
      elsif token = source_info_symbol_table_size_t then   -- Symbol_Table_Sz
         getNextToken;
         if onlyAda95 then
@@ -995,115 +685,6 @@ begin
        end if;
        kind := string_t;
         getNextToken;
-     --elsif token = cmd_argcount_t then
-     --   ParseArgument_Count( f );
-     --   kind := uni_numeric_t;
-     --elsif token = cmd_argument_t then
-     --   ParseArgument( f );
-     --   kind := uni_string_t;
-     --elsif token = cmd_commandname_t then
-     --   ParseCommand_Name( f );
-     --   kind := uni_string_t;
-     --elsif token = cmd_envcnt_t then
-     --   ParseEnvironment_Count( f );
-     --   kind := natural_t;
-     --elsif token = cmd_envval_t then
-     --   ParseEnvironment_Value( f );
-     --   kind := uni_string_t;
-     --elsif token = cgi_parsing_errors_t then               -- CGI package
-     --   ParseParsing_Errors( f );
-     --   kind := boolean_t;
-     --elsif token = cgi_input_received_t then               -- input_received
-     --   ParseInput_Received( f );
-     --   kind := boolean_t;
-     --elsif token = cgi_is_index_t then                     -- is_index
-     --   ParseIs_Index( f );
-     --   kind := boolean_t;
-     --elsif token = cgi_cgi_method_t then                   -- cgi_method
-     --   ParseCGI_Method( f );
-     --   kind := cgi_cgi_method_type_t;
-     --elsif token = cgi_value_t then                        -- value
-     --   ParseValue( f );
-     --   kind := string_t;
-     --elsif token = cgi_key_exists_t then                   -- key_exists
-     --   ParseKey_Exists( f );
-     --   kind := boolean_t;
-     --elsif token = cgi_key_count_t then                    -- key_count
-     --   ParseKey_Count( f );
-     --   kind := natural_t;
-     --elsif token = cgi_argument_count_t then               -- CGI.argument_cnt
-     --   ParseCGIArgument_Count( f );
-     --   kind := natural_t;
-     --elsif token = cgi_key_t then                          -- CGI.key
-     --   ParseKey( f );
-     --   kind := string_t;
-     --elsif token = cgi_key_value_t then                    -- CGI.key
-     --   ParseKeyValue( f );
-     --   kind := string_t;
-     --elsif token = cgi_key_value_exists_t then             -- CGI.key_val_exist
-     --   ParseKey_Value_Exists( f );
-     --   kind := boolean_t;
-     --elsif token = cgi_my_url_t then                       -- CGI.my_url
-     --   ParseMy_URL( f );
-     --   kind := string_t;
-     --elsif token = cgi_line_count_t then                   -- CGI.line_count
-     --   ParseLine_Count( f );
-     --   kind := natural_t;
-     --elsif token = cgi_line_count_of_value_t then          -- CGI.line_cnt_val
-     --   ParseLine_Count_Of_Value( f );
-     --   kind := natural_t;
-     --elsif token = cgi_line_t then                         -- CGI.line
-     --   ParseCGILine( f );
-     --   kind := string_t;
-     --elsif token = cgi_value_of_line_t then                -- CGI.Value_Of_Line
-     --   ParseValue_Of_Line( f );
-     --   kind := string_t;
-     --elsif token = cgi_url_decode_t then                   -- CGI.URL_Decode
-     --   ParseURL_Decode( f );
-     --   kind := string_t;
-     --elsif token = cgi_url_encode_t then                   -- CGI.URL_Encode
-     --   ParseURL_Encode( f );
-     --   kind := string_t;
-     --elsif token = cgi_html_encode_t then                  -- CGI.HTML_Encode
-     --   ParseHTML_Encode( f );
-     --   kind := string_t;
-     --elsif token = cgi_cookie_value_t then              -- CGI.Cooke_Value
-     --   ParseCookie_Value( f );
-     --   kind := string_t;
-     --elsif token = cgi_cookie_count_t then              -- CGI.Cooke_Count
-     --   ParseCookie_Count( f );
-     --   kind := natural_t;
-     --elsif token = cal_clock_t then                     -- Calendar.Clock
-     --   ParseCalClock( f );
-     --   kind := cal_time_t;
-     --elsif token = cal_year_t then                      -- Calendar.Year
-     --   ParseCalYear( f );
-     --   kind := cal_year_number_t;
-     --elsif token = cal_month_t then                     -- Calendar.Month
-     --   ParseCalMonth( f );
-     --   kind := cal_month_number_t;
-     --elsif token = cal_day_t then                       -- Calendar.Day
-     --   ParseCalDay( f );
-     --   kind := cal_day_number_t;
-     --elsif token = cal_seconds_t then                   -- Calendar.Seconds
-     --   ParseCalSeconds( f );
-     --   kind := cal_day_duration_t;
-     --elsif token = cal_time_of_t then                   -- Calendar.Time_Of
-     --   ParseCalTimeOf( f );
-     --   kind := cal_time_t;
-     --elsif token = cal_to_julian_t then                 -- Calendar.To_Julian
-     --   ParseCalToJulian( f );
-     --   kind := long_integer_t;
-     --elsif token = cal_to_time_t then                   -- Calendar.To_Time
-     --   ParseCalToTime( f );
-     --   kind := cal_time_t;
-     --elsif token = cal_day_of_week_t then               -- Calendar.Day_Of_Week
-     --   ParseCalDayOfWeek( f );
-     --   kind := integer_t;
-     -- TODO: more to convert to use callbacks
-     --elsif token = dbi_prepare_t then                  -- DB.Prepare
-     --   ParseDBIPrepare( f );
-     --   kind := boolean_t;
      elsif token = db_engine_of_t then                 -- DB.Engine_Of
 #if POSTGRES
         ParseDBEngineOf( f );
@@ -1202,9 +783,6 @@ begin
         err( "postgresql support not configured" );
 #end if;
         kind := db_column_index_type_t;
-     --elsif token = db_column_type_t then             -- DB.Column_Type
-     --   ParseDBColumnType( f );
-     --   kind := db_column_index_type_t;
      elsif token = db_is_null_t then                   -- DB.Is_Null
 #if POSTGRES
         ParseDBIsNull( f );
@@ -1219,339 +797,6 @@ begin
         err( "postgresql support not configured" );
 #end if;
         kind := universal_t;
-     --elsif token = os_status_t then                    -- OS.status
-     --   ParseOSSTatus( f );
-     --   kind := integer_t;
-     --elsif token = units_inches2mm_t then               -- Units.Inches2MM
-     --   ParseUnitsInches2MM( f );
-     --   kind := long_float_t;
-     --elsif token = units_feet2cm_t then                 -- Units.Feet2CM
-     --   ParseUnitsFeet2CM( f );
-     --   kind := long_float_t;
-     --elsif token = units_yards2m_t then                 -- Units.Yards2M
-     --   ParseUnitsYards2M( f );
-     --   kind := long_float_t;
-     --elsif token = units_miles2km_t then                -- Units.Miles2KM
-     --   ParseUnitsMiles2Km( f );
-     --   kind := long_float_t;
-     --elsif token = units_mm2inches_t then               -- Units.MM2Inches
-     --   ParseUnitsMM2Inches( f );
-     --   kind := long_float_t;
-     --elsif token = units_cm2inches_t then               -- Units.CM2Inches
-     --   ParseUnitsCM2Inches( f );
-     --   kind := long_float_t;
-     --elsif token = units_m2yards_t then                 -- Units.M2Yards
-     --   ParseUnitsM2Yards( f );
-     --   kind := long_float_t;
-     --elsif token = units_km2miles_t then                -- Units.Km2Miles
-     --   ParseUnitsKm2Miles( f );
-     --   kind := long_float_t;
-     --elsif token = units_sqin2sqcm_t then               -- Units.SqIn2SqCm
-     --   ParseUnitsSqIn2SqCm( f );
-     --   kind := long_float_t;
-     --elsif token = units_sqft2sqm_t then                -- Units.SqFt2SqM
-     --   ParseUnitsSqFt2SqM( f );
-     --   kind := long_float_t;
-     --elsif token = units_sqyd2sqm_t then                -- Units.SqYd2SqM
-     --   ParseUnitsSqYd2SqM( f );
-     --   kind := long_float_t;
-     --elsif token = units_acres2hectares_t then          -- Units.Acres2Hectares
-     --   ParseUnitsAcres2Hectares( f );
-     --   kind := long_float_t;
-     --elsif token = units_sqcm2sqin_t then               -- Units.SqCm2SqIn
-     --   ParseUnitsSqCm2SqIn( f );
-     --   kind := long_float_t;
-     --elsif token = units_sqm2sqft_t then                -- Units.SqM2SqFt
-     --   ParseUnitsSqM2SqFt( f );
-     --   kind := long_float_t;
-     --elsif token = units_sqm2sqyd_t then                -- Units.SqM2SqYd
-     --   ParseUnitsSqM2SqYd( f );
-     --   kind := long_float_t;
-     --elsif token = units_sqkm2sqmiles_t then            -- Units.SqKm2SqM
-     --   ParseUnitsSqKm2SqMiles( f );
-     --   kind := long_float_t;
-     --elsif token = units_hectares2acres_t then          -- Units.Hectares2Acres
-     --   ParseUnitsHectares2Acres( f );
-     --   kind := long_float_t;
-     --elsif token = units_oz2grams_t then                -- Units.Oz2Grams
-     --   ParseUnitsOz2Grams( f );
-     --   kind := long_float_t;
-     --elsif token = units_lb2kg_t then                   -- Units.Lb2Kg
-     --   ParseUnitsLb2Kg( f );
-     --   kind := long_float_t;
-     --elsif token = units_tons2tonnes_t then             -- Units.Tons2Tonnes
-     --   ParseUnitsTons2Tonnes( f );
-     --   kind := long_float_t;
-     --elsif token = units_grams2oz_t then                -- Units.Grams2Oz
-     --   ParseUnitsGrams2Oz( f );
-     --   kind := long_float_t;
-     --elsif token = units_kg2lb_t then                   -- Units.Grams2Oz
-     --   ParseUnitsKg2Lb( f );
-     --   kind := long_float_t;
-     --elsif token = units_tonnes2tons_t then             -- Units.Tonnes2Tons
-     --   ParseUnitsTonnes2Tons( f );
-     --   kind := long_float_t;
-     --elsif token = units_ly2pc_t then                   -- Units.Ly2Pc
-     --   ParseUnitsLy2Pc( f );
-     --   kind := long_float_t;
-     --elsif token = units_pc2ly_t then                   -- Units.Pc2Ly
-     --   ParseUnitsPc2Ly( f );
-     --   kind := long_float_t;
-     --elsif token = units_floz2ml_t then                 -- Units.FlOz2Ml
-     --   ParseUnitsFlOz2Ml( f );
-     --   kind := long_float_t;
-     --elsif token = units_usfloz2ml_t then               -- Units.USFlOz2Ml
-     --   ParseUnitsUSFlOz2Ml( f );
-     --   kind := long_float_t;
-     --elsif token = units_usfloz2floz_t then             -- Units.USFlOz2FlOz
-     --   ParseUnitsUSFlOz2FlOz( f );
-     --   kind := long_float_t;
-     --elsif token = units_pints2l_t then                 -- Units.Pints2L
-     --   ParseUnitsPints2L( f );
-     --   kind := long_float_t;
-     --elsif token = units_gal2l_t then                   -- Units.Gal2L
-     --   ParseUnitsGal2L( f );
-     --   kind := long_float_t;
-     --elsif token = units_ml2floz_t then                 -- Units.Ml2FlOz
-     --   ParseUnitsMl2FlOz( f );
-     --   kind := long_float_t;
-     --elsif token = units_ml2usfloz_t then               -- Units.Ml2USFlOz
-     --   ParseUnitsMl2USFlOz( f );
-     --   kind := long_float_t;
-     --elsif token = units_floz2usfloz_t then             -- Units.FlOz2USFlOz
-     --   ParseUnitsFlOz2USFlOz( f );
-     --   kind := long_float_t;
-     --elsif token = units_usdrygal2l_t then              -- Units.USDryGal2L
-     --   ParseUnitsUSDryGal2L( f );
-     --   kind := long_float_t;
-     --elsif token = units_l2usdrygal_t then              -- Units.L2USDryGal
-     --   ParseUnitsL2USDryGal( f );
-     --   kind := long_float_t;
-     --elsif token = units_usliqgal2l_t then              -- Units.USDryLiq2L
-     --   ParseUnitsUSLiqGal2L( f );
-     --   kind := long_float_t;
-     --elsif token = units_l2usliqgal_t then              -- Units.L2USLiqGal
-     --   ParseUnitsL2USLiqGal( f );
-     --   kind := long_float_t;
-     --elsif token = units_troz2g_t then                  -- Units.Troz2G
-     --   ParseUnitsTrOz2G( f );
-     --   kind := long_float_t;
-     --elsif token = units_g2troz_t then                  -- Units.G2Troz
-     --   ParseUnitsG2TrOz( f );
-     --   kind := long_float_t;
-     --elsif token = units_cucm2floz_t then               -- Units.CuCm2Oz
-     --   ParseUnitsCuCm2FlOz( f );
-     --   kind := long_float_t;
-     --elsif token = units_floz2cucm_t then               -- Units.Oz2CuCm
-     --   ParseUnitsFlOz2CuCm( f );
-     --   kind := long_float_t;
-     --elsif token = units_cucm2usfloz_t then             -- Units.CuCm2USFlOz
-     --   ParseUnitsCuCm2USFlOz( f );
-     --   kind := long_float_t;
-     --elsif token = units_usfloz2cucm_t then             -- Units.USFlOz2CuCm
-     --   ParseUnitsUSFlOz2CuCm( f );
-     --   kind := long_float_t;
-     --elsif token = units_bytes2mb_t then                -- Units.Bytes2MB
-     --   ParseUnitsBytes2MB( f );
-     --   kind := long_float_t;
-     --elsif token = units_mb2bytes_t then                -- Units.MB2Bytes
-     --   ParseUnitsMB2Bytes( f );
-     --   kind := long_float_t;
-     --elsif token = units_l2quarts_t then                -- Units.L2Quarts
-     --   ParseUnitsL2Quarts( f );
-     --   kind := long_float_t;
-     --elsif token = units_l2gal_t then                   -- Units.L2Gal
-     --   ParseUnitsL2Gal( f );
-     --   kind := long_float_t;
-     --elsif token = units_f2c_t then                     -- Units.F2C
-     --   ParseUnitsF2C( f );
-     --   kind := long_float_t;
-     --elsif token = units_c2f_t then                     -- Units.C2F
-     --   ParseUnitsC2F( f );
-     --   kind := long_float_t;
-     --elsif token = units_k2c_t then                     -- Units.K2C
-     --   ParseUnitsK2C( f );
-     --   kind := long_float_t;
-     --elsif token = units_c2k_t then                     -- Units.C2K
-     --   ParseUnitsC2K( f );
-     --   kind := long_float_t;
-     --elsif token = files_exists_t then                -- files.file_exists
-     --   ParseFileExists( f );
-     --   kind := boolean_t;
-     --elsif token = files_is_absolute_path_t then      -- files.is_absolute_path
-     --   ParseIsAbsolutePath( f );
-     --   kind := boolean_t;
-     --elsif token = files_is_regular_file_t then       -- files.is_regular_file
-     --   ParseIsRegularFile( f );
-     --   kind := boolean_t;
-     --elsif token = files_is_directory_t then          -- files.is_directory
-     --   ParseIsDirectory( f );
-     --   kind := boolean_t;
-     --elsif token = files_is_writable_file_t then       -- files.is_writable_file
-     --   ParseIsWritableFile( f );
-     --   kind := boolean_t;
-     --elsif token = files_is_writable_t then            -- files.is_writable
-     --   ParseIsWritable( f );
-     --   kind := boolean_t;
-     --elsif token = files_is_executable_file_t then     -- files.is_executable_file
-     --   ParseIsExecutableFile( f );
-     --   kind := boolean_t;
-     --elsif token = files_is_executable_t then         -- files.is_executable
-     --   ParseIsExecutable( f );
-     --   kind := boolean_t;
-     --elsif token = files_is_readable_file_t then       -- files.is_readable_file
-     --   ParseIsReadableFile( f );
-     --   kind := boolean_t;
-     --elsif token = files_is_readable_t then            -- files.is_readable_file
-     --   ParseIsReadable( f );
-     --   kind := boolean_t;
-     --elsif token = files_basename_t then               -- files.basename
-     --   ParseBasename( f );
-     --   kind := string_t;
-     --elsif token = files_dirname_t then                -- files.dirname
-     --   ParseDirname( f );
-     --   kind := string_t;
-     --elsif token = files_size_t then                   -- files.size
-     --   ParseFileSize( f );
-     --   kind := long_integer_t;
-     --elsif token = files_is_waiting_file_t then        -- files.is_waiting_file
-     --   ParseIsWaitingFile( f );
-     --   kind := boolean_t;
-     --elsif token = files_last_modified_t then          -- files.last_modified
-     --   ParseFileLastModified( f );
-     --   kind := cal_time_t;
-     --elsif token = files_last_changed_t then           -- files.last_changed
-     --   ParseFileLastChanged( f );
-     --   kind := cal_time_t;
-     --elsif token = files_last_accessed_t then          -- files.last_accessed
-     --   ParseFileLastAccessed( f );
-     --   kind := cal_time_t;
-     --elsif token = dirops_dir_separator_t then         -- dir_opts.dir_separator
-     --   ParseDirOpsDirSeparator( f );
-     --   kind := character_t;
-     --elsif token = dirops_get_current_dir_t then       -- dir_opts.get_current_dir
-     --   ParseDirOpsGetCurrentDir( f);
-     --   kind := dirops_dir_name_str_t;
-     --elsif token = dirops_dir_name_t then              -- dir_opts.dir_name
-     --   ParseDirOpsDirName( f );
-     --   kind := dirops_dir_name_str_t;
-     --elsif token = dirops_base_name_t then             -- dir_opts.base_name
-     --   ParseDirOpsBaseName( f );
-     --   kind := string_t;
-     --elsif token = dirops_file_extension_t then        -- dir_opts.file_ext
-     --   ParseDirOpsFileExtension( f );
-     --   kind := string_t;
-     --elsif token = dirops_file_name_t then             -- dir_opts.file_name
-     --   ParseDirOpsFileName( f );
-     --   kind := string_t;
-     --elsif token = dirops_format_pathname_t then       -- dir_opts.format_p
-     --   ParseDirOpsFormatPathname( f );
-     --   kind := dirops_path_name_t;
-     --elsif token = dirops_expand_path_t then           -- dir_opts.expand_p
-     --   ParseDirOpsExpandPath( f );
-     --   kind := dirops_path_name_t;
-     --elsif token = arrays_first_t then                 -- arrays.first
-     --   ParseArraysFirst( f, kind );
-     --   if syntax_check then                           -- array index type
-     --      kind := universal_t;                        -- not known at
-     --   end if;                                        -- syntax check time
-     --elsif token = arrays_last_t then                  -- arrays.last
-     --   ParseArraysLast( f, kind );
-     --   if syntax_check then                           -- array index type
-     --     kind := universal_t;                        -- not known at
-     --   end if;                                        -- syntax check time
-     --elsif token = arrays_length_t then                 -- arrays.last
-     --   ParseArraysLength( f );
-     --   kind := natural_t;
-     --elsif token = enums_first_t then                  -- enums.first
-     --   ParseEnumsFirst( f, kind );
-     --   if syntax_check then                           -- array index type
-     --      kind := universal_t;                        -- not known at
-     --   end if;                                        -- syntax check time
-     --elsif token = enums_last_t then                   -- enums.last
-     --   ParseEnumsLast( f, kind );
-     --   if syntax_check then                           -- array index type
-     --      kind := universal_t;                        -- not known at
-     --   end if;                                        -- syntax check time
-     --elsif token = enums_pred_t then                   -- enums.pred
-     --   ParseEnumsPred( f, kind );
-     --elsif token = enums_succ_t then                   -- enums.succ
-     --   ParseEnumsSucc( f, kind );
-     --elsif token = stats_average_t then                -- stats.average
-     --   ParseStatsAverage( f, kind );
-     --   if syntax_check then                           -- array index type
-     --      kind := universal_t;                        -- not known at
-     --   end if;                                        -- syntax check time
-     --elsif token = stats_max_t then                    -- stats.max
-     --   ParseStatsMax( f, kind );
-     --   if syntax_check then                           -- array index type
-     --      kind := universal_t;                        -- not known at
-     --   end if;                                        -- syntax check time
-     --elsif token = stats_min_t then                    -- stats.min
-     --   ParseStatsMin( f, kind );
-     --   if syntax_check then                           -- array index type
-     --      kind := universal_t;                        -- not known at
-     --   end if;                                        -- syntax check time
-     --elsif token = stats_standard_deviation_t then     -- stats.standard_deviation
-     --   ParseStatsStandardDeviation( f, kind );
-     --   if syntax_check then                           -- array index type
-     --      kind := universal_t;                        -- not known at
-     --   end if;                                        -- syntax check time
-     --elsif token = stats_sum_t then                    -- stats.sum
-     --   ParseStatsSum( f, kind );
-     --   if syntax_check then                           -- array index type
-     --      kind := universal_t;                        -- not known at
-     --   end if;                                        -- syntax check time
-     --elsif token = stats_variance_t then               -- stats.variance
-     --   ParseStatsVariance( f, kind );
-     --   if syntax_check then                           -- array index type
-     --      kind := universal_t;                        -- not known at
-     --   end if;                                        -- syntax check time
-     --elsif token = pen_is_empty_rect_t then            -- pen.is_empty_rect
-     --   ParsePenIsEmptyRect( f );
-     --   kind := boolean_t;
-     --elsif token = pen_inside_rect_t then              -- pen.inside_rect
-     --   ParsePenInsideRect( f );
-     --   kind := boolean_t;
-     --elsif token = pen_in_rect_t then                  -- pen.in_rect
-     --   ParsePenInRect( f );
-     --   kind := boolean_t;
-     --elsif token = pen_get_pen_mode_t then             -- pen.get_pen_mode
-     --   ParsePenGetPenMode( f );
-     --   kind := pen_pen_mode_t;
-     --elsif token = pen_greyscale_t then                -- pen.greyscale
-     --   ParsePenGreyscale( f );
-     --   kind := pen_rgbcomponent_t;
-     --elsif token = memcache_is_valid_memcache_key_t then -- memcache.is_valid_memcache_key
-     --   ParseMemcacheIsValidMemcacheKey( f );
-     --   kind := boolean_t;
-     --elsif token = memcache_new_cluster_t then         -- memcache.new_cluster
-     --   ParseMemcacheNewCluster( f );
-     --   kind := memcache_cluster_t;
-     --elsif token = memcache_version_t then             -- memcache.version
-     --   ParseMemcacheVersion( f );
-     --   kind := string_t;
-     --elsif token = memcache_stats_t then               -- memcache.stats
-     --   ParseMemcacheStats( f );
-     --   kind := string_t;
-     --elsif token = memcache_get_t then                 -- memcache.get
-     --   ParseMemcacheGet( f );
-     --   kind := string_t;
-     --elsif token = highread_new_cluster_t then         -- memcache.highread.new_cluster
-     --   ParseHighreadNewCluster( f );
-     --   kind := highread_cluster_t;
-     --elsif token = highread_version_t then             -- memcache.highread.version
-     --   ParseHighreadVersion( f );
-     --   kind := string_t;
-     --elsif token = highread_stats_t then               -- memcache.highread.stats
-     --   ParseHighreadStats( f );
-     --   kind := string_t;
-     --elsif token = highread_get_t then                 -- memcache.highread.get
-     --   ParseHighreadGet( f );
-     --   kind := string_t;
-     --elsif token = gnat_crc32_get_value_t then         -- gnat.crc32.get_value
-     --   ParseGnatCRC32GetValue( f );
-     --   kind := integer_t; -- should be unsigned_32
      elsif identifiers( token ).class = userFuncClass then
         declare
           funcToken : identifier := token;
@@ -2319,6 +1564,1068 @@ begin
   ex := re1;
   --put_line( "Expression value = " & to_string( ex ) );
 end ParseExpression;
+
+
+-----------------------------------------------------------------------------
+-- Pure Expressions
+-----------------------------------------------------------------------------
+
+procedure ParsePureExpression( ex : out unbounded_string; expr_type : out identifier ); -- forward
+
+procedure ParsePureFactor( f : out unbounded_string; kind : out identifier ) is
+  -- Syntax: factor = (expr) | "strlit" | numeric-lit | identifier | built-in fn
+  -- if the identifier is volatile, reload the value from the environment
+  castType  : identifier;
+  array_id  : identifier;
+  -- array_id2 : arrayID;
+  arrayIndex: long_integer;
+  type aUniOp is ( noOp, doPlus, doMinus, doNot );
+  uniOp : aUniOp := noOp;
+  t : identifier;
+begin
+  if Token = symbol_t and identifiers( Token ).value = "+" then
+     uniOp := doPlus;
+     getNextToken;
+  elsif Token = symbol_t and identifiers( Token ).value = "-" then
+     uniOp := doMinus;
+     getNextToken;
+  elsif Token = not_t then
+     uniOp := doNot;
+     getNextToken;
+  end if;
+  if Token = symbol_t and then identifiers( Token ).value = "(" then
+     expect( symbol_t, "(" );
+     ParsePureExpression( f, kind );
+     expect( symbol_t, ")" );
+  else
+     if Token = symbol_t and then identifiers( Token ).value = "$?" then
+        f := to_unbounded_string( last_status'img );
+        kind := uni_numeric_t;
+        getNextToken;
+     elsif Token = symbol_t and then identifiers( Token ).value = "$$" then
+        f := to_unbounded_string( aPID'image( getpid ) );
+        kind := uni_numeric_t;
+        getNextToken;
+     elsif Token = symbol_t and then identifiers( Token ).value = "$#" then
+        if onlyAda95 then
+           err( "$# not allowed with " & optional_bold( "pragma ada_95" ) &
+           " -- use command_line package" );
+        end if;
+        if isExecutingCommand then
+           f := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
+        end if;
+        kind := uni_numeric_t;
+        getNextToken;
+     elsif Token = symbol_t and then identifiers( Token ).value >= "$1" and then
+        identifiers( Token ).value <= "$9" then
+        -- this could be done a little tighter (ie length check)
+        if onlyAda95 then
+           err( "$1..$9 not allowed with " & optional_bold( "pragma ada_95" ) &
+           " -- use command_line package" );
+        end if;
+        kind := uni_string_t;
+        if isExecutingCommand then
+           begin
+              f := to_unbounded_string(
+                 Argument(
+                   integer'value(
+                   "" & Element( identifiers( Token ).value, 2 ) )+optionOffset ) );
+           exception when program_error =>
+              err( "program_error exception raised" );
+              kind := eof_t;
+           when others =>
+              err( "no such argument" );
+              kind := eof_t;
+           end;
+        end if;
+        getNextToken;
+     elsif Token = symbol_t and then identifiers( Token ).value = "$0" then
+        if onlyAda95 then
+           err( "$0 not allowed with " & optional_bold( "pragma ada_95" ) &
+           " -- use command_line package" );
+        end if;
+        if isExecutingCommand then
+           f := to_unbounded_string( Ada.Command_Line.Command_Name );
+        end if;
+        kind := uni_string_t;
+        getNextToken;
+     elsif Token = symbol_t and then identifiers( Token ).value = "@" then
+        if onlyAda95 then
+           err( "@ is not allowed with " & optional_bold( "pragma ada_95" ) );
+           f := null_unbounded_string;
+           kind := eof_t;
+        elsif itself_type = new_t then
+           err( "@ is not defined" );
+           f := null_unbounded_string;
+           kind := eof_t;
+        elsif identifiers( itself_type ).class = procClass then
+           err( "@ is not a variable" );
+        else
+           f := itself;
+           kind := itself_type;
+        end if;
+        getNextToken;
+     elsif Token = symbol_t and then identifiers( Token ).value = "%" then
+        if onlyAda95 then
+           err( "% is not allowed with " & optional_bold( "pragma ada_95" ) );
+           f := null_unbounded_string;
+           kind := eof_t;
+        elsif syntax_check then             -- % depends on run-time
+           f := to_unbounded_string( "0" ); -- so just use a dummy
+           kind := universal_t;             -- typeless value
+        else
+           if last_output_type = eof_t then
+              err( "there has been no output assigned to %" );
+           else
+              f := last_output;
+           end if;
+           kind := last_output_type;
+        end if;
+        getNextToken;
+     elsif token = number_t then                           -- numeric literal
+        f := identifiers( token ).value;
+        kind := identifiers( token ).kind;
+        getNextToken;
+     elsif token = charlit_t then                          -- character literal
+        --if length( identifiers( charlit_t ).value ) > 1 then
+        --   err( "character literal more than 1 character" );
+        --end if;
+        f := identifiers( token ).value;
+        kind := identifiers( token ).kind;
+        getNextToken;
+     elsif token = strlit_t then                           -- string literal
+        f := identifiers( token ).value;
+        kind := identifiers( token ).kind;
+        getNextToken;
+     elsif token = backlit_t then           -- `cmds`
+        kind := identifiers( token ).kind;
+        CompileRunAndCaptureOutput( identifiers( token ).value, f, getLineNo );
+        getNextToken;
+     elsif identifiers( token ).funcCB /= null then         -- a callback?
+        identifiers( token ).funcCB.all( f, kind );        -- run it
+     elsif token = is_open_t then                         -- is_open function
+        ParseIsOpen( t );
+        f := identifiers( t ).value;
+        kind := boolean_t;
+     elsif token = abs_t then                             -- abs function
+        ParseNumericsAbs( f );
+        kind := uni_numeric_t;
+     elsif token = source_info_symbol_table_size_t then   -- Symbol_Table_Sz
+        getNextToken;
+        if onlyAda95 then
+           err( "symbol_table_size is not allowed with pragma ada_95" );
+           f := null_unbounded_string;
+           kind := eof_t;
+        else
+          f := delete( to_unbounded_string( identifier'image( identifiers_top-1 )), 1, 1 );
+          kind := natural_t;
+        end if;
+     elsif token = source_info_file_t then                -- source_info.file
+        f := basename( getSourceFileName );
+        kind := string_t;
+        getNextToken;
+     elsif token = source_info_line_t then                -- source_info.line
+        f := to_unbounded_string( getLineNo'img );
+        kind := positive_t;
+        getNextToken;
+     elsif token = source_info_src_loc_t then      -- source_info.source_loc.
+        f := to_unbounded_string( getLineNo'img );
+        f := basename( getSourceFileName ) & ":" & f;
+        kind := string_t;
+        getNextToken;
+     elsif token = source_info_enc_ent_t then      -- source_info.enclosing.
+       if blocks_top > block'First then
+          f := getBlockName( block'First );
+       else
+          f := to_unbounded_string( "script" );
+       end if;
+       kind := string_t;
+        getNextToken;
+     elsif token = db_engine_of_t then                 -- DB.Engine_Of
+#if POSTGRES
+        ParseDBEngineOf( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
+        kind := db_database_type_t;
+     elsif token = db_is_connected_t then              -- DB.Is_Connected
+#if POSTGRES
+        ParseDBIsConnected( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
+        kind := boolean_t;
+     elsif token = db_error_message_t then             -- DB.Error_Message
+#if POSTGRES
+        ParseDBErrorMessage( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
+        kind := string_t;
+     elsif token = db_notice_message_t then            -- DB.Notice_Message
+#if POSTGRES
+        ParseDBNoticeMessage( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
+        kind := string_t;
+     elsif token = db_in_abort_state_t then            -- DB.In_Abort_State
+#if POSTGRES
+        ParseDBInAbortState( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
+        kind := boolean_t;
+     elsif token = db_options_t then                   -- DB.Options
+#if POSTGRES
+        ParseDBOptions( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
+        kind := string_t;
+     elsif token = db_will_rollback_on_finalize_t then -- DB.Will_Rollback_On_Finalize
+#if POSTGRES
+        ParseDBWillRollbackOnFinalize( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
+        kind := boolean_t;
+     elsif token = db_is_trace_t then                  -- DB.Is_Trace
+#if POSTGRES
+        ParseDBIsTrace( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
+        kind := boolean_t;
+     elsif token = db_end_of_query_t then              -- DB.End_Of_Query
+#if POSTGRES
+        ParseDBEndOfQuery( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
+        kind := boolean_t;
+     elsif token = db_tuple_t then                     -- DB.Tuple
+#if POSTGRES
+        ParseDBTuple( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
+        kind := db_tuple_index_type_t;
+     elsif token = db_tuples_t then                    -- DB.Tuples
+#if POSTGRES
+        ParseDBTuples( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
+        kind := db_tuple_count_type_t;
+     elsif token = db_columns_t then                   -- DB.Columns
+#if POSTGRES
+        ParseDBColumns( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
+        kind := natural_t;
+     elsif token = db_column_name_t then               -- DB.Column_Name
+#if POSTGRES
+        ParseDBColumnName( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
+        kind := string_t;
+     elsif token = db_column_index_t then              -- DB.Column_Index
+#if POSTGRES
+        ParseDBColumnIndex( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
+        kind := db_column_index_type_t;
+     elsif token = db_is_null_t then                   -- DB.Is_Null
+#if POSTGRES
+        ParseDBIsNull( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
+        kind := boolean_t;
+     elsif token = db_value_t then                     -- DB.Value
+#if POSTGRES
+        ParseDBValue( f );
+#else
+        err( "postgresql support not configured" );
+#end if;
+        kind := universal_t;
+     elsif identifiers( token ).class = userFuncClass then
+        declare
+          funcToken : identifier := token;
+        begin
+          DoUserDefinedFunction( identifiers( funcToken ).value, f );
+          kind := identifiers( funcToken ).kind;
+        end;
+     elsif identifiers( token ).kind = keyword_t then      -- no keywords
+        f := null_unbounded_string;                        -- (always return something)
+        kind := universal_t;
+        err( "variable, value or expression expected" );
+     else                                                  -- some kind of user ident?
+        ParseIdentifier( t );
+        if identifiers( t ).volatile then           -- volatile user identifier
+           refreshVolatile( t );
+           f := identifiers( t ).value;
+           kind := identifiers( t ).kind;
+        elsif identifiers( t ).class = subClass or             -- type cast
+           identifiers( t ).class = typeClass then
+           if identifiers( getBaseType( t ) ).list then        -- array cast?
+              err( "cannot typecast by array types...perhaps you wanted an array variable" ); -- because we can't
+           end if;                               -- represent array types
+           castType := t;                        -- in expressiosn (yet)
+           expect( symbol_t, "(" );
+           ParseExpression( f, kind );
+           expect( symbol_t, ")" );
+           if uniTypesOk( castType, kind ) then
+              kind := castType;
+              if isExecutingCommand then
+                 --f := castToType( to_numeric( f ), kind );
+                 f := castToType( f, kind );
+              end if;
+           end if;
+        elsif identifiers( getBaseType( t ) ).list then        -- array(index)?
+           array_id := t;                            -- array_id=array variable
+           expect( symbol_t, "(" );                  -- parse index part
+           ParseExpression( f, kind );               -- kind is the index type
+           if getUniType( kind ) = uni_string_t or   -- index must be scalar
+              identifiers( getBaseType( kind ) ).list then
+              err( "array index must be a scalar type" );
+           end if;                                   -- variables are not
+           if isExecutingCommand then                -- declared in syntax chk
+              arrayIndex := long_integer(to_numeric(f));  -- convert to number
+              --array_id2 := arrayID( to_numeric(      -- array_id2=reference
+              --   identifiers( array_id ).value ) );  -- to the array table
+              --if indexTypeOK( array_id2, kind ) then -- check and access array
+              --    if inBounds( array_id2, arrayIndex ) then
+              --       f := arrayElement( array_id2, arrayIndex );
+              --    end if;
+              --end if;
+              -- TODO: make a utility function for doing all this.
+              if baseTypesOK( identifiers( array_id ).genKind, kind ) then -- TODO: probably needs a better error message
+                 if arrayIndex not in identifiers( array_id ).avalue'range then -- DEBUG
+                    err( "array index " &  to_string( trim( f, ada.strings.both ) ) & " not in" & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
+                 end if;
+              end if;
+              if not error_found then
+                 begin
+                   f := identifiers( array_id ).avalue( arrayIndex ); -- NEWARRAY
+                 exception when CONSTRAINT_ERROR =>
+                   err( "internal error: constraint_error : index out of range " & identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
+                 when STORAGE_ERROR =>
+                   err( "internal error : storage error raised in ParseFactor" );
+                 end;
+              end if;
+           end if;
+           expect( symbol_t, ")" );                  -- element type is k's k
+           kind := identifiers( identifiers( array_id ).kind ).kind;
+        else                                          -- user identifier
+           f := identifiers( t ).value;
+           kind := identifiers( t ).kind;
+        end if;
+     end if;
+  end if;
+  case uniOp is
+  when noOp => null;
+  when doPlus =>
+       if baseTypesOk( kind, uni_numeric_t ) then
+          null;
+       end if;
+  when doMinus =>
+       begin
+          if baseTypesOk( kind, uni_numeric_t ) then
+             if isExecutingCommand then
+                f := to_unbounded_string( -to_numeric( f ) );
+             end if;
+          end if;
+       exception when others =>
+          err( "exception raised" );
+       end;
+  when doNot =>
+       begin
+          if baseTypesOk( kind, boolean_t ) then
+             if isExecutingCommand then
+                if to_numeric( f ) = 1.0 then
+                   f := to_unbounded_string( "0" );
+                else
+                   f := to_unbounded_string( "1" );
+                end if;
+             end if;
+          end if;
+       exception when others =>
+          err( "exception raised" );
+       end;
+  when others =>
+      err( "unexpected uniary operation error" );
+  end case;
+end ParsePureFactor;
+
+procedure ParsePurePowerTermOperator( op : out unbounded_string ) is
+-- Syntax: termop = "**"
+begin
+  -- token value is checked by parseTerm, but not token name
+  if Token /= symbol_t then
+     err( "operator expected");
+  elsif identifiers( Token ).value /= "**" then
+     err( "** operator expected");
+  else
+     op := identifiers( token ).value;
+  end if;
+  getNextToken;
+end ParsePurePowerTermOperator;
+
+procedure ParsePurePowerTerm( term : out unbounded_string; term_type : out identifier ) is
+  -- Syntax: term = "factor powerterm-op factor"
+  factor1  : unbounded_string;
+  factor2  : unbounded_string;
+  kind1    : identifier;
+  kind2    : identifier;
+  operator : unbounded_string;
+  operation: identifier;
+begin
+  ParsePureFactor( factor1, kind1 );
+  term := factor1;
+  term_type := kind1;
+  while identifiers( Token ).value = "**" loop
+     ParsePurePowerTermOperator( operator );
+     ParsePureFactor( factor2, kind2 );
+     if baseTypesOk( kind1, kind2 ) then
+        term_type := getBaseType( kind1 );
+        operation := getUniType( kind1 );
+        if operation = universal_t then
+           operation := getUniType( kind2 );
+        end if;
+        if operation = universal_t then
+           operation := uni_string_t;
+        end if;
+        if operation = uni_numeric_t then
+           if operator = "**" then
+              begin
+                 if isExecutingCommand then
+                    term := to_unbounded_string(
+                         to_numeric( term ) **
+                         natural( to_numeric( factor2 ) ) );
+                 end if;
+              exception when program_error =>
+                 err( "program_error exception raised" );
+                 term := null_unbounded_string;
+              when others =>
+                 err( "exception raised" );
+                 term := null_unbounded_string;
+              end;
+          else
+              err( "interal error: unknown power operator" );
+          end if;
+        else
+           err( "operation ** not defined for these types" );
+        end if;
+     end if;
+  end loop;
+end ParsePurePowerTerm;
+
+procedure ParsePureTermOperator( op : out unbounded_string ) is
+  -- Syntax: termop = '*' | '/' | '&'
+begin
+  -- token value is checked by parseTerm, but not token name
+  if Token = mod_t or Token = rem_t then
+     op := identifiers( token ).name;
+  elsif Token /= symbol_t then
+     err( "operator expected");
+  elsif identifiers( Token ).value /= "*" and identifiers( Token ).value /= "/" and identifiers( Token ).value /= "&" then
+     err( "term operator expected");
+  else
+     op := identifiers( token ).value;
+  end if;
+  getNextToken;
+end ParsePureTermOperator;
+
+procedure ParsePureTerm( term : out unbounded_string; term_type : out identifier ) is
+  -- Syntax: term = "powerterm term-op powerterm"
+  pterm1   : unbounded_string;
+  pterm2   : unbounded_string;
+  kind1    : identifier;
+  kind2    : identifier;
+  operator : unbounded_string;
+  operation: identifier;
+begin
+  ParsePurePowerTerm( pterm1, kind1 );
+  term := pterm1;
+  term_type := kind1;
+  while identifiers( Token ).value = "*" or
+        identifiers( Token ).value = "/" or
+        identifiers( Token ).value = "&" or
+        Token = mod_t or Token = rem_t loop
+     ParsePureTermOperator( operator );
+     ParsePurePowerTerm( pterm2, kind2 );
+     term_type := getBaseType( kind2 );
+     operation := getUniType( kind2 );
+     if operation = universal_t then
+        operation := getUniType( kind1 );
+     end if;
+     if operation = universal_t then
+        operation := uni_string_t;
+     end if;
+     if operation = uni_numeric_t then
+        if baseTypesOk( kind1, kind2 ) then
+             if operator = "*" then
+                begin
+                  if isExecutingCommand then
+                     term := castToType(
+                        to_numeric( term ) *
+                        to_numeric( pterm2 ),
+                     term_type );
+                  end if;
+                 exception when program_error =>
+                    err( "program_error exception raised" );
+                    term := null_unbounded_string;
+                 when others =>
+                    err( "exception raised" );
+                    term := null_unbounded_string;
+                 end;
+             elsif operator = "/" then
+                declare
+                  t : long_float;
+                  p : long_float;
+                  z : long_float := 0.0;
+                begin
+                  if isExecutingCommand then
+                     -- GCC Ada 4.7.1 doesn't catch divide by zero (returns
+                     -- infinity for the following division:
+                     -- term := castToType(
+                     --   to_numeric( term ) /
+                     --   to_numeric( pterm2 ),
+                     --term_type );
+                     -- As a kludge, we'll break up this function call into
+                     -- its parts and explicitly test for division by zero.
+                     -- this could likely be improved.
+                     t := to_numeric( term );
+                     p := to_numeric( pterm2 );
+                     if p = 0.0 then
+                        err( "division by zero" );
+                     else
+                        z := t / p;
+                        term := castToType( z, term_type );
+                     end if;
+                  end if;
+                exception when program_error =>
+                   err( "program_error exception raised" );
+                   term := null_unbounded_string;
+                when others =>
+                   err( "exception raised" );
+                   term := null_unbounded_string;
+                end;
+             elsif operator = "mod" then
+                begin
+                  if isExecutingCommand then
+                     term := castToType(
+                        --long_long_integer'image(
+                        long_float(
+                        long_long_integer( to_numeric( term ) ) mod
+                        long_long_integer( to_numeric( pterm2 ) ) ),
+                     term_type );
+                  end if;
+                exception when program_error =>
+                   err( "program_error exception raised" );
+                   term := null_unbounded_string;
+                when others =>
+                   err( "exception raised" );
+                   term := null_unbounded_string;
+                end;
+             elsif operator = "rem" then
+                begin
+                  if isExecutingCommand then
+                     term := castToType(
+                        --long_long_integer'image(
+                        long_float(
+                        long_long_integer( to_numeric( term ) ) rem
+                        long_long_integer( to_numeric( pterm2 ) ) ),
+                     term_type );
+                  end if;
+                exception when program_error =>
+                   err( "program_error exception raised" );
+                   term := null_unbounded_string;
+                when others =>
+                   err( "exception raised" );
+                   term := null_unbounded_string;
+                end;
+             else
+                err( "Internal error: unable to handle term operator" );
+             end if;
+           end if;
+        elsif operation = uni_string_t then
+           declare
+             base1 : identifier := getBaseType( kind1 );
+             base2 : identifier := getBaseType( kind2 );
+             uni1  : identifier := getUniType( kind1 );
+             uni2  : identifier := getUniType( kind2 );
+           begin
+              if operator = "&" then
+                 if base1 = character_t and base2 = character_t then
+                    kind1 := string_t;
+                    kind2 := string_t;
+                    term_type := string_t;
+                 elsif base1 = character_t and uni2 = uni_string_t then
+                    kind1 := kind2;
+                 elsif uni1 = uni_string_t and base2 = character_t then
+                    kind2 := kind1;
+                    term_type := kind1;
+                 end if;
+                 if baseTypesOk( kind1, kind2 ) then
+                    if isExecutingCommand then
+                       term := term & pterm2;
+                    end if;
+                 end if;
+              elsif operator = "*" then
+                 if baseTypesOk( kind1, natural_t ) then
+                    if baseTypesOk( kind2, uni_string_t ) then
+                       if isExecutingCommand then
+                          term := natural( to_numeric( term ) ) * pterm2;
+                       end if;
+                    end if;
+                 end if;
+              else
+                 err( "operation not defined for string types" );
+              end if;
+           exception when program_error =>
+              err( "program_error exception raised" );
+              term := null_unbounded_string;
+           when others =>
+              err( "exception raised" );
+              term := null_unbounded_string;
+           end;
+        else
+           if operator = "*" then
+              err( "operation * not defined for these types" );
+           elsif operator = "/" then
+              err( "operation / not defined for these types" );
+           elsif operator = "&" then
+              err( "operation & not defined for these types" );
+           end if;
+        end if;
+  end loop;
+end ParsePureTerm;
+
+procedure ParsePureSimpleExpressionOperator( op : out unbounded_string ) is
+  -- Syntax: simple-expr-op = '+' | '-'
+begin
+  -- token value is checked by parseTerm, but not token name
+  if Token /= symbol_t then
+     err( "operator expected");
+  elsif identifiers( Token ).value /= "+" and identifiers( Token ).value /= "-" then
+     err( "simple expression operator expected");
+  end if;
+  op := identifiers( token ).value;
+  getNextToken;
+end ParsePureSimpleExpressionOperator;
+
+procedure ParsePureSimpleExpression( se : out unbounded_string; expr_type : out identifier ) is
+  -- Syntax: term = "term expr-op term"
+  term1    : unbounded_string;
+  term2    : unbounded_string;
+  kind1    : identifier;
+  kind2    : identifier;
+  operator : unbounded_string;
+  operation: identifier;
+  typesOK  : boolean := false;
+begin
+  ParsePureTerm( term1, kind1 );
+  se := term1;
+  expr_type := kind1;
+  while identifiers( Token ).value = "+" or identifiers( Token ).value = "-" loop
+     ParsePureSimpleExpressionOperator( operator );
+     ParsePureTerm( term2, kind2 );
+     -- Special exception for + and -...allow time arithmetic
+     if (kind1 = cal_time_t) and then (getBaseType(kind2) = duration_t or kind2 = uni_numeric_t or kind2 = universal_t) then
+        typesOK := true;
+        expr_type := cal_time_t;
+        operation := uni_numeric_t;
+     end if;
+     if (kind2 = cal_time_t) and then (getBaseType(kind1) = duration_t or kind1 = uni_numeric_t or kind2 = universal_t) then
+        typesOK := true;
+        expr_type := cal_time_t;
+        operation := uni_numeric_t;
+     end if;
+     -- Otherwise check the types normally
+     if not typesOK then
+        typesOK := baseTypesOk( kind1, kind2 );
+        expr_type := getBaseType( kind1 );
+        operation := getUniType( kind1 );
+     end if;
+     if typesOk then
+        if operation = universal_t then
+           operation := getUniType( kind2 );
+        end if;
+        if operation = universal_t then
+           operation := uni_string_t;
+        end if;
+        if operation = uni_numeric_t then
+             if operator = "+" then
+                begin
+                  if isExecutingCommand then
+                     se := castToType(
+                        to_numeric( se ) +
+                        to_numeric( term2 ),
+                     expr_type );
+                  end if;
+                exception when program_error =>
+                   err( "program_error exception raised" );
+                   se := null_unbounded_string;
+                when others =>
+                   err( "exception raised" );
+                   se := null_unbounded_string;
+                end;
+             elsif operator = "-" then
+                begin
+                  if isExecutingCommand then
+                     se := castToType(
+                        to_numeric( se ) -
+                        to_numeric( term2 ),
+                     expr_type );
+                  end if;
+                exception when program_error =>
+                   err( "program_error exception raised" );
+                   se := null_unbounded_string;
+                when others =>
+                   err( "exception raised" );
+                   se := null_unbounded_string;
+                end;
+             end if;
+        else
+             if operator = "+" then
+                err( "operation + not defined for these types" );
+             elsif operator = "-" then
+                err( "operation - not defined for these types" );
+             end if;
+        end if;
+     end if;
+  end loop;
+  --put_line( "Simple Expression value = " & to_string( se ) );
+end ParsePureSimpleExpression;
+
+procedure ParsePureRelationalOperator( op : out unbounded_string ) is
+  -- Syntax: rel-op = >, >=, etc.
+begin
+  -- token value is checked by parseTerm, but not token name
+  if Token /= symbol_t and Token /= in_t and Token /= not_t then
+     err( "operator expected");
+  elsif identifiers( Token ).value /= ">=" and
+        identifiers( Token ).value /= ">" and
+        identifiers( Token ).value /= "<" and
+        identifiers( Token ).value /= "<=" and
+        identifiers( Token ).value /= "=" and
+        identifiers( Token ).value /= "/=" and
+        Token /= in_t and Token /= not_t then
+     err( "relational operator expected");
+  end if;
+  if Token = in_t then
+     op := identifiers( token ).name;
+  elsif Token = not_t then
+     op := to_unbounded_string( "not in" );
+     getNextToken;
+     if Token /= in_t then
+        err( "relational operator expected");
+     end if;
+  else
+     op := identifiers( token ).value;
+  end if;
+  getNextToken;
+end ParsePureRelationalOperator;
+
+procedure ParsePureRelation( re : out unbounded_string; rel_type : out identifier ) is
+  -- Syntax: relation = "simple-expr" =|>|<|... "simple-expr"
+  se1      : unbounded_string;
+  se2      : unbounded_string;
+  se3      : unbounded_string;
+  kind1    : identifier;
+  kind2    : identifier;
+  kind3    : identifier;
+  operator : unbounded_string;
+  operation: identifier;
+  b        : boolean;
+begin
+  ParsePureSimpleExpression( se1, kind1 );
+  re := se1;
+  rel_type := kind1;
+  if identifiers( Token ).value = ">=" or
+        identifiers( Token ).value = ">" or
+        identifiers( Token ).value = "<" or
+        identifiers( Token ).value = "<=" or
+        identifiers( Token ).value = "=" or
+        identifiers( Token ).value = "/=" or
+        Token = in_t or Token = not_t then
+     rel_type := boolean_t; -- always
+     ParsePureRelationalOperator( operator );
+     if operator = "in" or operator = "not in" then
+        ParsePureFactor( se2, kind2 );
+        if baseTypesOk( kind1, kind2 ) then -- redundant below but
+           expect( symbol_t, ".." );        -- keeps error messages nice
+           ParsePureFactor( se3, kind3 );       -- should probably restructure
+           if baseTypesOk( kind2, kind3 ) then
+              null;
+           end if;
+        end if;
+     else
+        ParsePureSimpleExpression( se2, kind2 );
+     end if;
+     if baseTypesOk( kind1, kind2 ) then
+        operation := getUniType( kind1 );
+        if operation = universal_t then
+           operation := getUniType( kind2 );
+        end if;
+        if operation = universal_t then
+           operation := uni_string_t;
+        end if;
+        if operation = uni_numeric_t or else operation = root_enumerated_t or else operation = cal_time_t then
+             begin
+               if operator = ">=" then
+                  if isExecutingCommand then
+                     b := to_numeric( se1 ) >= to_numeric( se2 );
+                  end if;
+               elsif operator = ">" then
+                  if isExecutingCommand then
+                     b := to_numeric( se1 ) > to_numeric( se2 );
+                  end if;
+               elsif operator = "<" then
+                  if isExecutingCommand then
+                     b := to_numeric( se1 ) < to_numeric( se2 );
+                  end if;
+               elsif operator = "<=" then
+                  if isExecutingCommand then
+                     b := to_numeric( se1 ) <= to_numeric( se2 );
+                  end if;
+               elsif operator = "=" then
+                  if isExecutingCommand then
+                     b := to_numeric( se1 ) = to_numeric( se2 );
+                  end if;
+               elsif operator = "/=" then
+                  if isExecutingCommand then
+                     b := to_numeric( se1 ) /= to_numeric( se2 );
+                  end if;
+               elsif operator = "in" then
+                  if isExecutingCommand then
+                     b := to_numeric( se1 ) in to_numeric( se2 )..to_numeric( se3 );
+                  end if;
+               elsif operator = "not in" then
+                  if isExecutingCommand then
+                     b := to_numeric( se1 ) not in to_numeric( se2 )..to_numeric( se3 );
+                  end if;
+               else
+                  err( "Internal error: couldn't handle relational operator" );
+               end if;
+               if b then
+                  re := to_unbounded_string( "1" );
+               else
+                  re := to_unbounded_string( "0" );
+               end if;
+             exception when others =>
+               err( "exception raised" );
+             end;
+        elsif operation = uni_string_t then
+             if operator = ">=" then
+                if isExecutingCommand then
+                   b := se1 >= se2;
+                end if;
+             elsif operator = ">" then
+                if isExecutingCommand then
+                   b := se1 > se2;
+                end if;
+             elsif operator = "<" then
+                if isExecutingCommand then
+                   b := se1 < se2;
+                end if;
+             elsif operator = "<=" then
+                if isExecutingCommand then
+                   b := se1 <= se2;
+                end if;
+             elsif operator = "=" then
+                if isExecutingCommand then
+                   b := se1 = se2;
+                end if;
+             elsif operator = "/=" then
+                if isExecutingCommand then
+                   b := se1 /= se2;
+                end if;
+             elsif operator = "in" then
+                if isExecutingCommand then
+                   if length( se1 ) /= 1 or
+                      length( se2 ) /= 1 or
+                      length( se3 ) /= 1 then
+                      err( "scalar type required for range" );
+                   else
+                      declare
+                        c1 : character := element( se1, 1 );
+                        c2 : character := element( se2, 1 );
+                        c3 : character := element( se3, 1 );
+                      begin
+                        b := c1 in c2..c3;
+                      exception when others =>
+                        err( "exception raised" );
+                      end;
+                   end if;
+                end if;
+             elsif operator = "not in" then
+                if isExecutingCommand then
+                   if length( se1 ) /= 1 or
+                      length( se2 ) /= 1 or
+                      length( se3 ) /= 1 then
+                      err( "scalar type required for range" );
+                   else
+                      declare
+                        c1 : character := element( se1, 1 );
+                        c2 : character := element( se2, 1 );
+                        c3 : character := element( se3, 1 );
+                      begin
+                        b := c1 not in c2..c3;
+                      exception when others =>
+                        err( "exception raised" );
+                      end;
+                   end if;
+                end if;
+             else
+                err( "Internal error: couldn't handle relational operator" );
+             end if;
+             if b then
+                re := to_unbounded_string( "1" );
+             else
+                re := to_unbounded_string( "0" );
+             end if;
+        else
+             err( "relational operation not defined for these types" );
+        end if;
+     end if;
+  end if;
+end ParsePureRelation;
+
+procedure ParsePureExpressionOperator( op : out identifier ) is
+  -- Syntax: expr-op = "and" | "or" | "xor"
+begin
+  if Token /= and_t and
+     Token /= or_t and
+     Token /= xor_t then
+     err( "boolean operator expected");
+  end if;
+  op := Token;
+  getNextToken;
+end ParsePureExpressionOperator;
+
+procedure ParsePureExpression( ex : out unbounded_string; expr_type : out identifier ) is
+  -- Syntax: expr = "relation" and|or|xor "relation"
+  re1      : unbounded_string;
+  re2      : unbounded_string;
+  kind1    : identifier;
+  kind2    : identifier;
+  operator : identifier;
+  last_op  : identifier := eof_t;
+  b        : boolean;
+  type bitwise_number is mod 2**64;
+begin
+  ParsePureRelation( re1, kind1 );
+  ex := re1;
+  expr_type := kind1;
+  while Token = and_t or Token = or_t or Token = xor_t loop
+     ParsePureExpressionOperator( operator );
+     if onlyAda95 and then last_op /= eof_t and then last_op /= operator then
+        err( "mixed boolean operators in expression not allowed with " &
+              optional_bold( "pragam ada_95" ) & " - use parantheses" );
+     end if;
+     ParsePureRelation( re2, kind2 );
+     if baseTypesOk( kind1, kind2 ) then
+        if getUniType( kind1 ) = uni_numeric_t then
+           expr_type := getBaseType( kind1 );
+           if operator = and_t then
+              begin
+                if isExecutingCommand then
+                   re1 := to_unbounded_string(
+                      long_float(
+                      bitwise_number( to_numeric( re1 ) ) and
+                      bitwise_number( to_numeric( re2 ) ) ) );
+                end if;
+              exception when program_error =>
+                 err( "program_error exception raised" );
+                 re1 := null_unbounded_string;
+              when ada.strings.index_error =>
+                 err( "variable was not intialized" );
+                 re1 := null_unbounded_string;
+              when others =>
+                 err( "exception raised" );
+                 re1 := null_unbounded_string;
+              end;
+           elsif operator = or_t then
+              begin
+                if isExecutingCommand then
+                   re1 := to_unbounded_string(
+                      long_float(
+                      bitwise_number( to_numeric( re1 ) ) or
+                      bitwise_number( to_numeric( re2 ) ) ) );
+                end if;
+              exception when program_error =>
+                 err( "program_error exception raised" );
+                 re1 := null_unbounded_string;
+              when ada.strings.index_error =>
+                 err( "variable was not intialized" );
+                 re1 := null_unbounded_string;
+              when others =>
+                 err( "exception raised" );
+                 re1 := null_unbounded_string;
+              end;
+           elsif operator = xor_t then
+              begin
+                if isExecutingCommand then
+                   re1 := to_unbounded_string(
+                      long_float(
+                      bitwise_number( to_numeric( re1 ) ) xor
+                      bitwise_number( to_numeric( re2 ) ) ) );
+                end if;
+              exception when program_error =>
+                 err( "program_error exception raised" );
+                 re1 := null_unbounded_string;
+              when ada.strings.index_error =>
+                 err( "variable was not intialized" );
+                 re1 := null_unbounded_string;
+              when others =>
+                 err( "exception raised" );
+                 re1 := null_unbounded_string;
+              end;
+           end if;
+        elsif getBaseType( kind1 ) = boolean_t then
+           expr_type := getBaseType( kind1 );
+           if operator = and_t then
+              if isExecutingCommand then
+                 b := re1 = "1" and re2 = "1";
+              end if;
+           elsif operator= or_t then
+              if isExecutingCommand then
+                 b := re1 = "1" or re2 = "1";
+              end if;
+           elsif operator = xor_t then
+              if isExecutingCommand then
+                 b := re1 = "1" xor re2 = "1";
+              end if;
+           else
+              err( "Internal error: unable to handle boolean operator" );
+           end if;
+           if b then
+              re1 := to_unbounded_string( "1" );
+           else
+              re1 := to_unbounded_string( "0" );
+           end if;
+        else
+           err( "boolean or number expected" );
+        end if;
+     end if;
+     last_op := operator;
+  end loop;
+  ex := re1;
+  --put_line( "Expression value = " & to_string( ex ) );
+end ParsePureExpression;
+
+
+-----------------------------------------------------------------------------
+-- Declarations
+-----------------------------------------------------------------------------
+
 
 procedure ParseAssignPart( expr_value : out unbounded_string; expr_type : out identifier ) is
   -- Syntax: assign-part = " := default_value_expression"
