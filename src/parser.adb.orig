@@ -507,6 +507,72 @@ exception when symbol_table_overflow =>
   done := true;   -- abort
 end ParseIdentifier;
 
+procedure ParseStaticIdentifier( id : out identifier ) is
+  -- expect a previously declared static identifier
+begin
+  id := eof_t; -- assume failure
+  if token = number_t then
+     err( optional_bold( "identifier" ) & " expected, not a " &
+          optional_bold( "number" ) );
+  elsif token = strlit_t then
+     err( optional_bold( "identifier" ) & " expected, not a " &
+          optional_bold( "string literal" ) );
+  elsif token = backlit_t then
+     err( optional_bold( "identifier" ) & " expected, not a " &
+          optional_bold( "backquoted literal" ) );
+  elsif token = charlit_t then
+     err( optional_bold( "identifier" ) & " expected, not a " &
+          optional_bold( "character literal" ) );
+  elsif token = word_t then
+     err( optional_bold( "identifier" ) & " expected, not a " &
+          optional_bold( "(shell immediate) word" ) );
+  elsif is_keyword( token ) and token /= eof_t then
+     err( optional_bold( "identifier" ) & " expected, not a " &
+          optional_bold( "keyword" ) );
+  elsif token = symbol_t then
+     err( optional_bold( "identifier" ) & " expected, not a " &
+          optional_bold( "symbol" ) );
+  elsif identifiers( token ).kind = new_t or identifiers( token ).deleted then
+     -- if we're skipping a block, it doesn't matter if the identifier is
+     -- declared, but it does if we're executing a block or checking syntax
+     if isExecutingCommand or syntax_check then
+        for i in identifiers'first..identifiers_top-1 loop
+            if i /= token and not identifiers(i).deleted then
+               if typoOf( identifiers(i).name, identifiers(token).name ) then
+                  discardUnusedIdentifier( token );
+                  err( optional_bold( to_string( identifiers(token).name ) ) &
+                  " is a possible typo of " &
+                  optional_bold( to_string( identifiers(i).name ) ) );
+                  exit;
+               end if;
+           end if;
+       end loop;
+       if not error_found then
+          -- token will be eof_t if error has already occurred
+          discardUnusedIdentifier( token );
+          err( optional_bold( to_string( identifiers( token ).name ) ) & " not declared or is not static" );
+       end if;
+     end if;
+     -- this only appears if err in typo loop didn't occur
+     --if not error_found then
+     --   discardUnusedIdentifier( token );
+     --end if;
+  else
+     if syntax_check then
+           -- for declared but not used checking, assign a value of "REF" to
+           -- the value (during syntax check only because value is otherwise
+           -- unused).  When blocks are pulled, this will be checked.
+           identifiers( token ).wasReferenced := true;
+     end if;
+     id := token;
+  end if;
+  getNextToken;
+exception when symbol_table_overflow =>
+  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  token := eof_t; -- this exception cannot be handled
+  done := true;   -- abort
+end ParseStaticIdentifier;
+
 procedure DoUserDefinedFunction( s : unbounded_string; result : out unbounded_string );
 -- forward declaration
 
@@ -1567,12 +1633,12 @@ end ParseExpression;
 
 
 -----------------------------------------------------------------------------
--- Pure Expressions
+-- Static Expressions
 -----------------------------------------------------------------------------
 
-procedure ParsePureExpression( ex : out unbounded_string; expr_type : out identifier ); -- forward
+procedure ParseStaticxpression( ex : out unbounded_string; expr_type : out identifier ); -- forward
 
-procedure ParsePureFactor( f : out unbounded_string; kind : out identifier ) is
+procedure ParseStaticFactor( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: factor = (expr) | "strlit" | numeric-lit | identifier | built-in fn
   -- if the identifier is volatile, reload the value from the environment
   castType  : identifier;
@@ -1595,7 +1661,7 @@ begin
   end if;
   if Token = symbol_t and then identifiers( Token ).value = "(" then
      expect( symbol_t, "(" );
-     ParsePureExpression( f, kind );
+     ParseStaticExpression( f, kind );
      expect( symbol_t, ")" );
   else
      if Token = symbol_t and then identifiers( Token ).value = "$?" then
@@ -1865,7 +1931,7 @@ begin
         kind := universal_t;
         err( "variable, value or expression expected" );
      else                                                  -- some kind of user ident?
-        ParseIdentifier( t );
+        ParseStaticIdentifier( t );
         if identifiers( t ).volatile then           -- volatile user identifier
            refreshVolatile( t );
            f := identifiers( t ).value;
@@ -1960,9 +2026,9 @@ begin
   when others =>
       err( "unexpected uniary operation error" );
   end case;
-end ParsePureFactor;
+end ParseStaticFactor;
 
-procedure ParsePurePowerTermOperator( op : out unbounded_string ) is
+procedure ParseStaticPowerTermOperator( op : out unbounded_string ) is
 -- Syntax: termop = "**"
 begin
   -- token value is checked by parseTerm, but not token name
@@ -1974,9 +2040,9 @@ begin
      op := identifiers( token ).value;
   end if;
   getNextToken;
-end ParsePurePowerTermOperator;
+end ParseStaticPowerTermOperator;
 
-procedure ParsePurePowerTerm( term : out unbounded_string; term_type : out identifier ) is
+procedure ParseStaticPowerTerm( term : out unbounded_string; term_type : out identifier ) is
   -- Syntax: term = "factor powerterm-op factor"
   factor1  : unbounded_string;
   factor2  : unbounded_string;
@@ -1985,12 +2051,12 @@ procedure ParsePurePowerTerm( term : out unbounded_string; term_type : out ident
   operator : unbounded_string;
   operation: identifier;
 begin
-  ParsePureFactor( factor1, kind1 );
+  ParseStaticFactor( factor1, kind1 );
   term := factor1;
   term_type := kind1;
   while identifiers( Token ).value = "**" loop
-     ParsePurePowerTermOperator( operator );
-     ParsePureFactor( factor2, kind2 );
+     ParseStaticPowerTermOperator( operator );
+     ParseStaticFactor( factor2, kind2 );
      if baseTypesOk( kind1, kind2 ) then
         term_type := getBaseType( kind1 );
         operation := getUniType( kind1 );
@@ -2023,9 +2089,9 @@ begin
         end if;
      end if;
   end loop;
-end ParsePurePowerTerm;
+end ParseStaticPowerTerm;
 
-procedure ParsePureTermOperator( op : out unbounded_string ) is
+procedure ParseStaticTermOperator( op : out unbounded_string ) is
   -- Syntax: termop = '*' | '/' | '&'
 begin
   -- token value is checked by parseTerm, but not token name
@@ -2039,9 +2105,9 @@ begin
      op := identifiers( token ).value;
   end if;
   getNextToken;
-end ParsePureTermOperator;
+end ParseStaticTermOperator;
 
-procedure ParsePureTerm( term : out unbounded_string; term_type : out identifier ) is
+procedure ParseStaticTerm( term : out unbounded_string; term_type : out identifier ) is
   -- Syntax: term = "powerterm term-op powerterm"
   pterm1   : unbounded_string;
   pterm2   : unbounded_string;
@@ -2050,15 +2116,15 @@ procedure ParsePureTerm( term : out unbounded_string; term_type : out identifier
   operator : unbounded_string;
   operation: identifier;
 begin
-  ParsePurePowerTerm( pterm1, kind1 );
+  ParseStaticPowerTerm( pterm1, kind1 );
   term := pterm1;
   term_type := kind1;
   while identifiers( Token ).value = "*" or
         identifiers( Token ).value = "/" or
         identifiers( Token ).value = "&" or
         Token = mod_t or Token = rem_t loop
-     ParsePureTermOperator( operator );
-     ParsePurePowerTerm( pterm2, kind2 );
+     ParseStaticTermOperator( operator );
+     ParseStaticPowerTerm( pterm2, kind2 );
      term_type := getBaseType( kind2 );
      operation := getUniType( kind2 );
      if operation = universal_t then
@@ -2205,9 +2271,9 @@ begin
            end if;
         end if;
   end loop;
-end ParsePureTerm;
+end ParseStaticTerm;
 
-procedure ParsePureSimpleExpressionOperator( op : out unbounded_string ) is
+procedure ParseStaticSimpleExpressionOperator( op : out unbounded_string ) is
   -- Syntax: simple-expr-op = '+' | '-'
 begin
   -- token value is checked by parseTerm, but not token name
@@ -2218,9 +2284,9 @@ begin
   end if;
   op := identifiers( token ).value;
   getNextToken;
-end ParsePureSimpleExpressionOperator;
+end ParseStaticSimpleExpressionOperator;
 
-procedure ParsePureSimpleExpression( se : out unbounded_string; expr_type : out identifier ) is
+procedure ParseStaticSimpleExpression( se : out unbounded_string; expr_type : out identifier ) is
   -- Syntax: term = "term expr-op term"
   term1    : unbounded_string;
   term2    : unbounded_string;
@@ -2230,12 +2296,12 @@ procedure ParsePureSimpleExpression( se : out unbounded_string; expr_type : out 
   operation: identifier;
   typesOK  : boolean := false;
 begin
-  ParsePureTerm( term1, kind1 );
+  ParseStaticTerm( term1, kind1 );
   se := term1;
   expr_type := kind1;
   while identifiers( Token ).value = "+" or identifiers( Token ).value = "-" loop
-     ParsePureSimpleExpressionOperator( operator );
-     ParsePureTerm( term2, kind2 );
+     ParseStaticSimpleExpressionOperator( operator );
+     ParseStaticTerm( term2, kind2 );
      -- Special exception for + and -...allow time arithmetic
      if (kind1 = cal_time_t) and then (getBaseType(kind2) = duration_t or kind2 = uni_numeric_t or kind2 = universal_t) then
         typesOK := true;
@@ -2302,9 +2368,9 @@ begin
      end if;
   end loop;
   --put_line( "Simple Expression value = " & to_string( se ) );
-end ParsePureSimpleExpression;
+end ParseStaticSimpleExpression;
 
-procedure ParsePureRelationalOperator( op : out unbounded_string ) is
+procedure ParseStaticRelationalOperator( op : out unbounded_string ) is
   -- Syntax: rel-op = >, >=, etc.
 begin
   -- token value is checked by parseTerm, but not token name
@@ -2331,9 +2397,9 @@ begin
      op := identifiers( token ).value;
   end if;
   getNextToken;
-end ParsePureRelationalOperator;
+end ParseStaticRelationalOperator;
 
-procedure ParsePureRelation( re : out unbounded_string; rel_type : out identifier ) is
+procedure ParseStaticRelation( re : out unbounded_string; rel_type : out identifier ) is
   -- Syntax: relation = "simple-expr" =|>|<|... "simple-expr"
   se1      : unbounded_string;
   se2      : unbounded_string;
@@ -2345,7 +2411,7 @@ procedure ParsePureRelation( re : out unbounded_string; rel_type : out identifie
   operation: identifier;
   b        : boolean;
 begin
-  ParsePureSimpleExpression( se1, kind1 );
+  ParseStaticSimpleExpression( se1, kind1 );
   re := se1;
   rel_type := kind1;
   if identifiers( Token ).value = ">=" or
@@ -2356,18 +2422,18 @@ begin
         identifiers( Token ).value = "/=" or
         Token = in_t or Token = not_t then
      rel_type := boolean_t; -- always
-     ParsePureRelationalOperator( operator );
+     ParseStaticRelationalOperator( operator );
      if operator = "in" or operator = "not in" then
-        ParsePureFactor( se2, kind2 );
+        ParseStaticFactor( se2, kind2 );
         if baseTypesOk( kind1, kind2 ) then -- redundant below but
            expect( symbol_t, ".." );        -- keeps error messages nice
-           ParsePureFactor( se3, kind3 );       -- should probably restructure
+           ParseStaticFactor( se3, kind3 );       -- should probably restructure
            if baseTypesOk( kind2, kind3 ) then
               null;
            end if;
         end if;
      else
-        ParsePureSimpleExpression( se2, kind2 );
+        ParseStaticSimpleExpression( se2, kind2 );
      end if;
      if baseTypesOk( kind1, kind2 ) then
         operation := getUniType( kind1 );
@@ -2496,9 +2562,9 @@ begin
         end if;
      end if;
   end if;
-end ParsePureRelation;
+end ParseStaticRelation;
 
-procedure ParsePureExpressionOperator( op : out identifier ) is
+procedure ParseStaticExpressionOperator( op : out identifier ) is
   -- Syntax: expr-op = "and" | "or" | "xor"
 begin
   if Token /= and_t and
@@ -2508,9 +2574,9 @@ begin
   end if;
   op := Token;
   getNextToken;
-end ParsePureExpressionOperator;
+end ParseStaticExpressionOperator;
 
-procedure ParsePureExpression( ex : out unbounded_string; expr_type : out identifier ) is
+procedure ParseStaticExpression( ex : out unbounded_string; expr_type : out identifier ) is
   -- Syntax: expr = "relation" and|or|xor "relation"
   re1      : unbounded_string;
   re2      : unbounded_string;
@@ -2521,16 +2587,16 @@ procedure ParsePureExpression( ex : out unbounded_string; expr_type : out identi
   b        : boolean;
   type bitwise_number is mod 2**64;
 begin
-  ParsePureRelation( re1, kind1 );
+  ParseStaticRelation( re1, kind1 );
   ex := re1;
   expr_type := kind1;
   while Token = and_t or Token = or_t or Token = xor_t loop
-     ParsePureExpressionOperator( operator );
+     ParseStaticExpressionOperator( operator );
      if onlyAda95 and then last_op /= eof_t and then last_op /= operator then
         err( "mixed boolean operators in expression not allowed with " &
               optional_bold( "pragam ada_95" ) & " - use parantheses" );
      end if;
-     ParsePureRelation( re2, kind2 );
+     ParseStaticRelation( re2, kind2 );
      if baseTypesOk( kind1, kind2 ) then
         if getUniType( kind1 ) = uni_numeric_t then
            expr_type := getBaseType( kind1 );
@@ -2619,7 +2685,7 @@ begin
   end loop;
   ex := re1;
   --put_line( "Expression value = " & to_string( ex ) );
-end ParsePureExpression;
+end ParseStaticExpression;
 
 
 -----------------------------------------------------------------------------
