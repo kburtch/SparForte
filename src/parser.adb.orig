@@ -1636,8 +1636,6 @@ end ParseExpression;
 -- Static Expressions
 -----------------------------------------------------------------------------
 
-procedure ParseStaticxpression( ex : out unbounded_string; expr_type : out identifier ); -- forward
-
 procedure ParseStaticFactor( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: factor = (expr) | "strlit" | numeric-lit | identifier | built-in fn
   -- if the identifier is volatile, reload the value from the environment

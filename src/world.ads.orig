@@ -309,7 +309,7 @@ type declaration is record
      mapping  : anImportMapping := none;        -- how to translate on import
      export   : boolean := false;               -- marked by pragma export
      volatile : boolean := false;               -- marked by pragma volatile
-     pure     : boolean := false;               -- if value is known at syn chk
+     static   : boolean := false;               -- if value is known at syn chk
      limit    : boolean := false;               -- limited type
      list     : boolean := false;               -- array or array type
      resource : boolean := false;               -- resource type
@@ -663,7 +663,7 @@ procedure declareStandardConstant( id : out identifier;
 
 procedure declareStandardConstant( name : string; kind : identifier;
   value : string );
--- Alternative version: return the symbol table id
+-- Alternative version: don't return the symbol table id
 
 procedure declareStandardEnum( id : out identifier;
    name : string; kind : identifier; value : string );

@@ -44,3 +44,5 @@ CHANGES SINCE 1.5
 
 11. Split byte code compiler into a separate file, removing it from the scanner.
 
+12. Change: pragma advise, annotate, blocked, clarify, depreciated/deprecated, dispute, propose, refactor, todo now accept static string expressions instead of a string literal. [Help command not yet updated]
+

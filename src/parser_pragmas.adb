@@ -237,9 +237,11 @@ end parsePragmaKind;
 
 procedure ParseAnnotateKind is
   name : string := to_string( identifiers( token ).name );
+  exprVal  : unbounded_string;
+  exprType : identifier;
 begin
   annotationsFound := true;
-  if token /= strlit_t then
+  if token /= strlit_t and token /= charlit_t and not identifiers( token ).static then
      annotationTodoFound := name = "todo";
      if name /= "author" and
         name /= "created" and
@@ -259,7 +261,8 @@ begin
         expect( symbol_t, "," );
      end if;
   end if;
-  expect( strlit_t );
+  ParseStaticExpression( exprVal, exprType );
+  baseTypesOK( exprType, uni_string_t );
 end ParseAnnotateKind;
 
 --  PARSE IMPORT KIND
@@ -559,7 +562,8 @@ begin
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expect( symbol_t, "," );
-           expect( strlit_t );
+           ParseStaticExpression( expr_val, var_id );
+           baseTypesOK( var_id, uni_string_t );
         end if;
      end if;
   when asserting =>                          -- pragma assert
@@ -573,7 +577,8 @@ begin
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expect( symbol_t, "," );
-           expect( strlit_t );
+           ParseStaticExpression( expr_val, var_id );
+           baseTypesOK( var_id, uni_string_t );
         end if;
      end if;
   when clarify =>                            -- pragma clarify
@@ -583,7 +588,8 @@ begin
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expect( symbol_t, "," );
-           expect( strlit_t );
+           ParseStaticExpression( expr_val, var_id );
+           baseTypesOK( var_id, uni_string_t );
         end if;
      end if;
   when debug =>                              -- pragma debug
@@ -593,7 +599,8 @@ begin
      null;
   when depreciated =>                           -- pragma depreciated
      expr_val := identifiers( token ).value;
-     expect( strlit_t );
+     ParseStaticExpression( expr_val, var_id );
+     baseTypesOK( var_id, uni_string_t );
   when dispute =>                               -- pragma dispute
      ParseIdentifier( var_id );
      if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
@@ -601,7 +608,8 @@ begin
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expect( symbol_t, "," );
-           expect( strlit_t );
+           ParseStaticExpression( expr_val, var_id );
+           baseTypesOK( var_id, uni_string_t );
         end if;
      end if;
   when export | export_json =>                  -- pragma export/json
@@ -627,7 +635,8 @@ begin
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expect( symbol_t, "," );
-           expect( strlit_t );
+           ParseStaticExpression( expr_val, var_id );
+           baseTypesOK( var_id, uni_string_t );
         end if;
      end if;
   when refactor =>                           -- pragma refactor
@@ -637,7 +646,8 @@ begin
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expect( symbol_t, "," );
-           expect( strlit_t );
+           ParseStaticExpression( expr_val, var_id );
+           baseTypesOK( var_id, uni_string_t );
         end if;
      end if;
   when register_memcache_server =>           -- pragma register_memcache_server
@@ -786,7 +796,9 @@ begin
        unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_member_t );
        expect( symbol_t, "," );
        --expr_val := identifiers( token ).value;
-       expect( strlit_t );
+       --expect( strlit_t );
+       ParseStaticExpression( expr_val, var_id );
+       baseTypesOK( var_id, uni_string_t );
        expect( symbol_t, "," );
 
        -- pragma to-do: the work estimate measure

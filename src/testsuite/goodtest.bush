@@ -974,6 +974,22 @@ pragma todo( ken, "some task 19", work_measure.unknown, 0, work_priority.cvss, 5
 
 pragma todo( ken, "some task 18", work_measure.unknown, 0, work_priority.unknown, 0 );
 
+-- static epxressions
+
+pragma annotate( "foo" & "bar" );
+pragma annotate( 'f' );
+pragma annotate( System.System_Version );
+pragma annotate( author, "foo" & "bar" );
+pragma advise( ken, ken, "foo" & "bar" );
+pragma blocked( ken, ken, "foo" & "bar" );
+pragma clarify( ken, ken, "foo" & "bar" );
+pragma depreciated( "foo" & "bar" );
+pragma deprecated( "foo" & "bar" );
+pragma dispute( ken, ken, "foo" & "bar" );
+pragma propose( ken, ken, "foo" & "bar" );
+pragma refactor( ken, ken, "foo" & "bar" );
+pragma todo( ken, "some " & "task 1", work_measure.unknown, 0, work_priority.level, 'l', "ID 1" );
+
 -- team member fields
 
 ken.description := "my description";
