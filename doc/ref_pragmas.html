@@ -127,6 +127,21 @@ The arguments are specific to the pragmas they refer to.</p>
         </div>
         </center>
 
+<h4>Pragma Expressions</h4>
+
+<p>Some pragmas may use an expression.  Depending on the pragma, the expression
+can be either a normal expression or a static expression.</p>
+
+<p>If the pragma takes effect when a script is loaded, or if the pragma may be
+interpreted by the help command, the expression must be static.  A static
+expression is one that can be computed before the program is loaded, one that
+uses only literals or system-defined constants.  User-defined variables,
+constants and functions cannot be used since those things don't yet exist.</p>
+
+<p>If the pragma takes effect when a script is running, and it is not
+interpreted by the help command, the expression can be a normal expression.
+User-defined variables, constants and functions can be used.</p>
+
 <h4>Pragma Blocks</h4>
 
 <p>A group of consecutive pragmas can be declared in a pragma block.  A
@@ -174,7 +189,7 @@ licensing and feature restriction.</p>
   <li> <b>pragma depreciated( "newscript" )</b> - when script finishes
 execution,
 SparForte will warn that the script is obsolete and has been superceded for
-"newscript".</li>
+"newscript".  The script name can be a static string expression.</li>
   <li><b>pragma license( license_name [, "extra"] )</b> - declare the
 license for the script.  license_name can be:<br>
 <ul>
@@ -337,9 +352,10 @@ effect if --break option isn't used.</li>
 world concerns that are not expressed in the source code.</p>
 
 <ul>
-  <li> <b>pragma annotate( [type,] "text" )</b> - embed a comment. The
+  <li> <b>pragma annotate( [type,] text )</b> - embed a comment. The
 contents of any or all annotate pragmas are shown when you use the help
-command on a script.  Type type of annotation field can be:
+command on a script.  The text is a static string expression.  Type type of
+annotation field can be:
 <ul>
 <li><b>author</b> - who wrote the script</li>
 <li><b>bugs</b> - known bugs</li>
@@ -373,8 +389,8 @@ act as comments and have no effect on the executing of the program.</p>
 
 <p>These pragmas all take three parameters.  The first identifies who placed
 the pragma (a variable of type team.member).  The second is the person to whom
-it is addressed (a variable of type team.member).  The third is a string
-literal containing the message.</p>
+it is addressed (a variable of type team.member).  The third is a static
+string expression containing the message.</p>
 
         <center>
         <div class="code">
@@ -395,7 +411,7 @@ with <b>pragma todo</b>.</p>
 
 <ul>
 <li>The first parameter is the person to whom the task is assigned</li>
-<li>The second parameter is a string literal describing the task</li>
+<li>The second parameter is a static string expression describing the task</li>
 <li>The third parameter is the unit of work (of type team.work_measure)</li>
 <li>The fourth parameter is the amount of work</li>
 <li>The fifth parameter is the unit of priority (of the type team.work_priority)</li>

@@ -558,7 +558,7 @@ procedure put_all_identifiers is
 begin
   -- Show all the information in a table
   for i in 1..identifiers_top-1 loop
-      if not identifiers( i ).deleted then
+      if not identifiers( i ).deleted and identifiers( i ).class /= namespaceClass then
          round := 1;
          firstChar := 0;
          lastChar := 0;
@@ -2027,6 +2027,10 @@ end shutdownScanner;
   declareStandardConstant( "System.Script_License", uni_string_t, "" );
   declareStandardConstant( "System.Script_Software_Model", uni_string_t, "" );
   declareStandardConstant( "System.System_Version", uni_string_t, world.version );
+  declareStandardConstant( "System.Design_Phase", boolean_t, integer'image( commandLineOption'pos(designOpt))(2) & "" );
+  declareStandardConstant( "System.Maintenance_Phase", boolean_t, integer'image( commandLineOption'pos(maintenanceOpt))(2) & "" );
+  declareStandardConstant( "System.Testing_Phase", boolean_t, integer'image( commandLineOption'pos(testOpt))(2) & "" );
+  declareStandardConstant( "System.Development_Phase", boolean_t, integer'image( commandLineOption'pos( not testOpt and not maintenanceOpt and not designOpt ) )(2) & "" );
   declareNamespaceClosed( "System" );
   end declareStandardPackage;
 

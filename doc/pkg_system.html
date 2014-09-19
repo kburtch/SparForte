@@ -59,6 +59,8 @@ units, amount of free memory and more.</p>
   System.Max_Mantissa           System.Login_Shell
   System.Restricted_Shell       System.Script_License
   System.Script_Software_Model  System.System_Version
+  System.Design_Phase           System.Development_Phase
+  System.Maintenance_Phase      System.Testing_Phase
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -134,6 +136,18 @@ license (or empty string if none)</li>
 <li>
 <b>System.Script_Software_Model</b> - (string) the software model name set by pragma
 software_model (or empty string if none)</li>
+
+<li>
+<b>System.Design_Phase</b> - (boolean) true if running in the design phase of the SDLC</li>
+
+<li>
+<b>System.Development_Phase</b> - (boolean) true if running in the development phase of the SDLC</li>
+
+<li>
+<b>System.Maintenance_Phase</b> - (boolean) true if running in the maintenance phase of the SDLC</li>
+
+<li>
+<b>System.Testing_Phase</b> - (boolean) true if running in the testing phase of the SDLC</li>
 
 </ul>
 <p>SparForte is case-sensitve.&nbsp; "system.system_name" is not the same as "System.System_Name".</p>
