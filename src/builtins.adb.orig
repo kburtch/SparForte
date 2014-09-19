@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2014 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -863,6 +863,8 @@ end vm;
        end ParsePragmaKindAsHelp;
 
        procedure ParsePragmaStatementAsHelp( pragmaKind : unbounded_string ) is
+         exprVal  : unbounded_string;
+         exprType : identifier;
        begin
          if pragmaKind = license_str then
             if token = symbol_t and identifiers( token ).value = "(" then
@@ -887,8 +889,8 @@ end vm;
                info := identifiers( token ).name; -- name
                getNextToken;
                expect( symbol_t, "," );
-               info := info & "," & ToCSV( identifiers( token ).value ); -- message
-               getNextToken;
+               ParseStaticExpression( exprVal, exprType );
+               info := info & "," & ToCSV( exprVal ); -- message
                expect( symbol_t, "," );
                info := info & "," & identifiers( token ).name; -- measure
                measure := token;
@@ -990,8 +992,8 @@ end vm;
                info := info & "," & identifiers( token ).name; -- name
                getNextToken;
                expect( symbol_t, "," );
-               info := info & "," & ToCSV( identifiers( token ).value ); -- message
-               getNextToken;
+               ParseStaticExpression( exprVal, exprType );
+               info := info & "," & ToCSV( exprVal ); -- message
                expect( symbol_t, ")" );
                if CollabOutput then
                   put_line( to_string( info ) );
@@ -1171,13 +1173,14 @@ end vm;
                else
                   info := null_unbounded_string;
                end if;
+               ParseStaticExpression( exprVal, exprType );
                if HTMLoutput then
-                  if length( identifiers( token ).value ) = 0 then
+                  if length( exprVal ) = 0 then
                      info := info & "<br>&nbsp;";
                   end if;
-                  info := info & identifiers( token ).value & "<br>";
+                  info := info & exprVal & "<br>";
                elsif MANoutput then
-                  if length( identifiers( token ).value ) = 0 then
+                  if length( exprVal ) = 0 then
                      info := info & ASCII.LF & ".PP";
                   end if;
                   if length( info ) > 0 then
@@ -1186,11 +1189,10 @@ end vm;
                          put_line( info );
                       end if;
                   end if;
-                  info := identifiers( token ).value;
+                  info := exprVal;
                else
-                  info := info & identifiers( token ).value;
+                  info := info & exprVal;
                end if;
-               expect( strlit_t );
                -- if it's not a license, output the annotations
                if not LicenseOutput then
                   put_line( to_string( info ) );
