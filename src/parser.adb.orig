@@ -3773,6 +3773,165 @@ begin
 
 end ParseIfBlock;
 
+-----------------------------------------------------------------------------
+
+-- PARSE PRAGMA BLOCK
+--
+-- execute a block of code in a pragma if
+
+procedure ParsePragmaBlock( termid1, termid2 : identifier := keyword_t ) is
+  -- Syntax: block = "general-stmt [general-stmt...] termid1 | termid2"
+begin
+  if token = end_t or token = eof_t or token = termid1 or token = termid2 then
+     err( "missing statement or command" );
+  end if;
+  while token /= end_t and token /= eof_t and token /= termid1 and token /= termid2 loop
+     if token = pragma_t then
+        ParsePragma;
+        expectSemicolon;
+     elsif token = if_t then
+        ParsePragmaIfBlock;
+        expectSemicolon;
+     elsif token = null_t then
+        expect( null_t );
+        expectSemicolon;
+     end if;
+  end loop;
+end ParsePragmaBlock;
+
+--  SKIP PRAGMA BLOCK
+--
+-- skip a block of code in a pragma if
+
+procedure SkipPragmaBlock( termid1, termid2 : identifier := keyword_t ) is
+  old_error : boolean;
+begin
+  if token = end_t or token = eof_t or token = termid1 or token = termid2 then
+     err( "missing statement or command" );
+  end if;
+  if syntax_check then               -- if we're checking syntax
+     ParsePragmaBlock( termid1, termid2 ); -- must process the block to look
+     return;                         -- for syntax errors
+  end if;
+  old_error := syntax_check;
+  syntax_check := true;
+  -- if an error happens in the block, we were skipping it anyway...
+  while token /= end_t and token /= eof_t and token /= termid1 and token /= termid2 loop
+      ParseGeneralStatement;         -- step through context
+  end loop;
+  syntax_check := old_error;
+end SkipPragmaBlock;
+
+-- PARSE PRAGMA IF BLOCK
+--
+--
+
+procedure ParsePragmaIfBlock is
+-- Syntax: if-block = "if"... "elsif"..."else"..."end if"
+  expr_val  : unbounded_string;
+  expr_type : identifier;
+  b : boolean := false;
+  handled : boolean := false;
+  backup_sc : boolean;
+begin
+
+  -- The handling of an if block is very tricky because the blocks
+  -- do not only include what is between the parts of the if, but
+  -- the expressions themselves.  Plus there's the problem of exiting
+  -- gracefully if an exit statement is encountered.  All of this
+  -- makes handling this statement more complicated than you might
+  -- think.
+
+  -- if expr then statements
+
+  expect( if_t );                                          -- "if"
+  if token = if_t then                                     -- this error is
+     err( "redundant " & optional_bold( "if" ) );          -- from GNAT
+  end if;
+  ParseStaticExpression( expr_val, expr_type );            -- expression
+  if not baseTypesOk( boolean_t, expr_type ) then          -- not a bool result?
+     err( "boolean expression expected" );
+  else                                                     -- else convert bool
+     b := expr_val = "1";                                  -- to real boolean
+  end if;
+  expect( then_t );                                        -- "then"
+  if token = then_t then                                   -- this error is
+     err( "redundant " & optional_bold( "then" ) );        -- from GNAT
+  end if;
+  if b then                                                -- was true?
+     ParsePragmaBlock( elsif_t, else_t );                  -- handle if block
+     handled := true;                                      -- remember we did it
+                                                           -- even elsifs and else line
+  else                                                     -- otherwise
+     SkipPragmaBlock( elsif_t, else_t );                   -- skip if block
+  end if;
+
+  -- elsif expr then statements
+
+  -- temporarily switch to syntax check mode when required to skip expression
+
+  while token = elsif_t loop                               -- a(nother) elsif?
+     if handled then                                       -- already handled?
+        backup_sc := syntax_check;                         -- don't exec elsif
+        syntax_check := true;                              -- expression
+     end if;
+     expect( elsif_t );                                    -- "elsif"
+     if token = elsif_t then                               -- this error is
+        err( "redundant " & optional_bold( "elsif" ) );    -- from GNAT
+     end if;
+     ParseStaticExpression( expr_val, expr_type );         -- expression
+     if not baseTypesOk( boolean_t, expr_type ) then       -- not bool result?
+        err( "boolean expression expected" );
+     else                                                  -- else convert bool
+        b := expr_val = "1";                               -- to real boolean
+     end if;
+     if handled then                                       -- already handled?
+        syntax_check := backup_sc;                         -- restore flag
+     end if;                                               -- for SkipBlock
+     expect( then_t );                                     -- "then"
+     if token = then_t then                                -- this is from
+        err( "redundant " & optional_bold( "then" ) );     -- GNAT
+     end if;
+     if b and not handled then                             -- true (and not previously done)
+        ParsePragmaBlock( elsif_t, else_t );               -- handle the elsif block
+        handled := true;                                   -- remember we did it
+     else                                                  -- otherwise
+        SkipPragmaBlock( elsif_t, else_t );                -- skip elsif block
+     end if;
+  end loop;
+
+  -- by this point syntax check mode should be restored (if it was altered)
+
+  -- else statements
+
+  if token = else_t then                                   -- else part?
+     if handled then                                       -- already handled?
+        backup_sc := syntax_check;                         -- don't exec else
+        syntax_check := true;                              -- for --trace
+     end if;
+     expect( else_t );                                     -- "else"
+     if handled then                                       -- already handled?
+        syntax_check := backup_sc;                         -- restore flag
+     end if;                                               -- for SkipBlock
+     if token = else_t then                                -- this is from
+        err( "redundant " & optional_bold( "else" ) );     -- GNAT
+     end if;
+     if not handled then                                   -- nothing handled yet?
+        ParsePragmaBlock;                                  -- handle else block
+     else                                                  -- otherwise
+        SkipPragmaBlock;                                   -- skip else block
+     end if;
+  end if;
+
+  -- end if
+
+  expect( end_t );                                         -- "end if"
+  expect( if_t );
+
+end ParsePragmaIfBlock;
+
+-----------------------------------------------------------------------------
+
 procedure ParseCaseBlock is
 -- Syntax: case-block = "case" ident "is" "when" const-ident ["|"...] "=>" ...
 -- "when others =>" ..."end case"
@@ -8392,20 +8551,16 @@ begin
      cmdpos := firstScriptCommandOffset;
      token := identifiers'first;                -- dummy, replaced by g_n_t
      getNextToken;                              -- load first token
-     -- todo: "policy" is not a reserved word yet because we've maxed out
-     -- the reserved words.  In the meantime, treated it like a pragma name.
      -- except that this throws off the byte-code compiler.  it doesn't know
      -- what policy is so it treats it as a shell command.
-     --if identifiers( token ).name = "policy" then
-     --   discardUnusedIdentifier( token );
-     --   getNextToken;
-     --else
-     --   err( "policy expected" );
-     --end if;
-     --expect( is_t );
+     expect( policy_t );
+     expect( is_t );
      while (not error_found and not done) loop
         if token = pragma_t then
            ParsePragma;
+           expectSemicolon;
+        elsif token = if_t then
+           ParsePragmaIfBlock;
            expectSemicolon;
         elsif token = null_t then
            expect( null_t );
@@ -8414,15 +8569,9 @@ begin
            exit;
         end if;
      end loop;
-     -- todo: "policy" is not a reserved word yet because we've maxed out
-     -- the reserved words.  In the meantime, treated it like a pragma name.
-     -- expect( end_t );
-     --if identifiers( token ).name = "policy" then
-     --   discardUnusedIdentifier( token );
-     --   getNextToken;
-     --else
-     --   err( "policy expected" );
-     --end if;
+     expect( end_t );
+     expect( policy_t );
+     expect( symbol_t, ";" );
      if token /= eof_t then                     -- unexpected token?
         expect( pragma_t );                     -- say what we expect
      else

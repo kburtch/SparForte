@@ -63,6 +63,8 @@ procedure ParseIfBlock;
 procedure ParseWhileBlock;
 procedure ParseForBlock;
 
+procedure ParsePragmaIfBlock;
+
 procedure ParseDelay;
 procedure ParseTypeset;
 procedure ParseDeclarations;

@@ -469,7 +469,7 @@ when_t     : identifier;
 while_t    : identifier;
 with_t     : identifier;
 xor_t      : identifier;
-
+policy_t   : identifier;
 
 ------------------------------------------------------------------------------
 --  Built-in Bourne shell commands
