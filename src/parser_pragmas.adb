@@ -87,6 +87,7 @@ type aPragmaKind is (
      debug_on,
      depreciated,
      dispute,
+     error,
      export,
      export_json,
      gcc_errors,
@@ -161,6 +162,8 @@ begin
      pragmaKind :=  depreciated;
   elsif name = "dispute" then
      pragmaKind :=  dispute;
+  elsif name = "error" then
+     pragmaKind := error;
   elsif name = "export" then
      pragmaKind := export;
   elsif name = "export_json" then
@@ -612,6 +615,9 @@ begin
            baseTypesOK( var_id, uni_string_t );
         end if;
      end if;
+  when error =>                                 -- pragma error
+     ParseStaticExpression( expr_val, var_id );
+     baseTypesOK( var_id, uni_string_t );
   when export | export_json =>                  -- pragma export/json
      ParseExportKind( var_id, exportType );
   when import | unchecked_import | import_json | unchecked_import_json =>
@@ -741,26 +747,28 @@ begin
      end if;
      -- Mark this script as having a template to disable unused variable checks
      -- We need the type of template so interpret it now.
-     hasTemplate := true;
-     templateHeader.templateType := noTemplate;
-     templateHeader.status := 200;
-     -- http://www.webmaster-toolkit.com/mime-types.shtml
-     if expr_val = "html" then
-        templateHeader.templateType := htmlTemplate;
-     elsif expr_val = "css" then
-        templateHeader.templateType := cssTemplate;
-     elsif expr_val = "js" then
-        templateHeader.templateType := jsTemplate;
-     elsif expr_val = "json" then
-        templateHeader.templateType := jsonTemplate;
-     elsif expr_val = "text" then
-        templateHeader.templateType := textTemplate;
-     elsif expr_val = "wml" then
-        templateHeader.templateType := wmlTemplate;
-     elsif expr_val = "xml" then
-        templateHeader.templateType := xmlTemplate; -- text/xml
-     else
-        err( "unknown template type" );
+     if not skipping_block then
+        hasTemplate := true;
+        templateHeader.templateType := noTemplate;
+        templateHeader.status := 200;
+        -- http://www.webmaster-toolkit.com/mime-types.shtml
+        if expr_val = "html" then
+           templateHeader.templateType := htmlTemplate;
+        elsif expr_val = "css" then
+           templateHeader.templateType := cssTemplate;
+        elsif expr_val = "js" then
+           templateHeader.templateType := jsTemplate;
+        elsif expr_val = "json" then
+           templateHeader.templateType := jsonTemplate;
+        elsif expr_val = "text" then
+           templateHeader.templateType := textTemplate;
+        elsif expr_val = "wml" then
+           templateHeader.templateType := wmlTemplate;
+        elsif expr_val = "xml" then
+           templateHeader.templateType := xmlTemplate; -- text/xml
+        else
+           err( "unknown template type" );
+        end if;
      end if;
   when test =>                               -- pragma test
      expr_val := identifiers( token ).value;
@@ -991,6 +999,8 @@ begin
         depreciatedMsg := "This script made obsolete by " & expr_val & '.';
      when dispute =>
         null;
+     when error =>
+        err( "error: " & to_string( expr_val ) );
      when export | export_json  =>
         if pragmaKind = export_json then
            identifiers( var_id ).mapping := json;
@@ -1283,17 +1293,17 @@ begin
         if softwareModelSet then
            err( "software model already set" );
         else
-          declare
-            id : identifier;
-          begin
-            findIdent( to_unbounded_string( "System.Script_Software_Model" ), id );
-            if id /= eof_t then
-               identifiers( id ).value := expr_val;
-               softwareModelSet := true;
-            end if;
-          exception when others =>
-            err( "exception raised" );
-          end;
+           declare
+             id : identifier;
+           begin
+             findIdent( to_unbounded_string( "System.Script_Software_Model" ), id );
+             if id /= eof_t then
+                identifiers( id ).value := expr_val;
+                softwareModelSet := true;
+             end if;
+           exception when others =>
+             err( "exception raised" );
+           end;
         end if;
      when suppress_word_quoting =>
         null; -- only applies in syntax check
@@ -1340,7 +1350,7 @@ begin
         end if;
      when test_result =>
         if testOpt then
-           if not syntax_check then   -- has no meaning during syntax check
+           if not syntax_check then
               if baseTypesOk( boolean_t, var_id ) then
                  if expr_val = "0" then
                     put( standard_error, scriptFilePath );

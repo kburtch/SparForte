@@ -3805,6 +3805,7 @@ end ParsePragmaBlock;
 
 procedure SkipPragmaBlock( termid1, termid2 : identifier := keyword_t ) is
   old_error : boolean;
+  old_skipping : boolean;
 begin
   if token = end_t or token = eof_t or token = termid1 or token = termid2 then
      err( "missing statement or command" );
@@ -3814,12 +3815,15 @@ begin
      return;                         -- for syntax errors
   end if;
   old_error := syntax_check;
+  old_skipping := skipping_block;
   syntax_check := true;
+  skipping_block := true;
   -- if an error happens in the block, we were skipping it anyway...
   while token /= end_t and token /= eof_t and token /= termid1 and token /= termid2 loop
       ParseGeneralStatement;         -- step through context
   end loop;
   syntax_check := old_error;
+  skipping_block := old_skipping;
 end SkipPragmaBlock;
 
 -- PARSE PRAGMA IF BLOCK
@@ -3929,6 +3933,97 @@ begin
   expect( if_t );
 
 end ParsePragmaIfBlock;
+
+procedure ParsePragmaCaseBlock is
+-- Syntax: case-block = "case" ident "is" "when" const-ident ["|"...] "=>" ...
+-- "when others =>" ..."end case"
+-- constants only
+  test_id : identifier;
+  case_id : identifier;
+  handled : boolean := false;
+  b       : boolean := false;
+begin
+
+  -- case id is
+
+  expect( case_t );                                        -- "case"
+  ParseIdentifier( test_id );                              -- identifier to test
+  -- we allow const because parameters are consts in Bush 1.x.
+  if class_ok( test_id, constClass ) then
+     expect( is_t );                                       -- "is"
+  end if;
+
+  -- when const-id =>
+
+  if token /= when_t then                                 -- first when missing?
+     expect( when_t );                                    -- force error
+  end if;
+  while token = when_t loop
+     expect( when_t );                                    -- "when"
+     exit when error_found or token = others_t;
+     -- this should be ParseConstantIdentifier
+     b := false;                                          -- assume case fails
+     loop
+        if token = strlit_t then                          -- strlit allowed
+           if baseTypesOk( identifiers( test_id ).kind, string_t ) then
+              case_id := token;
+              getNextToken;
+           end if;
+        elsif token = charlit_t then                      -- charlit allowed
+           if baseTypesOk( identifiers( test_id ).kind, character_t ) then
+              case_id := token;
+              getNextToken;
+           end if;
+        elsif token = number_t then                       -- num lit allowed
+           if uniTypesOk( identifiers( test_id ).kind, uni_numeric_t ) then
+              case_id := token;
+              getNextToken;
+           end if;
+        else                                             -- constant allowed
+           ParseIdentifier( case_id );                         -- get the case
+           if identifiers( case_id ).class /= constClass       -- is constant
+              and identifiers( case_id ).class /= enumClass then -- or enum?
+              err( "variable not allowed as a case" );         -- error if not
+           elsif baseTypesOk( identifiers( test_id ).kind,
+                 identifiers( case_id ).kind ) then            -- types good?
+              null;
+           end if;
+        end if;
+        if not error_found then                         -- OK? check case
+           b := b or                                    -- against test var
+             identifiers( test_id ).value = identifiers( case_id ).value;
+        end if;
+        exit when error_found or token /= symbol_t or identifiers( token ).value /= "|";
+        expect( symbol_t, "|" );                        -- expect alternate
+     end loop;
+     expect( symbol_t, "=>" );                             -- "=>"
+     if b and not handled and not exit_block then          -- handled yet?
+        ParsePragmaBlock( when_t );                        -- if not, handle
+        handled := true;                                   -- and remember done
+     else
+        SkipPragmaBlock( when_t );                         -- else skip case
+     end if;
+  end loop;
+
+  -- others part
+
+  if token /= others_t then                                -- a little clearer
+     err( "when others expected" );                        -- if pointing at
+  end if;                                                  -- end case
+  expect( others_t );                                      -- "others"
+  expect( symbol_t, "=>" );                                -- "=>"
+  if not handled and not exit_block then                   -- not handled yet?
+     ParseBlock;                                           -- handle now
+  else                                                     -- else just
+     SkipBlock;                                            -- skip
+  end if;
+
+  -- end case
+
+  expect( end_t );                                         -- "end case"
+  expect( case_t );
+
+end ParsePragmaCaseBlock;
 
 -----------------------------------------------------------------------------
 
@@ -5283,6 +5378,7 @@ end ParseRaise;
 
 procedure SkipBlock( termid1, termid2 : identifier := keyword_t ) is
   old_error : boolean;
+  old_skipping : boolean;
 begin
   if token = end_t or token = eof_t or token = exception_t or token = termid1 or token = termid2 then
      err( "missing statement or command" );
@@ -5294,13 +5390,16 @@ begin
   --old_error := error_found;          -- save error code
   --error_found := true;               -- skip by setting error flag
   old_error := syntax_check;
+  old_skipping := skipping_block;
   syntax_check := true;
+  skipping_block := true;
   -- if an error happens in the block, we were skipping it anyway...
   while token /= end_t and token /= eof_t and token /= exception_t and token /= termid1 and token /= termid2 loop
       ParseGeneralStatement;         -- step through context
   end loop;
   --error_found := old_error;          -- ignore any error while skipping
   syntax_check := old_error;
+  skipping_block := old_skipping;
 end SkipBlock;
 
 -- execute a block of code
@@ -5369,6 +5468,7 @@ procedure SkipExceptionBlock is
   null_declaration : declaration;
   pragma warnings( on );
   old_error : boolean;
+  old_skipping : boolean;
 begin
   if token = end_t or token = eof_t or token = when_t then
      err( "missing statement or command" );
@@ -5378,7 +5478,9 @@ begin
      return;                         -- for syntax errors
   end if;
   old_error := syntax_check;
+  old_skipping := skipping_block;
   syntax_check := true;
+  skipping_block := true;
   -- if an error happens in the block, we were skipping it anyway...
   while token /= end_t and token /= eof_t and token /= exception_t and token /= when_t loop
       if token = raise_t then -- TODO: wrong
@@ -5390,6 +5492,7 @@ begin
       end if;
   end loop;
   syntax_check := old_error;
+  skipping_block := old_skipping;
 end SkipExceptionBlock;
 
 procedure ParseExceptionHandler is
@@ -8561,6 +8664,9 @@ begin
            expectSemicolon;
         elsif token = if_t then
            ParsePragmaIfBlock;
+           expectSemicolon;
+        elsif token = case_t then
+           ParsePragmaCaseBlock;
            expectSemicolon;
         elsif token = null_t then
            expect( null_t );

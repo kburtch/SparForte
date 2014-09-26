@@ -48,3 +48,5 @@ CHANGES SINCE 1.5
 
 13. New: System.Design_Phase, System.Development_Phase, System.Maintenance_Phase, System.Testing_Phase, reflecting the command line options.
 
+14. New: policy blocks.  static if and static case allowed in policy blocks. [docs needed] [tests needed] [needs to work outside of sparforte_policy]
+
