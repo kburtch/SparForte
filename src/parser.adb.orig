@@ -3947,7 +3947,7 @@ begin
   -- case id is
 
   expect( case_t );                                        -- "case"
-  ParseIdentifier( test_id );                              -- identifier to test
+  ParseStaticIdentifier( test_id );                        -- identifier to test
   -- we allow const because parameters are consts in Bush 1.x.
   if class_ok( test_id, constClass ) then
      expect( is_t );                                       -- "is"
@@ -8605,11 +8605,19 @@ begin
      cmdpos := firstScriptCommandOffset;
      token := identifiers'first;                -- dummy, replaced by g_n_t
      getNextToken;                              -- load first token
+
+     -- A script can start with a main program or it can have pragmas,
+     -- policies or trace commands in front of it.
+
      while (not error_found and not done) and (token = procedure_t or
-       token = pragma_t or token = trace_t) loop
+       token = pragma_t or token = policy_t or token = trace_t) loop
         if token = pragma_t then
            ParsePragma;
            expectSemicolon;
+        elsif token = policy_t then
+           ParsePolicy;
+           expectSemicolon;
+        -- todo: configs go here
         elsif token = procedure_t then
            ParseMainProgram;
            expectSemicolon;
@@ -8620,6 +8628,10 @@ begin
            expectSemicolon;
         end if;
      end loop;
+
+     -- If we're not done, then there's no main program and it's a simple
+     -- script with general statements.
+
      -- TODO: if there was a main program, none of this is done
      -- so I should clean this up to make that obvious.  This also allows
      -- simple scripts to follow the main program??
@@ -8650,40 +8662,27 @@ end parse;
 
 procedure parsePolicy is
 begin
-  if not error_found then
-     cmdpos := firstScriptCommandOffset;
-     token := identifiers'first;                -- dummy, replaced by g_n_t
-     getNextToken;                              -- load first token
-     -- except that this throws off the byte-code compiler.  it doesn't know
-     -- what policy is so it treats it as a shell command.
-     expect( policy_t );
-     expect( is_t );
-     while (not error_found and not done) loop
-        if token = pragma_t then
-           ParsePragma;
-           expectSemicolon;
-        elsif token = if_t then
-           ParsePragmaIfBlock;
-           expectSemicolon;
-        elsif token = case_t then
-           ParsePragmaCaseBlock;
-           expectSemicolon;
-        elsif token = null_t then
-           expect( null_t );
-           expectSemicolon;
-        else
-           exit;
-        end if;
-     end loop;
-     expect( end_t );
-     expect( policy_t );
-     expect( symbol_t, ";" );
-     if token /= eof_t then                     -- unexpected token?
-        expect( pragma_t );                     -- say what we expect
+  expect( policy_t );
+  expect( is_t );
+  while (not error_found and not done) loop
+     if token = pragma_t then
+        ParsePragma;
+        expectSemicolon;
+     elsif token = if_t then
+        ParsePragmaIfBlock;
+        expectSemicolon;
+     elsif token = case_t then
+        ParsePragmaCaseBlock;
+        expectSemicolon;
+     elsif token = null_t then
+        expect( null_t );
+        expectSemicolon;
      else
-        expect( eof_t );                        -- should be nothing else
+        exit;
      end if;
-  end if;
+  end loop;
+  expect( end_t );
+  expect( policy_t );
 end parsePolicy;
 
 
@@ -8952,8 +8951,19 @@ begin
     end if;
   end if;
   if (scriptFile > 0 or boolean(execOpt)) and not done then -- file open or -e?
-     parsePolicy;
-  elsif C_errno = 2 then                             -- file not found?
+     if not error_found then
+        cmdpos := firstScriptCommandOffset;
+        token := identifiers'first;                -- dummy, replaced by g_n_t
+        getNextToken;                              -- load first token
+        parsePolicy;
+        expectSemicolon;
+        if token /= eof_t then                     -- unexpected token?
+           expect( pragma_t );                     -- say what we expect
+        else
+           expect( eof_t );                        -- should be nothing else
+        end if;
+     end if;
+  elsif C_errno = 2 then                           -- file not found?
      put_line( standard_error, "unable to open policy file '" &
        policyPath & "' : file not found" );
        error_found := true;
