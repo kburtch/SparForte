@@ -2509,6 +2509,7 @@ begin
   declareKeyword( xor_t, "xor" );
 
   declareKeyword( policy_t, "policy" );
+  declareKeyword( configuration_t, "configuration" );
 
   -- This variable is for limiting searches of the symbol table.  Only
   -- keywords below keyword_top, but there may be more keywords above it.

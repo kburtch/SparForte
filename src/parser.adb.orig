@@ -3773,13 +3773,15 @@ begin
 
 end ParseIfBlock;
 
+
+-----------------------------------------------------------------------------
+--  STATIC BLOCK
+--
+-- Conditionally run code based on a static expression.  Part of static if.
+-- Only pragmas, static if's or case's allowed.
 -----------------------------------------------------------------------------
 
--- PARSE PRAGMA BLOCK
---
--- execute a block of code in a pragma if
-
-procedure ParsePragmaBlock( termid1, termid2 : identifier := keyword_t ) is
+procedure ParseStaticBlock( termid1, termid2 : identifier := keyword_t ) is
   -- Syntax: block = "general-stmt [general-stmt...] termid1 | termid2"
 begin
   if token = end_t or token = eof_t or token = termid1 or token = termid2 then
@@ -3790,20 +3792,26 @@ begin
         ParsePragma;
         expectSemicolon;
      elsif token = if_t then
-        ParsePragmaIfBlock;
+        ParseStaticIfBlock;
+        expectSemicolon;
+     elsif token = case_t then
+        ParseStaticCaseBlock;
         expectSemicolon;
      elsif token = null_t then
         expect( null_t );
         expectSemicolon;
      end if;
   end loop;
-end ParsePragmaBlock;
+end ParseStaticBlock;
 
---  SKIP PRAGMA BLOCK
+
+-----------------------------------------------------------------------------
+--  SKIP STATIC BLOCK
 --
--- skip a block of code in a pragma if
+-- Conditionally skip code based on a static expression.  Part of static if.
+-----------------------------------------------------------------------------
 
-procedure SkipPragmaBlock( termid1, termid2 : identifier := keyword_t ) is
+procedure SkipStaticBlock( termid1, termid2 : identifier := keyword_t ) is
   old_error : boolean;
   old_skipping : boolean;
 begin
@@ -3811,7 +3819,7 @@ begin
      err( "missing statement or command" );
   end if;
   if syntax_check then               -- if we're checking syntax
-     ParsePragmaBlock( termid1, termid2 ); -- must process the block to look
+     ParseStaticBlock( termid1, termid2 ); -- must process the block to look
      return;                         -- for syntax errors
   end if;
   old_error := syntax_check;
@@ -3824,13 +3832,18 @@ begin
   end loop;
   syntax_check := old_error;
   skipping_block := old_skipping;
-end SkipPragmaBlock;
+end SkipStaticBlock;
 
--- PARSE PRAGMA IF BLOCK
---
---
 
-procedure ParsePragmaIfBlock is
+-----------------------------------------------------------------------------
+-- STATIC IF BLOCK
+--
+-- Conditionally execute or skip blocks of code based on a static expression.
+-- This is tied to parsePolicy: blocks may only contain policy block
+-- statements.
+-----------------------------------------------------------------------------
+
+procedure ParseStaticIfBlock is
 -- Syntax: if-block = "if"... "elsif"..."else"..."end if"
   expr_val  : unbounded_string;
   expr_type : identifier;
@@ -3863,11 +3876,11 @@ begin
      err( "redundant " & optional_bold( "then" ) );        -- from GNAT
   end if;
   if b then                                                -- was true?
-     ParsePragmaBlock( elsif_t, else_t );                  -- handle if block
+     ParseStaticBlock( elsif_t, else_t );                  -- handle if block
      handled := true;                                      -- remember we did it
                                                            -- even elsifs and else line
   else                                                     -- otherwise
-     SkipPragmaBlock( elsif_t, else_t );                   -- skip if block
+     SkipStaticBlock( elsif_t, else_t );                   -- skip if block
   end if;
 
   -- elsif expr then statements
@@ -3897,10 +3910,10 @@ begin
         err( "redundant " & optional_bold( "then" ) );     -- GNAT
      end if;
      if b and not handled then                             -- true (and not previously done)
-        ParsePragmaBlock( elsif_t, else_t );               -- handle the elsif block
+        ParseStaticBlock( elsif_t, else_t );               -- handle the elsif block
         handled := true;                                   -- remember we did it
      else                                                  -- otherwise
-        SkipPragmaBlock( elsif_t, else_t );                -- skip elsif block
+        SkipStaticBlock( elsif_t, else_t );                -- skip elsif block
      end if;
   end loop;
 
@@ -3921,9 +3934,9 @@ begin
         err( "redundant " & optional_bold( "else" ) );     -- GNAT
      end if;
      if not handled then                                   -- nothing handled yet?
-        ParsePragmaBlock;                                  -- handle else block
+        ParseStaticBlock;                                  -- handle else block
      else                                                  -- otherwise
-        SkipPragmaBlock;                                   -- skip else block
+        SkipStaticBlock;                                   -- skip else block
      end if;
   end if;
 
@@ -3932,100 +3945,8 @@ begin
   expect( end_t );                                         -- "end if"
   expect( if_t );
 
-end ParsePragmaIfBlock;
+end ParseStaticIfBlock;
 
-procedure ParsePragmaCaseBlock is
--- Syntax: case-block = "case" ident "is" "when" const-ident ["|"...] "=>" ...
--- "when others =>" ..."end case"
--- constants only
-  test_id : identifier;
-  case_id : identifier;
-  handled : boolean := false;
-  b       : boolean := false;
-begin
-
-  -- case id is
-
-  expect( case_t );                                        -- "case"
-  ParseStaticIdentifier( test_id );                        -- identifier to test
-  -- we allow const because parameters are consts in Bush 1.x.
-  if class_ok( test_id, constClass ) then
-     expect( is_t );                                       -- "is"
-  end if;
-
-  -- when const-id =>
-
-  if token /= when_t then                                 -- first when missing?
-     expect( when_t );                                    -- force error
-  end if;
-  while token = when_t loop
-     expect( when_t );                                    -- "when"
-     exit when error_found or token = others_t;
-     -- this should be ParseConstantIdentifier
-     b := false;                                          -- assume case fails
-     loop
-        if token = strlit_t then                          -- strlit allowed
-           if baseTypesOk( identifiers( test_id ).kind, string_t ) then
-              case_id := token;
-              getNextToken;
-           end if;
-        elsif token = charlit_t then                      -- charlit allowed
-           if baseTypesOk( identifiers( test_id ).kind, character_t ) then
-              case_id := token;
-              getNextToken;
-           end if;
-        elsif token = number_t then                       -- num lit allowed
-           if uniTypesOk( identifiers( test_id ).kind, uni_numeric_t ) then
-              case_id := token;
-              getNextToken;
-           end if;
-        else                                             -- constant allowed
-           ParseIdentifier( case_id );                         -- get the case
-           if identifiers( case_id ).class /= constClass       -- is constant
-              and identifiers( case_id ).class /= enumClass then -- or enum?
-              err( "variable not allowed as a case" );         -- error if not
-           elsif baseTypesOk( identifiers( test_id ).kind,
-                 identifiers( case_id ).kind ) then            -- types good?
-              null;
-           end if;
-        end if;
-        if not error_found then                         -- OK? check case
-           b := b or                                    -- against test var
-             identifiers( test_id ).value = identifiers( case_id ).value;
-        end if;
-        exit when error_found or token /= symbol_t or identifiers( token ).value /= "|";
-        expect( symbol_t, "|" );                        -- expect alternate
-     end loop;
-     expect( symbol_t, "=>" );                             -- "=>"
-     if b and not handled and not exit_block then          -- handled yet?
-        ParsePragmaBlock( when_t );                        -- if not, handle
-        handled := true;                                   -- and remember done
-     else
-        SkipPragmaBlock( when_t );                         -- else skip case
-     end if;
-  end loop;
-
-  -- others part
-
-  if token /= others_t then                                -- a little clearer
-     err( "when others expected" );                        -- if pointing at
-  end if;                                                  -- end case
-  expect( others_t );                                      -- "others"
-  expect( symbol_t, "=>" );                                -- "=>"
-  if not handled and not exit_block then                   -- not handled yet?
-     ParseBlock;                                           -- handle now
-  else                                                     -- else just
-     SkipBlock;                                            -- skip
-  end if;
-
-  -- end case
-
-  expect( end_t );                                         -- "end case"
-  expect( case_t );
-
-end ParsePragmaCaseBlock;
-
------------------------------------------------------------------------------
 
 procedure ParseCaseBlock is
 -- Syntax: case-block = "case" ident "is" "when" const-ident ["|"...] "=>" ...
@@ -4117,6 +4038,113 @@ begin
 
 end ParseCaseBlock;
 
+-----------------------------------------------------------------------------
+-- STATIC CASE BLOCK
+--
+-- Conditionally execute code based on a static expression value.  This is
+-- tied to parsePolicy: only policy block statements allowed in the code.
+-----------------------------------------------------------------------------
+
+procedure ParseStaticCaseBlock is
+-- Syntax: case-block = "case" ident "is" "when" const-ident ["|"...] "=>" ...
+-- "when others =>" ..."end case"
+-- constants only
+  test_id : identifier;
+  case_id : identifier;
+  handled : boolean := false;
+  b       : boolean := false;
+begin
+
+  -- case id is
+
+  expect( case_t );                                        -- "case"
+  ParseStaticIdentifier( test_id );                        -- identifier to test
+  -- we allow const because parameters are consts in Bush 1.x.
+  if class_ok( test_id, constClass ) then
+     expect( is_t );                                       -- "is"
+  end if;
+
+  -- when const-id =>
+
+  if token /= when_t then                                 -- first when missing?
+     expect( when_t );                                    -- force error
+  end if;
+  while token = when_t loop
+     expect( when_t );                                    -- "when"
+     exit when error_found or token = others_t;
+     -- this should be ParseConstantIdentifier
+     b := false;                                          -- assume case fails
+     loop
+        if token = strlit_t then                          -- strlit allowed
+           if baseTypesOk( identifiers( test_id ).kind, string_t ) then
+              case_id := token;
+              getNextToken;
+           end if;
+        elsif token = charlit_t then                      -- charlit allowed
+           if baseTypesOk( identifiers( test_id ).kind, character_t ) then
+              case_id := token;
+              getNextToken;
+           end if;
+        elsif token = number_t then                       -- num lit allowed
+           if uniTypesOk( identifiers( test_id ).kind, uni_numeric_t ) then
+              case_id := token;
+              getNextToken;
+           end if;
+        else                                             -- constant allowed
+           ParseIdentifier( case_id );                         -- get the case
+           if identifiers( case_id ).class /= constClass       -- is constant
+              and identifiers( case_id ).class /= enumClass then -- or enum?
+              err( "variable not allowed as a case" );         -- error if not
+           elsif baseTypesOk( identifiers( test_id ).kind,
+                 identifiers( case_id ).kind ) then            -- types good?
+              null;
+           end if;
+        end if;
+        if not error_found then                         -- OK? check case
+           b := b or                                    -- against test var
+             identifiers( test_id ).value = identifiers( case_id ).value;
+        end if;
+        exit when error_found or token /= symbol_t or identifiers( token ).value /= "|";
+        expect( symbol_t, "|" );                        -- expect alternate
+     end loop;
+     expect( symbol_t, "=>" );                             -- "=>"
+     if b and not handled and not exit_block then          -- handled yet?
+        ParseStaticBlock( when_t );                        -- if not, handle
+        handled := true;                                   -- and remember done
+     else
+        SkipStaticBlock( when_t );                         -- else skip case
+     end if;
+  end loop;
+
+  -- others part
+
+  if token /= others_t then                                -- a little clearer
+     err( "when others expected" );                        -- if pointing at
+  end if;                                                  -- end case
+  expect( others_t );                                      -- "others"
+  expect( symbol_t, "=>" );                                -- "=>"
+  if not handled and not exit_block then                   -- not handled yet?
+     ParseBlock;                                           -- handle now
+  else                                                     -- else just
+     SkipBlock;                                            -- skip
+  end if;
+
+  -- end case
+
+  expect( end_t );                                         -- "end case"
+  expect( case_t );
+
+end ParseStaticCaseBlock;
+
+
+-----------------------------------------------------------------------------
+-- LOOPS
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+-- LOOP
+-----------------------------------------------------------------------------
+
 procedure ParseLoopBlock is
   -- Syntax: loop-block = "loop" ... "end loop"
   exit_on_entry : boolean := exit_block;
@@ -4151,6 +4179,11 @@ begin
   expect( end_t );                                         -- "end loop"
   expect( loop_t );
 end ParseLoopBlock;
+
+
+-----------------------------------------------------------------------------
+-- WHILE
+-----------------------------------------------------------------------------
 
 procedure ParseWhileBlock is
   -- Syntax: while-block = "while" bool-expr "loop" ... "end loop"
@@ -4210,6 +4243,11 @@ begin
   expect( end_t );                                         -- "end loop"
   expect( loop_t );
 end ParseWhileBlock;
+
+
+-----------------------------------------------------------------------------
+-- FOR
+-----------------------------------------------------------------------------
 
 procedure ParseForBlock is
   -- Syntax: for-block = "for" local-var "in" expr ".." expr "loop" ... "end loop"
@@ -4406,6 +4444,14 @@ begin
 
 end ParseForBlock;
 
+-----------------------------------------------------------------------------
+-- Other statements
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+-- DELAY
+-----------------------------------------------------------------------------
+
 procedure ParseDelay is
   -- Syntax: delay expression
   -- Source: Ada built-in
@@ -4427,6 +4473,11 @@ begin
      end if;
   end if;
 end ParseDelay;
+
+
+-----------------------------------------------------------------------------
+-- TYPESET
+-----------------------------------------------------------------------------
 
 procedure ParseTypeset is
   -- Syntax: typeset identifier is type
@@ -8555,6 +8606,62 @@ when block_table_overflow =>
   done := true;
 end ParseGeneralStatement;
 
+
+------------------------------------------------------------------------------
+-- PARSE POLICY
+--
+-- Parse a policy block.  This contains pragmas, static if, static case or
+-- null.
+------------------------------------------------------------------------------
+
+procedure parsePolicy is
+begin
+  expect( policy_t );
+  expect( is_t );
+  while (not error_found and not done) loop
+     if token = pragma_t then
+        ParsePragma;
+        expectSemicolon;
+     elsif token = if_t then
+        ParseStaticIfBlock;
+        expectSemicolon;
+     elsif token = case_t then
+        ParseStaticCaseBlock;
+        expectSemicolon;
+     elsif token = null_t then
+        expect( null_t );
+        expectSemicolon;
+     else
+        exit;
+     end if;
+  end loop;
+  expect( end_t );
+  expect( policy_t );
+end parsePolicy;
+
+
+------------------------------------------------------------------------------
+-- PARSE CONFIG
+--
+-- Parse a configuration block.  The block contains declarations only.
+------------------------------------------------------------------------------
+
+procedure parseConfig is
+begin
+  expect( configuration_t );
+  expect( is_t );
+  if not error_found and not done then -- this if is probably redundant
+     ParseDeclarations;
+  end if;
+  expect( end_t );
+  expect( configuration_t );
+end parseConfig;
+
+
+------------------------------------------------------------------------------
+-- PARSE MAIN PROGRAM
+------------------------------------------------------------------------------
+
 procedure ParseMainProgram is
   program_id : identifier;
 begin
@@ -8600,29 +8707,44 @@ end ParseMainProgram;
 ------------------------------------------------------------------------------
 
 procedure parse is
+  save_syntax_check : boolean;
 begin
   if not error_found then
      cmdpos := firstScriptCommandOffset;
      token := identifiers'first;                -- dummy, replaced by g_n_t
      getNextToken;                              -- load first token
 
-     -- A script can start with a main program or it can have pragmas,
-     -- policies or trace commands in front of it.
+     -- Prior to a main program (or a simple script), a script may have
+     -- pragmas, policies, configurations, withs, trace.  A procedure
+     -- is a main program.  Otherwise, skip all this and drop down to the
+     -- simple script handling.
 
-     while (not error_found and not done) and (token = procedure_t or
-       token = pragma_t or token = policy_t or token = trace_t) loop
+     while (not error_found and not done) and (
+       token = procedure_t or
+       token = pragma_t or
+       token = policy_t or
+       token = configuration_t or
+       token = trace_t ) loop
         if token = pragma_t then
            ParsePragma;
            expectSemicolon;
         elsif token = policy_t then
            ParsePolicy;
            expectSemicolon;
-        -- todo: configs go here
+        elsif token = configuration_t then
+           ParseConfig;
+           expectSemicolon;
         elsif token = procedure_t then
            ParseMainProgram;
            expectSemicolon;
            expect( eof_t );                        -- should be nothing else
            exit;
+        elsif token = with_t then                  -- with before main pgm
+           save_syntax_check := syntax_check;      -- this copied
+           syntax_check := true;                   -- from elsewhere
+           ParseWith;
+           syntax_check := save_syntax_check;
+           expectSemicolon;
         elsif token = trace_t then
            ParseShellCommand;
            expectSemicolon;
@@ -8651,80 +8773,6 @@ begin
      end if;
   end if;
 end parse;
-
-
-------------------------------------------------------------------------------
--- PARSE POLICY
---
--- Switch to a new set of policy commands.  For a policy file, this should
--- only be pragmas.   It is up to the caller to restore the scanner state.
-------------------------------------------------------------------------------
-
-procedure parsePolicy is
-begin
-  expect( policy_t );
-  expect( is_t );
-  while (not error_found and not done) loop
-     if token = pragma_t then
-        ParsePragma;
-        expectSemicolon;
-     elsif token = if_t then
-        ParsePragmaIfBlock;
-        expectSemicolon;
-     elsif token = case_t then
-        ParsePragmaCaseBlock;
-        expectSemicolon;
-     elsif token = null_t then
-        expect( null_t );
-        expectSemicolon;
-     else
-        exit;
-     end if;
-  end loop;
-  expect( end_t );
-  expect( policy_t );
-end parsePolicy;
-
-
-------------------------------------------------------------------------------
--- PARSE CONFIG
---
--- Switch to a new set of config commands.  For a config file, this should
--- only be declarations.   It is up to the caller to restore the scanner state.
-------------------------------------------------------------------------------
-
-procedure parseConfig is
-begin
-  if not error_found then
-     cmdpos := firstScriptCommandOffset;
-     token := identifiers'first;                -- dummy, replaced by g_n_t
-     getNextToken;                              -- load first token
-     -- todo: "config" is not a reserved word yet because we've maxed out
-     -- the reserved words.  In the meantime, treated it like a pragma name.
-     -- except that this throws off the byte-code compiler.  it doesn't know
-     -- what config is so it treats it as a shell command.
-     --if identifiers( token ).name = "policy" then
-     --   discardUnusedIdentifier( token );
-     --   getNextToken;
-     --else
-     --   err( "config expected" );
-     --end if;
-     --expect( is_t );
-     if not error_found and not done then
-        ParseDeclarations;
-     end if;
-     -- todo: "config" is not a reserved word yet because we've maxed out
-     -- the reserved words.  In the meantime, treated it like a pragma name.
-     -- expect( end_t );
-     --if identifiers( token ).name = "config" then
-     --   discardUnusedIdentifier( token );
-     --   getNextToken;
-     --else
-     --   err( "config expected" );
-     --end if;
-     expect( eof_t );                        -- should be nothing else
-  end if;
-end parseConfig;
 
 
 ------------------------------------------------------------------------------
@@ -9060,7 +9108,13 @@ begin
     end if;
   end if;
   if (scriptFile > 0 or boolean(execOpt)) and not done then -- file open or -e?
-     parseConfig;
+     if not error_found then
+        cmdpos := firstScriptCommandOffset;
+        token := identifiers'first;                -- dummy, replaced by g_n_t
+        getNextToken;                              -- load first token
+        parseConfig;
+        expect( eof_t );                        -- should be nothing else
+     end if;
   elsif C_errno = 2 then                             -- file not found?
      put_line( standard_error, "unable to open config file '" &
        configPath & "' : file not found" );
