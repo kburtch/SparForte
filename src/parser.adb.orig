@@ -8612,11 +8612,15 @@ end ParseGeneralStatement;
 --
 -- Parse a policy block.  This contains pragmas, static if, static case or
 -- null.
+-- Ada: N/A
+-- Syntax: policy p is .. end c;
 ------------------------------------------------------------------------------
 
 procedure parsePolicy is
+  policy_id : identifier;
 begin
   expect( policy_t );
+  ParseNewIdentifier( policy_id );
   expect( is_t );
   while (not error_found and not done) loop
      if token = pragma_t then
@@ -8636,7 +8640,7 @@ begin
      end if;
   end loop;
   expect( end_t );
-  expect( policy_t );
+  expect( policy_id );
 end parsePolicy;
 
 
@@ -8644,17 +8648,21 @@ end parsePolicy;
 -- PARSE CONFIG
 --
 -- Parse a configuration block.  The block contains declarations only.
+-- Ada: N/A
+-- Syntax: configuration c is .. end c;
 ------------------------------------------------------------------------------
 
 procedure parseConfig is
+  config_id : identifier;
 begin
   expect( configuration_t );
+  ParseNewIdentifier( config_id );
   expect( is_t );
   if not error_found and not done then -- this if is probably redundant
      ParseDeclarations;
   end if;
   expect( end_t );
-  expect( configuration_t );
+  expect( config_id );
 end parseConfig;
 
 
