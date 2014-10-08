@@ -211,6 +211,7 @@ end old_cd;
 --
 -- env : show the attributes of an identifier / all identifiers (if eof_t)
 -- Syntax: env [id]
+-- NOTE: another instance supports argument list params
 -----------------------------------------------------------------------------
 
 procedure env( id : identifier := eof_t ) is
@@ -694,24 +695,29 @@ begin
         put_all_identifiers;
      else
         tempStr := to_unbounded_string( ap( 1 ).all );
-        delete( tempStr, length( tempStr ), length( tempStr ) );
-        findIdent( tempStr, identToShow );
-        if identToShow = eof_t then
-           err( "identifier not declared" );
-        elsif boolean(rshOpt) and then identifiers( identToShow ).name =  "PATH" then
-           err( "env PATH is not allowed in a " &
-             optional_bold( "restricted shell" ) );
-        elsif boolean(rshOpt) and then identifiers( identToShow ).name = "HOME" then
-           err( "env HOME is not allowed in a " &
-              optional_bold( "restricted shell" ) );
-        elsif boolean(rshOpt) and then identifiers( identToShow ).name = "PWD" then
-           err( "env PWD is not allowed in a " &
-             optional_bold( "restricted shell" ) );
-        elsif boolean(rshOpt) and then identifiers( identToShow ).name = "OLDPWD" then
-           err( "env OLDPWD is not allowed in a " &
-             optional_bold( "restricted shell" ) );
-        elsif isExecutingCommand then
-           Put_Identifier( identToShow );
+        if length( tempStr ) <= 1 then
+           err( "internal error: name of identifier to find is empty" );
+        else
+           -- remove ASCII.NUL from C string
+           delete( tempStr, length( tempStr ), length( tempStr ) );
+           findIdent( tempStr, identToShow );
+           if identToShow = eof_t then
+              err( "identifier not declared" );
+           elsif boolean(rshOpt) and then identifiers( identToShow ).name =  "PATH" then
+              err( "env PATH is not allowed in a " &
+                optional_bold( "restricted shell" ) );
+           elsif boolean(rshOpt) and then identifiers( identToShow ).name = "HOME" then
+              err( "env HOME is not allowed in a " &
+                 optional_bold( "restricted shell" ) );
+           elsif boolean(rshOpt) and then identifiers( identToShow ).name = "PWD" then
+              err( "env PWD is not allowed in a " &
+                optional_bold( "restricted shell" ) );
+           elsif boolean(rshOpt) and then identifiers( identToShow ).name = "OLDPWD" then
+              err( "env OLDPWD is not allowed in a " &
+                optional_bold( "restricted shell" ) );
+           elsif isExecutingCommand then
+              Put_Identifier( identToShow );
+           end if;
         end if;
      end if;
   end if;

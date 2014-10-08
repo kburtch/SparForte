@@ -317,6 +317,29 @@ echo "OK"
 # Search testsuite* directories and run bad tests stored there
 
 echo
+echo "Testing good suite scripts:"
+
+ls -d goodsuite* | (while read DIR ; do
+   ls "$DIR"/goodtest* | ( while read FILE; do
+      good_test "$FILE"
+      RESULT=$?
+      if [ $RESULT -ne 0 ] ; then
+         exit $RESULT
+      fi
+   done )
+   RESULT=$?
+   if [ $RESULT -ne 0 ] ; then
+      exit $RESULT
+   fi
+done )
+RESULT=$?
+if [ $RESULT -ne 0 ] ; then
+   exit $RESULT
+fi
+
+# Search testsuite* directories and run bad tests stored there
+
+echo
 echo "Testing bad scripts:"
 
 ls -d testsuite* | (while read DIR ; do

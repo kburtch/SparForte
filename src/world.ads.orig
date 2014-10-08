@@ -259,11 +259,14 @@ libraryPath : Unbounded_String;
 --   varClass      - a variable
 --   namespaceClass - a namespace marker
 --   enumClass     - an enumerated item
+--   policyClass   - a policy block
+--   configurationClass - a configuration block
 --   otherClass    - an undefined class
 
 type anIdentifierClass is ( constClass, subClass, typeClass, funcClass,
   userFuncClass, procClass, userProcClass, taskClass, mainProgramClass,
-  exceptionClass, varClass, namespaceClass, enumClass, otherClass );
+  exceptionClass, varClass, namespaceClass, enumClass, policyClass,
+  configurationClass, otherClass );
 
 function getIdentifierClassImage( c : anIdentifierClass ) return string;
 

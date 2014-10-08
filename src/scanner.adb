@@ -331,6 +331,10 @@ begin
         put( "namespace " );
      when enumClass =>
         put( "enumerated item of the type " );
+     when policyClass =>
+        put( "policy block " );
+     when configurationClass =>
+        put( "configuration block " );
      when others =>
         put( "identifier of the type " );
      end case;
@@ -345,10 +349,19 @@ begin
      -- Failsafe: shouldn't be keyword, but just in case.
 
      if ident.kind = keyword_t then
-        if ident.class /= funcClass and ident.class /= procClass and ident.class /= userProcClass and ident.class /= userFuncClass and ident.class /= mainProgramClass and ident.class /= namespaceClass then
+        if ident.class /= funcClass and
+           ident.class /= procClass and
+           ident.class /= userProcClass and
+           ident.class /= userFuncClass and
+           ident.class /= mainProgramClass and
+           ident.class /= namespaceClass then
            put( "keyword" );
         end if;
      elsif ident.class = exceptionClass then
+        null;
+     elsif ident.class = namespaceClass then
+        null;
+     elsif ident.class = policyClass then
         null;
      else
         if kind.name = "an anonymous array" then

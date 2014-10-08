@@ -1,0 +1,3 @@
+separate;
+b : boolean := true;
+

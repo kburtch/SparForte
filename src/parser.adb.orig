@@ -8386,7 +8386,7 @@ begin
   elsif Token = elsif_t then
      err( "elsif without if" );
   elsif Token = with_t then
-     err( "with only allowed in declaration section" );
+     err( "with only allowed in declaration section or before main program" );
   elsif Token = use_t then
      err( "use not implemented" );
   elsif Token = task_t then
@@ -8621,6 +8621,10 @@ procedure parsePolicy is
 begin
   expect( policy_t );
   ParseNewIdentifier( policy_id );
+  if identifiers( policy_id ).kind = new_t then
+     identifiers( policy_id ).class := policyClass;
+     identifiers( policy_id ).kind := policy_t;
+  end if;
   expect( is_t );
   while (not error_found and not done) loop
      if token = pragma_t then
@@ -8657,6 +8661,10 @@ procedure parseConfig is
 begin
   expect( configuration_t );
   ParseNewIdentifier( config_id );
+  if identifiers( config_id ).kind = new_t then
+     identifiers( config_id ).class := configurationClass;
+     identifiers( config_id ).kind := configuration_t;
+  end if;
   expect( is_t );
   if not error_found and not done then -- this if is probably redundant
      ParseDeclarations;
@@ -8715,7 +8723,6 @@ end ParseMainProgram;
 ------------------------------------------------------------------------------
 
 procedure parse is
-  save_syntax_check : boolean;
 begin
   if not error_found then
      cmdpos := firstScriptCommandOffset;
@@ -8731,6 +8738,7 @@ begin
        token = procedure_t or
        token = pragma_t or
        token = policy_t or
+       token = with_t or
        token = configuration_t or
        token = trace_t ) loop
         if token = pragma_t then
@@ -8748,11 +8756,8 @@ begin
            expect( eof_t );                        -- should be nothing else
            exit;
         elsif token = with_t then                  -- with before main pgm
-           save_syntax_check := syntax_check;      -- this copied
-           syntax_check := true;                   -- from elsewhere
+           -- load the include file, parse the header
            ParseWith;
-           syntax_check := save_syntax_check;
-           expectSemicolon;
         elsif token = trace_t then
            ParseShellCommand;
            expectSemicolon;

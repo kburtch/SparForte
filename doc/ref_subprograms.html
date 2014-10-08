@@ -521,12 +521,39 @@ following conditions:</p>
 reported and the profile file will not be run.  The login session will
 be aborted.</p>
 
-<h2>Global Policy File</h2>
+<h2>Policies and the Global Policy File</h2>
 
-<p>When SparForte runs a script, it searches for a file
-called "/etc/sparforte_policy".  This is a system-wide initialization
+<p>A <b>policy</b> is a special block.  It contains a collection of
+pragmas that apply to a project.  It may also contain static if or case
+statements (that is, with expressions that can be evaluated before the
+program is run) so that different pragmas can be applied in different
+situations.  They are intended for use by architects.</p>
+
+<p>Policy blocks are named so that each block can be applied only once.
+An identifier already declared error will occur if the same block is
+applied twice.</p>
+
+<p>A policy block should appear before the main program.</p>
+
+        <center>
+        <div class="code">
+        <p class="code"><b>policy</b> web_app_policy <b>is</b><br>
+        &nbsp;&nbsp;<b>pragma</b> ada_95;<br>
+        &nbsp;&nbsp;<b>if</b> <b>not</b> System.Development_Phase <b>then</b><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<b>pragma</b> restriction( no_external_commands );<br>
+        &nbsp;&nbsp;<b>end</b> <b>if</b>;<br>
+        <b>end</b> web_app_policy;<br>&nbsp;<br>
+        </p>
+        <div class="code_caption">
+        <b>Example</b>: A Simple Policy Block</span>
+        </div>
+        </div>
+        </center>
+
+<p>There can also be a global policy file.  When SparForte runs a script,
+it searches for a file called <span class="code">/etc/sparforte_policy</span>.  This is a system-wide initialization
 file, similar to a profile file.  It's purpose is to setup any architectural
-pragmas, constants, and other shared declarations common to all scripts
+pragmas common to all scripts
 on a server.  The policy file is not executed for interactive sessions.
 The file is indended to be used by architects who maintain the standards
 and integration of different computer systems, separating their concerns
@@ -548,27 +575,24 @@ reported and the file will not be run.  The script will be aborted.</p>
 <p>A policy file may only contain <b>pragma</b>'s.  It cannot contain
 include files.</p>
 
-        <center>
-        <div class="code">
-        <p class="code"><b>pragma</b> <b>is</b><br>
-        &nbsp;&nbsp;ada_95;<br>
-        &nbsp;&nbsp;restriction( no_external_commands );<br>
-        <b>end</b> <b>pragma</b>;<br>&nbsp;<br>
-        </p>
-        <div class="code_caption">
-        <b>Example</b>: A Simple /etc/sparforte_policy file</span>
-        </div>
-        </div>
-        </center>
+<h2>Configuration Blocks and Global Configuration File</h2>
 
-<p>There are currently no project-specific policy files.</p>
-
-<h2>Global Configuration File</h2>
-
-<p>After running any global policy file, SparForte searches for a file called
-"/etc/sparforte_config".  This is a system-wide initialization file
-used to set up any system administration information such as server names,
+<p>A <b>configuration</b> block is a special block.  It contains a
+collection of declarations and pragmas at apply to a project.  These
+are for describing environment settings such as server names,
 login credentials for services (such as databases) and so forth.
+The block is intended for use by system administrators.</p>
+
+<p>Configuration blocks are named so that each block can be applied only once.
+An identifier already declared error will occur if the same block is
+applied twice.</p>
+
+<p>A configuration block should appear before the main program.</p>
+
+<p>There can also be a global configuration file.
+After running any global policy file, SparForte searches for a file called
+<span class="code"/etc/sparforte_config</span>.  This is a system-wide initialization file
+containing a configuration block.
 The configuration file is not executed for interactive sessions.  The
 file is intended to be used by system administrators who must maintain
 different enviroments, separating their concerns from those of the
@@ -597,12 +621,14 @@ files.</p>
         <center>
         <div class="code">
         <p class="code">-- Database settings for this server<br>
-        db_host     : <b>constant</b> string := "db1.ourcompany.com";<br>
-        db_username : <b>constant</b> string := "webapp";<br>
-        db_password : <b>constant</b> string := "secret";<br>&nbsp;<br>
+        <b>configuration</b> dev_environment <b>is</b><br>
+        &nbsp;&nbsp;db_host     : <b>constant</b> string := "db1.ourcompany.com";<br>
+        &nbsp;&nbsp;db_username : <b>constant</b> string := "webapp";<br>
+        &nbsp;&nbsp;db_password : <b>constant</b> string := "secret";<br>
+        <b>end</b> dev_environment;<br>&nbsp;<br>
         </p>
         <div class="code_caption">
-        <b>Example</b>: A Simple /etc/sparforte_config file</span>
+        <b>Example</b>: A Simple /etc/sparforte_config File</span>
         </div>
         </div>
         </center>
@@ -610,8 +636,6 @@ files.</p>
 <p>SparForte will not report an error if there are any unused variables from
 the configuration file.   It is assumed that some declarations will not be
 used in some scripts.</p>
-
-<p>There are currently no project-specific configuration files.</p>
 
 <br>&nbsp;
 

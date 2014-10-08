@@ -8,7 +8,9 @@ CHANGES SINCE 1.5
 
 2. Fix: eliminated warnings on newer versions of gcc for tinyserver buffer and apq printf formatting one one line
 
-3. New: more Standard OpenGL functions (not documented yet) :
+3. Fix: trailing whitespace check no longer crashes with separate files.
+
+4. New: more Standard OpenGL functions (not documented yet) :
    glnormal3b,         glnormal3d,         glnormal3f,        glnormal3i,
    glnormal3s,         glindexd,           glindexf,          glindexi,
    glindexs,           glrectd,            glrectf,           glrecti,
@@ -28,25 +30,29 @@ CHANGES SINCE 1.5
    glinitnames,        glloadname,         glpushname,        gopopname,
    [not all tested] 
 
-4. New: OpenGL extension functions
+5. New: OpenGL extension functions
 
-5. Change: byte code changed - reserved word limit moved from 128 to 8192.
+6. Change: byte code changed - reserved word limit moved from 128 to 8192.
 
-6. New: reserved words interface, overriding, some, synchronized.  There are in Ada 2005, 2012 but are not used in SparForte.  Reserved for compatibility reasons.
+7. New: reserved words interface, overriding, some, synchronized.  There are in Ada 2005, 2012 but are not used in SparForte.  Reserved for compatibility reasons.
 
-7. Change: containers package was declared in parser_doubly now extracted into separate package.
+8. Change: containers package was declared in parser_doubly now extracted into separate package.
 
-8. New: vectors (singly linked list) package. new_vector, clear, to_vector, capacity, reserve_capacity, length, set_length, is_empty, append, prepend, first_index, last_index, element [not finished], first_element, last_element, delete_first, delete_last, contains, move, reverse_elements, flip [docs needed] [tests needed]
+9. New: vectors (singly linked list) package. new_vector, clear, to_vector, capacity, reserve_capacity, length, set_length, is_empty, append, prepend, first_index, last_index, element [not finished], first_element, last_element, delete_first, delete_last, contains, move, reverse_elements, flip [docs needed] [tests needed]
 
-9. Change: new, faster identifier search function. [pen enums not modified for this]
+10. Change: new, faster identifier search function. [pen enums not modified for this]
 
-10. Fix: constants with enumerated values no longer confused with the enumerated value itself.  (e.g. b : boolean := true; ? true; will show "true" not "b").
+11. Fix: constants with enumerated values no longer confused with the enumerated value itself.  (e.g. b : boolean := true; ? true; will show "true" not "b").
 
-11. Split byte code compiler into a separate file, removing it from the scanner.
+12. Split byte code compiler into a separate file, removing it from the scanner.
 
-12. Change: pragma advise, annotate, blocked, clarify, depreciated/deprecated, dispute, propose, refactor, todo now accept static string expressions instead of a string literal. [negative tests needed]
+13. Change: pragma advise, annotate, blocked, clarify, depreciated/deprecated, dispute, propose, refactor, todo now accept static string expressions instead of a string literal. [negative tests needed]
 
-13. New: System.Design_Phase, System.Development_Phase, System.Maintenance_Phase, System.Testing_Phase, reflecting the command line options.
+14. New: System.Design_Phase, System.Development_Phase, System.Maintenance_Phase, System.Testing_Phase, reflecting the command line options.
 
-14. New: policy blocks.  static if and static case allowed in policy blocks. [docs needed] [tests needed] [needs to work outside of sparforte_policy]
+15. New: policy blocks.  static if and static case allowed in policy blocks. [docs needed] [tests needed] [needs to work outside of sparforte_policy]
+
+16. New: policy, configuration are reserved words.
+
+17. Fix (needed): env with AdaScript parameters gives error on semi-colon at end of command.
 

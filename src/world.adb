@@ -1311,6 +1311,8 @@ begin
   when varClass         => return "variable";
   when namespaceClass   => return "namespace";
   when enumClass        => return "enumerated item";
+  when policyClass      => return "policy block";
+  when configurationClass => return "configuration block";
   when otherClass       => return "other class";
   end case;
 end getIdentifierClassImage;
