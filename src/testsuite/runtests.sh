@@ -226,8 +226,8 @@ fi
 if [ "$1" != "-b" ] ; then
    # goodtest.bush checks itself for read-only
    chmod -w goodtest.bush
-   good_test "goodtest.bush"
-   good_test "goodtest2.bush"
+   good_test "goodtest.sp"
+   good_test "goodtest2.sp"
 fi
 
 echo
