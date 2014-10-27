@@ -1,2 +1,2 @@
-with separate "goodsuite/include002.sp";
+with separate "include002.sp";
 

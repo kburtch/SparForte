@@ -164,7 +164,7 @@ bad_test_testmode() {
   fi
 }
 
-#  BAD TEST
+#  GOOD TEST
 #
 # Run the test script with no parameters.  Declare FOOBAR.  If there's a
 # non-success code is returned, abort with the error.  Do it with syntax-only
@@ -186,6 +186,36 @@ good_test() {
   ../spar --debug "$1" a b c
   RESULT=$?
   teardown
+  test -f ./test.txt && rm ./test.txt
+  if [ $RESULT -ne 0 ] ; then
+     echo "--- $1 TEST FAILED - status code $? ---"
+     exit 1
+  fi
+}
+
+#  GOOD TEST IN DIR
+#
+# Run the test script with no parameters.  Declare FOOBAR.  If there's a
+# non-success code is returned, abort with the error.  Do it with syntax-only
+# and normally.  Unlike regular good_test, this assumes you are in the
+# subdirectory...this is necessary from some of the "separate" tests.
+# ---------------------------------------------------------------------------
+
+good_test_in_dir() {
+  echo "Running $1..."
+  #setup
+  ../../spar --debug --check "$1" a b c
+  RESULT=$?
+  #teardown
+  test -f ./test.txt && rm ./test.txt
+  if [ $RESULT -ne 0 ] ; then
+     echo "--- $1 TEST FAILED - status code $? ---"
+     exit 1
+  fi
+  #setup
+  ../../spar --debug "$1" a b c
+  RESULT=$?
+  #teardown
   test -f ./test.txt && rm ./test.txt
   if [ $RESULT -ne 0 ] ; then
      echo "--- $1 TEST FAILED - status code $? ---"
@@ -225,7 +255,7 @@ fi
 
 if [ "$1" != "-b" ] ; then
    # goodtest.bush checks itself for read-only
-   chmod -w goodtest.bush
+   chmod -w goodtest.sp
    good_test "goodtest.sp"
    good_test "goodtest2.sp"
 fi
@@ -315,13 +345,17 @@ cd - 2>/dev/null
 echo "OK"
 
 # Search testsuite* directories and run bad tests stored there
+#
+# These good tests normally test different structures such as
+# include files.  We need to change to the directory first.
 
 echo
 echo "Testing good suite scripts:"
 
 ls -d goodsuite* | (while read DIR ; do
-   ls "$DIR"/goodtest* | ( while read FILE; do
-      good_test "$FILE"
+   cd "$DIR"
+   ls goodtest* | ( while read FILE; do
+      good_test_in_dir "$FILE"
       RESULT=$?
       if [ $RESULT -ne 0 ] ; then
          exit $RESULT
@@ -331,6 +365,7 @@ ls -d goodsuite* | (while read DIR ; do
    if [ $RESULT -ne 0 ] ; then
       exit $RESULT
    fi
+   cd - 2>/dev/null
 done )
 RESULT=$?
 if [ $RESULT -ne 0 ] ; then

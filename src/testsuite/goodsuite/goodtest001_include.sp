@@ -1,3 +1,3 @@
-with separate "goodsuite/include001.sp";
+with separate "include001.sp";
 pragma assert( b = true );
 
