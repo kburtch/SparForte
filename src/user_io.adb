@@ -321,6 +321,8 @@ end slashifyPath;
   vi_escape    : boolean := false; -- true if expecting vi-mode command
   arrow_escape : boolean := false; -- true if expecting VT-100 arrow
   last_was_esc : boolean := false; -- true if last char was ESC
+  last_was_esc_o : boolean := false; -- true if last chars were ESC+O
+  last_was_esc_sq_3 : boolean := false; -- true if last chars were ESC+[+3
   ch         : character; -- last character read
   pos        : natural;   -- position to insert next character
   old_pos    : natural;   -- for redrawing lines
@@ -368,9 +370,27 @@ begin
           ch := ASCII.ACK;
        elsif ch = 'D' then                    -- D = left
           ch := ASCII.STX;
+       elsif ch = '3' then                    -- Delete Key
+          last_was_esc_sq_3 := true;
+          goto retry;
        else
           beep;                               -- otherwise unknown
        end if;
+    elsif last_was_esc_sq_3 then              -- ESC + [ + 3 + ...?
+       last_was_esc_sq_3 := false;
+       if ch = '~' then                       -- no vi equivalent to DEL key
+          ch := ASCII.NAK;                    -- control-u
+       end if;
+    elsif last_was_esc_o then                 -- ESC + O + ...?
+        last_was_esc := false;
+        last_was_esc_o := false;
+        if ch = 'H' then                      -- home key (ESC+O+H)
+           ch := ASCII.SOH;
+        elsif ch = 'F' then                   -- end key (ESC+O+F)
+           ch := ASCII.ENQ;
+        else
+           beep;                              -- otherwise unknown
+        end if;
     elsif vi_escape then
        last_was_esc := false;
        if ch ='[' then                        -- same as control-n
@@ -389,6 +409,12 @@ begin
           ch := ASCII.SOH;
        elsif ch = '$' then                    -- same as control-e
           ch := ASCII.ENQ;
+       elsif ch = 'x' then                    -- same as control-u
+          ch := ASCII.NAK;
+       elsif ch = 'O' then                    -- home/end keys
+          last_was_esc_o := true;             -- ESC+O
+          vi_escape := false;                 -- cancel vi mode
+          goto retry;
        else                                   -- else not supported
           vi_escape := false;                 -- drop out of vi escape mode
           beep;                               -- beep at illegal character
@@ -508,6 +534,23 @@ begin
           old_pos := pos;                     -- remember old position
           pos := pos - 1;                     -- new position is one to left
           redrawLine( old_pos, pos );         -- redraw line, cursor at end
+       else                                   -- nothing to delete?
+          beep;                               -- beep
+       end if;
+    when ASCII.NAK =>                         -- control-u or del key
+       if length( line ) > 0 then
+          old_pos := pos;                     -- remember old position
+          if pos > length( line ) then        -- beyond eol?
+             pos := pos - 1;                  -- position one to left
+          elsif pos = length( line ) then     -- was at last char?
+             delete( line, pos, pos );        -- delete char under cursor
+             if pos /= 1 then                 -- if last char, don't move
+                pos := pos - 1;               -- position is one to left
+             end if;
+          else                                -- else
+             delete( line, pos, pos );        -- delete char under cursor
+          end if;                             -- and don't move
+          redrawLine( old_pos, pos );         -- redraw line
        else                                   -- nothing to delete?
           beep;                               -- beep
        end if;
