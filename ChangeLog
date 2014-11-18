@@ -56,3 +56,5 @@ CHANGES SINCE 1.5
 
 17. Fix (needed): env with AdaScript parameters gives error on semi-colon at end of command.
 
+18. New: Additional command line editing keys: PC keyboard Home (= control-a), End (= control-e), and Del (= new Control-u / ESC x).
+
