@@ -46,6 +46,24 @@ tutorial discusses how execute statements and delcarations can be
 organized.  It also discusses how scripts can evolve and grow under
 SparForte.</p>
 
+<h3>What Makes an Error?</h3>
+
+<p>Unlike most programming languages, SparForte takes into account many
+factors before reporting an error in a program.</p>
+
+<img src="pictures/sparforte_error_considerations.png" width="742" height="412" alt="[image of 5 considerations]">
+
+<ul>
+<li><b>Life cycle stage</b>: Is this script being designed? Developed? Tested?</li>
+<li><b>Formality</b>: Is the script structured or unstructured?</li>
+<li><b>Project tasks</b>: Is there outstanding work?</li>
+<li><b>Architecture</b>: Are there design requirements, standards or restrictions?</li>
+<li><b>Software model</b>: Is the script built to standards for a common task?</li>
+</ul>
+
+<p>For example, if you declare a variable but do not use it, it may be
+considered an error in certain contexts and not an error in others.</p>
+
 <h3>Setting Your Architecture Constraints</h3>
 
 <p>If you are working in a medium to large size organization, you may have
