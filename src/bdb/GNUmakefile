@@ -1,0 +1,24 @@
+
+all: gen_constants c_bdb.o bdb_constants.ads db
+
+gen_constants:
+	gcc -DBDB4 -o gen_constants gen_constants.c
+
+c_bdb.o:
+	gcc -DBDB4 -c c_bdb.c
+
+bdb_constants.ads: gen_constants
+	./gen_constants > bdb_constants.ads
+
+db:
+	gnatmake -c db.adb
+	gnatbind -x db.ali
+	gnatlink db.ali -ldb c_bdb.o
+
+clean:
+	rm -f *.o *.ali db bdb_constants.ads gen_constants
+	rm -f __db* txn/__db* nbs
+
+distclean: clean
+	rm  -f *~ *.tmp *.bak
+
