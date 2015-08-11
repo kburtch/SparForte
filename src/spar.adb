@@ -31,6 +31,7 @@ with ada.text_io,
      user_io,
      parser,
      signal_flags;
+
 use ada.text_io,
     ada.strings.unbounded,
     ada.strings.unbounded.text_io,
@@ -42,7 +43,10 @@ use ada.text_io,
     user_io,
     parser,
     signal_flags;
+
 with string_util; use string_util;
+
+--with spar_interface;
 
 -- pragma Optimize( space );
 
