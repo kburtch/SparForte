@@ -32,6 +32,7 @@ while [ $# -gt 0 ] ; do
       echo "  --prefix=PREFIX       root installation directory"
       echo "  --manprefix=MANPREFIX man page install directory"
       echo "  --with-gnat-cgi       enable GNAT.CGI support"
+      echo "  --without-bdb         disable Berkeley DB support"
       echo "  --without-mysql       disable MySQL support"
       echo "  --without-postgres    disable PostgreSQL support"
 #      echo "  --without-sdl"
@@ -54,6 +55,9 @@ while [ $# -gt 0 ] ; do
       ;;
   --with-gnat-cgi)
       NO_GCGI=
+      ;;
+  --without-bdb)
+      NO_BDB=0
       ;;
   --without-mysql)
       NO_MYSQL=0
@@ -942,6 +946,11 @@ if [ -z "$NO_GCGI" ] ; then
 else
    GNATPREP_OPTS="$GNATPREP_OPTS -DGCGI=false"
 fi
+if [ -z "$NO_BDB" ] ; then
+   GNATPREP_OPTS="$GNATPREP_OPTS -DBDB=true"
+else
+   GNATPREP_OPTS="$GNATPREP_OPTS -DBDI=false"
+fi
 # this is for world.ads. APQ=true if either DB is installed
 if [ ! -z "$NEEDS_APQ" ] ; then
    GNATPREP_OPTS="$GNATPREP_OPTS -DAPQ=true"
@@ -1088,6 +1097,12 @@ if [ -z "$NO_SOUND" ] ; then
    fi
 fi
 
+if [ -z "$NO_BDB" ] ; then
+   BDBLIBS="-ldb bdb/bdb_constants.o bdb/bdb.o bdb/c_bdb.o"
+else
+   BDBLIBS=
+fi
+
 PREFIX=`echo "$PREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 MANPREFIX=`echo "$MANPREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 
@@ -1100,7 +1115,7 @@ touch c_gstreamer.c
 
 echo "Creating...src/GNUmakefile"
 
-sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g;s/MESAINCLSUB/$MESAINCLTYPE/g;s/MESALIBSSUB/$MESALIBSTYPE/g" < GNUmakefile.orig > GNUmakefile
+sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g;s/MESAINCLSUB/$MESAINCLTYPE/g;s/MESALIBSSUB/$MESALIBSTYPE/g;s/BDBSUB/$BDBLIBS/g" < GNUmakefile.orig > GNUmakefile
 
 cd ..
 echo "Creating...GNUmakefile"

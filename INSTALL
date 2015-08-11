@@ -168,6 +168,8 @@ By default, SparForte will install under /usr/local.
             because it raises an exception if SparForte is not running
             in a CGI context.  Use this switch to enable support.
 
+    --without-bdb (NO_BDB variable): disable Berkeley DB support
+
     --without-mysql (NO_MYSQL variable): disable MySQL database support
 
     --without-postgres (NO_POSTGRES variable): disable PostgreSQL database
