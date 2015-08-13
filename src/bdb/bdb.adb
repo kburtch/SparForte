@@ -26,7 +26,7 @@ function to_unbounded_string( buffer : char_array; buffer_len : size_t ) return 
   s : unbounded_string;
 begin
     while i < buffer_len loop
-      s := s & Interfaces.C.To_Ada( buffer(i) ); 
+      s := s & Interfaces.C.To_Ada( buffer(i) );
       i := i + 1;
     end loop;
   return s;
@@ -377,7 +377,7 @@ begin
    buffer := new char_array(0..255);
    C_db_strerror( session.err, char_array_ptr_Conv.to_address( buffer ), size_t( buffer'length ) );
    for i in buffer'range loop
-	exit when To_Ada( buffer(i) ) = ASCII.NUL;
+        exit when To_Ada( buffer(i) ) = ASCII.NUL;
         msg := msg & To_Ada( buffer(i) );
     end loop;
     free( buffer );
@@ -395,7 +395,7 @@ begin
    buffer := new char_array(0..255);
    C_db_strerror( env.err, char_array_ptr_Conv.to_address( buffer ), size_t( buffer'length ) );
    for i in buffer'range loop
-	exit when To_Ada( buffer(i) ) = ASCII.NUL;
+        exit when To_Ada( buffer(i) ) = ASCII.NUL;
         msg := msg & To_Ada( buffer(i) );
     end loop;
     free( buffer );
@@ -448,11 +448,11 @@ end init;
 -- (Null strings will be treated as NULL pointers in C.)
 ------------------------------------------------------------------------------
 
-procedure new_berkeley_session( session : out berkeley_session; max_key_length, max_data_length : size_t ) is
+procedure new_berkeley_session( session : out berkeley_session; env : berkeley_environment; max_key_length, max_data_length : size_t ) is
 begin
   session.key_buffer := new char_array( 0 .. max_key_length-1 );  -- size_t starts at zero
   session.data_buffer := new char_array( 0 .. max_data_length-1 ); -- but make it explicit for readability
-  init( session );
+  init( session, env );
 end new_berkeley_session;
 
 
@@ -461,12 +461,16 @@ end new_berkeley_session;
 -- Releases memory allocated by new berkely session.
 ------------------------------------------------------------------------------
 
-procedure free_berkeley_session( session : out berkeley_session; key_length, data_length : size_t ) is
+procedure free_berkeley_session( session : out berkeley_session ) is
+  use char_array_ptr_Conv;
 begin
-  free( session.key_buffer );
-  free( session.data_buffer );
+  if session.key_buffer /= null then
+     free( session.key_buffer );
+  end if;
+  if session.data_buffer /= null then
+     free( session.data_buffer );
+  end if;
 end free_berkeley_session;
-
 
 
 -- OPEN
@@ -867,7 +871,7 @@ end new_berkeley_cursor;
 -- Get a key/pair value from the current cursor position (or the position
 -- specified in the flags).
 
-procedure get( session : in out berkeley_session; cursor : in out berkeley_cursor; 
+procedure get( session : in out berkeley_session; cursor : in out berkeley_cursor;
   key, data : out unbounded_string; flags : c_get_flags := DB_C_GET_CURRENT ) is
 begin
   C_dbc_c_get( session.err,
@@ -901,7 +905,7 @@ end close;
 -- Write a key/data pair to the current cursor position (or where specified in
 -- the flags).  Putting before or after only applies to identical keys.
 
-procedure put( session : in out berkeley_session; cursor : berkeley_cursor; 
+procedure put( session : in out berkeley_session; cursor : berkeley_cursor;
   key, data : string; flags : c_put_flags := DB_C_PUT_CURRENT ) is
 begin
   to_char_array( key, session.key_buffer.all, session.key_length );
@@ -918,7 +922,7 @@ begin
   end if;
 end put;
 
-procedure put( session : in out berkeley_session; cursor : berkeley_cursor; 
+procedure put( session : in out berkeley_session; cursor : berkeley_cursor;
   key, data : unbounded_string; flags : c_put_flags := DB_C_PUT_CURRENT ) is
 begin
   put( session, cursor, to_string( key ), to_string( data ), flags );

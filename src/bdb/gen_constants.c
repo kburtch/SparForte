@@ -263,7 +263,9 @@
  printf( " DB_E_SET_TXN_TIMEOUT      : constant e_set_timeout_flags := %d;\n", DB_SET_TXN_TIMEOUT );
  printf( "\n" );
  printf( "type e_verbose_flags is new flags;\n" );
+ #ifdef DB_VERB_BACKUP
  printf( " DB_VERB_BACKUP          : constant e_verbose_flags := %d;\n", DB_VERB_BACKUP );
+ #endif
  printf( " DB_VERB_DEADLOCK        : constant e_verbose_flags := %d;\n", DB_VERB_DEADLOCK );
  printf( " DB_VERB_FILEOPS         : constant e_verbose_flags := %d;\n", DB_VERB_FILEOPS );
  printf( " DB_VERB_FILEOPS_ALL     : constant e_verbose_flags := %d;\n", DB_VERB_FILEOPS_ALL );
@@ -277,7 +279,9 @@
  printf( " DB_VERB_REP_MISC        : constant e_verbose_flags := %d;\n", DB_VERB_REP_MISC );
  printf( " DB_VERB_REP_MSGS        : constant e_verbose_flags := %d;\n", DB_VERB_REP_MSGS );
  printf( " DB_VERB_REP_SYNC        : constant e_verbose_flags := %d;\n", DB_VERB_REP_SYNC );
+ #ifdef DB_VERB_REP_SYSTEM
  printf( " DB_VERB_REP_SYSTEM      : constant e_verbose_flags := %d;\n", DB_VERB_REP_SYSTEM );
+ #endif
  printf( " DB_VERB_REP_TEST        : constant e_verbose_flags := %d;\n", DB_VERB_REP_TEST );
  printf( " DB_VERB_WAITSFOR        : constant e_verbose_flags := %d;\n", DB_VERB_WAITSFOR );
  printf( " -- TODO: not sure all these apply\n" );

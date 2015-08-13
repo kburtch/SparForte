@@ -24,6 +24,11 @@
 with ada.text_io, user_io, scanner;
 use  ada.text_io, user_io, scanner;
 
+#if BDB
+  with bdb;
+  use  bdb;
+#end if;
+
 package body scanner_res is
 
 -- a list of resource handles.  the sort isn't used.
@@ -175,6 +180,18 @@ begin
        put_line( "OpenGL float array" );
   when gl_double_array  =>
        put_line( "OpenGL doubly array" );
+  when btree_file =>
+       put_line( "btree file" );
+  when hash_file =>
+       put_line( "hash file" );
+  when recno_file =>
+       put_line( "recno file" );
+  when btree_cursor =>
+       put_line( "btree cursor" );
+  when hash_cursor =>
+       put_line( "hash cursor" );
+  when recno_cursor =>
+       put_line( "recno cursor" );
   when none =>
        put_line( "undefined resource" );
   when others =>
@@ -220,6 +237,30 @@ begin
      Free( rp.gl_fa );
   elsif rp.rt = gl_double_array then
      Free( rp.gl_da );
+  elsif rp.rt = btree_file then
+     if rp.btree.isOpen then
+        close( rp.btree.env );
+        close( rp.btree.session );
+     end if;
+     free_berkeley_session( rp.btree.session );
+  elsif rp.rt = hash_file then
+     if rp.hash.isOpen then
+        close( rp.hash.env );
+        close( rp.hash.session );
+     end if;
+     free_berkeley_session( rp.hash.session );
+  elsif rp.rt = recno_file then
+     if rp.recno.isOpen then
+        close( rp.recno.env );
+        close( rp.recno.session );
+     end if;
+     free_berkeley_session( rp.recno.session );
+  elsif rp.rt = btree_cursor then
+       null;
+  elsif  rp.rt =hash_cursor then
+       null;
+  elsif  rp.rt =recno_cursor then
+       null;
   end if;
   resHandleList.clear( resHandles, long_integer( id ) );
 end clearResource;

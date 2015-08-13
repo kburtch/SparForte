@@ -25,7 +25,7 @@ procedure db is
   less, equal, greater : long_float := 99.0;
 
 begin
-  new_berkeley_session( session, 10, 10 );
+  new_berkeley_session( session, standalone_environment, 10, 10 );
   raise_exceptions( session );
   --set_create_dir( session, "/tmp" );
   --set_pagesize( session, 512 );

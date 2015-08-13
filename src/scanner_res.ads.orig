@@ -33,6 +33,9 @@ with gen_list,
 #if MYSQL
      APQ.MySQL.Client,
 #end if;
+#if BDB
+     bdb,
+#end if;
      bush_os.opengl,
      world;
 use  world,
@@ -79,9 +82,14 @@ type aResourceType is (
    gl_short_array,
    gl_int_array,
    gl_float_array,
-   gl_double_array
+   gl_double_array,
+   btree_file,
+   hash_file,
+   recno_file,
+   btree_cursor,
+   hash_cursor,
+   recno_cursor
 );
-
 
 --- Resource Defnitions
 --
@@ -114,6 +122,31 @@ package dynamic_string_hash_tables is
       String_Hash,
       "="
 );
+
+-- Berkeley DB B-Tree File
+
+#if BDB
+type btree_file_type is record
+    session : bdb.berkeley_session;
+    env     : bdb.berkeley_environment;
+    isOpen  : boolean := false;
+    name    : unbounded_string;
+end record;
+
+type hash_file_type is record
+    session : bdb.berkeley_session;
+    env     : bdb.berkeley_environment;
+    isOpen  : boolean := false;
+    name    : unbounded_string;
+end record;
+
+type recno_file_type is record
+    session : bdb.berkeley_session;
+    env     : bdb.berkeley_environment;
+    isOpen  : boolean := false;
+    name    : unbounded_string;
+end record;
+#end if;
 
 --- Resource Handle
 --
@@ -176,6 +209,42 @@ type resHandle( rt : aResourceType ) is record
           gl_fa : GL_Float_Array_Access;
      when gl_double_array =>
           gl_da : GL_Double_Array_Access;
+     when btree_file =>
+#if BDB
+          btree : btree_file_type;
+#else
+          null; -- no Berkeley DB
+#end if;
+     when hash_file =>
+#if BDB
+          hash : hash_file_type;
+#else
+          null; -- no Berkeley DB
+#end if;
+     when recno_file =>
+#if BDB
+          recno : recno_file_type;
+#else
+          null; -- no Berkeley DB
+#end if;
+     when btree_cursor =>
+#if BDB
+          btree_cur : bdb.berkeley_cursor;
+#else
+          null; -- no Berkeley DB
+#end if;
+     when hash_cursor =>
+#if BDB
+          hash_cur : bdb.berkeley_cursor;
+#else
+          null; -- no Berkeley DB
+#end if;
+     when recno_cursor =>
+#if BDB
+          recno_cur : bdb.berkeley_cursor;
+#else
+          null; -- no Berkeley DB
+#end if;
      when none => null;
      end case;
 

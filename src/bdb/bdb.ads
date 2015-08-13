@@ -89,15 +89,15 @@ procedure init( session : in out berkeley_session; env : berkeley_environment :=
 -- (Null strings will be treated as NULL pointers in C.)
 ------------------------------------------------------------------------------
 
-procedure new_berkeley_session( session : out berkeley_session; max_key_length, max_data_length : size_t );
+procedure new_berkeley_session( session : out berkeley_session; env : berkeley_environment; max_key_length, max_data_length : size_t );
 
 
 -- FREE BERKELEY SESSION
 --
--- Releases memory allocated by new berkely session.
+-- Releases memory allocated by new berkeley session.
 ------------------------------------------------------------------------------
 
-procedure free_berkeley_session( session : out berkeley_session; key_length, data_length : size_t );
+procedure free_berkeley_session( session : out berkeley_session );
 
 
 -- OPEN
@@ -203,7 +203,7 @@ procedure key_range( session : in out berkeley_session; key : string; less, equa
 
 procedure new_berkeley_cursor( session : in out berkeley_session; cursor : in out berkeley_cursor; flags : cursor_flags );
 
-procedure get( session : in out berkeley_session; cursor : in out berkeley_cursor; 
+procedure get( session : in out berkeley_session; cursor : in out berkeley_cursor;
   key, data : out unbounded_string; flags : c_get_flags := DB_C_GET_CURRENT );
 
 procedure close( session : in out berkeley_session; cursor : berkeley_cursor );
