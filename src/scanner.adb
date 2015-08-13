@@ -76,7 +76,7 @@ with system,
     parser_dht,
     parser_teams,
     parser_sessions,
-    parser_btree;
+    parser_btree_io;
 use ada.text_io,
     ada.integer_text_io,
     ada.command_line,
@@ -127,7 +127,7 @@ use ada.text_io,
     parser_dht,
     parser_teams,
     parser_sessions,
-    parser_btree;
+    parser_btree_io;
 
 pragma Optimize( time );
 

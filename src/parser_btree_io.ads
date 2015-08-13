@@ -24,7 +24,7 @@
 with ada.strings.unbounded, world;
 use  ada.strings.unbounded, world;
 
-package parser_btree is
+package parser_btree_io is
 
 ------------------------------------------------------------------------------
 -- BTree package identifiers
@@ -63,5 +63,5 @@ btree_new_cursor_t    : identifier;
 procedure StartupBTree;
 procedure ShutdownBTree;
 
-end parser_btree;
+end parser_btree_io;
 

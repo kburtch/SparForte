@@ -20,11 +20,14 @@
 -- This is maintained at http://www.sparforte.com                           --
 --                                                                          --
 ------------------------------------------------------------------------------
+pragma ada_2005;
 
 with text_io;use text_io;
 
 with
     Interfaces.C,
+    ada.exceptions,
+    gnat.directory_operations,
     world,
     scanner,
     scanner_res,
@@ -38,6 +41,8 @@ with
     bdb_constants;
 
 use
+    ada.exceptions,
+    gnat.directory_operations,
     world,
     scanner,
     scanner_res,
@@ -50,7 +55,7 @@ use
     bdb,
     bdb_constants;
 
-package body parser_btree is
+package body parser_btree_io is
 
 ------------------------------------------------------------------------------
 -- Utility subprograms
@@ -253,25 +258,75 @@ begin
      exception when others =>
         err( "value length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img );
      end;
+
+     declare
+        filename : string := base_name( to_string( fname_val ) );
+        dirname  : string := dir_name( to_string( fname_val ) );
+        dirname2 : unbounded_string;
+        pwdId : identifier;
      begin
-        -- TODO: pathname handling
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        -- Create an environment
+
         init( theFile.btree.env );
-        create( theFile.btree.env,
-                "",
+
+        -- berkeley db paths must be absolute paths when creating (opening
+        -- an exisiting data file is OK for relative paths)
+
+        dirname2 := to_unbounded_string( dirname );
+        if dirname = "." then
+           dirname2 := null_unbounded_string;
+        elsif element( dirname2, 1 ) /= '/' then
+           findIdent( to_unbounded_string( "PWD" ), pwdId );
+           dirname2 := identifiers( pwdId ).value & "/" & dirname;
+        end if;
+
+        -- Berkeley puts the files in the current directory, though you can
+        -- move the env because it is shared.  To put the project in a specific
+        -- directory, you have you configure it.  A sophisiticated setup would
+        -- place all of these in different directories.
+        --
+        -- For our purposes (simple files), keep everything in one directory
+
+        if length( dirname2 ) > 0 then
+           begin
+              set_data_dir( theFile.btree.env, to_string( dirname2 ) );
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) & " on setting the data directory" );
+           end;
+           begin
+              set_tmp_dir( theFile.btree.env, to_string( dirname2 ) );
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) & " on setting the temp directory"  );
+           end;
+           -- set_lg_dir ... I haven't imported this yet but we're haven't
+           -- enabled logging.
+        end if;
+
+        -- Create an environment
+
+        begin
+           create( theFile.btree.env,
+                to_string( dirname2 ),
                 -- I assume we don't need logging or transactions but
                 -- they could be implemented.
                 DB_E_OPEN_INIT_LOCK OR
                 DB_E_OPEN_INIT_MPOOL,
-                0 ); -- TODO: dirname
+                0 );
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) & " on creating the environment" );
+           end;
+
         -- Create the file
         new_berkeley_session(
            theFile.btree.session,
            theFile.btree.env,
            keyLen,
            valLen );
-        create( theFile.btree.session, to_string( fname_val ), "", DB_BTREE, 0, 0 );
+        begin
+           create( theFile.btree.session, filename, "", DB_BTREE, 0, 0 );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) & " on creating the data file"  );
+        end;
         theFile.btree.isOpen := true;
         theFile.btree.name := fname_val;
      --exception when berkeley_error:s =>
@@ -333,29 +388,79 @@ begin
      exception when others =>
         err( "value length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img );
      end;
+
+     declare
+        filename : string := base_name( to_string( fname_val ) );
+        dirname  : string := dir_name( to_string( fname_val ) );
+        dirname2 : unbounded_string;
+        pwdId : identifier;
      begin
         -- TODO: pathname handling
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+
         -- Create an environment
         init( theFile.btree.env );
-        open( theFile.btree.env,
-                "",
+
+        -- berkeley db paths must be absolute paths when creating (opening
+        -- an exisiting data file is OK for relative paths).  We're doing this
+        -- here to be consistent with create but it shouldn't be necessary
+
+        dirname2 := to_unbounded_string( dirname );
+        if dirname = "." then
+           dirname2 := null_unbounded_string;
+        elsif element( dirname2, 1 ) /= '/' then
+           findIdent( to_unbounded_string( "PWD" ), pwdId );
+           dirname2 := identifiers( pwdId ).value & "/" & dirname;
+        end if;
+
+        -- Berkeley puts the files in the current directory, though you can
+        -- move the env because it is shared.  To put the project in a specific
+        -- directory, you have you configure it.  A sophisiticated setup would
+        -- place all of these in different directories.
+        --
+        -- For our purposes (simple files), keep everything in one directory
+
+        if length( dirname2 ) > 0 then
+           begin
+              set_data_dir( theFile.btree.env, to_string( dirname2 ) );
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) & " on setting the data directory" );
+           end;
+           begin
+              set_tmp_dir( theFile.btree.env, to_string( dirname2 ) );
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) & " on setting the temp directory"  );
+           end;
+           -- set_lg_dir ... I haven't imported this yet but we're haven't
+           -- enabled logging.
+        end if;
+
+        begin
+           open( theFile.btree.env,
+                to_string( dirname2 ),
                 -- I assume we don't need logging or transactions but
                 -- they could be implemented.
                 DB_E_OPEN_INIT_LOCK OR
                 DB_E_OPEN_INIT_MPOOL,
-                0 ); -- TODO: dirname
+                0 );
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) & " on opening the environment" );
+           end;
+
         -- Create the file
         new_berkeley_session(
            theFile.btree.session,
            theFile.btree.env,
            keyLen,
            valLen );
-        open( theFile.btree.session, to_string( fname_val ), "", DB_BTREE, 0, 0 );
+
+        begin
+           open( theFile.btree.session, filename, "", DB_BTREE, 0, 0 );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) & " on opening the data file"  );
+        end;
         theFile.btree.isOpen := true;
         theFile.btree.name := fname_val;
-     --exception when berkeley_error =>
-     --   err( to_string( last_error( theFile.btree.session ) );
      end;
   end if;
 end ParseBTreeOpen;
@@ -776,35 +881,35 @@ end ParseBtreeNewCursor;
 procedure StartupBTree is
 begin
   -- TODO: rename btree_io
-  declareNamespace( "btree" );
+  declareNamespace( "btree_io" );
 
-  declareIdent( btree_file_t,   "btree.file", positive_t, typeClass );
-  declareIdent( btree_cursor_t, "btree.cursor", positive_t, typeClass );
+  declareIdent( btree_file_t,   "btree_io.file", positive_t, typeClass );
+  declareIdent( btree_cursor_t, "btree_io.cursor", positive_t, typeClass );
 
-  declareProcedure( btree_new_file_t,  "btree.new_file", ParseBTreeNewFile'access );
-  declareProcedure( btree_clear_t,     "btree.clear",    ParseBTreeClear'access );
+  declareProcedure( btree_new_file_t,  "btree_io.new_file", ParseBTreeNewFile'access );
+  declareProcedure( btree_clear_t,     "btree_io.clear",    ParseBTreeClear'access );
 
-  declareProcedure( btree_create_t,    "btree.create",   ParseBTreeCreate'access );
-  declareProcedure( btree_close_t,     "btree.close",    ParseBTreeClose'access );
-  declareProcedure( btree_open_t,      "btree.open",     ParseBTreeOpen'access );
-  declareFunction(  btree_is_open_t,   "btree.is_open",  ParseBTreeIsOpen'access );
-  declareFunction(  btree_name_t,      "btree.name",     ParseBTreeName'access );
-  declareProcedure( btree_delete_t,    "btree.delete",   ParseBTreeDelete'access );
+  declareProcedure( btree_create_t,    "btree_io.create",   ParseBTreeCreate'access );
+  declareProcedure( btree_close_t,     "btree_io.close",    ParseBTreeClose'access );
+  declareProcedure( btree_open_t,      "btree_io.open",     ParseBTreeOpen'access );
+  declareFunction(  btree_is_open_t,   "btree_io.is_open",  ParseBTreeIsOpen'access );
+  declareFunction(  btree_name_t,      "btree_io.name",     ParseBTreeName'access );
+  declareProcedure( btree_delete_t,    "btree_io.delete",   ParseBTreeDelete'access );
 
-  declareProcedure( btree_set_t,       "btree.set",      ParseBTreeSet'access );
-  declareFunction(  btree_get_t,       "btree.get",      ParseBTreeGet'access );
-  declareFunction(  btree_has_element_t, "btree.has_element",  ParseBTreeHasElement'access );
-  declareProcedure( btree_remove_t, "btree.remove",      ParseBTreeRemove'access );
-  declareProcedure( btree_increment_t, "btree.increment",ParseBTreeIncrement'access );
-  declareProcedure( btree_decrement_t, "btree.decrement",ParseBTreeDecrement'access );
-  declareProcedure( btree_add_t, "btree.add", ParseBTreeAdd'access );
-  declareProcedure( btree_replace_t, "btree.replace", ParseBTreeReplace'access );
-  declareProcedure( btree_append_t, "btree.append", ParseBTreeAppend'access );
-  declareProcedure( btree_prepend_t, "btree.prepend", ParseBTreePrepend'access );
+  declareProcedure( btree_set_t,       "btree_io.set",      ParseBTreeSet'access );
+  declareFunction(  btree_get_t,       "btree_io.get",      ParseBTreeGet'access );
+  declareFunction(  btree_has_element_t, "btree_io.has_element",  ParseBTreeHasElement'access );
+  declareProcedure( btree_remove_t, "btree_io.remove",      ParseBTreeRemove'access );
+  declareProcedure( btree_increment_t, "btree_io.increment",ParseBTreeIncrement'access );
+  declareProcedure( btree_decrement_t, "btree_io.decrement",ParseBTreeDecrement'access );
+  declareProcedure( btree_add_t, "btree_io.add", ParseBTreeAdd'access );
+  declareProcedure( btree_replace_t, "btree_io.replace", ParseBTreeReplace'access );
+  declareProcedure( btree_append_t, "btree_io.append", ParseBTreeAppend'access );
+  declareProcedure( btree_prepend_t, "btree_io.prepend", ParseBTreePrepend'access );
 
-  declareProcedure( btree_new_cursor_t,  "btree.new_cursor", ParseBTreeNewCursor'access );
+  declareProcedure( btree_new_cursor_t,  "btree_io.new_cursor", ParseBTreeNewCursor'access );
 
-  declareNamespaceClosed( "btree" );
+  declareNamespaceClosed( "btree_io" );
 
 end StartupBTree;
 
@@ -813,5 +918,5 @@ begin
   null;
 end ShutdownBTree;
 
-end parser_btree;
+end parser_btree_io;
 
