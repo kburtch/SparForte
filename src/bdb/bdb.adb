@@ -309,6 +309,11 @@ pragma import( C, C_db_cursor, "C_db_cursor" );
    dir : string );
   pragma import( C, C_dbe_set_tmp_dir, "C_dbe_set_tmp_dir" );
 
+  procedure C_dbe_set_lg_dir( err : in out db_error;
+   dbe : db_environment;
+   dir : string );
+  pragma import( C, C_dbe_set_lg_dir, "C_dbe_set_lg_dir" );
+
   procedure C_dbe_set_verbose( err : in out db_error;
    dbe : db_environment;
    flags : e_verbose_flags := 0;
@@ -1243,7 +1248,7 @@ begin
 end set_timeout;
 
 
--- SET TEMP DIR (environment)
+-- SET TMP DIR (environment)
 --
 -- Set the temp directory, overriding any environment variables.
 
@@ -1259,6 +1264,24 @@ begin
      raise_error( gnat.source_info.source_location, env );
   end if;
 end set_tmp_dir;
+
+
+-- SET LG DIR (environment)
+--
+-- Set the (transaction) log directory, overriding any environment variables.
+
+procedure set_lg_dir( env : in out berkeley_environment;
+  dir : string ) is
+begin
+  if env.env = no_environment then
+     raise berkeley_error with gnat.source_info.source_location &
+        ": environment is not initialized";
+  end if;
+  C_dbe_set_lg_dir( env.err, env.env, dir & ASCII.NUL );
+  if env.will_raise and then env.err /= DB_OK then
+     raise_error( gnat.source_info.source_location, env );
+  end if;
+end set_lg_dir;
 
 
 -- SET VERBOSE (environment)

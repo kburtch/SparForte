@@ -298,8 +298,11 @@ begin
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on setting the temp directory"  );
            end;
-           -- set_lg_dir ... I haven't imported this yet but we're haven't
-           -- enabled logging.
+           begin
+              set_lg_dir( theFile.btree.env, to_string( dirname2 ) );
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) & " on setting the logging directory"  );
+           end;
         end if;
 
         -- Create an environment
@@ -432,8 +435,11 @@ begin
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on setting the temp directory"  );
            end;
-           -- set_lg_dir ... I haven't imported this yet but we're haven't
-           -- enabled logging.
+           begin
+              set_lg_dir( theFile.btree.env, to_string( dirname2 ) );
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) & " on setting the logging directory"  );
+           end;
         end if;
 
         begin
@@ -873,6 +879,24 @@ begin
   end if;
 end ParseBTreePrepend;
 
+procedure ParseBTreeFlush is
+  -- Syntax: btree.flush( f, flags );
+  -- Ada:    bbd.sync( f );
+  fileId     : identifier;
+  theFile    : resPtr;
+begin
+  expect( btree_flush_t );
+  ParseSingleFileParameter( fileId );
+  if isExecutingCommand then
+     begin
+        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        sync( theFile.btree.session );
+     exception when msg: berkeley_error =>
+        err( exception_message( msg ) );
+     end;
+  end if;
+end ParseBTreeFlush;
+
 procedure ParseBTreeNewCursor is
   -- Syntax: btree.new_cursor( f, t );
   -- Ada:    N/A
@@ -921,6 +945,7 @@ begin
   declareFunction(  btree_is_open_t,   "btree_io.is_open",  ParseBTreeIsOpen'access );
   declareFunction(  btree_name_t,      "btree_io.name",     ParseBTreeName'access );
   declareProcedure( btree_delete_t,    "btree_io.delete",   ParseBTreeDelete'access );
+  declareProcedure( btree_flush_t,     "btree_io.flush",    ParseBTreeFlush'access );
 
   declareProcedure( btree_set_t,       "btree_io.set",      ParseBTreeSet'access );
   declareFunction(  btree_get_t,       "btree_io.get",      ParseBTreeGet'access );

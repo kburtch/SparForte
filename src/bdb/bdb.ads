@@ -201,6 +201,13 @@ procedure set_bt_minkey( session : in out berkeley_session; bt_minkey : natural 
 
 procedure key_range( session : in out berkeley_session; key : string; less, equal, greater : out long_float; flags : key_range_flags );
 
+
+------------------------------------------------------------------------------
+--
+-- Cursors
+--
+------------------------------------------------------------------------------
+
 procedure new_berkeley_cursor( session : in out berkeley_session; cursor : in out berkeley_cursor; flags : cursor_flags );
 
 procedure get( session : in out berkeley_session; cursor : in out berkeley_cursor;
@@ -274,6 +281,9 @@ procedure set_timeout( env : in out berkeley_environment;
   timeout : long_integer; flags : e_set_timeout_flags );
 
 procedure set_tmp_dir( env : in out berkeley_environment;
+  dir : string );
+
+procedure set_lg_dir( env : in out berkeley_environment;
   dir : string );
 
 procedure set_verbose( env : in out berkeley_environment;
