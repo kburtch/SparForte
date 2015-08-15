@@ -595,9 +595,9 @@ begin
   expect( btree_get_t );
   ParseFirstFileParameter( fileId );
   ParseLastStringParameter( keyExpr, keyType, string_t );
+  kind := identifiers( fileId ).genKind;
   if isExecutingCommand then
      begin
-        kind := identifiers( fileId ).genKind;
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
         get( theFile.btree.session, to_string( keyExpr ), result );
      exception when berkeley_error =>
