@@ -141,29 +141,35 @@ put_line( "truncate count =" & rec_cnt'img );
 
   -- Environment Test
 
--- NOTE: an environment must be in the same location as the databases
--- NOTE: an environment must be initialized with the same parameters if it
--- already exists
--- NOTE: deleting an environment isn't working!
-
 put_line( "commit test" );
   Init( session );
   Init( env );
-  create( env, "/home/ken/ada/berkeley", 
+  set_data_dir( env, "/tmp" );
+  set_tmp_dir( env, "/tmp" );
+  create( env, "/tmp", 
    DB_E_OPEN_INIT_LOCK OR
    DB_E_OPEN_INIT_LOG OR
    DB_E_OPEN_INIT_MPOOL OR
    DB_E_OPEN_INIT_TXN,
    0
   );
+put_line("a1" );
   create( session, "nbs", "", DB_HASH, 0, 0 );
-  simple_txn_begin( session, env );
-  simple_txn_commit( session, env );
-  simple_txn_begin( session, env );
-  simple_txn_abort( session, env );
+put_line("a2" );
+--  simple_txn_begin( session, env );
+--  simple_txn_commit( session, env );
+--  simple_txn_begin( session, env );
+--  simple_txn_abort( session, env );
   close( session );
+put_line("a3" );
   dbremove( env, "nbs", "", 0 );
 put_line( "done" );
+  close( env );
+put_line( "d1" );
+  init( env );
+put_line( "d2" );
+  remove( env, "/home/ken/ada/berkeley" );
+put_line( "d3" );
 
 return;
 

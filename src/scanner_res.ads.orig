@@ -131,6 +131,7 @@ type btree_file_type is record
     env     : bdb.berkeley_environment;
     isOpen  : boolean := false;
     name    : unbounded_string;
+    envhome : unbounded_string;
 end record;
 
 type hash_file_type is record
@@ -138,6 +139,7 @@ type hash_file_type is record
     env     : bdb.berkeley_environment;
     isOpen  : boolean := false;
     name    : unbounded_string;
+    envhome : unbounded_string;
 end record;
 
 type recno_file_type is record
@@ -145,6 +147,7 @@ type recno_file_type is record
     env     : bdb.berkeley_environment;
     isOpen  : boolean := false;
     name    : unbounded_string;
+    envhome : unbounded_string;
 end record;
 #end if;
 

@@ -312,6 +312,7 @@ begin
                 DB_E_OPEN_INIT_LOCK OR
                 DB_E_OPEN_INIT_MPOOL,
                 0 );
+           theFile.btree.envhome := dirname2;
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on creating the environment" );
            end;
@@ -443,6 +444,7 @@ begin
                 DB_E_OPEN_INIT_LOCK OR
                 DB_E_OPEN_INIT_MPOOL,
                 0 );
+           theFile.btree.envhome := dirname2;
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on opening the environment" );
            end;
@@ -516,21 +518,45 @@ begin
      begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
         if theFile.btree.isOpen then
-           close( theFile.btree.session );
+           begin
+              close( theFile.btree.session );
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) & " on closing the data file"  );
+           end;
         end if;
-  -- TODO:   hangs on a lock
-        dbremove( theFile.btree.env,
-          to_string( theFile.btree.name ),
-          "",
-          0 );
+
+        begin
+           dbremove( theFile.btree.env,
+             to_string( theFile.btree.name ),
+             "",
+             0 );
+        exception when msg: berkeley_error =>
+            err( exception_message( msg ) & " on removing the data file"  );
+        end;
+
         -- keep the environment
         if theFile.btree.isOpen then
-          close( theFile.btree.env );
+           begin
+              close( theFile.btree.env );
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) & " on closing the environment"  );
+           end;
           -- remove( theFile.btree.env, dbhome )
         end if;
+
+        begin
+           init( theFile.btree.env );
+           remove( theFile.btree.env, to_string( theFile.btree.envhome ) );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) & " on removing the environment"  );
+        end;
         theFile.btree.isOpen := false;
-     --exception when berkeley_error =>
-     --   err( to_string( last_error( theFile.btree.session ) );
+     exception when storage_error =>
+        err( "storage_error raised" );
+     when constraint_error =>
+        err( "constraint_error raised" );
+     when others =>
+        err( "exception raised" );
      end;
   end if;
 end ParseBTreeDelete;

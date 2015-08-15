@@ -10,7 +10,7 @@ c_bdb.o:
 bdb_constants.ads: gen_constants
 	./gen_constants > bdb_constants.ads
 
-db:
+db: db.adb
 	gnatmake -c db.adb
 	gnatbind -x db.ali
 	gnatlink db.ali -ldb c_bdb.o
