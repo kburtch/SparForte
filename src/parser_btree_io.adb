@@ -204,23 +204,26 @@ begin
 end ParseBtreeNewFile;
 
 procedure ParseBTreeClear is
-  -- Syntax: btree.clear( l );
-  -- Ada:    btree.clear( l );
-  --listExpr : unbounded_string;
-  --listType : identifier;
+  -- Syntax: btree.clear( f );
+  -- Ada:    N/A;
   fileId   : identifier;
-  --theFile  : resPtr;
+  theFile  : resPtr;
 begin
   expect( btree_clear_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
-     null;
-     -- TODO: Check and close open resources?
-     --begin
-     --  findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-     --  Doubly_Linked_String_Lists.Clear( theFile.btree.session );
-     --  Doubly_Linked_String_Lists.Clear( theFile.btree.env );
-     --end;
+     begin
+       -- close the file / environment, if they are still open.  This doesn't
+       -- close any cursors.
+       findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+       if theFile.btree.isOpen then
+          Close( theFile.btree.session );
+          Close( theFile.btree.env );
+          theFile.btree.isOpen := false;
+       end if;
+     exception when msg: berkeley_error =>
+       err( exception_message( msg ) );
+     end;
   end if;
 end ParseBTreeClear;
 
@@ -351,8 +354,8 @@ begin
         close( theFile.btree.session );
         close( theFile.btree.env );
         theFile.btree.isOpen := false;
-     --exception when berkeley_error =>
-     --   err( to_string( last_error( theFile.btree.session ) );
+      exception when msg: berkeley_error =>
+        err( exception_message( msg ) );
      end;
   end if;
 end ParseBTreeClose;
@@ -503,8 +506,6 @@ begin
      begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
         result := theFile.btree.name;
-     --exception when berkeley_error =>
-     --   result := null_unbounded_string;
      end;
   end if;
 end ParseBTreeName;
@@ -583,6 +584,8 @@ begin
      begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
         put( theFile.btree.session, to_string( keyExpr ), to_string( valExpr ) );
+     exception when msg: berkeley_error =>
+        err( exception_message( msg ) );
      end;
   end if;
 end ParseBTreeSet;
@@ -604,9 +607,12 @@ begin
      begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
         get( theFile.btree.session, to_string( keyExpr ), result );
-     exception when berkeley_error =>
-        err( "key not found" );
-     --   err( to_string( last_error( theFile.btree.session ) );
+     exception when msg: berkeley_error =>
+        if last_error( theFile.btree.session ) = DB_NOTFOUND then
+           err( "key not found" );
+        else
+            err( exception_message( msg ) );
+        end if;
      end;
   end if;
 end ParseBTreeGet;
@@ -635,23 +641,46 @@ begin
 end ParseBTreeHasElement;
 
 procedure ParseBTreeRemove is
-  -- Syntax: v := btree.remove( f, k );
-  -- Ada:    bdb.delete( f, k );
+  -- Syntax: v := btree.remove( f, k | c );
+  -- Ada:    bdb.delete( f, k | c );
   fileId     : identifier;
   theFile    : resPtr;
+  cursId     : identifier;
+  theCurs    : resPtr;
   keyExpr    : unbounded_string;
   keyType    : identifier;
 begin
   expect( btree_remove_t );
   ParseFirstFileParameter( fileId );
-  ParseLastStringParameter( keyExpr, keyType, string_t );
+  expect( symbol_t, "," );
+  if getbaseType( identifiers( token ).kind ) = btree_cursor_t then
+     ParseIdentifier( cursId );
+     genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
+  else
+     ParseExpression( keyExpr, keyType );
+     baseTypesOk( keyType, uni_string_t );
+  end if;
+  expect( symbol_t, ")" );
   if isExecutingCommand then
-     begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        delete( theFile.btree.session, to_string( keyExpr ) );
-     -- exception when berkeley_error =>
-      --   result := to_bush_boolean( false );
-     end;
+     findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+     if cursId /= eof_t then
+        begin
+          findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+          delete( theFile.btree.session, theCurs.btree_cur );
+        exception when msg: berkeley_error =>
+            err( exception_message( msg ) );
+        end;
+     else
+        begin
+           delete( theFile.btree.session, to_string( keyExpr ) );
+        exception when msg: berkeley_error =>
+           if last_error( theFile.btree.session ) = DB_NOTFOUND then
+              err( "key not found" );
+           else
+              err( exception_message( msg ) );
+           end if;
+        end;
+     end if;
   end if;
 end ParseBTreeRemove;
 
@@ -700,7 +729,12 @@ begin
        err( "storage error raised" );
      when constraint_error =>
        err( "constraint error raised" );
-     -- TODO: berkeley exception handing
+     when msg: berkeley_error =>
+       if last_error( theFile.btree.session ) = DB_NOTFOUND then
+          err( "key not found" );
+       else
+          err( exception_message( msg ) );
+       end if;
      end;
   end if;
 end ParseBTreeIncrement;
@@ -750,7 +784,12 @@ begin
        err( "storage error raised" );
      when constraint_error =>
        err( "constraint error raised" );
-     -- TODO: berkeley exception handing
+     when msg: berkeley_error =>
+       if last_error( theFile.btree.session ) = DB_NOTFOUND then
+          err( "key not found" );
+       else
+          err( exception_message( msg ) );
+       end if;
      end;
   end if;
 end ParseBTreeDecrement;
@@ -773,14 +812,14 @@ begin
      begin
        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
        exists( theFile.btree.session, to_string( keyExpr ) );
-       -- berkeley throws exception on not found.  no exception? do nothing
-       --if oldItem = null_unbounded_string then
-       ----end if;
      exception when storage_error =>
        err( "storage error raised" );
-     when berkeley_error =>
-       put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
-     -- other berkeley exceptions
+     when msg: berkeley_error =>
+       if last_error( theFile.btree.session ) = DB_NOTFOUND then
+          put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
+       else
+          err( exception_message( msg ) );
+       end if;
      end;
   end if;
 end ParseBTreeAdd;
@@ -821,7 +860,7 @@ begin
                itemExpr,
                DB_C_PUT_CURRENT );
         exception when msg: berkeley_error =>
-            err( exception_message( msg ) );
+          err( exception_message( msg ) );
         end;
      else
        -- put, but only if the target exists
@@ -831,9 +870,10 @@ begin
          put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
        exception when storage_error =>
          err( "storage error raised" );
-       when berkeley_error =>
-         null;
-         -- TODO: other berkeley exceptions
+       when msg: berkeley_error =>
+          if last_error( theFile.btree.session ) /= DB_NOTFOUND then
+             err( exception_message( msg ) );
+          end if;
        end;
      end if;
   end if;
@@ -864,9 +904,10 @@ begin
        put( theFile.btree.session, to_string( keyExpr ), to_string( oldItem & itemExpr ) );
      exception when storage_error =>
        err( "storage error raised" );
-     when berkeley_error =>
-       null; -- do not store
-     -- other berkeley exceptions
+     when msg: berkeley_error =>
+       if last_error( theFile.btree.session ) /= DB_NOTFOUND then
+           err( exception_message( msg ) );
+       end if;
      end;
   end if;
 end ParseBTreeAppend;
@@ -896,9 +937,10 @@ begin
        put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr & oldItem ) );
      exception when storage_error =>
        err( "storage error raised" );
-     when berkeley_error =>
-       null; -- do not store
-     -- other berkeley exceptions
+     when msg: berkeley_error =>
+       if last_error( theFile.btree.session ) /= DB_NOTFOUND then
+           err( exception_message( msg ) );
+       end if;
      end;
   end if;
 end ParseBTreePrepend;
