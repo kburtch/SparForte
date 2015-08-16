@@ -92,38 +92,36 @@ begin
   CheckFileIsInitialized( fileId );
 end ParseLastFileParameter;
 
-------------------------------------------------------------------------------
+procedure CheckCursorIsInitialized( cursId : identifier ) is
+begin
+  if identifiers( cursId ).genKind = eof_t then
+     err( "new_cursor has not been called to initialize the cursor" );
+  end if;
+end CheckCursorIsInitialized;
 
---procedure CheckCursorIsInitialized( cursId : identifier ) is
---begin
---  if identifiers( cursId ).genKind = eof_t then
---     err( "new_cursor has not been called to initialize the cursor" );
---  end if;
---end CheckCursorIsInitialized;
---
---procedure ParseSingleCursorParameter( cursId : out identifier ) is
---begin
---  ParseSingleInOutParameter( cursId, doubly_cursor_t );
---  CheckCursorIsInitialized( cursId );
---end ParseSingleCursorParameter;
---
---procedure ParseFirstCursorParameter( cursId : out identifier ) is
---begin
---  ParseFirstInOutParameter( cursId, doubly_cursor_t );
---  CheckCursorIsInitialized( cursId );
---end ParseFirstCursorParameter;
---
---procedure ParseNextCursorParameter( cursId : out identifier ) is
---begin
---  ParseNextInOutParameter( cursId, doubly_cursor_t );
---  CheckCursorIsInitialized( cursId );
---end ParseNextCursorParameter;
---
---procedure ParseLastCursorParameter( cursId : out identifier ) is
---begin
---  ParseLastInOutParameter( cursId, doubly_cursor_t );
---  CheckCursorIsInitialized( cursId );
---end ParseLastCursorParameter;
+procedure ParseSingleCursorParameter( cursId : out identifier ) is
+begin
+  ParseSingleInOutParameter( cursId, btree_cursor_t );
+  CheckCursorIsInitialized( cursId );
+end ParseSingleCursorParameter;
+
+procedure ParseFirstCursorParameter( cursId : out identifier ) is
+begin
+  ParseFirstInOutParameter( cursId, btree_cursor_t );
+  CheckCursorIsInitialized( cursId );
+end ParseFirstCursorParameter;
+
+procedure ParseNextCursorParameter( cursId : out identifier ) is
+begin
+  ParseNextInOutParameter( cursId, btree_cursor_t );
+  CheckCursorIsInitialized( cursId );
+end ParseNextCursorParameter;
+
+procedure ParseLastCursorParameter( cursId : out identifier ) is
+begin
+  ParseLastInOutParameter( cursId, btree_cursor_t );
+  CheckCursorIsInitialized( cursId );
+end ParseLastCursorParameter;
 
 ------------------------------------------------------------------------------
 
@@ -788,30 +786,56 @@ begin
 end ParseBTreeAdd;
 
 procedure ParseBtreeReplace is
-  -- Syntax: btree.replace( f, s, e );
+  -- Syntax: btree.replace( f, c | k, v );
   -- Ada:    N/A
+  -- Note: the key will not be overwritten if a cursor is used
   fileId     : identifier;
   theFile  : resPtr;
   keyExpr  : unbounded_string;
   keyType  : identifier;
   itemExpr : unbounded_string;
   itemType : identifier;
+  cursId   : identifier := eof_t;
+  theCurs  : resPtr;
 begin
   expect( btree_replace_t );
   ParseFirstFileParameter( fileId );
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
+  expect( symbol_t, "," );
+  if getbaseType( identifiers( token ).kind ) = btree_cursor_t then
+     ParseIdentifier( cursId );
+     genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
+  else
+     ParseExpression( keyExpr, keyType );
+     baseTypesOk( keyType, uni_string_t );
+  end if;
   ParseLastGenItemParameter( itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
-     begin
-       findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-       exists( theFile.btree.session, to_string( keyExpr ) );
-       put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
-     exception when storage_error =>
-       err( "storage error raised" );
-     when berkeley_error =>
-       null;
-     -- other berkeley exceptions
-     end;
+     if cursId /= eof_t then
+        -- put where the cursor is
+        begin
+          findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+          findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+          put( theFile.btree.session,
+               theCurs.btree_cur,
+               keyExpr, -- this is ignored
+               itemExpr,
+               DB_C_PUT_CURRENT );
+        exception when msg: berkeley_error =>
+            err( exception_message( msg ) );
+        end;
+     else
+       -- put, but only if the target exists
+       begin
+         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+         exists( theFile.btree.session, to_string( keyExpr ) );
+         put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
+       exception when storage_error =>
+         err( "storage error raised" );
+       when berkeley_error =>
+         null;
+         -- TODO: other berkeley exceptions
+       end;
+     end if;
   end if;
 end ParseBTreeReplace;
 
@@ -920,10 +944,219 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, btree_file, blocks_top );
+     declareResource( resId, btree_cursor, blocks_top );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParseBtreeNewCursor;
+
+procedure ParseBTreeOpenCursor is
+  -- Syntax: btree_io.open_cursor( f, c );
+  -- Ada:    N/A
+  fileId     : identifier;
+  theFile    : resPtr;
+  cursId     : identifier;
+  theCurs    : resPtr;
+begin
+-- TODO: fold into btree.open
+  expect( btree_open_cursor_t );
+  ParseFirstFileParameter( fileId );
+  ParseLastCursorParameter( cursId );
+  if isExecutingCommand then
+     findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+     findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+     new_berkeley_cursor( theFile.btree.session, theCurs.btree_cur );
+  end if;
+end ParseBtreeOpenCursor;
+
+procedure ParseBTreeCloseCursor is
+  -- Syntax: btree_io.close_cursor( fc );
+  -- Ada:    bdb.close( f );
+  fileId     : identifier;
+  theFile    : resPtr;
+  cursId     : identifier;
+  theCurs    : resPtr;
+begin
+  expect( btree_close_cursor_t );
+  ParseFirstFileParameter( fileId );
+  ParseLastCursorParameter( cursId );
+  if isExecutingCommand then
+     begin
+        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+        close( theFile.btree.session, theCurs.btree_cur );
+     exception when msg: berkeley_error =>
+        err( exception_message( msg ) );
+     end;
+  end if;
+end ParseBTreeCloseCursor;
+
+procedure ParseBTreeFirst is
+  -- Syntax: btree_io.first( f, c, k, v );
+  -- Ada:    bdb.get( f );
+  -- Note: Unlike Ada lists, Berkeley will also return the element when
+  -- positioning the cursor.
+  fileId     : identifier;
+  theFile    : resPtr;
+  cursId     : identifier;
+  theCurs    : resPtr;
+  keyRef     : reference;
+  valRef     : reference;
+begin
+  expect( btree_first_t );
+  ParseFirstFileParameter( fileId );
+  ParseNextCursorParameter( cursId );
+  genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
+  ParseNextOutParameter( keyRef, string_t );
+  baseTypesOK( keyRef.kind, string_t );
+  ParseLastOutParameter( valRef, identifiers( fileId ).genKind );
+  baseTypesOK( valRef.kind, identifiers( fileId ).genKind  );
+  if isExecutingCommand then
+     declare
+        key : unbounded_string;
+        data : unbounded_string;
+     begin
+        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+        get( theFile.btree.session,
+             theCurs.btree_cur,
+             key,
+             data,
+             DB_C_GET_FIRST );
+        AssignParameter( keyRef, key );
+        AssignParameter( valRef, data );
+     exception when msg: berkeley_error =>
+         -- TODO: differentiate between key not found and other errors here
+         err( "key not found" );
+         -- err( exception_message( msg ) );
+     end;
+  end if;
+end ParseBTreeFirst;
+
+procedure ParseBTreeNext is
+  -- Syntax: btree_io.next( f, c, k, v );
+  -- Ada:    bdb.get( f );
+  -- Note: Unlike Ada lists, Berkeley will also return the element when
+  -- positioning the cursor.
+  fileId     : identifier;
+  theFile    : resPtr;
+  cursId     : identifier;
+  theCurs    : resPtr;
+  keyRef     : reference;
+  valRef     : reference;
+begin
+  expect( btree_next_t );
+  ParseFirstFileParameter( fileId );
+  ParseNextCursorParameter( cursId );
+  genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
+  ParseNextOutParameter( keyRef, string_t );
+  baseTypesOK( keyRef.kind, string_t );
+  ParseLastOutParameter( valRef, identifiers( fileId ).genKind );
+  baseTypesOK( valRef.kind, identifiers( fileId ).genKind  );
+  if isExecutingCommand then
+     declare
+        key : unbounded_string;
+        data : unbounded_string;
+     begin
+        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+        get( theFile.btree.session,
+             theCurs.btree_cur,
+             key,
+             data,
+             DB_C_GET_NEXT );
+        AssignParameter( keyRef, key );
+        AssignParameter( valRef, data );
+     exception when msg: berkeley_error =>
+         -- TODO: differentiate between key not found and other errors here
+         err( "key not found" );
+         -- err( exception_message( msg ) );
+     end;
+  end if;
+end ParseBTreeNext;
+
+procedure ParseBTreeLast is
+  -- Syntax: btree_io.last( f, c, k, v );
+  -- Ada:    bdb.get( f );
+  -- Note: Unlike Ada lists, Berkeley will also return the element when
+  -- positioning the cursor.
+  fileId     : identifier;
+  theFile    : resPtr;
+  cursId     : identifier;
+  theCurs    : resPtr;
+  keyRef     : reference;
+  valRef     : reference;
+begin
+  expect( btree_last_t );
+  ParseFirstFileParameter( fileId );
+  ParseNextCursorParameter( cursId );
+  genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
+  ParseNextOutParameter( keyRef, string_t );
+  baseTypesOK( keyRef.kind, string_t );
+  ParseLastOutParameter( valRef, identifiers( fileId ).genKind );
+  baseTypesOK( valRef.kind, identifiers( fileId ).genKind  );
+  if isExecutingCommand then
+     declare
+        key : unbounded_string;
+        data : unbounded_string;
+     begin
+        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+        get( theFile.btree.session,
+             theCurs.btree_cur,
+             key,
+             data,
+             DB_C_GET_LAST );
+        AssignParameter( keyRef, key );
+        AssignParameter( valRef, data );
+     exception when msg: berkeley_error =>
+         -- TODO: differentiate between key not found and other errors here
+         err( "key not found" );
+         -- err( exception_message( msg ) );
+     end;
+  end if;
+end ParseBTreeLast;
+
+procedure ParseBTreePrevious is
+  -- Syntax: btree_io.previous( f, c, k, v );
+  -- Ada:    bdb.get( f );
+  -- Note: Unlike Ada lists, Berkeley will also return the element when
+  -- positioning the cursor.
+  fileId     : identifier;
+  theFile    : resPtr;
+  cursId     : identifier;
+  theCurs    : resPtr;
+  keyRef     : reference;
+  valRef     : reference;
+begin
+  expect( btree_previous_t );
+  ParseFirstFileParameter( fileId );
+  ParseNextCursorParameter( cursId );
+  genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
+  ParseNextOutParameter( keyRef, string_t );
+  baseTypesOK( keyRef.kind, string_t );
+  ParseLastOutParameter( valRef, identifiers( fileId ).genKind );
+  baseTypesOK( valRef.kind, identifiers( fileId ).genKind  );
+  if isExecutingCommand then
+     declare
+        key : unbounded_string;
+        data : unbounded_string;
+     begin
+        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+        get( theFile.btree.session,
+             theCurs.btree_cur,
+             key,
+             data,
+             DB_C_GET_PREV );
+        AssignParameter( keyRef, key );
+        AssignParameter( valRef, data );
+     exception when msg: berkeley_error =>
+         -- TODO: differentiate between key not found and other errors here
+         err( "key not found" );
+         -- err( exception_message( msg ) );
+     end;
+  end if;
+end ParseBTreePrevious;
 
 
 -----------------------------------------------------------------------------
@@ -950,15 +1183,21 @@ begin
   declareProcedure( btree_set_t,       "btree_io.set",      ParseBTreeSet'access );
   declareFunction(  btree_get_t,       "btree_io.get",      ParseBTreeGet'access );
   declareFunction(  btree_has_element_t, "btree_io.has_element",  ParseBTreeHasElement'access );
-  declareProcedure( btree_remove_t, "btree_io.remove",      ParseBTreeRemove'access );
+  declareProcedure( btree_remove_t,    "btree_io.remove",      ParseBTreeRemove'access );
   declareProcedure( btree_increment_t, "btree_io.increment",ParseBTreeIncrement'access );
   declareProcedure( btree_decrement_t, "btree_io.decrement",ParseBTreeDecrement'access );
-  declareProcedure( btree_add_t, "btree_io.add", ParseBTreeAdd'access );
-  declareProcedure( btree_replace_t, "btree_io.replace", ParseBTreeReplace'access );
-  declareProcedure( btree_append_t, "btree_io.append", ParseBTreeAppend'access );
-  declareProcedure( btree_prepend_t, "btree_io.prepend", ParseBTreePrepend'access );
+  declareProcedure( btree_add_t,       "btree_io.add", ParseBTreeAdd'access );
+  declareProcedure( btree_replace_t,   "btree_io.replace", ParseBTreeReplace'access );
+  declareProcedure( btree_append_t,    "btree_io.append", ParseBTreeAppend'access );
+  declareProcedure( btree_prepend_t,   "btree_io.prepend", ParseBTreePrepend'access );
 
   declareProcedure( btree_new_cursor_t,  "btree_io.new_cursor", ParseBTreeNewCursor'access );
+  declareProcedure( btree_open_cursor_t,  "btree_io.open_cursor", ParseBTreeOpenCursor'access );
+  declareProcedure( btree_close_cursor_t,  "btree_io.close_cursor", ParseBTreeCloseCursor'access );
+  declareProcedure( btree_first_t,     "btree_io.first", ParseBTreeFirst'access );
+  declareProcedure( btree_next_t,      "btree_io.next", ParseBTreeNext'access );
+  declareProcedure( btree_previous_t,  "btree_io.previous", ParseBTreePrevious'access );
+  declareProcedure( btree_last_t,      "btree_io.last", ParseBTreeLast'access );
 
   declareNamespaceClosed( "btree_io" );
 

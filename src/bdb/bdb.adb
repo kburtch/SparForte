@@ -863,7 +863,7 @@ end key_range;
 --
 -- Allocate a new Berkeley cursor record
 
-procedure new_berkeley_cursor( session : in out berkeley_session; cursor : in out berkeley_cursor; flags : cursor_flags ) is
+procedure new_berkeley_cursor( session : in out berkeley_session; cursor : in out berkeley_cursor; flags : cursor_flags := 0 ) is
 begin
   C_db_cursor( session.err, session.dbh, session.txn, cursor.cursor, flags );
   if session.will_raise and then session.err /= DB_OK then

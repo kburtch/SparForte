@@ -780,6 +780,19 @@ void C_dbe_set_tmp_dir( int *err,
 }
 
 
+// C_dbe_set_lg_dir
+//
+// Set the password for encryption.  This must be called before the environment
+// is opened.
+
+void C_dbe_set_lg_dir( int *err,
+   DB_ENV *dbe,
+   const char *dir ) {
+
+   *err = dbe->set_lg_dir( dbe, dir );
+}
+
+
 // C_dbe_set_verbose
 //
 // Enable additional error logging.

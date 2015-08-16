@@ -208,7 +208,7 @@ procedure key_range( session : in out berkeley_session; key : string; less, equa
 --
 ------------------------------------------------------------------------------
 
-procedure new_berkeley_cursor( session : in out berkeley_session; cursor : in out berkeley_cursor; flags : cursor_flags );
+procedure new_berkeley_cursor( session : in out berkeley_session; cursor : in out berkeley_cursor; flags : cursor_flags := 0 );
 
 procedure get( session : in out berkeley_session; cursor : in out berkeley_cursor;
   key, data : out unbounded_string; flags : c_get_flags := DB_C_GET_CURRENT );

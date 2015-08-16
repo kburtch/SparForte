@@ -56,6 +56,12 @@ btree_append_t        : identifier;
 btree_prepend_t       : identifier;
 
 btree_new_cursor_t    : identifier;
+btree_open_cursor_t   : identifier;
+btree_close_cursor_t  : identifier;
+btree_first_t         : identifier;
+btree_last_t          : identifier;
+btree_next_t          : identifier;
+btree_previous_t      : identifier;
 
 ------------------------------------------------------------------------------
 -- HOUSEKEEPING
