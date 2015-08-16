@@ -36,9 +36,11 @@ with
     parser_aux,
     parser_params;
 
+#if BDB
 with
     bdb,
     bdb_constants;
+#end if;
 
 use
     ada.exceptions,
@@ -51,9 +53,11 @@ use
     parser_aux,
     parser_params;
 
+#if BDB
 use
     bdb,
     bdb_constants;
+#end if;
 
 package body parser_btree_io is
 
@@ -123,57 +127,12 @@ begin
   CheckCursorIsInitialized( cursId );
 end ParseLastCursorParameter;
 
-------------------------------------------------------------------------------
-
--- A special message for the insert function
-
-function insertTypesOk( leftType, rightType : identifier ) return boolean is
-  effectiveLeftType : identifier;
-  effectiveRightType : identifier;
-begin
-
-  -- Basic checks: if the root types don't match, then the base types
-  -- won't.  If either type is universal typeless, they automatically
-  -- match.
-
-  if not uniTypesOk( leftType, rightType ) then
-     return false;
-  end if;
-  if leftType = universal_t or rightType = universal_t then
-     return true;
-  end if;
-  effectiveLeftType := getBaseType( leftType );
-  effectiveRightType := getBaseType( rightType );
-
-  -- Universal type cases: Universal numeric or universal string will
-  -- match depending on the root type of the second type.
-
-  if effectiveLeftType = uni_numeric_t and then getUniType( rightType ) = uni_numeric_t then
-     return true;
-  end if;
-  if effectiveLeftType = uni_string_t and then getUniType( rightType ) = uni_string_t then
-     return true;
-  end if;
-  if effectiveRightType = uni_numeric_t and then getUniType( leftType ) = uni_numeric_t then
-     return true;
-  end if;
-  if effectiveRightType = uni_string_t and then getUniType( leftType ) = uni_string_t then
-     return true;
-  end if;
-
-  -- Otherwise, the types must be identical.
-
-  if effectiveLeftType /= effectiveRightType then
-     err( "doubly_linked_lists.cursor or list item expected" );
-     return false;
-  end if;
-  return true;
-end insertTypesOk;
 
 ------------------------------------------------------------------------------
 -- Parser subprograms
 ------------------------------------------------------------------------------
 
+#if BDB
 
 procedure ParseBTreeNewFile is
   -- Syntax: btree.new_file( f, t );
@@ -203,6 +162,19 @@ begin
   end if;
 end ParseBtreeNewFile;
 
+#else
+
+pragma warnings( off );
+-- Hide unused parameters warnings
+
+procedure ParseBtreeNewFile is
+begin
+  err( "bdb support not configured" );
+end ParseBtreeNewFile;
+
+#end if;
+#if BDB
+
 procedure ParseBTreeClear is
   -- Syntax: btree.clear( f );
   -- Ada:    N/A;
@@ -226,6 +198,16 @@ begin
      end;
   end if;
 end ParseBTreeClear;
+
+#else
+
+procedure ParseBTreeClear is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeClear;
+
+#end if;
+#if BDB
 
 procedure ParseBTreeCreate is
   -- Syntax: btree.create( f, path, keyLen, valLen );
@@ -340,6 +322,16 @@ begin
   end if;
 end ParseBTreeCreate;
 
+#else
+
+procedure ParseBTreeCreate is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeCreate;
+
+#end if;
+#if BDB
+
 procedure ParseBTreeClose is
   -- Syntax: btree.create( f );
   -- Ada:    btree.create( f );
@@ -359,6 +351,16 @@ begin
      end;
   end if;
 end ParseBTreeClose;
+
+#else
+
+procedure ParseBTreeClose is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeClose;
+
+#end if;
+#if BDB
 
 procedure ParseBTreeOpen is
   -- Syntax: btree.open( f, path, keyLen, valLen );
@@ -474,6 +476,16 @@ begin
   end if;
 end ParseBTreeOpen;
 
+#else
+
+procedure ParseBTreeOpen is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeOpen;
+
+#end if;
+#if BDB
+
 procedure ParseBTreeIsOpen( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := btree.is_open( f );
   -- Ada:    N/A
@@ -493,6 +505,16 @@ begin
   end if;
 end ParseBTreeIsOpen;
 
+#else
+
+procedure ParseBTreeIsOpen( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeIsOpen;
+
+#end if;
+#if BDB
+
 procedure ParseBTreeName( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := btree.name( f );
   -- Ada:    N/A
@@ -509,6 +531,16 @@ begin
      end;
   end if;
 end ParseBTreeName;
+
+#else
+
+procedure ParseBTreeName( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeName;
+
+#end if;
+#if BDB
 
 procedure ParseBTreeDelete is
   -- Syntax: btree.delete( f );
@@ -566,6 +598,16 @@ begin
   end if;
 end ParseBTreeDelete;
 
+#else
+
+procedure ParseBTreeDelete is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeDelete;
+
+#end if;
+#if BDB
+
 procedure ParseBTreeSet is
   -- Syntax: btree.set( f, key, value );
   -- Ada:    bdb.put( f, key, value );
@@ -589,6 +631,16 @@ begin
      end;
   end if;
 end ParseBTreeSet;
+
+#else
+
+procedure ParseBTreeSet is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeSet;
+
+#end if;
+#if BDB
 
 procedure ParseBTreeGet( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: v := btree.get( f, k );
@@ -617,6 +669,16 @@ begin
   end if;
 end ParseBTreeGet;
 
+#else
+
+procedure ParseBTreeGet( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeGet;
+
+#end if;
+#if BDB
+
 procedure ParseBTreeHasElement( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: v := btree.has_element( f, k );
   -- Ada:    bdb.exists( f, k );
@@ -639,6 +701,16 @@ begin
      end;
   end if;
 end ParseBTreeHasElement;
+
+#else
+
+procedure ParseBTreeHasElement( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeHasElement;
+
+#end if;
+#if BDB
 
 procedure ParseBTreeRemove is
   -- Syntax: v := btree.remove( f, k | c );
@@ -683,6 +755,16 @@ begin
      end if;
   end if;
 end ParseBTreeRemove;
+
+#else
+
+procedure ParseBTreeRemove is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeRemove;
+
+#end if;
+#if BDB
 
 procedure ParseBtreeIncrement is
   -- Syntax: btree.increment( f, s [,n] );
@@ -739,6 +821,16 @@ begin
   end if;
 end ParseBTreeIncrement;
 
+#else
+
+procedure ParseBTreeIncrement is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeIncrement;
+
+#end if;
+#if BDB
+
 procedure ParseBtreeDecrement is
   -- Syntax: btree.decrement( f, s [,n] );
   -- Ada:    N/A
@@ -794,6 +886,16 @@ begin
   end if;
 end ParseBTreeDecrement;
 
+#else
+
+procedure ParseBTreeDecrement is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeDecrement;
+
+#end if;
+#if BDB
+
 procedure ParseBtreeAdd is
   -- Syntax: btree.add( f, s, e );
   -- Ada:    N/A
@@ -823,6 +925,16 @@ begin
      end;
   end if;
 end ParseBTreeAdd;
+
+#else
+
+procedure ParseBTreeAdd is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeAdd;
+
+#end if;
+#if BDB
 
 procedure ParseBtreeReplace is
   -- Syntax: btree.replace( f, c | k, v );
@@ -879,6 +991,16 @@ begin
   end if;
 end ParseBTreeReplace;
 
+#else
+
+procedure ParseBTreeReplace is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeReplace;
+
+#end if;
+#if BDB
+
 procedure ParseBtreeAppend is
   -- Syntax: btree.append( f, s, e );
   -- Ada:    N/A
@@ -911,6 +1033,16 @@ begin
      end;
   end if;
 end ParseBTreeAppend;
+
+#else
+
+procedure ParseBTreeAppend is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeAppend;
+
+#end if;
+#if BDB
 
 procedure ParseBtreePrepend is
   -- Syntax: btree.prepend( f, s, e );
@@ -945,6 +1077,16 @@ begin
   end if;
 end ParseBTreePrepend;
 
+#else
+
+procedure ParseBTreePrepend is
+begin
+  err( "bdb support not configured" );
+end ParseBTreePrepend;
+
+#end if;
+#if BDB
+
 procedure ParseBTreeFlush is
   -- Syntax: btree.flush( f, flags );
   -- Ada:    bbd.sync( f );
@@ -962,6 +1104,16 @@ begin
      end;
   end if;
 end ParseBTreeFlush;
+
+#else
+
+procedure ParseBTreeFlush is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeFlush;
+
+#end if;
+#if BDB
 
 procedure ParseBTreeNewCursor is
   -- Syntax: btree.new_cursor( f, t );
@@ -991,6 +1143,16 @@ begin
   end if;
 end ParseBtreeNewCursor;
 
+#else
+
+procedure ParseBtreeNewCursor is
+begin
+  err( "bdb support not configured" );
+end ParseBtreeNewCursor;
+
+#end if;
+#if BDB
+
 procedure ParseBTreeOpenCursor is
   -- Syntax: btree_io.open_cursor( f, c );
   -- Ada:    N/A
@@ -1009,6 +1171,16 @@ begin
      new_berkeley_cursor( theFile.btree.session, theCurs.btree_cur );
   end if;
 end ParseBtreeOpenCursor;
+
+#else
+
+procedure ParseBTreeOpenCursor is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeOpenCursor;
+
+#end if;
+#if BDB
 
 procedure ParseBTreeCloseCursor is
   -- Syntax: btree_io.close_cursor( fc );
@@ -1031,6 +1203,16 @@ begin
      end;
   end if;
 end ParseBTreeCloseCursor;
+
+#else
+
+procedure ParseBTreeCloseCursor is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeCloseCursor;
+
+#end if;
+#if BDB
 
 procedure ParseBTreeFirst is
   -- Syntax: btree_io.first( f, c, k, v );
@@ -1074,6 +1256,16 @@ begin
   end if;
 end ParseBTreeFirst;
 
+#else
+
+procedure ParseBTreeFirst is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeFirst;
+
+#end if;
+#if BDB
+
 procedure ParseBTreeNext is
   -- Syntax: btree_io.next( f, c, k, v );
   -- Ada:    bdb.get( f );
@@ -1115,6 +1307,16 @@ begin
      end;
   end if;
 end ParseBTreeNext;
+
+#else
+
+procedure ParseBTreeNext is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeNext;
+
+#end if;
+#if BDB
 
 procedure ParseBTreeLast is
   -- Syntax: btree_io.last( f, c, k, v );
@@ -1158,6 +1360,16 @@ begin
   end if;
 end ParseBTreeLast;
 
+#else
+
+procedure ParseBTreeLast is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeLast;
+
+#end if;
+#if BDB
+
 procedure ParseBTreePrevious is
   -- Syntax: btree_io.previous( f, c, k, v );
   -- Ada:    bdb.get( f );
@@ -1199,7 +1411,14 @@ begin
      end;
   end if;
 end ParseBTreePrevious;
+#else
 
+procedure ParseBTreePrevious is
+begin
+  err( "bdb support not configured" );
+end ParseBTreePrevious;
+
+#end if;
 
 -----------------------------------------------------------------------------
 
@@ -1251,4 +1470,3 @@ begin
 end ShutdownBTree;
 
 end parser_btree_io;
-

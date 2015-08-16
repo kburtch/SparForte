@@ -1036,6 +1036,12 @@ cp parser_gnat_cgi.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb parser_gnat_cgi.adb
 chmod 444 parser_gnat_cgi.adb
 
+echo "Updating...parser_btree_io.adb"
+test -f parser_btree_io.adb && chmod 666 parser_btree_io.adb
+cp parser_btree_io.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb parser_btree_io.adb
+chmod 444 parser_btree_io.adb
+
 test -f temp.ads && rm temp.ads
 test -f temp.adb && rm temp.adb
 
