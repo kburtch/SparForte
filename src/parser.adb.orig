@@ -3418,6 +3418,9 @@ begin
   identifiers( field_id ).class := subClass;        -- it is a subtype
   identifiers( field_id ).field_of := record_id;    -- it is a field
   identifiers( field_id ).value := to_unbounded_string( field_no'img );
+  if syntax_check then
+     identifiers( field_id ).wasReferenced := true;
+  end if;
   expectSemicolon;
   if not error_found and  token /= eof_t and token /= end_t then
      field_no := field_no + 1;
