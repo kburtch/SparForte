@@ -652,18 +652,16 @@ begin
      isRecord := true;
      ParseIdentifier( valId );
      genTypesOk( identifiers( valId ).kind, genKindId );
-     expect( symbol_t, ")" );
   -- array?
   elsif identifiers( genKindId ).list then
      isArray := true;
      ParseIdentifier( valId );
      genTypesOk( identifiers( valId ).kind, genKindId );
-     expect( symbol_t, ")" );
   -- normal (scalar) expression?
   else
     ParseGenItemParameter( valExpr, valType, genKindId );
-    expect( symbol_t, ")" );
   end if;
+  expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
         declare
@@ -707,30 +705,90 @@ end ParseBTreeSet;
 #end if;
 #if BDB
 
-procedure ParseBTreeGet( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: v := btree.get( f, k );
-  -- Ada:    bdb.get( f, k );
+procedure ParseBTreeGet is
+  -- Syntax: btree.get( f, k, v );
+  -- Ada:    v := bdb.get( f, k );
+  -- This was originally a function but turned into a procedure because
+  -- v can now be an aggregate (and we currently cannot return aggregates
+  -- from a function)
   fileId     : identifier;
   theFile    : resPtr;
   keyExpr    : unbounded_string;
   keyType    : identifier;
+  itemRef    : reference;
+  isRecord   : boolean := false;
+  isArray    : boolean := false;
+  genKindId  : identifier;
 begin
   -- TODO: null string instead of exception to parallel dht
   expect( btree_get_t );
   ParseFirstFileParameter( fileId );
-  ParseLastStringParameter( keyExpr, keyType, string_t );
-  kind := identifiers( fileId ).genKind;
+  genKindId := identifiers( fileId ).genKind;
+  ParseNextStringParameter( keyExpr, keyType, string_t );
+  expect( symbol_t, "," );
+  -- This assumes we don't have aggregate expressions yet.
+  -- record?
+  if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+     -- ParseOutParam doesn't handle full records or arrays
+     isRecord := true;
+     ParseIdentifier( itemRef.id );
+     genTypesOk( identifiers( itemRef.id ).kind, genKindId );
+  -- array?
+  elsif identifiers( genKindId ).list then
+     -- ParseOutParam doesn't handle full records or arrays
+     isArray := true;
+     ParseIdentifier( itemRef.id );
+     genTypesOk( identifiers( itemRef.id ).kind, genKindId );
+     --ParseLastOutParameter(  itemRef, genKindId );
+  else
+     -- This will still auto-declare scalars
+     ParseOutParameter(  itemRef, genKindId );
+  end if;
+  expect( symbol_t, ")" );
   if isExecutingCommand then
-     begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        get( theFile.btree.session, to_string( keyExpr ), result );
-     exception when msg: berkeley_error =>
-        if last_error( theFile.btree.session ) = DB_NOTFOUND then
-           err( "key not found" );
-        else
-            err( exception_message( msg ) );
-        end if;
-     end;
+     if isRecord then
+        declare
+           jsonString : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           get( theFile.btree.session, to_string( keyExpr ), jsonString );
+           DoJsonToRecord( itemRef.id, jsonString );
+        exception when msg: berkeley_error =>
+           if last_error( theFile.btree.session ) = DB_NOTFOUND then
+              err( "key not found" );
+           else
+               err( exception_message( msg ) );
+           end if;
+        end;
+     elsif isArray then
+        declare
+           jsonString : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           get( theFile.btree.session, to_string( keyExpr ), jsonString );
+           DoJsonToArray( itemRef.id, jsonString );
+        exception when msg: berkeley_error =>
+           if last_error( theFile.btree.session ) = DB_NOTFOUND then
+              err( "key not found" );
+           else
+               err( exception_message( msg ) );
+           end if;
+        end;
+     else
+        declare
+           result : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           get( theFile.btree.session, to_string( keyExpr ), result );
+           AssignParameter( itemRef, result );
+        exception when msg: berkeley_error =>
+           if last_error( theFile.btree.session ) = DB_NOTFOUND then
+              err( "key not found" );
+           else
+               err( exception_message( msg ) );
+           end if;
+        end;
+     end if;
   end if;
 end ParseBTreeGet;
 
@@ -986,18 +1044,16 @@ begin
      isRecord := true;
      ParseIdentifier( itemId );
      genTypesOk( identifiers( itemId ).kind, genKindId );
-     expect( symbol_t, ")" );
   -- array?
   elsif identifiers( genKindId ).list then
      isArray := true;
      ParseIdentifier( itemId );
      genTypesOk( identifiers( itemId ).kind, genKindId );
-     expect( symbol_t, ")" );
   -- normal (scalar) expression?
   else
     ParseGenItemParameter( itemExpr, itemType, genKindId );
-    expect( symbol_t, ")" );
   end if;
+  expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
         declare
@@ -1094,18 +1150,16 @@ begin
      isRecord := true;
      ParseIdentifier( itemId );
      genTypesOk( identifiers( itemId ).kind, genKindId );
-     expect( symbol_t, ")" );
   -- array?
   elsif identifiers( genKindId ).list then
      isArray := true;
      ParseIdentifier( itemId );
      genTypesOk( identifiers( itemId ).kind, genKindId );
-     expect( symbol_t, ")" );
   -- normal (scalar) expression?
   else
     ParseGenItemParameter( itemExpr, itemType, genKindId );
-    expect( symbol_t, ")" );
   end if;
+  expect( symbol_t, ")" );
   if isExecutingCommand then
      if cursId /= eof_t then
         -- put where the cursor is
@@ -1779,7 +1833,7 @@ begin
   declareProcedure( btree_flush_t,     "btree_io.flush",    ParseBTreeFlush'access );
 
   declareProcedure( btree_set_t,       "btree_io.set",      ParseBTreeSet'access );
-  declareFunction(  btree_get_t,       "btree_io.get",      ParseBTreeGet'access );
+  declareProcedure( btree_get_t,       "btree_io.get",      ParseBTreeGet'access );
   declareFunction(  btree_has_element_t, "btree_io.has_element",  ParseBTreeHasElement'access );
   declareProcedure( btree_remove_t,    "btree_io.remove",      ParseBTreeRemove'access );
   declareProcedure( btree_increment_t, "btree_io.increment",ParseBTreeIncrement'access );
