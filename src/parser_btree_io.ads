@@ -32,9 +32,46 @@ package parser_btree_io is
 
 btree_file_t          : identifier;
 btree_cursor_t        : identifier;
+btree_db_error_t      : identifier;
+
+btree_DB_OK_t         : identifier;
+btree_DB_BUFFER_SMALL_t         : identifier;
+btree_DB_DONOTINDEX_t         : identifier;
+btree_DB_FOREIGN_CONFLICT_t         : identifier;
+btree_DB_KEYEMPTY_t         : identifier;
+btree_DB_KEYEXIST_t         : identifier;
+btree_DB_LOCK_DEADLOCK_t         : identifier;
+btree_DB_LOCK_NOTGRANTED_t         : identifier;
+btree_DB_LOG_BUFFER_FULL_t         : identifier;
+btree_DB_NOSERVER_t         : identifier;
+btree_DB_NOSERVER_HOME_t         : identifier;
+btree_DB_NOSERVER_ID_t         : identifier;
+btree_DB_NOTFOUND_t         : identifier;
+btree_DB_OLD_VERSION_t         : identifier;
+btree_DB_PAGE_NOTFOUND_t         : identifier;
+btree_DB_REP_DUPMASTER_t         : identifier;
+btree_DB_REP_HANDLE_DEAD_t         : identifier;
+btree_DB_REP_HOLDELECTION_t         : identifier;
+btree_DB_REP_IGNORE_t         : identifier;
+btree_DB_REP_ISPERM_t         : identifier;
+btree_DB_REP_JOIN_FAILURE_t         : identifier;
+btree_DB_REP_LEASE_EXPIRED_t         : identifier;
+btree_DB_REP_LOCKOUT_t         : identifier;
+btree_DB_REP_NEWSITE_t         : identifier;
+btree_DB_REP_NOTPERM_t         : identifier;
+btree_DB_REP_UNAVAIL_t         : identifier;
+btree_DB_RUNRECOVERY_t         : identifier;
+btree_DB_SECONDARY_BAD_t         : identifier;
+btree_DB_VERIFY_BAD_t         : identifier;
+btree_DB_VERSION_MISMATCH_t         : identifier;
 
 btree_new_file_t      : identifier;
 btree_clear_t         : identifier;
+
+-- TODO
+btree_will_raise_t    : identifier;
+btree_last_error_t    : identifier;
+btree_raise_exceptions_t : identifier;
 
 btree_create_t        : identifier;
 btree_close_t         : identifier;

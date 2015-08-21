@@ -28,6 +28,7 @@ with
     Interfaces.C,
     ada.exceptions,
     gnat.directory_operations,
+    bush_os,
     world,
     scanner,
     scanner_res,
@@ -147,11 +148,13 @@ begin
   expect( symbol_t, "," );
   ParseIdentifier( genKindId );
   if class_ok( genKindId, typeClass, subClass ) then
-     if identifiers( genKindId ).list then
-        err( "element type should be a scalar type" );
-     elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-        err( "element type should be a scalar type" );
-     end if;
+     -- DEBUG: trying aggregates
+     null;
+     --if identifiers( genKindId ).list then
+     --   err( "element type should be a scalar type" );
+     -- elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+     --    err( "element type should be a scalar type" );
+     --end if;
   end if;
   identifiers( ref.id ).genKind := genKindId;
   expect( symbol_t, ")" );
@@ -212,6 +215,7 @@ end ParseBTreeClear;
 procedure ParseBTreeCreate is
   -- Syntax: btree.create( f, path, keyLen, valLen );
   -- Ada:    btree.create( f, path, keyLen, valLen );
+  -- this is impacted by --verbse
   fileId     : identifier;
   theFile    : resPtr;
   fname_val  : unbounded_string;
@@ -285,6 +289,13 @@ begin
               set_lg_dir( theFile.btree.env, to_string( dirname2 ) );
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on setting the logging directory"  );
+           end;
+           begin
+              if verboseOpt then
+                 set_verbose( theFile.btree.env, 0, 1 );
+              end if;
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) & " on changing verbose setting"  );
            end;
         end if;
 
@@ -365,6 +376,7 @@ end ParseBTreeClose;
 procedure ParseBTreeOpen is
   -- Syntax: btree.open( f, path, keyLen, valLen );
   -- Ada:    btree.open( f, path, keyLen, valLen );
+  -- this is impacted by --verbse
   fileId     : identifier;
   theFile    : resPtr;
   fname_val  : unbounded_string;
@@ -442,6 +454,13 @@ begin
               set_lg_dir( theFile.btree.env, to_string( dirname2 ) );
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on setting the logging directory"  );
+           end;
+           begin
+              if verboseOpt then
+                 set_verbose( theFile.btree.env, 0, 1 );
+              end if;
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) & " on changing verbose setting"  );
            end;
         end if;
 
@@ -617,18 +636,64 @@ procedure ParseBTreeSet is
   keyType    : identifier;
   valExpr    : unbounded_string;
   valType    : identifier;
+  valId      : identifier;
+  isRecord   : boolean := false;
+  isArray    : boolean := false;
+  genKindId  : identifier;
 begin
   expect( btree_set_t );
   ParseFirstFileParameter( fileId );
   ParseNextStringParameter( keyExpr, keyType, string_t );
-  ParseLastGenItemParameter( valExpr, valType, identifiers( fileId ).genKind );
+  expect( symbol_t, "," );
+  genKindId := identifiers( fileId ).genKind;
+  -- This assumes we don't have aggregate expressions yet.
+  -- record?
+  if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+     isRecord := true;
+     ParseIdentifier( valId );
+     genTypesOk( identifiers( valId ).kind, genKindId );
+     expect( symbol_t, ")" );
+  -- array?
+  elsif identifiers( genKindId ).list then
+     isArray := true;
+     ParseIdentifier( valId );
+     genTypesOk( identifiers( valId ).kind, genKindId );
+     expect( symbol_t, ")" );
+  -- normal (scalar) expression?
+  else
+    ParseGenItemParameter( valExpr, valType, genKindId );
+    expect( symbol_t, ")" );
+  end if;
   if isExecutingCommand then
-     begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        put( theFile.btree.session, to_string( keyExpr ), to_string( valExpr ) );
-     exception when msg: berkeley_error =>
-        err( exception_message( msg ) );
-     end;
+     if isRecord then
+        declare
+           jsonString : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           DoRecordToJson( jsonString, valId );
+           put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        end;
+     elsif isArray then
+        declare
+           jsonString : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           DoArrayToJson( jsonString, valId );
+           put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        end;
+     else
+        -- normal scalar expression
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           put( theFile.btree.session, to_string( keyExpr ), to_string( valExpr ) );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        end;
+     end if;
   end if;
 end ParseBTreeSet;
 
@@ -905,24 +970,82 @@ procedure ParseBtreeAdd is
   keyType  : identifier;
   itemExpr : unbounded_string;
   itemType : identifier;
+  itemId     : identifier;
+  isRecord   : boolean := false;
+  isArray    : boolean := false;
+  genKindId  : identifier;
 begin
   expect( btree_add_t );
   ParseFirstFileParameter( fileId );
   ParseNextStringParameter( keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( itemExpr, itemType, identifiers( fileId ).genKind );
+  expect( symbol_t, "," );
+  genKindId := identifiers( fileId ).genKind;
+  -- This assumes we don't have aggregate expressions yet.
+  -- record?
+  if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+     isRecord := true;
+     ParseIdentifier( itemId );
+     genTypesOk( identifiers( itemId ).kind, genKindId );
+     expect( symbol_t, ")" );
+  -- array?
+  elsif identifiers( genKindId ).list then
+     isArray := true;
+     ParseIdentifier( itemId );
+     genTypesOk( identifiers( itemId ).kind, genKindId );
+     expect( symbol_t, ")" );
+  -- normal (scalar) expression?
+  else
+    ParseGenItemParameter( itemExpr, itemType, genKindId );
+    expect( symbol_t, ")" );
+  end if;
   if isExecutingCommand then
-     begin
-       findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-       exists( theFile.btree.session, to_string( keyExpr ) );
-     exception when storage_error =>
-       err( "storage error raised" );
-     when msg: berkeley_error =>
-       if last_error( theFile.btree.session ) = DB_NOTFOUND then
-          put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
-       else
-          err( exception_message( msg ) );
-       end if;
-     end;
+     if isRecord then
+        declare
+           jsonString : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           exists( theFile.btree.session, to_string( keyExpr ) );
+        exception when storage_error =>
+          err( "storage error raised" );
+        when msg: berkeley_error =>
+          if last_error( theFile.btree.session ) = DB_NOTFOUND then
+             DoRecordToJson( jsonString, itemId );
+             put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+          else
+             err( exception_message( msg ) );
+          end if;
+        end;
+     elsif isArray then
+        declare
+           jsonString : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           exists( theFile.btree.session, to_string( keyExpr ) );
+        exception when storage_error =>
+          err( "storage error raised" );
+        when msg: berkeley_error =>
+          if last_error( theFile.btree.session ) = DB_NOTFOUND then
+             DoArrayToJson( jsonString, itemId );
+             put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+          else
+             err( exception_message( msg ) );
+          end if;
+        end;
+     else
+        -- normal scalar expression
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           exists( theFile.btree.session, to_string( keyExpr ) );
+        exception when storage_error =>
+          err( "storage error raised" );
+        when msg: berkeley_error =>
+          if last_error( theFile.btree.session ) = DB_NOTFOUND then
+             put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
+          else
+             err( exception_message( msg ) );
+          end if;
+        end;
+     end if;
   end if;
 end ParseBTreeAdd;
 
@@ -946,6 +1069,10 @@ procedure ParseBtreeReplace is
   keyType  : identifier;
   itemExpr : unbounded_string;
   itemType : identifier;
+  itemId     : identifier;
+  isRecord   : boolean := false;
+  isArray    : boolean := false;
+  genKindId  : identifier;
   cursId   : identifier := eof_t;
   theCurs  : resPtr;
 begin
@@ -959,34 +1086,117 @@ begin
      ParseExpression( keyExpr, keyType );
      baseTypesOk( keyType, uni_string_t );
   end if;
-  ParseLastGenItemParameter( itemExpr, itemType, identifiers( fileId ).genKind );
+  expect( symbol_t, "," );
+  genKindId := identifiers( fileId ).genKind;
+  -- This assumes we don't have aggregate expressions yet.
+  -- record?
+  if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+     isRecord := true;
+     ParseIdentifier( itemId );
+     genTypesOk( identifiers( itemId ).kind, genKindId );
+     expect( symbol_t, ")" );
+  -- array?
+  elsif identifiers( genKindId ).list then
+     isArray := true;
+     ParseIdentifier( itemId );
+     genTypesOk( identifiers( itemId ).kind, genKindId );
+     expect( symbol_t, ")" );
+  -- normal (scalar) expression?
+  else
+    ParseGenItemParameter( itemExpr, itemType, genKindId );
+    expect( symbol_t, ")" );
+  end if;
   if isExecutingCommand then
      if cursId /= eof_t then
         -- put where the cursor is
-        begin
-          findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-          findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-          put( theFile.btree.session,
-               theCurs.btree_cur,
-               keyExpr, -- this is ignored
-               itemExpr,
-               DB_C_PUT_CURRENT );
-        exception when msg: berkeley_error =>
-          err( exception_message( msg ) );
-        end;
+        if isRecord then
+           declare
+              jsonString : unbounded_string;
+           begin
+             findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+             findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+             DoRecordToJson( jsonString, itemId );
+             put( theFile.btree.session,
+                  theCurs.btree_cur,
+                  keyExpr, -- this is ignored
+                  jsonString,
+                  DB_C_PUT_CURRENT );
+           exception when msg: berkeley_error =>
+             err( exception_message( msg ) );
+           end;
+        elsif isArray then
+           declare
+              jsonString : unbounded_string;
+           begin
+             findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+             findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+             DoArrayToJson( jsonString, itemId );
+             put( theFile.btree.session,
+                  theCurs.btree_cur,
+                  keyExpr, -- this is ignored
+                  jsonString,
+                  DB_C_PUT_CURRENT );
+           exception when msg: berkeley_error =>
+             err( exception_message( msg ) );
+           end;
+        else
+           begin
+             findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+             findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+             put( theFile.btree.session,
+                  theCurs.btree_cur,
+                  keyExpr, -- this is ignored
+                  itemExpr,
+                  DB_C_PUT_CURRENT );
+           exception when msg: berkeley_error =>
+             err( exception_message( msg ) );
+           end;
+        end if;
      else
        -- put, but only if the target exists
-       begin
-         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-         exists( theFile.btree.session, to_string( keyExpr ) );
-         put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
-       exception when storage_error =>
-         err( "storage error raised" );
-       when msg: berkeley_error =>
-          if last_error( theFile.btree.session ) /= DB_NOTFOUND then
-             err( exception_message( msg ) );
-          end if;
-       end;
+        if isRecord then
+           declare
+              jsonString : unbounded_string;
+           begin
+             findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+             exists( theFile.btree.session, to_string( keyExpr ) );
+             DoRecordToJson( jsonString, itemId );
+             put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+           exception when storage_error =>
+             err( "storage error raised" );
+           when msg: berkeley_error =>
+              if last_error( theFile.btree.session ) /= DB_NOTFOUND then
+                 err( exception_message( msg ) );
+              end if;
+           end;
+        elsif isArray then
+           declare
+              jsonString : unbounded_string;
+           begin
+             findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+             exists( theFile.btree.session, to_string( keyExpr ) );
+             DoArrayToJson( jsonString, itemId );
+             put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+           exception when storage_error =>
+             err( "storage error raised" );
+           when msg: berkeley_error =>
+              if last_error( theFile.btree.session ) /= DB_NOTFOUND then
+                 err( exception_message( msg ) );
+              end if;
+           end;
+        else
+           begin
+             findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+             exists( theFile.btree.session, to_string( keyExpr ) );
+             put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
+           exception when storage_error =>
+             err( "storage error raised" );
+           when msg: berkeley_error =>
+              if last_error( theFile.btree.session ) /= DB_NOTFOUND then
+                 err( exception_message( msg ) );
+              end if;
+           end;
+        end if;
      end if;
   end if;
 end ParseBTreeReplace;
@@ -1128,11 +1338,13 @@ begin
   expect( symbol_t, "," );
   ParseIdentifier( genKindId );
   if class_ok( genKindId, typeClass, subClass ) then
-     if identifiers( genKindId ).list then
-        err( "element type should be a scalar type" );
-     elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-        err( "element type should be a scalar type" );
-     end if;
+     --DEBUG
+     null;
+     --if identifiers( genKindId ).list then
+     --   err( "element type should be a scalar type" );
+     --elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+     --   err( "element type should be a scalar type" );
+     --end if;
   end if;
   identifiers( ref.id ).genKind := genKindId;
   expect( symbol_t, ")" );
@@ -1419,6 +1631,98 @@ begin
 end ParseBTreePrevious;
 
 #end if;
+#if BDB
+
+procedure ParseBTreeWillRaise( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: b := btree.will_raise( f );
+  -- Ada:    N/A
+  fileId     : identifier;
+  theFile    : resPtr;
+begin
+  kind := boolean_t;
+  expect( btree_will_raise_t );
+  ParseSingleFileParameter( fileId );
+  if isExecutingCommand then
+     begin
+        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        result := to_bush_boolean( will_raise( theFile.btree.session ) );
+     exception when berkeley_error =>
+        result := to_bush_boolean( false );
+     end;
+  end if;
+end ParseBTreeWillRaise;
+
+#else
+
+procedure ParseBTreeWillRaise( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeWillRaise;
+
+#end if;
+#if BDB
+
+procedure ParseBTreeLastError( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: n := btree_io.last_error( f );
+  -- Ada:    N/A
+  fileId     : identifier;
+  theFile    : resPtr;
+begin
+  kind := btree_db_error_t;
+  expect( btree_last_error_t );
+  ParseSingleFileParameter( fileId );
+  if isExecutingCommand then
+     begin
+        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        result := to_unbounded_string( db_error'image( last_error( theFile.btree.session ) ) );
+     exception when msg: berkeley_error =>
+        err( exception_message( msg ) );
+     end;
+  end if;
+end ParseBTreeLastError;
+
+#else
+
+procedure ParseBTreeLastError( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeLastError;
+
+#end if;
+#if BDB
+
+procedure ParseBTreeRaiseExceptions is
+  -- Syntax: btree_io.raise_exceptions( f, b );
+  -- Ada:    bdb.raise_exceptions
+  -- this is impacted by --trace
+  fileId     : identifier;
+  theFile    : resPtr;
+  boolExpr   : unbounded_string;
+  boolType   : identifier;
+begin
+  expect( btree_raise_exceptions_t );
+  ParseFirstFileParameter( fileId );
+  ParseLastEnumParameter( boolExpr, boolType, boolean_t );
+  if isExecutingCommand then
+     declare
+       raise_them : boolean := boolExpr = to_unbounded_string( "1" );
+     begin
+        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        raise_exceptions( theFile.btree.session, raise_them, boolean( traceOpt ) );
+     exception when msg: berkeley_error =>
+        err( exception_message( msg ) );
+     end;
+  end if;
+end ParseBtreeRaiseExceptions;
+
+#else
+
+procedure ParseBTreeRaiseExceptions is
+begin
+  err( "bdb support not configured" );
+end ParseBTreeRaiseExceptions;
+
+#end if;
 
 -----------------------------------------------------------------------------
 
@@ -1429,6 +1733,39 @@ begin
 
   declareIdent( btree_file_t,   "btree_io.file", positive_t, typeClass );
   declareIdent( btree_cursor_t, "btree_io.cursor", positive_t, typeClass );
+  declareIdent( btree_db_error_t, "btree_io.db_error", natural_t, typeClass );
+
+  declareStandardConstant( btree_DB_OK_t, "btree_io.DB_OK", btree_db_error_t, DB_OK'img );
+  declareStandardConstant( btree_DB_BUFFER_SMALL_t, "btree_io.DB_BUFFER_SMALL", btree_db_error_t, DB_BUFFER_SMALL'img );
+  declareStandardConstant( btree_DB_DONOTINDEX_t, "btree_io.DB_DONOTINDEX", btree_db_error_t, DB_DONOTINDEX'img );
+  declareStandardConstant( btree_DB_FOREIGN_CONFLICT_t, "btree_io.DB_FOREIGN_CONFLICT", btree_db_error_t, DB_FOREIGN_CONFLICT'img );
+  declareStandardConstant( btree_DB_KEYEMPTY_t, "btree_io.DB_KEYEMPTY", btree_db_error_t, DB_KEYEMPTY'img );
+  declareStandardConstant( btree_DB_KEYEXIST_t, "btree_io.DB_KEYEXIST", btree_db_error_t, DB_KEYEXIST'img );
+  declareStandardConstant( btree_DB_LOCK_DEADLOCK_t, "btree_io.DB_LOCK_DEADLOCK", btree_db_error_t, DB_LOCK_DEADLOCK'img );
+  declareStandardConstant( btree_DB_LOCK_NOTGRANTED_t, "btree_io.DB_LOCK_NOTGRANTED", btree_db_error_t, DB_LOCK_NOTGRANTED'img );
+  declareStandardConstant( btree_DB_LOG_BUFFER_FULL_t, "btree_io.DB_LOG_BUFFER_FULL", btree_db_error_t, DB_LOG_BUFFER_FULL'img );
+  declareStandardConstant( btree_DB_NOSERVER_t, "btree_io.DB_NOSERVER", btree_db_error_t, DB_NOSERVER'img );
+  declareStandardConstant( btree_DB_NOSERVER_HOME_t, "btree_io.DB_NOSERVER_HOME", btree_db_error_t, DB_NOSERVER_HOME'img );
+  declareStandardConstant( btree_DB_NOSERVER_ID_t, "btree_io.DB_NOSERVER_ID", btree_db_error_t, DB_NOSERVER_ID'img );
+  declareStandardConstant( btree_DB_NOTFOUND_t, "btree_io.DB_NOTFOUND", btree_db_error_t, DB_NOTFOUND'img );
+  declareStandardConstant( btree_DB_OLD_VERSION_t, "btree_io.DB_OLD_VERSION", btree_db_error_t, DB_OLD_VERSION'img );
+  declareStandardConstant( btree_DB_PAGE_NOTFOUND_t, "btree_io.DB_PAGE_NOTFOUND", btree_db_error_t, DB_PAGE_NOTFOUND'img );
+  declareStandardConstant( btree_DB_REP_DUPMASTER_t, "btree_io.DB_REP_DUPMASTER", btree_db_error_t, DB_REP_DUPMASTER'img );
+  declareStandardConstant( btree_DB_REP_HANDLE_DEAD_t, "btree_io.DB_REP_HANDLE_DEAD", btree_db_error_t, DB_REP_HANDLE_DEAD'img );
+  declareStandardConstant( btree_DB_REP_HOLDELECTION_t, "btree_io.DB_REP_HOLDELECTION", btree_db_error_t, DB_REP_HOLDELECTION'img );
+  declareStandardConstant( btree_DB_REP_IGNORE_t, "btree_io.DB_REP_IGNORE", btree_db_error_t, DB_REP_IGNORE'img );
+  declareStandardConstant( btree_DB_REP_ISPERM_t, "btree_io.DB_REP_ISPERM", btree_db_error_t, DB_REP_ISPERM'img );
+  declareStandardConstant( btree_DB_REP_JOIN_FAILURE_t, "btree_io.DB_REP_JOIN_FAILURE", btree_db_error_t, DB_REP_JOIN_FAILURE'img );
+  declareStandardConstant( btree_DB_REP_LEASE_EXPIRED_t, "btree_io.DB_REP_LEASE_EXPIRED", btree_db_error_t, DB_REP_LEASE_EXPIRED'img );
+  declareStandardConstant( btree_DB_REP_LOCKOUT_t, "btree_io.DB_REP_LOCKOUT", btree_db_error_t, DB_REP_LOCKOUT'img );
+  declareStandardConstant( btree_DB_REP_NEWSITE_t, "btree_io.DB_REP_NEWSITE", btree_db_error_t, DB_REP_NEWSITE'img );
+  declareStandardConstant( btree_DB_REP_NOTPERM_t, "btree_io.DB_REP_NOTPERM", btree_db_error_t, DB_REP_NOTPERM'img );
+  declareStandardConstant( btree_DB_REP_UNAVAIL_t, "btree_io.DB_REP_UNAVAIL", btree_db_error_t, DB_REP_UNAVAIL'img );
+  declareStandardConstant( btree_DB_RUNRECOVERY_t, "btree_io.DB_RUNRECOVERY", btree_db_error_t, DB_RUNRECOVERY'img );
+  declareStandardConstant( btree_DB_SECONDARY_BAD_t, "btree_io.DB_SECONDARY_BAD", btree_db_error_t, DB_SECONDARY_BAD'img );
+  declareStandardConstant( btree_DB_VERIFY_BAD_t, "btree_io.DB_VERIFY_BAD", btree_db_error_t, DB_VERIFY_BAD'img );
+  declareStandardConstant( btree_DB_VERSION_MISMATCH_t, "btree_io.DB_VERSION_MISMATCH", btree_db_error_t, DB_VERSION_MISMATCH'img );
+
 
   declareProcedure( btree_new_file_t,  "btree_io.new_file", ParseBTreeNewFile'access );
   declareProcedure( btree_clear_t,     "btree_io.clear",    ParseBTreeClear'access );
@@ -1459,6 +1796,10 @@ begin
   declareProcedure( btree_next_t,      "btree_io.next", ParseBTreeNext'access );
   declareProcedure( btree_previous_t,  "btree_io.previous", ParseBTreePrevious'access );
   declareProcedure( btree_last_t,      "btree_io.last", ParseBTreeLast'access );
+
+  declareFunction( btree_will_raise_t, "btree_io.will_raise",  ParseBTreeWillRaise'access );
+  declareFunction( btree_last_error_t, "btree_io.last_error",  ParseBTreeLastError'access );
+  declareProcedure( btree_raise_exceptions_t, "btree_io.raise_exceptions", ParseBTreeRaiseExceptions'access );
 
   declareNamespaceClosed( "btree_io" );
 
