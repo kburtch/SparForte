@@ -1485,40 +1485,108 @@ procedure ParseBTreeFirst is
   -- Ada:    bdb.get( f );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
+  -- TODO: open cursor check would prevent storage error messages
   fileId     : identifier;
   theFile    : resPtr;
   cursId     : identifier;
   theCurs    : resPtr;
   keyRef     : reference;
   valRef     : reference;
+  isRecord   : boolean := false;
+  isArray    : boolean := false;
+  genKindId  : identifier;
 begin
-  expect( btree_first_t );
+  expect( btree_get_first_t );
   ParseFirstFileParameter( fileId );
   ParseNextCursorParameter( cursId );
-  genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
+  genKindId := identifiers( fileId ).genKind;
+  genTypesOk( genKindId, identifiers( cursId ).genKind );
   ParseNextOutParameter( keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
-  ParseLastOutParameter( valRef, identifiers( fileId ).genKind );
-  baseTypesOK( valRef.kind, identifiers( fileId ).genKind  );
+  expect( symbol_t, "," );
+  -- This assumes we don't have aggregate expressions yet.
+  -- record?
+  if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+     -- ParseOutParam doesn't handle full records or arrays
+     isRecord := true;
+     ParseIdentifier( valRef.id );
+     genTypesOk( identifiers( valRef.id ).kind, genKindId );
+  -- array?
+  elsif identifiers( genKindId ).list then
+     -- ParseOutParam doesn't handle full records or arrays
+     isArray := true;
+     ParseIdentifier( valRef.id );
+     genTypesOk( identifiers( valRef.id ).kind, genKindId );
+  else
+     -- This will still auto-declare scalar values
+     ParseOutParameter(  valRef, genKindId );
+  end if;
+  expect( symbol_t, ")" );
   if isExecutingCommand then
-     declare
-        key : unbounded_string;
-        data : unbounded_string;
-     begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-        get( theFile.btree.session,
-             theCurs.btree_cur,
-             key,
-             data,
-             DB_C_GET_FIRST );
-        AssignParameter( keyRef, key );
-        AssignParameter( valRef, data );
-     exception when msg: berkeley_error =>
-         -- TODO: differentiate between key not found and other errors here
-         err( "key not found" );
-         -- err( exception_message( msg ) );
-     end;
+     if isRecord then
+        declare
+           key : unbounded_string;
+           jsonString : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           get( theFile.btree.session,
+                theCurs.btree_cur,
+                key,
+                jsonString,
+                DB_C_GET_FIRST );
+           AssignParameter( keyRef, key );
+           DoJsonToRecord( valRef.id, jsonString );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        when STORAGE_ERROR =>
+           err( "storage_error raised" );
+        when others =>
+           raise;
+        end;
+     elsif isArray then
+        declare
+           key : unbounded_string;
+           jsonString : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           get( theFile.btree.session,
+                theCurs.btree_cur,
+                key,
+                jsonString,
+                DB_C_GET_FIRST );
+           AssignParameter( keyRef, key );
+           DoJsonToArray( valRef.id, jsonString );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        when STORAGE_ERROR =>
+           err( "storage_error raised" );
+        when others =>
+           raise;
+        end;
+     else
+        declare
+           key : unbounded_string;
+           data : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           get( theFile.btree.session,
+                theCurs.btree_cur,
+                key,
+                data,
+                DB_C_GET_FIRST );
+           AssignParameter( keyRef, key );
+           AssignParameter( valRef, data );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        when STORAGE_ERROR =>
+           err( "storage_error raised" );
+        when others =>
+           raise;
+        end;
+     end if;
   end if;
 end ParseBTreeFirst;
 
@@ -1543,34 +1611,101 @@ procedure ParseBTreeNext is
   theCurs    : resPtr;
   keyRef     : reference;
   valRef     : reference;
+  isRecord   : boolean := false;
+  isArray    : boolean := false;
+  genKindId  : identifier;
 begin
-  expect( btree_next_t );
+  expect( btree_get_next_t );
   ParseFirstFileParameter( fileId );
   ParseNextCursorParameter( cursId );
-  genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
+  genKindId := identifiers( fileId ).genKind;
+  genTypesOk( genKindId, identifiers( cursId ).genKind );
   ParseNextOutParameter( keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
-  ParseLastOutParameter( valRef, identifiers( fileId ).genKind );
-  baseTypesOK( valRef.kind, identifiers( fileId ).genKind  );
+  expect( symbol_t, "," );
+  -- This assumes we don't have aggregate expressions yet.
+  -- record?
+  if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+     -- ParseOutParam doesn't handle full records or arrays
+     isRecord := true;
+     ParseIdentifier( valRef.id );
+     genTypesOk( identifiers( valRef.id ).kind, genKindId );
+  -- array?
+  elsif identifiers( genKindId ).list then
+     -- ParseOutParam doesn't handle full records or arrays
+     isArray := true;
+     ParseIdentifier( valRef.id );
+     genTypesOk( identifiers( valRef.id ).kind, genKindId );
+  else
+     -- This will still auto-declare scalar values
+     ParseOutParameter(  valRef, genKindId );
+  end if;
+  expect( symbol_t, ")" );
   if isExecutingCommand then
-     declare
-        key : unbounded_string;
-        data : unbounded_string;
-     begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-        get( theFile.btree.session,
-             theCurs.btree_cur,
-             key,
-             data,
-             DB_C_GET_NEXT );
-        AssignParameter( keyRef, key );
-        AssignParameter( valRef, data );
-     exception when msg: berkeley_error =>
-         -- TODO: differentiate between key not found and other errors here
-         err( "key not found" );
-         -- err( exception_message( msg ) );
-     end;
+     if isRecord then
+        declare
+           key : unbounded_string;
+           jsonString : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           get( theFile.btree.session,
+                theCurs.btree_cur,
+                key,
+                jsonString,
+                DB_C_GET_NEXT );
+           AssignParameter( keyRef, key );
+           DoJsonToRecord( valRef.id, jsonString );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        when STORAGE_ERROR =>
+           err( "storage_error raised" );
+        when others =>
+           raise;
+        end;
+     elsif isArray then
+        declare
+           key : unbounded_string;
+           jsonString : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           get( theFile.btree.session,
+                theCurs.btree_cur,
+                key,
+                jsonString,
+                DB_C_GET_NEXT );
+           AssignParameter( keyRef, key );
+           DoJsonToArray( valRef.id, jsonString );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        when STORAGE_ERROR =>
+           err( "storage_error raised" );
+        when others =>
+           raise;
+        end;
+     else
+        declare
+           key : unbounded_string;
+           data : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           get( theFile.btree.session,
+                theCurs.btree_cur,
+                key,
+                data,
+                DB_C_GET_NEXT );
+           AssignParameter( keyRef, key );
+           AssignParameter( valRef, data );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        when STORAGE_ERROR =>
+           err( "storage_error raised" );
+        when others =>
+           raise;
+        end;
+     end if;
   end if;
 end ParseBTreeNext;
 
@@ -1595,34 +1730,101 @@ procedure ParseBTreeLast is
   theCurs    : resPtr;
   keyRef     : reference;
   valRef     : reference;
+  isRecord   : boolean := false;
+  isArray    : boolean := false;
+  genKindId  : identifier;
 begin
-  expect( btree_last_t );
+  expect( btree_get_last_t );
   ParseFirstFileParameter( fileId );
   ParseNextCursorParameter( cursId );
-  genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
+  genKindId := identifiers( fileId ).genKind;
+  genTypesOk( genKindId, identifiers( cursId ).genKind );
   ParseNextOutParameter( keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
-  ParseLastOutParameter( valRef, identifiers( fileId ).genKind );
-  baseTypesOK( valRef.kind, identifiers( fileId ).genKind  );
+  expect( symbol_t, "," );
+  -- This assumes we don't have aggregate expressions yet.
+  -- record?
+  if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+     -- ParseOutParam doesn't handle full records or arrays
+     isRecord := true;
+     ParseIdentifier( valRef.id );
+     genTypesOk( identifiers( valRef.id ).kind, genKindId );
+  -- array?
+  elsif identifiers( genKindId ).list then
+     -- ParseOutParam doesn't handle full records or arrays
+     isArray := true;
+     ParseIdentifier( valRef.id );
+     genTypesOk( identifiers( valRef.id ).kind, genKindId );
+  else
+     -- This will still auto-declare scalar values
+     ParseOutParameter(  valRef, genKindId );
+  end if;
+  expect( symbol_t, ")" );
   if isExecutingCommand then
-     declare
-        key : unbounded_string;
-        data : unbounded_string;
-     begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-        get( theFile.btree.session,
-             theCurs.btree_cur,
-             key,
-             data,
-             DB_C_GET_LAST );
-        AssignParameter( keyRef, key );
-        AssignParameter( valRef, data );
-     exception when msg: berkeley_error =>
-         -- TODO: differentiate between key not found and other errors here
-         err( "key not found" );
-         -- err( exception_message( msg ) );
-     end;
+     if isRecord then
+        declare
+           key : unbounded_string;
+           jsonString : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           get( theFile.btree.session,
+                theCurs.btree_cur,
+                key,
+                jsonString,
+                DB_C_GET_LAST );
+           AssignParameter( keyRef, key );
+           DoJsonToRecord( valRef.id, jsonString );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        when STORAGE_ERROR =>
+           err( "storage_error raised" );
+        when others =>
+           raise;
+        end;
+     elsif isArray then
+        declare
+           key : unbounded_string;
+           jsonString : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           get( theFile.btree.session,
+                theCurs.btree_cur,
+                key,
+                jsonString,
+                DB_C_GET_LAST );
+           AssignParameter( keyRef, key );
+           DoJsonToArray( valRef.id, jsonString );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        when STORAGE_ERROR =>
+           err( "storage_error raised" );
+        when others =>
+           raise;
+        end;
+     else
+        declare
+           key : unbounded_string;
+           data : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           get( theFile.btree.session,
+                theCurs.btree_cur,
+                key,
+                data,
+                DB_C_GET_LAST );
+           AssignParameter( keyRef, key );
+           AssignParameter( valRef, data );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        when STORAGE_ERROR =>
+           err( "storage_error raised" );
+        when others =>
+           raise;
+        end;
+     end if;
   end if;
 end ParseBTreeLast;
 
@@ -1647,34 +1849,101 @@ procedure ParseBTreePrevious is
   theCurs    : resPtr;
   keyRef     : reference;
   valRef     : reference;
+  isRecord   : boolean := false;
+  isArray    : boolean := false;
+  genKindId  : identifier;
 begin
-  expect( btree_previous_t );
+  expect( btree_get_previous_t );
   ParseFirstFileParameter( fileId );
   ParseNextCursorParameter( cursId );
-  genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
+  genKindId := identifiers( fileId ).genKind;
+  genTypesOk( genKindId, identifiers( cursId ).genKind );
   ParseNextOutParameter( keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
-  ParseLastOutParameter( valRef, identifiers( fileId ).genKind );
-  baseTypesOK( valRef.kind, identifiers( fileId ).genKind  );
+  expect( symbol_t, "," );
+  -- This assumes we don't have aggregate expressions yet.
+  -- record?
+  if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+     -- ParseOutParam doesn't handle full records or arrays
+     isRecord := true;
+     ParseIdentifier( valRef.id );
+     genTypesOk( identifiers( valRef.id ).kind, genKindId );
+  -- array?
+  elsif identifiers( genKindId ).list then
+     -- ParseOutParam doesn't handle full records or arrays
+     isArray := true;
+     ParseIdentifier( valRef.id );
+     genTypesOk( identifiers( valRef.id ).kind, genKindId );
+  else
+     -- This will still auto-declare scalar values
+     ParseOutParameter(  valRef, genKindId );
+  end if;
+  expect( symbol_t, ")" );
   if isExecutingCommand then
-     declare
-        key : unbounded_string;
-        data : unbounded_string;
-     begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-        get( theFile.btree.session,
-             theCurs.btree_cur,
-             key,
-             data,
-             DB_C_GET_PREV );
-        AssignParameter( keyRef, key );
-        AssignParameter( valRef, data );
-     exception when msg: berkeley_error =>
-         -- TODO: differentiate between key not found and other errors here
-         err( "key not found" );
-         -- err( exception_message( msg ) );
-     end;
+     if isRecord then
+        declare
+           key : unbounded_string;
+           jsonString : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           get( theFile.btree.session,
+                theCurs.btree_cur,
+                key,
+                jsonString,
+                DB_C_GET_PREV );
+           AssignParameter( keyRef, key );
+           DoJsonToRecord( valRef.id, jsonString );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        when STORAGE_ERROR =>
+           err( "storage_error raised" );
+        when others =>
+           raise;
+        end;
+     elsif isArray then
+        declare
+           key : unbounded_string;
+           jsonString : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           get( theFile.btree.session,
+                theCurs.btree_cur,
+                key,
+                jsonString,
+                DB_C_GET_PREV );
+           AssignParameter( keyRef, key );
+           DoJsonToArray( valRef.id, jsonString );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        when STORAGE_ERROR =>
+           err( "storage_error raised" );
+        when others =>
+           raise;
+        end;
+     else
+        declare
+           key : unbounded_string;
+           data : unbounded_string;
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           get( theFile.btree.session,
+                theCurs.btree_cur,
+                key,
+                data,
+                DB_C_GET_PREV );
+           AssignParameter( keyRef, key );
+           AssignParameter( valRef, data );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        when STORAGE_ERROR =>
+           err( "storage_error raised" );
+        when others =>
+           raise;
+        end;
+     end if;
   end if;
 end ParseBTreePrevious;
 #else
@@ -1846,10 +2115,10 @@ begin
   declareProcedure( btree_new_cursor_t,  "btree_io.new_cursor", ParseBTreeNewCursor'access );
   declareProcedure( btree_open_cursor_t,  "btree_io.open_cursor", ParseBTreeOpenCursor'access );
   declareProcedure( btree_close_cursor_t,  "btree_io.close_cursor", ParseBTreeCloseCursor'access );
-  declareProcedure( btree_first_t,     "btree_io.first", ParseBTreeFirst'access );
-  declareProcedure( btree_next_t,      "btree_io.next", ParseBTreeNext'access );
-  declareProcedure( btree_previous_t,  "btree_io.previous", ParseBTreePrevious'access );
-  declareProcedure( btree_last_t,      "btree_io.last", ParseBTreeLast'access );
+  declareProcedure( btree_get_first_t,     "btree_io.get_first", ParseBTreeFirst'access );
+  declareProcedure( btree_get_next_t,      "btree_io.get_next", ParseBTreeNext'access );
+  declareProcedure( btree_get_previous_t,  "btree_io.get_previous", ParseBTreePrevious'access );
+  declareProcedure( btree_get_last_t,      "btree_io.get_last", ParseBTreeLast'access );
 
   declareFunction( btree_will_raise_t, "btree_io.will_raise",  ParseBTreeWillRaise'access );
   declareFunction( btree_last_error_t, "btree_io.last_error",  ParseBTreeLastError'access );
