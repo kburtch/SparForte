@@ -1,0 +1,1543 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Packages - B-Tree I/O</title>
+	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+	<link rel="index" href="packages.html" />
+	<link rel="prev" href="pkg_cgi.html" />
+	<link rel="next" href="pkg_cmdline.html" />
+</head>
+<body bgcolor="#FFFFFF"><a name="top"></a>
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html">Tutorials</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html"><b>Packages</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_dirops.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_dht.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+	<!-- Content Area -->
+<h2><a NAME="4.14"></a>Btree_Io Package</h2>
+
+<p>The SparForte built-in btree_io package contains subprograms
+to create and manage ordered data files.</p>
+
+<p><u>Introduced</u>: SparForte 1.6<br>
+
+<p><u>GCC Ada Equivalent</u>: none<br>
+
+        <center>
+        <div class="code">
+<pre>
+  <a href="#btree_io.add">add( f, k, v )</a>                   <a href="#btree_io.get_previous">get_previous( f, c, k, v )</a>
+  <a href="#btree_io.append">append( f, k, v )</a>                <a href="#btree_io.has_element">b := has_element( f, k )</a>
+  <a href="#btree_io.clear">clear( f )</a>                       <a href="#btree_io.increment">increment( f, k [,n] )</a>
+  <a href="#btree_io.close">close( f )</a>                       <a href="#btree_io.is_open">b := is_open( f )</a>
+  <a href="#btree_io.close_cursor">close_cursor( f, c )</a>             <a href="#btree_io.last_error">e := last_error( f )</a>
+  <a href="#btree_io.create">create( f, p, kl, vl )</a>           <a href="#btree_io.new_cursor">new_cursor( c, t )</a>
+  <a href="#btree_io.decrement">decrement( f, k [,n] )</a>           <a href="#btree_io.new_file">new_file( f, t )</a>
+  <a href="#btree_io.delete">delete( f )</a>                      <a href="#btree_io.prepend">prepend( f, k, v )</a>
+  <a href="#btree_io.flush">flush( f )</a>                       <a href="#btree_io.raise_exceptions">raise_exceptions( f, b )</a>
+  <a href="#btree_io.get">v := get( f, k )</a>                 <a href="#btree_io.remove">remove( f, k )</a>
+  <a href="#btree_io.get_first">get_first( f, c, k, v )</a>          <a href="#btree_io.replace">replace( f, k, v )</a>
+  <a href="#btree_io.get_last">get_last( f, c, k, v )</a>           <a href="#btree_io.set">set( f, k, v )</a>
+  <a href="#btree_io.get_next">get_next( f, c, k, v )</a>           <a href="#btree_io.will_raise">b := will_raise( f )</a>
+
+
+  <a href="#btree_io.open">open( f, p, kl, vl )</a> <a href="#btree_io.open_cursor">open_cursor( f, c )</a>
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the btree_io package</span>
+        </div>
+        </div>
+        </center>
+
+<p>A B-tree file is a collection of data nodes stored to disk.  Each node
+stores a value called an element.  Each value is referenced by a key.
+Each file can only hold one kind of element (unless universal types are
+used).</p>
+
+<p>The programmer can traverse forward or
+reverse through the file.  File positions are designated by cursors.</p>
+
+<p>This package is implemented using the Berkeley database.  Creating a
+file will also create several auxillary files in the same directory.
+The files in one directory will share the same Berkeley environment.</p>
+
+<p>This package includes three new types:</p>
+
+<ul>
+<li><b>btree_io.file</b> - a B-tree file</li>
+<li><b>btree_io.cursor</b> - a B-tree cursor</li>
+<li><b>btree_io.db_error</b> - a B-tree error number</li>
+</ul>
+
+<p>db_error constants are also defined (e.g. btree_io.DB_OK ), though
+not all errors for all versions of Berkeley DB are defined and
+operating system error codes (e.g. EINVAL, ENOENT) may also be
+returned.</p>
+
+<p>It is possible to open the file with the wrong (or a different) file
+data type but this is not recommended.</p>
+
+        <center>
+        <div class="code">
+<pre>
+<b>=&gt;</b> type clouds is (fog, cumulus, stratus, cirrus, cumulonimbus )
+<b>=&gt;</b> btree_io.new_file( f, clouds )
+<b>=&gt;</b> (Assuming f is a new btree_io.file variable)
+<b>=&gt;</b> btree_io.create( f, "clouds.btree", 80, 80 )
+<b>=&gt;</b> ? btree_io.is_open( f )
+true
+<b>=&gt;</b> ? btree_io.name( f )
+clouds.btree
+<b>=&gt;</b> ls
+clouds.btree  __db.001	__db.002  __db.003  __db.004
+<b>=&gt;</b> btree_io.set( f, "Toronto", fog )
+<b>=&gt;</b> btree_io.set( f, "New York", cirrus )
+<b>=&gt;</b> btree_io.set( f, "Moscow", cumulonimbus )
+<b>=&gt;</b> ? btree_io.has_element( f, "Tokyo" )
+false
+<b>=&gt;</b> ? btree_io.get( f, "New York" )
+cirrus
+<b>=&gt;</b> btree_io.add( f, "New York", cumulus )
+<b>=&gt;</b> ? btree_io.get( f, "New York" )
+cirrus
+<b>=&gt;</b> btree_io.close( f )
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Example</b>: Using btree_io to create a file of cities and their clouds</span>
+        </div>
+        </div>
+        </center>
+
+        <center>
+        <div class="code">
+<pre>
+<b>type</b> person_type <b>is</b> <b>record</b>
+   first_name : string;
+   age  : natural;
+<b>end</b> <b>record</b>;
+
+person : person_type;
+
+f : btree_io.file;
+
+btree_io.new_file( f, person_type );
+btree_io.create( f, "person.btree", 80, 80 );
+
+person.first_name := "John";
+person.age  := 18;
+btree_io.add( f, person.first_name, person );
+
+person.first_name := "Sue";
+person.age  := 21;
+btree_io.add( f, person.first_name, person );
+
+person.first_name := "Al";
+person.age  := 42;
+btree_io.add( f, person.first_name, person );
+
+<b>declare</b>
+  c : btree_io.cursor;
+  key : string;
+<b>begin</b>
+  btree_io.new_cursor( c, person_type );
+  btree_io.open_cursor( f, c );
+  btree_io.get_first( f, c, key, person );
+  put( person.first_name ) @ ( " /" ) @ (person.age);
+  new_line;
+
+  <b>loop</b>
+    btree_io.get_next( f, c, key, person );
+    put( person.first_name ) @ ( " /" ) @ (person.age);
+    new_line;
+  <b>end</b> <b>loop</b>;
+<b>exception</b> <b>when</b> <b>others</b> =&gt;
+  btree_io.close_cursor( f, c );
+  put_line( "no more people" );
+<b>end</b>;
+
+btree_io.close( f );
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Example</b>: Using btree_io to sort records</span>
+        </div>
+        </div>
+        </center>
+
+<a name="btree_io.add"></a><h3>btree_io.add( f, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Put value v under key k in the file.  If the key already exists, do nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.add( fruit, "apples", 15 );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span><i>file value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the value</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised for a deadlock<br>
+An exception is raised if the files are read-only access<br>
+An exception is raised if the B-Tree is too large</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.set">btree_io.set</a><br><a href="#btree_io.replace">btree_io.replace</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
+<a name="btree_io.append"></a><h3>btree_io.append( f, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Append string value v to the value under key k in the file.  If the key does not exist, do nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.set( fruit_unit, "apples", "bushel" );<br>btree_io.append( fruit_unit, "apples", "s" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span><i>file value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the string to append</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised for a deadlock<br>
+An exception is raised if the files are read-only access<br>
+An exception is raised if the value type is not a string</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dynamic_hash_tables.prepend">btree_io.prepend</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
+<a name="btree_io.clear"></a><h3>btree_io.clear( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Release memory allocated for f.  (This is automatically done when the
+variable is destroyed.)</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.clear( fruit );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.create">btree_io.create</a><br>
+<a href="#btree_io.increment">btree_io.open</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)<br>
+C: DB-&gt;close<br>
+PHP: dba_close</p></td>
+</tr>
+</table>
+
+<a name="btree_io.close"></a><h3>btree_io.close( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Close the btree file f.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.close( fruit );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.create">btree_io.create</a><br>
+<a href="#btree_io.increment">btree_io.open</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)<br>
+C: DB-&gt;close<br>
+PHP: dba_close</p></td>
+</tr>
+</table>
+
+<a name="btree_io.close_cursor"></a><h3>btree_io.close_cursor( f, c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Close the cursor c associated with file f.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.close( fruit );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.create">btree_io.create</a><br>
+<a href="#btree_io.increment">btree_io.open</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)<br>
+C: DB-&gt;close<br>
+PHP: dba_close</p></td>
+</tr>
+</table>
+
+<a name="btree_io.create"></a><h3>btree_io.create( f, p, kl, vl )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Create a new btree file f named p.  Maximum key length is kl bytes and maximum value length is vl bytes.  If the database exists, it is not overwritten.  If --verbose is used, BDB verbose error messages are enabled.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.create( fruit, "fruit.btree", 80, 80 );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the pathname</span></td>
+</tr><tr>
+<td><span>kl</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the max key length</span></td>
+</tr><tr>
+<td><span>vl</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the max value length</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised for a database created in an incompatible version of BDB<br>
+An exception is raised for a deadlock</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.increment">btree_io.open</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)<br>
+C: db_env_create, DB_ENV-&gt;open, db_create, DB-&gt;open<br>
+PHP: dba_open</p></td>
+</tr>
+</table>
+
+<a name="btree_io.decrement"></a><h3>btree_io.decrement( f, k [,n] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Reduce the numeric value under key k in the file by one (or n).  If the key does not exist, do nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.decrement( fruit, "apples" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span><i>file value type</i></span></td>
+<td><span>1</span></td>
+<td><span>the amount to decrement</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised for a deadlock<br>
+An exception is raised if the files are read-only access<br>
+An exception is raised if the value type is not numeric</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.increment">btree_io.increment</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
+<a name="btree_io.delete"></a><h3>btree_io.delete( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Delete the file and associated files.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.delete( fruit );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.create">btree_io.create</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)<br>
+C: db_remove<br>
+PHP: ?</p></td>
+</tr>
+</table>
+
+<a name="btree_io.flush"></a><h3>btree_io.flush( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Write all cached data to disk.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.flush( fruit );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)<br>
+C: DB-&gt;sync<br>
+PHP: ?</p></td>
+</tr>
+</table>
+
+<a name="btree_io.get"></a><h3>v := btree_io.get( f, k )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Get the value under key k in the file.  An exception is raised if k does not exist.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">put_line( btree_io.get( fruit, "apples" ) );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>return value</span></td>
+<td><span><i>file value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the value</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised on out-of-memory<br>
+An exception is raised for a deadlock<br>
+An exception is raised if the key is not found</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Gnat.Dynamic_Hash_Tables.Get<br>
+C: DB-&gt;get<br>
+PHP: dbm_fetch</p></td>
+</tr>
+</table>
+
+<a name="btree_io.get_first"></a><h3>btree_io.get_first( f, c, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Iterate through the file.  Return the first value in the file.  The order is the alphabetical order of the keys.  An exception is thrown if the file is empty.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.get_first( fruit, cursor, first_key, first_value );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>out</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the first key</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>out</span></td>
+<td><span><i>file value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the first value</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>?</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.get_next">btree_io.get_next</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: bdb.get</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>The name reflects dynamic_hash_tables.</p></td>
+</tr>
+</table>
+
+<a name="btree_io.get_last"></a><h3>btree_io.get_last( f, c, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Iterate through the file.  Return the last value in the file.  The order is the alphabetical order of the keys.  An exception is thrown if the file is empty.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.get_last( fruit, cursor, last_key, last_value );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>out</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the last key</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>out</span></td>
+<td><span><i>file value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the last value</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>?</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.get_prev">btree_io.get_prev</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: bdb.get</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>The name reflects dynamic_hash_tables.</p></td>
+</tr>
+</table>
+
+<a name="btree_io.get_next"></a><h3>btree_io.get_next( f, c, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Iterate through the file.  Return the next value in the file.  The order is the alphabetical order of the keys.  An exception is thrown if the file is empty.  Iteration is started with get_first.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.get_next( fruit, cursor, next_key, next_value );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>out</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the next key</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>out</span></td>
+<td><span><i>file value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the next value</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>?</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.get_next">btree_io.get_next</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: bdb.get</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>The name reflects dynamic_hash_tables.</p></td>
+</tr>
+</table>
+
+<a name="btree_io.get_previous"></a><h3>btree_io.get_previous( f, c, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Iterate through the file.  Return the previous value in the file.  The order is the alphabetical order of the keys.  An exception is thrown if the file is empty.  Iteration is started with get_last.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.get_previous( fruit, cursor, prev_key, prev_value );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>out</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the previous key</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>out</span></td>
+<td><span><i>file value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the previous value</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>?</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.get_next">btree_io.get_next</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: bdb.get</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>The name reflects dynamic_hash_tables.</p></td>
+</tr>
+</table>
+
+<a name="btree_io.has_element"></a><h3>b := btree_io.has_element( f, k )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Determine if key k is in the file.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">if btree_io.has_element( fruit, "apples" ) then ...</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if there is an element</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: DB-&gt;exists</p></td>
+</tr>
+</table>
+
+<a name="btree_io.increment"></a><h3>btree_io.increment( f, k [,n] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Increase the numeric value under key k in the file by one (or n).  If the key does not exist, do nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.increment( fruit, "apples" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span><i>file value type</i></span></td>
+<td><span>1</span></td>
+<td><span>the amount to increment</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory<br>
+An exception is raised if the value type is not numeric</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.decrement">btree_io.decrement</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
+<a name="btree_io.is_open"></a><h3>b := btree_io.is_open( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if file f has been openned.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">if btree_io.is_open( fruit ) then ...</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if the file is open</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="btree_io.last_error"></a><h3>e := btree_io.last_error( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the error code from the last Berkeley DB action.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">if btree_io.last_error /= btree_io.DB_OK then ...</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span>btree_io.db_error</span></td>
+<td><span>required</span></td>
+<td><span>the last error code</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="btree_io.new_cursor"></a><h3>btree_io.new_cursor( c, t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Initialize a new cursor, assigning the type for the values in the file.  The type may be an array, record, scalar or a unversal type.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.new_cursor( fruit, natural );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span><i>the value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the type of values</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Allocates a resource for the list.</p></td>
+</tr>
+</table>
+
+<a name="btree_io.new_file"></a><h3>btree_io.new_file( f, t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Initialize a new file, assigning the type for the values in the file.  The type may be an array, record, scalar or a unversal type.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.new_file( fruit, natural );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span><i>the value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the type of values</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Allocates a resource for the list.</p></td>
+</tr>
+</table>
+
+<a name="btree_io.prepend"></a><h3>btree_io.prepend( f, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Prepend string value v to the value under key k in the file.  If the key does not exist, do nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.set( fruit_unit, "apples", "ushels" );<br>btree_io.prepend( fruit_unit, "apples", "b" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span><i>file value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the string to prepend</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory<br>
+An exception is raised if the value type is not a string</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.append">btree_io.append</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
+<a name="btree_io.raise_exceptions"></a><h3>btree_io.raise_exceptions( f, b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Determine if Berkeley errors are raised as exceptions or if the programmer will check for errors with last_error as required.  The default is to raise exceptions.  If --trace is used, the location in the SparForte source code is included with the error message.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.raise_exceptions( fruit, true );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if errors will be raised</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.will_raise">btree_io.will_raise</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: ?</p></td>
+</tr>
+</table>
+
+<a name="btree_io.remove"></a><h3>btree_io.remove( f, k )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Delete a key and the associated value from the file.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.remove( fruit, "bad apples" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key to delete</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dynamic_hash_tables.reset">dynamic_hash_tables.reset</a><br><a href="#dynamic_hash_tables.set">dynamic_hash_tables.set</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
+<a name="btree_io.replace"></a><h3>btree_io.replace( f, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Replace the value v under key k in the file.  If the key does not exist, do nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.replace( fruit, "apples", 23 );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span><i>file value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the new value</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.set">btree_io.set</a><br><a href="#btree_io.add">btree_io.add</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
+<a name="btree_io.set"></a><h3>btree_io.set( f, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Assign the value v to the key k in the file.  If the key does not exist, create it.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.set( fruit, "apples", 21 );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span><i>file value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the new value</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.add">btree_io.add</a><br><a href="#btree_io.replace">btree_io.replace</a><br><a href="#btree_io.remove">btree_io.remove</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: ?</p></td>
+</tr>
+</table>
+
+<a name="btree_io.will_raise"></a><h3>b := btree_io.will_raise( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if Berkeley errors will be raised as exceptions.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">if btree_io.is_open( fruit ) then ...</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if the file is open</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+&nbsp;<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="packages.html">&nbsp;Summary</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_arrays.html">&nbsp;arrays</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_btree_io.html">&nbsp;<b>btree_io</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_calendar.html">&nbsp;calendar</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cgi.html">&nbsp;cgi</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_chains.html">&nbsp;chains</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cmdline.html">&nbsp;command_line</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_db.html">&nbsp;db/ postgresql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_doubly.html">&nbsp;doubly_linked...</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_dht.html">&nbsp;dynamic_hash_...</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_exceptions.html">&nbsp;exceptions</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_gnat_cgi.html">&nbsp;gnat.cgi</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_gnat_crc32.html">&nbsp;gnat.crc32</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_mysqlm.html">&nbsp;mysqlm</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_pen.html">&nbsp;pen</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_pengl.html">&nbsp;pen (OpenGL)</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_records.html">&nbsp;records</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sound.html">&nbsp;sound</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sinfo.html">&nbsp;source_info</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;stats</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_strings.html">&nbsp;strings</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_teams.html">&nbsp;teams</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
+</a></p>
+
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" border="0" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>
