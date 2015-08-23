@@ -564,7 +564,7 @@ end ParseBTreeName;
 procedure ParseBTreeDelete is
   -- Syntax: btree.delete( f );
   -- Ada:    bdb.remove( f );
-  -- TODO:   keep environment
+  -- TODO:   option to the keep environment in case other files use it
   fileId     : identifier;
   theFile    : resPtr;
 begin
@@ -1119,6 +1119,7 @@ procedure ParseBtreeReplace is
   -- Syntax: btree.replace( f, c | k, v );
   -- Ada:    N/A
   -- Note: the key will not be overwritten if a cursor is used
+-- TODO: option to throw an exception on missing values (including replace, get, add (existing value)
   fileId     : identifier;
   theFile  : resPtr;
   keyExpr  : unbounded_string;
@@ -1265,6 +1266,8 @@ end ParseBTreeReplace;
 #end if;
 #if BDB
 
+-- TODO: reset?
+
 procedure ParseBtreeAppend is
   -- Syntax: btree.append( f, s, e );
   -- Ada:    N/A
@@ -1380,7 +1383,7 @@ end ParseBTreeFlush;
 #if BDB
 
 procedure ParseBTreeNewCursor is
-  -- Syntax: btree.new_cursor( f, t );
+  -- Syntax: btree.new_cursor( c, t );
   -- Ada:    N/A
   resId : resHandleId;
   ref : reference;
@@ -1449,8 +1452,8 @@ end ParseBTreeOpenCursor;
 #if BDB
 
 procedure ParseBTreeCloseCursor is
-  -- Syntax: btree_io.close_cursor( fc );
-  -- Ada:    bdb.close( f );
+  -- Syntax: btree_io.close_cursor( f,c );
+  -- Ada:    bdb.close_cursor( f,c );
   fileId     : identifier;
   theFile    : resPtr;
   cursId     : identifier;
@@ -2058,6 +2061,7 @@ begin
   declareIdent( btree_cursor_t, "btree_io.cursor", positive_t, typeClass );
   declareIdent( btree_db_error_t, "btree_io.db_error", natural_t, typeClass );
 
+  -- TODO: move these to a shared package so we can implement more berkeley db
   declareStandardConstant( btree_DB_OK_t, "btree_io.DB_OK", btree_db_error_t, DB_OK'img );
   declareStandardConstant( btree_DB_BUFFER_SMALL_t, "btree_io.DB_BUFFER_SMALL", btree_db_error_t, DB_BUFFER_SMALL'img );
   declareStandardConstant( btree_DB_DONOTINDEX_t, "btree_io.DB_DONOTINDEX", btree_db_error_t, DB_DONOTINDEX'img );
