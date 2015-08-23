@@ -1162,6 +1162,9 @@ procedure ParseDoublyAssemble( result : out unbounded_string; kind : out identif
   -- This should run faster than if the user did it themselves in a script.
   -- As a shell language, this is useful for passing data to a pipeline
   -- echo( doubly_linked_lists.assemble( l ) ) | wc
+  -- TODO: shouldn't this stream directly to a pipeline so that it can
+  -- be avoid storing the data twice in memory (using an intermediate
+  -- variable) ?
   listId  : identifier;
   theList : resPtr;
   delimExpr : unbounded_string;
