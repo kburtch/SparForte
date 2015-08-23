@@ -438,7 +438,7 @@ PHP: dba_close</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Create a new btree file f named p.  Maximum key length is kl bytes and maximum value length is vl bytes.  If the database exists, it is not overwritten.  If --verbose is used, BDB verbose error messages are enabled.</p>
+<td><p>Create a new B-tree file f named p.  Maximum key length is kl bytes and maximum value length is vl bytes.  If the database exists, it is not overwritten.  If --verbose is used, BDB verbose error messages are enabled.  If the file name is an empty string, the B-tree will be stored in memory and any supporting files will be stored in the current directory.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</td><td><span class="code">btree_io.create( fruit, "fruit.btree", 80, 80 );</span></p></td>
 </tr><tr>
@@ -491,6 +491,10 @@ An exception is raised for a deadlock</p></td>
 <td><p>Ada: N/A (AdaScript extension)<br>
 C: db_env_create, DB_ENV-&gt;open, db_create, DB-&gt;open<br>
 PHP: dba_open</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This maximum lengths are for allocating space to convert SparForte strings into the C strings used by Berkeley DB.</p></td>
+</tr>
 </tr>
 </table>
 
