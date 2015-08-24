@@ -1547,6 +1547,9 @@ procedure ParseBTreeFirst is
   isArray    : boolean := false;
   genKindId  : identifier;
 begin
+  if rshOpt then
+     err( "get_first not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
   expect( btree_get_first_t );
   ParseFirstFileParameter( fileId );
   ParseNextCursorParameter( cursId );
@@ -1666,6 +1669,9 @@ procedure ParseBTreeNext is
   isArray    : boolean := false;
   genKindId  : identifier;
 begin
+  if rshOpt then
+     err( "get_next not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
   expect( btree_get_next_t );
   ParseFirstFileParameter( fileId );
   ParseNextCursorParameter( cursId );
@@ -1785,6 +1791,9 @@ procedure ParseBTreeLast is
   isArray    : boolean := false;
   genKindId  : identifier;
 begin
+  if rshOpt then
+     err( "get_last not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
   expect( btree_get_last_t );
   ParseFirstFileParameter( fileId );
   ParseNextCursorParameter( cursId );
@@ -1904,6 +1913,9 @@ procedure ParseBTreePrevious is
   isArray    : boolean := false;
   genKindId  : identifier;
 begin
+  if rshOpt then
+     err( "get_previous not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
   expect( btree_get_previous_t );
   ParseFirstFileParameter( fileId );
   ParseNextCursorParameter( cursId );
