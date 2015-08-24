@@ -227,6 +227,9 @@ procedure ParseBTreeCreate is
   valLenExpr : unbounded_string;
   valLenType : identifier;
 begin
+  if rshOpt then
+     err( "create not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
   expect( btree_create_t );
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
@@ -441,6 +444,9 @@ begin
         dirname2 := to_unbounded_string( dirname );
         if dirname = "." then
            dirname2 := null_unbounded_string;
+        elsif rshOpt then
+           -- TODO: probably could be in directories in current PATH as well
+           err( "file must be in current directory in a " & optional_bold( "restricted shell" ) );
         elsif element( dirname2, 1 ) /= '/' then
            findIdent( to_unbounded_string( "PWD" ), pwdId );
            dirname2 := identifiers( pwdId ).value & "/" & dirname;
@@ -585,6 +591,9 @@ procedure ParseBTreeDelete is
   fileId     : identifier;
   theFile    : resPtr;
 begin
+  if rshOpt then
+     err( "delete not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
   expect( btree_delete_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
@@ -658,6 +667,9 @@ procedure ParseBTreeSet is
   isArray    : boolean := false;
   genKindId  : identifier;
 begin
+  if rshOpt then
+     err( "set not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
   expect( btree_set_t );
   ParseFirstFileParameter( fileId );
   ParseNextStringParameter( keyExpr, keyType, string_t );
@@ -862,6 +874,9 @@ procedure ParseBTreeRemove is
   keyExpr    : unbounded_string;
   keyType    : identifier;
 begin
+  if rshOpt then
+     err( "remove not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
   expect( btree_remove_t );
   ParseFirstFileParameter( fileId );
   expect( symbol_t, "," );
@@ -919,6 +934,9 @@ procedure ParseBtreeIncrement is
   oldItem  : unbounded_string;
   oldItemValue : long_float;
 begin
+  if rshOpt then
+     err( "increment not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
   expect( btree_increment_t );
   ParseFirstFileParameter( fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
@@ -984,6 +1002,9 @@ procedure ParseBtreeDecrement is
   oldItem  : unbounded_string;
   oldItemValue : long_float;
 begin
+  if rshOpt then
+     err( "decrement not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
   expect( btree_decrement_t );
   ParseFirstFileParameter( fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
@@ -1050,6 +1071,9 @@ procedure ParseBtreeAdd is
   isArray    : boolean := false;
   genKindId  : identifier;
 begin
+  if rshOpt then
+     err( "add not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
   expect( btree_add_t );
   ParseFirstFileParameter( fileId );
   ParseNextStringParameter( keyExpr, keyType, uni_string_t );
@@ -1150,6 +1174,9 @@ procedure ParseBtreeReplace is
   cursId   : identifier := eof_t;
   theCurs  : resPtr;
 begin
+  if rshOpt then
+     err( "replace not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
   expect( btree_replace_t );
   ParseFirstFileParameter( fileId );
   expect( symbol_t, "," );
@@ -1283,8 +1310,6 @@ end ParseBTreeReplace;
 #end if;
 #if BDB
 
--- TODO: reset?
-
 procedure ParseBtreeAppend is
   -- Syntax: btree.append( f, s, e );
   -- Ada:    N/A
@@ -1296,6 +1321,9 @@ procedure ParseBtreeAppend is
   itemType : identifier;
   oldItem  : unbounded_string;
 begin
+  if rshOpt then
+     err( "append not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
   expect( btree_append_t );
   ParseFirstFileParameter( fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
@@ -1339,6 +1367,9 @@ procedure ParseBtreePrepend is
   itemType : identifier;
   oldItem  : unbounded_string;
 begin
+  if rshOpt then
+     err( "prepend not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
   expect( btree_prepend_t );
   ParseFirstFileParameter( fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
@@ -2149,8 +2180,10 @@ begin
   declareFunction( btree_last_error_t, "btree_io.last_error",  ParseBTreeLastError'access );
   declareProcedure( btree_raise_exceptions_t, "btree_io.raise_exceptions", ParseBTreeRaiseExceptions'access );
 
--- TODO: assemble and disassemble
+-- TODO: assemble and disassemble - are they helpful for potentially huge trees?
 -- TODO: clear (cursor) - just for consistency
+-- TODO: truncate
+-- TODO: reset?  are in_file, etc. helpful to define here?
 
   declareNamespaceClosed( "btree_io" );
 
