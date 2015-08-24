@@ -5,7 +5,7 @@ gen_constants:
 	gcc -DBDB4 -o gen_constants gen_constants.c
 
 c_bdb.o: c_bdb.c
-	gcc -DBDB4 -c c_bdb.c
+	gcc -O3 -DBDB4 -c c_bdb.c
 
 bdb_constants.ads: gen_constants
 	./gen_constants > bdb_constants.ads
