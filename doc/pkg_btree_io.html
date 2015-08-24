@@ -438,7 +438,7 @@ PHP: dba_close</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Create a new B-tree file f named p.  Maximum key length is kl bytes and maximum value length is vl bytes.  If the database exists, it is not overwritten.  If --verbose is used, BDB verbose error messages are enabled.  If the file name is an empty string, the B-tree will be stored in memory and any supporting files will be stored in the current directory.</p>
+<td><p>Create a new B-tree file f named p.  Maximum key length is kl bytes and maximum value length is vl bytes.  If the database exists, it is overwritten.  If --verbose is used, BDB verbose error messages are enabled.  If the file name is an empty string, the B-tree will be stored in memory and any supporting files will be stored in the current directory.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</td><td><span class="code">btree_io.create( fruit, "fruit.btree", 80, 80 );</span></p></td>
 </tr><tr>

@@ -266,6 +266,9 @@ begin
            findIdent( to_unbounded_string( "PWD" ), pwdId );
            dirname2 := identifiers( pwdId ).value & "/" & dirname;
         end if;
+        if trace then
+           put_trace( "Base directory is '" & to_string( dirname2 ) & "'" );
+        end if;
 
         -- Berkeley puts the files in the current directory, though you can
         -- move the env because it is shared.  To put the project in a specific
@@ -327,6 +330,17 @@ begin
         end;
         theFile.btree.isOpen := true;
         theFile.btree.name := fname_val;
+
+        declare
+           cnt : natural;
+        begin
+           truncate( theFile.btree.session, cnt );
+           if trace and cnt > 0 then
+              put_trace( cnt'img & " records were erased" );
+           end if;
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) & " on opening the data file"  );
+        end;
      --exception when berkeley_error:s =>
      --   err( to_string( last_error( theFile.btree.session ) );
      end;
@@ -430,6 +444,9 @@ begin
         elsif element( dirname2, 1 ) /= '/' then
            findIdent( to_unbounded_string( "PWD" ), pwdId );
            dirname2 := identifiers( pwdId ).value & "/" & dirname;
+        end if;
+        if trace then
+           put_trace( "Base directory is '" & to_string( dirname2 ) & "'" );
         end if;
 
         -- Berkeley puts the files in the current directory, though you can
