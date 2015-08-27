@@ -69,6 +69,7 @@ to create and manage ordered data files.</p>
 
 
   <a href="#btree_io.open">open( f, p, kl, vl )</a> <a href="#btree_io.open_cursor">open_cursor( f, c )</a>
+  <a href="#btree_io.truncate">truncate( f )</a></a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -1201,6 +1202,70 @@ An exception is raised if the value type is not numeric</p></td>
 </tr>
 </table>
 
+<a name="btree_io.open"></a><h3>btree_io.open( f, p, kl, vl )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Open a new B-tree file f named p.  Maximum key length is kl bytes and maximum value length is vl bytes.  If no database exists, an exception is raised.  If --verbose is used, BDB verbose error messages are enabled.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.open( fruit, "fruit.btree", 80, 80 );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the pathname</span></td>
+</tr><tr>
+<td><span>kl</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the max key length</span></td>
+</tr><tr>
+<td><span>vl</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the max value length</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised for a database created in an incompatible version of BDB<br>
+An exception is raised for a deadlock</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.create">btree_io.create</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)<br>
+C: db_env_create, DB_ENV-&gt;open, DB-&gt;open<br>
+PHP: dba_open</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This maximum lengths are for allocating space to convert SparForte strings into the C strings used by Berkeley DB.</p></td>
+</tr>
+</tr>
+</table>
+
 <a name="btree_io.prepend"></a><h3>btree_io.prepend( f, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
@@ -1451,7 +1516,48 @@ An exception is raised if out of memory</p></td>
 <td><p><a href="#btree_io.add">btree_io.add</a><br><a href="#btree_io.replace">btree_io.replace</a><br><a href="#btree_io.remove">btree_io.remove</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: ?</p></td>
+<td><p>Ada: DB-&gt;put</p></td>
+</tr>
+</table>
+
+<a name="btree_io.truncate"></a><h3>btree_io.truncate( f )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Erase all data from the file.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.truncate( fruit );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)<br>
+C: DB-&gt;truncate&gt;sync<br>
+</p></td>
 </tr>
 </table>
 

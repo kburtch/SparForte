@@ -29,6 +29,7 @@ with
     ada.exceptions,
     gnat.directory_operations,
     bush_os,
+    user_io,
     world,
     scanner,
     scanner_res,
@@ -47,6 +48,7 @@ use
     ada.exceptions,
     gnat.directory_operations,
     world,
+    user_io,
     scanner,
     scanner_res,
     string_util,
@@ -1436,6 +1438,9 @@ procedure ParseBTreeTruncate is
   fileId     : identifier;
   theFile    : resPtr;
 begin
+  if rshOpt then
+     err( "truncate not allowed in a " & optional_bold( "restricted shell" ) );
+  end if;
   expect( btree_truncate_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
