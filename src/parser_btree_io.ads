@@ -80,6 +80,7 @@ btree_delete_t        : identifier;
 btree_is_open_t       : identifier;
 btree_name_t          : identifier;
 btree_flush_t         : identifier;
+btree_truncate_t      : identifier;
 
 btree_set_t           : identifier;
 btree_get_t           : identifier;
