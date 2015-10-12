@@ -9,8 +9,12 @@ Check_DB() {
 	set +eu
 	# KB: 14/06/12 - this breaks on non-English locals.
 	# Added LC_ALL=C
+	#LC_ALL=C set -- $(type $Command 2>/dev/null)
+	#if [ "$2" != "is" ] ; then
+	# KB: 11/10/15 - Reports this still breaks in France
+	# Instead, check to see type returned a path in $3
 	LC_ALL=C set -- $(type $Command 2>/dev/null)
-	if [ "$2" != "is" ] ; then
+	if [ "$3" = "" ] ; then
 	# KB: possible work around
         #type $Command 2>/dev/null
 	#if [ $? -ne 0 ] ; then
