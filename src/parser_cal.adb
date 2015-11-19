@@ -200,10 +200,9 @@ begin
        I := long_float( Year );
        J := long_float( Month );
        K := long_float( Day );
-       Term1 := long_float'truncation( I + 4800.0 +
-                long_float'truncation( (J-14.0) / 12.0 ) / 4.0 );
-       Term2 := 367.0 *
-                long_float'truncation( ( J - 2.0 -
+       Term1 := long_float'truncation( 1461.0 * ( I + 4800.0 +
+                long_float'truncation( (J-14.0) / 12.0 ) ) / 4.0 );
+       Term2 := long_float'truncation( 367.0 * ( J - 2.0 -
                 long_float'truncation( ( J-14.0 ) / 12.0 ) * 12.0 )
                 / 12.0 );
        Term3 := 3.0 *
@@ -212,7 +211,7 @@ begin
                 long_float'truncation( ( J-14.0 ) / 12.0 )
                 ) / 100.0 )
                 ) / 4.0 );
-       Julian := K - 32075.0 + 1461.0 * Term1 + Term2 - Term3;
+       Julian := K - 32075.0 + Term1 + Term2 - Term3;
        result := to_unbounded_string( long_integer( Julian )'img );
      exception when others =>
        err( "exception raised" );
@@ -242,14 +241,14 @@ begin
      begin
        Julian := long_float( to_numeric( expr_val ) );
        L := Julian + 68569.0;
-       N := 4.0 * long_float'truncation( L / 146097.0 );
+       N := long_float'truncation( 4.0*L / 146097.0 );
        L := L - long_float'truncation( ( 146097.0 * N + 3.0 ) / 4.0 );
-       I := 4000.0 * long_float'truncation( ( L+1.0 ) / 1461001.0 );
-       L := L - 1461.0 * long_float'truncation( I / 4.0) + 31.0;
-       J := 80.0 * long_float'truncation( L / 2447.0 );
-       K := L - 2447.0 * long_float'truncation( J / 80.0 );
+       I := long_float'truncation( ( 4000.0*(L+1.0) ) / 1461001.0 );
+       L := L - long_float'truncation( 1461.0*I / 4.0) + 31.0;
+       J := long_float'truncation( 80.0*L / 2447.0 );
+       K := L - long_float'truncation( 2447.0*J / 80.0 );
        L := long_float'truncation( J / 11.0 );
-       J := J+2.0-12.0*L;
+       J := J+2.0-(12.0*L);
        I := 100.0 * (N-49.0) + I + L;
        Year := Year_Number( I );
        Month := Month_Number( J );

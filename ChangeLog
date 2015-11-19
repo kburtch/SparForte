@@ -58,5 +58,16 @@ CHANGES SINCE 1.5
 
 18. New: Additional command line editing keys: PC keyboard Home (= control-a), End (= control-e), and Del (= new Control-u / ESC x).
 
+19. hash_io (Berkeley DB library added).
+
+20. Fix: Berkeley DB gen_constants script generates dummy values for missing constants.
+
+21. Fix (Terry Droeger): Julian dates finished and working correctly.
+
+22. Fix (Terry Droeger): Argument count (in CGI) calls CGI argument count explicitly.
+
+23. Fix (Terry Droeger): Removed extraneous references to gnat.cgi from two files.  This should fix the CGI POST issues, but both CGI libraries should not be installed at the same time as both read from standard input when they elaborate.
+
+
 [David B wants shared library]
 

@@ -22,7 +22,7 @@
 ------------------------------------------------------------------------------
 -- CVS: $Id$
 
-with ada.strings.unbounded, gnat.cgi, world;
+with ada.strings.unbounded, world;
 use  ada.strings.unbounded, world;
 
 package parser_gnat_crc is

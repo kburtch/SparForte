@@ -197,7 +197,7 @@ begin
    kind := natural_t;
   expect( cgi_argument_count_t );
   if isExecutingCommand then
-     result := to_unbounded_string( natural'image( Argument_Count ));
+     result := to_unbounded_string( natural'image( cgi.Argument_Count ));
   end if;
 end ParseCGIArgument_Count;
 
