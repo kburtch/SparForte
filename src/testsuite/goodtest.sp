@@ -2549,7 +2549,7 @@ pragma assert( b = false );
 n := cgi.key_count( "xyzabc_fake" );
 pragma assert( n = 0 );
 n := cgi.argument_count;
-pragma assert( n = 5 or n = 6 ); -- return value varies between 5 and 6!
+pragma assert( n = 0 );
 
 -- backquotes
 

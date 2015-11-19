@@ -172,6 +172,8 @@ By default, SparForte will install under /usr/local.
 
     --without-mysql (NO_MYSQL variable): disable MySQL database support
 
+    --without-opengl (NO_OPENGL variable): disable OpenGL support
+
     --without-postgres (NO_POSTGRES variable): disable PostgreSQL database
             support
 

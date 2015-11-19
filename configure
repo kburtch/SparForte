@@ -34,6 +34,7 @@ while [ $# -gt 0 ] ; do
       echo "  --with-gnat-cgi       enable GNAT.CGI support"
       echo "  --without-bdb         disable Berkeley DB support"
       echo "  --without-mysql       disable MySQL support"
+      echo "  --without-opengl      disable OpenGL support"
       echo "  --without-postgres    disable PostgreSQL support"
 #      echo "  --without-sdl"
       echo "  --without-sound       disable OSS sound support"
@@ -61,6 +62,9 @@ while [ $# -gt 0 ] ; do
       ;;
   --without-mysql)
       NO_MYSQL=0
+      ;;
+  --without-opengl)
+      NO_OPENGL=0
       ;;
   --without-postgres)
       NO_POSTGRES=0
@@ -722,29 +726,34 @@ if [ -z "$TMP" ] ; then
 fi
 
 echo -n "configuring OpenGL (pkg-config)... "
-if [ -n "$PKGCONFIG" ] ; then
-   MESALIBSTYPE=`(exec $PKGCONFIG --libs gl glu 2>/dev/null)`
-   TMP=$?
-   MESALIBSTYPE=`echo "$MESALIBSTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
-   MESAINCLTYPE=`(exec $PKGCONFIG --cflags gl glu 2>/dev/null)`
-   MESAINCLTYPE=`echo "$MESAINCLTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
-   if [ $TMP -ne 0 ] ; then
-      MESALIBSTYPE=""
-      MESAINCLTYPE=""
+if [ -z "$NO_OPENGL" ] ; then
+   HAS_OPENGL=1
+   if [ -n "$PKGCONFIG" ] ; then
+      MESALIBSTYPE=`(exec $PKGCONFIG --libs gl glu 2>/dev/null)`
+      TMP=$?
+      MESALIBSTYPE=`echo "$MESALIBSTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+      MESAINCLTYPE=`(exec $PKGCONFIG --cflags gl glu 2>/dev/null)`
+      MESAINCLTYPE=`echo "$MESAINCLTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+      if [ $TMP -ne 0 ] ; then
+         MESALIBSTYPE=""
+         MESAINCLTYPE=""
+         echo "no"
+         echo "guessing at OpenGL configation (may be incorrect)... "
+         MESALIBSTYPE="-lGLU\ -lGL\ \ "
+         MESAINCLTYPE="-I\/usr\/include\/libdrm\ \ "
+      else
+         echo "yes"
+      fi
+   else
       echo "no"
+      echo
       echo "guessing at OpenGL configation (may be incorrect)... "
       MESALIBSTYPE="-lGLU\ -lGL\ \ "
       MESAINCLTYPE="-I\/usr\/include\/libdrm\ \ "
-   else
-      echo "yes"
    fi
 else
+   HAS_OPENGL=""
    echo "no"
-   echo
-   echo "guessing at OpenGL configation (may be incorrect)... "
-   MESALIBSTYPE="-lGLU\ -lGL\ \ "
-   MESAINCLTYPE="-I\/usr\/include\/libdrm\ \ "
-
 fi
 
 # Databases
@@ -930,6 +939,11 @@ if [ ! -z "$HAS_POSTGRES" ] ; then
 else
    GNATPREP_OPTS="-DPOSTGRES=false"
 fi
+if [ ! -z "$HAS_OPENGL" ] ; then
+   GNATPREP_OPTS="$GNATPREP_OPTS -DOPENGL=true"
+else
+   GNATPREP_OPTS="$GNATPREP_OPTS -DOPENGL=false"
+fi
 if [ ! -z "$HAS_MYSQL" ] ; then
    GNATPREP_OPTS="$GNATPREP_OPTS -DMYSQL=true"
    NEEDS_APQ=1
@@ -1029,6 +1043,12 @@ test -f parser_sound.adb && chmod 666 parser_sound.adb
 cp parser_sound.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb parser_sound.adb
 chmod 444 parser_sound.adb
+
+echo "Updating...parser_pen.adb"
+test -f parser_pen.adb && chmod 666 parser_pen.adb
+cp parser_pen.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb parser_pen.adb
+chmod 444 parser_pen.adb
 
 echo "Updating...parser_gnat_cgi.adb"
 test -f parser_gnat_cgi.adb && chmod 666 parser_gnat_cgi.adb

@@ -83,7 +83,7 @@ all: c_os.o c_scanner.o c_gstreamer.o
 	@echo
 	@echo
 	@echo "---------------------------------------------------------------"
-	@echo "  Making Berkeley DV Support"
+	@echo "  Making Berkeley DB Support"
 	@echo "---------------------------------------------------------------"
 	@echo
 	$(MAKE) -C bdb

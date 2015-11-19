@@ -68,6 +68,7 @@ CHANGES SINCE 1.5
 
 23. Fix (Terry Droeger): Removed extraneous references to gnat.cgi from two files.  This should fix the CGI POST issues, but both CGI libraries should not be installed at the same time as both read from standard input when they elaborate.
 
+24. New (Terry Droeger): OpenGL can be disabled with --without-opengl.
 
 [David B wants shared library]
 
