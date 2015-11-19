@@ -38,9 +38,13 @@
  printf( "DB_NOSERVER          : constant db_error := %d; -- Server panic return.\n", DB_NOSERVER );
  #ifdef DB_NOSERVER_HOME
  printf( "DB_NOSERVER_HOME     : constant db_error := %d; -- Bad home sent to server.\n", DB_NOSERVER_HOME );
+ #else
+ printf( "DB_NOSERVER_HOME     : constant db_error := %d; -- (undefined on this computer) Bad home sent to server.\n", -1 );
  #endif
  #ifdef DB_NOSERVER_ID
  printf( "DB_NOSERVER_ID       : constant db_error := %d; -- Bad ID sent to server.\n", DB_NOSERVER_ID );
+ #else
+ printf( "DB_NOSERVER_ID       : constant db_error := %d; -- (undefind on this computer) Bad ID sent to server.\n", -1 );
  #endif
  printf( "DB_NOTFOUND          : constant db_error := %d; -- Key/data pair not found (EOF).\n", DB_NOTFOUND );
  printf( "DB_OLD_VERSION       : constant db_error := %d; -- Out-of-date version.\n", DB_OLD_VERSION );
@@ -145,9 +149,13 @@
  printf( " DB_ENV_REGION_INIT     : constant env_flags := %d; -- DB_REGION_INIT set\n", DB_REGION_INIT );
  #ifdef DB_RPCCLIENT
  printf( " DB_ENV_RPCCLIENT       : constant env_flags := %d; -- DB_RPCCLIENT set\n", DB_RPCCLIENT );
+ #else
+ printf( " DB_ENV_RPCCLIENT       : constant env_flags := %d; -- (undefind on this computer) DB_RPCCLIENT set\n", -1 );
  #endif
  #ifdef DB_RPCCLIENT_GIVEN
  printf( " DB_ENV_RPCCLIENT_GIVEN : constant env_flags := %d; -- User-supplied RPC client struct\n", DB_RPCCLIENT_GIVEN );
+ #else
+ printf( " DB_ENV_RPCCLIENT_GIVEN : constant env_flags := %d; -- (undefind on this computer) User-supplied RPC client struct\n", -1 );
  #endif
  printf( " DB_ENV_TIME_NOTGRANTED : constant env_flags := %d; -- DB_TIME_NOTGRANTED set\n", DB_TIME_NOTGRANTED );
  printf( " DB_ENV_TXN_NOSYNC      : constant env_flags := %d; -- DB_TXN_NOSYNC set\n", DB_TXN_NOSYNC );
@@ -265,6 +273,8 @@
  printf( "type e_verbose_flags is new flags;\n" );
  #ifdef DB_VERB_BACKUP
  printf( " DB_VERB_BACKUP          : constant e_verbose_flags := %d;\n", DB_VERB_BACKUP );
+ #else
+ printf( " DB_VERB_BACKUP          : constant e_verbose_flags := %d; -- (undefind on this computer)\n", -1 );
  #endif
  printf( " DB_VERB_DEADLOCK        : constant e_verbose_flags := %d;\n", DB_VERB_DEADLOCK );
  printf( " DB_VERB_FILEOPS         : constant e_verbose_flags := %d;\n", DB_VERB_FILEOPS );
