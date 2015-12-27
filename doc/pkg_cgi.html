@@ -69,6 +69,9 @@ It provides form processing, string encoding, and cookie operations.</p>
 by web servers using the Common Gateway Interface (CGI). SparForte's large feature
 set and strong error checking make it ideal for writing web server applications.</p>
 
+<p>Some functions will cause standard_input to be read.  Some features of this
+package are incompatible with gnat.cgi.</p>
+
 <p>cgi.get_environment is not implemented: it is already available through
 the command_line package.</p>
 

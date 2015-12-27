@@ -66,9 +66,11 @@ CHANGES SINCE 1.5
 
 22. Fix (Terry Droeger): Argument count (in CGI) calls CGI argument count explicitly.
 
-23. Fix (Terry Droeger): Removed extraneous references to gnat.cgi from two files.  This should fix the CGI POST issues, but both CGI libraries should not be installed at the same time as both read from standard input when they elaborate.
+23. Fix (Terry Droeger): Removed extraneous references to gnat.cgi from two files.  This should fix the CGI POST issues, but both CGI libraries should not be installed at the same time as both read from standard input when they elaborate.  Confirmed CGI POST is now working.
 
 24. New (Terry Droeger): OpenGL can be disabled with --without-opengl.
+
+25. Change: AdaCGI package rewritten to defer reading standard input.
 
 [David B wants shared library]
 

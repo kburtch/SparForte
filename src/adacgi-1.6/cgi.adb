@@ -29,6 +29,29 @@ Semicolon     : constant Character_Set      := To_Set(';');
 Unescaped_URL : constant Character_Set      := Alphanumeric_Set or
                                                To_Set("-_.!~*'()");
 
+-- START CGI
+--
+-- Added by Ken B.
+--
+-- Deferred startup on CGI.  If already started, do nothing.
+------------------------------------------------------------
+
+was_started :  boolean := false;
+
+procedure Initialize;
+-- forward
+
+procedure Read_Cookie;
+-- forward
+
+procedure start_cgi is
+begin
+  if not was_started then
+     was_started := true;
+     Initialize;
+     Read_Cookie;
+  end if;
+end start_cgi;
 
 
 -- The following are data internal to this package.
@@ -127,6 +150,7 @@ end URL_Decode;
 
 function To_Hex_Char(Number : Natural ) return Character is
 begin
+  start_cgi; -- KB: DEFERRED START
  -- Assumes ASCII (or at least continuity in 0..9 and A..F).
  if Number < 10 then
    return Character'Val(Number + Character'Pos('0'));
@@ -239,6 +263,7 @@ function Get_Environment(Variable : String) return String is
   Result_Ptr : chars_ptr := getenv(Variable_In_C_Format);
   Result : String := Value_Without_Exception(Result_Ptr);
 begin
+  start_cgi; -- KB: DEFERRED START
  Free(Variable_In_C_Format);
  return Result;
 end Get_Environment;
@@ -246,12 +271,14 @@ end Get_Environment;
 
 function Parsing_Errors return Boolean is
 begin
+  start_cgi; -- KB: DEFERRED START
  return Parsing_Errors_Occurred;
 end Parsing_Errors;
 
 
 function Argument_Count return Natural is
 begin
+  start_cgi; -- KB: DEFERRED START
   if CGI_Data = null then return 0;
   else                   return CGI_Data.all'Length;
   end if;
@@ -261,6 +288,7 @@ end Argument_Count;
 function Input_Received return Boolean is
   -- True if Input Received.
 begin
+  start_cgi; -- KB: DEFERRED START
   return Argument_Count /= 0; -- Input received if nonzero data entries.
 end Input_Received;
 
@@ -268,12 +296,14 @@ end Input_Received;
 function CGI_Method return CGI_Method_Type is
   -- Return Method used to send data.
 begin
+  start_cgi; -- KB: DEFERRED START
   return Actual_CGI_Method;
 end CGI_Method;
 
 
 function Is_Index return Boolean is
 begin
+  start_cgi; -- KB: DEFERRED START
   return Is_Index_Request_Made;
 end Is_Index;
 
@@ -283,6 +313,7 @@ function Value(Key : in Unbounded_String; Index : in Positive := 1;
          return Unbounded_String is
  My_Index : Positive := 1;
 begin
+  start_cgi; -- KB: DEFERRED START
  for I in 1 .. Argument_Count loop
    if CGI_Data.all(I).Key = Key then
       if Index = My_Index then
@@ -305,6 +336,7 @@ function Value(Key : in String; Index : in Positive := 1;
                Required : in Boolean := False)
          return String is
 begin
+  start_cgi; -- KB: DEFERRED START
   return To_String(Value(To_Unbounded_String(Key), Index, Required));
 end Value;
 
@@ -313,6 +345,7 @@ function Value(Key : in String; Index : in Positive := 1;
                Required : in Boolean := False)
          return Unbounded_String is
 begin
+  start_cgi; -- KB: DEFERRED START
   return Value(To_Unbounded_String(Key), Index, Required);
 end Value;
 
@@ -321,6 +354,7 @@ function Value(Key : in Unbounded_String; Index : in Positive := 1;
                Required : in Boolean := False)
          return String is
 begin
+  start_cgi; -- KB: DEFERRED START
   return To_String(Value(Key, Index, Required));
 end Value;
 
@@ -329,6 +363,7 @@ function Key_Exists(Key : in Unbounded_String; Index : in Positive := 1)
          return Boolean is
  My_Index : Positive := 1;
 begin
+  start_cgi; -- KB: DEFERRED START
  for I in 1 .. Argument_Count loop
    if CGI_Data.all(I).Key = Key then
       if Index = My_Index then
@@ -343,12 +378,14 @@ end Key_Exists;
 
 function Key_Exists(Key : in String; Index : in Positive := 1) return Boolean is
 begin
+  start_cgi; -- KB: DEFERRED START
  return Key_Exists(To_Unbounded_String(Key), Index);
 end Key_Exists;
 
 function Key_Count(Key : in Unbounded_String) return Natural is
  Count : Natural := 0;
 begin
+  start_cgi; -- KB: DEFERRED START
  for I in 1 .. Argument_Count loop
    if CGI_Data.all(I).Key = Key then
         Count := Count + 1;
@@ -359,6 +396,7 @@ end Key_Count;
 
 function Key_Count(Key : in String) return Natural is
 begin
+  start_cgi; -- KB: DEFERRED START
   return Key_Count(To_Unbounded_String(Key));
 end Key_Count;
 
@@ -368,6 +406,7 @@ function Key_Value_Exists(Key : in Unbounded_String;
          return Boolean is
  My_Index : Positive := 1;
 begin
+  start_cgi; -- KB: DEFERRED START
  for I in 1 .. Argument_Count loop
    if CGI_Data.all(I).Key = Key and then
       CGI_Data.all(I).Value = Value then
@@ -381,35 +420,41 @@ function Key_Value_Exists(Key : in String;
                           Value : in String)
          return Boolean is
 begin
+  start_cgi; -- KB: DEFERRED START
  return Key_Value_Exists(To_Unbounded_String(Key), To_Unbounded_String(Value));
 end Key_Value_Exists;
 
 function Key(Position : in Positive) return Unbounded_String is
 begin
+  start_cgi; -- KB: DEFERRED START
  return CGI_Data.all(Position).Key;
 end Key;
 
 
 function Key(Position : in Positive) return String is
 begin
+  start_cgi; -- KB: DEFERRED START
  return To_String(Key(Position));
 end Key;
 
 
 function Value(Position : in Positive) return Unbounded_String is
 begin
+  start_cgi; -- KB: DEFERRED START
  return CGI_Data.all(Position).Value;
 end Value;
 
 
 function Value(Position : in Positive) return String is
 begin
+  start_cgi; -- KB: DEFERRED START
  return To_String(Value(Position));
 end Value;
 
 procedure Iterate_Key (Key : in String) is
  My_Index : Positive := 1;
 begin
+  start_cgi; -- KB: DEFERRED START
  for I in 1 .. Argument_Count loop
    if CGI_Data.all(I).Key = Key then
      Evaluate(CGI_Data.all(I).Value);
@@ -420,6 +465,7 @@ end Iterate_Key;
 procedure Iterate_CGI is
  My_Index : Positive := 1;
 begin
+  start_cgi; -- KB: DEFERRED START
  for I in 1 .. Argument_Count loop
      Evaluate(CGI_Data.all(I).Key, CGI_Data.all(I).Value);
  end loop;
@@ -430,6 +476,7 @@ end Iterate_CGI;
 function My_URL return String is
  -- Returns the URL of this script.
 begin
+  start_cgi; -- KB: DEFERRED START
   return "http://" & Get_Environment("SERVER_NAME") &
           Get_Environment("SCRIPT_NAME");
 end My_URL;
@@ -439,6 +486,7 @@ procedure Put_CGI_Header(Header : in String := "Content-type: text/html") is
 -- Put Header to Current_Output, followed by two carriage returns.
 -- Default is to return a generated HTML document.
 begin
+  start_cgi; -- KB: DEFERRED START
   Put_Line(Header);
   New_Line;
 end Put_CGI_Header;
@@ -446,6 +494,7 @@ end Put_CGI_Header;
 
 procedure Put_HTML_Head(Title : in String; Mail_To : in String := "") is
 begin
+  start_cgi; -- KB: DEFERRED START
   Put_Line("<html><head><title>" & Title & "</title>");
   if Mail_To /= "" then
     Put_Line("<link rev=""made"" href=""mailto:" &  mail_to  & """>");
@@ -457,12 +506,14 @@ end Put_HTML_Head;
 procedure Put_HTML_Heading(Title : in String; Level : in Positive) is
 -- Put an HTML heading, such as <h1>Title</h1>
 begin
+  start_cgi; -- KB: DEFERRED START
   Put_Line("<h" & Image(Level) & ">" & Title & "</h" & Image(Level) & ">");
 end Put_HTML_Heading;
  
 
 procedure Put_HTML_Tail is
 begin
+  start_cgi; -- KB: DEFERRED START
   Put_Line("</body></html>");
 end Put_HTML_Tail;
 
@@ -470,6 +521,7 @@ end Put_HTML_Tail;
 procedure Put_Error_Message(Message : in String) is
 -- Put to Current_Output an error message.
 begin
+  start_cgi; -- KB: DEFERRED START
   Put_HTML_Head("Fatal Error Encountered by Script " & My_URL);
   Put_HTML_Heading("Fatal Error: " & Message, 1);
   Put_HTML_Tail;
@@ -481,6 +533,7 @@ end Put_Error_Message;
 procedure Put_Variables is
 -- Put to Current_Output all of the data as an HTML-formatted String.
 begin
+  start_cgi; -- KB: DEFERRED START
  Put_Line("<pre>");
  for I in 1 .. Argument_Count loop
    Put("<b>");
@@ -504,6 +557,7 @@ function Next_CRLF (S : in String; N : in Natural)
 is
    I : Natural := N;
 begin
+  start_cgi; -- KB: DEFERRED START
    while I < S'LAST loop
       if S(I) = ASCII.CR  and then  S(I+1) = ASCII.LF then
          return I;
@@ -528,6 +582,7 @@ is
    Number_of_Lines : Natural := 0;
    I : Natural := Value'FIRST;
 begin
+  start_cgi; -- KB: DEFERRED START
    if Value'LENGTH = 0 then
       return 0;
    else
@@ -556,6 +611,7 @@ is
    Line_Number : Natural := 0;
    Start_of_Line, End_of_Line : Natural;
 begin
+  start_cgi; -- KB: DEFERRED START
    End_of_Line := Next_CRLF (Value, 1);
    if End_of_Line = 0 then
       -- no CRLF sequence on the "line"
@@ -603,6 +659,7 @@ end Line;
 
 function Line_Count_of_Value (Key : String) return Natural is
 begin
+  start_cgi; -- KB: DEFERRED START
    if Key_Exists (Key) then
       return Line_Count (Value(Key));
    else
@@ -613,6 +670,7 @@ end Line_Count_of_Value;
 
 function Value_of_Line (Key : String; Position : Positive) return String is
 begin
+  start_cgi; -- KB: DEFERRED START
    if Key_Exists (Key) then
       return Line (Value(Key), Position);
    else
@@ -631,6 +689,7 @@ procedure Set_CGI_Position(Key_Number : in Positive;
 -- Given a Key number and a datum of the form key=value
 -- assign the CGI_Data(Key_Number) the values of key and value.
 begin
+  start_cgi; -- KB: DEFERRED START
   CGI_Data.all(Key_Number).Key   := To_Unbounded_String(Slice(Datum, 1, Last));
   CGI_Data.all(Key_Number).Value := To_Unbounded_String(Slice(Datum,
                                                       Last+2, Length(Datum)));
@@ -646,6 +705,7 @@ procedure Set_CGI_Data(Raw_Data : in Unbounded_String) is
   Character_Position : Positive := 1;
   Last : Natural;
 begin
+  start_cgi; -- KB: DEFERRED START
  while Character_Position <= Length(Raw_Data) loop
    Last := Field_End(Raw_Data, '&', Character_Position);
    Set_CGI_Position(Key_Number, To_Unbounded_String(
@@ -663,6 +723,7 @@ procedure Set_Cookie_Position(Key_Number : in Positive;
   -- Given a Key number and a datum of the form key=value
   -- assign the Cookie_Data(Key_Number) the values of key and value.
 begin
+  start_cgi; -- KB: DEFERRED START
     Cookie_Data.all(Key_Number).Key :=
        To_Unbounded_String(Slice(Datum, 1, Last));
     Cookie_Data.all(Key_Number).Value :=
@@ -681,6 +742,7 @@ procedure Set_Cookie_Data(Raw_Data : in Unbounded_String) is
   Last : Natural;
   -- Parse through the cookie raw data and put in the cookie data array
 begin
+  start_cgi; -- KB: DEFERRED START
   while Character_Position <= Length(Raw_Data) loop
     Last := Field_End(Raw_Data, ';', Character_Position);
     Set_Cookie_Position(Key_Number,
@@ -698,6 +760,7 @@ function Cookie_Value(Key : in Unbounded_String; Index : in Positive := 1;
   -- Read the cookie from the browser request,
   -- returns the data or a null pointer if no cookie data
 begin
+  start_cgi; -- KB: DEFERRED START
   if Cookie_Data /= null then
     for I in 1 .. Cookie_Data'Last loop
       if Cookie_Data.all(I).Key = Key then
@@ -722,6 +785,7 @@ end Cookie_Value;
 function Cookie_Value(Key : in String; Index : in Positive := 1;
                       Required : in Boolean := False) return String is
 begin
+  start_cgi; -- KB: DEFERRED START
   return To_String(Cookie_Value(To_Unbounded_String(Key), Index, Required));
 end Cookie_Value;
 
@@ -730,6 +794,7 @@ function Cookie_Value(Key : in String; Index : in Positive := 1;
                       Required : in Boolean := False)
   return Unbounded_String is
 begin
+  start_cgi; -- KB: DEFERRED START
   return Cookie_Value(To_Unbounded_String(Key), Index, Required);
 end Cookie_Value;
 
@@ -737,22 +802,26 @@ end Cookie_Value;
 function Cookie_Value(Key : in Unbounded_String; Index : in Positive := 1;
                       Required : in Boolean := False) return String is
 begin
+  start_cgi; -- KB: DEFERRED START
   return To_String(Value(Key, Index, Required));
 end Cookie_Value;
 
 function Cookie_Value(Position : in Positive) return Unbounded_String is
 begin
+  start_cgi; -- KB: DEFERRED START
   return Cookie_Data.all(Position).Value;
 end Cookie_Value;
 
 
 function Cookie_Value(Position : in Positive) return String is
 begin
+  start_cgi; -- KB: DEFERRED START
   return To_String(Value(Position));
 end Cookie_Value;
 
 function Cookie_Count return Natural is
 begin
+  start_cgi; -- KB: DEFERRED START
   if Cookie_Data = null then
      return 0;
   else
@@ -791,6 +860,7 @@ procedure Set_Cookie(Key   : String;
   -- Sends a cookie to the browser.
   -- Do this before sending the header for the HTML.
 begin
+  start_cgi; -- KB: DEFERRED START
   Put("Set-Cookie: ");
   Put(Key & "=" & Value & ";");
   if Expires /= "" then
@@ -864,8 +934,8 @@ end Initialize;
 -- If you really don't want auto-initialization, just remove the calls
 -- here and make the calls visible in the spec.  Don't forget to call them!
 
-begin
-  Initialize;
-  Read_Cookie;
+--begin
+--  Initialize;
+--  Read_Cookie;
 end CGI;
 

@@ -775,7 +775,8 @@ begin
   -- Only create the abbreviated GCC-style error message if we need it
   --
   -- In the case of templates, we need both the Gcc version and the non-Gcc
-  -- version of the error message.
+  -- version of the error message.  In a CGI script that isn't a template,
+  -- regular errors are reported back.
 
   needGccVersion := boolean( gccOpt ) or hasTemplate;
 
@@ -965,7 +966,8 @@ begin
   -- Only create the abbreviated GCC-style error message if we need it
   --
   -- In the case of templates, we need both the Gcc version and the non-Gcc
-  -- version of the error message.
+  -- version of the error message.  In a CGI script that isn't a template,
+  -- regular errors are reported back.
 
   needGccVersion := boolean( gccOpt ) or hasTemplate;
 
