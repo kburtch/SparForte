@@ -1,0 +1,3176 @@
+------------------------------------------------------------------------------
+-- Database Package Parser                                                  --
+--                                                                          --
+-- Part of SparForte                                                        --
+------------------------------------------------------------------------------
+--                                                                          --
+--            Copyright (C) 2001-2015 Free Software Foundation              --
+--                                                                          --
+-- This is free software;  you can  redistribute it  and/or modify it under --
+-- terms of the  GNU General Public License as published  by the Free Soft- --
+-- ware  Foundation;  either version 2,  or (at your option) any later ver- --
+-- sion.  This is distributed in the hope that it will be useful, but WITH- --
+-- OUT ANY WARRANTY;  without even the  implied warranty of MERCHANTABILITY --
+-- or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License --
+-- for  more details.  You should have  received  a copy of the GNU General --
+-- Public License  distributed with this;  see file COPYING.  If not, write --
+-- to  the Free Software Foundation,  59 Temple Place - Suite 330,  Boston, --
+-- MA 02111-1307, USA.                                                      --
+--                                                                          --
+-- This is maintained at http://www.sparforte.com                           --
+--                                                                          --
+------------------------------------------------------------------------------
+
+with text_io;use text_io;
+with ada.io_exceptions,
+     ada.strings.unbounded,
+#if POSTGRES
+     APQ.PostgreSQL.Client,
+#end if;
+     bush_os.tty,
+     world,
+     signal_flags,
+     string_util,
+     user_io,
+     scanner,
+     scanner_res,
+     parser,
+     parser_aux,
+     parser_params,
+     parser_db;
+use  ada.io_exceptions,
+     ada.strings.unbounded,
+#if POSTGRES
+     APQ,
+     APQ.PostgreSQL,
+     APQ.PostgreSQL.Client,
+#end if;
+     bush_os.tty,
+     world,
+     signal_flags,
+     string_util,
+     user_io,
+     scanner,
+     scanner_res,
+     parser,
+     parser_aux,
+     parser_params,
+     parser_db;
+
+package body parser_dbm is
+
+#if POSTGRES
+
+-- Utilities
+--
+-- findConnection and findQuery are to avoid throwing exceptions
+-- on uninitialized resources, giving a meaningful error instead.
+
+procedure findConnection( connectExpr : unbounded_string; connection : in out resPtr ) is
+begin
+  if length( connectExpr ) = 0 then
+     err( optional_bold( "new_connnection" ) & " has not been called to initialize the connection" );
+  else
+     findResource( to_resource_id( connectExpr ), connection );
+  end if;
+end findConnection;
+
+procedure findQuery( queryExpr : unbounded_string; query : in out resPtr ) is
+begin
+  if length( queryExpr ) = 0 then
+     err( optional_bold( "new_query" ) & " has not been called to initialize the query" );
+  else
+     findResource( to_resource_id( queryExpr ), query );
+  end if;
+end findQuery;
+
+procedure ParseDBMConnect is
+  -- Syntax: dbm.connect( C, dbname [,user ,passwd [,host [,port ] ] ] );
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  dbnameExpr : unbounded_string;
+  dbnameType : identifier;
+  userExpr : unbounded_string;
+  userType : identifier;
+  hasUser  : boolean := false;
+  pswdExpr : unbounded_string;
+  pswdType : identifier;
+  hostExpr : unbounded_string;
+  hostType : identifier;
+  hasHost  : boolean := false;
+  portExpr : unbounded_string;
+  portType : identifier;
+  hasPort  : boolean := false;
+  connection : resPtr;
+begin
+  -- temporary limitation: only one database open at a time...
+  expect( dbm_connect_t );
+  if engineOpen then
+     err( "only one database connection may be open (a limitation of this verison of bush)" );
+     return;
+  end if;
+  ParseFirstStringParameter( connectExpr, connectType, dbm_connection_t );
+  ParseNextStringParameter( dbnameExpr, dbnameType, string_t );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseNextStringParameter( userExpr, userType, string_t );
+     hasUser := true;
+     if token = symbol_t and identifiers( token ).value = "," then
+        ParseNextStringParameter( pswdExpr, pswdType, string_t );
+        if token = symbol_t and identifiers( token ).value = "," then
+           ParseNextStringParameter( hostExpr, hostType, string_t );
+           hasHost := true;
+           if token = symbol_t and identifiers( token ).value = "," then
+              ParseNextNumericParameter( portExpr, portType, integer_t );
+              hasPort := true;
+           end if;
+        end if;
+     end if;
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     if restriction_no_postgresql_database then
+        err( "not allowed with " & bold( "pragma restriction( no_postgresql_database )" ) );
+     end if;
+     begin
+       findConnection( connectExpr, connection );
+       begin
+         Set_DB_Name( connection.PG_C, to_string( dbnameExpr ) );
+       exception when others =>
+         err( to_string( "Internal error: set_db_name " & dbnameExpr &
+              " failed" ) );
+       end;
+       if hasUser then
+          begin
+            Set_User_Password( connection.PG_C, to_string( userExpr ), to_string( pswdExpr ) );
+          exception when others =>
+             err( to_string( "Internal error: set_user_password " & userExpr &
+                  "/" & pswdExpr & " failed" ) );
+          end;
+       end if;
+       if hasHost then
+          begin
+             Set_Host_Name( connection.PG_C, to_string( hostExpr ) );
+          exception when others =>
+             err( to_string( "Internal error: set_host_name " & hostExpr &
+                  " failed" ) );
+          end;
+       end if;
+       if hasPort then
+          begin
+            Set_Port( connection.PG_C, integer( to_numeric( portExpr ) ) );
+          exception when others =>
+             err( to_string( "Internal error: set_port " & portExpr &
+                  " failed" ) );
+          end;
+       end if;
+       Connect( connection.PG_C );
+       engineOpen := true;
+       currentEngine := Engine_PostgreSQL;
+     exception when not_connected =>
+        if hasHost and hasPort then
+           err( "database connection failed - User " & User( connection.PG_C ) & ", Password " & Password( connection.PG_C )
+           & ", Host " & Host_Name( connection.PG_C ) & "and Port " & integer'image( Port( connection.PG_C ) ) & " " & DB_Name( connection.PG_C ) );
+        else
+          err( "database connection failed" );
+        end if;
+     when already_connected =>
+        err( "already connected to database" );
+     when STORAGE_ERROR =>
+        err( "out-of-memory or bad pointer" );
+     when CONSTRAINT_ERROR =>
+        err( "constraint error exception" );
+     when others =>
+        err( "exception raised" );
+     end;
+  end if;
+end ParseDBMConnect;
+
+#else
+
+pragma warnings( off );
+-- Hide unused parameters warnings
+
+procedure not_configured is
+begin
+  err( "postgresql support not configured" );
+end not_configured;
+
+procedure not_configured( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "postgresql support not configured" );
+end not_configured;
+
+procedure ParseDBMConnect is
+begin
+  not_configured;
+end ParseDBMConnect;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMEngineOf( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: b := dbm.engine_of( c );
+  -- Source: APQ.Engine_Of
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  kind := db_database_type_t;
+  expect( dbm_engine_of_t );
+  ParseSingleNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+       result := to_unbounded_string( integer'image( Database_Type'pos( Engine_Of( connection.PG_C ) ) ) );
+       if length( result ) > 0 then
+          if element( result, 1 ) = ' ' then
+             delete( result, 1, 1 );
+          end if;
+       end if;
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMEngineOf;
+
+#else
+
+procedure ParseDBMEngineOf( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+
+--procedure ParseDBIPrepare( result : out unbounded_string ) is
+--  -- Syntax: db.prepare( sqlstmt [,after] );
+--  sqlExpr   : unbounded_string;
+--  sqlType   : identifier;
+--  afterExpr : unbounded_string;
+--  afterType : identifier;
+--  hasAfter  : boolean := false;
+--begin
+--  expect( db_prepare_t );
+--  expect( symbol_t, "(" );
+--  ParseExpression( sqlExpr, sqlType );
+--  if baseTypesOK( string_t, sqlType ) then
+--     if token = symbol_t and identifiers( token ).value = "," then
+--        expect( symbol_t, "," );
+--        ParseExpression( afterExpr, afterType );
+--        if baseTypesOK( string_t, sqlType ) then
+--           hasAfter := true;
+--        end if;
+--     end if;
+--  end if;
+--  expect( symbol_t, ")" );
+--  if isExecutingCommand then
+--     result := to_bush_boolean( true );
+--     begin
+--       Clear( Q );
+--       if hasAfter then
+--          Prepare( Q, to_string( sqlExpr ), to_string( afterExpr ) );
+--       else
+--          Prepare( Q, to_string( sqlExpr ) );
+--       end if;
+--     exception when others =>
+--       result := to_bush_boolean( false );
+--     end;
+--  end if;
+--end ParseDBIPrepare;
+
+#if POSTGRES
+
+procedure ParseDBMPrepare is
+  -- Syntax: dbm.prepare( Q, sqlstmt [,after] );
+  sqlExpr   : unbounded_string;
+  sqlType   : identifier;
+  afterExpr : unbounded_string;
+  afterType : identifier;
+  hasAfter  : boolean := false;
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+begin
+  expect( dbm_prepare_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseNextStringParameter( sqlExpr, sqlType, string_t );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseNextStringParameter( afterExpr, afterType, string_t );
+     hasAfter := true;
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     begin
+       findQuery( queryExpr, query );
+       if hasAfter then
+          Prepare( query.PG_Q, to_string( sqlExpr ), to_string( afterExpr ) );
+       else
+          Prepare( query.PG_Q, to_string( sqlExpr ) );
+       end if;
+     exception when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseDBMPrepare;
+
+#else
+
+procedure ParseDBMPrepare renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMAppend is
+  -- Syntax: dbm.append( Q, sqlstmt [,after] );
+  sqlExpr   : unbounded_string;
+  sqlType   : identifier;
+  afterExpr : unbounded_string;
+  afterType : identifier;
+  hasAfter  : boolean := false;
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+begin
+  expect( dbm_append_t );
+  expect( symbol_t, "(" );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseNextStringParameter( sqlExpr, sqlType, string_t );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseNextStringParameter( afterExpr, afterType, string_t );
+     hasAfter := true;
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     begin
+       findQuery( queryExpr, query );
+       if hasAfter then
+          Append( query.PG_Q, to_string( sqlExpr ), to_string( afterExpr ) );
+       else
+          Append( query.PG_Q, to_string( sqlExpr ) );
+       end if;
+     exception when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseDBMAppend;
+
+#else
+
+procedure ParseDBMAppend renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMAppendLine is
+  -- Syntax: dbm.append_line( query, sqlstmt );
+  sqlExpr   : unbounded_string;
+  sqlType   : identifier;
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+begin
+  expect( dbm_append_line_t );
+  expect( symbol_t, "(" );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseLastStringParameter( sqlExpr, sqlType, string_t );
+  if isExecutingCommand then
+     begin
+       findQuery( queryExpr, query );
+       Append_Line( query.PG_Q, to_string( sqlExpr ) );
+     exception when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseDBMAppendLine;
+
+#else
+
+procedure ParseDBMAppendLine renames not_configured;
+
+#end if;
+#if POSTGRES
+
+
+procedure ParseDBMAppendQuoted is
+  -- Syntax: dbm.append_quoted( query, connect, sqlstmt [,after] );
+  sqlExpr   : unbounded_string;
+  sqlType   : identifier;
+  afterExpr : unbounded_string;
+  afterType : identifier;
+  hasAfter  : boolean := false;
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  expect( dbm_append_quoted_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseNextNumericParameter( connectExpr, connectType, dbm_connection_t );
+  ParseNextStringParameter( sqlExpr, sqlType, string_t );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseNextStringParameter( afterExpr, afterType, string_t );
+     hasAfter := true;
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+       findQuery( queryExpr, query );
+       if hasAfter then
+          Append_Quoted( query.PG_Q, connection.PG_C, to_string( sqlExpr ), to_string( afterExpr ) );
+       else
+          Append_Quoted( query.PG_Q, connection.PG_C, to_string( sqlExpr ) );
+       end if;
+     exception when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseDBMAppendQuoted;
+
+#else
+
+procedure ParseDBMAppendQuoted renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMExecute is
+  -- execute( Q, C );
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  expect( dbm_execute_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseLastNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+       findQuery( queryExpr, query );
+       Execute( query.PG_Q, connection.PG_C );
+     exception when not_connected =>
+       err( "not connected" );
+     when abort_state =>
+       err( "in abort state" );
+     when sql_error =>
+       err( Error_Message( query.PG_Q ) );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseDBMExecute;
+
+#else
+
+procedure ParseDBMExecute renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMExecuteChecked is
+  -- Syntax: dbm.execute_checked( Q, C [, msg ] );
+  msgExpr   : unbounded_string;
+  msgType   : identifier;
+  hasMsg    : boolean := false;
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  expect( dbm_execute_checked_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseNextNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseNextStringParameter( msgExpr, msgType, string_t );
+     hasMsg := true;
+  end if;
+  if isExecutingCommand then
+     begin
+       findQuery( queryExpr, query );
+       findConnection( connectExpr, connection );
+       if hasMsg then
+          Execute_Checked( query.PG_Q, connection.PG_C, to_string( msgExpr ) );
+       else
+          Execute_Checked( query.PG_Q, connection.PG_C );
+       end if;
+     exception when not_connected =>
+       err( "not connected" );
+     when abort_state =>
+       err( "in abort state" );
+     when sql_error =>
+       err( Error_Message( query.PG_Q ) );
+     when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseDBMExecuteChecked;
+
+#else
+
+procedure ParseDBMExecuteChecked renames not_configured;
+
+#end if;
+
+--procedure ParseDBDo( result : out unbounded_string ) is
+--begin
+--  expect( db_do_t );
+--  result := null_unbounded_string;
+--end ParseDBDo;
+--
+--procedure ParseDBFetchrow( result : out unbounded_string ) is
+--begin
+--  expect( db_fetchrow_t );
+--  result := null_unbounded_string;
+--end ParseDBFetchrow;
+#if POSTGRES
+
+procedure ParseDBMDisconnect is
+  -- Syntax: dbm.disconnect( c );
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  expect( dbm_disconnect_t );
+  ParseSingleNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+        findConnection( connectExpr, connection );
+        Disconnect( connection.PG_C );
+        engineOpen := false;
+     exception when not_connected =>
+        err( "no database connection" );
+     when already_connected =>
+        err( "already connected to database" );
+     when others =>
+        err( "exception raised" );
+     end;
+  end if;
+end ParseDBMDisconnect;
+
+#else
+
+procedure ParseDBMDisconnect renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMIsConnected( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: b := dbm.is_connected( c )
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  kind := boolean_t;
+  expect( dbm_is_connected_t );
+  ParseSingleNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+       result := to_bush_boolean( is_connected( connection.PG_C ) );
+     exception when others =>
+       result := to_bush_boolean( false );
+     end;
+  end if;
+end ParseDBMIsConnected;
+
+#else
+
+procedure ParseDBMIsConnected( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMReset is
+  -- Syntax: dbm.reset
+  -- Source: APQ.Reset
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  expect( dbm_reset_t );
+  ParseSingleNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+       Reset( connection.PG_C );
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMReset;
+
+#else
+
+procedure ParseDBMReset renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMErrorMessage( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: s := dbm.error_message( c )
+  -- Source: APQ.Error_Message
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  kind := string_t;
+  expect( dbm_error_message_t );
+  ParseSingleNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+       result := to_unbounded_string( Error_Message( connection.PG_C ) );
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMErrorMessage;
+
+#else
+
+procedure ParseDBMErrorMessage( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMNoticeMessage( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: dbm.notice_message( c )
+  -- Source: APQ.Notice_Message
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  kind := string_t;
+  expect( dbm_notice_message_t );
+  ParseSingleNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+       result := to_unbounded_string( Notice_Message( connection.PG_C ) );
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMNoticeMessage;
+
+#else
+
+procedure ParseDBMNoticeMessage( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMInAbortState( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: dbm.in_abort_state( c )
+  -- Source: APQ.In_Abort_State
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  kind := boolean_t;
+  expect( dbm_in_abort_state_t );
+  ParseSingleNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+       result := to_bush_boolean( In_Abort_State( connection.PG_C ) );
+     exception when not_connected =>
+       err( "not connected" );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMInAbortState;
+
+#else
+
+procedure ParseDBMInAbortState( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMOptions( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: s := dbm.options( c )
+  -- Source: APQ.Options
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  kind := string_t;
+  expect( dbm_options_t );
+  ParseSingleNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+       result := to_unbounded_string( Options( connection.PG_C ) );
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMOptions;
+
+#else
+
+procedure ParseDBMOptions( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMSetRollbackOnFinalize is
+  -- Syntax: dbm.set_rollback_on_finalize( c, b );
+  -- Source: APQ.Set_Rollback_On_Finalize
+  rollExpr : unbounded_string;
+  rollType : identifier;
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  expect( dbm_set_rollback_on_finalize_t );
+  ParseFirstNumericParameter( connectExpr, connectType, dbm_connection_t );
+  ParseLastEnumParameter( rollExpr, rollType, boolean_t );
+  if isExecutingCommand then
+     declare
+       rollback : boolean := rollExpr = to_unbounded_string( "1" );
+     begin
+       findConnection( connectExpr, connection );
+       Set_Rollback_On_Finalize( connection.PG_C, rollback );
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMSetRollbackOnFinalize;
+
+#else
+
+procedure ParseDBMSetRollbackOnFinalize renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: dbm.will_rollback_on_finalize( C );
+  -- Source: APQ.Will_Rollback_On_Finalize
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  kind := boolean_t;
+  expect( dbm_will_rollback_on_finalize_t );
+  ParseSingleNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+       result := to_bush_boolean( Will_Rollback_On_Finalize( connection.PG_C ) );
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMWillRollbackOnFinalize;
+
+#else
+
+procedure ParseDBMWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMOpenDBTrace is
+  -- Syntax: dbm.open_db_trace( f [,m] );
+  -- Source: APQ.Open_DB_Trace
+  fnameExpr : unbounded_string;
+  fnameType : identifier;
+  modeExpr  : unbounded_string;
+  modeType  : identifier;
+  traceMode : trace_mode_type;
+  hasMode  : boolean := false;
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  expect( dbm_open_db_trace_t );
+  ParseFirstNumericParameter( connectExpr, connectType, dbm_connection_t );
+  ParseNextStringParameter( fnameExpr, fnameType, string_t );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseNextStringParameter( modeExpr, modeType, db_trace_mode_type_t );
+     traceMode := Trace_Mode_Type'val( integer'value( ' ' & to_string( modeExpr ) ) );
+     hasMode := true;
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+       if hasMode then
+          Open_DB_Trace( connection.PG_C, to_string( fnameExpr ), traceMode );
+       else
+          Open_DB_Trace( connection.PG_C, to_string( fnameExpr ) );
+       end if;
+     exception when not_connected =>
+       err( "not connected" );
+     when tracing_state =>
+       err( "file already open" );
+     when Ada.IO_Exceptions.Name_Error =>
+       err( "file not found" );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMOpenDBTrace;
+
+#else
+
+procedure ParseDBMOpenDBTrace renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMCloseDBTrace is
+  -- Syntax: dbm.close_db_trace( C );
+  -- Source: APQ.Close_DB_Trace
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  expect( dbm_close_db_trace_t );
+  ParseSingleNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+       Close_DB_Trace( connection.PG_C );
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMCloseDBTrace;
+
+#else
+
+procedure ParseDBMCloseDBTrace renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMSetTrace is
+  -- Syntax: dbm.set_trace( C, b );
+  -- Source: APQ.Set_Trace
+  traceExpr : unbounded_string;
+  traceType : identifier;
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  expect( dbm_set_trace_t );
+  ParseFirstNumericParameter( connectExpr, connectType, dbm_connection_t );
+  ParseLastEnumParameter( traceExpr, traceType, boolean_t );
+  if isExecutingCommand then
+     declare
+       traceback : boolean := traceExpr = to_unbounded_string( "1" );
+     begin
+       findConnection( connectExpr, connection );
+       Set_Trace( connection.PG_C, traceback );
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMSetTrace;
+
+#else
+
+procedure ParseDBMSetTrace renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMIsTrace( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: b := dbm.is_trace( C );
+  -- Source: APQ.Is_Trace
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  kind := boolean_t;
+  expect( dbm_is_trace_t );
+  ParseSingleNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+       result := to_bush_boolean( Is_Trace( connection.PG_C ) );
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMIsTrace;
+
+#else
+
+procedure ParseDBMIsTrace( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMClear is
+  -- Syntax: dbm.clear( Q );
+  -- Source: APQ.Clear
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+begin
+  expect( dbm_clear_t );
+  ParseSingleNumericParameter( queryExpr, queryType, dbm_query_t );
+  if isExecutingCommand then
+     begin
+       findQuery( queryExpr, query );
+       Clear( query.PG_Q );
+     exception when CONSTRAINT_ERROR =>
+       err( "constraint error exception" );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMClear;
+
+#else
+
+procedure ParseDBMClear renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMRaiseExceptions is
+  -- Syntax: dbm.raise_exceptions( Q [, b ] );
+  -- Source: APQ.Raise_Exceptions
+  raiseExpr : unbounded_string;
+  raiseType : identifier;
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+begin
+  expect( dbm_raise_exceptions_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseNextEnumParameter( raiseExpr, raiseType, boolean_t );
+  else
+     raiseExpr := to_unbounded_string( "1" );
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     declare
+       raise_them : boolean := raiseExpr = to_unbounded_string( "1" );
+     begin
+       findQuery( queryExpr, query );
+       Raise_Exceptions( query.PG_Q, raise_them );
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMRaiseExceptions;
+
+#else
+
+procedure ParseDBMRaiseExceptions renames not_configured;
+
+#end if;
+#if POSTGRES
+
+
+procedure ParseDBMReportErrors is
+  -- Syntax: dbm.report_errors( Q [, b ] );
+  -- Source: APQ.Report_Errors
+  reportExpr : unbounded_string;
+  reportType : identifier;
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+begin
+  expect( dbm_report_errors_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseNextEnumParameter( reportExpr, reportType, boolean_t );
+  else
+     reportExpr := to_unbounded_string( "1" );
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     declare
+       report_them : boolean := reportExpr = to_unbounded_string( "1" );
+     begin
+       findQuery( queryExpr, query );
+       Report_Errors( query.PG_Q, report_them );
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMReportErrors;
+
+#else
+
+procedure ParseDBMReportErrors renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMBeginWork is
+  -- Syntax: dbm.begin_work( Q, C);
+  -- Source: APQ.Begin_Work
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  expect( dbm_begin_work_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseLastNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findQuery( queryExpr, query );
+       findConnection( connectExpr, connection );
+       Begin_Work( query.PG_Q, connection.PG_C );
+     exception when abort_state =>
+       err( "in abort state" );
+     when not_connected =>
+       err( "not connected" );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMBeginWork;
+
+#else
+
+procedure ParseDBMBeginWork renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMRollbackWork is
+  -- Syntax: dbm.rollback_work( Q, C );
+  -- Source: APQ.Rollback_Work
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  expect( dbm_rollback_work_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseLastNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+       findQuery( queryExpr, query );
+       Rollback_Work( query.PG_Q, connection.PG_C );
+     exception when abort_state =>
+       err( "in abort state" );
+     when not_connected =>
+       err( "not connected" );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMRollbackWork;
+
+#else
+
+procedure ParseDBMRollbackWork renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMCommitWork is
+  -- Syntax: dbm.commit_work( Q, C );
+  -- Source: APQ.Commit_Work
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+begin
+  expect( dbm_commit_work_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseLastNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+       findQuery( queryExpr, query );
+       Commit_Work( query.PG_Q, connection.PG_C );
+     exception when abort_state =>
+       err( "in abort state" );
+     when not_connected =>
+       err( "not connected" );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMCommitWork;
+
+#else
+
+procedure ParseDBMCommitWork renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMRewind is
+  -- Syntax: dbm.rewind( Q );
+  -- Source: APQ.Rewind
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+begin
+  expect( dbm_rewind_t );
+  ParseSingleNumericParameter( queryExpr, queryType, dbm_query_t );
+  if isExecutingCommand then
+     begin
+       findQuery( queryExpr, query );
+       Rewind( query.PG_Q );
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMRewind;
+
+#else
+
+procedure ParseDBMRewind renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMFetch is
+  -- Syntax: dbm.fetch( q [,i] );
+  -- Source: APQ.Fetch
+  expr_val : unbounded_string;
+  expr_type : identifier;
+  haveIndex : boolean := false;
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+begin
+  expect( dbm_fetch_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseNextNumericParameter( expr_val, expr_type, dbm_tuple_index_type_t );
+     haveIndex := true;
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     begin
+       findQuery( queryExpr, query );
+       if haveIndex then
+          Fetch( query.PG_Q, Tuple_Index_Type( to_numeric( expr_val ) ) );
+       else
+          Fetch( query.PG_Q );
+       end if;
+     exception when no_tuple =>
+       err( "no tuple" );
+     when no_result =>
+       err( "no result" );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMFetch;
+
+#else
+
+procedure ParseDBMFetch renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMEndOfQuery( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: b := dbm.end_of_query( Q );
+  -- Source: APQ.End_Of_Query
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+begin
+  kind := boolean_t;
+  expect( dbm_end_of_query_t );
+  ParseSingleNumericParameter( queryExpr, queryType, dbm_query_t );
+  if isExecutingCommand then
+     begin
+       findQuery( queryExpr, query );
+       result := to_bush_boolean( End_Of_Query( query.PG_Q ) );
+     exception when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMEndOfQuery;
+
+#else
+
+procedure ParseDBMEndOfQuery( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMTuple( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: t := dbm.tuple( Q );
+  -- Source: APQ.Tuple
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+begin
+  kind := dbm_tuple_index_type_t;
+  expect( dbm_tuple_t );
+  ParseSingleNumericParameter( queryExpr, queryType, dbm_query_t );
+  if isExecutingCommand then
+     begin
+       findQuery( queryExpr, query );
+       result := to_unbounded_string( Tuple_Index_Type'image( Tuple( query.PG_Q ) ) );
+     exception when no_tuple =>
+       err( "no tuple" );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMTuple;
+
+#else
+
+procedure ParseDBMTuple( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMTuples( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: n := dbm.tuples( Q );
+  -- Source: APQ.Tuples
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+begin
+  kind := dbm_tuple_count_type_t;
+  expect( dbm_tuples_t );
+  ParseSingleNumericParameter( queryExpr, queryType, dbm_query_t );
+  if isExecutingCommand then
+     begin
+       findQuery( queryExpr, query );
+       result := to_unbounded_string( Tuple_Count_Type'image( Tuples( query.PG_Q ) ) );
+     exception when no_result =>
+       err( "no result" );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMTuples;
+
+#else
+
+procedure ParseDBMTuples( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMColumns( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: n := dbm.columns( Q );
+  -- Source: APQ.Columns
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+begin
+  kind := natural_t;
+  expect( dbm_columns_t );
+  ParseSingleNumericParameter( queryExpr, queryType, dbm_query_t );
+  if isExecutingCommand then
+     begin
+       findQuery( queryExpr, query );
+       result := to_unbounded_string( Natural'image( Columns( query.PG_Q ) ) );
+     exception when no_result =>
+       err( "no result" );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMColumns;
+
+#else
+
+procedure ParseDBMColumns( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMColumnName( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: n := dbm.column_Name;
+  -- Source: APQ.Column_Name;
+  exprVal : unbounded_string;
+  exprType : identifier;
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+begin
+  kind := string_t;
+  expect( dbm_column_name_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseLastNumericParameter( exprVal, exprType, dbm_column_index_type_t );
+  if isExecutingCommand then
+     begin
+       findQuery( queryExpr, query );
+       result := to_unbounded_string(
+          Column_Name( query.PG_Q, Column_Index_Type( to_numeric( exprVal ) ) )
+       );
+     exception when no_column =>
+       err( "no column" );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMColumnName;
+
+#else
+
+procedure ParseDBMColumnName( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMColumnIndex( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: n := dbm.column_index( Q, s );
+  -- Source: APQ.Column_Index
+  exprVal : unbounded_string;
+  exprType : identifier;
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+begin
+  kind := dbm_column_index_type_t;
+  expect( dbm_column_index_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseLastStringParameter( exprVal, exprType, string_t );
+  if isExecutingCommand then
+     begin
+       findQuery( queryExpr, query );
+       result := to_unbounded_string( Column_Index_Type'image(
+           Column_Index( query.PG_Q, to_string( exprVal ) )
+       ) );
+     exception when no_column =>
+       err( "no column" );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMColumnIndex;
+
+#else
+
+procedure ParseDBColumnIndex( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+--procedure ParseDBColumnType( result : out unbounded_string ) is
+  -- Syntax: n := db.column_type;
+  -- Source: APQ.Column_Type;
+  --exprVal : unbounded_string;
+  --exprType : identifier;
+--begin
+  --expect( db_column_type_t );
+  --expect( symbol_t, "(" );
+  --ParseExpression( exprVal, exprType );
+  --if baseTypesOK( exprType, db_column_index_type_t ) then
+     --expect( symbol_t, ")" );
+  --end if;
+  --if isExecutingCommand then
+     --begin
+       --result := to_unbounded_string(
+          --Column_Type( Q,
+          --Column_Index_Type( to_numeric( exprVal ) ) )
+       --);
+     --exception when no_column =>
+       --err( "no column" );
+     --when no_result =>
+       --err( "no result" );
+     --when others =>
+       --err( "exception was raised" );
+     --end;
+  --end if;
+--end ParseDBColumnType;
+
+procedure ParseDBMIsNull( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: n := dbm.is_null;
+  -- Source: APQ.Is_Null;
+  exprVal : unbounded_string;
+  exprType : identifier;
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+begin
+  kind := boolean_t;
+  expect( dbm_is_null_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseLastNumericParameter( exprVal, exprType, dbm_column_index_type_t );
+  if isExecutingCommand then
+     begin
+       findQuery( queryExpr, query );
+       result := to_bush_boolean(
+          Is_Null( query.PG_Q,
+          Column_Index_Type( to_numeric( exprVal ) ) )
+       );
+     exception when no_column =>
+       err( "no column" );
+     when no_result =>
+       err( "no result" );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMIsNull;
+
+#else
+
+procedure ParseDBMIsNull( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMValue( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: n := dbm.value;
+  -- Source: APQ.Value;
+  exprVal  : unbounded_string;
+  exprType : identifier;
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+begin
+  kind := universal_t;
+  expect( dbm_value_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseLastNumericParameter( exprVal, exprType, dbm_column_index_type_t );
+  if isExecutingCommand then
+     begin
+       findQuery( queryExpr, query );
+       result := Value( query.PG_Q, Column_Index_Type( to_numeric( exprVal ) ) );
+     exception when no_tuple =>
+       err( "no tuple" );
+     when null_value =>
+       err( "null value" );
+     when no_column =>
+       err( "no column" );
+     when no_result =>
+       err( "no result" );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMValue;
+
+#else
+
+procedure ParseDBMValue( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+
+#if POSTGRES
+
+procedure DBMShowIt( Q : in out APQ.PostgreSQL.Client.Query_Type; C : resPtr ) is
+-- run SQL command and display results in tabular format
+  tabularDisplay : boolean := false;
+  headingWidth   : integer := 0;
+  wasNull        : boolean := false;
+  columnWidths   : array( 1..32 ) of integer;
+  totalWidth     : integer;
+  width          : integer;
+begin
+  if isExecutingCommand then
+     begin
+     if is_connected( C.PG_C ) then
+        execute( Q, C.PG_C );
+
+        -- Initially, the columns widths are the widths of the headings
+
+        for i in 1..columns( Q ) loop
+            columnWidths( i ) := column_name( Q, Column_Index_Type( i ) )'length;
+            if columnWidths( i ) < 4 then -- room for NULL on tabular display
+               columnWidths( i ) := 4;
+            end if;
+            if headingWidth < columnWidths( i ) then
+               headingWidth := columnWidths( i );
+            end if;
+        end loop;
+
+        -- Check query results and adjust the columns widths for the longest
+        -- results.
+
+        while not end_of_query( Q ) loop
+              fetch( Q );
+              for i in 1..columns( Q ) loop
+                 if not is_null( Q, Column_Index_Type( i ) ) then
+                    width := length( to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
+                    if width > 256 then
+                       width := 256;
+                    end if;
+                    if width > columnWidths( i ) then
+                       columnWidths( i ) := width;
+                    end if;
+                 end if;
+              end loop;
+        end loop;
+
+        -- Add up all columns for the total width for a tabular display
+
+        totalWidth := 2;                                        -- left/right marg
+        for i in 1..columns( Q ) loop
+            totalWidth := totalWidth + columnWidths( i );       -- width of column
+            if i /= columns(Q) then                             -- not last col?
+               totalWidth := totalWidth + 3;                    -- 3 char sep
+            end if;
+        end loop;
+
+        -- Rewind the clear and prepare to show the results
+
+        Rewind( Q );
+        new_line;
+
+        -- Use a tabular display only if will fit in the current display
+
+        tabularDisplay := totalWidth <= integer( displayInfo.col );
+
+        -- Draw the columns
+
+        if tabularDisplay then
+           put( " " );
+           for i in 1..columns( Q ) loop
+               put(
+                  to_string(
+                      Head(
+                          to_unbounded_string(
+                              column_name( Q, Column_Index_Type( i ) ) )
+                      , columnWidths( i ) )
+                  )
+               );
+               if i /= columns( Q ) then
+                  put( " | " );
+               end if;
+           end loop;
+           new_line;
+           put( "-" );
+           for i in 1..columns( Q ) loop
+               put( to_string( columnWidths( i ) * "-" ) );
+               if i /= columns( Q ) then
+                  put( "-+-" );
+               else
+                  put( "-" );
+               end if;
+           end loop;
+           new_line;
+        end if;
+
+        -- Draw the query results
+
+        while not end_of_query( Q ) loop
+            fetch( Q );
+            if tabularDisplay then
+               put( " " );
+            end if;
+            for i in 1..columns( Q ) loop
+                if tabularDisplay then
+                   if is_null( Q, Column_Index_Type( i ) ) then
+                      put( inverse( to_string( Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
+                      wasNull := true;
+                   else
+                      put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
+                   end if;
+                   if i /= columns( Q ) then
+                      put( " | " );
+                   end if;
+                else
+                   put( to_string( head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
+                   put( ": " );
+                   if is_null( Q, Column_Index_Type( i ) ) then
+                      put( inverse( "NULL" ) );
+                      wasNull := true;
+                   else
+                      put( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
+                   end if;
+                   new_line;
+                end if;
+                exit when wasSIGINT;
+            end loop;
+            new_line;
+        end loop;
+     end if;
+
+     -- Draw the summary line
+
+     if tuples( Q ) > 1 and columns ( Q ) > 1 then
+        if tuples( Q ) = 1 then
+           put( " 1 Row" );
+        else
+           put( Tuple_Index_Type'image( tuples( Q ) ) );
+           put( " Rows" );
+        end if;
+        if wasNull then
+           put( " with nulls" );
+        end if;
+        if columns( Q ) = 1 then
+           put( " and 1 Column" );
+        else
+           put( " and" );
+           put( integer'image( columns( Q ) ) );
+           put( " Columns" );
+        end if;
+        new_line;
+     end if;
+     exception when no_tuple =>
+       err( "no tuple" );
+     when null_value =>
+       err( "null value" );
+     when no_column =>
+       err( "no column" );
+     when no_result =>
+       err( "no result" );
+     when sql_error =>
+       err( Error_Message( Q ) );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end DBMShowIt;
+
+procedure ParseDBMShow is
+  -- Syntax: dbm.show( Q, C );
+  -- Source: N/A
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+  connectionExpr : unbounded_string;
+  connectionType : identifier;
+  connection : resPtr;
+begin
+  expect( dbm_show_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseLastNumericParameter( connectionExpr, connectionType, dbm_connection_t );
+  if isExecutingCommand then
+     findConnection( connectionExpr, connection );
+     findQuery( queryExpr, query );
+     DBMShowIt( Q => query.PG_Q, C => connection );
+  end if;
+end ParseDBMShow;
+
+#else
+
+procedure ParseDBMShow renames not_configured;
+
+#end if;
+#if POSTGRES
+
+function pg_kind_to_string( kind : string ) return string is
+-- convert the pg_class table's pg_relkind code to a readable string
+begin
+  if kind = "r" then
+     return "table";
+  elsif kind = "i" then
+     return "index";
+  elsif kind = "S" then
+     return "sequence";
+  elsif kind = "v" then
+     return "view";
+  elsif kind = "c" then
+     return "composite type";
+  elsif kind = "s" then
+     return "special";
+  elsif kind = "t" then
+     return "TOAST table";
+  end if;
+  return "kind code " & kind;
+end pg_kind_to_string;
+
+function pg_column_type_to_string( kind, len : string ) return string is
+-- convert the pg_class table's pg_relkind code to a readable string
+begin
+  if kind = "bpchar" then              -- blank-padded character array
+     return "character(" & len & ")";  -- is char(n)
+  elsif kind = "int4" then             -- 4-byte integer
+     return "integer";                 -- is integer
+  elsif kind = "varchar" then          -- varchar has a
+     return "character varying(" & len & ")";   -- length
+  elsif kind = "interval" then
+     return kind;
+  elsif kind = "timestamp" then
+     return "timestamp without time zone";
+  elsif kind = "int8" then
+     return "bigint";
+  elsif kind = "serial8" then
+     return "bigserial";
+  elsif kind = "bit" then
+     return kind;
+  elsif kind = "varbit" then
+     return "bit varying(" & len & ")";   -- length
+  elsif kind = "bool" then
+     return "boolean";
+  elsif kind = "box" then
+     return kind;
+  elsif kind = "bytea" then
+     return kind;
+  elsif kind = "cidr" then
+     return kind;
+  elsif kind = "circle" then
+     return kind;
+  elsif kind = "date" then
+     return kind;
+  elsif kind = "float8" then
+     return "double precision";
+  elsif kind = "inet" then
+     return kind;
+  elsif kind = "line" then
+     return kind;
+  elsif kind = "lseg" then
+     return kind;
+  elsif kind = "macaddr" then
+     return kind;
+  elsif kind = "money" then
+     return kind;
+  elsif kind = "decimal" then
+     return kind;
+  elsif kind = "path" then
+     return kind;
+  elsif kind = "point" then
+     return kind;
+  elsif kind = "polygon" then
+     return kind;
+  elsif kind = "float4" then
+     return "real";
+  elsif kind = "int2" then
+     return "smallint";
+  elsif kind = "serial4" then
+     return "serial";
+  elsif kind = "text" then
+     return kind;
+  elsif kind = "timetz" then
+     return "time with time zone";
+  elsif kind = "timestamptz" then
+     return "timestamp with time zone";
+  end if;
+  return "type code " & kind;
+end pg_column_type_to_string;
+
+function pg_not_null_to_string( val : string ) return string is
+-- convert a t/f value to "not null" like psql client
+begin
+  if val = "t" then
+     return "not null";
+  end if;
+  return "";
+end pg_not_null_to_string;
+
+function pg_default_to_string( val : string ) return string is
+-- convert a t/f value to "not null" like psql client
+begin
+  if val = "t" then
+     return "default";
+  end if;
+  return "";
+end pg_default_to_string;
+
+function pg_userattributes_to_string( super, create : string ) return string is
+-- convert t/f values to "superuser, create database" like psql client
+begin
+  if super = "t" and create = "t" then
+     return "superuser, create database";
+  elsif super = "t" then
+     return "superuser";
+  elsif create = "t" then
+     return "create database";
+  end if;
+  return "";
+end pg_userattributes_to_string;
+
+procedure ParseDBMList is
+  -- Syntax: dbm.list( C )
+  -- Source: N/A
+  tabularDisplay : boolean := false;
+  headingWidth   : integer := 0;
+  wasNull        : boolean := false;
+  columnWidths   : array( 1..32 ) of integer;
+  totalWidth     : integer;
+  width          : integer;
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+  Q : APQ.PostgreSQL.Client.Query_Type;
+begin
+  expect( dbm_list_t );
+  ParseSingleNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+     if is_connected( connection.PG_C ) then
+        -- Show tablename and kind, lookup owner from another table.
+        -- Don't show tables owned by postgres (user 1), TOAST tables or indexes
+        prepare( Q, "select n.nspname as " & '"' & "Schema" & '"' &
+          ", c.relname as " & '"' & "Name" & '"' &
+          ", c.relkind as " & '"' & "Type" & '"' &
+          ", u.usename as " &  '"' & "Owner" & '"' &
+          " from pg_class c, pg_user u, pg_namespace n where u.usesysid = c.relowner and n.oid = c.relnamespace and c.relkind <> 't' and c.relkind <> 'i' and u.usesysid <> 1 order by c.relname" );
+        execute( Q, connection.PG_C );
+
+        -- Initially, the columns widths are the widths of the headings
+
+        for i in 1..columns( Q ) loop
+            columnWidths( i ) := column_name( Q, Column_Index_Type( i ) )'length;
+            if columnWidths( i ) < 4 then -- room for NULL on tabular display
+               columnWidths( i ) := 4;
+            end if;
+            if headingWidth < columnWidths( i ) then
+               headingWidth := columnWidths( i );
+            end if;
+        end loop;
+
+        -- Check query results and adjust the columns widths for the longest
+        -- results.
+
+        while not end_of_query( Q ) loop
+              fetch( Q );
+              for i in 1..columns( Q ) loop
+                 if not is_null( Q, Column_Index_Type( i ) ) then
+                    if i = 3 then -- column 2 is table type
+                       width := length( to_unbounded_string( pg_kind_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
+                    else
+                       width := length( to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
+                    end if;
+                    if width > 256 then
+                       width := 256;
+                    end if;
+                    if width > columnWidths( i ) then
+                       columnWidths( i ) := width;
+                    end if;
+                 end if;
+              end loop;
+              exit when wasSIGINT;
+        end loop;
+
+        -- Add up all columns for the total width for a tabular display
+
+        totalWidth := 2;                                        -- left/right marg
+        for i in 1..columns( Q ) loop
+            totalWidth := totalWidth + columnWidths( i );       -- width of column
+            if i /= columns(Q) then                             -- not last col?
+               totalWidth := totalWidth + 3;                    -- 3 char sep
+            end if;
+        end loop;
+
+        -- Rewind the clear and prepare to show the results
+
+        Rewind( Q );
+        new_line;
+
+        -- Use a tabular display only if will fit in the current display
+
+        tabularDisplay := totalWidth <= integer( displayInfo.col );
+
+        -- Draw the columns
+
+        if tabularDisplay then
+           put( " " );
+           for i in 1..columns( Q ) loop
+               put(
+                  to_string(
+                      Head(
+                          to_unbounded_string(
+                              column_name( Q, Column_Index_Type( i ) ) )
+                      , columnWidths( i ) )
+                  )
+               );
+               if i /= columns( Q ) then
+                  put( " | " );
+               end if;
+           end loop;
+           new_line;
+           put( "-" );
+           for i in 1..columns( Q ) loop
+               put( to_string( columnWidths( i ) * "-" ) );
+               if i /= columns( Q ) then
+                  put( "-+-" );
+               else
+                  put( "-" );
+               end if;
+           end loop;
+           new_line;
+        end if;
+
+        -- Draw the query results
+
+        while not end_of_query( Q ) loop
+            fetch( Q );
+            if tabularDisplay then
+               put( " " );
+            end if;
+            for i in 1..columns( Q ) loop
+                if tabularDisplay then
+                   if is_null( Q, Column_Index_Type( i ) ) then
+                      put( inverse( to_string( Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
+                      wasNull := true;
+                   elsif i = 3 then -- column 2 is table type
+                      put( to_string( Head( ToEscaped( to_unbounded_string( pg_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
+                   else
+                      put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
+                   end if;
+                   if i /= columns( Q ) then
+                      put( " | " );
+                   end if;
+                else
+                   put( to_string( head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
+                   put( ": " );
+                   if is_null( Q, Column_Index_Type( i ) ) then
+                      put( inverse( "NULL" ) );
+                      wasNull := true;
+                   elsif i = 3 then
+                      put( bold( to_string( ToEscaped( to_unbounded_string( pg_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
+                   else
+                      put( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
+                   end if;
+                   new_line;
+                end if;
+            end loop;
+            new_line;
+            exit when wasSIGINT;
+        end loop;
+     end if;
+
+     -- Draw the summary line
+
+     if tuples( Q ) = 1 then
+        put( " 1 Row" );
+     else
+        put( Tuple_Index_Type'image( tuples( Q ) ) );
+        put( " Rows" );
+     end if;
+     if wasNull then
+        put( " with nulls" );
+     end if;
+     if columns( Q ) = 1 then
+        put( " and 1 Column" );
+     else
+        put( " and" );
+        put( integer'image( columns( Q ) ) );
+        put( " Columns" );
+     end if;
+     new_line;
+     exception when no_tuple =>
+       err( "no tuple" );
+     when null_value =>
+       err( "null value" );
+     when no_column =>
+       err( "no column" );
+     when no_result =>
+       err( "no result" );
+     when sql_error =>
+       err( Error_Message( Q ) );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMList;
+
+#else
+
+procedure ParseDBMList renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMSchema is
+  -- Syntax: dbm.schema( C, "table" );
+  -- Source: N/A
+  tabularDisplay : boolean := false;
+  headingWidth   : integer := 0;
+  wasNull        : boolean := false;
+  columnWidths   : array( 1..32 ) of integer;
+  totalWidth     : integer;
+  width          : integer;
+  exprType       : identifier;
+  exprVal        : unbounded_string;
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+  Q : APQ.PostgreSQL.Client.Query_Type;
+begin
+  expect( dbm_schema_t );
+  ParseFirstNumericParameter( connectExpr, connectType, dbm_connection_t );
+  ParseLastStringParameter( exprVal, exprType, string_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+     if is_connected( connection.PG_C ) then
+        -- Find column name, type, type length, not null and default flags
+        -- Don't show dropped columns, columns with system types (oid, etc).
+        prepare( Q, "select a.attname as " & '"' & "Column" & '"' &
+                    ", t.typname as " & '"' & "Type" & '"' &
+                    ", a.atttypmod-4 as " & '"' & "Length" & '"' &
+                    ", a.attnotnull as " & '"' & "Not Null" & '"' &
+                    ", a.atthasdef as " & '"' & "Default" & '"' &
+                    "from pg_attribute a, pg_class c, pg_type t where a.attrelid = c.oid and t.oid = a.atttypid and a.attisdropped = 'f' and (a.atttypid < 26 or a.atttypid > 29) and c.relname='" &
+                     to_string( exprVal ) & "' order by a.attnum" );
+        execute( Q, connection.PG_C );
+
+        -- No result? Then table was not found.
+
+        if end_of_query( Q ) then
+           err( "Did not find any relation named " &
+              optional_bold( to_string( exprVal ) ) );
+           return;
+        end if;
+
+        -- Initially, the columns widths are the widths of the headings
+
+        for i in 1..columns( Q ) loop
+            if i /= 3 then -- column 3 is type length (not shown)
+               columnWidths( i ) := column_name( Q, Column_Index_Type( i ) )'length;
+               if columnWidths( i ) < 4 then -- room for NULL on tabular display
+                  columnWidths( i ) := 4;
+               end if;
+               if headingWidth < columnWidths( i ) then
+                  headingWidth := columnWidths( i );
+               end if;
+            end if;
+        end loop;
+
+        -- Check query results and adjust the columns widths for the longest
+        -- results.
+
+        while not end_of_query( Q ) loop
+              fetch( Q );
+              for i in 1..columns( Q ) loop
+                 if i /= 3 then -- column 3 is type length (not shown)
+                    if not is_null( Q, Column_Index_Type( i ) ) then
+                       if i = 2 then -- column 2 is column type
+                          width := length( to_unbounded_string(
+                                   pg_column_type_to_string( Value( Q, Column_Index_Type( i ) ),
+                                                             Value( Q, Column_Index_Type( i+1 ) ) ) ) );
+                       elsif i = 4 then
+                          width := length( to_unbounded_string(
+                                   pg_not_null_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
+                       elsif i = 5 then
+                          width := length( to_unbounded_string(
+                                   pg_default_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
+                       else
+                          width := length( to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
+                       end if;
+                       if width > 256 then
+                          width := 256;
+                       end if;
+                       if width > columnWidths( i ) then
+                          columnWidths( i ) := width;
+                       end if;
+                    end if;
+                 end if;
+              end loop;
+        end loop;
+
+        -- Add up all columns for the total width for a tabular display
+
+        totalWidth := 2;                                        -- left/right marg
+        for i in 1..columns( Q ) loop
+            if i /= 3 then -- column 3 is type length (not shown)
+               totalWidth := totalWidth + columnWidths( i );       -- width of column
+               if i /= columns(Q) then                             -- not last col?
+                  totalWidth := totalWidth + 3;                    -- 3 char sep
+               end if;
+            end if;
+        end loop;
+
+        -- Rewind the clear and prepare to show the results
+
+        Rewind( Q );
+        new_line;
+
+        -- Use a tabular display only if will fit in the current display
+
+        tabularDisplay := totalWidth <= integer( displayInfo.col );
+
+        -- Draw the columns
+
+        if tabularDisplay then
+           put( " " );
+           for i in 1..columns( Q ) loop
+               if i /= 3 then -- column 3 is type length (not shown)
+                  put(
+                     to_string(
+                         Head(
+                             to_unbounded_string(
+                                 column_name( Q, Column_Index_Type( i ) ) )
+                         , columnWidths( i ) )
+                     )
+                  );
+                  if i /= columns( Q ) then
+                     put( " | " );
+                  end if;
+               end if;
+           end loop;
+           new_line;
+           put( "-" );
+           for i in 1..columns( Q ) loop
+               if i /= 3 then -- column 3 is type length (not shown)
+                  put( to_string( columnWidths( i ) * "-" ) );
+                  if i /= columns( Q ) then
+                     put( "-+-" );
+                  else
+                     put( "-" );
+                  end if;
+               end if;
+           end loop;
+           new_line;
+        end if;
+
+        -- Draw the query results
+
+        while not end_of_query( Q ) loop
+            fetch( Q );
+            if tabularDisplay then
+               put( " " );
+            end if;
+            for i in 1..columns( Q ) loop
+                if i /= 3 then -- column 3 is type length (not shown)
+                   if tabularDisplay then
+                      if is_null( Q, Column_Index_Type( i ) ) then
+                         put( inverse( to_string( Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
+                         wasNull := true;
+                      elsif i = 2 then -- column 2 is column type
+                         put( to_string( Head( ToEscaped( to_unbounded_string( pg_column_type_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i+1 ) ) ) ) ), columnWidths( i ) ) ) );
+                      elsif i = 4 then
+                         put( to_string( Head( ToEscaped( to_unbounded_string( pg_not_null_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
+                      elsif i = 5 then
+                         put( to_string( Head( ToEscaped( to_unbounded_string( pg_default_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
+                      else
+                         put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
+                      end if;
+                      if i /= columns( Q ) then
+                         put( " | " );
+                      end if;
+                   else
+                      put( to_string( head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
+                      put( ": " );
+                      if is_null( Q, Column_Index_Type( i ) ) then
+                         put( inverse( "NULL" ) );
+                         wasNull := true;
+                      elsif i = 2 then
+                         put( bold( to_string( ToEscaped( to_unbounded_string( pg_column_type_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i+1 ) ) ) ) ) ) ) );
+                      elsif i = 4 then
+                         put( bold( to_string( ToEscaped( to_unbounded_string( pg_not_null_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
+                      elsif i = 5 then
+                         put( bold( to_string( ToEscaped( to_unbounded_string( pg_default_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
+                      else
+                         put( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
+                      end if;
+                      new_line;
+                   end if;
+                end if;
+            end loop;
+            new_line;
+        end loop;
+     end if;
+
+     -- Draw the summary line
+
+     if tuples( Q ) = 1 then
+        put( " 1 Row" );
+     else
+        put( Tuple_Index_Type'image( tuples( Q ) ) );
+        put( " Rows" );
+     end if;
+     if wasNull then
+        put( " with nulls" );
+     end if;
+     if columns( Q ) = 1 then
+        put( " and 1 Column" );
+     else
+        put( " and" );
+        put( integer'image( columns( Q ) ) );
+        put( " Columns" );
+     end if;
+     new_line;
+     prepare( Q, "select c.relname, i.indisprimary, i.indisunique, i.indkey from pg_index i, pg_class c" &
+                 " where c.oid = i.indexrelid and i.indrelid in " &
+                 " (select i.indrelid from pg_index, pg_class c2 where i.indrelid = c2.oid and c2.relname='" & to_string( exprVal ) & "') order by c.relname" );
+     execute( Q, connection.PG_C );
+     if tuples( Q ) > 0 then
+        put_line( "Indexes:" );
+        while not end_of_query( Q ) loop
+            fetch( Q );
+            put( "    " );
+            declare
+               indexName   : string := Value( Q, 1 );
+               primaryKey  : string := Value( Q, 2 );
+               uniqueIndex : string := Value( Q, 3 );
+               colList     : string := Value( Q, 4 );
+            begin
+               put( bold( indexName ) );
+               put( " " );
+               if primaryKey = "t" then
+                  put( "primary key " );
+               end if;
+               if uniqueIndex = "t" then
+                  put( "unique " );
+               end if;
+               put( "on columns " );
+               put( bold( colList ) );
+            end;
+            new_line;
+        end loop;
+     end if;
+
+     exception when no_tuple =>
+       err( "no tuple" );
+     when null_value =>
+       err( "null value" );
+     when no_column =>
+       err( "no column" );
+     when no_result =>
+       err( "no result" );
+     when sql_error =>
+       err( Error_Message( Q ) );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMSchema;
+
+#else
+
+procedure ParseDBMSchema renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMUsers is
+  -- Syntax: dbm.users
+  -- Source: N/A
+  tabularDisplay : boolean := false;
+  headingWidth   : integer := 0;
+  wasNull        : boolean := false;
+  columnWidths   : array( 1..32 ) of integer;
+  totalWidth     : integer;
+  width          : integer;
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+  Q : APQ.PostgreSQL.Client.Query_Type;
+begin
+  expect( dbm_users_t );
+  ParseSingleNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+     if is_connected( connection.PG_C ) then
+        -- Show tablename and kind, lookup owner from another table.
+        -- Don't show tables owned by postgres (user 1), TOAST tables or indexes
+        prepare( Q, "select usename as " & '"' & "User Name" & '"' &
+                    ", usesysid as " & '"' & "User ID" & '"' &
+                    ", usesuper as " & '"' & "Attributes" & '"' &
+                    ", usecreatedb from pg_user order by usename" );
+        execute( Q, connection.PG_C );
+
+        -- Initially, the columns widths are the widths of the headings
+
+        for i in 1..columns( Q ) loop
+            columnWidths( i ) := column_name( Q, Column_Index_Type( i ) )'length;
+            if columnWidths( i ) < 4 then -- room for NULL on tabular display
+               columnWidths( i ) := 4;
+            end if;
+            if headingWidth < columnWidths( i ) then
+               headingWidth := columnWidths( i );
+            end if;
+        end loop;
+
+        -- Check query results and adjust the columns widths for the longest
+        -- results.
+
+        while not end_of_query( Q ) loop
+              fetch( Q );
+              for i in 1..columns( Q ) loop
+                 if not is_null( Q, Column_Index_Type( i ) ) then
+                    if i = 3 then -- column 3 and 4 are attributes
+                       width := length( to_unbounded_string( pg_userattributes_to_string( Value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i ) ) ) ) );
+                    elsif i = 4 then
+                       null;
+                    else
+                       width := length( to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
+                    end if;
+                    if width > 256 then
+                       width := 256;
+                    end if;
+                    if width > columnWidths( i ) then
+                       columnWidths( i ) := width;
+                    end if;
+                 end if;
+              end loop;
+        end loop;
+
+        -- Add up all columns for the total width for a tabular display
+
+        totalWidth := 2;                                        -- left/right marg
+        for i in 1..columns( Q ) loop
+            totalWidth := totalWidth + columnWidths( i );       -- width of column
+            if i /= columns(Q) then                             -- not last col?
+               totalWidth := totalWidth + 3;                    -- 3 char sep
+            end if;
+        end loop;
+
+        -- Rewind the clear and prepare to show the results
+
+        Rewind( Q );
+        new_line;
+
+        -- Use a tabular display only if will fit in the current display
+
+        tabularDisplay := totalWidth <= integer( displayInfo.col );
+
+        -- Draw the columns
+
+        if tabularDisplay then
+           put( " " );
+           for i in 1..columns( Q ) loop
+               if i /= 4 then
+                  put(
+                     to_string(
+                         Head(
+                             to_unbounded_string(
+                                 column_name( Q, Column_Index_Type( i ) ) )
+                         , columnWidths( i ) )
+                     )
+                  );
+                  if i /= 3 then
+                     put( " | " );
+                  end if;
+               end if;
+           end loop;
+           new_line;
+           put( "-" );
+           for i in 1..columns( Q ) loop
+               if i /= 4 then
+                  put( to_string( columnWidths( i ) * "-" ) );
+                  if i /= 3 then
+                     put( "-+-" );
+                  else
+                     put( "-" );
+                  end if;
+               end if;
+           end loop;
+           new_line;
+        end if;
+
+        -- Draw the query results
+
+        while not end_of_query( Q ) loop
+            fetch( Q );
+            if tabularDisplay then
+               put( " " );
+            end if;
+            for i in 1..columns( Q ) loop
+                if i /= 4 then
+                   if tabularDisplay then
+                      if is_null( Q, Column_Index_Type( i ) ) then
+                         put( inverse( to_string( Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
+                         wasNull := true;
+                      elsif i = 2 then -- right-aligned
+                         put( to_string( Tail( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
+                      elsif i = 3 then -- column 3 and 4 are attributes
+                         put( to_string( Head( ToEscaped( to_unbounded_string( pg_userattributes_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
+                      else
+                         put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
+                      end if;
+                      if i /= 3 then
+                         put( " | " );
+                      end if;
+                   else
+                      put( to_string( head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
+                      put( ": " );
+                      if is_null( Q, Column_Index_Type( i ) ) then
+                         put( inverse( "NULL" ) );
+                         wasNull := true;
+                      elsif i = 3 then -- column 3 and 4 are attributes
+                         put( bold( to_string( ToEscaped( to_unbounded_string( pg_userattributes_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
+                      else
+                         put( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
+                      end if;
+                      new_line;
+                   end if;
+                end if;
+            end loop;
+            new_line;
+        end loop;
+     end if;
+
+     -- Draw the summary line
+
+     if tuples( Q ) = 1 then
+        put( " 1 Row" );
+     else
+        put( Tuple_Index_Type'image( tuples( Q ) ) );
+        put( " Rows" );
+     end if;
+     if wasNull then
+        put( " with nulls" );
+     end if;
+     if columns( Q ) = 1 then
+        put( " and 1 Column" );
+     else
+        put( " and" );
+        put( integer'image( columns( Q ) ) );
+        put( " Columns" );
+     end if;
+     new_line;
+     exception when no_tuple =>
+       err( "no tuple" );
+     when null_value =>
+       err( "null value" );
+     when no_column =>
+       err( "no column" );
+     when no_result =>
+       err( "no result" );
+     when sql_error =>
+       err( Error_Message( Q ) );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMUsers;
+
+#else
+
+procedure ParseDBMUsers renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMDatabases is
+  -- Syntax: dbm.databases( c )
+  -- Source: N/A
+  tabularDisplay : boolean := false;
+  headingWidth   : integer := 0;
+  wasNull        : boolean := false;
+  columnWidths   : array( 1..32 ) of integer;
+  totalWidth     : integer;
+  width          : integer;
+  connectExpr : unbounded_string;
+  connectType : identifier;
+  connection : resPtr;
+  Q : APQ.PostgreSQL.Client.Query_Type;
+begin
+  expect( dbm_databases_t );
+  ParseSingleNumericParameter( connectExpr, connectType, dbm_connection_t );
+  if isExecutingCommand then
+     begin
+       findConnection( connectExpr, connection );
+     if is_connected( connection.PG_C ) then
+        -- Show tablename and kind, lookup owner from another table.
+        -- Don't show tables owned by postgres (user 1), TOAST tables or indexes
+        prepare( Q, "select d.datname as " & '"' & "Name" & '"' &
+                    ", u.usename as " & '"' & "Owner" & '"' &
+                    " from pg_database d, pg_user u where u.usesysid = d.datdba order by d.datname" );
+        execute( Q, connection.PG_C );
+
+        -- Initially, the columns widths are the widths of the headings
+
+        for i in 1..columns( Q ) loop
+            columnWidths( i ) := column_name( Q, Column_Index_Type( i ) )'length;
+            if columnWidths( i ) < 4 then -- room for NULL on tabular display
+               columnWidths( i ) := 4;
+            end if;
+            if headingWidth < columnWidths( i ) then
+               headingWidth := columnWidths( i );
+            end if;
+        end loop;
+
+        -- Check query results and adjust the columns widths for the longest
+        -- results.
+
+        while not end_of_query( Q ) loop
+              fetch( Q );
+              for i in 1..columns( Q ) loop
+                 if not is_null( Q, Column_Index_Type( i ) ) then
+                    if i = 3 then -- column 2 is table type
+                       width := length( to_unbounded_string( pg_kind_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
+                    else
+                       width := length( to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
+                    end if;
+                    if width > 256 then
+                       width := 256;
+                    end if;
+                    if width > columnWidths( i ) then
+                       columnWidths( i ) := width;
+                    end if;
+                 end if;
+              end loop;
+        end loop;
+
+        -- Add up all columns for the total width for a tabular display
+
+        totalWidth := 2;                                        -- left/right marg
+        for i in 1..columns( Q ) loop
+            totalWidth := totalWidth + columnWidths( i );       -- width of column
+            if i /= columns(Q) then                             -- not last col?
+               totalWidth := totalWidth + 3;                    -- 3 char sep
+            end if;
+        end loop;
+
+        -- Rewind the clear and prepare to show the results
+
+        Rewind( Q );
+        new_line;
+
+        -- Use a tabular display only if will fit in the current display
+
+        tabularDisplay := totalWidth <= integer( displayInfo.col );
+
+        -- Draw the columns
+
+        if tabularDisplay then
+           put( " " );
+           for i in 1..columns( Q ) loop
+               put(
+                  to_string(
+                      Head(
+                          to_unbounded_string(
+                              column_name( Q, Column_Index_Type( i ) ) )
+                      , columnWidths( i ) )
+                  )
+               );
+               if i /= columns( Q ) then
+                  put( " | " );
+               end if;
+           end loop;
+           new_line;
+           put( "-" );
+           for i in 1..columns( Q ) loop
+               put( to_string( columnWidths( i ) * "-" ) );
+               if i /= columns( Q ) then
+                  put( "-+-" );
+               else
+                  put( "-" );
+               end if;
+           end loop;
+           new_line;
+        end if;
+
+        -- Draw the query results
+
+        while not end_of_query( Q ) loop
+            fetch( Q );
+            if tabularDisplay then
+               put( " " );
+            end if;
+            for i in 1..columns( Q ) loop
+                if tabularDisplay then
+                   if is_null( Q, Column_Index_Type( i ) ) then
+                      put( inverse( to_string( Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
+                      wasNull := true;
+                   elsif i = 3 then -- column 2 is table type
+                      put( to_string( Head( ToEscaped( to_unbounded_string( pg_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
+                   else
+                      put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
+                   end if;
+                   if i /= columns( Q ) then
+                      put( " | " );
+                   end if;
+                else
+                   put( to_string( head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
+                   put( ": " );
+                   if is_null( Q, Column_Index_Type( i ) ) then
+                      put( inverse( "NULL" ) );
+                      wasNull := true;
+                   elsif i = 3 then
+                      put( bold( to_string( ToEscaped( to_unbounded_string( pg_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
+                   else
+                      put( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
+                   end if;
+                   new_line;
+                end if;
+            end loop;
+            new_line;
+        end loop;
+     end if;
+
+     -- Draw the summary line
+
+     if tuples( Q ) = 1 then
+        put( " 1 Row" );
+     else
+        put( Tuple_Index_Type'image( tuples( Q ) ) );
+        put( " Rows" );
+     end if;
+     if wasNull then
+        put( " with nulls" );
+     end if;
+     if columns( Q ) = 1 then
+        put( " and 1 Column" );
+     else
+        put( " and" );
+        put( integer'image( columns( Q ) ) );
+        put( " Columns" );
+     end if;
+     new_line;
+     exception when no_tuple =>
+       err( "no tuple" );
+     when null_value =>
+       err( "null value" );
+     when no_column =>
+       err( "no column" );
+     when no_result =>
+       err( "no result" );
+     when sql_error =>
+       err( Error_Message( Q ) );
+     when others =>
+       err( "exception was raised" );
+     end;
+  end if;
+end ParseDBMDatabases;
+
+#else
+
+procedure ParseDBMDatabases renames not_configured;
+
+#end if;
+#if POSTGRES
+
+--procedure DoSQLSelect( sqlcmd : unbounded_string ) is
+--begin
+--  if isExecutingCommand then
+--     prepare( Q, to_string( sqlcmd ) );
+--     DBShowIt;
+--  end if;
+--end DoSQLSelect;
+--
+--procedure DoSQLStatement( sqlcmd : unbounded_string ) is
+--begin
+--  if isExecutingCommand then
+--     prepare( Q, to_string( sqlcmd ) );
+--     begin
+--       Execute( Q, C );
+--     exception when not_connected =>
+--       err( "not connected" );
+--     when abort_state =>
+--       err( "in abort state" );
+--     when sql_error =>
+--       err( Error_Message( Q ) );
+--     when others =>
+--       err( "exception raised" );
+--     end;
+--  end if;
+--end DoSQLStatement;
+
+procedure ParseDBMNewConnection is
+  -- Syntax: dbm.new_connection( c )
+  -- Source: N/A
+  resId : resHandleId;
+  ref : reference;
+begin
+  expect( dbm_new_connection_t );
+  ParseSingleOutParameter( ref, dbm_connection_t );
+  if baseTypesOK( ref.kind, dbm_connection_t ) then
+      null;
+  end if;
+  if isExecutingCommand then
+     identifiers( ref.id ).resource := true;
+     declareResource( resId, postgresql_connection, blocks_top );
+     AssignParameter( ref, to_unbounded_string( resId ) );
+  end if;
+end ParseDBMNewConnection;
+
+#else
+
+procedure ParseDBMNewConnection renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMNewQuery is
+  -- Syntax: dbm.new_connection( q )
+  -- Source: N/A
+  resId : resHandleId;
+  ref : reference;
+begin
+  expect( dbm_new_query_t );
+  ParseSingleOutParameter( ref, dbm_query_t );
+  if baseTypesOK( ref.kind, dbm_query_t ) then
+      null;
+  end if;
+  if isExecutingCommand then
+     identifiers( ref.id ).resource := true;
+     declareResource( resId, postgresql_query, blocks_top );
+     AssignParameter( ref, to_unbounded_string( resId ) );
+  end if;
+end ParseDBMNewQuery;
+
+#else
+
+procedure ParseDBNewQuery renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMFetchValues is
+-- dbm.fetch_values( Q, C, r );
+-- Fetch a row, reading all values into record r.  The column names must match
+-- the fields in the record (the record fields need not be in the same order
+-- as the query results).
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+  connectionExpr : unbounded_string;
+  connectionType : identifier;
+  connection : resPtr;
+  id : identifier;
+  --ref : reference;
+begin
+  expect( dbm_fetch_values_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseNextNumericParameter( connectionExpr, connectionType, dbm_connection_t );
+  -- TODO: ref type is meaningless here since you can't autodeclare
+  ParseLastInOutRecordParameter( id  );
+-- TODO: is kind in the reference?
+  if identifiers( getBaseType( identifiers( id ).kind ) ).kind /= root_record_t then
+     err( "Record type expected" );
+  end if;
+  if isExecutingCommand then
+     declare
+       fieldsInRecord : long_integer;
+       searchName : unbounded_string;
+       found : boolean;
+       field : unbounded_string;
+       elementKind : identifier;
+     begin
+       -- get the resources
+       findConnection( connectionExpr, connection );
+       findQuery( queryExpr, query );
+
+       -- fetch the next row
+       Fetch( query.pg_q );
+
+       -- confirm the length
+-- TODO: is kind in the reference?
+       fieldsInRecord := long_integer'value( to_string( identifiers( identifiers( id ).kind ).value ) );
+--put_line( "fields in record = " &fieldsInRecord'img ); -- DEBUG
+--put_line( "fields in query = " & integer'image( columns( query.Q ) ) ); -- DEBUG
+       if long_integer( columns( query.PG_Q ) ) /= fieldsInRecord then
+          err( "record has" & fieldsInRecord'img & " field(s) but the query returns" & integer'image( columns( query.PG_Q ) ) );
+       else
+          for fieldNumber in 1..fieldsInRecord loop
+
+          -- we have a label and a value.  the record field is stored in the
+          -- symbol table as rec.field.  Prepend the record name and search
+          -- the symbol table for the record field.  When found, cast the
+          -- value and assign it.  Otherwise, if the field is not found, it
+          -- is an error.
+             found := false;
+
+             searchName := identifiers( id ).name & "." & column_name( query.PG_Q, column_index_type( fieldNumber ) );
+             for j in reverse 1..identifiers_top-1 loop
+                 if identifiers( j ).name = searchName then
+                    found := true;
+                    if not error_found then
+                       field := to_unbounded_string( value( query.PG_Q, Column_Index_Type( fieldNumber ) ) );
+                       elementKind := getBaseType( identifiers( j ).kind );
+                       if elementKind = boolean_t then
+                          -- a PostgreSQL boolean isn't exactly the same as an Ada boolean
+                          declare
+                            lf : long_float;
+                          begin
+                            lf := to_numeric( field );
+                            if lf = 0.0 then
+                               identifiers( j ).value := identifiers( false_t ).value;
+                            else
+                               identifiers( j ).value := identifiers( true_t ).value;
+                            end if;
+                          exception when constraint_error =>
+                            err( to_string( searchName ) & " is boolean but query value is not numeric" );
+                          end;
+                       --elsif getUniType( elementKind ) = root_enumerated_t then
+                       -- TODO: non-boolean enumerated.  See scanner.adb
+                       -- for how to search for an enumerated item.
+                       -- Not trying to map to PostgreSQL enumerated types.
+                       elsif getUniType( elementKind ) = uni_string_t then
+-- TODO: shouldn't catToType be used here to guarantee character values are
+-- only one letter long (probably doesn't matter for JSON, but matters here)
+                          -- identifiers( j ).value := field;
+                          identifiers( j ).value := castToType( field,
+                            identifiers( j ).kind );
+                       elsif getUniType( elementKind ) = uni_numeric_t then
+                          declare
+                            lf : long_float;
+                          begin
+                            lf := to_numeric( field );
+                            identifiers( j ).value := castToType( field,
+                              identifiers( j ).kind );
+                          exception when constraint_error =>
+                            err( to_string( searchName ) & " is numeric but query value is not numeric" );
+                          end;
+                       elsif getUniType( elementKind ) = universal_t then
+                            identifiers( j ).value := field;
+                       else
+                          err( "unsupported data type" );
+                       end if;
+                    end if;
+                 end if;
+             end loop;
+             if not found then
+                err( optional_bold( to_string( searchName ) ) & " does not exist" );
+             end if;
+          end loop;
+       end if;
+
+     exception when no_tuple =>
+       err( "no tuple" );
+     when null_value =>
+       err( "null value" );
+     when no_column =>
+       err( "no column" );
+     when no_result =>
+       err( "no result" );
+     --when sql_error =>
+     --  err( Error_Message( Q ) );
+     when others =>
+       err( "exception raised" );
+       --if sourceLen = long_integer'value( to_string( identifiers( identifiers( target_var_id ).kind ).value ) ) then
+-- TODO: no_coumn, no_result, null_value, no_tuple, etc exception handling
+     end;
+null;
+  end if;
+end ParseDBMFetchValues;
+
+#else
+
+procedure ParseDBMFetchValues renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMAppendForInsert is
+-- dbm.append_for_insert( Q, C, r );
+-- append the fields of record r to the query in the format of an ANSI SQL insert
+-- " ( a, b, ... ) VALUES ( 'a', 'b', ... )"
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+  connectionExpr : unbounded_string;
+  connectionType : identifier;
+  connection : resPtr;
+  id : identifier;
+begin
+  expect( dbm_append_for_insert_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseNextNumericParameter( connectionExpr, connectionType, dbm_connection_t );
+  -- TODO: ref type is meaningless here since you can't autodeclare
+  ParseLastInOutRecordParameter( id  );
+-- TODO: is kind in the reference?
+  if identifiers( getBaseType( identifiers( id ).kind ) ).kind /= root_record_t then
+     err( "Record type expected" );
+  end if;
+  if isExecutingCommand then
+     declare
+       fieldName : unbounded_string;
+       fieldSuffix : unbounded_string;
+       dotPos : natural;
+       field_t : identifier;
+       elementKind : identifier;
+       elementUniKind : identifier;
+       firstField : boolean := true;
+     begin
+       -- get the resources
+       findConnection( connectionExpr, connection );
+       findQuery( queryExpr, query );
+
+       append( query.PG_Q, " (" );
+
+       -- The basic logic is copied from DoRecordToJson()
+       for i in 1..integer'value( to_string( identifiers( identifiers( id ).kind ).value ) ) loop
+           for j in 1..identifiers_top-1 loop
+               if identifiers( j ).field_of = identifiers( id ).kind then
+                  if integer'value( to_string( identifiers( j ).value )) = i then
+                     fieldName := identifiers( j ).name;
+                     dotPos := length( fieldName );
+                     while dotPos > 1 loop
+                        exit when element( fieldName, dotPos ) = '.';
+                        dotPos := dotPos - 1;
+                     end loop;
+                     fieldSuffix := delete( fieldName, 1, dotPos );
+                     fieldName := identifiers( id ).name & "." & fieldSuffix;
+                     findIdent( fieldName, field_t );
+
+                     if firstField then
+                        firstField := false;
+                     else
+                        Append( query.PG_Q, "," );
+                     end if;
+                     Append( query.PG_Q, fieldSuffix );
+                  end if;
+               end if;
+           end loop;
+       end loop;
+
+       append( query.PG_Q, " ) VALUES ( " );
+       firstField := true;
+
+       for i in 1..integer'value( to_string( identifiers( identifiers( id ).kind ).value ) ) loop
+           for j in 1..identifiers_top-1 loop
+               if identifiers( j ).field_of = identifiers( id ).kind then
+                  if integer'value( to_string( identifiers( j ).value )) = i then
+                     if firstField then
+                        firstField := false;
+                     else
+                        Append( query.PG_Q, "," );
+                     end if;
+                     fieldName := identifiers( j ).name;
+                     dotPos := length( fieldName );
+                     while dotPos > 1 loop
+                        exit when element( fieldName, dotPos ) = '.';
+                        dotPos := dotPos - 1;
+                     end loop;
+                     fieldSuffix := delete( fieldName, 1, dotPos );
+                     fieldName := identifiers( id ).name & "." & fieldSuffix;
+                     findIdent( fieldName, field_t );
+
+                     elementKind := getBaseType( identifiers( field_t ).kind );
+                     elementUniKind := getUniType( identifiers( field_t ).kind );
+
+                     if elementKind = boolean_t then
+                        Append( query.PG_Q, to_string( identifiers( field_t ).value ) );
+                     elsif elementUniKind = uni_string_t then
+-- TODO: shouldn't catToType be used here to guarantee character values are
+-- only one letter long (probably doesn't matter for JSON, but matters here)
+                          -- identifiers( j ).value := field;
+                        Append_Quoted( query.PG_Q, connection.PG_C, to_string( identifiers( field_t ).value ) );
+                     elsif elementUniKind = uni_numeric_t then
+                        Append( query.PG_Q, to_string( identifiers( field_t ).value ) );
+                     elsif elementUniKind = universal_t then
+                        Append_Quoted( query.PG_Q, connection.PG_C, to_string( identifiers( field_t ).value ) );
+                     else
+                         err( "unsupported data type" );
+                     end if;
+                  end if;
+               end if;
+           end loop;
+       end loop;
+       append( query.PG_Q, " )" );
+
+     exception when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseDBMAppendForInsert;
+
+#else
+
+procedure ParseDBMAppendForInsert renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBMAppendForUpdate is
+-- dbm.append_for_update( Q, C, r );
+-- append the fields of record r to the query in the format of an ANSI SQL update
+-- " SET a = 'a', b = 'b', ..."
+  queryExpr : unbounded_string;
+  queryType : identifier;
+  query : resPtr;
+  connectionExpr : unbounded_string;
+  connectionType : identifier;
+  connection : resPtr;
+  id : identifier;
+begin
+  expect( dbm_append_for_update_t );
+  ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
+  ParseNextNumericParameter( connectionExpr, connectionType, dbm_connection_t );
+  -- TODO: ref type is meaningless here since you can't autodeclare
+  ParseLastInOutRecordParameter( id  );
+-- TODO: is kind in the reference?
+  if identifiers( getBaseType( identifiers( id ).kind ) ).kind /= root_record_t then
+     err( "Record type expected" );
+  end if;
+  if isExecutingCommand then
+     declare
+       fieldName : unbounded_string;
+       fieldSuffix : unbounded_string;
+       dotPos : natural;
+       field_t : identifier;
+       elementKind : identifier;
+       elementUniKind : identifier;
+       firstField : boolean := true;
+     begin
+       -- get the resources
+       findConnection( connectionExpr, connection );
+       findQuery( queryExpr, query );
+
+       Append( query.PG_Q, " SET " );
+       -- The basic logic is copied from DoRecordToJson()
+     for i in 1..integer'value( to_string( identifiers( identifiers( id ).kind ).value ) ) loop
+         for j in 1..identifiers_top-1 loop
+             if identifiers( j ).field_of = identifiers( id ).kind then
+                if integer'value( to_string( identifiers( j ).value )) = i then
+                   fieldName := identifiers( j ).name;
+                   dotPos := length( fieldName );
+                   while dotPos > 1 loop
+                      exit when element( fieldName, dotPos ) = '.';
+                      dotPos := dotPos - 1;
+                   end loop;
+                   fieldSuffix := delete( fieldName, 1, dotPos );
+                   fieldName := identifiers( id ).name & "." & fieldSuffix;
+                   findIdent( fieldName, field_t );
+
+                   elementKind := getBaseType( identifiers( field_t ).kind );
+                   elementUniKind := getUniType( identifiers( field_t ).kind );
+
+                   if firstField then
+                      firstField := false;
+                   else
+                      Append( query.PG_Q, "," );
+                   end if;
+                   Append( query.PG_Q, fieldSuffix & "=" );
+
+                   if elementKind = boolean_t then
+                      Append( query.PG_Q, identifiers( field_t ).value );
+                   elsif elementUniKind = uni_string_t then
+-- TODO: shouldn't catToType be used here to guarantee character values are
+-- only one letter long (probably doesn't matter for JSON, but matters here)
+                          -- identifiers( j ).value := field;
+                      Append_Quoted( query.PG_Q, connection.PG_C, identifiers( field_t ).value );
+                   elsif getUniType( elementKind ) = uni_numeric_t then
+                      Append( query.PG_Q, identifiers( field_t ).value );
+                   elsif getUniType( elementKind ) = universal_t then
+                      Append_Quoted( query.PG_Q, connection.PG_C, identifiers( field_t ).value );
+                   else
+                       err( "unsupported data type" );
+                   end if;
+                 end if;
+             end if;
+         end loop;
+       end loop;
+       Append( query.PG_Q, " " );
+
+     exception when others =>
+       err( "exception raised" );
+     end;
+  end if;
+end ParseDBMAppendForUpdate;
+
+#else
+
+procedure ParseDBMAppendForUpdate renames not_configured;
+
+#end if;
+
+procedure StartupDBM is
+begin
+  declareNamespace( "dbm" );
+  declareIdent( dbm_column_index_type_t, "dbm.column_index_type",
+    positive_t, typeClass );
+
+  declareIdent( dbm_tuple_index_type_t, "dbm.tuple_index_type",
+    positive_t, typeClass );
+
+  declareIdent( dbm_tuple_count_type_t, "dbm.tuple_count_type",
+    db_tuple_index_type_t, subClass );
+
+--  declareIdent( db_trace_mode_type_t, "db.trace_mode_type",
+--    root_enumerated_t, typeClass );
+--  declareStandardConstant( db_trace_none_t, "db.trace_none",
+--    db_trace_mode_type_t, "0" );
+--  declareStandardConstant( db_trace_db_t, "db.trace_db",
+--    db_trace_mode_type_t, "1" );
+--  declareStandardConstant( db_trace_apq_t, "db.trace_apq",
+--    db_trace_mode_type_t, "2" );
+--  declareStandardConstant( db_trace_full_t, "db.trace_full",
+--    db_trace_mode_type_t, "3" );
+
+  declareIdent( dbm_mode_type_t, "dbm.mode_type",
+    root_enumerated_t, typeClass );
+  declareStandardConstant( dbm_read_t, "dbm.read",
+    db_mode_type_t, "0" );
+  declareStandardConstant( dbm_write_t, "dbm.write",
+    db_mode_type_t, "1" );
+  declareStandardConstant( dbm_read_write_t, "dbm.read_write",
+    db_mode_type_t, "2" );
+
+--  declareIdent( db_fetch_mode_type_t, "db.fetch_mode_type",
+--    root_enumerated_t, typeClass );
+--  declareStandardConstant( db_sequential_fetch_t, "db.sequential_fetch",
+--    db_fetch_mode_type_t, "0" );
+--  declareStandardConstant( db_random_fetch_t, "db.random_fetch",
+--    db_fetch_mode_type_t, "1" );
+
+--  declareIdent( db_database_type_t, "db.database_type",
+--    root_enumerated_t, typeClass );
+--  declareStandardConstant( db_engine_postgresql_t, "db.engine_postgresql",
+--    db_database_type_t, "0" );
+--  declareStandardConstant( db_engine_mysql_t, "db.engine_mysql",
+--    db_database_type_t, "1" );
+--  declareStandardConstant( db_engine_oracle_t, "db.engine_oracle",
+--    db_database_type_t, "2" );
+--  declareStandardConstant( db_engine_sybase_t, "db.engine_sybase",
+--    db_database_type_t, "3" );
+--  declareStandardConstant( db_engine_db2_t, "db.engine_db2",
+--    db_database_type_t, "4" );
+
+  declareProcedure( dbm_new_connection_t, "dbm.new_connection" );
+  declareProcedure( dbm_new_query_t, "dbm.new_query" );
+  declareProcedure( dbm_connect_t, "dbm.connect" );
+  declareProcedure( dbm_disconnect_t, "dbm.disconnect" );
+  declareFunction(  dbm_is_connected_t, "dbm.is_connected" );
+  declareProcedure( dbm_reset_t, "dbm.reset" );
+  declareFunction(  dbm_error_message_t, "dbm.error_message" );
+  --declareFunction(  dbm_notice_message_t, "dbm.notice_message" );
+  declareFunction(  dbm_in_abort_state_t, "dbm.in_abort_state" );
+  declareFunction(  dbm_options_t, "dbm.options" );
+  declareFunction(  dbm_will_rollback_on_finalize_t, "dbm.will_rollback_on_finalize" );
+  declareProcedure( dbm_set_rollback_on_finalize_t, "dbm.set_rollback_on_finalize" );
+  declareProcedure( dbm_open_db_trace_t, "dbm.open_db_trace" );
+  declareProcedure( dbm_close_db_trace_t, "dbm.close_db_trace" );
+  declareProcedure( dbm_set_trace_t, "dbm.set_trace" );
+  declareFunction(  dbm_is_trace_t, "dbm.is_trace" );
+  declareProcedure( dbm_clear_t, "dbm.clear" );
+  declareProcedure( dbm_prepare_t, "dbm.prepare" );
+  declareProcedure( dbm_append_t, "dbm.append" );
+  declareProcedure( dbm_append_line_t, "dbm.append_line" );
+  declareProcedure( dbm_append_quoted_t, "dbm.append_quoted" );
+  declareProcedure( dbm_execute_t, "dbm.execute" );
+  declareProcedure( dbm_execute_checked_t, "dbm.execute_checked" );
+  declareProcedure( dbm_raise_exceptions_t, "dbm.raise_exceptions" );
+  declareProcedure( dbm_report_errors_t, "dbm.report_errors" );
+  declareProcedure( dbm_begin_work_t, "dbm.begin_work" );
+  declareProcedure( dbm_commit_work_t, "dbm.commit_work" );
+  declareProcedure( dbm_rollback_work_t, "dbm.rollback_work" );
+  declareProcedure( dbm_rewind_t, "dbm.rewind" );
+  declareProcedure( dbm_fetch_t, "dbm.fetch" );
+  declareFunction(  dbm_end_of_query_t, "dbm.end_of_query" );
+  declareFunction(  dbm_tuple_t, "dbm.tuple" );
+  declareFunction(  dbm_tuples_t, "dbm.tuples" );
+  declareFunction(  dbm_columns_t, "dbm.columns" );
+  declareFunction(  dbm_column_name_t, "dbm.column_name" );
+  declareFunction(  dbm_column_index_t, "dbm.column_index" );
+  --declareFunction(  dbm_column_type_t, "dbm.column_type" );
+  declareFunction(  dbm_is_null_t, "dbm.is_null" );
+  declareFunction(  dbm_value_t, "dbm.value" );
+  declareFunction(  db_engine_of_t, "dbm.engine_of" );
+  declareProcedure( dbm_show_t, "dbm.show" );
+  declareProcedure( dbm_list_t, "dbm.list" );
+  declareProcedure( dbm_schema_t, "dbm.schema" );
+  declareProcedure( dbm_users_t, "dbm.users" );
+  declareProcedure( dbm_databases_t, "dbm.databases" );
+
+  declareProcedure( dbm_fetch_values_t, "dbm.fetch_values", ParseDBMFetchValues'access );
+  declareProcedure( dbm_append_for_insert_t, "dbm.append_for_insert", ParseDBMAppendForInsert'access );
+  declareProcedure( dbm_append_for_update_t, "dbm.append_for_update", ParseDBMAppendForUpdate'access );
+
+  --declareFunction( db_do_t, "db.do" );
+  --declareFunction( db_fetchrow_t, "dbi.fetchrow" );
+
+  --declareFunction( dbi_prepare_t, "dbi.prepare" );
+
+  declareNamespaceClosed( "dbm" );
+end StartupDBM;
+
+procedure ShutdownDBM is
+begin
+  null;
+end ShutdownDBM;
+
+end parser_dbm;

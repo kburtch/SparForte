@@ -217,6 +217,19 @@ begin
 #end if;
   elsif rp.rt = mysql_query then
      Free( rp );
+  elsif rp.rt = postgresql_connection then
+#if POSTGRES
+     if APQ.PostgreSQL.Client.is_trace( rp.PG_C ) then
+        APQ.PostgreSQL.Client.close_Db_Trace( rp.PG_C );
+     end if;
+     if APQ.PostgreSQL.Client.is_connected( rp.PG_C ) then
+        APQ.PostgreSQL.Client.disconnect( rp.PG_C );
+     end if;
+#else
+     null;
+#end if;
+  elsif rp.rt = postgresql_query then
+     Free( rp );
   elsif rp.rt = directory then
      if is_open( rp.dir ) then
         close( rp.dir );

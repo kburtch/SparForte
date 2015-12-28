@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2013 Free Software Foundation              --
+--            Copyright (C) 2001-2015 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -17,7 +17,7 @@
 -- to  the Free Software Foundation,  59 Temple Place - Suite 330,  Boston, --
 -- MA 02111-1307, USA.                                                      --
 --                                                                          --
--- This is maintained at http://www.pegasoft.ca                             --
+-- This is maintained at http://www.sparforte.com                           --
 --                                                                          --
 ------------------------------------------------------------------------------
 
@@ -54,6 +54,7 @@ with system,
     parser_cgi,
     parser_cmd,
     parser_db,
+    parser_dbm,
     parser_mysql,
     parser_mysqlm,
     parser_files,
@@ -98,6 +99,7 @@ use ada.text_io,
     parser_cgi,
     parser_cmd,
     parser_db,
+    parser_dbm,
     parser_mysql,
     parser_mysqlm,
     parser_files,

@@ -30,6 +30,9 @@ with gen_list,
      Interfaces.C,
      Gnat.Directory_Operations,
      Gnat.Dynamic_HTables,
+#if POSTGRES
+     APQ.PostgreSQL.Client,
+#end if;
 #if MYSQL
      APQ.MySQL.Client,
 #end if;
@@ -176,13 +179,13 @@ type resHandle( rt : aResourceType ) is record
 #end if;
      when postgresql_connection =>
 #if POSTGRES
-          null; -- c : APQ.PostgreSQL.Client.Connection_Type;
+          pg_c : APQ.PostgreSQL.Client.Connection_Type;
 #else
           null; -- PostgreSQL support not enabled
 #end if;
      when postgresql_query =>
 #if POSTGRES
-          null; -- q : APQ.PostgreSQL.Client.Query_Type;
+          pg_q : APQ.PostgreSQL.Client.Query_Type;
 #else
           null; -- PostgreSQL support not enabled
 #end if;
