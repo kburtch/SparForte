@@ -194,10 +194,7 @@ begin
   err( "mysql support not configured" );
 end not_configured;
 
-procedure ParseMySQLMConnect is
-begin
-  not_configured;
-end ParseMySQLMConnect;
+procedure ParseMySQLMConnect renames not_configured;
 
 #end if;
 #if MYSQL

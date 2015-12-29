@@ -113,8 +113,6 @@ procedure ShutdownMySQL;
 -- PARSE THE DATABASE PACKAGE
 ------------------------------------------------------------------------------
 
-#if MYSQL
-
 procedure ParseMySQLConnect;
 procedure ParseMySQLPrepare;
 procedure ParseMySQLAppend;
@@ -167,7 +165,5 @@ procedure DoMySQLSQLStatement( sqlcmd : unbounded_string );
 --procedure ParseDBIPrepare( result : out unbounded_string );
 --procedure ParseDBDo( result : out unbounded_string );
 --procedure ParseDBFetchrow( result : out unbounded_string );
-
-#end if;
 
 end parser_mysql;

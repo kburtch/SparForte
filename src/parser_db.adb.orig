@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2015 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -17,7 +17,7 @@
 -- to  the Free Software Foundation,  59 Temple Place - Suite 330,  Boston, --
 -- MA 02111-1307, USA.                                                      --
 --                                                                          --
--- This is maintained at http://www.pegasoft.ca                             --
+-- This is maintained at http://www.sparforte.com                           --
 --                                                                          --
 ------------------------------------------------------------------------------
 
@@ -34,7 +34,8 @@ with ada.io_exceptions,
      user_io,
      scanner,
      parser,
-     parser_aux;
+     parser_aux,
+     parser_params;
 use  ada.io_exceptions,
      ada.strings.unbounded,
 #if POSTGRES
@@ -49,7 +50,8 @@ use  ada.io_exceptions,
      user_io,
      scanner,
      parser,
-     parser_aux;
+     parser_aux,
+     parser_params;
 
 package body parser_db is
 
@@ -75,37 +77,23 @@ procedure ParseDBConnect is
   portType : identifier;
   hasPort  : boolean := false;
 begin
-  -- temporary limitation: only one database open at a time...
   expect( db_connect_t );
   if engineOpen then
-     err( "only one database connection may be open (a limitation of this verison of bush)" );
+     err( "only one database connection may be open" );
      return;
   end if;
-  expect( symbol_t, "(" );
-  ParseExpression( dbnameExpr, dbnameType );
-  if baseTypesOK( string_t, dbnameType ) then
+  ParseFirstStringParameter( dbnameExpr, dbnameType, string_t );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseNextStringParameter( userExpr, userType, string_t );
+     hasUser := true;
      if token = symbol_t and identifiers( token ).value = "," then
-        expect( symbol_t, "," );
-        ParseExpression( userExpr, userType );
-        if baseTypesOK( string_t, userType ) then
-           hasUser := true;
-           expect( symbol_t, "," );
-           ParseExpression( pswdExpr, pswdType );
-           if baseTypesOK( string_t, pswdType ) then
-              if token = symbol_t and identifiers( token ).value = "," then
-                 expect( symbol_t, "," );
-                 ParseExpression( hostExpr, hostType );
-                 if baseTypesOK( string_t, hostType ) then
-                    hasHost := true;
-                    if token = symbol_t and identifiers( token ).value = "," then
-                       expect( symbol_t, "," );
-                       ParseExpression( portExpr, portType );
-                       if baseTypesOK( integer_t, portType ) then
-                          hasPort := true;
-                       end if;
-                    end if;
-                 end if;
-              end if;
+        ParseNextStringParameter( pswdExpr, pswdType, string_t );
+        if token = symbol_t and identifiers( token ).value = "," then
+           ParseNextStringParameter( hostExpr, hostType, string_t );
+           hasHost := true;
+           if token = symbol_t and identifiers( token ).value = "," then
+              ParseNextNumericParameter( portExpr, portType, integer_t );
+              hasPort := true;
            end if;
         end if;
      end if;
@@ -158,16 +146,41 @@ begin
         end if;
      when already_connected =>
         err( "already connected to database" );
+     when STORAGE_ERROR =>
+        err( "out-of-memory or bad pointer" );
+     when CONSTRAINT_ERROR =>
+        err( "constraint error exception" );
      when others =>
         err( "exception raised" );
      end;
   end if;
 end ParseDBConnect;
 
-procedure ParseDBEngineOf( result : out unbounded_string ) is
+#else
+
+pragma warnings( off );
+-- Hide unused parameters warnings
+
+procedure not_configured is
+begin
+  err( "PostgreSQL support not configured" );
+end not_configured;
+
+procedure not_configured( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "PostgreSQL support not configured" );
+end not_configured;
+
+procedure ParseDBConnect renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBEngineOf( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := db.engine_of;
   -- Source: APQ.Engine_Of
 begin
+  kind := db_database_type_t;
   expect( db_engine_of_t );
   if isExecutingCommand then
      begin
@@ -183,41 +196,49 @@ begin
   end if;
 end ParseDBEngineOf;
 
-procedure ParseDBIPrepare( result : out unbounded_string ) is
-  -- Syntax: db.prepare( sqlstmt [,after] );
-  sqlExpr   : unbounded_string;
-  sqlType   : identifier;
-  afterExpr : unbounded_string;
-  afterType : identifier;
-  hasAfter  : boolean := false;
-begin
-  expect( db_prepare_t );
-  expect( symbol_t, "(" );
-  ParseExpression( sqlExpr, sqlType );
-  if baseTypesOK( string_t, sqlType ) then
-     if token = symbol_t and identifiers( token ).value = "," then
-        expect( symbol_t, "," );
-        ParseExpression( afterExpr, afterType );
-        if baseTypesOK( string_t, sqlType ) then
-           hasAfter := true;
-        end if;
-     end if;
-  end if;
-  expect( symbol_t, ")" );
-  if isExecutingCommand then
-     result := to_bush_boolean( true );
-     begin
-       Clear( Q );
-       if hasAfter then
-          Prepare( Q, to_string( sqlExpr ), to_string( afterExpr ) );
-       else
-          Prepare( Q, to_string( sqlExpr ) );
-       end if;
-     exception when others =>
-       result := to_bush_boolean( false );
-     end;
-  end if;
-end ParseDBIPrepare;
+#else
+
+procedure ParseDBEngineOf( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+-- this is not used
+--procedure ParseDBIPrepare( result : out unbounded_string ) is
+--  -- Syntax: db.prepare( sqlstmt [,after] );
+--  sqlExpr   : unbounded_string;
+--  sqlType   : identifier;
+--  afterExpr : unbounded_string;
+--  afterType : identifier;
+--  hasAfter  : boolean := false;
+--begin
+--  expect( db_prepare_t );
+--  expect( symbol_t, "(" );
+--  ParseExpression( sqlExpr, sqlType );
+--  if baseTypesOK( string_t, sqlType ) then
+--     if token = symbol_t and identifiers( token ).value = "," then
+--        expect( symbol_t, "," );
+--        ParseExpression( afterExpr, afterType );
+--        if baseTypesOK( string_t, sqlType ) then
+--           hasAfter := true;
+--        end if;
+--     end if;
+--  end if;
+--  expect( symbol_t, ")" );
+--  if isExecutingCommand then
+--     result := to_bush_boolean( true );
+--     begin
+--       Clear( Q );
+--       if hasAfter then
+--          Prepare( Q, to_string( sqlExpr ), to_string( afterExpr ) );
+--       else
+--          Prepare( Q, to_string( sqlExpr ) );
+--       end if;
+--     exception when others =>
+--       result := to_bush_boolean( false );
+--     end;
+--  end if;
+--end ParseDBIPrepare;
 
 procedure ParseDBPrepare is
   -- Syntax: db.prepare( sqlstmt [,after] );
@@ -228,16 +249,10 @@ procedure ParseDBPrepare is
   hasAfter  : boolean := false;
 begin
   expect( db_prepare_t );
-  expect( symbol_t, "(" );
-  ParseExpression( sqlExpr, sqlType );
-  if baseTypesOK( string_t, sqlType ) then
-     if token = symbol_t and identifiers( token ).value = "," then
-        expect( symbol_t, "," );
-        ParseExpression( afterExpr, afterType );
-        if baseTypesOK( string_t, afterType ) then
-           hasAfter := true;
-        end if;
-     end if;
+  ParseFirstStringParameter( sqlExpr, sqlType, string_t );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseNextStringParameter( afterExpr, afterType, string_t );
+     hasAfter := true;
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -253,6 +268,13 @@ begin
   end if;
 end ParseDBPrepare;
 
+#else
+
+procedure ParseDBPrepare renames not_configured;
+
+#end if;
+#if POSTGRES
+
 procedure ParseDBAppend is
   -- Syntax: db.append( sqlstmt [,after] );
   sqlExpr   : unbounded_string;
@@ -262,16 +284,10 @@ procedure ParseDBAppend is
   hasAfter  : boolean := false;
 begin
   expect( db_append_t );
-  expect( symbol_t, "(" );
-  ParseExpression( sqlExpr, sqlType );
-  if baseTypesOK( string_t, sqlType ) then
-     if token = symbol_t and identifiers( token ).value = "," then
-        expect( symbol_t, "," );
-        ParseExpression( afterExpr, afterType );
-        if baseTypesOK( string_t, afterType ) then
-           hasAfter := true;
-        end if;
-     end if;
+  ParseFirstStringParameter( sqlExpr, sqlType, string_t );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseNextStringParameter( afterExpr, afterType, string_t );
+     hasAfter := true;
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -287,17 +303,20 @@ begin
   end if;
 end ParseDBAppend;
 
+#else
+
+procedure ParseDBAppend renames not_configured;
+
+#end if;
+#if POSTGRES
+
 procedure ParseDBAppendLine is
   -- Syntax: db.append_line( sqlstmt );
   sqlExpr   : unbounded_string;
   sqlType   : identifier;
 begin
   expect( db_append_line_t );
-  expect( symbol_t, "(" );
-  ParseExpression( sqlExpr, sqlType );
-  if baseTypesOK( string_t, sqlType ) then
-     expect( symbol_t, ")" );
-  end if;
+  ParseSingleStringParameter( sqlExpr, sqlType, string_t );
   if isExecutingCommand then
      begin
        Append_Line( Q, to_string( sqlExpr ) );
@@ -306,6 +325,13 @@ begin
      end;
   end if;
 end ParseDBAppendLine;
+
+#else
+
+procedure ParseDBAppendLine renames not_configured;
+
+#end if;
+#if POSTGRES
 
 procedure ParseDBAppendQuoted is
   -- Syntax: db.append_quoted( sqlstmt [,after] );
@@ -316,18 +342,10 @@ procedure ParseDBAppendQuoted is
   hasAfter  : boolean := false;
 begin
   expect( db_append_quoted_t );
-  expect( symbol_t, "(" );
-  ParseExpression( sqlExpr, sqlType );
-  if baseTypesOK( sqlType, string_t ) then
-     if token = symbol_t and identifiers( token ).value = "," then
-        expect( symbol_t, "," );
-        hasAfter := true;
-        ParseExpression( afterExpr, afterType );
-        if baseTypesOK( afterType, string_t ) then
-           null;
-        end if;
-     end if;
-     expect( symbol_t, ")" );
+  ParseFirstStringParameter( sqlExpr, sqlType, string_t );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseNextStringParameter( afterExpr, afterType, string_t );
+     hasAfter := true;
   end if;
   if isExecutingCommand then
      begin
@@ -341,6 +359,13 @@ begin
      end;
   end if;
 end ParseDBAppendQuoted;
+
+#else
+
+procedure ParseDBAppendQuoted renames not_configured;
+
+#end if;
+#if POSTGRES
 
 procedure ParseDBExecute is
 begin
@@ -360,6 +385,13 @@ begin
   end if;
 end ParseDBExecute;
 
+#else
+
+procedure ParseDBExecute renames not_configured;
+
+#end if;
+#if POSTGRES
+
 procedure ParseDBExecuteChecked is
   -- Syntax: db.execute_checked( [ msg ] );
   msgExpr   : unbounded_string;
@@ -368,11 +400,7 @@ procedure ParseDBExecuteChecked is
 begin
   expect( db_execute_checked_t );
   if token = symbol_t and identifiers( token ).value = "(" then
-     expect( symbol_t, "(" );
-     ParseExpression( msgExpr, msgType );
-     if baseTypesOK( string_t, msgType ) then
-        expect( symbol_t, ")" );
-     end if;
+     ParseSingleStringParameter( msgExpr, msgType, string_t );
      hasMsg := true;
   end if;
   if isExecutingCommand then
@@ -394,6 +422,12 @@ begin
   end if;
 end ParseDBExecuteChecked;
 
+#else
+
+procedure ParseDBExecuteChecked renames not_configured;
+
+#end if;
+
 --procedure ParseDBDo( result : out unbounded_string ) is
 --begin
 --  expect( db_do_t );
@@ -405,6 +439,8 @@ end ParseDBExecuteChecked;
 --  expect( db_fetchrow_t );
 --  result := null_unbounded_string;
 --end ParseDBFetchrow;
+
+#if POSTGRES
 
 procedure ParseDBDisconnect is
   -- Syntax: db.disconnect;
@@ -424,9 +460,17 @@ begin
   end if;
 end ParseDBDisconnect;
 
-procedure ParseDBIsConnected( result : out unbounded_string ) is
+#else
+
+procedure ParseDBDisconnect renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBIsConnected( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: db.is_connected
 begin
+  kind := boolean_t;
   expect( db_is_connected_t );
   if isExecutingCommand then
      begin
@@ -436,6 +480,13 @@ begin
      end;
   end if;
 end ParseDBIsConnected;
+
+#else
+
+procedure ParseDBIsConnected( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
 
 procedure ParseDBReset is
   -- Syntax: db.reset
@@ -451,10 +502,18 @@ begin
   end if;
 end ParseDBReset;
 
-procedure ParseDBErrorMessage( result : out unbounded_string ) is
+#else
+
+procedure ParseDBReset renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBErrorMessage( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: db.error_message
   -- Source: APQ.Error_Message
 begin
+  kind := string_t;
   expect( db_error_message_t );
   if isExecutingCommand then
      begin
@@ -465,10 +524,18 @@ begin
   end if;
 end ParseDBErrorMessage;
 
-procedure ParseDBNoticeMessage( result : out unbounded_string ) is
+#else
+
+procedure ParseDBErrorMessage( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBNoticeMessage( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: db.notice_message
   -- Source: APQ.Notice_Message
 begin
+  kind := string_t;
   expect( db_notice_message_t );
   if isExecutingCommand then
      begin
@@ -479,10 +546,18 @@ begin
   end if;
 end ParseDBNoticeMessage;
 
-procedure ParseDBInAbortState( result : out unbounded_string ) is
-  -- Syntax: db.in_abort_state
+#else
+
+procedure ParseDBNoticeMessage( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBInAbortState( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: b := db.in_abort_state
   -- Source: APQ.In_Abort_State
 begin
+  kind := boolean_t;
   expect( db_in_abort_state_t );
   if isExecutingCommand then
      begin
@@ -495,10 +570,18 @@ begin
   end if;
 end ParseDBInAbortState;
 
-procedure ParseDBOptions( result : out unbounded_string ) is
+#else
+
+procedure ParseDBInAbortState( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBOptions( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: db.options
   -- Source: APQ.Options
 begin
+  kind := string_t;
   expect( db_options_t );
   if isExecutingCommand then
      begin
@@ -509,6 +592,13 @@ begin
   end if;
 end ParseDBOptions;
 
+#else
+
+procedure ParseDBOptions( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
 procedure ParseDBSetRollbackOnFinalize is
   -- Syntax: db.set_rollback_on_finalize( b );
   -- Source: APQ.Set_Rollback_On_Finalize
@@ -516,11 +606,7 @@ procedure ParseDBSetRollbackOnFinalize is
   rollType : identifier;
 begin
   expect( db_set_rollback_on_finalize_t );
-  expect( symbol_t, "(" );
-  ParseExpression( rollExpr, rollType );
-  if baseTypesOK( rollType, boolean_t ) then
-     expect( symbol_t, ")" );
-  end if;
+  ParseSingleEnumParameter( rollExpr, rollType, boolean_t );
   if isExecutingCommand then
      declare
        rollback : boolean := rollExpr = to_unbounded_string( "1" );
@@ -532,10 +618,18 @@ begin
   end if;
 end ParseDBSetRollbackOnFinalize;
 
-procedure ParseDBWillRollbackOnFinalize( result : out unbounded_string ) is
-  -- Syntax: db.will_rollback_on_finalize( b );
+#else
+
+procedure ParseDBSetRollbackOnFinalize renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: b := db.will_rollback_on_finalize( b );
   -- Source: APQ.Will_Rollback_On_Finalize
 begin
+  kind := boolean_t;
   expect( db_will_rollback_on_finalize_t );
   if isExecutingCommand then
      begin
@@ -545,6 +639,13 @@ begin
      end;
   end if;
 end ParseDBWillRollbackOnFinalize;
+
+#else
+
+procedure ParseDBWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
 
 procedure ParseDBOpenDBTrace is
   -- Syntax: db.open_db_trace( f [,m] );
@@ -557,18 +658,11 @@ procedure ParseDBOpenDBTrace is
   hasMode  : boolean := false;
 begin
   expect( db_open_db_trace_t );
-  expect( symbol_t, "(" );
-  ParseExpression( fnameExpr, fnameType );
-  if baseTypesOK( fnameType, string_t ) then
-     if token = symbol_t and identifiers( token ).value = "," then
-        expect( symbol_t, "," );
-        ParseExpression( modeExpr, modeType );
-        if baseTypesOK( modeType, db_trace_mode_type_t ) then
-           traceMode := Trace_Mode_Type'val( integer'value( ' ' & to_string( modeExpr ) ) );
-           hasMode := true;
-        end if;
-     end if;
-     expect( symbol_t, ")" );
+  ParseFirstStringParameter( fnameExpr, fnameType, string_t );
+  if token = symbol_t and identifiers( token ).value = "," then
+     ParseNextStringParameter( modeExpr, modeType, db_trace_mode_type_t );
+     traceMode := Trace_Mode_Type'val( integer'value( ' ' & to_string( modeExpr ) ) );
+     hasMode := true;
   end if;
   if isExecutingCommand then
      begin
@@ -589,6 +683,13 @@ begin
   end if;
 end ParseDBOpenDBTrace;
 
+#else
+
+procedure ParseDBOpenDBTrace renames not_configured;
+
+#end if;
+#if POSTGRES
+
 procedure ParseDBCloseDBTrace is
   -- Syntax: db.close_db_trace( f );
   -- Source: APQ.Close_DB_Trace
@@ -603,6 +704,13 @@ begin
   end if;
 end ParseDBCloseDBTrace;
 
+#else
+
+procedure ParseDBCloseDBTrace renames not_configured;
+
+#end if;
+#if POSTGRES
+
 procedure ParseDBSetTrace is
   -- Syntax: db.set_trace( b );
   -- Source: APQ.Set_Trace
@@ -610,11 +718,7 @@ procedure ParseDBSetTrace is
   traceType : identifier;
 begin
   expect( db_set_trace_t );
-  expect( symbol_t, "(" );
-  ParseExpression( traceExpr, traceType );
-  if baseTypesOK( traceType, boolean_t ) then
-     expect( symbol_t, ")" );
-  end if;
+  ParseSingleEnumParameter( traceExpr, traceType, boolean_t );
   if isExecutingCommand then
      declare
        traceback : boolean := traceExpr = to_unbounded_string( "1" );
@@ -626,10 +730,18 @@ begin
   end if;
 end ParseDBSetTrace;
 
-procedure ParseDBIsTrace( result : out unbounded_string ) is
-  -- Syntax: db.is_trace( b );
+#else
+
+procedure ParseDBSetTrace renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBIsTrace( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: b := db.is_trace( b );
   -- Source: APQ.Is_Trace
 begin
+  kind := boolean_t;
   expect( db_is_trace_t );
   if isExecutingCommand then
      begin
@@ -639,6 +751,13 @@ begin
      end;
   end if;
 end ParseDBIsTrace;
+
+#else
+
+procedure ParseDBIsTrace( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
 
 procedure ParseDBClear is
   -- Syntax: db.clear;
@@ -654,6 +773,13 @@ begin
   end if;
 end ParseDBClear;
 
+#else
+
+procedure ParseDBClear renames not_configured;
+
+#end if;
+#if POSTGRES
+
 procedure ParseDBRaiseExceptions is
   -- Syntax: db.raise_exceptions( [ b ] );
   -- Source: APQ.Raise_Exceptions
@@ -662,11 +788,7 @@ procedure ParseDBRaiseExceptions is
 begin
   expect( db_raise_exceptions_t );
   if token = symbol_t and identifiers( token ).value = "(" then
-     expect( symbol_t, "(" );
-     ParseExpression( raiseExpr, raiseType );
-     if baseTypesOK( raiseType, boolean_t ) then
-        expect( symbol_t, ")" );
-     end if;
+     ParseSingleEnumParameter( raiseExpr, raiseType, boolean_t );
   else
      raiseExpr := to_unbounded_string( "1" );
   end if;
@@ -681,6 +803,13 @@ begin
   end if;
 end ParseDBRaiseExceptions;
 
+#else
+
+procedure ParseDBRaiseExceptions renames not_configured;
+
+#end if;
+#if POSTGRES
+
 procedure ParseDBReportErrors is
   -- Syntax: db.report_errors( [ b ] );
   -- Source: APQ.Report_Errors
@@ -689,11 +818,7 @@ procedure ParseDBReportErrors is
 begin
   expect( db_report_errors_t );
   if token = symbol_t and identifiers( token ).value = "(" then
-     expect( symbol_t, "(" );
-     ParseExpression( reportExpr, reportType );
-     if baseTypesOK( reportType, boolean_t ) then
-        expect( symbol_t, ")" );
-     end if;
+     ParseSingleStringParameter( reportExpr, reportType, boolean_t );
   else
      reportExpr := to_unbounded_string( "1" );
   end if;
@@ -707,6 +832,13 @@ begin
      end;
   end if;
 end ParseDBReportErrors;
+
+#else
+
+procedure ParseDBReportErrors renames not_configured;
+
+#end if;
+#if POSTGRES
 
 procedure ParseDBBeginWork is
   -- Syntax: db.begin_work;
@@ -726,6 +858,13 @@ begin
   end if;
 end ParseDBBeginWork;
 
+#else
+
+procedure ParseDBBeginWork renames not_configured;
+
+#end if;
+#if POSTGRES
+
 procedure ParseDBRollbackWork is
   -- Syntax: db.rollback_work;
   -- Source: APQ.Rollback_Work
@@ -743,6 +882,13 @@ begin
      end;
   end if;
 end ParseDBRollbackWork;
+
+#else
+
+procedure ParseDBRollbackWork renames not_configured;
+
+#end if;
+#if POSTGRES
 
 procedure ParseDBCommitWork is
   -- Syntax: db.commit_work;
@@ -762,6 +908,13 @@ begin
   end if;
 end ParseDBCommitWork;
 
+#else
+
+procedure ParseDBCommitWork renames not_configured;
+
+#end if;
+#if POSTGRES
+
 procedure ParseDBRewind is
   -- Syntax: db.rewind;
   -- Source: APQ.Rewind
@@ -776,6 +929,13 @@ begin
   end if;
 end ParseDBRewind;
 
+#else
+
+procedure ParseDBRewind renames not_configured;
+
+#end if;
+#if POSTGRES
+
 procedure ParseDBFetch is
   -- Syntax: db.fetch;
   -- Source: APQ.Fetch
@@ -785,12 +945,8 @@ procedure ParseDBFetch is
 begin
   expect( db_fetch_t );
   if token = symbol_t and identifiers( token ).value = "(" then
-     expect( symbol_t, "(" );
-     parseExpression( expr_val, expr_type );
-     if baseTypesOK( expr_type, db_tuple_index_type_t ) then
-        expect( symbol_t, ")" );
-        haveIndex := true;
-     end if;
+     ParseSingleNumericParameter( expr_val, expr_type, db_tuple_index_type_t );
+     haveIndex := true;
   end if;
   if isExecutingCommand then
      begin
@@ -809,10 +965,18 @@ begin
   end if;
 end ParseDBFetch;
 
-procedure ParseDBEndOfQuery( result : out unbounded_string ) is
+#else
+
+procedure ParseDBFetch renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBEndOfQuery( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := db.end_of_query;
   -- Source: APQ.End_Of_Query
 begin
+  kind := boolean_t;
   expect( db_end_of_query_t );
   if isExecutingCommand then
      begin
@@ -823,10 +987,18 @@ begin
   end if;
 end ParseDBEndOfQuery;
 
-procedure ParseDBTuple( result : out unbounded_string ) is
+#else
+
+procedure ParseDBEndOfQuery( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBTuple( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: t := db.tuple;
   -- Source: APQ.Tuple
 begin
+  kind := db_tuple_index_type_t;
   expect( db_tuple_t );
   if isExecutingCommand then
      begin
@@ -839,10 +1011,18 @@ begin
   end if;
 end ParseDBTuple;
 
-procedure ParseDBTuples( result : out unbounded_string ) is
+#else
+
+procedure ParseDBTuple( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBTuples( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := db.tuples;
   -- Source: APQ.Tuples
 begin
+  kind := db_tuple_count_type_t;
   expect( db_tuples_t );
   if isExecutingCommand then
      begin
@@ -855,10 +1035,18 @@ begin
   end if;
 end ParseDBTuples;
 
-procedure ParseDBColumns( result : out unbounded_string ) is
+#else
+
+procedure ParseDBTuples( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBColumns( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := db.columns;
   -- Source: APQ.Columns
 begin
+  kind := natural_t;
   expect( db_columns_t );
   if isExecutingCommand then
      begin
@@ -871,18 +1059,22 @@ begin
   end if;
 end ParseDBColumns;
 
-procedure ParseDBColumnName( result : out unbounded_string ) is
+#else
+
+procedure ParseDBColumns( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBColumnName( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := db.column_Name;
   -- Source: APQ.Column_Name;
   exprVal : unbounded_string;
   exprType : identifier;
 begin
+  kind := string_t;
   expect( db_column_name_t );
-  expect( symbol_t, "(" );
-  ParseExpression( exprVal, exprType );
-  if baseTypesOK( exprType, db_column_index_type_t ) then
-     expect( symbol_t, ")" );
-  end if;
+  ParseSingleNumericParameter( exprVal, exprType, db_column_index_type_t );
   if isExecutingCommand then
      begin
        result := to_unbounded_string(
@@ -896,18 +1088,22 @@ begin
   end if;
 end ParseDBColumnName;
 
-procedure ParseDBColumnIndex( result : out unbounded_string ) is
+#else
+
+procedure ParseDBColumnName( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBColumnIndex( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := db.column_index;
   -- Source: APQ.Column_Index
   exprVal : unbounded_string;
   exprType : identifier;
 begin
+  kind := db_column_index_type_t;
   expect( db_column_index_t );
-  expect( symbol_t, "(" );
-  ParseExpression( exprVal, exprType );
-  if baseTypesOK( exprType, string_t ) then
-     expect( symbol_t, ")" );
-  end if;
+  ParseSingleStringParameter( exprVal, exprType, string_t );
   if isExecutingCommand then
      begin
        result := to_unbounded_string( Column_Index_Type'image(
@@ -920,6 +1116,12 @@ begin
      end;
   end if;
 end ParseDBColumnIndex;
+
+#else
+
+procedure ParseDBColumnIndex( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
 
 --procedure ParseDBColumnType( result : out unbounded_string ) is
   -- Syntax: n := db.column_type;
@@ -949,18 +1151,17 @@ end ParseDBColumnIndex;
   --end if;
 --end ParseDBColumnType;
 
-procedure ParseDBIsNull( result : out unbounded_string ) is
+#if POSTGRES
+
+procedure ParseDBIsNull( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := db.is_null;
   -- Source: APQ.Is_Null;
   exprVal : unbounded_string;
   exprType : identifier;
 begin
+  kind := boolean_t;
   expect( db_is_null_t );
-  expect( symbol_t, "(" );
-  ParseExpression( exprVal, exprType );
-  if baseTypesOK( exprType, db_column_index_type_t ) then
-     expect( symbol_t, ")" );
-  end if;
+  ParseSingleNumericParameter( exprVal, exprType, db_column_index_type_t );
   if isExecutingCommand then
      begin
        result := to_bush_boolean(
@@ -977,18 +1178,22 @@ begin
   end if;
 end ParseDBIsNull;
 
-procedure ParseDBValue( result : out unbounded_string ) is
+#else
+
+procedure ParseDBIsNull( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
+
+procedure ParseDBValue( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := db.value;
   -- Source: APQ.Value;
   exprVal  : unbounded_string;
   exprType : identifier;
 begin
+  kind := universal_t;
   expect( db_value_t );
-  expect( symbol_t, "(" );
-  ParseExpression( exprVal, exprType );
-  if baseTypesOK( exprType, db_column_index_type_t ) then
-     expect( symbol_t, ")" );
-  end if;
+  ParseSingleNumericParameter( exprVal, exprType, db_column_index_type_t );
   if isExecutingCommand then
      begin
        result := Value( Q, Column_Index_Type( to_numeric( exprVal ) ) );
@@ -1005,6 +1210,13 @@ begin
      end;
   end if;
 end ParseDBValue;
+
+#else
+
+procedure ParseDBValue( result : out unbounded_string; kind : out identifier ) renames not_configured;
+
+#end if;
+#if POSTGRES
 
 procedure DBShowIt is
 -- run SQL command and display results in tabular format
@@ -1178,6 +1390,13 @@ begin
   expect( db_show_t );
   DBShowIt;
 end ParseDBShow;
+
+#else
+
+procedure ParseDBShow renames not_configured;
+
+#end if;
+#if POSTGRES
 
 function pg_kind_to_string( kind : string ) return string is
 -- convert the pg_class table's pg_relkind code to a readable string
@@ -1481,6 +1700,13 @@ begin
   end if;
 end ParseDBList;
 
+#else
+
+procedure ParseDBList renames not_configured;
+
+#end if;
+#if POSTGRES
+
 procedure ParseDBSchema is
   -- Syntax: db.schema( "table" );
   -- Source: N/A
@@ -1735,6 +1961,13 @@ begin
   end if;
 end ParseDBSchema;
 
+#else
+
+procedure ParseDBSchema renames not_configured;
+
+#end if;
+#if POSTGRES
+
 procedure ParseDBUsers is
   -- Syntax: db.users
   -- Source: N/A
@@ -1923,6 +2156,13 @@ begin
   end if;
 end ParseDBUsers;
 
+#else
+
+procedure ParseDBUsers renames not_configured;
+
+#end if;
+#if POSTGRES
+
 procedure ParseDBDatabases is
   -- Syntax: db.databases
   -- Source: N/A
@@ -2100,6 +2340,13 @@ begin
   end if;
 end ParseDBDatabases;
 
+#else
+
+procedure ParseDBDatabases renames not_configured;
+
+#end if;
+#if POSTGRES
+
 procedure DoSQLSelect( sqlcmd : unbounded_string ) is
 begin
   if isExecutingCommand then
@@ -2107,6 +2354,16 @@ begin
      DBShowIt;
   end if;
 end DoSQLSelect;
+
+#else
+
+procedure DoSQLSelect( sqlcmd : unbounded_string ) is
+begin
+  err( "PostgreSQL support not configured" );
+end DoSQLSelect;
+
+#end if;
+#if POSTGRES
 
 procedure DoSQLStatement( sqlcmd : unbounded_string ) is
 begin
@@ -2124,6 +2381,13 @@ begin
        err( "exception raised" );
      end;
   end if;
+end DoSQLStatement;
+
+#else
+
+procedure DoSQLStatement( sqlcmd : unbounded_string ) is
+begin
+  err( "PostgreSQL support not configured" );
 end DoSQLStatement;
 
 #end if;
@@ -2180,49 +2444,49 @@ begin
   declareStandardConstant( db_engine_db2_t, "db.engine_db2",
     db_database_type_t, "4" );
 
-  declareProcedure( db_connect_t, "db.connect" );
-  declareProcedure( db_disconnect_t, "db.disconnect" );
-  declareFunction( db_is_connected_t, "db.is_connected" );
-  declareProcedure( db_reset_t, "db.reset" );
-  declareFunction( db_error_message_t, "db.error_message" );
-  declareFunction( db_notice_message_t, "db.notice_message" );
-  declareFunction( db_in_abort_state_t, "db.in_abort_state" );
-  declareFunction( db_options_t, "db.options" );
-  declareFunction( db_will_rollback_on_finalize_t, "db.will_rollback_on_finalize" );
-  declareProcedure( db_set_rollback_on_finalize_t, "db.set_rollback_on_finalize" );
-  declareProcedure( db_open_db_trace_t, "db.open_db_trace" );
-  declareProcedure( db_close_db_trace_t, "db.close_db_trace" );
-  declareProcedure( db_set_trace_t, "db.set_trace" );
-  declareFunction( db_is_trace_t, "db.is_trace" );
-  declareProcedure( db_clear_t, "db.clear" );
-  declareProcedure( db_prepare_t, "db.prepare" );
-  declareProcedure( db_append_t, "db.append" );
-  declareProcedure( db_append_line_t, "db.append_line" );
-  declareProcedure( db_append_quoted_t, "db.append_quoted" );
-  declareProcedure( db_execute_t, "db.execute" );
-  declareProcedure( db_execute_checked_t, "db.execute_checked" );
-  declareProcedure( db_raise_exceptions_t, "db.raise_exceptions" );
-  declareProcedure( db_report_errors_t, "db.report_errors" );
-  declareProcedure( db_begin_work_t, "db.begin_work" );
-  declareProcedure( db_commit_work_t, "db.commit_work" );
-  declareProcedure( db_rollback_work_t, "db.rollback_work" );
-  declareProcedure( db_rewind_t, "db.rewind" );
-  declareProcedure( db_fetch_t, "db.fetch" );
-  declareFunction( db_end_of_query_t, "db.end_of_query" );
-  declareFunction( db_tuple_t, "db.tuple" );
-  declareFunction( db_tuples_t, "db.tuples" );
-  declareFunction( db_columns_t, "db.columns" );
-  declareFunction( db_column_name_t, "db.column_name" );
-  declareFunction( db_column_index_t, "db.column_index" );
-  declareFunction( db_column_type_t, "db.column_type" );
-  declareFunction( db_is_null_t, "db.is_null" );
-  declareFunction( db_value_t, "db.value" );
-  declareFunction( db_engine_of_t, "db.engine_of" );
-  declareProcedure( db_show_t, "db.show" );
-  declareProcedure( db_list_t, "db.list" );
-  declareProcedure( db_schema_t, "db.schema" );
-  declareProcedure( db_users_t, "db.users" );
-  declareProcedure( db_databases_t, "db.databases" );
+  declareProcedure( db_connect_t, "db.connect", ParseDBConnect'access );
+  declareProcedure( db_disconnect_t, "db.disconnect", ParseDBDisconnect'access );
+  declareFunction(  db_is_connected_t, "db.is_connected", ParseDBIsConnected'access );
+  declareProcedure( db_reset_t, "db.reset", ParseDBReset'access );
+  declareFunction(  db_error_message_t, "db.error_message", ParseDBErrorMessage'access );
+  declareFunction(  db_notice_message_t, "db.notice_message", ParseDBNoticeMessage'access );
+  declareFunction(  db_in_abort_state_t, "db.in_abort_state", ParseDBInAbortState'access );
+  declareFunction(  db_options_t, "db.options", ParseDBOptions'access );
+  declareFunction(  db_will_rollback_on_finalize_t, "db.will_rollback_on_finalize", ParseDBWillRollbackOnFinalize'access );
+  declareProcedure( db_set_rollback_on_finalize_t, "db.set_rollback_on_finalize", ParseDBSetRollbackOnFinalize'access );
+  declareProcedure( db_open_db_trace_t, "db.open_db_trace", ParseDBOpenDBTrace'access );
+  declareProcedure( db_close_db_trace_t, "db.close_db_trace", ParseDBCloseDBTrace'access );
+  declareProcedure( db_set_trace_t, "db.set_trace", ParseDBSetTrace'access );
+  declareFunction(  db_is_trace_t, "db.is_trace", ParseDBIsTrace'access );
+  declareProcedure( db_clear_t, "db.clear", ParseDBClear'access );
+  declareProcedure( db_prepare_t, "db.prepare", ParseDBPrepare'access );
+  declareProcedure( db_append_t, "db.append", ParseDBAppend'access );
+  declareProcedure( db_append_line_t, "db.append_line", ParseDBAppendLine'access );
+  declareProcedure( db_append_quoted_t, "db.append_quoted", ParseDBAppendQuoted'access );
+  declareProcedure( db_execute_t, "db.execute", ParseDBExecute'access );
+  declareProcedure( db_execute_checked_t, "db.execute_checked", ParseDBExecuteChecked'access );
+  declareProcedure( db_raise_exceptions_t, "db.raise_exceptions", ParseDBRaiseExceptions'access );
+  declareProcedure( db_report_errors_t, "db.report_errors", ParseDBReportErrors'access );
+  declareProcedure( db_begin_work_t, "db.begin_work", ParseDBBeginWork'access );
+  declareProcedure( db_commit_work_t, "db.commit_work", ParseDBCommitWork'access );
+  declareProcedure( db_rollback_work_t, "db.rollback_work", ParseDBRollbackWork'access );
+  declareProcedure( db_rewind_t, "db.rewind", ParseDBRewind'access );
+  declareProcedure( db_fetch_t, "db.fetch", ParseDBFetch'access );
+  declareFunction(  db_end_of_query_t, "db.end_of_query", ParseDBEndOfQuery'access );
+  declareFunction(  db_tuple_t, "db.tuple", ParseDBTuple'access );
+  declareFunction(  db_tuples_t, "db.tuples", ParseDBTuples'access );
+  declareFunction(  db_columns_t, "db.columns", ParseDBColumns'access );
+  declareFunction(  db_column_name_t, "db.column_name", ParseDBColumnName'access );
+  declareFunction(  db_column_index_t, "db.column_index", ParseDBColumnIndex'access );
+  --declareFunction(  db_column_type_t, "db.column_type", ParseDBColumnType'access );
+  declareFunction(  db_is_null_t, "db.is_null", ParseDBIsNull'access );
+  declareFunction(  db_value_t, "db.value", ParseDBValue'access );
+  declareFunction(  db_engine_of_t, "db.engine_of", ParseDBEngineOf'access );
+  declareProcedure( db_show_t, "db.show", ParseDBShow'access );
+  declareProcedure( db_list_t, "db.list", ParseDBList'access );
+  declareProcedure( db_schema_t, "db.schema", ParseDBSchema'access );
+  declareProcedure( db_users_t, "db.users", ParseDBUsers'access );
+  declareProcedure( db_databases_t, "db.databases", ParseDBDatabases'access );
 
   --declareFunction( db_do_t, "db.do" );
   --declareFunction( db_fetchrow_t, "dbi.fetchrow" );

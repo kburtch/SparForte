@@ -79,7 +79,6 @@ procedure ParseMySQLConnect is
   portType : identifier;
   hasPort  : boolean := false;
 begin
-  -- temporary limitation: only one database open at a time...
   expect( mysql_connect_t );
   if engineOpen then
      err( "only one database connection may be open" );
@@ -165,10 +164,17 @@ end ParseMySQLConnect;
 pragma warnings( off );
 -- Hide unused parameters warnings
 
-procedure ParseMySQLConnect is
+procedure not_configured is
 begin
   err( "mysql support not configured" );
-end ParseMySQLConnect;
+end not_configured;
+
+procedure not_configured( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "mysql support not configured" );
+end not_configured;
+
+procedure ParseMySQLConnect renames not_configured;
 
 #end if;
 #if MYSQL
@@ -195,10 +201,7 @@ end ParseMySQLEngineOf;
 
 #else
 
-procedure ParseMySQLEngineOf( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLEngineOf;
+procedure ParseMySQLEngineOf( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -241,10 +244,7 @@ end ParseMySQLPrepare;
 
 #else
 
-procedure ParseMySQLPrepare( result : out unbounded_string ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLPrepare;
+procedure ParseMySQLPrepare( result : out unbounded_string ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -280,10 +280,7 @@ end ParseMySQLPrepare;
 
 #else
 
-procedure ParseMySQLPrepare is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLPrepare;
+procedure ParseMySQLPrepare renames not_configured;
 
 #end if;
 #if MYSQL
@@ -319,10 +316,7 @@ end ParseMySQLAppend;
 
 #else
 
-procedure ParseMySQLAppend is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLAppend;
+procedure ParseMySQLAppend renames not_configured;
 
 #end if;
 #if MYSQL
@@ -346,10 +340,7 @@ end ParseMySQLAppendLine;
 
 #else
 
-procedure ParseMySQLAppendLine is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLAppendLine;
+procedure ParseMySQLAppendLine renames not_configured;
 
 #end if;
 #if MYSQL
@@ -385,10 +376,7 @@ end ParseMySQLAppendQuoted;
 
 #else
 
-procedure ParseMySQLAppendQuoted is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLAppendQuoted;
+procedure ParseMySQLAppendQuoted renames not_configured;
 
 #end if;
 #if MYSQL
@@ -413,10 +401,7 @@ end ParseMySQLExecute;
 
 #else
 
-procedure ParseMySQLExecute is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLExecute;
+procedure ParseMySQLExecute renames not_configured;
 
 #end if;
 #if MYSQL
@@ -454,10 +439,7 @@ end ParseMySQLExecuteChecked;
 
 #else
 
-procedure ParseMySQLExecuteChecked is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLExecuteChecked;
+procedure ParseMySQLExecuteChecked renames not_configured;
 
 #end if;
 
@@ -495,10 +477,7 @@ end ParseMySQLDisconnect;
 
 #else
 
-procedure ParseMySQLDisconnect is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLDisconnect;
+procedure ParseMySQLDisconnect renames not_configured;
 
 #end if;
 #if MYSQL
@@ -519,10 +498,7 @@ end ParseMySQLIsConnected;
 
 #else
 
-procedure ParseMySQLIsConnected( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLIsConnected;
+procedure ParseMySQLIsConnected( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -543,16 +519,13 @@ end ParseMySQLReset;
 
 #else
 
-procedure ParseMySQLReset is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLReset;
+procedure ParseMySQLReset renames not_configured;
 
 #end if;
 #if MYSQL
 
 procedure ParseMySQLErrorMessage( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: mysql.error_message
+  -- Syntax: s := mysql.error_message
   -- Source: APQ.Error_Message
 begin
   kind := string_t;
@@ -568,10 +541,7 @@ end ParseMySQLErrorMessage;
 
 #else
 
-procedure ParseMySQLErrorMessage( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLErrorMessage;
+procedure ParseMySQLErrorMessage( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 
@@ -610,10 +580,7 @@ end ParseMySQLInAbortState;
 
 #else
 
-procedure ParseMySQLInAbortState( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLInAbortState;
+procedure ParseMySQLInAbortState( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -635,10 +602,7 @@ end ParseMySQLOptions;
 
 #else
 
-procedure ParseMySQLOptions( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLOptions;
+procedure ParseMySQLOptions( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -664,10 +628,7 @@ end ParseMySQLSetRollbackOnFinalize;
 
 #else
 
-procedure ParseMySQLSetRollbackOnFinalize is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLSetRollbackOnFinalize;
+procedure ParseMySQLSetRollbackOnFinalize renames not_configured;
 
 #end if;
 #if MYSQL
@@ -689,10 +650,7 @@ end ParseMySQLWillRollbackOnFinalize;
 
 #else
 
-procedure ParseMySQLWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLWillRollbackOnFinalize;
+procedure ParseMySQLWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -737,10 +695,7 @@ end ParseMySQLOpenDBTrace;
 
 #else
 
-procedure ParseMySQLOpenDBTrace is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLOpenDBTrace;
+procedure ParseMySQLOpenDBTrace renames not_configured;
 
 #end if;
 #if MYSQL
@@ -761,10 +716,7 @@ end ParseMySQLCloseDBTrace;
 
 #else
 
-procedure ParseMySQLCloseDBTrace is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLCloseDBTrace;
+procedure ParseMySQLCloseDBTrace renames not_configured;
 
 #end if;
 #if MYSQL
@@ -790,10 +742,7 @@ end ParseMySQLSetTrace;
 
 #else
 
-procedure ParseMySQLSetTrace is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLSetTrace;
+procedure ParseMySQLSetTrace renames not_configured;
 
 #end if;
 #if MYSQL
@@ -815,10 +764,7 @@ end ParseMySQLIsTrace;
 
 #else
 
-procedure ParseMySQLIsTrace( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLIsTrace;
+procedure ParseMySQLIsTrace( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -841,10 +787,7 @@ end ParseMySQLClear;
 
 #else
 
-procedure ParseMySQLClear is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLClear;
+procedure ParseMySQLClear renames not_configured;
 
 #end if;
 #if MYSQL
@@ -874,10 +817,7 @@ end ParseMySQLRaiseExceptions;
 
 #else
 
-procedure ParseMySQLRaiseExceptions is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLRaiseExceptions;
+procedure ParseMySQLRaiseExceptions renames not_configured;
 
 #end if;
 #if MYSQL
@@ -907,10 +847,7 @@ end ParseMySQLReportErrors;
 
 #else
 
-procedure ParseMySQLReportErrors is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLReportErrors;
+procedure ParseMySQLReportErrors renames not_configured;
 
 #end if;
 #if MYSQL
@@ -935,10 +872,7 @@ end ParseMySQLBeginWork;
 
 #else
 
-procedure ParseMySQLBeginWork is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLBeginWork;
+procedure ParseMySQLBeginWork renames not_configured;
 
 #end if;
 #if MYSQL
@@ -963,10 +897,7 @@ end ParseMySQLRollbackWork;
 
 #else
 
-procedure ParseMySQLRollbackWork is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLRollbackWork;
+procedure ParseMySQLRollbackWork renames not_configured;
 
 #end if;
 #if MYSQL
@@ -991,10 +922,7 @@ end ParseMySQLCommitWork;
 
 #else
 
-procedure ParseMySQLCommitWork is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLCommitWork;
+procedure ParseMySQLCommitWork renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1015,10 +943,7 @@ end ParseMySQLRewind;
 
 #else
 
-procedure ParseMySQLRewind is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLRewind;
+procedure ParseMySQLRewind renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1054,10 +979,7 @@ end ParseMySQLFetch;
 
 #else
 
-procedure ParseMySQLFetch is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLFetch;
+procedure ParseMySQLFetch renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1079,10 +1001,7 @@ end ParseMySQLEndOfQuery;
 
 #else
 
-procedure ParseMySQLEndOfQuery( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLEndOfQuery;
+procedure ParseMySQLEndOfQuery( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1106,10 +1025,7 @@ end ParseMySQLTuple;
 
 #else
 
-procedure ParseMySQLTuple( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLTuple;
+procedure ParseMySQLTuple( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1133,10 +1049,7 @@ end ParseMySQLTuples;
 
 #else
 
-procedure ParseMySQLTuples( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLTuples;
+procedure ParseMySQLTuples( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1160,10 +1073,7 @@ end ParseMySQLColumns;
 
 #else
 
-procedure ParseMySQLColumns( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLColumns;
+procedure ParseMySQLColumns( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1192,10 +1102,7 @@ end ParseMySQLColumnName;
 
 #else
 
-procedure ParseMySQLColumnName( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLColumnName;
+procedure ParseMySQLColumnName( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1224,10 +1131,7 @@ end ParseMySQLColumnIndex;
 
 #else
 
-procedure ParseMySQLColumnIndex( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLColumnIndex;
+procedure ParseMySQLColumnIndex( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 
@@ -1288,10 +1192,7 @@ end ParseMySQLIsNull;
 
 #else
 
-procedure ParseMySQLIsNull( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLIsNull;
+procedure ParseMySQLIsNull( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1324,10 +1225,7 @@ end ParseMySQLValue;
 
 #else
 
-procedure ParseMySQLValue( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLValue;
+procedure ParseMySQLValue( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1507,10 +1405,7 @@ end ParseMySQLShow;
 
 #else
 
-procedure ParseMySQLShow is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLShow;
+procedure ParseMySQLShow renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1873,10 +1768,7 @@ end ParseMySQLList;
 
 #else
 
-procedure ParseMySQLList is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLList;
+procedure ParseMySQLList renames not_configured;
 
 #end if;
 #if MYSQL
@@ -2159,10 +2051,7 @@ end ParseMySQLSchema;
 
 #else
 
-procedure ParseMySQLSchema is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLSchema;
+procedure ParseMySQLSchema renames not_configured;
 
 #end if;
 #if MYSQL
@@ -2362,10 +2251,7 @@ end ParseMySQLUsers;
 
 #else
 
-procedure ParseMySQLUsers is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLUsers;
+procedure ParseMySQLUsers renames not_configured;
 
 #end if;
 #if MYSQL
@@ -2565,10 +2451,7 @@ end ParseMySQLDatabases;
 
 #else
 
-procedure ParseMySQLDatabases is
-begin
-  err( "mysql support not configured" );
-end ParseMySQLDatabases;
+procedure ParseMySQLDatabases renames not_configured;
 
 #end if;
 #if MYSQL
@@ -2583,10 +2466,7 @@ end DoMySQLSQLSelect;
 
 #else
 
-procedure DoMySQLSQLSelect( sqlcmd : unbounded_string ) is
-begin
-  err( "mysql support not configured" );
-end DoMySQLSQLSelect;
+procedure DoMySQLSQLSelect( sqlcmd : unbounded_string ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -2611,10 +2491,7 @@ end DoMySQLSQLStatement;
 
 #else
 
-procedure DoMySQLSQLStatement( sqlcmd : unbounded_string ) is
-begin
-  err( "mysql support not configured" );
-end DoMySQLSQLStatement;
+procedure DoMySQLSQLStatement( sqlcmd : unbounded_string ) renames not_configured;
 
 #end if;
 
