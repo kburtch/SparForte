@@ -180,7 +180,7 @@ distclean:
 	$(MAKE) -C apq-2.1 clobber
 	$(MAKE) -C pegasock clean
 	-rm -f *.o *.ali *~ t.t t.spar core spar.zip spar testsuite/write_only.txt testsuite/exec_only.txt
-	-rm -f bush_os.ads bush_os.adb bush_os-sdl.ads parser.adb parser_db.ads parser_db.adb parser_mysql.ads parser_mysql.adb parser_mysqlm.ads parser_mysqlm.adb parser_sound.adb world.ads builtins.adb parser_gnat_cgi.adb scanner_res.adb scanner_res.ads parser_btree_io.adb
+	-rm -f bush_os.ads bush_os.adb bush_os-sdl.ads parser.adb parser_db.adb parser_dbm.adb parser_mysql.adb parser_mysqlm.adb parser_sound.adb world.ads builtins.adb parser_gnat_cgi.adb scanner_res.adb scanner_res.ads parser_btree_io.adb
 
 
 test:	all
