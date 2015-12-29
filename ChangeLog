@@ -72,5 +72,9 @@ CHANGES SINCE 1.5
 
 25. Change: AdaCGI package rewritten to defer reading standard input.
 
+26. New: dbm package.
+
+27. Change: Refactoring done to database packages.  db.reset not working, not sure why.
+
 [David B wants shared library]
 
