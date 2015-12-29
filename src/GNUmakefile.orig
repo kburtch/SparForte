@@ -90,7 +90,7 @@ all: c_os.o c_scanner.o c_gstreamer.o
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo " Making SparForte"
-	@echo "   http://www.pegasoft.ca/sparforte.html"
+	@echo "   http://www.sparforte.com"
 	@echo "---------------------------------------------------------------"
 	@echo
 	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -gnat05 -gnatfaoN -gnatybdh -fstack-check -c $(INCLUDE) spar
