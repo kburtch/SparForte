@@ -347,6 +347,7 @@ begin
      ParseNextStringParameter( afterExpr, afterType, string_t );
      hasAfter := true;
   end if;
+  expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
        if hasAfter then
@@ -664,6 +665,7 @@ begin
      traceMode := Trace_Mode_Type'val( integer'value( ' ' & to_string( modeExpr ) ) );
      hasMode := true;
   end if;
+  expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
        if hasMode then

@@ -329,7 +329,6 @@ procedure ParseDBMAppend is
   query : resPtr;
 begin
   expect( dbm_append_t );
-  expect( symbol_t, "(" );
   ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
   ParseNextStringParameter( sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value = "," then
@@ -367,7 +366,6 @@ procedure ParseDBMAppendLine is
   query : resPtr;
 begin
   expect( dbm_append_line_t );
-  expect( symbol_t, "(" );
   ParseFirstNumericParameter( queryExpr, queryType, dbm_query_t );
   ParseLastStringParameter( sqlExpr, sqlType, string_t );
   if isExecutingCommand then
@@ -488,6 +486,7 @@ begin
      ParseNextStringParameter( msgExpr, msgType, string_t );
      hasMsg := true;
   end if;
+  expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
        findQuery( queryExpr, query );
@@ -1362,7 +1361,7 @@ end ParseDBMColumnIndex;
 
 #else
 
-procedure ParseDBColumnIndex( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMColumnIndex( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if POSTGRES
@@ -2703,7 +2702,7 @@ end ParseDBMNewQuery;
 
 #else
 
-procedure ParseDBNewQuery renames not_configured;
+procedure ParseDBMNewQuery renames not_configured;
 
 #end if;
 #if POSTGRES
@@ -3061,6 +3060,11 @@ procedure ParseDBMAppendForUpdate renames not_configured;
 procedure StartupDBM is
 begin
   declareNamespace( "dbm" );
+
+  declareIdent( dbm_connection_t, "dbm.connection", positive_t, typeClass );
+
+  declareIdent( dbm_query_t, "dbm.query", positive_t, typeClass );
+
   declareIdent( dbm_column_index_type_t, "dbm.column_index_type",
     positive_t, typeClass );
 
@@ -3110,51 +3114,51 @@ begin
 --  declareStandardConstant( db_engine_db2_t, "db.engine_db2",
 --    db_database_type_t, "4" );
 
-  declareProcedure( dbm_new_connection_t, "dbm.new_connection" );
-  declareProcedure( dbm_new_query_t, "dbm.new_query" );
-  declareProcedure( dbm_connect_t, "dbm.connect" );
-  declareProcedure( dbm_disconnect_t, "dbm.disconnect" );
-  declareFunction(  dbm_is_connected_t, "dbm.is_connected" );
-  declareProcedure( dbm_reset_t, "dbm.reset" );
-  declareFunction(  dbm_error_message_t, "dbm.error_message" );
-  --declareFunction(  dbm_notice_message_t, "dbm.notice_message" );
-  declareFunction(  dbm_in_abort_state_t, "dbm.in_abort_state" );
-  declareFunction(  dbm_options_t, "dbm.options" );
-  declareFunction(  dbm_will_rollback_on_finalize_t, "dbm.will_rollback_on_finalize" );
-  declareProcedure( dbm_set_rollback_on_finalize_t, "dbm.set_rollback_on_finalize" );
-  declareProcedure( dbm_open_db_trace_t, "dbm.open_db_trace" );
-  declareProcedure( dbm_close_db_trace_t, "dbm.close_db_trace" );
-  declareProcedure( dbm_set_trace_t, "dbm.set_trace" );
-  declareFunction(  dbm_is_trace_t, "dbm.is_trace" );
-  declareProcedure( dbm_clear_t, "dbm.clear" );
-  declareProcedure( dbm_prepare_t, "dbm.prepare" );
-  declareProcedure( dbm_append_t, "dbm.append" );
-  declareProcedure( dbm_append_line_t, "dbm.append_line" );
-  declareProcedure( dbm_append_quoted_t, "dbm.append_quoted" );
-  declareProcedure( dbm_execute_t, "dbm.execute" );
-  declareProcedure( dbm_execute_checked_t, "dbm.execute_checked" );
-  declareProcedure( dbm_raise_exceptions_t, "dbm.raise_exceptions" );
-  declareProcedure( dbm_report_errors_t, "dbm.report_errors" );
-  declareProcedure( dbm_begin_work_t, "dbm.begin_work" );
-  declareProcedure( dbm_commit_work_t, "dbm.commit_work" );
-  declareProcedure( dbm_rollback_work_t, "dbm.rollback_work" );
-  declareProcedure( dbm_rewind_t, "dbm.rewind" );
-  declareProcedure( dbm_fetch_t, "dbm.fetch" );
-  declareFunction(  dbm_end_of_query_t, "dbm.end_of_query" );
-  declareFunction(  dbm_tuple_t, "dbm.tuple" );
-  declareFunction(  dbm_tuples_t, "dbm.tuples" );
-  declareFunction(  dbm_columns_t, "dbm.columns" );
-  declareFunction(  dbm_column_name_t, "dbm.column_name" );
-  declareFunction(  dbm_column_index_t, "dbm.column_index" );
+  declareProcedure( dbm_new_connection_t, "dbm.new_connection", ParseDBMNewConnection'access );
+  declareProcedure( dbm_new_query_t, "dbm.new_query", ParseDBMNewQuery'access );
+  declareProcedure( dbm_connect_t, "dbm.connect", ParseDBMConnect'access );
+  declareProcedure( dbm_disconnect_t, "dbm.disconnect", ParseDBMDisconnect'access );
+  declareFunction(  dbm_is_connected_t, "dbm.is_connected", ParseDBMIsConnected'access );
+  declareProcedure( dbm_reset_t, "dbm.reset", ParseDBMReset'access );
+  declareFunction(  dbm_error_message_t, "dbm.error_message", ParseDBMErrorMessage'access );
+  declareFunction(  dbm_notice_message_t, "dbm.notice_message", ParseDBMNoticeMessage'access );
+  declareFunction(  dbm_in_abort_state_t, "dbm.in_abort_state", ParseDBMInAbortState'access );
+  declareFunction(  dbm_options_t, "dbm.options", ParseDBMOptions'access );
+  declareFunction(  dbm_will_rollback_on_finalize_t, "dbm.will_rollback_on_finalize", ParseDBMWillRollbackOnFinalize'access );
+  declareProcedure( dbm_set_rollback_on_finalize_t, "dbm.set_rollback_on_finalize", ParseDBMSetRollbackOnFinalize'access );
+  declareProcedure( dbm_open_db_trace_t, "dbm.open_db_trace", ParseDBMOpenDBTrace'access );
+  declareProcedure( dbm_close_db_trace_t, "dbm.close_db_trace", ParseDBMCloseDBTrace'access );
+  declareProcedure( dbm_set_trace_t, "dbm.set_trace", ParseDBMSetTrace'access );
+  declareFunction(  dbm_is_trace_t, "dbm.is_trace", ParseDBMIsTrace'access );
+  declareProcedure( dbm_clear_t, "dbm.clear", ParseDBMClear'access );
+  declareProcedure( dbm_prepare_t, "dbm.prepare", ParseDBMPrepare'access );
+  declareProcedure( dbm_append_t, "dbm.append", ParseDBMAppend'access );
+  declareProcedure( dbm_append_line_t, "dbm.append_line", ParseDBMAppendLine'access );
+  declareProcedure( dbm_append_quoted_t, "dbm.append_quoted", ParseDBMAppendQuoted'access );
+  declareProcedure( dbm_execute_t, "dbm.execute", ParseDBMExecute'access );
+  declareProcedure( dbm_execute_checked_t, "dbm.execute_checked", ParseDBMExecuteChecked'access );
+  declareProcedure( dbm_raise_exceptions_t, "dbm.raise_exceptions", ParseDBMRaiseExceptions'access );
+  declareProcedure( dbm_report_errors_t, "dbm.report_errors", ParseDBMReportErrors'access );
+  declareProcedure( dbm_begin_work_t, "dbm.begin_work", ParseDBMBeginWork'access );
+  declareProcedure( dbm_commit_work_t, "dbm.commit_work", ParseDBMCommitWork'access );
+  declareProcedure( dbm_rollback_work_t, "dbm.rollback_work", ParseDBMRollbackWork'access );
+  declareProcedure( dbm_rewind_t, "dbm.rewind", ParseDBMRewind'access );
+  declareProcedure( dbm_fetch_t, "dbm.fetch", ParseDBMFetch'access );
+  declareFunction(  dbm_end_of_query_t, "dbm.end_of_query", ParseDBMEndOfQuery'access );
+  declareFunction(  dbm_tuple_t, "dbm.tuple", ParseDBMTuple'access );
+  declareFunction(  dbm_tuples_t, "dbm.tuples", ParseDBMTuples'access );
+  declareFunction(  dbm_columns_t, "dbm.columns", ParseDBMColumns'access );
+  declareFunction(  dbm_column_name_t, "dbm.column_name", ParseDBMColumnName'access );
+  declareFunction(  dbm_column_index_t, "dbm.column_index", ParseDBMColumnIndex'access );
   --declareFunction(  dbm_column_type_t, "dbm.column_type" );
-  declareFunction(  dbm_is_null_t, "dbm.is_null" );
-  declareFunction(  dbm_value_t, "dbm.value" );
-  declareFunction(  db_engine_of_t, "dbm.engine_of" );
-  declareProcedure( dbm_show_t, "dbm.show" );
-  declareProcedure( dbm_list_t, "dbm.list" );
-  declareProcedure( dbm_schema_t, "dbm.schema" );
-  declareProcedure( dbm_users_t, "dbm.users" );
-  declareProcedure( dbm_databases_t, "dbm.databases" );
+  declareFunction(  dbm_is_null_t, "dbm.is_null", ParseDBMIsNull'access );
+  declareFunction(  dbm_value_t, "dbm.value", ParseDBMValue'access );
+  declareFunction(  dbm_engine_of_t, "dbm.engine_of", ParseDBMEngineOf'access );
+  declareProcedure( dbm_show_t, "dbm.show", ParseDBMShow'access );
+  declareProcedure( dbm_list_t, "dbm.list", ParseDBMList'access );
+  declareProcedure( dbm_schema_t, "dbm.schema", ParseDBMSchema'access );
+  declareProcedure( dbm_users_t, "dbm.users", ParseDBMUsers'access );
+  declareProcedure( dbm_databases_t, "dbm.databases", ParseDBMDatabases'access );
 
   declareProcedure( dbm_fetch_values_t, "dbm.fetch_values", ParseDBMFetchValues'access );
   declareProcedure( dbm_append_for_insert_t, "dbm.append_for_insert", ParseDBMAppendForInsert'access );

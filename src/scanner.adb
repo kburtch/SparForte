@@ -1550,7 +1550,9 @@ begin
   ShutdownRecords;
   ShutdownEnums;
   ShutdownArrays;
+  ShutdownMySQLM;
   ShutdownMySQL;
+  ShutdownDBM;
   ShutdownDB;
   ShutdownSparOS;
 
@@ -2166,6 +2168,7 @@ begin
 
   StartupSparOS;
   StartupDB;
+  StartupDBM;
   StartupMySQL;
   StartupMySQLM;
   StartupArrays;
