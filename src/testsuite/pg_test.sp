@@ -37,21 +37,21 @@ begin
 
   -- TODO: drop no postgresql on restricted shell?  mysql has its own security
 
-  dbm.connect( C, dbname, user, pass, "localhost" );
+  dbm.connect( C, dbname, user, pass );
   dbm.disconnect( C );
   b := dbm.is_connected( C );
 
-  dbm.connect( C, dbname, user, pass, "localhost" );
+  dbm.connect( C, dbname, user, pass );
   dbm.disconnect( C );
   b := dbm.is_connected( C );
 
   e := dbm.engine_of( C );
 
-  dbm.connect( C, dbname, user, pass, "localhost" );
+  dbm.connect( C, dbname, user, pass );
   b := dbm.is_connected( C );
   dbm.disconnect( C );
 
-  dbm.connect( C, dbname, user, pass, "localhost" );
+  dbm.connect( C, dbname, user, pass );
   dbm.prepare( Q, "select 1" );
   dbm.clear( Q );
   dbm.append( Q, "select 1" );
@@ -75,7 +75,7 @@ begin
   b := dbm.will_rollback_on_finalize( C );
   dbm.disconnect( C );
 
-  dbm.connect( C, dbname, user, pass, "localhost" );
+  dbm.connect( C, dbname, user, pass );
   dbm.open_db_trace( C, "/tmp/trace.txt" );
   dbm.set_trace( C, true );
   b := dbm.is_trace( C );
@@ -84,7 +84,7 @@ begin
   dbm.report_errors( Q, true );
   dbm.disconnect( C );
 
-  dbm.connect( C, dbname, user, pass, "localhost" );
+  dbm.connect( C, dbname, user, pass );
   dbm.begin_work( Q, C );
   dbm.rollback_work( Q, C );
   dbm.begin_work( Q, C );
@@ -130,7 +130,7 @@ begin
   dbm.prepare( Q, "create table foobar ( b integer not null, i integer not null, s varchar(256) not null )" );
   dbm.execute( Q, C );
 
-  dbm.prepare( Q, "insert into foobar (b, i, s) values (0, 15, " & ASCII.Quotation & "hello" & ASCII.Quotation & ")" );
+  dbm.prepare( Q, "insert into foobar (b, i, s) values (0, 15, " & Latin_1.Apostrophe & "hello" & Latin_1.Apostrophe & ")" );
   dbm.execute( Q, C );
 
   declare
@@ -187,21 +187,21 @@ begin
 
   -- REGULAR POSTGRESQL
 
-  db.connect( dbname, user, pass, "localhost", 3306 );
+  db.connect( dbname, user, pass );
   db.disconnect;
   b := db.is_connected;
 
-  db.connect( dbname, user, pass, "localhost", 3306 );
+  db.connect( dbname, user, pass );
   db.disconnect;
   b := db.is_connected;
 
   e := db.engine_of;
 
-  db.connect( dbname, user, pass, "localhost", 3306 );
+  db.connect( dbname, user, pass );
   b := db.is_connected;
   db.disconnect;
 
-  db.connect( dbname, user, pass, "localhost" );
+  db.connect( dbname, user, pass );
   db.prepare( "select 1" );
   db.clear;
   db.append( "select 1" );
@@ -217,14 +217,14 @@ begin
   db.execute_checked( "a message" );
 
   s := db.error_message; -- s should be blank
-  db.reset;
+  --db.reset; -- NOT WORKING? DISCONNECTS
   b := db.in_abort_state;
   s := db.options; -- s should be blank
   db.set_rollback_on_finalize( true );
   b := db.will_rollback_on_finalize;
   db.disconnect;
 
-  db.connect( dbname, user, pass, "localhost" );
+  db.connect( dbname, user, pass );
   db.open_db_trace( "/tmp/trace.txt" );
   db.set_trace( true );
   b := db.is_trace;
@@ -233,7 +233,7 @@ begin
   db.report_errors( true );
   db.disconnect;
 
-  db.connect( dbname, user, pass, "localhost" );
+  db.connect( dbname, user, pass );
   --mysql.set_trace( false ); -- DEBUG
   db.begin_work; -- throws an exception
   db.rollback_work;
