@@ -110,60 +110,10 @@ procedure StartupMySQL;
 procedure ShutdownMySQL;
 
 ------------------------------------------------------------------------------
--- PARSE THE DATABASE PACKAGE
+-- Command Line SQL
 ------------------------------------------------------------------------------
-
-procedure ParseMySQLConnect;
-procedure ParseMySQLPrepare;
-procedure ParseMySQLAppend;
-procedure ParseMySQLAppendLine;
-procedure ParseMySQLAppendQuoted;
-procedure ParseMySQLExecute;
-procedure ParseMySQLExecuteChecked;
-procedure ParseMySQLDisconnect;
-procedure ParseMySQLIsConnected( result : out unbounded_string; kind : out identifier );
-procedure ParseMySQLReset;
-procedure ParseMySQLErrorMessage( result : out unbounded_string; kind : out identifier );
--- procedure ParseMySQLNoticeMessage( result : out unbounded_string );
-procedure ParseMySQLInAbortState( result : out unbounded_string; kind : out identifier );
-procedure ParseMySQLOptions( result : out unbounded_string; kind : out identifier );
-procedure ParseMySQLSetRollbackOnFinalize;
-procedure ParseMySQLWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier );
-procedure ParseMySQLOpenDBTrace;
-procedure ParseMySQLCloseDBTrace;
-procedure ParseMySQLSetTrace;
-procedure ParseMySQLIsTrace( result : out unbounded_string; kind : out identifier );
-procedure ParseMySQLClear;
-procedure ParseMySQLRaiseExceptions;
-procedure ParseMySQLReportErrors;
-procedure ParseMySQLBeginWork;
-procedure ParseMySQLRollbackWork;
-procedure ParseMySQLCommitWork;
-procedure ParseMySQLRewind;
-procedure ParseMySQLFetch;
-procedure ParseMySQLEndOfQuery( result : out unbounded_string; kind : out identifier );
-procedure ParseMySQLTuple( result : out unbounded_string; kind : out identifier );
-procedure ParseMySQLTuples( result : out unbounded_string; kind : out identifier );
-procedure ParseMySQLColumns( result : out unbounded_string; kind : out identifier );
-procedure ParseMySQLColumnName( result : out unbounded_string; kind : out identifier );
-procedure ParseMySQLColumnIndex( result : out unbounded_string; kind : out identifier );
---procedure ParseDBColumnType( result : out unbounded_string );
-procedure ParseMySQLIsNull( result : out unbounded_string; kind : out identifier );
-procedure ParseMySQLValue( result : out unbounded_string; kind : out identifier );
-procedure ParseMySQLEngineOf( result : out unbounded_string; kind : out identifier );
-procedure ParseMySQLShow;
-procedure ParseMySQLList;
-procedure ParseMySQLSchema;
-procedure ParseMySQLUsers;
-procedure ParseMySQLDatabases;
-
--- for embedded SQL
 
 procedure DoMySQLSQLSelect( sqlcmd : unbounded_string );
 procedure DoMySQLSQLStatement( sqlcmd : unbounded_string );
-
---procedure ParseDBIPrepare( result : out unbounded_string );
---procedure ParseDBDo( result : out unbounded_string );
---procedure ParseDBFetchrow( result : out unbounded_string );
 
 end parser_mysql;

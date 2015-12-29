@@ -1002,23 +1002,11 @@ cp builtins.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb builtins.adb
 chmod 444 builtins.adb
 
-echo "Updating...parser_db.ads"
-test -f parser_db.ads && chmod 666 parser_db.ads
-cp parser_db.ads.orig temp.adb
-gnatprep $GNATPREP_OPTS temp.adb parser_db.ads
-chmod 444 parser_db.ads
-
 echo "Updating...parser_db.adb"
 test -f parser_db.adb && chmod 666 parser_db.adb
 cp parser_db.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb parser_db.adb
 chmod 444 parser_db.adb
-
-echo "Updating...parser_dbm.ads"
-test -f parser_dbm.ads && chmod 666 parser_dbm.ads
-cp parser_dbm.ads.orig temp.adb
-gnatprep $GNATPREP_OPTS temp.adb parser_dbm.ads
-chmod 444 parser_dbm.ads
 
 echo "Updating...parser_dbm.adb"
 test -f parser_dbm.adb && chmod 666 parser_dbm.adb
@@ -1026,23 +1014,11 @@ cp parser_dbm.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb parser_dbm.adb
 chmod 444 parser_dbm.adb
 
-echo "Updating...parser_mysql.ads"
-test -f parser_mysql.ads && chmod 666 parser_mysql.ads
-cp parser_mysql.ads.orig temp.adb
-gnatprep $GNATPREP_OPTS temp.adb parser_mysql.ads
-chmod 444 parser_mysql.ads
-
 echo "Updating...parser_mysql.adb"
 test -f parser_mysql.adb && chmod 666 parser_mysql.adb
 cp parser_mysql.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb parser_mysql.adb
 chmod 444 parser_mysql.adb
-
-echo "Updating...parser_mysqlm.ads"
-test -f parser_mysqlm.ads && chmod 666 parser_mysqlm.ads
-cp parser_mysqlm.ads.orig temp.adb
-gnatprep $GNATPREP_OPTS temp.adb parser_mysqlm.ads
-chmod 444 parser_mysqlm.ads
 
 echo "Updating...parser_mysqlm.adb"
 test -f parser_mysqlm.adb && chmod 666 parser_mysqlm.adb

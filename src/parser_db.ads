@@ -110,60 +110,10 @@ procedure StartupDB;
 procedure ShutdownDB;
 
 ------------------------------------------------------------------------------
--- PARSE THE DATABASE PACKAGE
+-- Command Line SQL
 ------------------------------------------------------------------------------
-
-procedure ParseDBConnect;
-procedure ParseDBPrepare;
-procedure ParseDBAppend;
-procedure ParseDBAppendLine;
-procedure ParseDBAppendQuoted;
-procedure ParseDBExecute;
-procedure ParseDBExecuteChecked;
-procedure ParseDBDisconnect;
-procedure ParseDBIsConnected( result : out unbounded_string; kind : out identifier );
-procedure ParseDBReset;
-procedure ParseDBErrorMessage( result : out unbounded_string; kind : out identifier );
-procedure ParseDBNoticeMessage( result : out unbounded_string; kind : out identifier );
-procedure ParseDBInAbortState( result : out unbounded_string; kind : out identifier );
-procedure ParseDBOptions( result : out unbounded_string; kind : out identifier );
-procedure ParseDBSetRollbackOnFinalize;
-procedure ParseDBWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier );
-procedure ParseDBOpenDBTrace;
-procedure ParseDBCloseDBTrace;
-procedure ParseDBSetTrace;
-procedure ParseDBIsTrace( result : out unbounded_string; kind : out identifier );
-procedure ParseDBClear;
-procedure ParseDBRaiseExceptions;
-procedure ParseDBReportErrors;
-procedure ParseDBBeginWork;
-procedure ParseDBRollbackWork;
-procedure ParseDBCommitWork;
-procedure ParseDBRewind;
-procedure ParseDBFetch;
-procedure ParseDBEndOfQuery( result : out unbounded_string; kind : out identifier );
-procedure ParseDBTuple( result : out unbounded_string; kind : out identifier );
-procedure ParseDBTuples( result : out unbounded_string; kind : out identifier );
-procedure ParseDBColumns( result : out unbounded_string; kind : out identifier );
-procedure ParseDBColumnName( result : out unbounded_string; kind : out identifier );
-procedure ParseDBColumnIndex( result : out unbounded_string; kind : out identifier );
---procedure ParseDBColumnType( result : out unbounded_string );
-procedure ParseDBIsNull( result : out unbounded_string; kind : out identifier );
-procedure ParseDBValue( result : out unbounded_string; kind : out identifier );
-procedure ParseDBEngineOf( result : out unbounded_string; kind : out identifier );
-procedure ParseDBShow;
-procedure ParseDBList;
-procedure ParseDBSchema;
-procedure ParseDBUsers;
-procedure ParseDBDatabases;
-
--- for embedded SQL (experimental)
 
 procedure DoSQLSelect( sqlcmd : unbounded_string );
 procedure DoSQLStatement( sqlcmd : unbounded_string );
-
---procedure ParseDBIPrepare( result : out unbounded_string );
---procedure ParseDBDo( result : out unbounded_string );
---procedure ParseDBFetchrow( result : out unbounded_string );
 
 end parser_db;
