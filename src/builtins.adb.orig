@@ -1504,6 +1504,36 @@ begin
      Put_Line( "  databases" );
 end helpDb;
 
+procedure helpDbm is
+begin
+     Put_Line( "dbm (package) - APQ PostgreSQL database package - multiple connections interface" );
+     New_Line;
+     Put_line( "connect( c, d [, u, w ][, h][, p] )" );
+     Put_line( "append( q, s [, a] )         prepare( q, s [, a] )" );
+     Put_line( "append_line( q, s )          append_quoted( q, c, s )" );
+     Put_line( "execute( q, c )              execute_checked( q, c [, s ] )" );
+     Put_line( "disconnect( c )              is_connected( c )" );
+     Put_line( "reset( c )                   s := error_message( c )" );
+     Put_line( "databases( c )               b := in_abort_state( c )" );
+     Put_line( "s := options( c )            set_rollback_on_finalize( c, b )" );
+     Put_line( "open_db_trace( c, f [, m] )  b := will_rollback_on_finalize( c )" );
+     Put_line( "close_db_trace( c )          set_trace( c, b )" );
+     Put_line( "b := is_trace( c )           clear( q )" );
+     Put_line( "raise_exceptions( q [, b ] ) report_errors( q, b )" );
+     Put_line( "begin_work( q, c )           rollback_work( q, c )" );
+     Put_line( "commit_work( q, c )          rewind( q )" );
+     Put_line( "fetch( q [, i] )             b := end_of_query( q )" );
+     Put_line( "n := tuple( q, t )           n := tuples( q )" );
+     Put_line( "n := columns( q )            s := column_name( q, i )" );
+     Put_line( "i := column_index( q, s )    b := is_null( q, i )" );
+     Put_line( "s := value( q, i )           b := engine_of( c )" );
+     Put_line( "show( q, c )                 list( c )" );
+     Put_line( "schema( c, t )               users( c )" );
+     Put_line( "new_connection( c )          new_query( q )" );
+     Put_line( "fetch_values( q, c, r )      s := notice_message( c )" );
+     Put_line( "append_for_insert( q, c, r ) append_for_update( q, c, r )" );
+end helpDbm;
+
 procedure helpMySQL is
 begin
      Put_Line( "mysql (package) - APQ MySQL database package interface" );
@@ -1862,6 +1892,8 @@ begin
      Put_Line( "The default path a temporary file name" );
   elsif helpTopic = "db" then
      helpDb;
+  elsif helpTopic = "db" then
+     helpDbm;
   elsif helpTopic = "declare" then
      Put_Line( "declare - begin a new block" );
      Put_Line( "  [" & bold( "declare") & " declarations] " &
