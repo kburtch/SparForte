@@ -1,0 +1,2427 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/transitional.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <META NAME="description" CONTENT="SparForte language documentation">
+	<title>SparForte - Packages - Dbm (PostgreSQL)</title>
+	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
+	<link rel="index" href="packages.html" />
+	<link rel="prev" href="pkg_memcache_highread.html" />
+	<link rel="next" href="pkg_numerics.html" />
+</head>
+<body bgcolor="#FFFFFF"><a name="top"></a>
+	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
+		<tr><td align="left"><img src="art/sparforte.png" alt="[SparForte]"></td><td align="right"><img src="art/header_cloud.png" alt="[Banner]"></td></tr>
+		<tr><td background="art/header_border.png" height="10" colspan="2"></td></tr>
+		<tr><td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0" summary="top menu">
+			<tr>
+				<td width="10"><img src="art/menu_left.png" alt="[Top Main Menu]"></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="intro_preface.html">Intro</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="tutorial_1.html">Tutorials</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="ref_adascript.html">Reference</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="packages.html"><b>Packages</b></a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="../examples/index.html">Examples</a></td>
+				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
+				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
+				<td background="art/menu_border.png" align="center">&nbsp;</td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_mysqlm.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_numerics.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png">&nbsp;</td>
+</tr></table></td></tr>
+	</table>
+	<noscript>
+	<a href="#submenu">[Jump to Submenu]</a>
+	<hr />
+	</noscript>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" summary="content and right submenu">
+		<tr>
+			<td align="left" valign="top">
+	<!-- Content Area -->
+<h2><a NAME="4.19"></a>DBM (PostgreSQL) - Multiple Connections Package</h2>
+<p>A package for opening multiple connections and having mutiple open queries
+to a PostgreSQL database.  The subprograms here are similar to the db package
+accept that they also require a connection, query or both.</p>
+
+<p>New data types:</p>
+
+<ul>
+<li><b>dbm.connection</b> - a connection id to a database</li>
+<li><b>dbm.query</b> - a database id query</li>
+</ul>
+
+<p>The database package is based on a modified version of Warren Gay's APQ PostgreSQL binding.  For full details on these routines, consult the APQ documentation.</p>
+
+        <center>
+        <div class="code">
+<pre>
+  <a href="#dbm.connect">connect( c, d [, u, w ][, h][, p] )</a>
+  <a href="#dbm.append">append( q, s [, a] )</a>         <a href="#dbm.prepare">prepare( q, s [, a] )</a>
+  <a href="#dbm.append_line">append_line( q, s )</a>          <a href="#dbm.append_quoted">append_quoted( q, c, s )</a>
+  <a href="#dbm.execute">execute( q, c )</a>              <a href="#dbm.execute_checked">execute_checked( q, c [, s ] )</a>
+  <a href="#dbm.disconnect">disconnect( c )</a>              <a href="#dbm.is_connected">is_connected( c )</a>
+  <a href="#dbm.reset">reset( c )</a>                   <a href="#dbm.error_message">s := error_message( c )</a>
+  <a href="#dbm.databases">databases( c )</a>               <a href="#dbm.in_abort_state">b := in_abort_state( c )</a>
+  <a href="#dbm.options">s := options( c )</a>            <a href="#dbm.set_rollback_on_finalize">set_rollback_on_finalize( c, b )</a>
+  <a href="#dbm.open_db_trace">open_db_trace( c, f [, m] )</a>  <a href="#dbm.will_rollback_on_finalize">b := will_rollback_on_finalize( c )</a>
+  <a href="#dbm.close_db_trace">close_db_trace( c )</a>          <a href="#dbm.set_trace">set_trace( c, b )</a>
+  <a href="#dbm.is_trace">b := is_trace( c )</a>           <a href="#dbm.clear">clear( q )</a>
+  <a href="#dbm.raise_exceptions">raise_exceptions( q [, b ] )</a> <a href="#dbm.report_errors">report_errors( q, b )</a>
+  <a href="#dbm.begin_work">begin_work( q, c )</a>           <a href="#dbm.rollback_work">rollback_work( q, c )</a>
+  <a href="#dbm.commit_work">commit_work( q, c )</a>          <a href="#dbm.rewind">rewind( q )</a>
+  <a href="#dbm.fetch">fetch( q [, i] )</a>             <a href="#dbm.end_of_query">b := end_of_query( q )</a>
+  <a href="#dbm.tuple">n := tuple( q, t )</a>           <a href="#dbm.tuples">n := tuples( q )</a>
+  <a href="#dbm.columns">n := columns( q )</a>            <a href="#dbm.column_name">s := column_name( q, i )</a>
+  <a href="#dbm.column_index">i := column_index( q, s ) </a>   <a href="#dbm.is_null">b := is_null( q, i )</a>
+  <a href="#dbm.value">s := value( q, i )</a>           <a href="#dbm.engine_of">b := engine_of( c )</a> 
+  <a href="#dbm.show">show( q, c )</a>                 <a href="#dbm.list">list( c )</a>
+  <a href="#dbm.schema">schema( c, t )</a>               <a href="#dbm.users">users( c )</a>
+  <a href="#dbm.new_connection">new_connection( c )</a>          <a href="#dbm.new_query">new_query( q )</a>
+  <a href="#dbm.fetch_values">fetch_values( q, c, r )</a>      <a href="#dbm.notice_message">s := notice_message( c )</a>
+  <a href="#dbm.append_for_insert">append_for_insert( q, c, r )</a> <a href="#dbm.append_for_update">append_for_update( q, c, r )</a>
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the dbm package</span>
+        </div>
+        </div>
+        </center>
+
+
+<p>There is an enumerated type in the db package that controls the verbosity of tracing:
+        <center>
+        <div class="code">
+                <p class="code">
+<b>type</b> db.trace_mode_type <b>is</b> ( db.trace_none, db.trace_db, db.trace_apq, db.trace_full );
+                </p>
+        </div>
+        </center>
+
+<p><tt>type db.trace_mode_type is ( db.trace_none, db.trace_db, db.trace_apq, db.trace_full );</tt>
+
+<p>There is an enumerated type that controls file access:
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>type</b> dbm.mode_type <b>is</b> ( dbm.read, dbm.write, dbm.read_write );
+                </p>
+        </div>
+        </center>
+
+<p>There is an enumerated type in the db package that controls fetch order:
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>type</b> db.fetch_mode_type <b>is</b> ( db.sequential_fetch, db.random_fetch );
+                </p>
+        </div>
+        </center>
+
+
+<p>There is an enumerated type in the db package that identifies the database engine:
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>type</b> db.database_type <b>is</b> ( db.engine_postgresql, db.engine_mysql, db.engine_oracle, db.engine_sybase, db.engine_db2 );</tt>
+                </p>
+        </div>
+        </center>
+
+<br>&nbsp;
+
+<a name="dbm.append"></a><h3>dbm.append( q, s [, a] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Append text s to the SQL query. The text is on the same line.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.append( q, s, " where customer_no &gt; 5" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>SQL query text</span></td>
+</tr>
+<tr>
+<td><span>a</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>empty string</span></td>
+<td><span>additional text to place after the text</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown when out of memory.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Append</p></td>
+</tr>
+</table>
+
+<a name="dbm.append_for_insert"></a><h3>dbm.append_for_insert( q, c, r )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Append the fields of record r to the query in the format of an ANSI SQL
+insert (that is, " ( a, b, ... ) VALUES ( 'a', 'b', ... )").  The record fields may be
+boolean, string, numeric or universal (treated as a string).  String values
+are appended with Append_Quoted.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">type row is record<br />
+&nbsp;&nbsp;b : boolean;<br />
+&nbsp;&nbsp;i : integer;<br />
+&nbsp;&nbsp;s : string;<br />
+end record;<br />
+r : row;<br />
+...<br />
+dbm.append_for_insert( q, c, r ); -- (b,i,s) values (...)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>in</span></td>
+<td><span>record type</span></td>
+<td><span>required</span></td>
+<td><span>The record type to use for insert data</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.append_for_update">dbm.append_for_update</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A</p></td>
+</tr>
+</table>
+
+<a name="dbm.append_for_update"></a><h3>dbm.append_for_update( q, c, r )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Append the fields of record r to the query in the format of an ANSI SQL
+update (that is," SET a = 'a', b = 'b', ..." ).  The record fields may be
+boolean, string, numeric or universal (treated as a string).  String values
+are appended with Append_Quoted.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">type row is record<br />
+&nbsp;&nbsp;b : boolean;<br />
+&nbsp;&nbsp;i : integer;<br />
+&nbsp;&nbsp;s : string;<br />
+end record;<br />
+r : row;<br />
+...<br />
+dbm.append_for_update( q, c, r ); -- SET b = ..., i = ... etc.</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>in</span></td>
+<td><span>record type</span></td>
+<td><span>required</span></td>
+<td><span>The record type to use for update data</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.append_for_insert">dbm.append_for_insert</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A</p></td>
+</tr>
+</table>
+
+<a name="dbm.append_line"></a><h3>dbm.append_line( q, s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Append text s to the SQL query and start a new line.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.append_line( q, s, "where customer_no &gt; 5" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>SQL query text</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Append_Line</p></td>
+</tr>
+</table>
+
+<a name="dbm.append_quoted"></a><h3>dbm.append_quoted( q, c, s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Append text s to SQL query while surrounding s with single quotes.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.append_quoted( q, c, "customer_name" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>SQL query text</span></td>
+</tr>
+<tr>
+<td><span>a</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>empty string</span></td>
+<td><span>additional text to place after the text</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Append_Quoted</p></td>
+</tr>
+</table>
+
+<a name="dbm.begin_work"></a><h3>dbm.begin_work( q, c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Start a database transaction, marking the position of a possible rollback.  The query will be erased.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.begin_work( q, c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>in_abort_state exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.commit_work">dbm.commit_work</a><br><a href="#dbm.rollback_work">dbm.rollback_work</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Begin_Work</p></td>
+</tr>
+</table>
+
+<a name="dbm.clear"></a><h3>dbm.clear( q )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Erase the text of the current query.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.clear( q );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Clear</p></td>
+</tr>
+</table>
+
+<a name="dbm.close_db_trace"></a><h3>dbm.close_db_trace( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Stop tracing the database activity and close the trace file.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.close_db_trace( c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.is_trace">dbm.is_trace</a><br><a href="#dbm.open_db_trace">dbm.open_db_trace</a><br><a href="#dbm.set_trace">dbm.set_trace</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Clear</p></td>
+</tr>
+</table>
+
+<a name="dbm.column_index"></a><h3>i := dbm.column_index( q, s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the position of a query result column.  This is the position in the query, not the database table.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">third_column_position := dbm.column_index( q, "first name" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the column heading</span></td>
+</tr>
+<tr>
+<td><span>i</span></td>
+<td><span>return value</span></td>
+<td><span>dbm.column_index_type</span></td>
+<td><span>required</span></td>
+<td><span>the column position in the query</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_column exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.column_name">dbm.column_name</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Column_Index</p></td>
+</tr>
+</table>
+
+<a name="dbm.column_name"></a><h3>s := dbm.column_name( q, i )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the name of a query result column.  The number is the position in the query, not the database table.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">third_column_heading := dbm.column_name( q, 3 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>in</span></td>
+<td><span>dbm.column_index_type</span></td>
+<td><span>required</span></td>
+<td><span>the column position in the query results</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the column heading</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_column exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Column_Name<br>PHP: mysql_field_name</p></td>
+</tr>
+</table>
+
+<a name="dbm.columns"></a><h3>n := dbm.columns( q )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of columns (fields) from the last query.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">number_of_columns := dbm.columns( q );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of columns</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_result exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Columns</p></td>
+</tr>
+</table>
+
+<a name="dbm.commit_work"></a><h3>dbm.commit_work( q, c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Complete a database transaction.  The query will be erased.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.commit_work( q, c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>in_abort_state exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.begin_work">dbm.begin_work</a><br><a href="#dbm.rollback_work">dbm.rollback_work</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Commit_Work</p></td>
+</tr>
+</table>
+
+<a name="dbm.connect"></a><h3>dbm.connect( c, d [, u, w ][, h][, p] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Connect to database d using username u, password w, hostname h and port p. If no hostname or port are specified, connection is made by a UNIX socket instead of a network socket.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.connect( c, "db", "user", "password" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr><tr>
+<td><span>d</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the database name</span></td>
+</tr><tr>
+<td><span>u</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>your username</span></td>
+<td><span>the username to connect with</span></td>
+</tr>
+<tr>
+<td><span>w</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>default password</span></td>
+<td><span>username's password</span></td>
+</tr>
+<tr>
+<td><span>h</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>UNIX Socket</span></td>
+<td><span>hostname for network socket</span></td>
+</tr>
+<tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>default port</span></td>
+<td><span>network socket port</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection cannot be made, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: combines several APQ functions</p></td>
+</tr>
+</table>
+
+<a name="dbm.databases"></a><h3>dbm.databases( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Show a list of the databases available with the current connection.  This
+is the equivalent of MySQL "show databases".</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.databases( c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.list">dbm.list</a><br><a href="#dbm.schema">dbm.schema</a><br><a href="#dbm.users">dbm.users</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="dbm.disconnect"></a><h3>dbm.disconnect( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+
+<td><p>Close a connection created by connect.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.disconnect( c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.connect">dbm.connect</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Disconnect<br>PHP: mysql_close</p></td>
+</tr>
+</table>
+
+<a name="dbm.end_of_query"></a><h3>b := dbm.end_of_query( q )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if there are no more result (tuple) rows.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">while not dbm.end_of_query( q ) loop ...</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if no more rows</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.End_Of_Query</p></td>
+</tr>
+</table>
+
+<a name="dbm.engine_of"></a><h3>e := dbm.engine_of( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the identity of the database engine</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">e := dbm.engine_of( c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span>db.database_type</span></td>
+<td><span>db.engine_mysql, etc.</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Engine_Of</p></td>
+</tr>
+</table>
+
+<a name="dbm.error_message"></a><h3>s := dbm.error_message( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Last error message returned by database server.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">err := dbm.error_message( c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>last server message</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Error_Message;<br>PHP: mysql_error</p></td>
+</tr>
+</table>
+
+<a name="dbm.execute"></a><h3>dbm.execute( q, c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Run a prepared database query.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.execute( q, c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.show">dbm.show</a><br><a href="#dbm.execute_checked">dbm.execute_checked</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Execute<br>PHP: pg_execute</p></td>
+</tr>
+</table>
+
+<a name="dbm.execute_checked"></a><h3>dbm.execute_checked( q, c [, s ] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Execute the query.  If an error occurs, display the message s on
+standard error and raise an exception.  If an error occurs and there is
+no error message s, display the query on standard error and raise an
+exception.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.execute_checked( q, c, "message" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>empty string</span></td>
+<td><span>a message</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is thrown if an error occurs.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.show">dbm.show</a><br><a href="#dbm.execute">dbm.execute</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Execute_Checked</p></td>
+</tr>
+</table>
+
+<a name="dbm.fetch"></a><h3>dbm.fetch( q, [, i] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Fetch the next query result tuple row, or a specific result row.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.fetch( q );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>in</span></td>
+<td><span>tuple_index_type</span></td>
+<td><span>next row</span></td>
+<td><span>a specific result row</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_result or no_tuple exceptions may be raised.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.fetch_values">dbm.fetch_values</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Fetch<br>PHP: mysql_fetch_assoc</p></td>
+</tr>
+</table>
+
+<a name="dbm.fetch_values"></a><h3>dbm.fetch_values( q, c, r )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Fetch the next query result tuple row into a record.</p>
+<p>The record's
+fields may be boolean, numeric, string or typeless types and the names of
+the record's fields must be the same as the column names returned by the
+query.  The number of fields must match the number of columns, though the
+order may be different.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">
+type row is record<br />
+&nbsp;&nbsp;b : boolean;<br />
+&nbsp;&nbsp;i : integer;<br />
+&nbsp;&nbsp;s : string;<br />
+end record;<br />
+r : row;<br />
+...<br />
+dbm.prepare( Q, "SELECT b, i, s FROM sometable" );<br />
+dbm.execute( Q, C );<br />
+if not dbm.end_of_query( Q ) then<br />
+&nbsp;&nbsp;dbm.fetch_values( Q, C, r );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>in</span></td>
+<td><span>a record</span></td>
+<td><span>required</span></td>
+<td><span>a result row</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_result, no_column exceptions may be raised.<br />no_tuple may be raised if there's no more data.<br />Assigning a
+string to a numeric or boolean field may raise an exception.<br />A field that is not in the query raises an exception.<br />A column that is not in the record raises an exception.<br />The wrong number of fields raises an exception.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.fetch">dbm.fetch</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A<br />PHP: mysql_fetch_array</p></td>
+</tr>
+</table>
+
+<a name="dbm.in_abort_state"></a><h3>s := dbm.in_abort_state( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if in abort state. If there is no connection, return false.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := dbm.in_abort_state( c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if in abort state</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, a not connected exception will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.In_Abort_State</p></td>
+</tr>
+</table>
+
+<a name="dbm.is_connected"></a><h3>b := dbm.is_connected( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if a connection is open to a database.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := dbm.is_connected( c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if connected</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Is_Connected</p></td>
+</tr>
+</table>
+
+<a name="dbm.is_null"></a><h3>b := dbm.is_null(q, i )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if column in the fetch result is undefined.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := dbm.is_null( q, 2 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>in</span></td>
+<td><span>dbm.column_index_type</span></td>
+<td><span>required</span></td>
+<td><span>the field to check</span></td>
+</tr>
+<tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if null</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_column and no_result exceptions may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Is_Null</p></td>
+</tr>
+</table>
+
+<a name="dbm.is_trace"></a><h3>b := dbm.is_trace( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if set_trace was true (that is, if debug tracing is enabled).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := dbm.is_trace( c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if tracing is enabled</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.close_db_trace">dbm.close_db_trace</a><br><a href="#dbm.open_db_trace">dbm.open_db_trace</a><br><a href="#dbm.set_trace">dbm.set_trace</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Is_Trace</p></td>
+</tr>
+</table>
+
+<a name="dbm.list"></a><h3>dbm.list( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Show on standard output a list of the tables available in the current database.  This is the
+equivalent of MySQL's "show tables".</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.list( c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.databases">dbm.databases</a><br><a href="#dbm.schema">dbm.schema</a><br><a href="#dbm.users">dbm.users</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="dbm.new_connection"></a><h3>dbm.new_connection( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Allocate a new PostgreSQL connection and return the id.  The connection will be deallocated when the variable is destroyed.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.new_connection( c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>out</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>the connection id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>Out-of-memory</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="dbm.new_query"></a><h3>dbm.new_query( q )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Allocate a new PostgreSQL query and return the id.  The query will be deallocated when the variable is destroyed.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.new_query( q );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>out</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>the query id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>Out-of-memory</p>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="dbm.notice_message"></a><h3>s := dbm.notice_message( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Last notice message returned by database server.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">info := dbm.notice_message( c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>last server message</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Error_Message;<br>PHP: mysql_error</p></td>
+</tr>
+</table>
+
+<a name="dbm.open_db_trace"></a><h3>dbm.open_db_trace( c, f [,m] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Begin tracing the database activity, storing the results at pathname f.  m is an optional trace mode type</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.open_db_trace( c, "./trace.log" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>trace file pathname</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in</span></td>
+<td><span>db.trace_mode_type</span></td>
+<td><span>dbm.trace_apq</span></td>
+<td><span>trace type</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.<br>
+not_connected, file already open, file not found exceptions may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.close_db_trace">dbm.close_db_trace</a><br><a href="#dbm.is_trace">dbm.is_trace</a><br><a href="#dbm.set_trace">dbm.set_trace</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Open_DB_Trace</p></td>
+</tr>
+</table>
+
+<a name="dbm.options"></a><h3>s := dbm.options( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return database options.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := dbm.options( c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>database options</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Options</p></td>
+</tr>
+</table>
+
+<a name="dbm.prepare"></a><h3>dbm.prepare( q, s [, a] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Prepare a SQL statement to execute.  If a is included, insert the next statement after the statement named a.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.prepare( q, "select * from customers" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>SQL statement</span></td>
+</tr>
+<tr>
+<td><span>a</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>after all others</span></td>
+<td><span>insert SQL statement after statement a</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection cannot be made, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Prepare</p></td>
+</tr>
+</table>
+
+<a name="dbm.raise_exceptions"></a><h3>dbm.raise_exceptions( q, [ b ] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True to raise exceptions on query errors.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.raise_exceptions( q, false );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>true</span></td>
+<td><span>whether or not exceptions will occur</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Raise_Exceptions</p></td>
+</tr>
+</table>
+
+<a name="dbm.report_errors"></a><h3>dbm.report_errors( q, b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True to report errors on query.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.report_errors( q, false );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>true</span></td>
+<td><span>whether or not errors will be reported</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Report_Errors</p></td>
+</tr>
+</table>
+
+<a name="dbm.reset"></a><h3>dbm.reset( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Reset the database connection: close open files, rollback query (if
+necessary) and disconnect.  Use disconnect instead unless you know what
+you are doing.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.reset( c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Reset</p></td>
+</tr>
+</table>
+
+<a name="dbm.rewind"></a><h3>dbm.rewind( q )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return to the start of a query's results.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.rewind( q );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Rewind</p></td>
+</tr>
+</table>
+
+<a name="dbm.rollback_work"></a><h3>dbm.rollback_work( q, c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Rollback a database transaction, undoing all work since begin_work.  The query will be erased.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.rollback_work( q, c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.begin_work">dbm.begin_work</a><br><a href="#dbm.commit_work">dbm.commit_work</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Rollback_Work</p></td>
+</tr>
+</table>
+
+<a name="dbm.schema"></a><h3>dbm.schema( c, t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Show information about the columns available in a table.  This is the equivalent of MySQL's "show create table" or "desc".</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.schema( c, "table" );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>name of the table</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.databases">dbm.databases</a><br><a href="#dbm.list">dbm.list</a><br><a href="#dbm.users">dbm.users</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="dbm.set_rollback_on_finalize"></a><h3>dbm.set_rollback_on_finalize( c, b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Determine if a rollback will be issued when the connection is deallocated while the connection is still open (true) or no rollback (false).  Default is true.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.set_rollback_on_finalize( c, false );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true to rollback</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Set_Rollback_On_Finalize</p></td>
+</tr>
+</table>
+
+<a name="dbm.set_trace"></a><h3>dbm.set_trace( c, b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Enable or disable query tracing.  The trace file will remain open.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.set_trace( c, false );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>in</span></td>
+<td><span>boolean</span></td>
+<td><span>true</span></td>
+<td><span>whether or not tracing will occur</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.close_db_trace">dbm.close_db_trace</a><br><a href="#dbm.is_trace">dbm.is_trace</a><br><a href="#dbm.open_db_trace">dbm.open_db_trace</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Set_Trace</p></td>
+</tr>
+</table>
+
+<a name="dbm.show"></a><h3>dbm.show( q, c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Run the prepared query and show the results in a table on standard output.
+This is often used to show the results of a SQL SELECT statement.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.show( q, c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.execute">dbm.execute</a><br><a href="#dbm.execute_checked">dbm.execute_checked</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="dbm.tuple"></a><h3>t := dbm.tuple( q )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the result row (tuple) number from the last fetch.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">row_number := dbm.tuple( q );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>the query id</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>return value</span></td>
+<td><span>dbm.tuple_index_type</span></td>
+<td><span>required</span></td>
+<td><span>the current row number</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_tuple exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Tuple</p></td>
+</tr>
+</table>
+
+<a name="dbm.tuples"></a><h3>n := dbm.tuples( q )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of rows (tuples) from the last query.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">row_number := dbm.tuples( q );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>dbm.tuple_count_type</span></td>
+<td><span>required</span></td>
+<td><span>the number of rows</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>the query id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_result exception may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Tuples</p></td>
+</tr>
+</table>
+
+<a name="dbm.users"></a><h3>dbm.users( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Show a list of database users.  This is similar to MySQL's "show grants".  The
+columns in the list depend on the database engine.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">dbm.users( c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>dbm.connection</span></td>
+<td><span>required</span></td>
+<td><span>PostgreSQL connection id</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>If a connection doesn't exist, an error will occur.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#dbm.execute">dbm.execute</a><br><a href="#dbm.execute_checked">dbm.execute_checked</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="dbm.value"></a><h3>s := dblm.value( q, i )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the column value as a string.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">first_name := dbm.value( q, 3 );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>universal_typeless</span></td>
+<td><span>required</span></td>
+<td><span>the value of the field</span></td>
+</tr><tr>
+<td><span>q</span></td>
+<td><span>in</span></td>
+<td><span>dbm.query</span></td>
+<td><span>required</span></td>
+<td><span>SQL query id</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>in</span></td>
+<td><span>dbm.column_index_type</span></td>
+<td><span>required</span></td>
+<td><span>the field position to return</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>no_column, no_result, null_value and no_tuple exceptions may be raised</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Value</p></td>
+</tr>
+</table>
+
+<a name="dbm.will_rollback_on_finalize"></a><h3>b := dbm.will_rollback_on_finalize( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if set_rollback_on_finalize was true (that is, that when the connection is deallocated, a rollback will be issued if the connection is still open).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := dbm.will_rollback_on_finalize( c );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>rollback will be issued on finalize</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: APQ.Will_Rollback_On_Finalize</p></td>
+</tr>
+</table>
+
+&nbsp;<br>
+
+			</td>
+			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
+                                <p class="rmt"><a class="rightmenutext" href="packages.html">&nbsp;Summary</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_arrays.html">&nbsp;arrays</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_calendar.html">&nbsp;calendar</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cgi.html">&nbsp;cgi</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_chains.html">&nbsp;chains</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_cmdline.html">&nbsp;command_line</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_db.html">&nbsp;db/ postgresql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_doubly.html">&nbsp;doubly_linked...</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_dht.html">&nbsp;dynamic_hash_...</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_exceptions.html">&nbsp;exceptions</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_gnat_cgi.html">&nbsp;gnat.cgi</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_gnat_crc32.html">&nbsp;gnat.crc32</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_mysqlm.html">&nbsp;mysql</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_mysqlm.html">&nbsp;<b>mysqlm</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_pen.html">&nbsp;pen</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_pengl.html">&nbsp;pen (OpenGL)</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_records.html">&nbsp;records</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sound.html">&nbsp;sound</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_sinfo.html">&nbsp;source_info</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;stats</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_strings.html">&nbsp;strings</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_teams.html">&nbsp;teams</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
+</a></p>
+
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#d3c7f8" align="left" valign="middle"><a href="#top"><img src="art/up_arrow.png" border="0" width="24" height="27" alt="[Back to Top]"><span>&nbsp;Back To Top</span></a></td>
+			<td bgcolor="#d3c7f8" align="center" valign="middle"><img src="art/forte_small.png" width="26" height="32" border="0" alt="[Small Forte Symbol]"></td>
+	       	</tr>
+
+	</table>
+
+</body>
+</html>
+
