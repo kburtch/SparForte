@@ -1463,18 +1463,40 @@ begin
      Put_Line( "  command_line      get             null                strings.match    " );
      Put_Line( "  create            get_immediate   numerics            subtype          " );
      Put_Line( "  db                get_line        open                System           " );
-     Put_Line( "  declare           gnat.cgi        os                  trace            " );
-     Put_Line( "  delay             gnat.crc32      pen                 type             " );
-     Put_Line( "  delete            history         pragma              typeset              " );
-     Put_Line( "  directory_operations if           procedure           units            " );
-     Put_Line( "  doubly_linked_lists inkey         put                 unset            " );
-     Put_Line( "  dynamic_hash_tables is_open       put_line            variables        " );
-     Put_Line( "  end_of_file       jobs            raise               wait             " );
-     Put_Line( "  end_of_line       keys            reset               while            " );
-     Put_Line( "                    line            records             ""?""                 " );
+     Put_Line( "  dbm               gnat.cgi        os                  trace            " );
+     Put_Line( "  declare           gnat.crc32      pen                 type             " );
+     Put_Line( "  delay             history         pragma              typeset              " );
+     Put_Line( "  delete            if              procedure           units            " );
+     Put_Line( "  directory_operations inkey        put                 unset            " );
+     Put_Line( "  doubly_linked_lists is_open       put_line            variables        " );
+     Put_Line( "  dynamic_hash_tables jobs          raise               wait             " );
+     Put_Line( "  end_of_file       keys            reset               while            " );
+     Put_Line( "  end_of_line       line            records             ""?""                 " );
+     Put_Line( "  btree_io                                                                    " );
      New_Line;
      Put_Line( "You can also type an O/S word or a SparForte script name." );
 end helpMain;
+
+procedure helpBtreeIO is
+begin
+     Put_Line( "btree_io (package) - Berkeley DB B-tree files" );
+     New_Line;
+     Put_Line( "add( f, k, v )                   get_previous( f, c, k, v )" );
+     Put_Line( "append( f, k, v )                b := has_element( f, k )" );
+     Put_Line( "clear( f )                       increment( f, k [,n] )" );
+     Put_Line( "close( f )                       b := is_open( f )" );
+     Put_Line( "close_cursor( f, c )             e := last_error( f )" );
+     Put_Line( "create( f, p, kl, vl )           new_cursor( c, t )" );
+     Put_Line( "decrement( f, k [,n] )           new_file( f, t )" );
+     Put_Line( "delete( f )                      prepend( f, k, v )" );
+     Put_Line( "flush( f )                       raise_exceptions( f, b )" );
+     Put_Line( "v := get( f, k )                 remove( f, k )" );
+     Put_Line( "get_first( f, c, k, v )          replace( f, k, v )" );
+     Put_Line( "get_last( f, c, k, v )           set( f, k, v )" );
+     Put_Line( "get_next( f, c, k, v )           b := will_raise( f )" );
+     Put_Line( "open( f, p, kl, vl ) open_cursor( f, c )" );
+     Put_Line( "truncate( f )" );
+end helpBtreeIO;
 
 procedure helpDb is
 begin
@@ -1831,6 +1853,8 @@ begin
      Put_Line( "  shift_left( a )          shift_right( a )" );
      Put_Line( "  rotate_left( a )         rotate_right( a )" );
      Put_Line( "  to_array( a, s )         to_json( s, a )" );
+  elsif helpTopic = "btree_io" then
+     helpBTreeIO;
   elsif helpTopic = "calendar" then
      Put_Line( "calendar (package) - time and date operations:" );
      New_Line;
