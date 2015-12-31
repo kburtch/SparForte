@@ -107,10 +107,10 @@ procedure ParseDBMConnect is
 begin
   -- temporary limitation: only one database open at a time...
   expect( dbm_connect_t );
-  if engineOpen then
-     err( "only one database connection may be open (a limitation of this verison of bush)" );
-     return;
-  end if;
+  --if engineOpen then
+  --   err( "only one database connection may be open (a limitation of this verison of bush)" );
+  --   return;
+  --end if;
   ParseFirstStringParameter( connectExpr, connectType, dbm_connection_t );
   ParseNextStringParameter( dbnameExpr, dbnameType, string_t );
   if token = symbol_t and identifiers( token ).value = "," then
@@ -166,8 +166,8 @@ begin
           end;
        end if;
        Connect( connection.PG_C );
-       engineOpen := true;
-       currentEngine := Engine_PostgreSQL;
+       --engineOpen := true;
+       --currentEngine := Engine_PostgreSQL;
      exception when not_connected =>
         if hasHost and hasPort then
            err( "database connection failed - User " & User( connection.PG_C ) & ", Password " & Password( connection.PG_C )
@@ -541,7 +541,7 @@ begin
      begin
         findConnection( connectExpr, connection );
         Disconnect( connection.PG_C );
-        engineOpen := false;
+        --engineOpen := false;
      exception when not_connected =>
         err( "no database connection" );
      when already_connected =>
