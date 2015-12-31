@@ -1,6 +1,6 @@
 For the latest news, visit the Linux Cafe at the PegaSoft web site. 
 
-SparForte 2.0's focus was on ???.
+SparForte 2.0's focus was on symbol table changes to support packages, and extending the maximum number of reserved words so more keywords can be defined.
 
 CHANGES SINCE 1.5
 
@@ -58,7 +58,7 @@ CHANGES SINCE 1.5
 
 18. New: Additional command line editing keys: PC keyboard Home (= control-a), End (= control-e), and Del (= new Control-u / ESC x).
 
-19. hash_io (Berkeley DB library added).
+19. btree_io (Berkeley DB library added).  append, has_element, clear, increment, close, is_open, close_cursor, last_error, create, new_cursor, decrement, new_file, delete, prepend, flush, raise_exceptions, get, remove, get_first, replace, get_last, set, get_next, will_raise, open, open_cursor, truncate.
 
 20. Fix: Berkeley DB gen_constants script generates dummy values for missing constants.
 
@@ -72,7 +72,7 @@ CHANGES SINCE 1.5
 
 25. Change: AdaCGI package rewritten to defer reading standard input.
 
-26. New: dbm package.
+26. New: dbm package.  connect, append, prepare, append_line, append_quoted, execute, execute_checked, disconnect, is_connected, reset, error_message, databases, in_abort_state, options, set_rollback_on_finalize, open_db_trace, will_rollback_on_finalize, close_db_trace,  set_trace, is_trace, clear, raise_exceptions, report_errors, begin_work, rollback_work, commit_work, rewind, fetch, end_of_query, tuple, tuples, columns, column_name, column_index, is_null, value, engine_of, show, list, schema, users, new_connection, new_query, fetch_values, notice_message, append_for_insert, append_for_update.
 
 27. Change: Refactoring done to database packages.  db.reset not working, not sure why.
 
