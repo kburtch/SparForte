@@ -299,7 +299,7 @@ out_file
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return true if all data has been read from in_mode file f</p></td>
+<td><p>Return true if all data has been read from in_file mode file f</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">if end_of_file( data ) then ...</span></td>
@@ -757,7 +757,7 @@ of current_output.</p></td>
 <td><p>Open existing file f as pathname p in file mode m.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">open( data, in_mode, "/home/ken/data.txt" );</span></td>
+<td><span class="code">open( data, in_file, "/home/ken/data.txt" );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -912,7 +912,7 @@ of current_output.</p></td>
 <td><p>Reopen open file f in optional new file mode m</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">reset( temp_file, in_mode );</span></td>
+<td><span class="code">reset( temp_file, in_file );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -993,7 +993,7 @@ of current_output.</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Redirect the current input (usually standard_input) to another open file f.  All future reads (get, get_line, etc.) will use the new file.  The new file must be an in_mode file.  Use set_input( standard_input ) to return to standard input, or save the value of current_input and restore it later.</p></td>
+<td><p>Redirect the current input (usually standard_input) to another open file f.  All future reads (get, get_line, etc.) will use the new file.  The new file must be an in_file mode file.  Use set_input( standard_input ) to return to standard input, or save the value of current_input and restore it later.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">set_input( data_file );</span></td>
