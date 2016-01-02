@@ -79,7 +79,7 @@ Path_Name handle both styles (UNIX and DOS) of directory separators (either
 slash or back slash).</li>
 <li><b>directory_operations.path_style</b>: the format of a pathname - path_style.unix, path_style.dos, path_style.system_default</li>
 <li><b>directory_operations.environment_style</b>: the format for environment variable substitution - environment_style.unix, environment_style.dos, environment_style.both, environment_style.system_default</li>
-<li><b>directory_operations.dir_file_id</b>: the id number of a dir_file resource, allocated by directory_operations.open</li>
+<li><b>directory_operations.dir_type_id</b>: the id number of a dir_type resource, allocated by directory_operations.open</li>
 </ul>
 
 <a name="directory_operations.base_name"></a><h3>s := directory_operations.base_name( p [, f] )</h3>
@@ -174,7 +174,7 @@ slash or back slash).</li>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Closes a directory referenced by the dir_file id.</p></td>
+<td><p>Closes a directory referenced by the dir_type id.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">directory_operations.close( dir );</span></td>
@@ -190,14 +190,14 @@ slash or back slash).</li>
 </tr><tr>
 <td><span>d</span></td>
 <td><span>in</span></td>
-<td><span>dir_file_id</span></td>
+<td><span>dir_type_id</span></td>
 <td><span>required</span></td>
 <td><span>the id of a directory file resource</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An error occurs if the dir_file is not open.</p></td>
+<td><p>An error occurs if the dir_type is not open.</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p><a href="#directory_operations.open">directory_operations.open</a></p></td>
@@ -579,7 +579,7 @@ slash or back slash).</li>
 </tr><tr>
 <td><span>d</span></td>
 <td><span>in</span></td>
-<td><span>dir_file_id</span></td>
+<td><span>dir_type_id</span></td>
 <td><span>required</span></td>
 <td><span>the id of a directory file resource</span></td>
 </tr>
@@ -597,7 +597,7 @@ slash or back slash).</li>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Opens the directory named p and returns a dir_file id and is
+<td><p>Opens the directory named p and returns a dir_type id and is
 positioned at the first entry in the directory.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
@@ -614,7 +614,7 @@ positioned at the first entry in the directory.</p></td>
 </tr><tr>
 <td><span>d</span></td>
 <td><span>out</span></td>
-<td><span>dir_file_id</span></td>
+<td><span>dir_type_id</span></td>
 <td><span>required</span></td>
 <td><span>the id of a directory file resource</span></td>
 </tr><tr>
@@ -662,7 +662,7 @@ then the end of the directory is reached.</p></td>
 </tr><tr>
 <td><span>d</span></td>
 <td><span>in</span></td>
-<td><span>dir_file_id</span></td>
+<td><span>dir_type_id</span></td>
 <td><span>required</span></td>
 <td><span>the id of a directory file resource</span></td>
 </tr><tr>
