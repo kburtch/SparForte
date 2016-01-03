@@ -751,9 +751,11 @@ if [ -z "$TMP" ] ; then
           exit 1
       fi
     else
+       SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_ttf\ "
        echo "yes"
     fi
  else
+  SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_ttf\ "
   echo "yes"
 fi
 
