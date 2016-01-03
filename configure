@@ -1,3 +1,4 @@
+#!/bin/bash
 # Configure script
 # by Ken O. Burtch
 #
@@ -90,7 +91,7 @@ while [ $# -gt 0 ] ; do
  --localstatedir) echo "--localdatedir not used" ;;
  --sharedstatedir) echo "--sharedstatedir not used" ;;
  --disable-dependency-tracking) echo "--disable-dependency-tracking not used" ;;
- --mandir) 
+ --mandir)
       MANPREFIX=`echo "$1" | cut -d= -f2`
       ;;
  --infodir) echo "--infodir not used" ;;
@@ -130,7 +131,7 @@ if [ $? -ne 0 ] ; then
   echo "no"
   LOCATE="locate"
   echo -n "checking for locate ($LOCATE)... "
-  "$LOCATE" --help >/dev/null 2>/dev/null
+  "$LOCATE" /bin/true >/dev/null 2>/dev/null
   if [ $? -ne 0 ] ; then
      echo "no"
      # freebsd 8 has different parameters
@@ -162,6 +163,9 @@ fi
 TMP=`echo "$OS" | cut -c1-6`
 if [ "$TMP" = "CYGWIN" ] ; then
    OS="cygwin"
+fi
+if [ "$TMP" = "Darwin" ] ; then
+    OS="darwin"
 fi
 echo "yes"
 echo -n "checking for architecture (\$ARCH)... "
@@ -425,27 +429,34 @@ if [ -z "$TMP" ] ; then
          echo "yes"
       else
          echo "no"
-         echo -n "checking for static libgnat.a only (e.g. Slackware)... "
-         TMP=`"$LOCATE" adalib/libgnat`
-         if [ $? -eq 0 ] ; then
-            TMP2=`"$LOCATE" adalib/libgnat.a`
+         echo -n "checking for libgnat.dylib (Darwin)..."
+         TMP=`"$LOCATE" adalib/libgnat.dylib`
+         if [ ! -z "$TMP" ] ; then
+             echo "yes"
          else
-            TMP2="fail-me"
-         fi
-         if [ "$TMP" = "$TMP2" ] ; then
-            echo "yes"
-         else
-            echo "no"
-            echo
-            echo "GCC Ada or GNAT is installed but the Ada Run-Time Environment"
-            echo "(libgnat) was not found.  If libgnat.so was installed, you"
-            echo "may need to run ldconfig (as root) to update the shared"
-            echo "library search paths.  You may need to edit ld.so.conf first"
-            echo "and add the path to libgnat's directory.  If libgnat.a was"
-            echo "installed, run updatedb (as root) and this script should"
-            echo "detect it."
-            echo
-            exit 1
+             echo "no"
+             echo -n "checking for static libgnat.a only (e.g. Slackware)... "
+             TMP=`"$LOCATE" adalib/libgnat`
+             if [ $? -eq 0 ] ; then
+                TMP2=`"$LOCATE" adalib/libgnat.a`
+             else
+                TMP2="fail-me"
+             fi
+             if [ "$TMP" = "$TMP2" ] ; then
+                echo "yes"
+             else
+                echo "no"
+                echo
+                echo "GCC Ada or GNAT is installed but the Ada Run-Time Environment"
+                echo "(libgnat) was not found.  If libgnat.so was installed, you"
+                echo "may need to run ldconfig (as root) to update the shared"
+                echo "library search paths.  You may need to edit ld.so.conf first"
+                echo "and add the path to libgnat's directory.  If libgnat.a was"
+                echo "installed, run updatedb (as root) and this script should"
+                echo "detect it."
+                echo
+                exit 1
+              fi
           fi
       fi
    else
@@ -560,12 +571,19 @@ if [ -z "$TMP" ] ; then
    TMP=`/sbin/ldconfig -r 2>/dev/null | grep libSDL`
    if [ -z "$TMP" ] ; then
       echo "no"
-      echo "No version of the Simple DirectMedia Layer (libSDL) was found"
-      echo "If you have installed libSDL, you may need to use ldconfig (as"
-      echo "root) to update the shared library search paths for libSDL"
-      echo
-      echo "libSDL is used by SparForte to access sound and graphics on your machine"
-      exit 1
+      echo -n "checking for libSDL (locate, Darwin)... "
+      TMP=`"$LOCATE" libSDL`
+      if [ ! -z "$TMP" ] ; then
+          echo "yes"
+      else
+          echo "no"
+          echo "No version of the Simple DirectMedia Layer (libSDL) was found"
+          echo "If you have installed libSDL, you may need to use ldconfig (as"
+          echo "root) to update the shared library search paths for libSDL"
+          echo
+          echo "libSDL is used by SparForte to access sound and graphics on your machine"
+          exit 1
+      fi
     else
        echo "yes"
     fi
@@ -682,20 +700,26 @@ if [ -z "$TMP" ] ; then
    TMP=`/sbin/ldconfig -r 2>/dev/null | grep libSDL_image`
    if [ -z "$TMP" ] ; then
       echo "no"
-      echo "No version of the Simple DirectMedia Layer image library (libSDL_Image) was found"
-      echo "This auxillary library is normally included with libSDL."
-      echo "Fedora users can install it using this command: yum install SDL_image"
-      echo "If you have installed libSDL_image, you may need to use ldconfig (as"
-      echo "root) to update the shared library search paths for libSDL_image"
-      echo
-      echo "libSDL_image is used by SparForte to load image files (JPEGs, GIFs, etc.)"
-      exit 1
+      echo -n "checking for libSDL_image (locate, Darwin)... "
+      TMP=`"$LOCATE" libSDL_image`
+      if [ ! -z "$TMP" ] ; then
+          echo "yes"
+      else
+          echo "No version of the Simple DirectMedia Layer image library (libSDL_Image) was found"
+          echo "This auxillary library is normally included with libSDL."
+          echo "Fedora users can install it using this command: yum install SDL_image"
+          echo "If you have installed libSDL_image, you may need to use ldconfig (as"
+          echo "root) to update the shared library search paths for libSDL_image"
+          echo
+          echo "libSDL_image is used by SparForte to load image files (JPEGs, GIFs, etc.)"
+          exit 1
+      fi
     else
-       SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_ttf\ "
+       SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_image\ "
        echo "yes"
     fi
  else
-  SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_ttf\ "
+  SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_image\ "
   echo "yes"
 fi
 
@@ -709,15 +733,23 @@ if [ -z "$TMP" ] ; then
    TMP=`/sbin/ldconfig -r 2>/dev/null | grep libSDL_ttf`
    if [ -z "$TMP" ] ; then
       echo "no"
-      echo "No version of the Simple DirectMedia Layer truetype font library (libSDL_ttf) was found"
-      echo "This is a third-party  library not normally included with libSDL."
-      echo "Fedora users can install it using this command: yum install SDL_ttf"
-      echo "If you have installed libSDL_ttf, you may need to use ldconfig (as"
-      echo "root) to update the shared library search paths for libSDL_ttf"
-      echo
-      echo "libSDL_ttf is not currently used.  It will be used by the pen package to"
-      echo "to display text."
-      exit 1
+      echo -n "checking for libSDL_ttf (locate, Darwin)... "
+      TMP=`"$LOCATE" libSDL_ttf`
+      if [ ! -z "$TMP" ] ; then
+          SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_ttf\ "
+          echo "yes"
+      else
+          echo "no"
+          echo "No version of the Simple DirectMedia Layer truetype font library (libSDL_ttf) was found"
+          echo "This is a third-party  library not normally included with libSDL."
+          echo "Fedora users can install it using this command: yum install SDL_ttf"
+          echo "If you have installed libSDL_ttf, you may need to use ldconfig (as"
+          echo "root) to update the shared library search paths for libSDL_ttf"
+          echo
+          echo "libSDL_ttf is not currently used.  It will be used by the pen package to"
+          echo "to display text."
+          exit 1
+      fi
     else
        echo "yes"
     fi
@@ -748,8 +780,13 @@ if [ -z "$NO_OPENGL" ] ; then
       echo "no"
       echo
       echo "guessing at OpenGL configation (may be incorrect)... "
-      MESALIBSTYPE="-lGLU\ -lGL\ \ "
-      MESAINCLTYPE="-I\/usr\/include\/libdrm\ \ "
+      if [ "$OS" = "darwin" ]; then
+          MESALIBSTYPE="-Wl,-framework,OpenGL"
+          MESAINCLTYPE=""
+      else
+          MESALIBSTYPE="-lGLU\ -lGL\ \ "
+          MESAINCLTYPE="-I\/usr\/include\/libdrm\ \ "
+      fi
    fi
 else
    HAS_OPENGL=""
@@ -815,7 +852,7 @@ else
    echo "no"
    echo -n "checking for gmake... "
    GMAKETYPE=gmake
-   $GMAKETYPE --version > /dev/null
+   $GMAKETYPE --version > /dev/null 2>/dev/null
    if [ $? -eq 0 ] ; then
       echo "yes"
    else
@@ -823,7 +860,7 @@ else
       echo -n 'checking for ${GMAKE}... '
       if [ ! -z "$GMAKE" ] ; then
          GMAKETYPE="$GMAKE"
-         $GMAKETYPE --version > /dev/null
+         $GMAKETYPE --version > /dev/null 2>/dev/null
          if [ $? -eq 0 ] ; then
             echo "yes"
          else
@@ -839,14 +876,22 @@ else
          fi
       else
          echo "no"
-         echo
-         echo "SparForte requires GNU make.  GNU make normally has a gmake alias"
-         echo "but some systems (like Debian/Linux, Cygwin) do not include the"
-         echo "alias.  If your system calls gmake by another name (such as"
-         echo "'make') use the --make option."
-         echo
-         echo "For example, 'configure --make=make'"
-         exit 1
+         echo -n "checking for make == gmake (Darwin)... "
+         GMAKETYPE="make"
+         $GMAKETYPE --version > /dev/null 2> /dev/null
+         if [ $? -eq 0 ] ; then
+             echo "yes"
+         else
+             echo "no"
+             echo
+             echo "SparForte requires GNU make.  GNU make normally has a gmake alias"
+             echo "but some systems (like Debian/Linux, Cygwin) do not include the"
+             echo "alias.  If your system calls gmake by another name (such as"
+             echo "'make') use the --make option."
+             echo
+             echo "For example, 'configure --make=make'"
+             exit 1
+         fi
       fi
    fi
 fi
@@ -863,6 +908,14 @@ if [ -z "$NO_SOUND" ] ; then
       TMP=`/sbin/ldconfig -r 2>/dev/null | grep libgstreamer`
       if [ -z "$TMP" ] ; then
          echo "no"
+         echo -n "checking for gstreamer (locate, Darwin)... "
+         TMP=`"$LOCATE" libgstreamer`
+         if [ ! -z "$TMP" ] ; then
+             GSTREAMERFLAG=-DGSTREAMER
+             echo "yes"
+         else
+             echo "no"
+         fi
        else
           GSTREAMERFLAG=-DGSTREAMER
           echo "yes"
@@ -905,18 +958,20 @@ else
    fi
 fi
 
-cd apq-2.1
-if [ ! -z "$NO_MYSQL" -a -z "$NO_POSTGRES" ] ; then
-   echo "Running APQ's configure (no MySQL)..."
-   HAVE_MY=0 ./configure
-elif [ -z "$NO_MYSQL" -a ! -z "$NO_POSTGRES" ] ; then
-   echo "Running APQ's configure (no PostgreSQL)..."
-   HAVE_PG=0 ./configure
-else
-   echo "Running APQ's configure..."
-   ./configure
+if [ -z "$NO_MYSQL" -a -z "$NO_POSTGRES" ] ; then
+   cd apq-2.1
+   if [ ! -z "$NO_MYSQL" -a -z "$NO_POSTGRES" ] ; then
+      echo "Running APQ's configure (no MySQL)..."
+      HAVE_MY=0 ./configure
+   elif [ -z "$NO_MYSQL" -a ! -z "$NO_POSTGRES" ] ; then
+      echo "Running APQ's configure (no PostgreSQL)..."
+      HAVE_PG=0 ./configure
+   else
+      echo "Running APQ's configure..."
+      ./configure
+   fi
+   cd -
 fi
-cd -
 #if test -f Makeincl ; then
 #   mv -f Makeincl apq-2.1/Makeincl
 #fi
@@ -1145,7 +1200,7 @@ echo
 if [ "$GMAKE" != "" ] ; then
    echo "Type $GMAKE all"
 else
-   echo "Type gmake all"
+   echo "Type $GMAKETYPE all"
 fi
 exit 0
 
