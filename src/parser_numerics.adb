@@ -93,7 +93,7 @@ begin
         ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsShiftLeft;
 
@@ -117,7 +117,7 @@ begin
         ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsShiftRight;
 
@@ -141,7 +141,7 @@ begin
         ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsRotateLeft;
 
@@ -165,7 +165,7 @@ begin
         ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsRotateRight;
 
@@ -189,7 +189,7 @@ begin
         ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsASR;
 
@@ -207,7 +207,7 @@ begin
        result := to_unbounded_string( sqrt( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsSqrt;
 
@@ -237,7 +237,7 @@ begin
         end if;
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsLog;
 
@@ -255,7 +255,7 @@ begin
         result := to_unbounded_string( exp( to_numeric( expr_val ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsExp;
 
@@ -285,7 +285,7 @@ begin
         end if;
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsSin;
 
@@ -315,7 +315,7 @@ begin
        end if;
     end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
      raise;
   end;
 end ParseNumericsCos;
@@ -346,7 +346,7 @@ begin
        end if;
     end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsTan;
 
@@ -376,7 +376,7 @@ begin
        end if;
     end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsCot;
 
@@ -406,7 +406,7 @@ begin
        end if;
     end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsArcSin;
 
@@ -436,7 +436,7 @@ begin
        end if;
     end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsArcCos;
 
@@ -471,7 +471,7 @@ begin
        end if;
     end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsArcTan;
 
@@ -506,7 +506,7 @@ begin
        end if;
     end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsArcCot;
 
@@ -524,7 +524,7 @@ begin
        result := to_unbounded_string( sinh( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsSinH;
 
@@ -542,7 +542,7 @@ begin
        result := to_unbounded_string( cosh( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsCosH;
 
@@ -560,7 +560,7 @@ begin
        result := to_unbounded_string( tanh( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsTanH;
 
@@ -578,7 +578,7 @@ begin
        result := to_unbounded_string( coth( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsCotH;
 
@@ -596,7 +596,7 @@ begin
        result := to_unbounded_string( arcsinh( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsArcSinH;
 
@@ -614,7 +614,7 @@ begin
        result := to_unbounded_string( arccosh( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsArcCosH;
 
@@ -632,7 +632,7 @@ begin
        result := to_unbounded_string( arctanh( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsArcTanH;
 
@@ -650,7 +650,7 @@ begin
        result := to_unbounded_string( arccoth( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsArcCotH;
 
@@ -668,7 +668,7 @@ begin
        result := to_unbounded_string( long_float'floor( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsFloor;
 
@@ -686,7 +686,7 @@ begin
        result := to_unbounded_string( long_float'ceiling( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsCeiling;
 
@@ -704,7 +704,7 @@ begin
       result := to_unbounded_string( long_float'rounding( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsRounding;
 
@@ -722,7 +722,7 @@ begin
       result := to_unbounded_string( long_float'unbiased_rounding( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsUnbiasedRounding;
 
@@ -740,7 +740,7 @@ begin
       result := to_unbounded_string( long_float'truncation( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsTruncation;
 
@@ -762,7 +762,7 @@ begin
          to_numeric( expr2_val ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsRemainder;
 
@@ -780,7 +780,7 @@ begin
       result := to_unbounded_string( long_float( long_float'exponent( to_numeric( expr_val ) ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsExponent;
 
@@ -798,7 +798,7 @@ begin
       result := to_unbounded_string( long_float'fraction( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsFraction;
 
@@ -820,7 +820,7 @@ begin
          integer( to_numeric( expr2_val ) ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsLeadingPart;
 
@@ -842,7 +842,7 @@ begin
          to_numeric( expr2_val ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsCopySign;
 
@@ -883,7 +883,7 @@ begin
         result := to_unbounded_string( long_float'rounding( (hi-lo) / (1.0+log( total ) ) ) ); -- this is wrong
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsSturges;
 
@@ -905,7 +905,7 @@ begin
          to_numeric( expr2_val ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsMax;
 
@@ -927,7 +927,7 @@ begin
          to_numeric( expr2_val ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsMin;
 
@@ -945,7 +945,7 @@ begin
       result := to_unbounded_string( long_float'machine( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsMachine;
 
@@ -967,7 +967,7 @@ begin
          integer( to_numeric( expr2_val ) ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsScaling;
 
@@ -993,7 +993,7 @@ begin
   when ada.strings.index_error =>
      err( "ada.strings.index_error exception raised" );
   when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsValue;
 
@@ -1012,7 +1012,7 @@ begin
        result := to_unbounded_string( character'pos( Element( expr_val, 1 ) )'img );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsPos;
 
@@ -1030,7 +1030,7 @@ begin
        result := to_unbounded_string( abs( to_numeric( expr_val ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsAbs;
 
@@ -1053,7 +1053,7 @@ begin
        result := to_unbounded_string( Digest_To_Text( FP ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsMd5;
 
@@ -1091,7 +1091,7 @@ begin
              long_float( Ada.Numerics.Float_Random.Random( random_generator ) ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsRnd;
 
@@ -1109,7 +1109,7 @@ begin
        result := to_bush_boolean( integer( to_numeric( expr_val ) ) mod 2 = 1 );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsOdd;
 
@@ -1127,7 +1127,7 @@ begin
        result := to_bush_boolean( integer( to_numeric( expr_val ) ) mod 2 = 0 );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsEven;
 
@@ -1155,7 +1155,7 @@ begin
        result := to_unbounded_string( Re( c ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsRe;
 
@@ -1183,7 +1183,7 @@ begin
        result := to_unbounded_string( Im( c ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsIm;
 
@@ -1217,7 +1217,7 @@ begin
        identifiers( real_t ).value := to_unbounded_string( c.re );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsSetRe;
 
@@ -1251,7 +1251,7 @@ begin
        identifiers( img_t ).value := to_unbounded_string( c.Im );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsSetIm;
 
@@ -1274,7 +1274,7 @@ end ParseNumericsSetIm;
        --result := to_numeric( expr_val );
      --end if;
   --exception when others =>
-     --err( "exception raised" );
+     --err_exception_raised;
   --end;
 --end ParseNumericsComposeFromCartisian;
 
@@ -1302,7 +1302,7 @@ begin
        result := to_unbounded_string( Modulus( c ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsModulus;
 
@@ -1344,7 +1344,7 @@ begin
        end if;
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseNumericsArgument;
 
@@ -1366,7 +1366,7 @@ end ParseNumericsArgument;
 --       result := to_numeric( expr_val );
  --    end if;
   --exception when others =>
-   --  err( "exception raised" );
+   --  err_exception_raised;
   --end;
 --end ParseNumericsComposeFromPolar;
 
@@ -1388,7 +1388,7 @@ end ParseNumericsArgument;
        --result := to_numeric( expr_val );
      --end if;
   --exception when others =>
-     --err( "exception raised" );
+     --err_exception_raised;
   --end;
 --end ParseNumericsConjugate;
 
@@ -1416,7 +1416,7 @@ begin
        result := to_unbounded_string( long_float( hash ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsHashOf;
 
@@ -1445,7 +1445,7 @@ begin
        result := to_unbounded_string( long_float( hash ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsSdbmHashOf;
 
@@ -1479,7 +1479,7 @@ begin
        result := to_unbounded_string( long_float( hash ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsFnvHashOf;
 
@@ -1552,7 +1552,7 @@ begin
 
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseNumericsMurmurHashOf;
 

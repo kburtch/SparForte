@@ -177,7 +177,7 @@ begin
      begin
        result := to_bush_boolean( isValidMemcacheKey( expr_val ) );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMemcacheIsValidMemcacheKey;
@@ -200,7 +200,7 @@ begin
         memcacheClusterList.Queue( memcacheCluster, cluster_entry );
         result := to_unbounded_string( long_float( cluster_id_value ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMemcacheNewCluster;
@@ -233,7 +233,7 @@ begin
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMemcacheRegisterServer;
@@ -259,7 +259,7 @@ begin
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMemcacheClearServers;
@@ -288,7 +288,7 @@ begin
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMemcacheSetClusterName;
@@ -314,7 +314,7 @@ begin
      exception when constraint_error =>
         err( "constraint error" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
      declare
         cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value ) );
@@ -326,7 +326,7 @@ begin
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMemcacheSetClusterType;
@@ -360,7 +360,7 @@ begin
      exception when constraint_error =>
         err( "no memcache servers registered" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMemcacheSet;
@@ -394,7 +394,7 @@ begin
      exception when constraint_error =>
         err( "no memcache servers registered" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMemcacheAdd;
@@ -426,7 +426,7 @@ begin
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMemcacheReplace;
@@ -458,7 +458,7 @@ begin
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMemcacheAppend;
@@ -490,7 +490,7 @@ begin
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMemcachePrepend;
@@ -522,7 +522,7 @@ begin
      exception when constraint_error =>
         err( "no memcache servers registered" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMemcacheGet;
@@ -553,7 +553,7 @@ begin
      exception when constraint_error =>
         err( "no memcache servers registered" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMemcacheDelete;
@@ -580,7 +580,7 @@ begin
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMemcacheStats;
@@ -609,7 +609,7 @@ begin
      exception when constraint_error =>
         err( "no memcache servers registered" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMemcacheVersion;
@@ -635,7 +635,7 @@ begin
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMemcacheFlush;
@@ -664,7 +664,7 @@ begin
         memcacheDualClusterList.Queue( memcacheDualCluster, cluster_entry );
         result := to_unbounded_string( long_float( cluster_id_value ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseHighreadNewCluster;
@@ -697,7 +697,7 @@ begin
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseHighreadRegisterAlphaServer;
@@ -730,7 +730,7 @@ begin
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseHighreadRegisterBetaServer;
@@ -756,7 +756,7 @@ begin
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseHighreadClearServers;
@@ -785,7 +785,7 @@ begin
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseHighreadSetClusterName;
@@ -811,7 +811,7 @@ begin
      exception when constraint_error =>
         err( "constraint error" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
      declare
         cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value ) );
@@ -823,7 +823,7 @@ begin
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseHighreadSetClusterType;
@@ -857,7 +857,7 @@ begin
      exception when constraint_error =>
         err( "no memcache servers registered" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseHighreadSet;
@@ -891,7 +891,7 @@ begin
      exception when constraint_error =>
         err( "no memcache servers registered" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseHighreadAdd;
@@ -923,7 +923,7 @@ begin
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseHighreadReplace;
@@ -955,7 +955,7 @@ begin
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseHighreadAppend;
@@ -987,7 +987,7 @@ begin
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseHighreadPrepend;
@@ -1019,7 +1019,7 @@ begin
      exception when constraint_error =>
         err( "no memcache servers registered" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseHighreadGet;
@@ -1050,7 +1050,7 @@ begin
      exception when constraint_error =>
         err( "no memcache servers registered" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseHighreadDelete;
@@ -1077,7 +1077,7 @@ begin
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseHighreadStats;
@@ -1106,7 +1106,7 @@ begin
      exception when constraint_error =>
         err( "no memcache servers registered" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseHighreadVersion;
@@ -1132,7 +1132,7 @@ begin
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseHighreadFlush;

@@ -76,7 +76,7 @@ begin
   exception when directory_error =>
     err( "directory not accessible" );
   when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseDirOpsDirSeparator;
 
@@ -95,7 +95,7 @@ begin
   exception when directory_error =>
     err( "directory not accessible" );
   when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseDirOpsChangeDir;
 
@@ -114,7 +114,7 @@ begin
   exception when directory_error =>
     err( "directory not accessible" );
   when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseDirOpsMakeDir;
 
@@ -148,7 +148,7 @@ begin
   exception when directory_error =>
     err( "directory cannot be removed" );
   when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseDirOpsRemoveDir;
 
@@ -165,7 +165,7 @@ begin
   exception when directory_error =>
     err( "directory not accessible" );
   when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseDirOpsGetCurrentDir;
 
@@ -183,7 +183,7 @@ begin
        result := to_unbounded_string( dir_name( path_name( to_string( expr_val ) ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseDirOpsDirName;
 
@@ -214,7 +214,7 @@ begin
        result := to_unbounded_string( base_name( path_name( to_string( expr_val ) ), to_string( expr_val2 ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseDirOpsBaseName;
 
@@ -232,7 +232,7 @@ begin
        result := to_unbounded_string( file_extension( path_name( to_string( expr_val ) ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseDirOpsFileExtension;
 
@@ -250,7 +250,7 @@ begin
        result := to_unbounded_string( file_name( path_name( to_string( expr_val ) ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseDirOpsFileName;
 
@@ -293,7 +293,7 @@ begin
   exception when directory_error =>
     err( "directory not accessible" );
   when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseDirOpsFormatPathname;
 
@@ -338,7 +338,7 @@ begin
   exception when directory_error =>
     err( "directory not accessible" );
   when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseDirOpsExpandPath;
 
@@ -384,7 +384,7 @@ begin
      exception when DIRECTORY_ERROR =>
        err( "directory does not exist" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDirOpsOpen;
@@ -405,7 +405,7 @@ begin
      exception when DIRECTORY_ERROR =>
        err( "directory is not open" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDirOpsClose;
@@ -425,7 +425,7 @@ begin
        findResource( to_resource_id( dirVal ), theDir );
        result := to_bush_boolean( Is_Open( theDir.dir ) );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDirOpsIsOpen;
@@ -457,7 +457,7 @@ begin
      exception when DIRECTORY_ERROR =>
        err( "directory is not open" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDirOpsRead;

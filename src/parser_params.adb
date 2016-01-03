@@ -480,7 +480,7 @@ begin
          begin
             arrayIndex := long_integer(to_numeric(expr_value));-- convert to number
          exception when others =>
-            err( "exception raised" );
+            err_exception_raised;
             arrayIndex := 0;
          end;
          -- array_id2 := arrayID( to_numeric(      -- array_id2=reference
@@ -609,7 +609,7 @@ begin
          begin
             arrayIndex := long_integer(to_numeric(expr_value));-- convert to number
          exception when others =>
-            err( "exception raised" );
+            err_exception_raised;
             arrayIndex := 0;
          end;
          -- array_id2 := arrayID( to_numeric(      -- array_id2=reference

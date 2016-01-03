@@ -1271,7 +1271,7 @@ begin
            -- it is almost always this
            err( "numeric variable has no value" );
         when others =>
-           err( "exception raised" );
+           err_exception_raised;
         end;
      end if;
      Put_Line( expr_val );

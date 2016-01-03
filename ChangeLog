@@ -76,5 +76,7 @@ CHANGES SINCE 1.5
 
 27. Change: Refactoring done to database packages.  db.reset not working, not sure why.
 
+28. New (Jedi Tek'unum): Initial support for Darwin (OS/X)...not fully implemented, doesn't build yet.
+
 [David B wants shared library]
 

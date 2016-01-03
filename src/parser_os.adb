@@ -52,7 +52,7 @@ begin
      begin
         last_status:= aStatusCode( linux_system( to_string( expr_val ) & ascii.nul ) );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseOSSystem;

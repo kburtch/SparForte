@@ -212,7 +212,7 @@ begin
        findField( record_ref.id, 4, bottom_field_t );
           identifiers( bottom_field_t ).value := bottom_val;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenSetRect;
@@ -247,7 +247,7 @@ begin
        bushRect2penRect( pen_rect, record_id );
        result := to_bush_boolean( isEmptyRect( pen_rect ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenIsEmptyRect;
@@ -292,7 +292,7 @@ begin
        offsetRect( pen_rect, aCoordinate( to_numeric( dx_val ) ),aCoordinate( to_numeric( dy_val ) ) );
        penRect2bushRect( pen_rect, record_id );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenOffsetRect;
@@ -337,7 +337,7 @@ begin
        insetRect( pen_rect, aCoordinate( to_numeric( dx_val ) ),aCoordinate( to_numeric( dy_val ) ) );
        penRect2bushRect( pen_rect, record_id );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenInsetRect;
@@ -386,7 +386,7 @@ begin
        intersectRect( pen_rect, pen_rect1, pen_rect2 );
        penRect2bushRect( pen_rect, record_id );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenIntersectRect;
@@ -430,7 +430,7 @@ begin
        bushRect2penRect( pen_rect2, record2_id );
        result := to_bush_boolean( insideRect( pen_rect, pen_rect2 ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenInsideRect;
@@ -475,7 +475,7 @@ begin
        bushRect2penRect( pen_rect, record_id );
        result := to_bush_boolean( inRect( ACoordinate( to_numeric( x_val ) ), ACoordinate( to_numeric( y_val ) ), pen_rect ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenInRect;
@@ -514,7 +514,7 @@ begin
        setPenMode( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
           aPenMode'val( natural( to_numeric( mode_val ) ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenSetPenMode;
@@ -549,7 +549,7 @@ begin
           aCanvasID( to_numeric( identifiers( canvas_id ).value ) )) )'img );
        delete( result, 1, 1 );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenGetPenMode;
@@ -601,14 +601,14 @@ begin
           setPenInk( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
              aColourName'val( integer( to_numeric( R_val ) ) ) );
         exception when others =>
-           err( "exception raised" );
+           err_exception_raised;
         end;
      else
         begin
           setPenInk( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
              aRGBComponent( to_numeric( R_val ) ), aRGBComponent( to_numeric( G_val ) ), aRGBComponent( to_numeric( B_val ) ) );
         exception when others =>
-           err( "exception raised" );
+           err_exception_raised;
         end;
      end if;
   end if;
@@ -660,7 +660,7 @@ begin
        identifiers( G_id ).value := to_unbounded_string( G'img );
        identifiers( B_id ).value := to_unbounded_string( B'img );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenGetPenInk;
@@ -699,7 +699,7 @@ begin
        setPenBrush( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
           aPenBrush'val( natural( to_numeric( brush_val ) ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenSetPenBrush;
@@ -733,7 +733,7 @@ begin
        result := to_unbounded_string( aPenBrush'pos( getPenBrush( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ) ) )'img );
        delete( result, 1, 1 );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenGetPenBrush;
@@ -771,7 +771,7 @@ begin
        setPenPattern( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
           aCanvasID( to_numeric( identifiers( brush_id ).value ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenSetPenPattern;
@@ -802,7 +802,7 @@ end ParsePenSetPenPattern;
 --       result := to_unbounded_string( aCanvasID'image( getPenPattern( aCanvasID( to_numeric( canvas_id ) ) ) ) );
 --       delete( result, 1, 1 );
 --     exception when others =>
---        err( "exception raised" );
+--        err_exception_raised;
 --     end;
 --  end if;
 --end ParsePenGetPenPattern;
@@ -859,7 +859,7 @@ begin
                          C_Res, id );
         identifiers( canvas_ref.id ).value := to_unbounded_string( long_float( id ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenNewScreenCanvas;
@@ -925,7 +925,7 @@ begin
                          C_Res, id );
         identifiers( canvas_ref.id ).value := to_unbounded_string( long_float( id ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenNewGLScreenCanvas;
@@ -987,7 +987,7 @@ begin
                          C_Res, id );
         identifiers( canvas_ref.id ).value := to_unbounded_string( long_float( id ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenNewWindowCanvas;
@@ -1049,7 +1049,7 @@ begin
                          C_Res, id );
         identifiers( canvas_ref.id ).value := to_unbounded_string( long_float( id ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenNewGLWindowCanvas;
@@ -1123,7 +1123,7 @@ begin
         end if;
         identifiers( canvas_ref.id ).value := to_unbounded_string( long_float( id ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenNewCanvas;
@@ -1162,7 +1162,7 @@ begin
      begin
         saveCanvas( to_string( h_val ), aCanvasID( to_numeric( identifiers( canvas_id ).value ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenSaveCanvas;
@@ -1206,7 +1206,7 @@ begin
              aCoordinate( to_numeric( x_val ) ),
              aCoordinate( to_numeric( y_val ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenMoveTo;
@@ -1250,7 +1250,7 @@ begin
              aCoordinate( to_numeric( dx_val ) ),
              aCoordinate( to_numeric( dy_val ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenMove;
@@ -1294,7 +1294,7 @@ begin
              aCoordinate( to_numeric( x_val ) ),
              aCoordinate( to_numeric( y_val ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenLineTo;
@@ -1338,7 +1338,7 @@ begin
              aCoordinate( to_numeric( dx_val ) ),
              aCoordinate( to_numeric( dy_val ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenLine;
@@ -1387,7 +1387,7 @@ begin
               aCoordinate( to_numeric( x2_val ) ),
               aCoordinate( to_numeric( y_val ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenHLine;
@@ -1436,7 +1436,7 @@ begin
               aCoordinate( to_numeric( y1_val ) ),
               aCoordinate( to_numeric( y2_val ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenVLine;
@@ -1477,7 +1477,7 @@ begin
        frameRect( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
           pen_rect );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenFrameRect;
@@ -1518,7 +1518,7 @@ begin
        paintRect( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
           pen_rect );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenPaintRect;
@@ -1584,7 +1584,7 @@ begin
             pen_rect,
             aColourName'val( integer( to_numeric( rexpr_val ) ) ) );
         exception when others =>
-          err( "exception raised" );
+          err_exception_raised;
         end;
      else
         declare
@@ -1597,7 +1597,7 @@ begin
              aRGBComponent( to_numeric( gexpr_val ) ),
              aRGBComponent( to_numeric( bexpr_val ) ) );
         exception when others =>
-          err( "exception raised" );
+          err_exception_raised;
         end;
      end if;
   end if;
@@ -1639,7 +1639,7 @@ begin
        frameEllipse( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
           pen_rect );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenFrameEllipse;
@@ -1680,7 +1680,7 @@ begin
        paintEllipse( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
           pen_rect );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenPaintEllipse;
@@ -1745,7 +1745,7 @@ begin
             pen_rect,
             aColourName'val( integer( to_numeric( rexpr_val ) ) ) );
         exception when others =>
-          err( "exception raised" );
+          err_exception_raised;
         end;
      else
         declare
@@ -1758,7 +1758,7 @@ begin
              aRGBComponent( to_numeric( gexpr_val ) ),
              aRGBComponent( to_numeric( bexpr_val ) ) );
         exception when others =>
-          err( "exception raised" );
+          err_exception_raised;
         end;
      end if;
   end if;
@@ -1822,14 +1822,14 @@ begin
         begin
           clear( aCanvasID( to_numeric( canvas_id ) ) );
         exception when others =>
-          err( "exception raised" );
+          err_exception_raised;
         end;
      elsif colorNameVersion then
         begin
           clear( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
             aColourName'val( integer( to_numeric( rexpr_val ) ) ) );
         exception when others =>
-          err( "exception raised" );
+          err_exception_raised;
         end;
      else
         begin
@@ -1838,7 +1838,7 @@ begin
              aRGBComponent( to_numeric( gexpr_val ) ),
              aRGBComponent( to_numeric( bexpr_val ) ) );
         exception when others =>
-          err( "exception raised" );
+          err_exception_raised;
         end;
      end if;
   end if;
@@ -1878,7 +1878,7 @@ begin
        setTitle( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
          expr_val );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenSetTitle;
@@ -1914,7 +1914,7 @@ begin
           penRunning := false;
        end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenCloseCanvas;
@@ -1945,7 +1945,7 @@ begin
      begin
         WaitToReveal( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenWaitToReveal;
@@ -1976,7 +1976,7 @@ begin
      begin
         Reveal( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenReveal;
@@ -2007,7 +2007,7 @@ begin
      begin
         RevealNow( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenRevealNow;
@@ -2058,7 +2058,7 @@ begin
                    )
                  ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenGreyscale;
@@ -2151,7 +2151,7 @@ begin
        AssignParameter( g3, to_unbounded_string( long_float( blend_g ) ) );
        AssignParameter( b3, to_unbounded_string( long_float( blend_b ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenBlend;
@@ -2230,7 +2230,7 @@ begin
        AssignParameter( g3, to_unbounded_string( long_float( blend_g ) ) );
        AssignParameter( b3, to_unbounded_string( long_float( blend_b ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenFade;
@@ -2281,7 +2281,7 @@ begin
         end loop;
         Plot( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ), values );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenPlot;
@@ -2326,7 +2326,7 @@ begin
            font_val,
            natural( to_numeric( points_val ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenSetFont;
@@ -2364,7 +2364,7 @@ begin
            aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
            msg_val ) ;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePenPut;
@@ -2395,7 +2395,7 @@ begin
     begin
       glClearIndex( GLfloat( to_numeric( c_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglClearIndex;
@@ -2435,7 +2435,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglClearColor;
@@ -2466,7 +2466,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglClear;
@@ -2494,7 +2494,7 @@ begin
     begin
       glIndexMask( GLuint( to_numeric( mask_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglIndexMask;
@@ -2531,7 +2531,7 @@ begin
     begin
       glColorMask( GLboolean( to_numeric( red_val ) ), GLboolean( to_numeric( green_val ) ), GLboolean( to_numeric( blue_val ) ), GLboolean( to_numeric( alpha_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColorMask;
@@ -2562,7 +2562,7 @@ begin
     begin
       glAlphaFunc( GLalphacompare( to_numeric( func_val ) ), GLclampf( to_numeric( ref_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglAlphaFunc;
@@ -2596,7 +2596,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglBlendFunc;
@@ -2624,7 +2624,7 @@ begin
     begin
       glLogicOp( GLlogicops( to_numeric( opcode_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLogicOp;
@@ -2652,7 +2652,7 @@ begin
     begin
       glCullFace( GLbuffers( to_numeric( mode_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCullFace;
@@ -2680,7 +2680,7 @@ begin
     begin
       glFrontFace( GLpolygons( to_numeric( mode_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglFrontFace;
@@ -2708,7 +2708,7 @@ begin
     begin
       glPointSize( GLfloat( to_numeric( size_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPointSize;
@@ -2736,7 +2736,7 @@ begin
     begin
       glLineWidth( GLfloat( to_numeric( width_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLineWidth;
@@ -2767,7 +2767,7 @@ begin
     begin
       glLineStipple( GLint( to_numeric( factor_val ) ), GLushort( to_numeric( pattern_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLineStipple;
@@ -2798,7 +2798,7 @@ begin
     begin
       glPolygonMode( GLbuffers( to_numeric( face_val ) ), GLpolygons( to_numeric( mode_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPolygonMode;
@@ -2829,7 +2829,7 @@ begin
     begin
       glPolygonOffset( GLfloat( to_numeric( factor_val ) ), GLfloat( to_numeric( units_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPolygonOffset;
@@ -2858,7 +2858,7 @@ begin
     begin
       glPolygonStipple( mask );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPolygonStipple;
@@ -2886,7 +2886,7 @@ begin
     begin
       glGetPolygonStipple( GLubyte( to_numeric( mask_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetPolygonStipple;
@@ -2914,7 +2914,7 @@ begin
     begin
       glEdgeFlag( GLboolean( to_numeric( flag_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEdgeFlag;
@@ -2943,7 +2943,7 @@ begin
     begin
       glEdgeFlagv( flag );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEdgeFlagv;
@@ -2980,7 +2980,7 @@ begin
     begin
       glScissor( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglScissor;
@@ -3003,7 +3003,7 @@ end ParsePenglScissor;
 --    begin
 --      glClipPlane( GLusercplane( to_numeric( plane_val ) ), equation( equation'first )'address );
 --    exception when others =>
---      err( "exception raised" );
+--      err_exception_raised;
 --    end;
 --  end if;
 --end ParsePenglClipPlane;
@@ -3024,7 +3024,7 @@ end ParsePenglScissor;
 --    begin
 --      glGetClipPlane( GLusercplane( to_numeric( plane_val ) ), GLdouble( to_numeric( equation_val ) ) );
 --    exception when others =>
---      err( "exception raised" );
+--      err_exception_raised;
 --    end;
 --  end if;
 --end ParsePenglGetClipPlane;
@@ -3052,7 +3052,7 @@ begin
     begin
       glDrawBuffer( GLbuffers( to_numeric( mode_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglDrawBuffer;
@@ -3080,7 +3080,7 @@ begin
     begin
       glReadBuffer( GLbuffers( to_numeric( mode_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglReadBuffer;
@@ -3122,7 +3122,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEnable;
@@ -3153,7 +3153,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglDisable;
@@ -3185,7 +3185,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglIsEnabled;
@@ -3217,7 +3217,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEnableClientState;
@@ -3247,7 +3247,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglDisableClientState;
@@ -3278,7 +3278,7 @@ end ParsePenglDisableClientState;
 --    begin
 --      glGetBooleanv( GLenum( to_numeric( pname_val ) ), params );
 --    exception when others =>
---      err( "exception raised" );
+--      err_exception_raised;
 --    end;
 --  end if;
 --end ParsePenglGetBooleanv;
@@ -3299,7 +3299,7 @@ end ParsePenglDisableClientState;
 --    begin
 --      glGetDoublev( GLenum( to_numeric( pname_val ) ), GLdouble( to_numeric( params_val ) ) );
 --    exception when others =>
---      err( "exception raised" );
+--      err_exception_raised;
 --    end;
 --  end if;
 --end ParsePenglGetDoublev;
@@ -3320,7 +3320,7 @@ end ParsePenglDisableClientState;
 --    begin
 --      glGetFloatv( GLenum( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
 --    exception when others =>
---      err( "exception raised" );
+--      err_exception_raised;
 --    end;
 --  end if;
 --end ParsePenglGetFloatv;
@@ -3341,7 +3341,7 @@ end ParsePenglDisableClientState;
 --    begin
 --      glGetIntegerv( GLenum( to_numeric( pname_val ) ), GLint( to_numeric( params_val ) ) );
 --    exception when others =>
---      err( "exception raised" );
+--      err_exception_raised;
 --    end;
 --  end if;
 --end ParsePenglGetIntegerv;
@@ -3363,7 +3363,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPushAttrib;
@@ -3391,7 +3391,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPopAttrib;
@@ -3419,7 +3419,7 @@ begin
     begin
       glPushClientAttrib( GLbitfield( to_numeric( mask_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPushClientAttrib;
@@ -3444,7 +3444,7 @@ begin
     begin
       glPopClientAttrib;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPopClientAttrib;
@@ -3472,7 +3472,7 @@ begin
     begin
       result := to_unbounded_string( long_float( glRenderMode( GLrendermodes( to_numeric( mode_val ) ) ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRenderMode;
@@ -3500,7 +3500,7 @@ begin
     begin
       result := to_unbounded_string( long_float( errNum ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetError;
@@ -3532,7 +3532,7 @@ begin
       c_string_loc := glGetString( GLenum( to_numeric( name_val ) ) );
       result := null_unbounded_string; -- TODO: convert C string to ada string
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetString;
@@ -3560,7 +3560,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglFinish;
@@ -3588,7 +3588,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglFlush;
@@ -3622,7 +3622,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglHint;
@@ -3653,7 +3653,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglClearDepth;
@@ -3684,7 +3684,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglDepthFunc;
@@ -3715,7 +3715,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglDepthMask;
@@ -3749,7 +3749,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglDepthRange;
@@ -3786,7 +3786,7 @@ begin
     begin
       glClearAccum( GLfloat( to_numeric( red_val ) ), GLfloat( to_numeric( green_val ) ), GLfloat( to_numeric( blue_val ) ), GLfloat( to_numeric( alpha_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglClearAccum;
@@ -3817,7 +3817,7 @@ begin
     begin
       glAccum( GLenum( to_numeric( op_val ) ), GLfloat( to_numeric( value_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglAccum;
@@ -3848,7 +3848,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMatrixMode;
@@ -3894,7 +3894,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglOrtho;
@@ -3937,7 +3937,7 @@ begin
     begin
       glFrustum( GLdouble( to_numeric( left_val ) ), GLdouble( to_numeric( right_val ) ), GLdouble( to_numeric( bottom_val ) ), GLdouble( to_numeric( top_val ) ), GLdouble( to_numeric( near_val_val ) ), GLdouble( to_numeric( far_val_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglFrustum;
@@ -3977,7 +3977,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglViewport;
@@ -4005,7 +4005,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPushMatrix;
@@ -4033,7 +4033,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPopMatrix;
@@ -4061,7 +4061,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLoadIdentity;
@@ -4096,7 +4096,7 @@ begin
       glLoadMatrixd( param_ptr );
       free( param_array );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLoadMatrixd;
@@ -4131,7 +4131,7 @@ begin
       glLoadMatrixf( param_ptr );
       free( param_array );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLoadMatrixf;
@@ -4166,7 +4166,7 @@ begin
       glMultMatrixd( param_ptr );
       free( param_array );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultMatrixd;
@@ -4201,7 +4201,7 @@ begin
       glMultMatrixf( param_ptr );
       free( param_array );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultMatrixf;
@@ -4241,7 +4241,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRotated;
@@ -4281,7 +4281,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRotatef;
@@ -4318,7 +4318,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglScaled;
@@ -4352,7 +4352,7 @@ begin
     begin
       glScalef( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ), GLfloat( to_numeric( z_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglScalef;
@@ -4389,7 +4389,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTranslated;
@@ -4426,7 +4426,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTranslatef;
@@ -4454,7 +4454,7 @@ begin
     begin
       result := to_unbounded_string( long_float( glIsList( GLuint( to_numeric( list_val ) ) ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglIsList;
@@ -4485,7 +4485,7 @@ begin
     begin
       glDeleteLists( GLuint( to_numeric( list_val ) ), GLsizei( to_numeric( rng_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglDeleteLists;
@@ -4513,7 +4513,7 @@ begin
     begin
       result := to_unbounded_string( long_float( glGenLists( GLsizei( to_numeric( rng_val ) ) ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGenLists;
@@ -4544,7 +4544,7 @@ begin
     begin
       glNewList( GLuint( to_numeric( list_val ) ), GLdlists( to_numeric( mode_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglNewList;
@@ -4569,7 +4569,7 @@ begin
     begin
       glEndList;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEndList;
@@ -4597,7 +4597,7 @@ begin
     begin
       glCallList( GLuint( to_numeric( list_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCallList;
@@ -4636,7 +4636,7 @@ begin
     begin
       glCallLists( GLsizei( to_numeric( n_val ) ), GLtypes( to_numeric( kind_val ) ), callList );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCallLists;
@@ -4664,7 +4664,7 @@ begin
     begin
       glListBase( GLuint( to_numeric( base_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglListBase;
@@ -4693,7 +4693,7 @@ begin
       glBegin( GLprimitives( to_numeric( mode_val ) ) );
       -- do not check errors: only allowed after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglBegin;
@@ -4721,7 +4721,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEnd;
@@ -4752,7 +4752,7 @@ begin
     begin
       glVertex2d( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex2d;
@@ -4783,7 +4783,7 @@ begin
     begin
       glVertex2f( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex2f;
@@ -4814,7 +4814,7 @@ begin
     begin
       glVertex2i( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex2i;
@@ -4845,7 +4845,7 @@ begin
     begin
       glVertex2s( GLshort( to_numeric( x_val ) ), GLshort( to_numeric( y_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex2s;
@@ -4880,7 +4880,7 @@ begin
       glVertex3d( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( z_val ) ) );
       -- do not check errors: only allowed after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex3d;
@@ -4915,7 +4915,7 @@ begin
       glVertex3f( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ), GLfloat( to_numeric( z_val ) ) );
       -- do not check errors: only allowed after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex3f;
@@ -4950,7 +4950,7 @@ begin
       glVertex3i( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLint( to_numeric( z_val ) ) );
       -- do not check errors: only allowed after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex3i;
@@ -4985,7 +4985,7 @@ begin
       glVertex3s( GLshort( to_numeric( x_val ) ), GLshort( to_numeric( y_val ) ), GLshort( to_numeric( z_val ) ) );
       -- do not check errors: only allowed after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex3s;
@@ -5023,7 +5023,7 @@ begin
       glVertex4d( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( z_val ) ), GLdouble( to_numeric( w_val ) ) );
       -- do not check errors: only allowed after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex4d;
@@ -5060,7 +5060,7 @@ begin
     begin
       glVertex4f( GLfloat( to_numeric( x_val ) ), GLfloat( to_numeric( y_val ) ), GLfloat( to_numeric( z_val ) ), GLfloat( to_numeric( w_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex4f;
@@ -5097,7 +5097,7 @@ begin
     begin
       glVertex4i( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLint( to_numeric( z_val ) ), GLint( to_numeric( w_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex4i;
@@ -5134,7 +5134,7 @@ begin
     begin
       glVertex4s( GLshort( to_numeric( x_val ) ), GLshort( to_numeric( y_val ) ), GLshort( to_numeric( z_val ) ), GLshort( to_numeric( w_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex4s;
@@ -5168,7 +5168,7 @@ begin
     exception when storage_error =>
       err( "storage error raised" );
     when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex2dv;
@@ -5202,7 +5202,7 @@ begin
     exception when storage_error =>
       err( "storage error raised" );
     when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex2fv;
@@ -5236,7 +5236,7 @@ begin
     exception when storage_error =>
       err( "storage error raised" );
     when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex2iv;
@@ -5270,7 +5270,7 @@ begin
     exception when storage_error =>
       err( "storage error raised" );
     when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex2sv;
@@ -5304,7 +5304,7 @@ begin
     exception when storage_error =>
       err( "storage error raised" );
     when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex3dv;
@@ -5338,7 +5338,7 @@ begin
     exception when storage_error =>
       err( "storage error raised" );
     when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex3fv;
@@ -5372,7 +5372,7 @@ begin
     exception when storage_error =>
       err( "storage error raised" );
     when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex3iv;
@@ -5406,7 +5406,7 @@ begin
     exception when storage_error =>
       err( "storage error raised" );
     when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex3sv;
@@ -5440,7 +5440,7 @@ begin
     exception when storage_error =>
       err( "storage error raised" );
     when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex4dv;
@@ -5474,7 +5474,7 @@ begin
     exception when storage_error =>
       err( "storage error raised" );
     when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex4fv;
@@ -5508,7 +5508,7 @@ begin
     exception when storage_error =>
       err( "storage error raised" );
     when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex4iv;
@@ -5542,7 +5542,7 @@ begin
     exception when storage_error =>
       err( "storage error raised" );
     when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertex4sv;
@@ -5576,7 +5576,7 @@ begin
     begin
       glNormal3b( GLbyte( to_numeric( nx_val ) ), GLbyte( to_numeric( ny_val ) ), GLbyte( to_numeric( nz_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglNormal3b;
@@ -5610,7 +5610,7 @@ begin
     begin
       glNormal3d( GLdouble( to_numeric( nx_val ) ), GLdouble( to_numeric( ny_val ) ), GLdouble( to_numeric( nz_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglNormal3d;
@@ -5644,7 +5644,7 @@ begin
     begin
       glNormal3f( GLfloat( to_numeric( nx_val ) ), GLfloat( to_numeric( ny_val ) ), GLfloat( to_numeric( nz_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglNormal3f;
@@ -5678,7 +5678,7 @@ begin
     begin
       glNormal3i( GLint( to_numeric( nx_val ) ), GLint( to_numeric( ny_val ) ), GLint( to_numeric( nz_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglNormal3i;
@@ -5712,7 +5712,7 @@ begin
     begin
       glNormal3s( GLshort( to_numeric( nx_val ) ), GLshort( to_numeric( ny_val ) ), GLshort( to_numeric( nz_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglNormal3s;
@@ -5746,7 +5746,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glNormal3bv( GL_Byte_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglNormal3bv;
@@ -5780,7 +5780,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glNormal3dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglNormal3dv;
@@ -5814,7 +5814,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glNormal3fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglNormal3fv;
@@ -5848,7 +5848,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glNormal3iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglNormal3iv;
@@ -5882,7 +5882,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glNormal3sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglNormal3sv;
@@ -5910,7 +5910,7 @@ begin
     begin
       glIndexd( GLdouble( to_numeric( c_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglIndexd;
@@ -5938,7 +5938,7 @@ begin
     begin
       glIndexf( GLfloat( to_numeric( c_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglIndexf;
@@ -5966,7 +5966,7 @@ begin
     begin
       glIndexi( GLint( to_numeric( c_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglIndexi;
@@ -5994,7 +5994,7 @@ begin
     begin
       glIndexs( GLshort( to_numeric( c_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglIndexs;
@@ -6022,7 +6022,7 @@ begin
     begin
       glIndexub( GLubyte( to_numeric( c_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglIndexub;
@@ -6056,7 +6056,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glIndexdv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglIndexdv;
@@ -6090,7 +6090,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glIndexfv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglIndexfv;
@@ -6124,7 +6124,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glIndexiv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglIndexiv;
@@ -6158,7 +6158,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glIndexsv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglIndexsv;
@@ -6192,7 +6192,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glIndexubv( GL_UByte_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglIndexubv;
@@ -6226,7 +6226,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3;
@@ -6262,7 +6262,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3b;
@@ -6298,7 +6298,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3d;
@@ -6334,7 +6334,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3f;
@@ -6370,7 +6370,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3i;
@@ -6406,7 +6406,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3s;
@@ -6442,7 +6442,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3ub;
@@ -6478,7 +6478,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3ui;
@@ -6514,7 +6514,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3us;
@@ -6553,7 +6553,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4;
@@ -6592,7 +6592,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4b;
@@ -6631,7 +6631,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4d;
@@ -6670,7 +6670,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4f;
@@ -6709,7 +6709,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4i;
@@ -6748,7 +6748,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4s;
@@ -6787,7 +6787,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4ub;
@@ -6826,7 +6826,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4ui;
@@ -6865,7 +6865,7 @@ begin
       -- do not check errors: glcolor may be called during glbegin which
       -- requires error checking only after glEnd
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4us;
@@ -6899,7 +6899,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glColor3bv( GL_Byte_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3bv;
@@ -6933,7 +6933,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glColor3dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3dv;
@@ -6967,7 +6967,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glColor3fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3fv;
@@ -7001,7 +7001,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glColor3iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3iv;
@@ -7035,7 +7035,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glColor3sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3sv;
@@ -7069,7 +7069,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glColor3ubv( GL_UByte_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3ubv;
@@ -7103,7 +7103,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glColor3uiv( GL_UInt_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3uiv;
@@ -7137,7 +7137,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glColor3usv( GL_UShort_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor3usv;
@@ -7171,7 +7171,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glColor4bv( GL_Byte_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4bv;
@@ -7205,7 +7205,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glColor4dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4dv;
@@ -7239,7 +7239,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glColor4fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4fv;
@@ -7273,7 +7273,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glColor4iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4iv;
@@ -7307,7 +7307,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glColor4sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4sv;
@@ -7341,7 +7341,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glColor4ubv( GL_UByte_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4ubv;
@@ -7375,7 +7375,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glColor4uiv( GL_UInt_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4uiv;
@@ -7409,7 +7409,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glColor4usv( GL_UShort_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColor4usv;
@@ -7437,7 +7437,7 @@ begin
     begin
       glTexCoord1d( GLdouble( to_numeric( s_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord1d;
@@ -7465,7 +7465,7 @@ begin
     begin
       glTexCoord1f( GLfloat( to_numeric( s_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord1f;
@@ -7493,7 +7493,7 @@ begin
     begin
       glTexCoord1i( GLint( to_numeric( s_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord1i;
@@ -7521,7 +7521,7 @@ begin
     begin
       glTexCoord1s( GLshort( to_numeric( s_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord1s;
@@ -7552,7 +7552,7 @@ begin
     begin
       glTexCoord2d( GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord2d;
@@ -7583,7 +7583,7 @@ begin
     begin
       glTexCoord2f( GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord2f;
@@ -7614,7 +7614,7 @@ begin
     begin
       glTexCoord2i( GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord2i;
@@ -7645,7 +7645,7 @@ begin
     begin
       glTexCoord2s( GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord2s;
@@ -7679,7 +7679,7 @@ begin
     begin
       glTexCoord3d( GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ), GLdouble( to_numeric( r_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord3d;
@@ -7713,7 +7713,7 @@ begin
     begin
       glTexCoord3f( GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ), GLfloat( to_numeric( r_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord3f;
@@ -7747,7 +7747,7 @@ begin
     begin
       glTexCoord3i( GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ), GLint( to_numeric( r_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord3i;
@@ -7781,7 +7781,7 @@ begin
     begin
       glTexCoord3s( GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ), GLshort( to_numeric( r_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord3s;
@@ -7818,7 +7818,7 @@ begin
     begin
       glTexCoord4d( GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ), GLdouble( to_numeric( r_val ) ), GLdouble( to_numeric( q_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord4d;
@@ -7855,7 +7855,7 @@ begin
     begin
       glTexCoord4f( GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ), GLfloat( to_numeric( r_val ) ), GLfloat( to_numeric( q_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord4f;
@@ -7892,7 +7892,7 @@ begin
     begin
       glTexCoord4i( GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ), GLint( to_numeric( r_val ) ), GLint( to_numeric( q_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord4i;
@@ -7929,7 +7929,7 @@ begin
     begin
       glTexCoord4s( GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ), GLshort( to_numeric( r_val ) ), GLshort( to_numeric( q_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord4s;
@@ -7963,7 +7963,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glTexCoord1dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord1dv;
@@ -7997,7 +7997,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glTexCoord1fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord1fv;
@@ -8031,7 +8031,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glTexCoord1iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord1iv;
@@ -8065,7 +8065,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glTexCoord1sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord1sv;
@@ -8099,7 +8099,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glTexCoord2dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord2dv;
@@ -8133,7 +8133,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glTexCoord2fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord2fv;
@@ -8167,7 +8167,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glTexCoord2iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord2iv;
@@ -8201,7 +8201,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glTexCoord2sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord2sv;
@@ -8235,7 +8235,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glTexCoord3dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord3dv;
@@ -8269,7 +8269,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glTexCoord3fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord3fv;
@@ -8303,7 +8303,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glTexCoord3iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord3iv;
@@ -8337,7 +8337,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glTexCoord3sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord3sv;
@@ -8371,7 +8371,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glTexCoord4dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord4dv;
@@ -8405,7 +8405,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glTexCoord4fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord4fv;
@@ -8439,7 +8439,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glTexCoord4iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord4iv;
@@ -8473,7 +8473,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glTexCoord4sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoord4sv;
@@ -8507,7 +8507,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos2d;
@@ -8541,7 +8541,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos2f;
@@ -8575,7 +8575,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos2i;
@@ -8609,7 +8609,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos2s;
@@ -8646,7 +8646,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos3d;
@@ -8683,7 +8683,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos3f;
@@ -8720,7 +8720,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos3i;
@@ -8757,7 +8757,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos3s;
@@ -8797,7 +8797,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos4d;
@@ -8837,7 +8837,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos4f;
@@ -8877,7 +8877,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos4i;
@@ -8917,7 +8917,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos4s;
@@ -8951,7 +8951,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glRasterPos2dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos2dv;
@@ -8985,7 +8985,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glRasterPos2fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos2fv;
@@ -9019,7 +9019,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glRasterPos2iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos2iv;
@@ -9053,7 +9053,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glRasterPos2sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos2sv;
@@ -9087,7 +9087,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glRasterPos3dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos3dv;
@@ -9121,7 +9121,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glRasterPos3fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos3fv;
@@ -9155,7 +9155,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glRasterPos3iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos3iv;
@@ -9189,7 +9189,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glRasterPos3sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos3sv;
@@ -9223,7 +9223,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glRasterPos4dv( GL_Double_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos4dv;
@@ -9257,7 +9257,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glRasterPos4fv( GL_Float_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos4fv;
@@ -9291,7 +9291,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glRasterPos4iv( GL_Int_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos4iv;
@@ -9325,7 +9325,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glRasterPos4sv( GL_Short_Array_Ptr( param_ptr ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRasterPos4sv;
@@ -9362,7 +9362,7 @@ begin
     begin
       glRectd( GLdouble( to_numeric( x1_val ) ), GLdouble( to_numeric( y1_val ) ), GLdouble( to_numeric( x2_val ) ), GLdouble( to_numeric( y2_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRectd;
@@ -9399,7 +9399,7 @@ begin
     begin
       glRectf( GLfloat( to_numeric( x1_val ) ), GLfloat( to_numeric( y1_val ) ), GLfloat( to_numeric( x2_val ) ), GLfloat( to_numeric( y2_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRectf;
@@ -9436,7 +9436,7 @@ begin
     begin
       glRecti( GLint( to_numeric( x1_val ) ), GLint( to_numeric( y1_val ) ), GLint( to_numeric( x2_val ) ), GLint( to_numeric( y2_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRecti;
@@ -9473,7 +9473,7 @@ begin
     begin
       glRects( GLshort( to_numeric( x1_val ) ), GLshort( to_numeric( y1_val ) ), GLshort( to_numeric( x2_val ) ), GLshort( to_numeric( y2_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRects;
@@ -9512,7 +9512,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glRectdv( GL_Double_Array_Ptr( param_ptr1 ), GL_Double_Array_Ptr( param_ptr2 ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRectdv;
@@ -9551,7 +9551,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glRectfv( GL_Float_Array_Ptr( param_ptr1 ), GL_Float_Array_Ptr( param_ptr2 ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRectfv;
@@ -9590,7 +9590,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glRectiv( GL_Int_Array_Ptr( param_ptr1 ), GL_Int_Array_Ptr( param_ptr2 ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRectiv;
@@ -9629,7 +9629,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glRectsv( param_ptr1, param_ptr2 );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglRectsv;
@@ -9671,7 +9671,7 @@ begin
     begin
       glVertexPointer( GLint( to_numeric( size_val ) ), GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglVertexPointer;
@@ -9710,7 +9710,7 @@ begin
     begin
       glNormalPointer( GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglNormalPointer;
@@ -9752,7 +9752,7 @@ begin
     begin
       glColorPointer( GLint( to_numeric( size_val ) ), GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColorPointer;
@@ -9791,7 +9791,7 @@ begin
     begin
       glIndexPointer( GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglIndexPointer;
@@ -9833,7 +9833,7 @@ begin
     begin
       glTexCoordPointer( GLint( to_numeric( size_val ) ), GLtypes( to_numeric( kind_val ) ), GLsizei( to_numeric( stride_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexCoordPointer;
@@ -9869,7 +9869,7 @@ begin
     begin
       glEdgeFlagPointer( GLsizei( to_numeric( stride_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEdgeFlagPointer;
@@ -9906,7 +9906,7 @@ begin
     begin
       glGetPointerv( GLvertexarrays( to_numeric( pname_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetPointerv;
@@ -9934,7 +9934,7 @@ begin
     begin
       glArrayElement( GLint( to_numeric( i_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglArrayElement;
@@ -9968,7 +9968,7 @@ begin
     begin
       glDrawArrays( GLprimitives( to_numeric( mode_val ) ), GLint( to_numeric( first_val ) ), GLsizei( to_numeric( count_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglDrawArrays;
@@ -10011,7 +10011,7 @@ begin
     begin
       glDrawElements( GLtypes( to_numeric( mode_val ) ), GLsizei( to_numeric( count_val ) ), GLprimitives( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglDrawElements;
@@ -10051,7 +10051,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glInterleavedArrays( GLvertexarrays( to_numeric( format_val ) ), GLsizei( to_numeric( stride_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglInterleavedArrays;
@@ -10082,7 +10082,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglShadeModel;
@@ -10119,7 +10119,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLightf;
@@ -10156,7 +10156,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLighti;
@@ -10197,7 +10197,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glLightfv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLightfv;
@@ -10238,7 +10238,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glLightiv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLightiv;
@@ -10277,7 +10277,7 @@ begin
     begin
       glGetLightfv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetLightfv;
@@ -10316,7 +10316,7 @@ begin
     begin
       glGetLightiv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetLightiv;
@@ -10350,7 +10350,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLightModelf;
@@ -10384,7 +10384,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLightModeli;
@@ -10422,7 +10422,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glLightModelfv( GLenum( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLightModelfv;
@@ -10460,7 +10460,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glLightModeliv( GLenum( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLightModeliv;
@@ -10497,7 +10497,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMaterialf;
@@ -10534,7 +10534,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMateriali;
@@ -10575,7 +10575,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glMaterialfv( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMaterialfv;
@@ -10616,7 +10616,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glMaterialiv( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMaterialiv;
@@ -10657,7 +10657,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glGetMaterialfv( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetMaterialfv;
@@ -10698,7 +10698,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       glGetMaterialiv( GLbuffers( to_numeric( face_val ) ), GLlighting( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetMaterialiv;
@@ -10732,7 +10732,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColorMaterial;
@@ -10766,7 +10766,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPixelZoom;
@@ -10800,7 +10800,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPixelStoref;
@@ -10834,7 +10834,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPixelStorei;
@@ -10868,7 +10868,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPixelTransferf;
@@ -10902,7 +10902,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPixelTransferi;
@@ -10942,7 +10942,7 @@ begin
     begin
       glPixelMapfv( GLpixelmode( to_numeric( map_val ) ), GLsizei( to_numeric( mapsize_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPixelMapfv;
@@ -10982,7 +10982,7 @@ begin
     begin
       glPixelMapuiv( GLpixelmode( to_numeric( map_val ) ), GLsizei( to_numeric( mapsize_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPixelMapuiv;
@@ -11022,7 +11022,7 @@ begin
     begin
       glPixelMapusv( GLpixelmode( to_numeric( map_val ) ), GLsizei( to_numeric( mapsize_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPixelMapusv;
@@ -11059,7 +11059,7 @@ begin
     begin
       glGetPixelMapfv( GLpixelmode( to_numeric( map_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetPixelMapfv;
@@ -11096,7 +11096,7 @@ begin
     begin
       glGetPixelMapuiv( GLpixelmode( to_numeric( map_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetPixelMapuiv;
@@ -11133,7 +11133,7 @@ begin
     begin
       glGetPixelMapusv( GLpixelmode( to_numeric( map_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetPixelMapusv;
@@ -11185,7 +11185,7 @@ begin
     begin
       glBitmap( GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLfloat( to_numeric( xorig_val ) ), GLfloat( to_numeric( yorig_val ) ), GLfloat( to_numeric( xmove_val ) ), GLfloat( to_numeric( ymove_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglBitmap;
@@ -11236,7 +11236,7 @@ begin
     begin
       glReadPixels( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLenum( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglReadPixels;
@@ -11281,7 +11281,7 @@ begin
     begin
       glDrawPixels( GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglDrawPixels;
@@ -11321,7 +11321,7 @@ begin
     begin
       glCopyPixels( GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( kind_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCopyPixels;
@@ -11358,7 +11358,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglStencilFunc;
@@ -11389,7 +11389,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglStencilMask;
@@ -11426,7 +11426,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglStencilOp;
@@ -11457,7 +11457,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglClearStencil;
@@ -11494,7 +11494,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexGend;
@@ -11531,7 +11531,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexGenf;
@@ -11568,7 +11568,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexGeni;
@@ -11608,7 +11608,7 @@ begin
     begin
       glTexGendv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexGendv;
@@ -11648,7 +11648,7 @@ begin
     begin
       glTexGenfv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexGenfv;
@@ -11688,7 +11688,7 @@ begin
     begin
       glTexGeniv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexGeniv;
@@ -11728,7 +11728,7 @@ begin
     begin
       glGetTexGendv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetTexGendv;
@@ -11768,7 +11768,7 @@ begin
     begin
       glGetTexGenfv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetTexGenfv;
@@ -11808,7 +11808,7 @@ begin
     begin
       glGetTexGeniv( GLtexturemapping( to_numeric( coord_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetTexGeniv;
@@ -11845,7 +11845,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexEnvf;
@@ -11882,7 +11882,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexEnvi;
@@ -11922,7 +11922,7 @@ begin
     begin
       glTexEnvfv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexEnvfv;
@@ -11962,7 +11962,7 @@ begin
     begin
       glTexEnviv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexEnviv;
@@ -12002,7 +12002,7 @@ begin
     begin
       glGetTexEnvfv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetTexEnvfv;
@@ -12042,7 +12042,7 @@ begin
     begin
       glGetTexEnviv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetTexEnviv;
@@ -12079,7 +12079,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexParameterf;
@@ -12116,7 +12116,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexParameteri;
@@ -12156,7 +12156,7 @@ begin
     begin
       glTexParameterfv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexParameterfv;
@@ -12196,7 +12196,7 @@ begin
     begin
       glTexParameteriv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexParameteriv;
@@ -12236,7 +12236,7 @@ begin
     begin
       glGetTexParameterfv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetTexParameterfv;
@@ -12276,7 +12276,7 @@ begin
     begin
       glGetTexParameteriv( GLtexturemapping( to_numeric( target_val ) ), GLtexturemapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetTexParameteriv;
@@ -12319,7 +12319,7 @@ begin
     begin
       glGetTexLevelParameterfv( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLenum( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetTexLevelParameterfv;
@@ -12362,7 +12362,7 @@ begin
     begin
       glGetTexLevelParameteriv( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLenum( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetTexLevelParameteriv;
@@ -12416,7 +12416,7 @@ begin
     begin
       glTexImage1D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLint( to_numeric( border_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexImage1D;
@@ -12474,7 +12474,7 @@ begin
     begin
       glTexImage2D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLint( to_numeric( border_val ) ), GLenum( to_numeric( format_val ) ), GLenum( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexImage2D;
@@ -12519,7 +12519,7 @@ begin
     begin
       glGetTexImage( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetTexImage;
@@ -12556,7 +12556,7 @@ begin
     begin
       glGenTextures( GLsizei( to_numeric( n_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGenTextures;
@@ -12593,7 +12593,7 @@ begin
     begin
       glDeleteTextures( GLsizei( to_numeric( n_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglDeleteTextures;
@@ -12627,7 +12627,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglBindTexture;
@@ -12668,7 +12668,7 @@ begin
     begin
       null; --glPrioritizeTextures( GLsizei( to_numeric( n_val ) ), param_ptr, GL_Clampf_Array_Ptr( to_numeric( priorities_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPrioritizeTextures;
@@ -12710,7 +12710,7 @@ begin
     begin
       result := to_unbounded_string( long_float( glAreTexturesResident( GLsizei( to_numeric( n_val ) ), param_ptr, param2_ptr ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglAreTexturesResident;
@@ -12738,7 +12738,7 @@ begin
     begin
       result := to_unbounded_string( long_float( glIsTexture( GLuint( to_numeric( texture_val ) ) ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglIsTexture;
@@ -12789,7 +12789,7 @@ begin
     begin
       glTexSubImage1D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexSubImage1D;
@@ -12846,7 +12846,7 @@ begin
     begin
       glTexSubImage2D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexSubImage2D;
@@ -12892,7 +12892,7 @@ begin
     begin
       glCopyTexImage1D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLenum( to_numeric( internalformat_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLint( to_numeric( border_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCopyTexImage1D;
@@ -12941,7 +12941,7 @@ begin
     begin
       glCopyTexImage2D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLenum( to_numeric( internalformat_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLint( to_numeric( border_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCopyTexImage2D;
@@ -12984,7 +12984,7 @@ begin
     begin
       glCopyTexSubImage1D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCopyTexSubImage1D;
@@ -13033,7 +13033,7 @@ begin
     begin
       glCopyTexSubImage2D( GLtexturemapping( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCopyTexSubImage2D;
@@ -13082,7 +13082,7 @@ begin
     begin
       glMap1d( GLevaluators( to_numeric( target_val ) ), GLdouble( to_numeric( u1_val ) ), GLdouble( to_numeric( u2_val ) ), GLint( to_numeric( stride_val ) ), GLint( to_numeric( order_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMap1d;
@@ -13131,7 +13131,7 @@ begin
     begin
       glMap1f( GLevaluators( to_numeric( target_val ) ), GLfloat( to_numeric( u1_val ) ), GLfloat( to_numeric( u2_val ) ), GLint( to_numeric( stride_val ) ), GLint( to_numeric( order_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMap1f;
@@ -13192,7 +13192,7 @@ begin
     begin
       glMap2d( GLevaluators( to_numeric( target_val ) ), GLdouble( to_numeric( u1_val ) ), GLdouble( to_numeric( u2_val ) ), GLint( to_numeric( ustride_val ) ), GLint( to_numeric( uorder_val ) ), GLdouble( to_numeric( v1_val ) ), GLdouble( to_numeric( v2_val ) ), GLint( to_numeric( vstride_val ) ), GLint( to_numeric( vorder_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMap2d;
@@ -13253,7 +13253,7 @@ begin
     begin
       glMap2f( GLevaluators( to_numeric( target_val ) ), GLfloat( to_numeric( u1_val ) ), GLfloat( to_numeric( u2_val ) ), GLint( to_numeric( ustride_val ) ), GLint( to_numeric( uorder_val ) ), GLfloat( to_numeric( v1_val ) ), GLfloat( to_numeric( v2_val ) ), GLint( to_numeric( vstride_val ) ), GLint( to_numeric( vorder_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMap2f;
@@ -13293,7 +13293,7 @@ begin
     begin
       glGetMapdv( GLevaluators( to_numeric( target_val ) ), GLevaluators( to_numeric( query_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetMapdv;
@@ -13333,7 +13333,7 @@ begin
     begin
       glGetMapfv( GLevaluators( to_numeric( target_val ) ), GLevaluators( to_numeric( query_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetMapfv;
@@ -13373,7 +13373,7 @@ begin
     begin
       glGetMapiv( GLevaluators( to_numeric( target_val ) ), GLevaluators( to_numeric( query_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetMapiv;
@@ -13407,7 +13407,7 @@ begin
     begin
       glEvalCoord1d( param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEvalCoord1d;
@@ -13441,7 +13441,7 @@ begin
     begin
       glEvalCoord1f( param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEvalCoord1f;
@@ -13475,7 +13475,7 @@ begin
     begin
       glEvalCoord1dv( param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEvalCoord1dv;
@@ -13509,7 +13509,7 @@ begin
     begin
       glEvalCoord1fv( param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEvalCoord1fv;
@@ -13540,7 +13540,7 @@ begin
     begin
       glEvalCoord2d( GLdouble( to_numeric( u_val ) ), GLdouble( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEvalCoord2d;
@@ -13571,7 +13571,7 @@ begin
     begin
       glEvalCoord2f( GLfloat( to_numeric( u_val ) ), GLfloat( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEvalCoord2f;
@@ -13605,7 +13605,7 @@ begin
     begin
       glEvalCoord2dv( param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEvalCoord2dv;
@@ -13639,7 +13639,7 @@ begin
     begin
       glEvalCoord2fv( param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEvalCoord2fv;
@@ -13673,7 +13673,7 @@ begin
     begin
       glMapGrid1d( GLint( to_numeric( un_val ) ), GLdouble( to_numeric( u1_val ) ), GLdouble( to_numeric( u2_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMapGrid1d;
@@ -13707,7 +13707,7 @@ begin
     begin
       glMapGrid1f( GLint( to_numeric( un_val ) ), GLfloat( to_numeric( u1_val ) ), GLfloat( to_numeric( u2_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMapGrid1f;
@@ -13750,7 +13750,7 @@ begin
     begin
       glMapGrid2d( GLint( to_numeric( un_val ) ), GLdouble( to_numeric( u1_val ) ), GLdouble( to_numeric( u2_val ) ), GLint( to_numeric( vn_val ) ), GLdouble( to_numeric( v1_val ) ), GLdouble( to_numeric( v2_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMapGrid2d;
@@ -13793,7 +13793,7 @@ begin
     begin
       glMapGrid2f( GLint( to_numeric( un_val ) ), GLfloat( to_numeric( u1_val ) ), GLfloat( to_numeric( u2_val ) ), GLint( to_numeric( vn_val ) ), GLfloat( to_numeric( v1_val ) ), GLfloat( to_numeric( v2_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMapGrid2f;
@@ -13821,7 +13821,7 @@ begin
     begin
       glEvalPoint1( GLint( to_numeric( i_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEvalPoint1;
@@ -13852,7 +13852,7 @@ begin
     begin
       glEvalPoint2( GLint( to_numeric( i_val ) ), GLint( to_numeric( j_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEvalPoint2;
@@ -13886,7 +13886,7 @@ begin
     begin
       glEvalMesh1( GLpolygons( to_numeric( mode_val ) ), GLint( to_numeric( i1_val ) ), GLint( to_numeric( i2_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEvalMesh1;
@@ -13926,7 +13926,7 @@ begin
     begin
       glEvalMesh2( GLpolygons( to_numeric( mode_val ) ), GLint( to_numeric( i1_val ) ), GLint( to_numeric( i2_val ) ), GLint( to_numeric( j1_val ) ), GLint( to_numeric( j2_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEvalMesh2;
@@ -13960,7 +13960,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglFogf;
@@ -13994,7 +13994,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglFogi;
@@ -14031,7 +14031,7 @@ begin
     begin
       glFogfv( GLfog( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglFogfv;
@@ -14068,7 +14068,7 @@ begin
     begin
       glFogiv( GLfog( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglFogiv;
@@ -14108,7 +14108,7 @@ begin
     begin
       glFeedbackBuffer( GLsizei( to_numeric( size_val ) ), GLfeedback( to_numeric( kind_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglFeedbackBuffer;
@@ -14139,7 +14139,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPassThrough;
@@ -14176,7 +14176,7 @@ begin
     begin
       glSelectBuffer( GLsizei( to_numeric( kind_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglSelectBuffer;
@@ -14204,7 +14204,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglInitNames;
@@ -14235,7 +14235,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLoadName;
@@ -14266,7 +14266,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPushName;
@@ -14294,7 +14294,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglPopName;
@@ -14342,7 +14342,7 @@ begin
     begin
       glDrawRangeElements( GLprimitives( to_numeric( mode_val ) ), GLuint( to_numeric( start_val ) ), GLuint( to_numeric( done_val ) ), GLsizei( to_numeric( count_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglDrawRangeElements;
@@ -14402,7 +14402,7 @@ begin
     begin
       glTexImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLint( to_numeric( border_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexImage3D;
@@ -14465,7 +14465,7 @@ begin
     begin
       glTexSubImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLint( to_numeric( zoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglTexSubImage3D;
@@ -14517,7 +14517,7 @@ begin
     begin
       glCopyTexSubImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLint( to_numeric( zoffset_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCopyTexSubImage3D;
@@ -14565,7 +14565,7 @@ begin
     begin
       glColorTable( GLenum( to_numeric( target_val ) ), GLenum( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLenum( to_numeric( format_val ) ), GLenum( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColorTable;
@@ -14613,7 +14613,7 @@ begin
     begin
       glColorSubTable( GLarbmapping( to_numeric( target_val ) ), GLsizei( to_numeric( start_val ) ), GLsizei( to_numeric( count_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColorSubTable;
@@ -14653,7 +14653,7 @@ begin
     begin
       glColorTableParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColorTableParameteriv;
@@ -14693,7 +14693,7 @@ begin
     begin
       glColorTableParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglColorTableParameterfv;
@@ -14733,7 +14733,7 @@ begin
     begin
       glCopyColorSubTable( GLarbmapping( to_numeric( target_val ) ), GLsizei( to_numeric( start_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCopyColorSubTable;
@@ -14773,7 +14773,7 @@ begin
     begin
       glCopyColorTable( GLarbmapping( to_numeric( target_val ) ), GLenum( to_numeric( internalformat_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCopyColorTable;
@@ -14815,7 +14815,7 @@ begin
     begin
       glGetColorTable( GLarbmapping( to_numeric( target_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetColorTable;
@@ -14855,7 +14855,7 @@ begin
     begin
       glGetColorTableParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetColorTableParameterfv;
@@ -14895,7 +14895,7 @@ begin
     begin
       glGetColorTableParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetColorTableParameteriv;
@@ -14923,7 +14923,7 @@ begin
     begin
       glBlendEquation( GLarbmapping( to_numeric( mode_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglBlendEquation;
@@ -14960,7 +14960,7 @@ begin
     begin
       glBlendColor( GLclampf( to_numeric( red_val ) ), GLclampf( to_numeric( green_val ) ), GLclampf( to_numeric( blue_val ) ), GLclampf( to_numeric( alpha_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglBlendColor;
@@ -14997,7 +14997,7 @@ begin
     begin
       glHistogram( GLarbmapping( to_numeric( target_val ) ), GLsizei( to_numeric( width_val ) ), GLenum( to_numeric( internalformat_val ) ), GLboolean( to_numeric( sink_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglHistogram;
@@ -15025,7 +15025,7 @@ begin
     begin
       glResetHistogram( GLarbmapping( to_numeric( target_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglResetHistogram;
@@ -15070,7 +15070,7 @@ begin
     begin
       glGetHistogram( GLarbmapping( to_numeric( target_val ) ), GLboolean( to_numeric( reset_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetHistogram;
@@ -15107,7 +15107,7 @@ begin
       glGetHistogramParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param );
       result := to_unbounded_string( GLFloat'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetHistogramParameterfv;
@@ -15144,7 +15144,7 @@ begin
       glGetHistogramParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param );
       result := to_unbounded_string( GLInt'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetHistogramParameteriv;
@@ -15178,7 +15178,7 @@ begin
     begin
       glMinmax( GLarbmapping( to_numeric( target_val ) ), GLenum( to_numeric( internalformat_val ) ), GLboolean( to_numeric( sink_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMinmax;
@@ -15206,7 +15206,7 @@ begin
     begin
       glResetMinmax( GLarbmapping( to_numeric( target_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglResetMinmax;
@@ -15251,7 +15251,7 @@ begin
     begin
       glGetMinmax( GLarbmapping( to_numeric( target_val ) ), GLboolean( to_numeric( reset_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetMinmax;
@@ -15291,7 +15291,7 @@ begin
     begin
       glGetMinmaxParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetMinmaxParameterfv;
@@ -15331,7 +15331,7 @@ begin
     begin
       glGetMinmaxParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetMinmaxParameteriv;
@@ -15379,7 +15379,7 @@ begin
     begin
       glConvolutionFilter1D( GLbuffers( to_numeric( target_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglConvolutionFilter1D;
@@ -15430,7 +15430,7 @@ begin
     begin
       glConvolutionFilter2D( GLbuffers( to_numeric( target_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglConvolutionFilter2D;
@@ -15464,7 +15464,7 @@ begin
     begin
       glConvolutionParameterf( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), GLfloat( to_numeric( params_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglConvolutionParameterf;
@@ -15502,7 +15502,7 @@ begin
       glConvolutionParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param );
       result := to_unbounded_string( GLfloat'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglConvolutionParameterfv;
@@ -15540,7 +15540,7 @@ begin
       glConvolutionParameteri( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param );
       result := to_unbounded_string( GLint'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglConvolutionParameteri;
@@ -15580,7 +15580,7 @@ begin
     begin
       glCopyConvolutionFilter1D( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( internalformat_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCopyConvolutionFilter1D;
@@ -15623,7 +15623,7 @@ begin
     begin
       glCopyConvolutionFilter2D( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( internalformat_val ) ), GLint( to_numeric( x_val ) ), GLint( to_numeric( y_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCopyConvolutionFilter2D;
@@ -15665,7 +15665,7 @@ begin
     begin
       glGetConvolutionFilter( GLarbmapping( to_numeric( target_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetConvolutionFilter;
@@ -15702,7 +15702,7 @@ begin
       glGetConvolutionParameterfv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param );
       result := to_unbounded_string( GLFloat'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetConvolutionParameterfv;
@@ -15739,7 +15739,7 @@ begin
       glGetConvolutionParameteriv( GLarbmapping( to_numeric( target_val ) ), GLarbmapping( to_numeric( pname_val ) ), param );
       result := to_unbounded_string( GLInt'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetConvolutionParameteriv;
@@ -15796,7 +15796,7 @@ begin
       -- TODO: two parameters are single dimensional arrays
       glSeparableFilter2D( GLarbmapping( to_numeric( target_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr, dummy2_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglSeparableFilter2D;
@@ -15849,7 +15849,7 @@ begin
       -- TODO: two one dimensional arrays
       glGetSeparableFilter( GLarbmapping( to_numeric( target_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr, dummy2_ptr, dummy3_ptr );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetSeparableFilter;
@@ -15877,7 +15877,7 @@ begin
     begin
       glActiveTexture( GLenum( to_numeric( texture_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglActiveTexture;
@@ -15905,7 +15905,7 @@ begin
     begin
       glClientActiveTexture( GLenum( to_numeric( texture_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglClientActiveTexture;
@@ -15953,7 +15953,7 @@ begin
     begin
       null; --glCompressedTexImage1D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLint( to_numeric( border_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCompressedTexImage1D;
@@ -16004,7 +16004,7 @@ begin
     begin
       null; --glCompressedTexImage2D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLint( to_numeric( border_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCompressedTexImage2D;
@@ -16058,7 +16058,7 @@ begin
     begin
       null; -- glCompressedTexImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLbuffers( to_numeric( internalformat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLint( to_numeric( border_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCompressedTexImage3D;
@@ -16106,7 +16106,7 @@ begin
       -- TODO: no man page?
       null; -- glCompressedTexSubImage1D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCompressedTexSubImage1D;
@@ -16159,7 +16159,7 @@ begin
     begin
       null; -- glCompressedTexSubImage2D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCompressedTexSubImage2D;
@@ -16219,7 +16219,7 @@ begin
       -- TODO: no man page?
       null; --glCompressedTexSubImage3D( GLenum( to_numeric( target_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( xoffset_val ) ), GLint( to_numeric( yoffset_val ) ), GLint( to_numeric( zoffset_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( imageSize_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCompressedTexSubImage3D;
@@ -16255,7 +16255,7 @@ begin
       -- TODO: no man page?
       null; -- glGetCompressedTexImage( GLenum( to_numeric( target_val ) ), GLint( to_numeric( lod_val ) ), System.address( to_numeric( img_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetCompressedTexImage;
@@ -16286,7 +16286,7 @@ begin
     begin
       glMultiTexCoord1d( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( s_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord1d;
@@ -16322,7 +16322,7 @@ begin
       glMultiTexCoord1dv( GLenum( to_numeric( target_val ) ), param );
       result := to_unbounded_string( GLdouble'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord1dv;
@@ -16353,7 +16353,7 @@ begin
     begin
       glMultiTexCoord1f( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( s_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord1f;
@@ -16389,7 +16389,7 @@ begin
       glMultiTexCoord1fv( GLenum( to_numeric( target_val ) ), param );
       result := to_unbounded_string( GLfloat'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord1fv;
@@ -16420,7 +16420,7 @@ begin
     begin
       glMultiTexCoord1i( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord1i;
@@ -16456,7 +16456,7 @@ begin
       glMultiTexCoord1iv( GLenum( to_numeric( target_val ) ), param );
       result := to_unbounded_string( GLint'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord1iv;
@@ -16487,7 +16487,7 @@ begin
     begin
       glMultiTexCoord1s( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( s_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord1s;
@@ -16523,7 +16523,7 @@ begin
       glMultiTexCoord1sv( GLenum( to_numeric( target_val ) ),  param );
       result := to_unbounded_string( GLshort'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord1sv;
@@ -16557,7 +16557,7 @@ begin
     begin
       glMultiTexCoord2d( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord2d;
@@ -16594,7 +16594,7 @@ begin
       glMultiTexCoord2dv( GLenum( to_numeric( target_val ) ), param );
       result := to_unbounded_string( GLdouble'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord2dv;
@@ -16628,7 +16628,7 @@ begin
     begin
       glMultiTexCoord2f( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord2f;
@@ -16665,7 +16665,7 @@ begin
       glMultiTexCoord2fv( GLenum( to_numeric( target_val ) ), param );
       result := to_unbounded_string( GLfloat'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord2fv;
@@ -16699,7 +16699,7 @@ begin
     begin
       glMultiTexCoord2i( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord2i;
@@ -16736,7 +16736,7 @@ begin
       glMultiTexCoord2iv( GLenum( to_numeric( target_val ) ), param );
       result := to_unbounded_string( GLint'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord2iv;
@@ -16770,7 +16770,7 @@ begin
     begin
       glMultiTexCoord2s( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord2s;
@@ -16807,7 +16807,7 @@ begin
       glMultiTexCoord2sv( GLenum( to_numeric( target_val ) ), param );
       result := to_unbounded_string( GLshort'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord2sv;
@@ -16844,7 +16844,7 @@ begin
     begin
       glMultiTexCoord3d( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ), GLdouble( to_numeric( r_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord3d;
@@ -16881,7 +16881,7 @@ begin
       glMultiTexCoord3dv( GLenum( to_numeric( target_val ) ), param );
       result := to_unbounded_string( GLdouble'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord3dv;
@@ -16918,7 +16918,7 @@ begin
     begin
       glMultiTexCoord3f( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ), GLfloat( to_numeric( r_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord3f;
@@ -16955,7 +16955,7 @@ begin
       glMultiTexCoord3fv( GLenum( to_numeric( target_val ) ), param );
       result := to_unbounded_string( GLfloat'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord3fv;
@@ -16992,7 +16992,7 @@ begin
     begin
       glMultiTexCoord3i( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ), GLint( to_numeric( r_val ) )  );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord3i;
@@ -17029,7 +17029,7 @@ begin
       glMultiTexCoord3iv( GLenum( to_numeric( target_val ) ), param );
       result := to_unbounded_string( GLint'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord3iv;
@@ -17066,7 +17066,7 @@ begin
     begin
       glMultiTexCoord3s( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ), GLshort( to_numeric( r_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord3s;
@@ -17103,7 +17103,7 @@ begin
       glMultiTexCoord3sv( GLenum( to_numeric( target_val ) ), param );
       result := to_unbounded_string( GLshort'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord3sv;
@@ -17143,7 +17143,7 @@ begin
     begin
       glMultiTexCoord4d( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ), GLdouble( to_numeric( r_val ) ), GLdouble( to_numeric( q_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord4d;
@@ -17180,7 +17180,7 @@ begin
       glMultiTexCoord4dv( GLenum( to_numeric( target_val ) ), param );
       result := to_unbounded_string( GLdouble'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord4dv;
@@ -17220,7 +17220,7 @@ begin
     begin
       glMultiTexCoord4f( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ), GLfloat( to_numeric( r_val ) ), GLfloat( to_numeric( q_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord4f;
@@ -17257,7 +17257,7 @@ begin
       glMultiTexCoord4fv( GLenum( to_numeric( target_val ) ), param );
       result := to_unbounded_string( GLfloat'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord4fv;
@@ -17297,7 +17297,7 @@ begin
     begin
       glMultiTexCoord4i( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ), GLint( to_numeric( r_val ) ), GLint( to_numeric( q_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord4i;
@@ -17334,7 +17334,7 @@ begin
       glMultiTexCoord4iv( GLenum( to_numeric( target_val ) ), param );
       result := to_unbounded_string( GLint'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord4iv;
@@ -17374,7 +17374,7 @@ begin
     begin
       glMultiTexCoord4s( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ), GLshort( to_numeric( r_val ) ), GLshort( to_numeric( q_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord4s;
@@ -17411,7 +17411,7 @@ begin
       glMultiTexCoord4sv( GLenum( to_numeric( target_val ) ), param );
       result := to_unbounded_string( GLshort'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord4sv;
@@ -17441,7 +17441,7 @@ begin
     begin
       null; --glLoadTransposeMatrixd( GLdoublem[16]( to_numeric( GLdoublem[16]_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLoadTransposeMatrixd;
@@ -17471,7 +17471,7 @@ begin
     begin
       null; --glLoadTransposeMatrixf( GLfloatm[16]( to_numeric( GLfloatm[16]_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglLoadTransposeMatrixf;
@@ -17501,7 +17501,7 @@ begin
     begin
       null; --glMultTransposeMatrixd( GLdoublem[16]( to_numeric( GLdoublem[16]_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultTransposeMatrixd;
@@ -17531,7 +17531,7 @@ begin
     begin
       null; --glMultTransposeMatrixf( GLfloatm[16]( to_numeric( GLfloatm[16]_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultTransposeMatrixf;
@@ -17562,7 +17562,7 @@ begin
     begin
       glSampleCoverage( GLclampf( to_numeric( value_val ) ), GLboolean( to_numeric( invert_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglSampleCoverage;
@@ -17590,7 +17590,7 @@ begin
     begin
       glActiveTextureARB( GLenum( to_numeric( texture_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglActiveTextureARB;
@@ -17618,7 +17618,7 @@ begin
     begin
       glClientActiveTextureARB( GLenum( to_numeric( texture_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglClientActiveTextureARB;
@@ -17649,7 +17649,7 @@ begin
     begin
       glMultiTexCoord1dARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( s_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord1dARB;
@@ -17682,7 +17682,7 @@ begin
       -- TODO: no man page for this
       null; -- glMultiTexCoord1dvARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord1dvARB;
@@ -17713,7 +17713,7 @@ begin
     begin
       glMultiTexCoord1fARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( s_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord1fARB;
@@ -17746,7 +17746,7 @@ begin
       -- TODO: no man page for this
       null; -- glMultiTexCoord1fvARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord1fvARB;
@@ -17777,7 +17777,7 @@ begin
     begin
       glMultiTexCoord1iARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord1iARB;
@@ -17810,7 +17810,7 @@ begin
       -- TODO: no man page for this
       null; -- glMultiTexCoord1ivARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord1ivARB;
@@ -17841,7 +17841,7 @@ begin
     begin
       glMultiTexCoord1sARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( s_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord1sARB;
@@ -17874,7 +17874,7 @@ begin
       -- TODO: no man page for this
       null; -- glMultiTexCoord1svARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord1svARB;
@@ -17908,7 +17908,7 @@ begin
     begin
       glMultiTexCoord2dARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord2dARB;
@@ -17941,7 +17941,7 @@ begin
       -- TODO: no man page for this
       null; -- glMultiTexCoord2dvARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord2dvARB;
@@ -17975,7 +17975,7 @@ begin
     begin
       glMultiTexCoord2fARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord2fARB;
@@ -18008,7 +18008,7 @@ begin
       -- TODO: no man page for this
       null; -- glMultiTexCoord2fvARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord2fvARB;
@@ -18042,7 +18042,7 @@ begin
     begin
       glMultiTexCoord2iARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord2iARB;
@@ -18075,7 +18075,7 @@ begin
       -- TODO: no man page for this
       null; -- glMultiTexCoord2ivARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord2ivARB;
@@ -18109,7 +18109,7 @@ begin
     begin
       glMultiTexCoord2sARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord2sARB;
@@ -18142,7 +18142,7 @@ begin
       -- TODO: no man page for this
       null; -- glMultiTexCoord2svARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord2svARB;
@@ -18179,7 +18179,7 @@ begin
     begin
       glMultiTexCoord3dARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ), GLdouble( to_numeric( r_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord3dARB;
@@ -18212,7 +18212,7 @@ begin
       -- TODO: no man page for this
       null; -- glMultiTexCoord3dvARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord3dvARB;
@@ -18249,7 +18249,7 @@ begin
     begin
       glMultiTexCoord3fARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ), GLfloat( to_numeric( r_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord3fARB;
@@ -18282,7 +18282,7 @@ begin
       -- TODO: no man page for this
       null; -- glMultiTexCoord3fvARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord3fvARB;
@@ -18319,7 +18319,7 @@ begin
     begin
       glMultiTexCoord3iARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ), GLint( to_numeric( r_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord3iARB;
@@ -18352,7 +18352,7 @@ begin
       -- TODO: no man page for this
       null; -- glMultiTexCoord3ivARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord3ivARB;
@@ -18389,7 +18389,7 @@ begin
     begin
       glMultiTexCoord3sARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ), GLshort( to_numeric( r_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord3sARB;
@@ -18422,7 +18422,7 @@ begin
       -- TODO: no man page for this
       null; -- glMultiTexCoord3svARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord3svARB;
@@ -18462,7 +18462,7 @@ begin
     begin
       glMultiTexCoord4dARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( s_val ) ), GLdouble( to_numeric( t_val ) ), GLdouble( to_numeric( r_val ) ), GLdouble( to_numeric( q_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord4dARB;
@@ -18495,7 +18495,7 @@ begin
       -- TODO: no man page for this
       null; -- glMultiTexCoord4dvARB( GLenum( to_numeric( target_val ) ), GLdouble( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord4dvARB;
@@ -18535,7 +18535,7 @@ begin
     begin
       glMultiTexCoord4fARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( s_val ) ), GLfloat( to_numeric( t_val ) ), GLfloat( to_numeric( r_val ) ), GLfloat( to_numeric( q_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord4fARB;
@@ -18568,7 +18568,7 @@ begin
       -- TODO: no man page for this
       null; -- glMultiTexCoord4fvARB( GLenum( to_numeric( target_val ) ), GLfloat( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord4fvARB;
@@ -18608,7 +18608,7 @@ begin
     begin
       glMultiTexCoord4iARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( s_val ) ), GLint( to_numeric( t_val ) ), GLint( to_numeric( r_val ) ), GLint( to_numeric( q_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord4iARB;
@@ -18641,7 +18641,7 @@ begin
       -- TODO: no man page for this
       null; -- glMultiTexCoord4ivARB( GLenum( to_numeric( target_val ) ), GLint( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord4ivARB;
@@ -18681,7 +18681,7 @@ begin
     begin
       glMultiTexCoord4sARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( s_val ) ), GLshort( to_numeric( t_val ) ), GLshort( to_numeric( r_val ) ), GLshort( to_numeric( q_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord4sARB;
@@ -18714,7 +18714,7 @@ begin
       -- TODO: no man page for this
       null; -- glMultiTexCoord4svARB( GLenum( to_numeric( target_val ) ), GLshort( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglMultiTexCoord4svARB;
@@ -18742,7 +18742,7 @@ begin
       -- TODO: MESA specific
       null; -- esult := to_unbounded_string( long_float( glCreateDebugObjectMESA ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglCreateDebugObjectMESA;
@@ -18779,7 +18779,7 @@ begin
 -- TODO: MESA specific
       null; -- glClearDebugLogMESA( GLhandleARB( to_numeric( obj_val ) ), GLenum( to_numeric( logType_val ) ), GLenum( to_numeric( shaderType_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglClearDebugLogMESA;
@@ -18826,7 +18826,7 @@ begin
 -- TODO: MESA specific
       null; -- glGetDebugLogMESA( GLhandleARB( to_numeric( obj_val ) ), GLenum( to_numeric( logType_val ) ), GLenum( to_numeric( shaderType_val ) ), GLsizei( to_numeric( maxLength_val ) ), GLsizei( to_numeric( length_val ) ), GLcharARB( to_numeric( debugLog_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetDebugLogMESA;
@@ -18864,7 +18864,7 @@ begin
 -- TODO: MESA specific
       null; -- result := to_unbounded_string( long_float( glGetDebugLogLengthMESA( GLhandleARB( to_numeric( obj_val ) ), GLenum( to_numeric( logType_val ) ), GLenum( to_numeric( shaderType_val ) ) ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetDebugLogLengthMESA;
@@ -18901,7 +18901,7 @@ begin
 -- TODO: MESA specific
       null; -- glProgramCallbackMESA( GLenum( to_numeric( target_val ) ), GLprogramcallbackMESA( to_numeric( callback_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglProgramCallbackMESA;
@@ -18940,7 +18940,7 @@ begin
 -- TODO: MESA specific
       null; -- glGetProgramRegisterfvMESA( GLenum( to_numeric( target_val ) ), GLsizei( to_numeric( len_val ) ), GLubyte( to_numeric( name_val ) ), GLfloat( to_numeric( v_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglGetProgramRegisterfvMESA;
@@ -18982,7 +18982,7 @@ begin
 -- TODO: MESA specific
       null; -- glFramebufferTextureLayerEXT( GLenum( to_numeric( target_val ) ), GLenum( to_numeric( attachment_val ) ), GLuint( to_numeric( texture_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( layer_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglFramebufferTextureLayerEXT;
@@ -19015,7 +19015,7 @@ begin
 -- TODO: MESA specific
       null; -- glBlendEquationSeparateATI( GLenum( to_numeric( modeRGB_val ) ), GLenum( to_numeric( modeA_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglBlendEquationSeparateATI;
@@ -19049,7 +19049,7 @@ begin
 -- TODO: MESA specific
       null; -- glEGLImageTargetTexture2DOES( GLenum( to_numeric( target_val ) ), GLeglImageOES( to_numeric( image_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEGLImageTargetTexture2DOES;
@@ -19083,7 +19083,7 @@ begin
 -- TODO: MESA specific
       null; -- glEGLImageTargetRenderbufferStorageOES( GLenum( to_numeric( target_val ) ), GLeglImageOES( to_numeric( image_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePenglEGLImageTargetRenderbufferStorageOES;
@@ -19113,7 +19113,7 @@ begin
     begin
       null; -- gluBeginCurve( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluBeginCurve;
@@ -19143,7 +19143,7 @@ begin
     begin
      null; -- gluBeginPolygon( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluBeginPolygon;
@@ -19173,7 +19173,7 @@ begin
     begin
       null; -- gluBeginSurface( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluBeginSurface;
@@ -19203,7 +19203,7 @@ begin
     begin
       null; -- gluBeginTrim( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluBeginTrim;
@@ -19261,7 +19261,7 @@ begin
       -- TODO: no man page?
       result := to_unbounded_string( long_float( gluBuild1DMipmapLevels( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), dummy_ptr ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluBuild1DMipmapLevels;
@@ -19309,7 +19309,7 @@ begin
     begin
       result := to_unbounded_string( long_float( gluBuild1DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluBuild1DMipmaps;
@@ -19369,7 +19369,7 @@ begin
     begin
       result := to_unbounded_string( long_float( gluBuild2DMipmapLevels( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), dummy_ptr ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluBuild2DMipmapLevels;
@@ -19420,7 +19420,7 @@ begin
     begin
       result := to_unbounded_string( long_float( gluBuild2DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluBuild2DMipmaps;
@@ -19483,7 +19483,7 @@ begin
     begin
       result := to_unbounded_string( long_float( gluBuild3DMipmapLevels( GLenum( to_numeric( taraget_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), dummy_ptr ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluBuild3DMipmapLevels;
@@ -19537,7 +19537,7 @@ begin
     begin
       result := to_unbounded_string( long_float( gluBuild3DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluBuild3DMipmaps;
@@ -19571,7 +19571,7 @@ begin
     begin
       null; -- result := to_unbounded_string( long_float( gluCheckExtension( char_array( to_numeric( extName_val ) ), char_array( to_numeric( extString_val ) ) ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluCheckExtension;
@@ -19616,7 +19616,7 @@ begin
     begin
       null; -- gluCylinder( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLdouble( to_numeric( base_val ) ), GLdouble( to_numeric( top_val ) ), GLdouble( to_numeric( height_val ) ), GLint( to_numeric( slices_val ) ), GLint( to_numeric( stacks_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluCylinder;
@@ -19646,7 +19646,7 @@ begin
     begin
       null; -- gluDeleteNurbsRenderer( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluDeleteNurbsRenderer;
@@ -19676,7 +19676,7 @@ begin
     begin
       null; -- gluDeleteQuadric( GLUquadratic_Ptr( to_numeric( quad_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluDeleteQuadric;
@@ -19706,7 +19706,7 @@ begin
     begin
       null; -- gluDeleteTess( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluDeleteTess;
@@ -19748,7 +19748,7 @@ begin
     begin
       null; -- gluDisk( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLdouble( to_numeric( inner_val ) ), GLdouble( to_numeric( outer_val ) ), GLint( to_numeric( slices_val ) ), GLint( to_numeric( loops_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluDisk;
@@ -19778,7 +19778,7 @@ begin
     begin
       null; -- gluEndCurve( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluEndCurve;
@@ -19808,7 +19808,7 @@ begin
     begin
       null; -- gluEndPolygon( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluEndPolygon;
@@ -19838,7 +19838,7 @@ begin
     begin
       null; -- gluEndSurface( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluEndSurface;
@@ -19868,7 +19868,7 @@ begin
     begin
       null; -- gluEndTrim( GLUnurbs_Ptr( to_numeric( nurb_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluEndTrim;
@@ -19900,7 +19900,7 @@ begin
       -- unbounded string.
       null; -- result := to_unbounded_string( gluErrorString( GLenum( to_numeric( error_val ) ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluErrorString;
@@ -19937,7 +19937,7 @@ begin
     begin
       null; -- gluGetNurbsProperty( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLUnurbsproperties( to_numeric( property_val ) ), GL_Float_Array_Ptr( to_numeric( data_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluGetNurbsProperty;
@@ -19969,7 +19969,7 @@ begin
       -- unbounded_string
       null; -- result := to_unbounded_string( long_float( gluGetString( GLenum( to_numeric( name_val ) ) ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluGetString;
@@ -20006,7 +20006,7 @@ begin
     begin
       null; -- gluGetTessProperty( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLUtessproperties( to_numeric( which_val ) ), GL_Float_Array_Ptr( to_numeric( data_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluGetTessProperty;
@@ -20046,7 +20046,7 @@ begin
       -- TODO: determine size of matrixes
       null; -- gluLoadSamplingMatrices( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GL_Float_Array_Ptr( to_numeric( model_val ) ), GL_Float_Array_Ptr( to_numeric( perspective_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluLoadSamplingMatrices;
@@ -20098,7 +20098,7 @@ begin
     begin
       gluLookAt( GLdouble( to_numeric( eyeX_val ) ), GLdouble( to_numeric( eyeY_val ) ), GLdouble( to_numeric( eyeZ_val ) ), GLdouble( to_numeric( centerX_val ) ), GLdouble( to_numeric( centerY_val ) ), GLdouble( to_numeric( centerZ_val ) ), GLdouble( to_numeric( upX_val ) ), GLdouble( to_numeric( upY_val ) ), GLdouble( to_numeric( upZ_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluLookAt;
@@ -20126,7 +20126,7 @@ begin
       -- TODO: returns a system.address but SparForte doesn't handle this yet
       null; -- result := to_unbounded_string( long_float( gluNewNurbsRenderer ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluNewNurbsRenderer;
@@ -20154,7 +20154,7 @@ begin
       -- TODO: returns a system.address but SparForte doesn't handle this yet
       null; -- result := to_unbounded_string( long_float( gluNewQuadric ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluNewQuadric;
@@ -20182,7 +20182,7 @@ begin
       -- TODO: returns a system.address but SparForte doesn't handle this yet
       null; -- result := to_unbounded_string( long_float( gluNewTess ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluNewTess;
@@ -20215,7 +20215,7 @@ begin
     begin
       null; -- gluNextContour( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLUtesscontour( to_numeric( kind_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluNextContour;
@@ -20252,7 +20252,7 @@ begin
     begin
       null; -- gluNurbsCallback( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLUnurbscallbacks( to_numeric( which_val ) ), System.address( to_numeric( CallBackFunc_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluNurbsCallback;
@@ -20286,7 +20286,7 @@ begin
     begin
       null; -- gluNurbsCallbackData( GLUnurbs_Ptr( to_numeric( nurb_val ) ), System.address( to_numeric( userData_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluNurbsCallbackData;
@@ -20320,7 +20320,7 @@ begin
     begin
       null; -- gluNurbsCallbackDataEXT( GLUnurbs_Ptr( to_numeric( nurb_val ) ), System.address( to_numeric( userData_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluNurbsCallbackDataEXT;
@@ -20368,7 +20368,7 @@ begin
     begin
       null; -- gluNurbsCurve( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLint( to_numeric( knotCount_val ) ), GL_Float_Array_Ptr( to_numeric( knots_val ) ), GLint( to_numeric( stride_val ) ), GL_Float_Array_Ptr( to_numeric( control_val ) ), GLint( to_numeric( order_val ) ), GLevaluators( to_numeric( kind_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluNurbsCurve;
@@ -20404,7 +20404,7 @@ begin
     begin
       null; -- gluNurbsProperty( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLUnurbsproperties( to_numeric( property_val ) ), GLfloat( to_numeric( value_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluNurbsProperty;
@@ -20464,7 +20464,7 @@ begin
     begin
       null; -- gluNurbsSurface( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLint( to_numeric( sKnotCount_val ) ), GL_Float_Array_Ptr( to_numeric( sKnots_val ) ), GLint( to_numeric( tKnotCount_val ) ), GL_Float_Array_Ptr( to_numeric( tKnots_val ) ), GLint( to_numeric( sStride_val ) ), GLint( to_numeric( tStride_val ) ), GL_Float_Array_Ptr( to_numeric( control_val ) ), GLint( to_numeric( sOrder_val ) ), GLint( to_numeric( tOrder_val ) ), GLenum( to_numeric( kind_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluNurbsSurface;
@@ -20501,7 +20501,7 @@ begin
     begin
       gluOrtho2D( GLdouble( to_numeric( left_val ) ), GLdouble( to_numeric( right_val ) ), GLdouble( to_numeric( bottom_val ) ), GLdouble( to_numeric( top_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluOrtho2D;
@@ -20549,7 +20549,7 @@ begin
     begin
       null; -- gluPartialDisk( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLdouble( to_numeric( inner_val ) ), GLdouble( to_numeric( outer_val ) ), GLint( to_numeric( slices_val ) ), GLint( to_numeric( loops_val ) ), GLdouble( to_numeric( start_val ) ), GLdouble( to_numeric( sweep_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluPartialDisk;
@@ -20589,7 +20589,7 @@ begin
          check_opengl_err;
       end if;
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluPerspective;
@@ -20632,7 +20632,7 @@ begin
       gluPickMatrix( GLdouble( to_numeric( x_val ) ), GLdouble( to_numeric( y_val ) ), GLdouble( to_numeric( delX_val ) ), GLdouble( to_numeric( delY_val ) ), param );
       result := to_unbounded_string( GLint'image( param ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluPickMatrix;
@@ -20701,7 +20701,7 @@ begin
       -- TODO: in SparForte, functions cannot return values
       null; -- result := to_unbounded_string( long_float( gluProject( GLdouble( to_numeric( objX_val ) ), GLdouble( to_numeric( objY_val ) ), GLdouble( to_numeric( objZ_val ) ), model_ptr, proj_ptr, view_ptr, winX, winY, winZ ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluProject;
@@ -20743,7 +20743,7 @@ begin
     begin
       null;-- gluPwlCurve( GLUnurbs_Ptr( to_numeric( nurb_val ) ), GLint( to_numeric( count_val ) ), GL_Float_Array_Ptr( to_numeric( data_val ) ), GLint( to_numeric( stride_val ) ), GLevaluators( to_numeric( kind_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluPwlCurve;
@@ -20780,7 +20780,7 @@ begin
       -- TODO: no callbacks in SparForte
       null; -- gluQuadricCallback( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLUnurbscallbacks( to_numeric( which_val ) ), System.address( to_numeric( CallBackFunc_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluQuadricCallback;
@@ -20813,7 +20813,7 @@ begin
     begin
       null; -- gluQuadricDrawStyle( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLUquaddrawstyle( to_numeric( draw_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluQuadricDrawStyle;
@@ -20846,7 +20846,7 @@ begin
     begin
       null; -- gluQuadricNormals( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLUquadricnormal( to_numeric( normal_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluQuadricNormals;
@@ -20879,7 +20879,7 @@ begin
     begin
       null; -- gluQuadricOrientation( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLUquadorientation( to_numeric( orientation_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluQuadricOrientation;
@@ -20912,7 +20912,7 @@ begin
     begin
       null; -- gluQuadricTexture( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLboolean( to_numeric( texture_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluQuadricTexture;
@@ -20972,7 +20972,7 @@ begin
     begin
       result := to_unbounded_string( long_float( gluScaleImage( GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( wIn_val ) ), GLsizei( to_numeric( hIn_val ) ), GLtypes( to_numeric( typeIn_val ) ), dummy_ptr, GLsizei( to_numeric( wOut_val ) ), GLsizei( to_numeric( hOut_val ) ), GLtypes( to_numeric( typeOut_val ) ), dummy2_ptr ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluScaleImage;
@@ -21011,7 +21011,7 @@ begin
     begin
       null; -- gluSphere( GLUquadratic_Ptr( to_numeric( quad_val ) ), GLdouble( to_numeric( radius_val ) ), GLint( to_numeric( slices_val ) ), GLint( to_numeric( stacks_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluSphere;
@@ -21041,7 +21041,7 @@ begin
     begin
       null; -- gluTessBeginContour( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluTessBeginContour;
@@ -21074,7 +21074,7 @@ begin
     begin
       null;-- gluTessBeginPolygon( GLUtessellator_Ptr( to_numeric( tess_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluTessBeginPolygon;
@@ -21110,7 +21110,7 @@ begin
     begin
       null; -- gluTessCallback( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLUtesscallbacks( to_numeric( which_val ) ), System.address( to_numeric( CallBackFunc_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluTessCallback;
@@ -21140,7 +21140,7 @@ begin
     begin
       null; -- gluTessEndContour( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluTessEndContour;
@@ -21170,7 +21170,7 @@ begin
     begin
       null; -- gluTessEndPolygon( GLUtessellator_Ptr( to_numeric( tess_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluTessEndPolygon;
@@ -21209,7 +21209,7 @@ begin
     begin
       null; -- gluTessNormal( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLdouble( to_numeric( valueX_val ) ), GLdouble( to_numeric( valueY_val ) ), GLdouble( to_numeric( valueZ_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluTessNormal;
@@ -21245,7 +21245,7 @@ begin
     begin
       null; -- gluTessProperty( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLUtessproperties( to_numeric( which_val ) ), GLdouble( to_numeric( data_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluTessProperty;
@@ -21281,7 +21281,7 @@ begin
     begin
       null; -- gluTessVertex( GLUtessellator_Ptr( to_numeric( tess_val ) ), GLdouble( to_numeric( location_val ) ), System.address( to_numeric( data_val ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluTessVertex;
@@ -21336,7 +21336,7 @@ begin
     begin
       null; -- result := to_unbounded_string( long_float( gluUnProject( GLdouble( to_numeric( winX_val ) ), GLdouble( to_numeric( winY_val ) ), GLdouble( to_numeric( winZ_val ) ), GL_Double_Array_Ptr( to_numeric( model_val ) ), GL_Double_Array_Ptr( to_numeric( proj_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ), GL_Double_Array_Ptr( to_numeric( objX_val ) ), GL_Double_Array_Ptr( to_numeric( objY_val ) ), GL_Double_Array_Ptr( to_numeric( objZ_val ) ) ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluUnProject;
@@ -21402,7 +21402,7 @@ begin
     begin
       null; -- result := to_unbounded_string( long_float( gluUnProject4( GLdouble( to_numeric( winX_val ) ), GLdouble( to_numeric( winY_val ) ), GLdouble( to_numeric( winZ_val ) ), GLdouble( to_numeric( clipW_val ) ), GL_Double_Array_Ptr( to_numeric( model_val ) ), GL_Double_Array_Ptr( to_numeric( proj_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ), GLdouble( to_numeric( nearVal_val ) ), GLdouble( to_numeric( farVal_val ) ), GL_Double_Array_Ptr( to_numeric( objX_val ) ), GL_Double_Array_Ptr( to_numeric( objY_val ) ), GL_Double_Array_Ptr( to_numeric( objZ_val ) ), GL_Double_Array_Ptr( to_numeric( objW_val ) ) ) ) );
     exception when others =>
-      err( "exception raised" );
+      err_exception_raised;
     end;
   end if;
 end ParsePengluUnProject4;

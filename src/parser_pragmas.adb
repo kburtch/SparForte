@@ -1092,7 +1092,7 @@ begin
                     identifiers( var_id ).import := false;
                  end if;
               exception when others =>
-                 err( "exception raised" );
+                 err_exception_raised;
               end;
            elsif importType = "memcache" then
               identifiers( var_id ).method := memcache;
@@ -1111,7 +1111,7 @@ begin
                     -- user will not be able to re-import)
                  end if;
               exception when others =>
-                 err( "exception raised" );
+                 err_exception_raised;
               end;
            --elsif processingTemplate and importType = "cgi" then
            elsif importType = "cgi" then
@@ -1231,7 +1231,7 @@ begin
                licenseSet := true;
             end if;
           exception when others =>
-            err( "exception raised" );
+            err_exception_raised;
           end;
         end if;
      when noCommandHash =>
@@ -1257,7 +1257,7 @@ begin
          exception when name_error =>
             err( "server already registered or too many servers registered" );
          when others =>
-            err( "exception raised" );
+            err_exception_raised;
          end;
      when restriction_auto =>
         restriction_no_auto_declarations := true;
@@ -1302,7 +1302,7 @@ begin
                 softwareModelSet := true;
              end if;
            exception when others =>
-             err( "exception raised" );
+             err_exception_raised;
            end;
         end if;
      when suppress_word_quoting =>
@@ -1417,7 +1417,7 @@ begin
                     newValue := temp;
                  end if;
               exception when others =>
-                 err( "exception raised" );
+                 err_exception_raised;
               end;
            elsif importType = "memcache" then
               identifiers( var_id ).method := memcache;
@@ -1435,7 +1435,7 @@ begin
                     newValue := temp;
                  end if;
               exception when others =>
-                 err( "exception raised" );
+                 err_exception_raised;
               end;
            --elsif processingTemplate and importType = "cgi" then
            elsif importType = "cgi" then

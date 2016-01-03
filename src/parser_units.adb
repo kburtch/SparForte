@@ -45,7 +45,7 @@ begin
        result := to_unbounded_string( to_numeric( expr_val ) * factor );
     end if;
 exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
 end ParseSimpleConversion;
 
 procedure ParseUnitsInches2mm( result : out unbounded_string; kind : out identifier ) is
@@ -482,7 +482,7 @@ begin
        result := to_unbounded_string( 5.0 / 9.0 * (to_numeric( expr_val ) - 32.0 ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseUnitsF2C;
 
@@ -500,7 +500,7 @@ begin
        result := to_unbounded_string( 9.0 / 5.0 * to_numeric( expr_val ) + 32.0 );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseUnitsC2F;
 
@@ -518,7 +518,7 @@ begin
        result := to_unbounded_string( to_numeric( expr_val ) - 273.15 );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseUnitsK2C;
 
@@ -536,7 +536,7 @@ begin
        result := to_unbounded_string( to_numeric( expr_val ) + 273.15 );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseUnitsC2K;
 
@@ -674,7 +674,7 @@ begin
        result := to_unbounded_string( to_numeric( expr_val )/1024.0/1024.0 );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseUnitsBytes2MB;
 
@@ -692,7 +692,7 @@ begin
        result := to_unbounded_string( to_numeric( expr_val ) *1024.0*1024.0 );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseUnitsMB2Bytes;
 

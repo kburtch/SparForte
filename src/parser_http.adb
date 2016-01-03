@@ -225,7 +225,7 @@ begin
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMemcacheSetClusterName;

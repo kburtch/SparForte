@@ -64,7 +64,7 @@ begin
        --identifiers( record_ref.id ).value := to_unbounded_string( long_float( 16#FFFF_FFFF# XOR Gnat.CRC32.Get_Value( C ) ) );
        identifiers( record_ref.id ).value := to_unbounded_string( long_float( C ) );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCRC32Initialize;
@@ -96,7 +96,7 @@ begin
        --identifiers( var_id ).value := to_unbounded_string( long_float( 16#FFFF_FFFF# XOR Gnat.CRC32.Get_Value( C ) ) );
        identifiers( var_id ).value := to_unbounded_string( long_float( C ) );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCRC32Update;
@@ -117,7 +117,7 @@ begin
      begin
        result := identifiers( var_id ).value;
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCRC32GetValue;

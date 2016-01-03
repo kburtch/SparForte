@@ -65,7 +65,7 @@ begin
        result := to_unbounded_string( Argument( integer'value(
          to_string( expr_val ) ) + optionOffset ) );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseArgument;
@@ -102,7 +102,7 @@ begin
      begin
        last_status := aStatusCode( to_numeric( expr_val ) );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseSetExitStatus;
@@ -133,7 +133,7 @@ begin
        result := to_unbounded_string( Environment_Value( integer'value(
          to_string( expr_val ) ) ) );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseEnvironment_Value;

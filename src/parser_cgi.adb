@@ -135,7 +135,7 @@ begin
          positive'value( to_string( expr_val2 ) ),
          expr_val3 = identifiers( true_t ).value );
      exception when others =>
-         err( "exception raised" );
+         err_exception_raised;
      end;
   end if;
 end ParseValue;
@@ -219,7 +219,7 @@ begin
      exception when constraint_error =>
        err( "no key at this position" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseKey;
@@ -242,7 +242,7 @@ begin
      exception when constraint_error =>
        err( "no key at this position" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseKeyValue;
@@ -354,7 +354,7 @@ begin
         cgi.put_HTML_heading( to_string( expr_val ),
            positive( to_numeric( level_val ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParsePut_HTML_Heading;
@@ -486,7 +486,7 @@ begin
         result := to_unbounded_string( cgi.line( to_string( expr_val ),
            positive( to_numeric( pos_val ) ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseCGILine;
@@ -520,7 +520,7 @@ begin
         result := to_unbounded_string( cgi.value_of_line( to_string( expr_val),
            positive( to_numeric( pos_val ) ) ) );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseValue_of_Line;
@@ -560,7 +560,7 @@ begin
      begin
         result := cgi.URL_Decode( expr_val, bool_val = identifiers( true_t ).value );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseURL_Decode;
@@ -594,7 +594,7 @@ begin
         result := cgi.URL_Encode( expr_val, bool_val = identifiers( true_t
 ).value );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseURL_Encode;
@@ -748,7 +748,7 @@ begin
            positive( to_numeric( pos_val ) ),
            bool_val = identifiers( true_t ).value );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseCookie_Value;

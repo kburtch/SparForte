@@ -2924,7 +2924,7 @@ begin
      exception when constraint_error =>
        err( "a variable has no value or a value is out-of-range" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
      str := to_unbounded_string( long_long_integer'image( roundedVal ) );
   -- If it's a natural type, round it and check for negative
@@ -2935,7 +2935,7 @@ begin
      exception when constraint_error =>
        err( "a variable has no value or a value is out-of-range" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
      if roundedVal < 0 then
         err( "natural value is less than zero" );
@@ -2943,7 +2943,7 @@ begin
      begin
        str := to_unbounded_string( long_long_integer'image( roundedVal ) );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   -- If it's a positive type, round it and check for negative or zero
   --elsif baseType = positive_t then
@@ -2953,7 +2953,7 @@ begin
      exception when constraint_error =>
        err( "a variable has no value or a value is out-of-range" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
      if roundedVal <= 0 then
         err( "positive value is less than zero" );

@@ -97,7 +97,7 @@ begin
             err( to_string( msg ) );
          end if;
        exception when others =>
-         err( "exception raised" );
+         err_exception_raised;
        end;
      exception
        when NAME_ERROR =>

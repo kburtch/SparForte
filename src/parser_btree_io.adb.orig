@@ -640,7 +640,7 @@ begin
      when constraint_error =>
         err( "constraint_error raised" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseBTreeDelete;

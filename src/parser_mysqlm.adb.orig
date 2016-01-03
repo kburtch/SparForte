@@ -176,7 +176,7 @@ begin
      when CONSTRAINT_ERROR =>
         err( "constraint error exception" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMySQLMConnect;
@@ -309,7 +309,7 @@ begin
           Prepare( query.Q, to_string( sqlExpr ) );
        end if;
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLMPrepare;
@@ -349,7 +349,7 @@ begin
           Append( query.Q, to_string( sqlExpr ) );
        end if;
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLMAppend;
@@ -377,7 +377,7 @@ begin
        findQuery( queryExpr, query );
        Append_Line( query.Q, to_string( sqlExpr ) );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLMAppendLine;
@@ -422,7 +422,7 @@ begin
           Append_Quoted( query.Q, connection.C, to_string( sqlExpr ) );
        end if;
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLMAppendQuoted;
@@ -458,7 +458,7 @@ begin
      when sql_error =>
        err( Error_Message( query.Q ) );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLMExecute;
@@ -506,7 +506,7 @@ begin
      when sql_error =>
        err( Error_Message( query.Q ) );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLMExecuteChecked;
@@ -547,7 +547,7 @@ begin
      when already_connected =>
         err( "already connected to database" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMySQLMDisconnect;
@@ -2594,7 +2594,7 @@ procedure ParseMySQLMDatabases renames not_configured;
 --     when sql_error =>
 --       err( Error_Message( Q ) );
 --     when others =>
---       err( "exception raised" );
+--       err_exception_raised;
 --     end;
 --  end if;
 --end DoMySQLSQLStatement;
@@ -2772,7 +2772,7 @@ begin
      --when sql_error =>
      --  err( Error_Message( Q ) );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
        --if sourceLen = long_integer'value( to_string( identifiers( identifiers( target_var_id ).kind ).value ) ) then
 -- TODO: no_coumn, no_result, null_value, no_tuple, etc exception handling
      end;
@@ -2896,7 +2896,7 @@ begin
        append( query.Q, " )" );
 
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLMAppendForInsert;
@@ -2990,7 +2990,7 @@ begin
        Append( query.Q, " " );
 
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLMAppendForUpdate;

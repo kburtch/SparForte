@@ -171,7 +171,7 @@ begin
            Element( str_val, positive( to_numeric( index_val ) ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsElement;
 
@@ -199,7 +199,7 @@ begin
            ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsSlice;
 
@@ -226,7 +226,7 @@ begin
         when 0 => dir := forward;
         when 1 => dir := backward;
         when others =>
-             err( "exception raised" );
+             err_exception_raised;
         end case;
      end if;
   else
@@ -237,7 +237,7 @@ begin
         result := to_unbounded_string( Index( str_val, to_string( pat_val ), Going => dir )'img );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsIndex;
 
@@ -261,7 +261,7 @@ begin
         when 0 => dir := forward;
         when 1 => dir := backward;
         when others =>
-             err( "exception raised" );
+             err_exception_raised;
          end case;
      end if;
   else
@@ -272,7 +272,7 @@ begin
         result := to_unbounded_string( Index_Non_Blank( str_val, dir )'img );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsIndexNonBlank;
 
@@ -294,7 +294,7 @@ begin
            to_string( pat_val ) )'img );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsCount;
 
@@ -325,7 +325,7 @@ begin
         );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsReplaceSlice;
 
@@ -352,7 +352,7 @@ begin
         );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsInsert;
 
@@ -379,7 +379,7 @@ begin
         );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsOverwrite;
 
@@ -406,7 +406,7 @@ begin
         );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsDelete;
 
@@ -430,7 +430,7 @@ begin
      when 1 => the_trim_end := right;
      when 2 => the_trim_end := both;
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end case;
   end if;
   begin
@@ -438,7 +438,7 @@ begin
         result := trim( str_val, the_trim_end );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsTrim;
 
@@ -456,7 +456,7 @@ begin
         result := to_unbounded_string( length( str_val )'img );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsLength;
 
@@ -480,7 +480,7 @@ begin
      begin
         pad_char := element( pad_val, 1 );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   else
      expect( symbol_t, ")" );
@@ -491,7 +491,7 @@ begin
             pad_char );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsHead;
 
@@ -515,7 +515,7 @@ begin
      begin
         pad_char := element( pad_val, 1 );
      exception when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   else
      expect( symbol_t, ")" );
@@ -526,7 +526,7 @@ begin
           pad_char );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsTail;
 
@@ -551,7 +551,7 @@ begin
         begin
           delim := element( del_val, 1 );
         exception when others =>
-          err( "exception raised" );
+          err_exception_raised;
         end;
      end if;
   else
@@ -562,7 +562,7 @@ begin
         result := stringField( str_val, delim, natural( to_numeric( cnt_val ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsField;
 
@@ -587,7 +587,7 @@ begin
         begin
           delim := element( del_val, 1 );
         exception when others =>
-          err( "exception raised" );
+          err_exception_raised;
         end;
      end if;
   else
@@ -598,7 +598,7 @@ begin
         result := stringCSVField( str_val, delim, natural( to_numeric( cnt_val ) ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsCSVField;
 
@@ -653,7 +653,7 @@ begin
        result := to_unbounded_string( "" & character'val( natural( to_numeric( expr_val ) ) ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsVal;
 
@@ -671,7 +671,7 @@ begin
        result := expr_val;
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsImage;
 
@@ -698,7 +698,7 @@ begin
        end if;
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsToString;
 
@@ -716,7 +716,7 @@ begin
        result := expr_val;
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsToUString;
 
@@ -741,7 +741,7 @@ begin
         begin
           delim := element( del_val, 1 );
         exception when others =>
-          err( "exception raised" );
+          err_exception_raised;
         end;
      end if;
   else
@@ -752,7 +752,7 @@ begin
         result := stringLookup( src_val, tar_val, delim );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsLookup;
 
@@ -781,7 +781,7 @@ begin
            begin
              delim := element( del_val, 1 );
            exception when others =>
-             err( "exception raised" );
+             err_exception_raised;
            end;
         end if;
      else
@@ -798,7 +798,7 @@ begin
         AssignParameter( src_ref, tempStr );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsReplace;
 
@@ -827,7 +827,7 @@ begin
            begin
              delim := element( del_val, 1 );
            exception when others =>
-             err( "exception raised" );
+             err_exception_raised;
            end;
         end if;
      else
@@ -844,7 +844,7 @@ begin
         assignParameter( src_ref, tempStr );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsCSVReplace;
 
@@ -944,7 +944,7 @@ begin
         assignParameter( right_ref, rightStr );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsSplit;
 
@@ -962,7 +962,7 @@ begin
        result := to_bush_boolean( is_control( expr_val ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsIsControl;
 
@@ -980,7 +980,7 @@ begin
        result := to_bush_boolean( is_graphic( expr_val ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsIsGraphic;
 
@@ -998,7 +998,7 @@ begin
        result := to_bush_boolean( is_letter( expr_val ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsIsLetter;
 
@@ -1016,7 +1016,7 @@ begin
        result := to_bush_boolean( is_lower( expr_val ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsIsLower;
 
@@ -1034,7 +1034,7 @@ begin
        result := to_bush_boolean( is_upper( expr_val ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsIsUpper;
 
@@ -1052,7 +1052,7 @@ begin
        result := to_bush_boolean( is_basic( expr_val ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsIsBasic;
 
@@ -1070,7 +1070,7 @@ begin
        result := to_bush_boolean( is_digit( expr_val ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsIsDigit;
 
@@ -1088,7 +1088,7 @@ begin
        result := to_bush_boolean( is_hexadecimal_digit( expr_val ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsIsHexDigit;
 
@@ -1106,7 +1106,7 @@ begin
        result := to_bush_boolean( is_alphanumeric( expr_val ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsIsAlphanumeric;
 
@@ -1124,7 +1124,7 @@ begin
        result := to_bush_boolean( is_special( expr_val ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsIsSpecial;
 
@@ -1142,7 +1142,7 @@ begin
        result := to_bush_boolean( is_date( expr_val ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsIsSlashedDate;
 
@@ -1160,7 +1160,7 @@ begin
        result := to_bush_boolean( is_fixed( expr_val ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsIsFixed;
 
@@ -1174,7 +1174,7 @@ end ParseStringsIsFixed;
 --        result := to_unbounded_string( Target );
 --     end if;
 --   exception when others =>
---     err( "exception raised" );
+--     err_exception_raised;
 --   end;
 -- end ParseStringsToBase64;
 
@@ -1188,7 +1188,7 @@ end ParseStringsIsFixed;
 --        result := to_unbounded_string( Target );
 --     end if;
 --   exception when others =>
---     err( "exception raised" );
+--     err_exception_raised;
 --   end;
 -- end ParseStringsFromBase64;
 
@@ -1209,7 +1209,7 @@ begin
        result := to_bush_boolean( typoOf( expr1_val, expr2_val ) );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsIsTypoOf;
 
@@ -1237,7 +1237,7 @@ begin
            ) );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsUnboundedSlice;
 
@@ -1259,7 +1259,7 @@ begin
         AssignParameter( src_ref, str_val );
      end if;
   exception when others =>
-     err( "exception raised" );
+     err_exception_raised;
   end;
 end ParseStringsSetUnboundedString;
 
@@ -1277,7 +1277,7 @@ begin
        result := DoStringToJSON( expr_val  );
     end if;
   exception when others =>
-    err( "exception raised" );
+    err_exception_raised;
   end;
 end ParseStringsToJSON;
 

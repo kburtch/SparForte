@@ -110,7 +110,7 @@ begin
      exception when lock_error =>
        err( "File cannot be locked" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseLockLockFile;

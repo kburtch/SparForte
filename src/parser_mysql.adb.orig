@@ -156,7 +156,7 @@ begin
      when CONSTRAINT_ERROR =>
         err( "constraint error exception" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMySQLConnect;
@@ -275,7 +275,7 @@ begin
           Prepare( Q, to_string( sqlExpr ) );
        end if;
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLPrepare;
@@ -311,7 +311,7 @@ begin
           Append( Q, to_string( sqlExpr ) );
        end if;
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLAppend;
@@ -335,7 +335,7 @@ begin
      begin
        Append_Line( Q, to_string( sqlExpr ) );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLAppendLine;
@@ -371,7 +371,7 @@ begin
           Append_Quoted( Q, C, to_string( sqlExpr ) );
        end if;
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLAppendQuoted;
@@ -396,7 +396,7 @@ begin
      when sql_error =>
        err( Error_Message( Q ) );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLExecute;
@@ -434,7 +434,7 @@ begin
      when sql_error =>
        err( Error_Message( Q ) );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLExecuteChecked;
@@ -472,7 +472,7 @@ begin
      when already_connected =>
         err( "already connected to database" );
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end ParseMySQLDisconnect;
@@ -2336,7 +2336,7 @@ begin
      when sql_error =>
        err( Error_Message( Q ) );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end DoMySQLSQLStatement;
