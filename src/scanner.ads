@@ -126,6 +126,9 @@ procedure err( msg : string );
 -- set the token to eof_t to abort the parsing and set the
 -- error_found flag to indicate that an error was encountered
 
+procedure err_exception_raised;
+-- generic error for when others => exceptions
+
 procedure raise_exception( msg : string );
 
 procedure warn( msg : string );

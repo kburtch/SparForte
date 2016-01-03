@@ -841,7 +841,7 @@ begin
              end if;
           end if;
        exception when others =>
-          err( "exception raised" );
+          err_exception_raised;
        end;
   when doNot =>
        begin
@@ -855,7 +855,7 @@ begin
              end if;
           end if;
        exception when others =>
-          err( "exception raised" );
+          err_exception_raised;
        end;
   when others =>
       err( "unexpected uniary operation error" );
@@ -912,7 +912,7 @@ begin
                  err( "program_error exception raised" );
                  term := null_unbounded_string;
               when others =>
-                 err( "exception raised" );
+                 err_exception_raised;
                  term := null_unbounded_string;
               end;
           else
@@ -981,7 +981,7 @@ begin
                     err( "program_error exception raised" );
                     term := null_unbounded_string;
                  when others =>
-                    err( "exception raised" );
+                    err_exception_raised;
                     term := null_unbounded_string;
                  end;
              elsif operator = "/" then
@@ -1013,7 +1013,7 @@ begin
                    err( "program_error exception raised" );
                    term := null_unbounded_string;
                 when others =>
-                   err( "exception raised" );
+                   err_exception_raised;
                    term := null_unbounded_string;
                 end;
              elsif operator = "mod" then
@@ -1030,7 +1030,7 @@ begin
                    err( "program_error exception raised" );
                    term := null_unbounded_string;
                 when others =>
-                   err( "exception raised" );
+                   err_exception_raised;
                    term := null_unbounded_string;
                 end;
              elsif operator = "rem" then
@@ -1047,7 +1047,7 @@ begin
                    err( "program_error exception raised" );
                    term := null_unbounded_string;
                 when others =>
-                   err( "exception raised" );
+                   err_exception_raised;
                    term := null_unbounded_string;
                 end;
              else
@@ -1092,7 +1092,7 @@ begin
               err( "program_error exception raised" );
               term := null_unbounded_string;
            when others =>
-              err( "exception raised" );
+              err_exception_raised;
               term := null_unbounded_string;
            end;
         else
@@ -1173,7 +1173,7 @@ begin
                    err( "program_error exception raised" );
                    se := null_unbounded_string;
                 when others =>
-                   err( "exception raised" );
+                   err_exception_raised;
                    se := null_unbounded_string;
                 end;
              elsif operator = "-" then
@@ -1188,7 +1188,7 @@ begin
                    err( "program_error exception raised" );
                    se := null_unbounded_string;
                 when others =>
-                   err( "exception raised" );
+                   err_exception_raised;
                    se := null_unbounded_string;
                 end;
              end if;
@@ -1320,7 +1320,7 @@ begin
                   re := to_unbounded_string( "0" );
                end if;
              exception when others =>
-               err( "exception raised" );
+               err_exception_raised;
              end;
         elsif operation = uni_string_t then
              if operator = ">=" then
@@ -1361,7 +1361,7 @@ begin
                       begin
                         b := c1 in c2..c3;
                       exception when others =>
-                        err( "exception raised" );
+                        err_exception_raised;
                       end;
                    end if;
                 end if;
@@ -1379,7 +1379,7 @@ begin
                       begin
                         b := c1 not in c2..c3;
                       exception when others =>
-                        err( "exception raised" );
+                        err_exception_raised;
                       end;
                    end if;
                 end if;
@@ -1449,7 +1449,7 @@ begin
                  err( "variable was not intialized" );
                  re1 := null_unbounded_string;
               when others =>
-                 err( "exception raised" );
+                 err_exception_raised;
                  re1 := null_unbounded_string;
               end;
            elsif operator = or_t then
@@ -1467,7 +1467,7 @@ begin
                  err( "variable was not intialized" );
                  re1 := null_unbounded_string;
               when others =>
-                 err( "exception raised" );
+                 err_exception_raised;
                  re1 := null_unbounded_string;
               end;
            elsif operator = xor_t then
@@ -1485,7 +1485,7 @@ begin
                  err( "variable was not intialized" );
                  re1 := null_unbounded_string;
               when others =>
-                 err( "exception raised" );
+                 err_exception_raised;
                  re1 := null_unbounded_string;
               end;
            end if;
@@ -1783,7 +1783,7 @@ begin
              end if;
           end if;
        exception when others =>
-          err( "exception raised" );
+          err_exception_raised;
        end;
   when doNot =>
        begin
@@ -1797,7 +1797,7 @@ begin
              end if;
           end if;
        exception when others =>
-          err( "exception raised" );
+          err_exception_raised;
        end;
   when others =>
       err( "unexpected uniary operation error" );
@@ -1854,7 +1854,7 @@ begin
                  err( "program_error exception raised" );
                  term := null_unbounded_string;
               when others =>
-                 err( "exception raised" );
+                 err_exception_raised;
                  term := null_unbounded_string;
               end;
           else
@@ -1923,7 +1923,7 @@ begin
                     err( "program_error exception raised" );
                     term := null_unbounded_string;
                  when others =>
-                    err( "exception raised" );
+                    err_exception_raised;
                     term := null_unbounded_string;
                  end;
              elsif operator = "/" then
@@ -1955,7 +1955,7 @@ begin
                    err( "program_error exception raised" );
                    term := null_unbounded_string;
                 when others =>
-                   err( "exception raised" );
+                   err_exception_raised;
                    term := null_unbounded_string;
                 end;
              elsif operator = "mod" then
@@ -1972,7 +1972,7 @@ begin
                    err( "program_error exception raised" );
                    term := null_unbounded_string;
                 when others =>
-                   err( "exception raised" );
+                   err_exception_raised;
                    term := null_unbounded_string;
                 end;
              elsif operator = "rem" then
@@ -1989,7 +1989,7 @@ begin
                    err( "program_error exception raised" );
                    term := null_unbounded_string;
                 when others =>
-                   err( "exception raised" );
+                   err_exception_raised;
                    term := null_unbounded_string;
                 end;
              else
@@ -2034,7 +2034,7 @@ begin
               err( "program_error exception raised" );
               term := null_unbounded_string;
            when others =>
-              err( "exception raised" );
+              err_exception_raised;
               term := null_unbounded_string;
            end;
         else
@@ -2115,7 +2115,7 @@ begin
                    err( "program_error exception raised" );
                    se := null_unbounded_string;
                 when others =>
-                   err( "exception raised" );
+                   err_exception_raised;
                    se := null_unbounded_string;
                 end;
              elsif operator = "-" then
@@ -2130,7 +2130,7 @@ begin
                    err( "program_error exception raised" );
                    se := null_unbounded_string;
                 when others =>
-                   err( "exception raised" );
+                   err_exception_raised;
                    se := null_unbounded_string;
                 end;
              end if;
@@ -2262,7 +2262,7 @@ begin
                   re := to_unbounded_string( "0" );
                end if;
              exception when others =>
-               err( "exception raised" );
+               err_exception_raised;
              end;
         elsif operation = uni_string_t then
              if operator = ">=" then
@@ -2303,7 +2303,7 @@ begin
                       begin
                         b := c1 in c2..c3;
                       exception when others =>
-                        err( "exception raised" );
+                        err_exception_raised;
                       end;
                    end if;
                 end if;
@@ -2321,7 +2321,7 @@ begin
                       begin
                         b := c1 not in c2..c3;
                       exception when others =>
-                        err( "exception raised" );
+                        err_exception_raised;
                       end;
                    end if;
                 end if;
@@ -2391,7 +2391,7 @@ begin
                  err( "variable was not intialized" );
                  re1 := null_unbounded_string;
               when others =>
-                 err( "exception raised" );
+                 err_exception_raised;
                  re1 := null_unbounded_string;
               end;
            elsif operator = or_t then
@@ -2409,7 +2409,7 @@ begin
                  err( "variable was not intialized" );
                  re1 := null_unbounded_string;
               when others =>
-                 err( "exception raised" );
+                 err_exception_raised;
                  re1 := null_unbounded_string;
               end;
            elsif operator = xor_t then
@@ -2427,7 +2427,7 @@ begin
                  err( "variable was not intialized" );
                  re1 := null_unbounded_string;
               when others =>
-                 err( "exception raised" );
+                 err_exception_raised;
                  re1 := null_unbounded_string;
               end;
            end if;
@@ -4246,7 +4246,7 @@ begin
         begin
           delay duration( to_numeric( expr_val ) );
         exception when others =>
-          err( "exception raised" );
+          err_exception_raised;
         end;
         if trace then
            put_trace( "duration := " & to_string( expr_val ) );
@@ -4306,7 +4306,7 @@ begin
                identifiers( id ).value, typeid );
             identifiers( id ).kind := typeid;
          exception when others =>
-            err( "exception raised" );
+            err_exception_raised;
          end;
       end if;
    else

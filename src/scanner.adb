@@ -937,6 +937,15 @@ begin
   end if;
 end err;
 
+--  ERR EXCEPTION RAISED
+--
+-- General message when raising on when others =>
+-----------------------------------------------------------------------------
+
+procedure err_exception_raised is
+begin
+  err( "an unexpected exception was raised" );
+end err_exception_raised;
 
 --  RAISE EXCEPTION
 --

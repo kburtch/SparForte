@@ -193,7 +193,7 @@ begin
           end if;
        end if;
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBEngineOf;
@@ -500,7 +500,7 @@ begin
      begin
        Reset( C );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBReset;
@@ -522,7 +522,7 @@ begin
      begin
        result := to_unbounded_string( Error_Message( C ) );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBErrorMessage;
@@ -544,7 +544,7 @@ begin
      begin
        result := to_unbounded_string( Notice_Message( C ) );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBNoticeMessage;
@@ -568,7 +568,7 @@ begin
      exception when not_connected =>
        err( "not connected" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBInAbortState;
@@ -590,7 +590,7 @@ begin
      begin
        result := to_unbounded_string( Options( C ) );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBOptions;
@@ -616,7 +616,7 @@ begin
      begin
        Set_Rollback_On_Finalize( C, rollback );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBSetRollbackOnFinalize;
@@ -638,7 +638,7 @@ begin
      begin
        result := to_bush_boolean( Will_Rollback_On_Finalize( C ) );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBWillRollbackOnFinalize;
@@ -682,7 +682,7 @@ begin
      when Ada.IO_Exceptions.Name_Error =>
        err( "file not found" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBOpenDBTrace;
@@ -703,7 +703,7 @@ begin
      begin
        Close_DB_Trace( C );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBCloseDBTrace;
@@ -729,7 +729,7 @@ begin
      begin
        Set_Trace( C, traceback );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBSetTrace;
@@ -751,7 +751,7 @@ begin
      begin
        result := to_bush_boolean( Is_Trace( C ) );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBIsTrace;
@@ -772,7 +772,7 @@ begin
      begin
        Clear( Q );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBClear;
@@ -802,7 +802,7 @@ begin
      begin
        Raise_Exceptions( Q, raise_them );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBRaiseExceptions;
@@ -832,7 +832,7 @@ begin
      begin
        Report_Errors( Q, report_them );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBReportErrors;
@@ -857,7 +857,7 @@ begin
      when not_connected =>
        err( "not connected" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBBeginWork;
@@ -882,7 +882,7 @@ begin
      when not_connected =>
        err( "not connected" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBRollbackWork;
@@ -907,7 +907,7 @@ begin
      when not_connected =>
        err( "not connected" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBCommitWork;
@@ -928,7 +928,7 @@ begin
      begin
        Rewind( Q );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBRewind;
@@ -964,7 +964,7 @@ begin
      when no_result =>
        err( "no result" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBFetch;
@@ -986,7 +986,7 @@ begin
      begin
        result := to_bush_boolean( End_Of_Query( Q ) );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBEndOfQuery;
@@ -1010,7 +1010,7 @@ begin
      exception when no_tuple =>
        err( "no tuple" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBTuple;
@@ -1034,7 +1034,7 @@ begin
      exception when no_result =>
        err( "no result" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBTuples;
@@ -1058,7 +1058,7 @@ begin
      exception when no_result =>
        err( "no result" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBColumns;
@@ -1087,7 +1087,7 @@ begin
      exception when no_column =>
        err( "no column" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBColumnName;
@@ -1116,7 +1116,7 @@ begin
      exception when no_column =>
        err( "no column" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBColumnIndex;
@@ -1177,7 +1177,7 @@ begin
      when no_result =>
        err( "no result" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBIsNull;
@@ -1210,7 +1210,7 @@ begin
      when no_result =>
        err( "no result" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBValue;
@@ -1382,7 +1382,7 @@ begin
      when sql_error =>
        err( Error_Message( Q ) );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end DBShowIt;
@@ -1578,7 +1578,7 @@ begin
      when sql_error =>
        err( Error_Message( Q ) );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBList;
@@ -1839,7 +1839,7 @@ begin
      when sql_error =>
        err( Error_Message( Q ) );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBSchema;
@@ -2034,7 +2034,7 @@ begin
      when sql_error =>
        err( Error_Message( Q ) );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBUsers;
@@ -2218,7 +2218,7 @@ begin
      when sql_error =>
        err( Error_Message( Q ) );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseDBDatabases;

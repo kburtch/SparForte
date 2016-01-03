@@ -196,7 +196,7 @@ begin
           end if;
        end if;
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLEngineOf;
@@ -514,7 +514,7 @@ begin
      begin
        Reset( C );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLReset;
@@ -536,7 +536,7 @@ begin
      begin
        result := to_unbounded_string( Error_Message( C ) );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLErrorMessage;
@@ -575,7 +575,7 @@ begin
      exception when not_connected =>
        err( "not connected" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLInAbortState;
@@ -597,7 +597,7 @@ begin
      begin
        result := to_unbounded_string( Options( C ) );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLOptions;
@@ -623,7 +623,7 @@ begin
      begin
        Set_Rollback_On_Finalize( C, rollback );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLSetRollbackOnFinalize;
@@ -645,7 +645,7 @@ begin
     begin
       result := to_bush_boolean( Will_Rollback_On_Finalize( C ) );
     exception when others =>
-      err( "exception was raised" );
+      err_exception_raised;
     end;
   end if;
 end ParseMySQLWillRollbackOnFinalize;
@@ -690,7 +690,7 @@ begin
      when Ada.IO_Exceptions.Name_Error =>
        err( "file not found" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLOpenDBTrace;
@@ -711,7 +711,7 @@ begin
      begin
        Close_DB_Trace( C );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLCloseDBTrace;
@@ -737,7 +737,7 @@ begin
      begin
        Set_Trace( C, traceback );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLSetTrace;
@@ -759,7 +759,7 @@ begin
     begin
       result := to_bush_boolean( Is_Trace( C ) );
     exception when others =>
-      err( "exception was raised" );
+      err_exception_raised;
     end;
   end if;
 end ParseMySQLIsTrace;
@@ -782,7 +782,7 @@ begin
     exception when CONSTRAINT_ERROR =>
       err( "constraint error exception" );
     when others =>
-      err( "exception was raised" );
+      err_exception_raised;
     end;
   end if;
 end ParseMySQLClear;
@@ -812,7 +812,7 @@ begin
      begin
        Raise_Exceptions( Q, raise_them );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLRaiseExceptions;
@@ -842,7 +842,7 @@ begin
      begin
        Report_Errors( Q, report_them );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLReportErrors;
@@ -867,7 +867,7 @@ begin
      when not_connected =>
        err( "not connected" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLBeginWork;
@@ -892,7 +892,7 @@ begin
      when not_connected =>
        err( "not connected" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLRollbackWork;
@@ -917,7 +917,7 @@ begin
      when not_connected =>
        err( "not connected" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLCommitWork;
@@ -938,7 +938,7 @@ begin
      begin
        Rewind( Q );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLRewind;
@@ -974,7 +974,7 @@ begin
      when no_result =>
        err( "no result" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLFetch;
@@ -996,7 +996,7 @@ begin
      begin
        result := to_bush_boolean( End_Of_Query( Q ) );
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLEndOfQuery;
@@ -1020,7 +1020,7 @@ begin
      exception when no_tuple =>
        err( "no tuple" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLTuple;
@@ -1044,7 +1044,7 @@ begin
      exception when no_result =>
        err( "no result" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLTuples;
@@ -1068,7 +1068,7 @@ begin
      exception when no_result =>
        err( "no result" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLColumns;
@@ -1097,7 +1097,7 @@ begin
      exception when no_column =>
        err( "no column" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLColumnName;
@@ -1126,7 +1126,7 @@ begin
      exception when no_column =>
        err( "no column" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLColumnIndex;
@@ -1187,7 +1187,7 @@ begin
      when no_result =>
        err( "no result" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLIsNull;
@@ -1220,7 +1220,7 @@ begin
      when no_result =>
        err( "no result" );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLValue;
@@ -1392,7 +1392,7 @@ begin
      when sql_error =>
        err( Error_Message( Q ) );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end MySQLShowIt;
@@ -1613,7 +1613,7 @@ begin
      when sql_error =>
        err( Error_Message( Q ) );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLList;
@@ -1896,7 +1896,7 @@ begin
      when sql_error =>
        err( Error_Message( Q ) );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLSchema;
@@ -2096,7 +2096,7 @@ begin
      when sql_error =>
        err( Error_Message( Q ) );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLUsers;
@@ -2296,7 +2296,7 @@ begin
      when sql_error =>
        err( Error_Message( Q ) );
      when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseMySQLDatabases;
