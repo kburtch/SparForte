@@ -534,12 +534,62 @@ expression. Has no effect unless the variable is imported as well.</li>
 <p>Interpreter directives that don't fit in any other category.</p>
 
 <ul>
-  <li> <b>pragma prompt_script( `commands` )</b> - commands to draw
-the command prompt.&nbsp; If the string is an empty string, the default "=&gt;"
-prompt
-is used.&nbsp; Make sure the final command ends with a
-semi-colon.&nbsp; Changing your prompt will also change the title of
-your terminal window.<br>
+  <li> <b>pragma prompt_script( `commands` )</b>
+<p>This pragma specifies a set of commands to run that will draw the
+command prompt.  The commands run in a restricted shell.  By default,
+the prompt will be in boldface.</p>
+
+<p>There are no special escape sequences like those used by Bash.
+Instead, the prompt is created by running normal AdaScript commands.
+Some common tasks:</p>
+
+<ul>
+<li>Your username - import LOGNAME or USER from the O/S environment.</li>
+<li>Your current directory - use the <tt>pwd</tt> command or the PWD variable</li>
+<li>No boldface - use <tt>tput sgr0</tt></li>
+<li>To use colour - use the character codes for your terminal (usually ANSI)</li>
+<li>To restore the default prompt - use an empty command list</li>
+</ul>
+
+<p>Here are some examples:</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>=&gt;</b> pragma prompt_script( `put( "$ ");` );<br />
+<b>$</b> <br />
+<b>$</b> LOGNAME : string;<br />
+<b>$</b> pragma import(shell, LOGNAME )<br />
+<b>$</b> pragma prompt_script( `put( LOGNAME ) @ ( "$ ");` );<br />
+<b>ken$</b> <br />
+<b>ken$</b> pragma prompt_script( `put( PWD ); new_line; put( LOGNAME ) @ ( "$ " );` );<br />
+<b>/home/ken</b><br />
+<b>ken$</b><br />
+<b>/home/ken</b><br />
+<b>ken$</b> ANSI_RED : constant string := ASCII.ESC &amp; "[0;31m";<br />
+<b>/home/ken</b><br />
+<b>ken$</b> ANSI_DEFAULT : constant string := ASCII.ESC &amp; "[0m";<br />
+<b>/home/ken</b><br />
+<b>ken$</b> pragma prompt_script( `new_line; put( ANSI_RED ); date; put( ANSI_DEFAULT ) @ ("$ " );` );<br />
+<br />
+<b><span style="color:red">Sat Jan  2 21:52:59 EST 2016</span></b><br>
+<b>$ </b><br>
+<br />
+<b><span style="color:red">Sat Jan  2 21:53:05 EST 2016</span></b><br>
+<b>$</b> pragma prompt_script( `` );<br />
+<b>=&gt;</b> <br />&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: Examples of pragma prompt_script</span>
+        </div>
+        </div>
+        </center>
+
+<p>Make sure the final command ends with a semi-colon. Changing your
+prompt will also change the title of your terminal window.</p>
+
+<p>Of course, the pragma can be placed in a profile file so it is
+set each time you start SparForte.</p>
+
   </li>
   <li> <b>pragma error( static-expression )</b> - always raise an error
 with the static expression in the message.</li>
