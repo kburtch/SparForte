@@ -1101,11 +1101,23 @@ cp parser_gnat_cgi.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb parser_gnat_cgi.adb
 chmod 444 parser_gnat_cgi.adb
 
+echo "Updating...parser_bdb.adb"
+test -f parser_bdb.adb && chmod 666 parser_bdb.adb
+cp parser_bdb.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb parser_bdb.adb
+chmod 444 parser_bdb.adb
+
 echo "Updating...parser_btree_io.adb"
 test -f parser_btree_io.adb && chmod 666 parser_btree_io.adb
 cp parser_btree_io.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb parser_btree_io.adb
 chmod 444 parser_btree_io.adb
+
+echo "Updating...parser_hash_io.adb"
+test -f parser_hash_io.adb && chmod 666 parser_hash_io.adb
+cp parser_hash_io.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb parser_hash_io.adb
+chmod 444 parser_hash_io.adb
 
 test -f temp.ads && rm temp.ads
 test -f temp.adb && rm temp.adb
