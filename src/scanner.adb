@@ -77,7 +77,9 @@ with system,
     parser_dht,
     parser_teams,
     parser_sessions,
-    parser_btree_io;
+    parser_bdb,
+    parser_btree_io,
+    parser_hash_io;
 use ada.text_io,
     ada.integer_text_io,
     ada.command_line,
@@ -129,7 +131,9 @@ use ada.text_io,
     parser_dht,
     parser_teams,
     parser_sessions,
-    parser_btree_io;
+    parser_bdb,
+    parser_btree_io,
+    parser_hash_io;
 
 pragma Optimize( time );
 
@@ -1531,7 +1535,9 @@ end dumpSymbolTable;
 procedure shutdownScanner is
 begin
 
-  ShutdownBTree;
+  ShutdownHashIO;
+  ShutdownBTreeIO;
+  ShutdownBDB;
   ShutdownSessions;
   ShutdownTeams;
   ShutdownDHT;
@@ -2207,7 +2213,9 @@ begin
   StartupDHT;
   StartupTeams;
   StartupSessions;
-  StartupBTree;
+  StartupBDB;
+  StartupBTreeIO;
+  StartupHashIO;
 
   -- Declare all Environment Variables
   --

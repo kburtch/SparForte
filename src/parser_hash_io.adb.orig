@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
--- Berekeley BTree Files Package Parser                                     --
+-- Berekeley Hash Files Package Parser                                      --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2015 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -57,14 +57,13 @@ use
     parser_aux,
     parser_params,
     parser_bdb;
-
 #if BDB
 use
     bdb,
     bdb_constants;
 #end if;
 
-package body parser_btree_io is
+package body parser_hash_io is
 
 ------------------------------------------------------------------------------
 -- Utility subprograms
@@ -79,25 +78,25 @@ end CheckFileIsInitialized;
 
 procedure ParseSingleFileParameter( fileId : out identifier ) is
 begin
-  ParseSingleInOutParameter( fileId, btree_file_t );
+  ParseSingleInOutParameter( fileId, hash_file_t );
   CheckFileIsInitialized( fileId );
 end ParseSingleFileParameter;
 
 procedure ParseFirstFileParameter( fileId : out identifier ) is
 begin
-  ParseFirstInOutParameter( fileId, btree_file_t );
+  ParseFirstInOutParameter( fileId, hash_file_t );
   CheckFileIsInitialized( fileId );
 end ParseFirstFileParameter;
 
 procedure ParseNextFileParameter( fileId : out identifier ) is
 begin
-  ParseNextInOutParameter( fileId, btree_file_t );
+  ParseNextInOutParameter( fileId, hash_file_t );
   CheckFileIsInitialized( fileId );
 end ParseNextFileParameter;
 
 procedure ParseLastFileParameter( fileId : out identifier ) is
 begin
-  ParseLastInOutParameter( fileId, btree_file_t );
+  ParseLastInOutParameter( fileId, hash_file_t );
   CheckFileIsInitialized( fileId );
 end ParseLastFileParameter;
 
@@ -110,25 +109,25 @@ end CheckCursorIsInitialized;
 
 procedure ParseSingleCursorParameter( cursId : out identifier ) is
 begin
-  ParseSingleInOutParameter( cursId, btree_cursor_t );
+  ParseSingleInOutParameter( cursId, hash_cursor_t );
   CheckCursorIsInitialized( cursId );
 end ParseSingleCursorParameter;
 
 procedure ParseFirstCursorParameter( cursId : out identifier ) is
 begin
-  ParseFirstInOutParameter( cursId, btree_cursor_t );
+  ParseFirstInOutParameter( cursId, hash_cursor_t );
   CheckCursorIsInitialized( cursId );
 end ParseFirstCursorParameter;
 
 procedure ParseNextCursorParameter( cursId : out identifier ) is
 begin
-  ParseNextInOutParameter( cursId, btree_cursor_t );
+  ParseNextInOutParameter( cursId, hash_cursor_t );
   CheckCursorIsInitialized( cursId );
 end ParseNextCursorParameter;
 
 procedure ParseLastCursorParameter( cursId : out identifier ) is
 begin
-  ParseLastInOutParameter( cursId, btree_cursor_t );
+  ParseLastInOutParameter( cursId, hash_cursor_t );
   CheckCursorIsInitialized( cursId );
 end ParseLastCursorParameter;
 
@@ -139,16 +138,16 @@ end ParseLastCursorParameter;
 
 #if BDB
 
-procedure ParseBTreeNewFile is
-  -- Syntax: btree.new_file( f, t );
+procedure ParseHashNewFile is
+  -- Syntax: hash.new_file( f, t );
   -- Ada:    N/A
   resId : resHandleId;
   ref : reference;
   genKindId : identifier;
 begin
-  expect( btree_new_file_t );
-  ParseFirstOutParameter( ref, btree_file_t );
-  baseTypesOK( ref.kind, btree_file_t );
+  expect( hash_new_file_t );
+  ParseFirstOutParameter( ref, hash_file_t );
+  baseTypesOK( ref.kind, hash_file_t );
   expect( symbol_t, "," );
   ParseIdentifier( genKindId );
   if class_ok( genKindId, typeClass, subClass ) then
@@ -164,61 +163,61 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, btree_file, blocks_top );
+     declareResource( resId, hash_file, blocks_top );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
-end ParseBtreeNewFile;
+end ParseHashNewFile;
 
 #else
 
 pragma warnings( off );
 -- Hide unused parameters warnings
 
-procedure ParseBtreeNewFile is
+procedure ParseHashNewFile is
 begin
   err( "bdb support not configured" );
-end ParseBtreeNewFile;
+end ParseHashNewFile;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeClear is
-  -- Syntax: btree.clear( f );
+procedure ParseHashClear is
+  -- Syntax: hash.clear( f );
   -- Ada:    N/A;
   fileId   : identifier;
   theFile  : resPtr;
 begin
-  expect( btree_clear_t );
+  expect( hash_clear_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
        -- close the file / environment, if they are still open.  This doesn't
        -- close any cursors.
        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-       if theFile.btree.isOpen then
-          Close( theFile.btree.session );
-          Close( theFile.btree.env );
-          theFile.btree.isOpen := false;
+       if theFile.hash.isOpen then
+          Close( theFile.hash.session );
+          Close( theFile.hash.env );
+          theFile.hash.isOpen := false;
        end if;
      exception when msg: berkeley_error =>
        err( exception_message( msg ) );
      end;
   end if;
-end ParseBTreeClear;
+end ParseHashClear;
 
 #else
 
-procedure ParseBTreeClear is
+procedure ParseHashClear is
 begin
   err( "bdb support not configured" );
-end ParseBTreeClear;
+end ParseHashClear;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeCreate is
-  -- Syntax: btree.create( f, path, keyLen, valLen );
-  -- Ada:    btree.create( f, path, keyLen, valLen );
+procedure ParseHashCreate is
+  -- Syntax: hash.create( f, path, keyLen, valLen );
+  -- Ada:    hash.create( f, path, keyLen, valLen );
   -- this is impacted by --verbse
   fileId     : identifier;
   theFile    : resPtr;
@@ -234,7 +233,7 @@ begin
   if rshOpt then
      err( "create not allowed in a " & optional_bold( "restricted shell" ) );
   end if;
-  expect( btree_create_t );
+  expect( hash_create_t );
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
   ParseFirstFileParameter( fileId );
@@ -261,7 +260,7 @@ begin
      begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
 
-        init( theFile.btree.env );
+        init( theFile.hash.env );
 
         -- berkeley db paths must be absolute paths when creating (opening
         -- an exisiting data file is OK for relative paths)
@@ -286,23 +285,23 @@ begin
 
         if length( dirname2 ) > 0 then
            begin
-              set_data_dir( theFile.btree.env, to_string( dirname2 ) );
+              set_data_dir( theFile.hash.env, to_string( dirname2 ) );
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on setting the data directory" );
            end;
            begin
-              set_tmp_dir( theFile.btree.env, to_string( dirname2 ) );
+              set_tmp_dir( theFile.hash.env, to_string( dirname2 ) );
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on setting the temp directory"  );
            end;
            begin
-              set_lg_dir( theFile.btree.env, to_string( dirname2 ) );
+              set_lg_dir( theFile.hash.env, to_string( dirname2 ) );
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on setting the logging directory"  );
            end;
            begin
               if verboseOpt then
-                 set_verbose( theFile.btree.env, 0, 1 );
+                 set_verbose( theFile.hash.env, 0, 1 );
               end if;
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on changing verbose setting"  );
@@ -312,36 +311,36 @@ begin
         -- Create an environment
 
         begin
-           create( theFile.btree.env,
+           create( theFile.hash.env,
                 to_string( dirname2 ),
                 -- I assume we don't need logging or transactions but
                 -- they could be implemented.
                 DB_E_OPEN_INIT_LOCK OR
                 DB_E_OPEN_INIT_MPOOL,
                 0 );
-           theFile.btree.envhome := dirname2;
+           theFile.hash.envhome := dirname2;
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on creating the environment" );
            end;
 
         -- Create the file
         new_berkeley_session(
-           theFile.btree.session,
-           theFile.btree.env,
+           theFile.hash.session,
+           theFile.hash.env,
            keyLen,
            valLen );
         begin
-           create( theFile.btree.session, filename, "", DB_BTREE, 0, 0 );
+           create( theFile.hash.session, filename, "", DB_HASH, 0, 0 );
         exception when msg: berkeley_error =>
            err( exception_message( msg ) & " on creating the data file"  );
         end;
-        theFile.btree.isOpen := true;
-        theFile.btree.name := fname_val;
+        theFile.hash.isOpen := true;
+        theFile.hash.name := fname_val;
 
         declare
            cnt : natural;
         begin
-           truncate( theFile.btree.session, cnt );
+           truncate( theFile.hash.session, cnt );
            if trace and cnt > 0 then
               put_trace( cnt'img & " records were erased" );
            end if;
@@ -349,54 +348,54 @@ begin
            err( exception_message( msg ) & " on truncating the data file"  );
         end;
      --exception when berkeley_error:s =>
-     --   err( to_string( last_error( theFile.btree.session ) );
+     --   err( to_string( last_error( theFile.hash.session ) );
      end;
   end if;
-end ParseBTreeCreate;
+end ParseHashCreate;
 
 #else
 
-procedure ParseBTreeCreate is
+procedure ParseHashCreate is
 begin
   err( "bdb support not configured" );
-end ParseBTreeCreate;
+end ParseHashCreate;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeClose is
-  -- Syntax: btree.create( f );
-  -- Ada:    btree.create( f );
+procedure ParseHashClose is
+  -- Syntax: hash.create( f );
+  -- Ada:    hash.create( f );
   fileId     : identifier;
   theFile    : resPtr;
 begin
-  expect( btree_close_t );
+  expect( hash_close_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        close( theFile.btree.session );
-        close( theFile.btree.env );
-        theFile.btree.isOpen := false;
+        close( theFile.hash.session );
+        close( theFile.hash.env );
+        theFile.hash.isOpen := false;
       exception when msg: berkeley_error =>
         err( exception_message( msg ) );
      end;
   end if;
-end ParseBTreeClose;
+end ParseHashClose;
 
 #else
 
-procedure ParseBTreeClose is
+procedure ParseHashClose is
 begin
   err( "bdb support not configured" );
-end ParseBTreeClose;
+end ParseHashClose;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeOpen is
-  -- Syntax: btree.open( f, path, keyLen, valLen );
-  -- Ada:    btree.open( f, path, keyLen, valLen );
+procedure ParseHashOpen is
+  -- Syntax: hash.open( f, path, keyLen, valLen );
+  -- Ada:    hash.open( f, path, keyLen, valLen );
   -- this is impacted by --verbse
   fileId     : identifier;
   theFile    : resPtr;
@@ -409,7 +408,7 @@ procedure ParseBTreeOpen is
   valLenExpr : unbounded_string;
   valLenType : identifier;
 begin
-  expect( btree_open_t );
+  expect( hash_open_t );
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
   ParseFirstFileParameter( fileId );
@@ -439,7 +438,7 @@ begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
 
         -- Create an environment
-        init( theFile.btree.env );
+        init( theFile.hash.env );
 
         -- berkeley db paths must be absolute paths when creating (opening
         -- an exisiting data file is OK for relative paths).  We're doing this
@@ -468,23 +467,23 @@ begin
 
         if length( dirname2 ) > 0 then
            begin
-              set_data_dir( theFile.btree.env, to_string( dirname2 ) );
+              set_data_dir( theFile.hash.env, to_string( dirname2 ) );
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on setting the data directory" );
            end;
            begin
-              set_tmp_dir( theFile.btree.env, to_string( dirname2 ) );
+              set_tmp_dir( theFile.hash.env, to_string( dirname2 ) );
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on setting the temp directory"  );
            end;
            begin
-              set_lg_dir( theFile.btree.env, to_string( dirname2 ) );
+              set_lg_dir( theFile.hash.env, to_string( dirname2 ) );
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on setting the logging directory"  );
            end;
            begin
               if verboseOpt then
-                 set_verbose( theFile.btree.env, 0, 1 );
+                 set_verbose( theFile.hash.env, 0, 1 );
               end if;
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on changing verbose setting"  );
@@ -492,104 +491,104 @@ begin
         end if;
 
         begin
-           open( theFile.btree.env,
+           open( theFile.hash.env,
                 to_string( dirname2 ),
                 -- I assume we don't need logging or transactions but
                 -- they could be implemented.
                 DB_E_OPEN_INIT_LOCK OR
                 DB_E_OPEN_INIT_MPOOL,
                 0 );
-           theFile.btree.envhome := dirname2;
+           theFile.hash.envhome := dirname2;
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on opening the environment" );
            end;
 
         -- Create the file
         new_berkeley_session(
-           theFile.btree.session,
-           theFile.btree.env,
+           theFile.hash.session,
+           theFile.hash.env,
            keyLen,
            valLen );
 
         begin
-           open( theFile.btree.session, filename, "", DB_BTREE, 0, 0 );
+           open( theFile.hash.session, filename, "", DB_HASH, 0, 0 );
         exception when msg: berkeley_error =>
            err( exception_message( msg ) & " on opening the data file"  );
         end;
-        theFile.btree.isOpen := true;
-        theFile.btree.name := fname_val;
+        theFile.hash.isOpen := true;
+        theFile.hash.name := fname_val;
      end;
   end if;
-end ParseBTreeOpen;
+end ParseHashOpen;
 
 #else
 
-procedure ParseBTreeOpen is
+procedure ParseHashOpen is
 begin
   err( "bdb support not configured" );
-end ParseBTreeOpen;
+end ParseHashOpen;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeIsOpen( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := btree.is_open( f );
+procedure ParseHashIsOpen( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: b := hash.is_open( f );
   -- Ada:    N/A
   fileId     : identifier;
   theFile    : resPtr;
 begin
   kind := boolean_t;
-  expect( btree_is_open_t );
+  expect( hash_is_open_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        result := to_bush_boolean( theFile.btree.isOpen );
+        result := to_bush_boolean( theFile.hash.isOpen );
      exception when berkeley_error =>
         result := to_bush_boolean( false );
      end;
   end if;
-end ParseBTreeIsOpen;
+end ParseHashIsOpen;
 
 #else
 
-procedure ParseBTreeIsOpen( result : out unbounded_string; kind : out identifier ) is
+procedure ParseHashIsOpen( result : out unbounded_string; kind : out identifier ) is
 begin
   err( "bdb support not configured" );
-end ParseBTreeIsOpen;
+end ParseHashIsOpen;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeName( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := btree.name( f );
+procedure ParseHashName( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: b := hash.name( f );
   -- Ada:    N/A
   fileId     : identifier;
   theFile    : resPtr;
 begin
   kind := string_t;
-  expect( btree_name_t );
+  expect( hash_name_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        result := theFile.btree.name;
+        result := theFile.hash.name;
      end;
   end if;
-end ParseBTreeName;
+end ParseHashName;
 
 #else
 
-procedure ParseBTreeName( result : out unbounded_string; kind : out identifier ) is
+procedure ParseHashName( result : out unbounded_string; kind : out identifier ) is
 begin
   err( "bdb support not configured" );
-end ParseBTreeName;
+end ParseHashName;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeDelete is
-  -- Syntax: btree.delete( f );
+procedure ParseHashDelete is
+  -- Syntax: hash.delete( f );
   -- Ada:    bdb.remove( f );
   -- TODO:   option to the keep environment in case other files use it
   fileId     : identifier;
@@ -598,22 +597,22 @@ begin
   if rshOpt then
      err( "delete not allowed in a " & optional_bold( "restricted shell" ) );
   end if;
-  expect( btree_delete_t );
+  expect( hash_delete_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        if theFile.btree.isOpen then
+        if theFile.hash.isOpen then
            begin
-              close( theFile.btree.session );
+              close( theFile.hash.session );
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on closing the data file"  );
            end;
         end if;
 
         begin
-           dbremove( theFile.btree.env,
-             to_string( theFile.btree.name ),
+           dbremove( theFile.hash.env,
+             to_string( theFile.hash.name ),
              "",
              0 );
         exception when msg: berkeley_error =>
@@ -621,22 +620,22 @@ begin
         end;
 
         -- keep the environment
-        if theFile.btree.isOpen then
+        if theFile.hash.isOpen then
            begin
-              close( theFile.btree.env );
+              close( theFile.hash.env );
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on closing the environment"  );
            end;
-          -- remove( theFile.btree.env, dbhome )
+          -- remove( theFile.hash.env, dbhome )
         end if;
 
         begin
-           init( theFile.btree.env );
-           remove( theFile.btree.env, to_string( theFile.btree.envhome ) );
+           init( theFile.hash.env );
+           remove( theFile.hash.env, to_string( theFile.hash.envhome ) );
         exception when msg: berkeley_error =>
            err( exception_message( msg ) & " on removing the environment"  );
         end;
-        theFile.btree.isOpen := false;
+        theFile.hash.isOpen := false;
      exception when storage_error =>
         err( "storage_error raised" );
      when constraint_error =>
@@ -645,20 +644,20 @@ begin
         err_exception_raised;
      end;
   end if;
-end ParseBTreeDelete;
+end ParseHashDelete;
 
 #else
 
-procedure ParseBTreeDelete is
+procedure ParseHashDelete is
 begin
   err( "bdb support not configured" );
-end ParseBTreeDelete;
+end ParseHashDelete;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeSet is
-  -- Syntax: btree.set( f, key, value );
+procedure ParseHashSet is
+  -- Syntax: hash.set( f, key, value );
   -- Ada:    bdb.put( f, key, value );
   fileId     : identifier;
   theFile    : resPtr;
@@ -674,7 +673,7 @@ begin
   if rshOpt then
      err( "set not allowed in a " & optional_bold( "restricted shell" ) );
   end if;
-  expect( btree_set_t );
+  expect( hash_set_t );
   ParseFirstFileParameter( fileId );
   ParseNextStringParameter( keyExpr, keyType, string_t );
   expect( symbol_t, "," );
@@ -702,7 +701,7 @@ begin
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
            DoRecordToJson( jsonString, valId );
-           put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+           put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         end;
@@ -712,7 +711,7 @@ begin
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
            DoArrayToJson( jsonString, valId );
-           put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+           put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         end;
@@ -720,26 +719,26 @@ begin
         -- normal scalar expression
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           put( theFile.btree.session, to_string( keyExpr ), to_string( valExpr ) );
+           put( theFile.hash.session, to_string( keyExpr ), to_string( valExpr ) );
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         end;
      end if;
   end if;
-end ParseBTreeSet;
+end ParseHashSet;
 
 #else
 
-procedure ParseBTreeSet is
+procedure ParseHashSet is
 begin
   err( "bdb support not configured" );
-end ParseBTreeSet;
+end ParseHashSet;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeGet is
-  -- Syntax: btree.get( f, k, v );
+procedure ParseHashGet is
+  -- Syntax: hash.get( f, k, v );
   -- Ada:    v := bdb.get( f, k );
   -- This was originally a function but turned into a procedure because
   -- v can now be an aggregate (and we currently cannot return aggregates
@@ -754,7 +753,7 @@ procedure ParseBTreeGet is
   genKindId  : identifier;
 begin
   -- TODO: null string instead of exception to parallel dht
-  expect( btree_get_t );
+  expect( hash_get_t );
   ParseFirstFileParameter( fileId );
   genKindId := identifiers( fileId ).genKind;
   ParseNextStringParameter( keyExpr, keyType, string_t );
@@ -784,10 +783,10 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           get( theFile.btree.session, to_string( keyExpr ), jsonString );
+           get( theFile.hash.session, to_string( keyExpr ), jsonString );
            DoJsonToRecord( itemRef.id, jsonString );
         exception when msg: berkeley_error =>
-           if last_error( theFile.btree.session ) = DB_NOTFOUND then
+           if last_error( theFile.hash.session ) = DB_NOTFOUND then
               err( "key not found" );
            else
                err( exception_message( msg ) );
@@ -798,10 +797,10 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           get( theFile.btree.session, to_string( keyExpr ), jsonString );
+           get( theFile.hash.session, to_string( keyExpr ), jsonString );
            DoJsonToArray( itemRef.id, jsonString );
         exception when msg: berkeley_error =>
-           if last_error( theFile.btree.session ) = DB_NOTFOUND then
+           if last_error( theFile.hash.session ) = DB_NOTFOUND then
               err( "key not found" );
            else
                err( exception_message( msg ) );
@@ -812,10 +811,10 @@ begin
            result : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           get( theFile.btree.session, to_string( keyExpr ), result );
+           get( theFile.hash.session, to_string( keyExpr ), result );
            AssignParameter( itemRef, result );
         exception when msg: berkeley_error =>
-           if last_error( theFile.btree.session ) = DB_NOTFOUND then
+           if last_error( theFile.hash.session ) = DB_NOTFOUND then
               err( "key not found" );
            else
                err( exception_message( msg ) );
@@ -823,20 +822,20 @@ begin
         end;
      end if;
   end if;
-end ParseBTreeGet;
+end ParseHashGet;
 
 #else
 
-procedure ParseBTreeGet is
+procedure ParseHashGet is
 begin
   err( "bdb support not configured" );
-end ParseBTreeGet;
+end ParseHashGet;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeHasElement( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: v := btree.has_element( f, k );
+procedure ParseHashHasElement( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: v := hash.has_element( f, k );
   -- Ada:    bdb.exists( f, k );
   fileId     : identifier;
   theFile    : resPtr;
@@ -844,32 +843,32 @@ procedure ParseBTreeHasElement( result : out unbounded_string; kind : out identi
   keyType    : identifier;
 begin
   kind := boolean_t;
-  expect( btree_has_element_t );
+  expect( hash_has_element_t );
   ParseFirstFileParameter( fileId );
   ParseLastStringParameter( keyExpr, keyType, string_t );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        exists( theFile.btree.session, to_string( keyExpr ) );
+        exists( theFile.hash.session, to_string( keyExpr ) );
         result := to_bush_boolean( true );
      exception when berkeley_error =>
         result := to_bush_boolean( false );
      end;
   end if;
-end ParseBTreeHasElement;
+end ParseHashHasElement;
 
 #else
 
-procedure ParseBTreeHasElement( result : out unbounded_string; kind : out identifier ) is
+procedure ParseHashHasElement( result : out unbounded_string; kind : out identifier ) is
 begin
   err( "bdb support not configured" );
-end ParseBTreeHasElement;
+end ParseHashHasElement;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeRemove is
-  -- Syntax: v := btree.remove( f, k | c );
+procedure ParseHashRemove is
+  -- Syntax: v := hash.remove( f, k | c );
   -- Ada:    bdb.delete( f, k | c );
   fileId     : identifier;
   theFile    : resPtr;
@@ -881,10 +880,10 @@ begin
   if rshOpt then
      err( "remove not allowed in a " & optional_bold( "restricted shell" ) );
   end if;
-  expect( btree_remove_t );
+  expect( hash_remove_t );
   ParseFirstFileParameter( fileId );
   expect( symbol_t, "," );
-  if getbaseType( identifiers( token ).kind ) = btree_cursor_t then
+  if getbaseType( identifiers( token ).kind ) = hash_cursor_t then
      ParseIdentifier( cursId );
      genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
   else
@@ -897,15 +896,15 @@ begin
      if cursId /= eof_t then
         begin
           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-          delete( theFile.btree.session, theCurs.btree_cur );
+          delete( theFile.hash.session, theCurs.hash_cur );
         exception when msg: berkeley_error =>
             err( exception_message( msg ) );
         end;
      else
         begin
-           delete( theFile.btree.session, to_string( keyExpr ) );
+           delete( theFile.hash.session, to_string( keyExpr ) );
         exception when msg: berkeley_error =>
-           if last_error( theFile.btree.session ) = DB_NOTFOUND then
+           if last_error( theFile.hash.session ) = DB_NOTFOUND then
               err( "key not found" );
            else
               err( exception_message( msg ) );
@@ -913,20 +912,20 @@ begin
         end;
      end if;
   end if;
-end ParseBTreeRemove;
+end ParseHashRemove;
 
 #else
 
-procedure ParseBTreeRemove is
+procedure ParseHashRemove is
 begin
   err( "bdb support not configured" );
-end ParseBTreeRemove;
+end ParseHashRemove;
 
 #end if;
 #if BDB
 
-procedure ParseBtreeIncrement is
-  -- Syntax: btree.increment( f, s [,n] );
+procedure ParseHashIncrement is
+  -- Syntax: hash.increment( f, s [,n] );
   -- Ada:    N/A
   fileId     : identifier;
   theFile    : resPtr;
@@ -941,7 +940,7 @@ begin
   if rshOpt then
      err( "increment not allowed in a " & optional_bold( "restricted shell" ) );
   end if;
-  expect( btree_increment_t );
+  expect( hash_increment_t );
   ParseFirstFileParameter( fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
      err( "increment requires a numeric item type" );
@@ -959,14 +958,14 @@ begin
      begin
        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
 
-       get( theFile.btree.session, to_string( keyExpr ), oldItem );
+       get( theFile.hash.session, to_string( keyExpr ), oldItem );
        -- berkeley throws exception on not found
        --if oldItem /= null_unbounded_string then
           oldItemValue := to_numeric( oldItem );
           if hasAmt then
-             put( theFile.btree.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue + long_float( natural( to_numeric( amtExpr ) ) ) ) ) );
+             put( theFile.hash.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue + long_float( natural( to_numeric( amtExpr ) ) ) ) ) );
           else
-             put( theFile.btree.session, to_string( keyExpr ), to_string( to_unbounded_string( oldItemValue + 1.0 ) ) );
+             put( theFile.hash.session, to_string( keyExpr ), to_string( to_unbounded_string( oldItemValue + 1.0 ) ) );
           end if;
        --end if;
      exception when storage_error =>
@@ -974,27 +973,27 @@ begin
      when constraint_error =>
        err( "constraint error raised" );
      when msg: berkeley_error =>
-       if last_error( theFile.btree.session ) = DB_NOTFOUND then
+       if last_error( theFile.hash.session ) = DB_NOTFOUND then
           err( "key not found" );
        else
           err( exception_message( msg ) );
        end if;
      end;
   end if;
-end ParseBTreeIncrement;
+end ParseHashIncrement;
 
 #else
 
-procedure ParseBTreeIncrement is
+procedure ParseHashIncrement is
 begin
   err( "bdb support not configured" );
-end ParseBTreeIncrement;
+end ParseHashIncrement;
 
 #end if;
 #if BDB
 
-procedure ParseBtreeDecrement is
-  -- Syntax: btree.decrement( f, s [,n] );
+procedure ParseHashDecrement is
+  -- Syntax: hash.decrement( f, s [,n] );
   -- Ada:    N/A
   fileId     : identifier;
   theFile    : resPtr;
@@ -1009,7 +1008,7 @@ begin
   if rshOpt then
      err( "decrement not allowed in a " & optional_bold( "restricted shell" ) );
   end if;
-  expect( btree_decrement_t );
+  expect( hash_decrement_t );
   ParseFirstFileParameter( fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
      err( "increment requires a numeric item type" );
@@ -1027,14 +1026,14 @@ begin
      begin
        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
 
-       get( theFile.btree.session, to_string( keyExpr ), oldItem );
+       get( theFile.hash.session, to_string( keyExpr ), oldItem );
        -- berkeley throws exception on not found
        --if oldItem /= null_unbounded_string then
           oldItemValue := to_numeric( oldItem );
           if hasAmt then
-             put( theFile.btree.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue - long_float( natural( to_numeric( amtExpr ) ) ) ) ) );
+             put( theFile.hash.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue - long_float( natural( to_numeric( amtExpr ) ) ) ) ) );
           else
-             put( theFile.btree.session, to_string( keyExpr ), to_string( to_unbounded_string( oldItemValue - 1.0 ) ) );
+             put( theFile.hash.session, to_string( keyExpr ), to_string( to_unbounded_string( oldItemValue - 1.0 ) ) );
           end if;
        --end if;
      exception when storage_error =>
@@ -1042,27 +1041,27 @@ begin
      when constraint_error =>
        err( "constraint error raised" );
      when msg: berkeley_error =>
-       if last_error( theFile.btree.session ) = DB_NOTFOUND then
+       if last_error( theFile.hash.session ) = DB_NOTFOUND then
           err( "key not found" );
        else
           err( exception_message( msg ) );
        end if;
      end;
   end if;
-end ParseBTreeDecrement;
+end ParseHashDecrement;
 
 #else
 
-procedure ParseBTreeDecrement is
+procedure ParseHashDecrement is
 begin
   err( "bdb support not configured" );
-end ParseBTreeDecrement;
+end ParseHashDecrement;
 
 #end if;
 #if BDB
 
-procedure ParseBtreeAdd is
-  -- Syntax: btree.add( f, s, e );
+procedure ParseHashAdd is
+  -- Syntax: hash.add( f, s, e );
   -- Ada:    N/A
   fileId     : identifier;
   theFile  : resPtr;
@@ -1078,7 +1077,7 @@ begin
   if rshOpt then
      err( "add not allowed in a " & optional_bold( "restricted shell" ) );
   end if;
-  expect( btree_add_t );
+  expect( hash_add_t );
   ParseFirstFileParameter( fileId );
   ParseNextStringParameter( keyExpr, keyType, uni_string_t );
   expect( symbol_t, "," );
@@ -1105,13 +1104,13 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           exists( theFile.btree.session, to_string( keyExpr ) );
+           exists( theFile.hash.session, to_string( keyExpr ) );
         exception when storage_error =>
           err( "storage error raised" );
         when msg: berkeley_error =>
-          if last_error( theFile.btree.session ) = DB_NOTFOUND then
+          if last_error( theFile.hash.session ) = DB_NOTFOUND then
              DoRecordToJson( jsonString, itemId );
-             put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+             put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
           else
              err( exception_message( msg ) );
           end if;
@@ -1121,13 +1120,13 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           exists( theFile.btree.session, to_string( keyExpr ) );
+           exists( theFile.hash.session, to_string( keyExpr ) );
         exception when storage_error =>
           err( "storage error raised" );
         when msg: berkeley_error =>
-          if last_error( theFile.btree.session ) = DB_NOTFOUND then
+          if last_error( theFile.hash.session ) = DB_NOTFOUND then
              DoArrayToJson( jsonString, itemId );
-             put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+             put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
           else
              err( exception_message( msg ) );
           end if;
@@ -1136,32 +1135,32 @@ begin
         -- normal scalar expression
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           exists( theFile.btree.session, to_string( keyExpr ) );
+           exists( theFile.hash.session, to_string( keyExpr ) );
         exception when storage_error =>
           err( "storage error raised" );
         when msg: berkeley_error =>
-          if last_error( theFile.btree.session ) = DB_NOTFOUND then
-             put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
+          if last_error( theFile.hash.session ) = DB_NOTFOUND then
+             put( theFile.hash.session, to_string( keyExpr ), to_string( itemExpr ) );
           else
              err( exception_message( msg ) );
           end if;
         end;
      end if;
   end if;
-end ParseBTreeAdd;
+end ParseHashAdd;
 
 #else
 
-procedure ParseBTreeAdd is
+procedure ParseHashAdd is
 begin
   err( "bdb support not configured" );
-end ParseBTreeAdd;
+end ParseHashAdd;
 
 #end if;
 #if BDB
 
-procedure ParseBtreeReplace is
-  -- Syntax: btree.replace( f, c | k, v );
+procedure ParseHashReplace is
+  -- Syntax: hash.replace( f, c | k, v );
   -- Ada:    N/A
   -- Note: the key will not be overwritten if a cursor is used
 -- TODO: option to throw an exception on missing values (including replace, get, add (existing value)
@@ -1181,10 +1180,10 @@ begin
   if rshOpt then
      err( "replace not allowed in a " & optional_bold( "restricted shell" ) );
   end if;
-  expect( btree_replace_t );
+  expect( hash_replace_t );
   ParseFirstFileParameter( fileId );
   expect( symbol_t, "," );
-  if getbaseType( identifiers( token ).kind ) = btree_cursor_t then
+  if getbaseType( identifiers( token ).kind ) = hash_cursor_t then
      ParseIdentifier( cursId );
      genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
   else
@@ -1219,8 +1218,8 @@ begin
              findResource( to_resource_id( identifiers( fileId ).value ), theFile );
              findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
              DoRecordToJson( jsonString, itemId );
-             put( theFile.btree.session,
-                  theCurs.btree_cur,
+             put( theFile.hash.session,
+                  theCurs.hash_cur,
                   keyExpr, -- this is ignored
                   jsonString,
                   DB_C_PUT_CURRENT );
@@ -1234,8 +1233,8 @@ begin
              findResource( to_resource_id( identifiers( fileId ).value ), theFile );
              findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
              DoArrayToJson( jsonString, itemId );
-             put( theFile.btree.session,
-                  theCurs.btree_cur,
+             put( theFile.hash.session,
+                  theCurs.hash_cur,
                   keyExpr, -- this is ignored
                   jsonString,
                   DB_C_PUT_CURRENT );
@@ -1246,8 +1245,8 @@ begin
            begin
              findResource( to_resource_id( identifiers( fileId ).value ), theFile );
              findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-             put( theFile.btree.session,
-                  theCurs.btree_cur,
+             put( theFile.hash.session,
+                  theCurs.hash_cur,
                   keyExpr, -- this is ignored
                   itemExpr,
                   DB_C_PUT_CURRENT );
@@ -1262,13 +1261,13 @@ begin
               jsonString : unbounded_string;
            begin
              findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-             exists( theFile.btree.session, to_string( keyExpr ) );
+             exists( theFile.hash.session, to_string( keyExpr ) );
              DoRecordToJson( jsonString, itemId );
-             put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+             put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
            exception when storage_error =>
              err( "storage error raised" );
            when msg: berkeley_error =>
-              if last_error( theFile.btree.session ) /= DB_NOTFOUND then
+              if last_error( theFile.hash.session ) /= DB_NOTFOUND then
                  err( exception_message( msg ) );
               end if;
            end;
@@ -1277,45 +1276,45 @@ begin
               jsonString : unbounded_string;
            begin
              findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-             exists( theFile.btree.session, to_string( keyExpr ) );
+             exists( theFile.hash.session, to_string( keyExpr ) );
              DoArrayToJson( jsonString, itemId );
-             put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+             put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
            exception when storage_error =>
              err( "storage error raised" );
            when msg: berkeley_error =>
-              if last_error( theFile.btree.session ) /= DB_NOTFOUND then
+              if last_error( theFile.hash.session ) /= DB_NOTFOUND then
                  err( exception_message( msg ) );
               end if;
            end;
         else
            begin
              findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-             exists( theFile.btree.session, to_string( keyExpr ) );
-             put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
+             exists( theFile.hash.session, to_string( keyExpr ) );
+             put( theFile.hash.session, to_string( keyExpr ), to_string( itemExpr ) );
            exception when storage_error =>
              err( "storage error raised" );
            when msg: berkeley_error =>
-              if last_error( theFile.btree.session ) /= DB_NOTFOUND then
+              if last_error( theFile.hash.session ) /= DB_NOTFOUND then
                  err( exception_message( msg ) );
               end if;
            end;
         end if;
      end if;
   end if;
-end ParseBTreeReplace;
+end ParseHashReplace;
 
 #else
 
-procedure ParseBTreeReplace is
+procedure ParseHashReplace is
 begin
   err( "bdb support not configured" );
-end ParseBTreeReplace;
+end ParseHashReplace;
 
 #end if;
 #if BDB
 
-procedure ParseBtreeAppend is
-  -- Syntax: btree.append( f, s, e );
+procedure ParseHashAppend is
+  -- Syntax: hash.append( f, s, e );
   -- Ada:    N/A
   fileId     : identifier;
   theFile  : resPtr;
@@ -1328,7 +1327,7 @@ begin
   if rshOpt then
      err( "append not allowed in a " & optional_bold( "restricted shell" ) );
   end if;
-  expect( btree_append_t );
+  expect( hash_append_t );
   ParseFirstFileParameter( fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
      err( "append requires a string item type" );
@@ -1338,30 +1337,30 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-       get( theFile.btree.session, to_string( keyExpr ), oldItem );
-       put( theFile.btree.session, to_string( keyExpr ), to_string( oldItem & itemExpr ) );
+       get( theFile.hash.session, to_string( keyExpr ), oldItem );
+       put( theFile.hash.session, to_string( keyExpr ), to_string( oldItem & itemExpr ) );
      exception when storage_error =>
        err( "storage error raised" );
      when msg: berkeley_error =>
-       if last_error( theFile.btree.session ) /= DB_NOTFOUND then
+       if last_error( theFile.hash.session ) /= DB_NOTFOUND then
            err( exception_message( msg ) );
        end if;
      end;
   end if;
-end ParseBTreeAppend;
+end ParseHashAppend;
 
 #else
 
-procedure ParseBTreeAppend is
+procedure ParseHashAppend is
 begin
   err( "bdb support not configured" );
-end ParseBTreeAppend;
+end ParseHashAppend;
 
 #end if;
 #if BDB
 
-procedure ParseBtreePrepend is
-  -- Syntax: btree.prepend( f, s, e );
+procedure ParseHashPrepend is
+  -- Syntax: hash.prepend( f, s, e );
   -- Ada:    N/A
   fileId     : identifier;
   theFile  : resPtr;
@@ -1374,7 +1373,7 @@ begin
   if rshOpt then
      err( "prepend not allowed in a " & optional_bold( "restricted shell" ) );
   end if;
-  expect( btree_prepend_t );
+  expect( hash_prepend_t );
   ParseFirstFileParameter( fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
      err( "append requires a string item type" );
@@ -1384,58 +1383,58 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-       get( theFile.btree.session, to_string( keyExpr ), oldItem );
-       put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr & oldItem ) );
+       get( theFile.hash.session, to_string( keyExpr ), oldItem );
+       put( theFile.hash.session, to_string( keyExpr ), to_string( itemExpr & oldItem ) );
      exception when storage_error =>
        err( "storage error raised" );
      when msg: berkeley_error =>
-       if last_error( theFile.btree.session ) /= DB_NOTFOUND then
+       if last_error( theFile.hash.session ) /= DB_NOTFOUND then
            err( exception_message( msg ) );
        end if;
      end;
   end if;
-end ParseBTreePrepend;
+end ParseHashPrepend;
 
 #else
 
-procedure ParseBTreePrepend is
+procedure ParseHashPrepend is
 begin
   err( "bdb support not configured" );
-end ParseBTreePrepend;
+end ParseHashPrepend;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeFlush is
-  -- Syntax: btree.flush( f, flags );
+procedure ParseHashFlush is
+  -- Syntax: hash.flush( f, flags );
   -- Ada:    bbd.sync( f, flags );
   fileId     : identifier;
   theFile    : resPtr;
 begin
-  expect( btree_flush_t );
+  expect( hash_flush_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        sync( theFile.btree.session );
+        sync( theFile.hash.session );
      exception when msg: berkeley_error =>
         err( exception_message( msg ) );
      end;
   end if;
-end ParseBTreeFlush;
+end ParseHashFlush;
 
 #else
 
-procedure ParseBTreeFlush is
+procedure ParseHashFlush is
 begin
   err( "bdb support not configured" );
-end ParseBTreeFlush;
+end ParseHashFlush;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeTruncate is
-  -- Syntax: btree.truncate( f );
+procedure ParseHashTruncate is
+  -- Syntax: hash.truncate( f );
   -- Ada:    bbd.sync( f, cnt );
   fileId     : identifier;
   theFile    : resPtr;
@@ -1443,14 +1442,14 @@ begin
   if rshOpt then
      err( "truncate not allowed in a " & optional_bold( "restricted shell" ) );
   end if;
-  expect( btree_truncate_t );
+  expect( hash_truncate_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      declare
         cnt : natural;
      begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        truncate( theFile.btree.session, cnt );
+        truncate( theFile.hash.session, cnt );
         if trace and cnt > 0 then
            put_trace( cnt'img & " records were erased" );
         end if;
@@ -1458,28 +1457,28 @@ begin
         err( exception_message( msg ) );
      end;
   end if;
-end ParseBTreeTruncate;
+end ParseHashTruncate;
 
 #else
 
-procedure ParseBTreeTruncate is
+procedure ParseHashTruncate is
 begin
   err( "bdb support not configured" );
-end ParseBTreeTruncate;
+end ParseHashTruncate;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeNewCursor is
-  -- Syntax: btree.new_cursor( c, t );
+procedure ParseHashNewCursor is
+  -- Syntax: hash.new_cursor( c, t );
   -- Ada:    N/A
   resId : resHandleId;
   ref : reference;
   genKindId : identifier;
 begin
-  expect( btree_new_cursor_t );
-  ParseFirstOutParameter( ref, btree_cursor_t );
-  baseTypesOK( ref.kind, btree_cursor_t );
+  expect( hash_new_cursor_t );
+  ParseFirstOutParameter( ref, hash_cursor_t );
+  baseTypesOK( ref.kind, hash_cursor_t );
   expect( symbol_t, "," );
   ParseIdentifier( genKindId );
   if class_ok( genKindId, typeClass, subClass ) then
@@ -1495,84 +1494,84 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, btree_cursor, blocks_top );
+     declareResource( resId, hash_cursor, blocks_top );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
-end ParseBtreeNewCursor;
+end ParseHashNewCursor;
 
 #else
 
-procedure ParseBtreeNewCursor is
+procedure ParseHashNewCursor is
 begin
   err( "bdb support not configured" );
-end ParseBtreeNewCursor;
+end ParseHashNewCursor;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeOpenCursor is
-  -- Syntax: btree_io.open_cursor( f, c );
+procedure ParseHashOpenCursor is
+  -- Syntax: hash_io.open_cursor( f, c );
   -- Ada:    N/A
   fileId     : identifier;
   theFile    : resPtr;
   cursId     : identifier;
   theCurs    : resPtr;
 begin
--- TODO: fold into btree.open
-  expect( btree_open_cursor_t );
+-- TODO: fold into hash.open
+  expect( hash_open_cursor_t );
   ParseFirstFileParameter( fileId );
   ParseLastCursorParameter( cursId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value ), theFile );
      findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-     new_berkeley_cursor( theFile.btree.session, theCurs.btree_cur );
+     new_berkeley_cursor( theFile.hash.session, theCurs.hash_cur );
   end if;
-end ParseBtreeOpenCursor;
+end ParseHashOpenCursor;
 
 #else
 
-procedure ParseBTreeOpenCursor is
+procedure ParseHashOpenCursor is
 begin
   err( "bdb support not configured" );
-end ParseBTreeOpenCursor;
+end ParseHashOpenCursor;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeCloseCursor is
-  -- Syntax: btree_io.close_cursor( f,c );
+procedure ParseHashCloseCursor is
+  -- Syntax: hash_io.close_cursor( f,c );
   -- Ada:    bdb.close_cursor( f,c );
   fileId     : identifier;
   theFile    : resPtr;
   cursId     : identifier;
   theCurs    : resPtr;
 begin
-  expect( btree_close_cursor_t );
+  expect( hash_close_cursor_t );
   ParseFirstFileParameter( fileId );
   ParseLastCursorParameter( cursId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
         findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-        close( theFile.btree.session, theCurs.btree_cur );
+        close( theFile.hash.session, theCurs.hash_cur );
      exception when msg: berkeley_error =>
         err( exception_message( msg ) );
      end;
   end if;
-end ParseBTreeCloseCursor;
+end ParseHashCloseCursor;
 
 #else
 
-procedure ParseBTreeCloseCursor is
+procedure ParseHashCloseCursor is
 begin
   err( "bdb support not configured" );
-end ParseBTreeCloseCursor;
+end ParseHashCloseCursor;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeFirst is
-  -- Syntax: btree_io.first( f, c, k, v );
+procedure ParseHashFirst is
+  -- Syntax: hash_io.first( f, c, k, v );
   -- Ada:    bdb.get( f );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
@@ -1590,7 +1589,7 @@ begin
   if rshOpt then
      err( "get_first not allowed in a " & optional_bold( "restricted shell" ) );
   end if;
-  expect( btree_get_first_t );
+  expect( hash_get_first_t );
   ParseFirstFileParameter( fileId );
   ParseNextCursorParameter( cursId );
   genKindId := identifiers( fileId ).genKind;
@@ -1624,8 +1623,8 @@ begin
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
            findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
+           get( theFile.hash.session,
+                theCurs.hash_cur,
                 key,
                 jsonString,
                 DB_C_GET_FIRST );
@@ -1645,8 +1644,8 @@ begin
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
            findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
+           get( theFile.hash.session,
+                theCurs.hash_cur,
                 key,
                 jsonString,
                 DB_C_GET_FIRST );
@@ -1666,8 +1665,8 @@ begin
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
            findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
+           get( theFile.hash.session,
+                theCurs.hash_cur,
                 key,
                 data,
                 DB_C_GET_FIRST );
@@ -1682,20 +1681,20 @@ begin
         end;
      end if;
   end if;
-end ParseBTreeFirst;
+end ParseHashFirst;
 
 #else
 
-procedure ParseBTreeFirst is
+procedure ParseHashFirst is
 begin
   err( "bdb support not configured" );
-end ParseBTreeFirst;
+end ParseHashFirst;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeNext is
-  -- Syntax: btree_io.next( f, c, k, v );
+procedure ParseHashNext is
+  -- Syntax: hash_io.next( f, c, k, v );
   -- Ada:    bdb.get( f );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
@@ -1712,7 +1711,7 @@ begin
   if rshOpt then
      err( "get_next not allowed in a " & optional_bold( "restricted shell" ) );
   end if;
-  expect( btree_get_next_t );
+  expect( hash_get_next_t );
   ParseFirstFileParameter( fileId );
   ParseNextCursorParameter( cursId );
   genKindId := identifiers( fileId ).genKind;
@@ -1746,8 +1745,8 @@ begin
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
            findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
+           get( theFile.hash.session,
+                theCurs.hash_cur,
                 key,
                 jsonString,
                 DB_C_GET_NEXT );
@@ -1767,8 +1766,8 @@ begin
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
            findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
+           get( theFile.hash.session,
+                theCurs.hash_cur,
                 key,
                 jsonString,
                 DB_C_GET_NEXT );
@@ -1788,8 +1787,8 @@ begin
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
            findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
+           get( theFile.hash.session,
+                theCurs.hash_cur,
                 key,
                 data,
                 DB_C_GET_NEXT );
@@ -1804,20 +1803,20 @@ begin
         end;
      end if;
   end if;
-end ParseBTreeNext;
+end ParseHashNext;
 
 #else
 
-procedure ParseBTreeNext is
+procedure ParseHashNext is
 begin
   err( "bdb support not configured" );
-end ParseBTreeNext;
+end ParseHashNext;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeLast is
-  -- Syntax: btree_io.last( f, c, k, v );
+procedure ParseHashLast is
+  -- Syntax: hash_io.last( f, c, k, v );
   -- Ada:    bdb.get( f );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
@@ -1834,7 +1833,7 @@ begin
   if rshOpt then
      err( "get_last not allowed in a " & optional_bold( "restricted shell" ) );
   end if;
-  expect( btree_get_last_t );
+  expect( hash_get_last_t );
   ParseFirstFileParameter( fileId );
   ParseNextCursorParameter( cursId );
   genKindId := identifiers( fileId ).genKind;
@@ -1868,8 +1867,8 @@ begin
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
            findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
+           get( theFile.hash.session,
+                theCurs.hash_cur,
                 key,
                 jsonString,
                 DB_C_GET_LAST );
@@ -1889,8 +1888,8 @@ begin
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
            findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
+           get( theFile.hash.session,
+                theCurs.hash_cur,
                 key,
                 jsonString,
                 DB_C_GET_LAST );
@@ -1910,8 +1909,8 @@ begin
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
            findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
+           get( theFile.hash.session,
+                theCurs.hash_cur,
                 key,
                 data,
                 DB_C_GET_LAST );
@@ -1926,20 +1925,20 @@ begin
         end;
      end if;
   end if;
-end ParseBTreeLast;
+end ParseHashLast;
 
 #else
 
-procedure ParseBTreeLast is
+procedure ParseHashLast is
 begin
   err( "bdb support not configured" );
-end ParseBTreeLast;
+end ParseHashLast;
 
 #end if;
 #if BDB
 
-procedure ParseBTreePrevious is
-  -- Syntax: btree_io.previous( f, c, k, v );
+procedure ParseHashPrevious is
+  -- Syntax: hash_io.previous( f, c, k, v );
   -- Ada:    bdb.get( f );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
@@ -1956,7 +1955,7 @@ begin
   if rshOpt then
      err( "get_previous not allowed in a " & optional_bold( "restricted shell" ) );
   end if;
-  expect( btree_get_previous_t );
+  expect( hash_get_previous_t );
   ParseFirstFileParameter( fileId );
   ParseNextCursorParameter( cursId );
   genKindId := identifiers( fileId ).genKind;
@@ -1990,8 +1989,8 @@ begin
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
            findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
+           get( theFile.hash.session,
+                theCurs.hash_cur,
                 key,
                 jsonString,
                 DB_C_GET_PREV );
@@ -2011,8 +2010,8 @@ begin
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
            findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
+           get( theFile.hash.session,
+                theCurs.hash_cur,
                 key,
                 jsonString,
                 DB_C_GET_PREV );
@@ -2032,8 +2031,8 @@ begin
         begin
            findResource( to_resource_id( identifiers( fileId ).value ), theFile );
            findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
+           get( theFile.hash.session,
+                theCurs.hash_cur,
                 key,
                 data,
                 DB_C_GET_PREV );
@@ -2048,77 +2047,77 @@ begin
         end;
      end if;
   end if;
-end ParseBTreePrevious;
+end ParseHashPrevious;
 #else
 
-procedure ParseBTreePrevious is
+procedure ParseHashPrevious is
 begin
   err( "bdb support not configured" );
-end ParseBTreePrevious;
+end ParseHashPrevious;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeWillRaise( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := btree.will_raise( f );
+procedure ParseHashWillRaise( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: b := hash.will_raise( f );
   -- Ada:    N/A
   fileId     : identifier;
   theFile    : resPtr;
 begin
   kind := boolean_t;
-  expect( btree_will_raise_t );
+  expect( hash_will_raise_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        result := to_bush_boolean( will_raise( theFile.btree.session ) );
+        result := to_bush_boolean( will_raise( theFile.hash.session ) );
      exception when berkeley_error =>
         result := to_bush_boolean( false );
      end;
   end if;
-end ParseBTreeWillRaise;
+end ParseHashWillRaise;
 
 #else
 
-procedure ParseBTreeWillRaise( result : out unbounded_string; kind : out identifier ) is
+procedure ParseHashWillRaise( result : out unbounded_string; kind : out identifier ) is
 begin
   err( "bdb support not configured" );
-end ParseBTreeWillRaise;
+end ParseHashWillRaise;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeLastError( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := btree_io.last_error( f );
+procedure ParseHashLastError( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: n := hash_io.last_error( f );
   -- Ada:    N/A
   fileId     : identifier;
   theFile    : resPtr;
 begin
   kind := bdb_db_error_t;
-  expect( btree_last_error_t );
+  expect( hash_last_error_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        result := to_unbounded_string( db_error'image( last_error( theFile.btree.session ) ) );
+        result := to_unbounded_string( db_error'image( last_error( theFile.hash.session ) ) );
      exception when msg: berkeley_error =>
         err( exception_message( msg ) );
      end;
   end if;
-end ParseBTreeLastError;
+end ParseHashLastError;
 
 #else
 
-procedure ParseBTreeLastError( result : out unbounded_string; kind : out identifier ) is
+procedure ParseHashLastError( result : out unbounded_string; kind : out identifier ) is
 begin
   err( "bdb support not configured" );
-end ParseBTreeLastError;
+end ParseHashLastError;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeRaiseExceptions is
-  -- Syntax: btree_io.raise_exceptions( f, b );
+procedure ParseHashRaiseExceptions is
+  -- Syntax: hash_io.raise_exceptions( f, b );
   -- Ada:    bdb.raise_exceptions
   -- this is impacted by --trace
   fileId     : identifier;
@@ -2126,7 +2125,7 @@ procedure ParseBTreeRaiseExceptions is
   boolExpr   : unbounded_string;
   boolType   : identifier;
 begin
-  expect( btree_raise_exceptions_t );
+  expect( hash_raise_exceptions_t );
   ParseFirstFileParameter( fileId );
   ParseLastEnumParameter( boolExpr, boolType, boolean_t );
   if isExecutingCommand then
@@ -2134,79 +2133,79 @@ begin
        raise_them : boolean := boolExpr = to_unbounded_string( "1" );
      begin
         findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        raise_exceptions( theFile.btree.session, raise_them, boolean( traceOpt ) );
+        raise_exceptions( theFile.hash.session, raise_them, boolean( traceOpt ) );
      exception when msg: berkeley_error =>
         err( exception_message( msg ) );
      end;
   end if;
-end ParseBtreeRaiseExceptions;
+end ParseHashRaiseExceptions;
 
 #else
 
-procedure ParseBTreeRaiseExceptions is
+procedure ParseHashRaiseExceptions is
 begin
   err( "bdb support not configured" );
-end ParseBTreeRaiseExceptions;
+end ParseHashRaiseExceptions;
 
 #end if;
 
 -----------------------------------------------------------------------------
 
-procedure StartupBTreeIO is
+procedure StartupHashIO is
 begin
+  declareNamespace( "hash_io" );
 
-  declareNamespace( "btree_io" );
+  declareIdent( hash_file_t,   "hash_io.file", positive_t, typeClass );
+  declareIdent( hash_cursor_t, "hash_io.cursor", positive_t, typeClass );
+  declareIdent( hash_db_error_t, "hash_io.db_error", natural_t, typeClass );
 
-  declareIdent( btree_file_t,   "btree_io.file", positive_t, typeClass );
-  declareIdent( btree_cursor_t, "btree_io.cursor", positive_t, typeClass );
+  declareProcedure( hash_new_file_t,  "hash_io.new_file", ParseHashNewFile'access );
+  declareProcedure( hash_clear_t,     "hash_io.clear",    ParseHashClear'access );
 
-  declareProcedure( btree_new_file_t,  "btree_io.new_file", ParseBTreeNewFile'access );
-  declareProcedure( btree_clear_t,     "btree_io.clear",    ParseBTreeClear'access );
+  declareProcedure( hash_create_t,    "hash_io.create",   ParseHashCreate'access );
+  declareProcedure( hash_close_t,     "hash_io.close",    ParseHashClose'access );
+  declareProcedure( hash_open_t,      "hash_io.open",     ParseHashOpen'access );
+  declareFunction(  hash_is_open_t,   "hash_io.is_open",  ParseHashIsOpen'access );
+  declareFunction(  hash_name_t,      "hash_io.name",     ParseHashName'access );
+  declareProcedure( hash_delete_t,    "hash_io.delete",   ParseHashDelete'access );
+  declareProcedure( hash_flush_t,     "hash_io.flush",    ParseHashFlush'access );
+  declareProcedure( hash_truncate_t,  "hash_io.truncate",  ParseHashTruncate'access );
 
-  declareProcedure( btree_create_t,    "btree_io.create",   ParseBTreeCreate'access );
-  declareProcedure( btree_close_t,     "btree_io.close",    ParseBTreeClose'access );
-  declareProcedure( btree_open_t,      "btree_io.open",     ParseBTreeOpen'access );
-  declareFunction(  btree_is_open_t,   "btree_io.is_open",  ParseBTreeIsOpen'access );
-  declareFunction(  btree_name_t,      "btree_io.name",     ParseBTreeName'access );
-  declareProcedure( btree_delete_t,    "btree_io.delete",   ParseBTreeDelete'access );
-  declareProcedure( btree_flush_t,     "btree_io.flush",    ParseBTreeFlush'access );
-  declareProcedure( btree_truncate_t,  "btree_io.truncate",  ParseBTreeTruncate'access );
+  declareProcedure( hash_set_t,       "hash_io.set",      ParseHashSet'access );
+  declareProcedure( hash_get_t,       "hash_io.get",      ParseHashGet'access );
+  declareFunction(  hash_has_element_t, "hash_io.has_element",  ParseHashHasElement'access );
+  declareProcedure( hash_remove_t,    "hash_io.remove",      ParseHashRemove'access );
+  declareProcedure( hash_increment_t, "hash_io.increment",ParseHashIncrement'access );
+  declareProcedure( hash_decrement_t, "hash_io.decrement",ParseHashDecrement'access );
+  declareProcedure( hash_add_t,       "hash_io.add", ParseHashAdd'access );
+  declareProcedure( hash_replace_t,   "hash_io.replace", ParseHashReplace'access );
+  declareProcedure( hash_append_t,    "hash_io.append", ParseHashAppend'access );
+  declareProcedure( hash_prepend_t,   "hash_io.prepend", ParseHashPrepend'access );
 
-  declareProcedure( btree_set_t,       "btree_io.set",      ParseBTreeSet'access );
-  declareProcedure( btree_get_t,       "btree_io.get",      ParseBTreeGet'access );
-  declareFunction(  btree_has_element_t, "btree_io.has_element",  ParseBTreeHasElement'access );
-  declareProcedure( btree_remove_t,    "btree_io.remove",      ParseBTreeRemove'access );
-  declareProcedure( btree_increment_t, "btree_io.increment",ParseBTreeIncrement'access );
-  declareProcedure( btree_decrement_t, "btree_io.decrement",ParseBTreeDecrement'access );
-  declareProcedure( btree_add_t,       "btree_io.add", ParseBTreeAdd'access );
-  declareProcedure( btree_replace_t,   "btree_io.replace", ParseBTreeReplace'access );
-  declareProcedure( btree_append_t,    "btree_io.append", ParseBTreeAppend'access );
-  declareProcedure( btree_prepend_t,   "btree_io.prepend", ParseBTreePrepend'access );
+  declareProcedure( hash_new_cursor_t,  "hash_io.new_cursor", ParseHashNewCursor'access );
+  declareProcedure( hash_open_cursor_t,  "hash_io.open_cursor", ParseHashOpenCursor'access );
+  declareProcedure( hash_close_cursor_t,  "hash_io.close_cursor", ParseHashCloseCursor'access );
+  declareProcedure( hash_get_first_t,     "hash_io.get_first", ParseHashFirst'access );
+  declareProcedure( hash_get_next_t,      "hash_io.get_next", ParseHashNext'access );
+  declareProcedure( hash_get_previous_t,  "hash_io.get_previous", ParseHashPrevious'access );
+  declareProcedure( hash_get_last_t,      "hash_io.get_last", ParseHashLast'access );
 
-  declareProcedure( btree_new_cursor_t,  "btree_io.new_cursor", ParseBTreeNewCursor'access );
-  declareProcedure( btree_open_cursor_t,  "btree_io.open_cursor", ParseBTreeOpenCursor'access );
-  declareProcedure( btree_close_cursor_t,  "btree_io.close_cursor", ParseBTreeCloseCursor'access );
-  declareProcedure( btree_get_first_t,     "btree_io.get_first", ParseBTreeFirst'access );
-  declareProcedure( btree_get_next_t,      "btree_io.get_next", ParseBTreeNext'access );
-  declareProcedure( btree_get_previous_t,  "btree_io.get_previous", ParseBTreePrevious'access );
-  declareProcedure( btree_get_last_t,      "btree_io.get_last", ParseBTreeLast'access );
-
-  declareFunction( btree_will_raise_t, "btree_io.will_raise",  ParseBTreeWillRaise'access );
-  declareFunction( btree_last_error_t, "btree_io.last_error",  ParseBTreeLastError'access );
-  declareProcedure( btree_raise_exceptions_t, "btree_io.raise_exceptions", ParseBTreeRaiseExceptions'access );
+  declareFunction( hash_will_raise_t, "hash_io.will_raise",  ParseHashWillRaise'access );
+  declareFunction( hash_last_error_t, "hash_io.last_error",  ParseHashLastError'access );
+  declareProcedure( hash_raise_exceptions_t, "hash_io.raise_exceptions", ParseHashRaiseExceptions'access );
 
 -- TODO: assemble and disassemble - are they helpful for potentially huge trees?
 -- TODO: clear (cursor) - just for consistency
 -- TODO: truncate
 -- TODO: reset?  are in_file, etc. helpful to define here?
 
-  declareNamespaceClosed( "btree_io" );
+  declareNamespaceClosed( "hash_io" );
 
-end StartupBTreeIO;
+end StartupHashIO;
 
-procedure ShutdownBTreeIO is
+procedure ShutdownHashIO is
 begin
   null;
-end ShutdownBTreeIO;
+end ShutdownHashIO;
 
-end parser_btree_io;
+end parser_hash_io;
