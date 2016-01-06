@@ -46,7 +46,7 @@ procedure StartupBDB is
 begin
 
   #if BDB
-  declareNamespaceClosed( "bdb" );
+  declareNamespace( "bdb" );
 
   declareIdent( bdb_db_error_t, "bdb.db_error", natural_t, typeClass );
 
@@ -80,9 +80,10 @@ begin
   declareStandardConstant( bdb_DB_SECONDARY_BAD_t, "bdb.DB_SECONDARY_BAD", bdb_db_error_t, DB_SECONDARY_BAD'img );
   declareStandardConstant( bdb_DB_VERIFY_BAD_t, "bdb.DB_VERIFY_BAD", bdb_db_error_t, DB_VERIFY_BAD'img );
   declareStandardConstant( bdb_DB_VERSION_MISMATCH_t, "bdb.DB_VERSION_MISMATCH", bdb_db_error_t, DB_VERSION_MISMATCH'img );
-#end if;
 
   declareNamespaceClosed( "bdb" );
+#end if;
+
 
 end StartupBDB;
 
