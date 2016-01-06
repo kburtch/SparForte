@@ -4,7 +4,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <META NAME="description" CONTENT="SparForte language documentation">
-	<title>SparForte - Packages - B-Tree I/O</title>
+	<title>SparForte - Packages - Hash I/O</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 	<link rel="index" href="packages.html" />
 	<link rel="prev" href="pkg_cgi.html" />
@@ -44,7 +44,9 @@
 <h2><a NAME="4.14"></a>Hash_Io Package</h2>
 
 <p>The SparForte built-in hash_io package contains subprograms
-to create and manage ordered data files.</p>
+to create hash table files.  btree_io is better for most
+applications.  hash_io should perform better on low-memory systems
+with very large amount of data.</p>
 
 <p><u>Introduced</u>: SparForte 2.0<br>
 
@@ -123,10 +125,14 @@ clouds.hash  __db.001	__db.002  __db.003  __db.004
 <b>=&gt;</b> hash_io.set( f, "Moscow", cumulonimbus )
 <b>=&gt;</b> ? hash_io.has_element( f, "Tokyo" )
 false
-<b>=&gt;</b> ? hash_io.get( f, "New York" )
+<b>=&gt;</b> hash_io.get( f, "New York", c )
+<b>=&gt;</b> (Assuming c is a new clouds variable)
+<b>=&gt;</b> ? c
 cirrus
 <b>=&gt;</b> hash_io.add( f, "New York", cumulus )
-<b>=&gt;</b> ? hash_io.get( f, "New York" )
+<b>=&gt;</b> hash_io.get( f, "New York", c )
+<b>=&gt;</b> (Assuming c is a new clouds variable)
+<b>=&gt;</b> ? c
 cirrus
 <b>=&gt;</b> hash_io.close( f )
 </pre>
@@ -637,7 +643,7 @@ PHP: ?</p></td>
 </tr>
 </table>
 
-<a name="hash_io.get"></a><h3>v := hash_io.get( f, k )</h3>
+<a name="hash_io.get"></a><h3>hash_io.get( f, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -655,7 +661,7 @@ PHP: ?</p></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
 <td><span>v</span></td>
-<td><span>return value</span></td>
+<td><span>out</span></td>
 <td><span><i>file value type</i></span></td>
 <td><span>required</span></td>
 <td><span>the value</span></td>
