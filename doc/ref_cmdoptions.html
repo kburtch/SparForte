@@ -80,8 +80,8 @@ environment variables when SparForte starts</li>
 maintenance phase of the software development life cycle.  That is, that the
 project has been installed in the production environment.  This will enable/
 disable language features and errors suitable to this phase.</li>
-  <li> <b>--restricted (or -r)</b> - run as a restricted shell.</li>
-
+  <li> <b>--restricted (or -r)</b> - run as a restricted shell, where
+a several features are disabled to create a more controlled environment.</li>
   <li> <b>--test (or -t)</b> -&nbsp; specify that this project is in the
 testing phase of the software development life cycle.  This will enable/
 disable language features and errors suitable to this phase. For example,
@@ -108,6 +108,30 @@ runs.</p>
   <li><b>SHELL</b> - the user's shell (always imported)</li>
   <li><b>SPAR_LIBRARY_PATH</b> - the search path for loadable components (always imported)</li>
 </ul>
+
+<h3>Restricted Shell Mode</h3>
+
+<p>Shells often have a "restricted" mode for running potentially insecure
+third-party scripts or to give limited shell access to a user.</p>
+
+<p>SparForte also has a restricted shell mode.  While it can be used
+in the same way, the main purpose of SparForte's restricted shell mode
+is not security.  It is used throughout SparForte as a read-only shell,
+where full shell capabilities are not required.  For example, web templates
+run in restricted shell mode.</p>
+
+<p><tt>System.Restricted_Shell</tt> will be true in a restricted shell.</p>
+
+<p>Some of the features disabled in restricted shell mode include:</p>
+
+<ul>
+<li>Changing directories with <tt>cd</tt></li>
+<li>Unsetting variables</li>
+<li>Changing the variables <tt>PATH</tt>, <tt>SHELL</tt>, <tt>PWD</tt>, <tt>OLDPWD</tt>, <tt>HOME</tt> or <tt>SPAR_LIBRARY_PATH</tt> (these are treated as constants)</li>
+<li>Disabling command redirections that create new files</li>
+<li>Using databases</li>
+</ul>
+
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
                                 <p class="rmt"><a class="rightmenutext" href="ref_adascript.html">&nbsp;AdaScript versus GCC</a></p>

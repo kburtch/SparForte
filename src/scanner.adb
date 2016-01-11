@@ -2253,14 +2253,23 @@ begin
        end if;
      end;
   end if;
+  if rshOpt then                                              -- restricted sh?
+     identifiers( temp_id).class := constClass;               -- PWD is a
+  end if;                                                     -- constant
   findIdent( to_unbounded_string( "OLDPWD" ), temp_id );      -- OLDPWD
   if temp_id = eof_t then                                     -- missing?
      declareIdent( temp_id, "OLDPWD", uni_string_t );         -- declare it
   end if;
+  if rshOpt then                                              -- restricted sh?
+     identifiers( temp_id).class := constClass;               -- OLDPWD is a
+  end if;                                                     -- constant
   findIdent( to_unbounded_string( "HOME" ), temp_id );        -- HOME
   if temp_id = eof_t then                                     -- missing?
      declareIdent( temp_id, "HOME", uni_string_t );           -- declare it
   end if;
+  if rshOpt then                                              -- restricted sh?
+     identifiers( temp_id).class := constClass;               -- HOME is a
+  end if;                                                     -- constant
   findIdent( to_unbounded_string( "SHELL" ), temp_id );       -- SHELL
   if temp_id = eof_t then                                     -- missing?
      declareIdent( temp_id, "SHELL", uni_string_t );          -- declare it
@@ -2272,6 +2281,9 @@ begin
         identifiers( temp_id ).value := to_unbounded_string( "/bin/spar" );
      end if;
   end if;
+  if rshOpt then                                              -- restricted sh?
+     identifiers( temp_id).class := constClass;               -- SHELL is a
+  end if;                                                     -- constant
   findIdent( to_unbounded_string( "TERM" ), temp_id );        -- TERM
   if temp_id = eof_t then                                     -- missing?
      declareIdent( temp_id, "TERM", uni_string_t );           -- declare it
@@ -2289,7 +2301,12 @@ begin
         end if;
      end if;
   end if;
-
+  findIdent( to_unbounded_string( "SPAR_LIBRARY_PATH" ), temp_id ); -- SPAR_LIBRARY_PATH defined?
+  if temp_id /= eof_t then                                    -- missing?
+    if rshOpt then                                            -- restricted sh?
+       identifiers( temp_id).class := constClass;             -- it's a constant
+    end if;
+  end if;
   findIdent( to_unbounded_string( "TABSIZE" ), temp_id );        -- TABSIZE
   if temp_id = eof_t then                                     -- missing?
      tabSize := 8;
