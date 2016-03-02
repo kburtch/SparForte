@@ -719,6 +719,8 @@ begin
         ci.context := shellStatement;
      elsif id = record_t then
         ci.context := adaScriptStatement;
+     elsif id = begin_t then
+       ci.context := startOfStatement; -- shell or adascript
      else
         ci.context := adaScriptStatement;
         --ci.context := startOfStatement;
@@ -869,7 +871,7 @@ begin
      elsif id = is_t then
         ci.context := isPart;
      elsif id=then_t or id=loop_t or id=begin_t then
-        ci.context := startOfStatement;
+       ci.context := startOfStatement;
      end if;
      -- add compressed token to compressed script
      declare
@@ -1522,7 +1524,6 @@ procedure startOfParametersByteCode( ci : in out compressionInfo;
   command : unbounded_string ) is
   ch : character;
 begin
-
   firstpos := cmdpos;
   lastpos  := cmdpos;
 

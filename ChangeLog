@@ -86,5 +86,7 @@ Examples:
 
 30. New: experimental support for in, out and in out parameters in user-defined functions and procedures.  Note that only identifier names, not references to elements of arrays or records, are supported. [tests needed][unset needs updating]
 
+31. Fix: shell command no longer errors after a begin.
+
 [David B wants shared library]
 
