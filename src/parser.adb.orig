@@ -2468,6 +2468,19 @@ end ParseStaticExpression;
 -- Declarations
 -----------------------------------------------------------------------------
 
+procedure ParseRenamesPart( new_id, new_type_id : identifier ) is
+  -- Syntax: ... renames ident ...
+  deref_id : identifier;
+begin
+  expect( renames_t );
+  ParseIdentifier( deref_id );
+  -- In Ada, renames don't use "constant" be we do.
+  -- the identifiers must be of the same type
+  if baseTypesOK( new_type_id, identifiers( deref_id ).kind ) then
+     identifiers( new_id ).renaming_of := deref_id;
+     identifiers( deref_id ).renamed_count := identifiers( deref_id ).renamed_count + 1;
+  end if;
+end ParseRenamesPart;
 
 procedure ParseAssignPart( expr_value : out unbounded_string; expr_type : out identifier ) is
   -- Syntax: assign-part = " := default_value_expression"
@@ -2764,7 +2777,12 @@ begin
   --
   -- Note: Array ID will not be valid at syntax check time
 
-  if token = symbol_t and identifiers( token ).value = ":=" then
+  -- Renames clause
+  -- if it appears, one can only rename...cannot assign.
+
+  if token = renames_t then
+     ParseRenamesPart( id, arrayType );
+  elsif token = symbol_t and identifiers( token ).value = ":=" then
      --ParseArrayAssignPart( id, array_id );
      ParseArrayAssignPart( id );
   end if;
@@ -2937,7 +2955,13 @@ begin
      end loop;
 
   end if;
-  if token = symbol_t and identifiers( token ).value = ":=" then
+
+  -- Renames clause
+  -- if it appears, one can only rename...cannot assign.
+
+  if token = renames_t then
+     ParseRenamesPart( id, recType );
+  elsif token = symbol_t and identifiers( token ).value = ":=" then
      if canAssign then
         ParseRecordAssignPart( id, recType );
      end if;
@@ -3069,6 +3093,7 @@ begin
      return;                                           --  and nothing more
   end if;
 
+  -- Not an array or record?
   -- Verify that the type token is a type and check for types
   -- not allowed with certain pragmas.
 
@@ -3086,9 +3111,15 @@ begin
      end if;
   end if;
 
+  -- Renames clause
+  -- if it appears, one can only rename...cannot assign.
+
+  if token = renames_t then
+     ParseRenamesPart( id, type_token );
+
   -- Check for optional assignment
 
-  if (token = symbol_t and identifiers( token ).value = ":=") or -- assign part?
+  elsif (token = symbol_t and identifiers( token ).value = ":=") or -- assign part?
      expr_expected then
      if identifiers( type_token ).limit then
         err( "limited type variables cannot be assigned a value" );
@@ -3126,24 +3157,28 @@ begin
        end if;
      end;
 
-     -- exceptions are a special case because they are a keyword
+    -- exceptions are a special case because they are a keyword
 
-     if right_type = exception_t then
-        err( "exceptions cannot be assigned" );
+    if right_type = exception_t then
+       err( "exceptions cannot be assigned" );
 
-     -- command types have special limitations
+    -- command types have special limitations
 
-     elsif getBaseType( type_token ) = command_t then
-        if baseTypesOk( uni_string_t, right_type ) then
-           type_token := uni_string_t; -- pretend it's a string
-           if not C_is_executable_file( to_string( expr_value ) & ASCII.NUL ) then
-              err( '"' & to_string( expr_value) & '"' &
-                 " is not an executable command" );
-           end if;
-        end if;
+    elsif getBaseType( type_token ) = command_t then
+       if baseTypesOk( uni_string_t, right_type ) then
+          type_token := uni_string_t; -- pretend it's a string
+          if not C_is_executable_file( to_string( expr_value ) & ASCII.NUL ) then
+             err( '"' & to_string( expr_value) & '"' &
+                " is not an executable command" );
+          end if;
+       end if;
+
      elsif baseTypesOk( type_token, right_type ) then
         null;
      end if;
+
+     -- perform assignment
+
      if isExecutingCommand then
         --if getUniType( type_token ) = uni_numeric_t then
         --   -- numeric test.  universal typelesses could result
@@ -3168,7 +3203,7 @@ begin
                to_string( identifiers( id ).name ) & " := """ &
                to_string( ToEscaped( expr_value ) ) & """" );
         end if;
-      end if;
+     end if;
   elsif (token = symbol_t and identifiers( token ).value = ";") then
      identifiers( id ).kind := type_token;
   else
@@ -5479,6 +5514,7 @@ procedure ParseFormalParameters( proc_id : identifier; param_no : in out integer
    b : boolean;
    paramName : unbounded_string;
    type_token    : identifier;
+   passingMode : aParameterPassingMode;
 begin
   param_no := param_no + 1;
   ParseNewIdentifier( formal_param_id );
@@ -5488,14 +5524,24 @@ begin
   -- Check the parameter mode
 
   if token = out_t then
-     err( "out parameters not yet supported" );
+        -- DEBUG
+     expect( out_t );
+     passingMode := out_mode;
+     -- err( "out parameters not yet supported" );
   elsif token = in_t then
+     -- TODO: deny in (just use default)?  Or require in?
+     passingMode := in_mode;
      expect( in_t );
      if token = out_t then
-        err( "in out parameters not yet supported" );
+        expect( out_t );
+        passingMode := in_out_mode;
+        -- DEBUG
+        -- err( "in out parameters not yet supported" );
      end if;
   elsif token = access_t then
      err( "access parameters not yet supported" );
+  else
+     passingMode := in_mode;
   end if;
 
   -- Check for anonymous array
@@ -5521,15 +5567,16 @@ begin
   -- Check for default value
 
   if token = symbol_t and identifiers( token ).value = ":=" then
-     err( "default values are not supported" );
+     err( "default values are not yet supported" );
   end if;
 
-  -- Create the parameter
+  -- Create the parameter, associating it to the procedure/function
 
   if syntax_check then
      identifiers( formal_param_id ).wasReferenced := true;
   end if;
-  updateFormalParameter( formal_param_id, type_token, proc_id, param_no );
+  updateFormalParameter( formal_param_id, type_token, proc_id, param_no,
+    passingMode );
 
   -- Check for further parameters
 
@@ -5577,7 +5624,7 @@ begin
   if syntax_check then
      identifiers( formal_param_id ).wasReferenced := true;
   end if;
-  updateFormalParameter( formal_param_id, type_token, func_id, 0 );
+  updateFormalParameter( formal_param_id, type_token, func_id, 0, none );
 
   -- Blow away on error
 
@@ -5605,6 +5652,9 @@ begin
             identifiers( actual_param_t ).wasReferenced := true;
          end if;
      end if;
+
+     -- this declares the actual parameters but does not set the value
+     -- or implement the passing mode.
 
      param_no := 1;
      loop
@@ -5754,8 +5804,7 @@ procedure ParseActualParameters( proc_id : identifier ) is
 -- Fields are implemented using records
    expr_value : unbounded_string;
    expr_type : identifier;
-   --field_id : identifier;
-   --b : boolean;
+   expr_id   : identifier;
    no_param : integer;
    found : boolean := false;
    typesOK : boolean;
@@ -5763,64 +5812,136 @@ begin
   expect( symbol_t, "(" );                                  -- read constant
   no_param := 1;
   loop                                                      -- read values
-    ParseExpression( expr_value, expr_type );               -- next element
+
     -- In a syntax check, the formal parameters aren't created so there's
     -- no reason to look them up.  We're just reading through the parameters
     -- for the procedure call...
-    if not syntax_check then
-       found := false;
-       for j in 1..identifiers_top-1 loop
-           if identifiers( j ).field_of = proc_id then
-              if integer'value( to_string( identifiers( j ).value )) = no_param then
-                 found := true;
-                 declare
-                    paramName : unbounded_string;
-                    formal_param_t : identifier;
-                    actual_param_t : identifier;
-                 begin
-                    formal_param_t := j;
-                    if formal_param_t = eof_t then
-                       err( "unable to find formal parameter" );
-                    else
-                       --if getUniType( expr_type ) = uni_numeric_t then
-                          --typesOK := intTypesOK( identifiers( formal_param_t ).kind, expr_type );
-                          --typesOK := intTypesOK( givenType => expr_type, desiredType => identifiers( formal_param_t ).kind );
-                       --else
-                       typesOK := baseTypesOK( identifiers( formal_param_t ).kind, expr_type );
-                       --end if;
-                       if typesOK then
-                          paramName := identifiers( j ).name;
-                          paramName := delete( paramName, 1, index( paramName, "." ) );
-                          --findIdent( fieldName, field_t );
-                          declareStandardConstant( actual_param_t,
-                              to_string( paramName ),
-                              identifiers( formal_param_t ).kind,
-                              to_string( expr_value ) );
-   --would really be a different declare
-                          if isExecutingCommand then
-                             identifiers( actual_param_t ).value := expr_value;
-                             if trace then
-                                put_trace(
-                                  to_string( identifiers( formal_param_t ).name ) & " := " &
-                                  to_string( expr_value ) );
-                             end if;
+
+    -- TODO: but now we have to declare the formal parameters because we
+    -- have passing modes.  So this is broken.
+    -- KB: is this still true?
+
+    found := false;
+    for j in 1..identifiers_top-1 loop
+        if identifiers( j ).field_of = proc_id then
+           if integer'value( to_string( identifiers( j ).value )) = no_param then
+              found := true;
+              declare
+                 paramName : unbounded_string;
+                 formal_param_t : identifier;
+                 actual_param_t : identifier;
+              begin
+                 formal_param_t := j;
+                 if formal_param_t = eof_t then
+                    err( "unable to find formal parameter" );
+                 else
+                       paramName := identifiers( j ).name;
+                       paramName := delete( paramName, 1, index( paramName, "." ) );
+                       case identifiers( formal_param_t ).passingMode is
+
+                       -- For an in mode parameter, expect an expression
+                       -- Create a constant containing the value.
+
+                       when in_mode =>
+                          ParseExpression( expr_value, expr_type );
+                          typesOK := baseTypesOK( identifiers( formal_param_t ).kind, expr_type );
+                          if typesOK then
+                             declareStandardConstant( actual_param_t,
+                                 to_string( paramName ),
+                                 identifiers( formal_param_t ).kind,
+                                 to_string( expr_value ) );
+--would really be a different declare
+                              if isExecutingCommand then
+                                 identifiers( actual_param_t ).value := expr_value;
+                              end if;
+                           end if;
+
+                       -- For an out mode parameter, expect an identifier.
+                       -- declare a variable as a renaming for the
+                       -- identifier.  Technically the value is
+                       -- undefined.
+
+                       when out_mode =>
+                          -- TODO: parse out parameter here
+                          ParseIdentifier( expr_id );
+                          typesOK := baseTypesOK( identifiers( formal_param_t ).kind,
+                             identifiers( expr_id ).kind );
+                          if typesOK then
+                             declareIdent(
+                                 actual_param_t,
+                                 to_string( paramName ),
+                                 identifiers( formal_param_t ).kind );
+                             identifiers( actual_param_t ).renaming_of := expr_id;
+                             -- KLUDGE: because the current system always dereferences
+                             -- parameters when they are looked up, it is not possible
+                             -- to mark them as referenced.  So we mark them as
+                             -- referenced on creation.  In the future, if storage
+                             -- is decoupled from the identifer name, this can be
+                             -- removed.
+                             identifiers( actual_param_t ).wasReferenced := true;
                           end if;
-                       end if;
-                    end if;
-                 end;
-                 exit; -- because found
+
+                       -- For an in out mode parameter, expect an identifier.
+                       -- declare a variable as a renaming for the
+                       -- identifier.
+
+                       when in_out_mode =>
+                          -- TODO: parse in out parameter here
+                          ParseIdentifier( expr_id );
+                          typesOK := baseTypesOK( identifiers( formal_param_t ).kind,
+                             identifiers( expr_id ).kind );
+                          if typesOK then
+                             declareIdent(
+                                actual_param_t,
+                                to_string( paramName ),
+                                identifiers( formal_param_t ).kind );
+                             identifiers( actual_param_t ).renaming_of := expr_id;
+                             -- KLUDGE: because the current system always dereferences
+                             -- parameters when they are looked up, it is not possible
+                             -- to mark them as referenced.  So we mark them as
+                             -- referenced on creation.  In the future, if storage
+                             -- is decoupled from the identifer name, this can be
+                             -- removed.
+                             identifiers( actual_param_t ).wasReferenced := true;
+                          end if;
+
+                       when others =>
+                          err( "internal error: unsupported parameter passing mode" );
+                      end case;
+
+                      -- If tracing, show the initial values for each
+                      -- parameter.
+
+                      if trace then
+                         put_trace(
+                            to_string( identifiers( formal_param_t ).name ) & " := " &
+                            to_string( expr_value ) );
+                      end if;
+
+                 end if;
+              end;
+              exit; -- because found
            end if;
        end if;
-       end loop; -- for
-       -- we don't know if there are too few (yet)
-       if not found then
-          err( "parameter not found or too many parameters" );
-       end if;
+    end loop; -- for
+
+    -- if the parameter is not found, we don't know if it misnamed
+    -- or if there were too many given.
+    -- TODO: distinguish these error messages
+
+    if not found then
+       err( "parameter not found or too many parameters" );
     end if;
+
+    --end if;
+
+    -- stop when there appears to be no more parameters
+
     exit when error_found or identifiers( token ).value /= ","; -- more?
     expect( symbol_t, "," );
     no_param := no_param + 1;
   end loop;
+
   expect( symbol_t, ")" );
 end ParseActualParameters;
 

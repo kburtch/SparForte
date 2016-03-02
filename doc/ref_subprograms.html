@@ -136,7 +136,7 @@ operators by defining functions with operator symbols.</p>
 <p>Both procedures and functions can have parameters.&nbsp;  If a
 procedure or function has no parameters, do not include any
 parantheses.  If there are parameters, they are listed with
-a name, a mode and a type.  All parameters are "in" mode
+a name, a mode and a type.  By default, all parameters are "in" mode
 parameters: they give additional information to a subprogram
 and are treated as constants.&nbsp; The word "in" is optional
 before the type of parameter.</p>
@@ -154,6 +154,8 @@ before the type of parameter.</p>
         </div>
         </div>
         </center>
+
+<p><b>Experimental</b>: New with SparForte version 2.0, parameters may be explicitedly declared as <tt>in</tt>, or can also be <tt>out</tt> or <tt>in out</tt>.  <tt>out</tt> and <tt>in out</tt> parameters must be simple identifiers, not references to elements of an array or record.  "out" means the parameter is returned to the caller.  "in out" means the parameter can be read and modified before returning to the caller.  These can be used both for procedures and functions.</p>
 
 <p>Procedures and functions can only declared inside the declaration section of
 a script's main procedure block (or declared nested inside other subprograms
@@ -193,7 +195,7 @@ the subprogram but a value will be returned using the parameter.
 Functions may only use in mode.  The modes are described on the front
 page of the <b>Packages</b> section of this documentation.</p>
 
-<p><b>Ada</b>: <tt>in out</tt>, <tt>out</tt> and <tt>access</tt>
+<p><b>Ada</b>: <tt>access</tt>
 mode parameters are not supported for user-defined subprograms.
 Named parameters are not supported.  Default values are not
 supported.</p>

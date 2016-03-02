@@ -171,6 +171,8 @@ begin
        kw.procCB := null;
        kw.funcCB := cb;
        kw.avalue := null;
+       kw.renaming_of := identifier'first;
+       kw.renamed_count := 0;
      end;
   end if;
 end declareFunction;
@@ -196,6 +198,8 @@ begin
        kw.procCB := cb;
        kw.funcCB := null;
        kw.avalue := null;
+       kw.renaming_of := identifier'first;
+       kw.renamed_count := 0;
      end;
   end if;
 end declareProcedure;
@@ -346,6 +350,19 @@ begin
          end if;
      end loop;
   end if;
+
+  -- dereferences
+  --
+  -- If this is an alias (e.g. a renaming, or in/out parameter) dereference it
+  -- and return the referred to identifier, rather than the actual one.
+  --
+  -- TODO: error handling may become confusing if the name of the referred to
+  -- identifier is returned rather than the one in the source code line.
+
+  while identifiers( id ).renaming_of /= identifier'first loop
+     id := identifiers( id ).renaming_of;
+  end loop;
+
 end findIdent;
 
 -- FIND ENUM IMAGE
@@ -416,7 +433,10 @@ begin
        parentNamespace => identifiers'first,
        firstBound => 1,
        lastBound => 0,
-       avalue => null
+       avalue => null,
+       renaming_of => identifier'first,
+       renamed_count => 0,
+       passingMode => none
      );
      identifiers_top := identifiers_top + 1;                    -- push stack
   end if;
@@ -462,7 +482,10 @@ begin
        parentNamespace => identifiers'first,
        firstBound => 1,
        lastBound => 0,
-       avalue => null
+       avalue => null,
+       renaming_of => identifier'first,
+       renamed_count => 0,
+       passingMode => none
      );
   end if;
 end declareIdent;
@@ -539,7 +562,7 @@ begin
 end declareStandardEnum;
 
 procedure updateFormalParameter( id : identifier; kind : identifier;
-proc_id : identifier; parameterNumber : integer ) is
+proc_id : identifier; parameterNumber : integer; passingMode : aParameterPassingMode ) is
 -- Update a formal parameter (ie. proc.param).  The id is not
 -- returned since we don't change the formal parameters once they are set.
 begin
@@ -560,6 +583,7 @@ begin
     identifiers(id).field_of := proc_id;
     identifiers(id).inspect  := false;
     identifiers(id).deleted  := false;
+    identifiers(id).passingMode  := passingMode;
 end updateFormalParameter;
 
 -- DECLARE ACTUAL PARAMETER
@@ -617,8 +641,16 @@ begin
                  parentNamespace => identifiers'first,
                  firstBound => 1,
                  lastBound => 0,
-                 avalue => null
+                 avalue => null,
+                 renaming_of => identifier'first,
+                 renamed_count => 0,
+                 passingMode => identifiers( i ).passingMode
                );
+               -- out or in out can be assigned to
+               if identifiers( i ).passingMode = out_mode or
+                 identifiers( i ).passingMode = in_out_mode then
+                 identifiers( id ).class := varClass;
+               end if;
             end if;
          end if;
       end if;
@@ -673,7 +705,10 @@ begin
        parentNamespace => identifiers'first,
        firstBound => 1,
        lastBound => 0,
-       avalue => null
+       avalue => null,
+       renaming_of => identifier'first,
+       renamed_count => 0,
+       passingMode => none
      );
   end if;
 end declareReturnResult;
@@ -749,7 +784,10 @@ begin
        parentNamespace => identifiers'first,
        firstBound => 1,
        lastBound => 0,
-       avalue   => null
+       avalue   => null,
+       renaming_of => identifier'first,
+       renamed_count => 0,
+       passingMode => none
      );
   end if;
 end declareException;
@@ -803,7 +841,10 @@ begin
        parentNamespace => currentNamespaceId,
        firstBound => 1,
        lastBound => 0,
-       avalue   => null
+       avalue   => null,
+       renaming_of => identifier'first,
+       renamed_count => 0,
+       passingMode => none
      );
 
      -- The position of the last namespace tag (open or closed)
@@ -920,7 +961,10 @@ begin
        parentNamespace => currentNamespaceId,
        firstBound => 1,
        lastBound => 0,
-       avalue   => null
+       avalue   => null,
+       renaming_of => identifier'first,
+       renamed_count => 0,
+       passingMode => none
      );
 --put_line( "   last namespace was " & to_string( currentNamespace ) ); -- DEBUG
 

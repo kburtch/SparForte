@@ -308,6 +308,16 @@ begin
         end if;
      end if;
 
+     -- Parameters and Passing Mode
+
+     if ident.passingMode = in_mode then
+           put( "in mode " );
+     elsif ident.passingMode = out_mode then
+           put( "out mode " );
+     elsif ident.passingMode = in_out_mode then
+           put( "in out mode " );
+     end if;
+
      -- Show the class (type, constant, etc.)
 
      case ident.class is

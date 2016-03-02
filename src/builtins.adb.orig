@@ -648,6 +648,8 @@ begin
      elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "OLDPWD" then
         err( "unsetting OLDPWD is not allowed in a " &
           optional_bold( "restricted shell" ) );
+     elsif identifiers( identToUnset ).renamed_count > 0 then
+        err( "there are renamings that refer to this identifier" );
      elsif isExecutingCommand then
         -- record? delete any fields first (notice not recursive)
         if identifiers( identToUnset ).kind = root_record_t then

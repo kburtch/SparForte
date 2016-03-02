@@ -292,6 +292,10 @@ type storage is array( long_integer range <>) of unbounded_string;
 type storagePtr is access all storage;
 procedure free is new unchecked_deallocation( storage, storagePtr );
 
+-- Ways to pass parameters
+
+type aParameterPassingMode is (none, in_mode, out_mode, in_out_mode );
+
 ------------------------------------------------------------------------------
 -- Identifier Declarations
 --
@@ -321,6 +325,11 @@ type declaration is record
      inspect  : boolean := false;               -- show value on breakout
      deleted  : boolean := false;               -- marked for deletion
      wasReferenced : boolean := false;          -- true if ref'd in syn chk
+     renaming_of : identifier := identifier'first; -- renaming or dereference
+     -- TODO: renaming should be a reference
+     -- TODO: renaming should be about storage, not dereference whole ident
+     renamed_count : natural := 0;              -- times renamed
+     passingMode : aParameterPassingMode := none; -- in, out, etc.
 
      -- New fields for symbol table
 
@@ -674,7 +683,8 @@ procedure declareStandardEnum( id : out identifier;
    name : string; kind : identifier; value : string );
 
 procedure updateFormalParameter( id : identifier; kind : identifier;
-  proc_id : identifier; parameterNumber : integer );
+  proc_id : identifier; parameterNumber : integer; passingMode :
+  aParameterPassingMode );
 -- Update a formal parameter (ie. proc.param).  The id is not
 -- returned since we don't change the formal parameters once they are set.
 
