@@ -5730,7 +5730,6 @@ begin
    expect( is_t );
 end ParseSeparateProcHeader;
 
-
 procedure ParseProcedureBlock is
   -- Syntax: procedure p [(param1...)] OR procedure p [(param1...)] is block
   -- end p;
@@ -5801,6 +5800,9 @@ end ParseProcedureBlock;
 
 procedure ParseActualParameters( proc_id : identifier ) is
 -- Syntax: (field = declaration [; declaration ... ] )
+-- Declare actual parameters to be used in a subprogram call such that
+-- defintion "proc.x" (formal parameter) creates a usuable identifier
+-- "x" (actual parameter).
 -- Fields are implemented using records
    expr_value : unbounded_string;
    expr_type : identifier;

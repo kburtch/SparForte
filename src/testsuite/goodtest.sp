@@ -2600,6 +2600,9 @@ end if;
 pragma assert( i = 2 );
 
 -- test that @ is ? not fn's return
+-- When using debugging messages during development, the following test may
+-- have to be commented out.  Restore it afterwards.
+-- Restore these DEBUG
 s := `put( test_f2 ) @ ( test_f2 );`;
 pragma assert( s = "truetrue" );
 

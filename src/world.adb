@@ -517,6 +517,7 @@ begin
        sc.class := constClass;
        sc.static := true;                                       -- identifier
        sc.field_of := eof_t;
+       sc.list := identifiers( kind ).list;
        -- since this is only called at startup, the default
        -- values for the other fields should be OK
      end;
