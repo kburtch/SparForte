@@ -633,7 +633,7 @@ begin
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
-     findIdent( tempStr, identToUnset );
+     findCanonicalIdent( tempStr, identToUnset );
      if identToUnset = eof_t then
         err( "identifier not declared" );
      elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "PATH" then
@@ -702,7 +702,7 @@ begin
         else
            -- remove ASCII.NUL from C string
            delete( tempStr, length( tempStr ), length( tempStr ) );
-           findIdent( tempStr, identToShow );
+           findCanonicalIdent( tempStr, identToShow );
            if identToShow = eof_t then
               err( "identifier not declared" );
            elsif boolean(rshOpt) and then identifiers( identToShow ).name =  "PATH" then

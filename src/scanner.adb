@@ -276,6 +276,14 @@ procedure put_identifier_attributes( id : identifier ) is
   ident : declaration renames identifiers( id );              -- the identifier
   kind  : declaration renames identifiers( ident.kind );      -- and its type
 begin
+  -- if a renaming, nothing more...
+  -- TODO: depends on what kind of renaming because params can be renamed
+  if ident.renaming_of /= identifier'first then
+     put( "renaming of " &
+        to_string( identifiers( ident.renaming_of ).name ) );
+     return;
+  end if;
+
      if ident.import then
         put( "imported " );
      end if;
@@ -501,9 +509,11 @@ begin
 
      -- Show the value of the variable
 
-     if ident.kind /= keyword_t then
+      if ident.kind /= keyword_t then
         put( ident.name );
-        if not ident.list and ident.kind /= root_record_t and ident.class /= exceptionClass then
+        if ident.renaming_of /= identifier'first then
+            null;
+        elsif not ident.list and ident.kind /= root_record_t and ident.class /= exceptionClass then
             put( " := " );
             if ident.class = userProcClass then
                 -- this appears first because getBaseType will fail on a
@@ -512,7 +522,7 @@ begin
                 put( ToEscaped( ident.value ) );
                 put( '"' );
                 -- (should really used root type to determine quoting)
-            elsif identifiers( getBaseType( ident.kind ) ).kind = root_record_t then
+             elsif identifiers( getBaseType( ident.kind ) ).kind = root_record_t then
                 put( "(" );
                 declare
                    field_id  : identifier;
@@ -569,6 +579,15 @@ begin
      put_identifier_attributes( id );
      new_line;
 
+     -- if a renaming, use recusion
+
+     if ident.renaming_of /= identifier'first then
+        declare
+           id : identifier := ident.renaming_of;
+        begin
+           put_identifier( ident.renaming_of );
+        end;
+     end if;
   end if;
 end Put_Identifier;
 

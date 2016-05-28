@@ -713,6 +713,9 @@ procedure declareNamespaceClosed( name : string );
 procedure findIdent( name : unbounded_string; id : out identifier );
 -- find an identifier, eof_t if failed
 
+procedure findCanonicalIdent( name : unbounded_string; id : out identifier );
+-- find an identifier, eof_t if failed. Do not dereference.
+
 procedure findEnumImage( val : unbounded_string; kind : identifier; name : out unbounded_string );
 -- Find the name of the enumerated item of enumerated type kind with value
 -- val.
