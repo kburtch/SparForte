@@ -2473,6 +2473,10 @@ procedure ParseRenamesPart( new_id, new_type_id : identifier ) is
   deref_id : identifier;
 begin
   expect( renames_t );
+  deref_id := token;
+  -- if the identifer is a renaming itself, the scanner will return the
+  -- dereferenced variable, so (without changes to the scanner) we cannot
+  -- know what the original variable name was.
   ParseIdentifier( deref_id );
   -- In Ada, renames don't use "constant" be we do.
   -- the identifiers must be of the same type

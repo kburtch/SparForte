@@ -649,8 +649,15 @@ begin
         err( "unsetting OLDPWD is not allowed in a " &
           optional_bold( "restricted shell" ) );
      elsif identifiers( identToUnset ).renamed_count > 0 then
-        err( "there are renamings that still refer to " & optional_bold(
-           identifiers( identToUnset ).name ) );
+        if identifiers( identToUnset ).renamed_count = 1 then
+           err( "there is a renaming that still refers to " & optional_bold(
+              to_string( identifiers( identToUnset ).name ) ) );
+        else
+           err( "there are" &
+              optional_bold( identifiers( identToUnset ).renamed_count'img ) &
+              " renamings that still refer to " & optional_bold(
+              to_string( identifiers( identToUnset ).name ) ) );
+        end if;
      elsif isExecutingCommand then
         -- record? delete any fields first (notice not recursive)
         if identifiers( identToUnset ).kind = root_record_t then

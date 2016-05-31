@@ -3139,13 +3139,28 @@ begin
         -- deleting a single resource is not allowed because the id is the index
         -- into the list of resources.
   elsif id = identifiers_top-1 then                             -- last id?
-        -- If a renaming, decrement the renaming count of the target first.
-        if identifiers( id ).renaming_of /= identifiers'first then
-           if identifiers( identifiers( id ).renaming_of ).renamed_count > 0 then
-              identifiers( identifiers( id ).renaming_of ).renamed_count :=
-                 identifiers( identifiers( id ).renaming_of ).renamed_count - 1;
-           end if;
-        end if;
+     -- If a renaming, decrement the renaming count of the target first.
+     -- Because variables are dereferenced before the token is returned,
+     -- the renamed count is always for the last item in the linked list of
+     -- successive renamings.
+     if identifiers( id ).renaming_of /= identifiers'first then
+        declare
+          derefed_id : identifier := id;
+        begin
+          while identifiers( derefed_id ).renaming_of /= identifiers'first loop
+             derefed_id := identifiers( derefed_id ).renaming_of;
+             if identifiers( derefed_id ).renaming_of = identifiers'first then
+                if identifiers( derefed_id ).renamed_count > 0 then
+                   identifiers( derefed_id ).renamed_count :=
+                      identifiers( derefed_id ).renamed_count - 1;
+                  exit;
+                end if;
+             else
+                err( "internal error: dereferenced identifier's renamed_count unexpectedly zero" );
+             end if;
+          end loop;
+        end;
+     end if;
      --kind := identifiers( id ).kind;
      if identifiers( id ).export then
         ExportValue( id );
