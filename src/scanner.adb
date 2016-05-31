@@ -3137,8 +3137,15 @@ begin
   elsif identifiers( id ).resource and identifiers( id ).class = varClass then
      return false;                                              -- delete fail
         -- deleting a single resource is not allowed because the id is the index
-        -- into the list of reousrces.
+        -- into the list of resources.
   elsif id = identifiers_top-1 then                             -- last id?
+        -- If a renaming, decrement the renaming count of the target first.
+        if identifiers( id ).renaming_of /= identifiers'first then
+           if identifiers( identifiers( id ).renaming_of ).renamed_count > 0 then
+              identifiers( identifiers( id ).renaming_of ).renamed_count :=
+                 identifiers( identifiers( id ).renaming_of ).renamed_count - 1;
+           end if;
+        end if;
      --kind := identifiers( id ).kind;
      if identifiers( id ).export then
         ExportValue( id );
@@ -3149,6 +3156,14 @@ begin
      identifiers_top := identifiers_top - 1;                -- pull stack
      return true;                                               -- delete ok
   end if;                                                       -- else
+
+  -- If a renaming, decrement the renaming count of the target first.
+  if identifiers( id ).renaming_of /= identifiers'first then
+     if identifiers( identifiers( id ).renaming_of ).renamed_count > 0 then
+        identifiers( identifiers( id ).renaming_of ).renamed_count :=
+            identifiers( identifiers( id ).renaming_of ).renamed_count - 1;
+     end if;
+  end if;
 
   -- If not the top-most identifier, then you can't just pull
   -- the top of the stack
@@ -3170,6 +3185,7 @@ begin
   identifiers( id ).mapping := none;
   identifiers( id ).list   := false;
   identifiers( id ).field_of  := eof_t;
+  identifiers( id ).renaming_of := identifiers'first;
   identifiers( id ).volatile := false;
   identifiers( id ).limit  := false;
   identifiers( id ).inspect := false;

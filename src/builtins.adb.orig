@@ -649,13 +649,14 @@ begin
         err( "unsetting OLDPWD is not allowed in a " &
           optional_bold( "restricted shell" ) );
      elsif identifiers( identToUnset ).renamed_count > 0 then
-        err( "there are renamings that refer to this identifier" );
+        err( "there are renamings that still refer to " & optional_bold(
+           identifiers( identToUnset ).name ) );
      elsif isExecutingCommand then
         -- record? delete any fields first (notice not recursive)
         if identifiers( identToUnset ).kind = root_record_t then
            for i in keywords_top..identifiers_top - 1 loop
                if identifiers( i ).field_of = identToUnset and not identifiers( i ).deleted then
-                  if not deleteIdent( i ) then
+                if not deleteIdent( i ) then
                      err( "unable to unset identifier field " & to_string( identifiers( i ).name ) );
                   end if;
                end if;
