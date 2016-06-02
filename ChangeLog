@@ -88,5 +88,7 @@ Examples:
 
 31. Fix: shell command no longer errors after a begin.
 
+32. Fix: mysql parser no longer has errors when compiling with --without-mysql.
+
 [David B wants shared library but didn't get it added in time]
 

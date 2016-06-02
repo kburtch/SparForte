@@ -339,7 +339,8 @@ type declaration is record
      genKind2 : identifier;                     -- generic type (if any)
      firstBound : long_integer := 1;            -- first bound (array type only)
      lastBound  : long_integer := 0;            -- last bound (array type only)
-     avalue   : storagePtr := null;             -- array value (array variable)
+     avalue    : storagePtr := null;             -- array value (array variable)
+     svalue    : aliased unbounded_string;       -- identifier's value
 
      -- Namespaces
 
