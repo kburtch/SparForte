@@ -171,6 +171,16 @@ begin
   err( "mysql support not configured" );
 end not_configured;
 
+procedure not_configured( result : out unbounded_string ) is
+begin
+  err( "mysql support not configured" );
+end not_configured;
+
+procedure not_configured_do( result : unbounded_string ) is
+begin
+  err( "mysql support not configured" );
+end not_configured_do;
+
 procedure not_configured( result : out unbounded_string; kind : out identifier ) is
 begin
   err( "mysql support not configured" );
@@ -2318,7 +2328,7 @@ end DoMySQLSQLSelect;
 
 #else
 
-procedure DoMySQLSQLSelect( sqlcmd : unbounded_string ) renames not_configured;
+procedure DoMySQLSQLSelect( sqlcmd : unbounded_string ) renames not_configured_do;
 
 #end if;
 #if MYSQL
@@ -2343,7 +2353,7 @@ end DoMySQLSQLStatement;
 
 #else
 
-procedure DoMySQLSQLStatement( sqlcmd : unbounded_string ) renames not_configured;
+procedure DoMySQLSQLStatement( sqlcmd : unbounded_string ) renames not_configured_do;
 
 #end if;
 
