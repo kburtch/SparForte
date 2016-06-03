@@ -291,6 +291,7 @@ type aBuiltinFunctionCallback is access procedure( value : out unbounded_string;
 type storage is array( long_integer range <>) of unbounded_string;
 type storagePtr is access all storage;
 procedure free is new unchecked_deallocation( storage, storagePtr );
+type valuePtr is access all unbounded_string;
 
 -- Ways to pass parameters
 
@@ -307,9 +308,10 @@ type declaration;
 type declaration is record
      name     : unbounded_string                -- identifier name
                 := Null_Unbounded_String;
+     value    : valuePtr := null;
+     --value    : unbounded_string                -- identifier's value
+     --           := Null_Unbounded_String;
      kind     : identifier;                     -- identifier's type
-     value    : unbounded_string                -- identifier's value
-                := Null_Unbounded_String;
      class    : anIdentifierClass               -- identifier's class
                 := otherClass;
      import   : boolean := false;               -- marked by pragma import
@@ -339,6 +341,7 @@ type declaration is record
      genKind2 : identifier;                     -- generic type (if any)
      firstBound : long_integer := 1;            -- first bound (array type only)
      lastBound  : long_integer := 0;            -- last bound (array type only)
+
      avalue    : storagePtr := null;             -- array value (array variable)
      svalue    : aliased unbounded_string;       -- identifier's value
 

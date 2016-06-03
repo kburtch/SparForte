@@ -142,7 +142,8 @@ begin
        end if;
        kw.name := To_Unbounded_String( s );
        kw.kind := identifier'first;
-       kw.value := Null_Unbounded_String;
+       kw.value := kw.svalue'access;
+       kw.svalue := Null_Unbounded_String;
        kw.class := otherClass;
        -- since keywords are only declared at startup,
        -- the defaults should be OK for remaining fields.
@@ -166,7 +167,8 @@ begin
        end if;
        kw.name := To_Unbounded_String( s );
        kw.kind := identifier'first;
-       kw.value := Null_Unbounded_String;
+       kw.svalue := Null_Unbounded_String;
+       kw.value := kw.svalue'access;
        kw.class := funcClass;
        kw.procCB := null;
        kw.funcCB := cb;
@@ -193,7 +195,8 @@ begin
        end if;
        kw.name := To_Unbounded_String( s );
        kw.kind := identifier'first;
-       kw.value := Null_Unbounded_String;
+       kw.svalue := Null_Unbounded_String;
+       kw.value := kw.svalue'access;
        kw.class := procClass;
        kw.procCB := cb;
        kw.funcCB := null;
@@ -526,7 +529,7 @@ begin
   for i in reverse identifiers'first..identifiers_top-1 loop
       if identifiers( i ).class = enumClass then
          if identifiers( i ).kind = kind then
-            if identifiers( i ).value = val then
+            if identifiers( i ).value.all = val then
                name := identifiers( i ).name;
                -- found := true;
                exit;
@@ -559,7 +562,9 @@ begin
      identifiers( identifiers_top ) := declaration'(            -- define
        name     => To_Unbounded_String( s(s'first..eqpos-1) ),  -- identifier
        kind     => string_t,
-       value    => To_Unbounded_String( s(eqpos+1..s'last ) ),
+       --svalue    => To_Unbounded_String( s(eqpos+1..s'last ) ),
+       --value    => svalue'access,
+       value    => null,
        class    => varClass,
        import   => true,                                        -- must import
        method   => shell,
@@ -583,12 +588,14 @@ begin
        parentNamespace => identifiers'first,
        firstBound => 1,
        lastBound => 0,
-       svalue => null_unbounded_string,
+       svalue    => To_Unbounded_String( s(eqpos+1..s'last ) ),
        avalue => null,
        renaming_of => identifier'first,
        renamed_count => 0,
        passingMode => none
      );
+     -- svalue isn't defined until here
+     identifiers( identifiers_top ).value := identifiers( identifiers_top ).svalue'access;
      identifiers_top := identifiers_top + 1;                    -- push stack
   end if;
 end init_env_ident;
@@ -609,7 +616,7 @@ begin
      identifiers( id ) := declaration'(                         -- define
        name     => name,                                        -- identifier
        kind     => kind,
-       value    => Null_Unbounded_String,
+       value    => null,
        class    => class,
        import   => false,
        method   => none,
@@ -639,6 +646,8 @@ begin
        renamed_count => 0,
        passingMode => none
      );
+     -- svalue isn't defined until here
+     identifiers( id ).value := identifiers( id ).svalue'access;
   end if;
 end declareIdent;
 
@@ -665,11 +674,12 @@ begin
        end if;
        sc.name  := to_unbounded_string( name );                 -- define
        sc.kind  := kind;                                        -- identifier
-       sc.value := to_unbounded_string( value );
+       sc.svalue := to_unbounded_string( value );
        sc.class := constClass;
        sc.static := true;                                       -- identifier
        sc.field_of := eof_t;
        sc.list := identifiers( kind ).list;
+       sc.value := sc.svalue'access;
        -- since this is only called at startup, the default
        -- values for the other fields should be OK
      end;
@@ -702,10 +712,11 @@ begin
        end if;
        sc.name  := to_unbounded_string( name );                 -- define
        sc.kind  := kind;                                        -- identifier
-       sc.value := to_unbounded_string( value );
+       sc.svalue := to_unbounded_string( value );
        sc.class := enumClass;
        sc.static := true;                                       -- identifier
        sc.field_of := eof_t;
+       sc.value := sc.svalue'access;
        -- since this is only called at startup, the default
        -- values for the other fields should be OK
      end;
@@ -724,7 +735,7 @@ begin
     else
        identifiers(id).name     := identifiers( proc_id ).name & "." & identifiers( id ).name;
     end if;
-    identifiers(id).value    := to_unbounded_string( parameterNumber'img );
+    identifiers(id).svalue   := to_unbounded_string( parameterNumber'img );
     identifiers(id).class    := constClass;
     identifiers(id).kind     := kind;
     identifiers(id).import   := false;
@@ -756,7 +767,7 @@ begin
   id := eof_t;
   for i in reverse reserved_top..identifiers_top-1 loop
       if identifiers( i ).field_of = proc_id then
-         if integer'value( to_string( identifiers( i ).value )) = parameterNumber then
+         if integer'value( to_string( identifiers( i ).value.all )) = parameterNumber then
             paramName := identifiers( i ).name;
             paramName := delete( paramName, 1, index( paramName, "." ));
             if identifiers_top = identifier'last then           -- no room?
@@ -770,7 +781,8 @@ begin
                identifiers( id ) := declaration'(               -- define
                  name     => paramName,                         -- identifier
                  kind     => identifiers( i ).kind,
-                 value    => value,
+                 --value    => svalue'access,
+                 value    => null,
                  class    => constClass,
                  import   => false,
                  method   => none,
@@ -794,12 +806,14 @@ begin
                  parentNamespace => identifiers'first,
                  firstBound => 1,
                  lastBound => 0,
-                 svalue => null_unbounded_string,
+                 svalue => value,
                  avalue => null,
                  renaming_of => identifier'first,
                  renamed_count => 0,
                  passingMode => identifiers( i ).passingMode
                );
+               -- svalue isn't defined until here
+               identifiers( id ).value := identifiers( id ).svalue'access;
                -- out or in out can be assigned to
                if identifiers( i ).passingMode = out_mode or
                  identifiers( i ).passingMode = in_out_mode then
@@ -835,7 +849,8 @@ begin
      identifiers( id ) := declaration'(               -- define
        name     => paramName,                         -- identifier
        kind     => identifiers( func_id ).kind,
-       value    => null_unbounded_string,
+       value    => null,
+       --value    => svalue'access,
        class    => constClass,
        import   => false,
        method   => none,
@@ -915,7 +930,8 @@ begin
      identifiers( id ) := declaration'(                      -- define
        name     => name,                                     -- identifier
        kind     => exception_t,
-       value    => character'val( exception_status_code ) & default_message,
+       --value    => svalue'access,
+       value    => null,
        class    => exceptionClass,
        import   => false,
        method   => none,
@@ -939,12 +955,14 @@ begin
        parentNamespace => identifiers'first,
        firstBound => 1,
        lastBound => 0,
-       svalue => null_unbounded_string,
+       svalue    => character'val( exception_status_code ) & default_message,
        avalue   => null,
        renaming_of => identifier'first,
        renamed_count => 0,
        passingMode => none
      );
+     -- svalue isn't defined until here
+     identifiers( id ).value := identifiers( id ).svalue'access;
   end if;
 end declareException;
 
@@ -973,7 +991,7 @@ begin
      identifiers( id ) := declaration'(                      -- define
        name     => to_unbounded_string( name ),              -- identifier
        kind     => identifiers'first,       -- TODO: this is a placeholder
-       value    => currentNamespace,
+       value    => null,
        class    => namespaceClass,
        import   => false,
        method   => none,
@@ -997,12 +1015,14 @@ begin
        parentNamespace => currentNamespaceId,
        firstBound => 1,
        lastBound => 0,
-       svalue => null_unbounded_string,
+       svalue    => currentNamespace,
        avalue   => null,
        renaming_of => identifier'first,
        renamed_count => 0,
        passingMode => none
      );
+     -- svalue isn't defined until here
+     identifiers( id ).value := identifiers( id ).svalue'access;
 
      -- The position of the last namespace tag (open or closed)
      -- for setting the nextNamespace link
@@ -1094,7 +1114,8 @@ begin
      identifiers( id ) := declaration'(                      -- define
        name     => to_unbounded_string( name ),              -- identifier
        kind     => identifiers'first,       -- TODO: this is a placeholder
-       value    => currentNamespace,             -- the previous namespace
+       --value    => svalue'access,
+       value    => null,
        class    => namespaceClass,
        import   => false,
        method   => none,
@@ -1118,12 +1139,14 @@ begin
        parentNamespace => currentNamespaceId,
        firstBound => 1,
        lastBound => 0,
-       svalue => null_unbounded_string,
+       svalue    => currentNamespace,             -- the previous namespace
        avalue   => null,
        renaming_of => identifier'first,
        renamed_count => 0,
        passingMode => none
      );
+     -- svalue isn't defined until here
+     identifiers( id ).value := identifiers( id ).svalue'access;
 --put_line( "   last namespace was " & to_string( currentNamespace ) ); -- DEBUG
 
      -- The position of the last namespace tag (open or closed)
@@ -1234,7 +1257,7 @@ function to_numeric( id : identifier ) return long_float is
 -- Look up an identifier's value and return it as a long float
 -- (BUSH's numeric representation).
 begin
-   return to_numeric( identifiers( id ).value );
+   return to_numeric( identifiers( id ).value.all );
 end to_numeric;
 
 function to_unbounded_string( f : long_float ) return unbounded_string is
@@ -1448,7 +1471,7 @@ begin
   fieldVar := eof_t;
   for candidateType in reverse reserved_top..identifiers_top-1 loop
       if identifiers( candidateType ).field_of = recordType then
-         if integer'value( to_string( identifiers( candidateType ).value )) = fieldNumber then
+         if integer'value( to_string( identifiers( candidateType ).value.all )) = fieldNumber then
             declare
                fieldName : unbounded_string;
                field_t   : identifier;
