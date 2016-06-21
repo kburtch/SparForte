@@ -209,7 +209,7 @@ begin
   ParseSingleListParameter( listId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        Doubly_Linked_String_Lists.Clear( theList.dlslList );
      end;
   end if;
@@ -226,7 +226,7 @@ begin
   ParseSingleListParameter( listId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        result := to_bush_boolean( Doubly_Linked_String_Lists.Is_Empty( theList.dlslList ) );
      end;
   end if;
@@ -243,7 +243,7 @@ begin
   ParseSingleListParameter( listId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        result := to_unbounded_string( long_float ( Doubly_Linked_String_Lists.Length( theList.dlslList ) ) );
      end;
   end if;
@@ -265,7 +265,7 @@ begin
   expect( doubly_append_t );
   ParseFirstListParameter( listId );
   ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -275,7 +275,7 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
           Doubly_Linked_String_Lists.Append( theList.dlslList, itemExpr, cnt );
@@ -306,7 +306,7 @@ begin
   expect( doubly_prepend_t );
   ParseFirstListParameter( listId );
   ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -316,7 +316,7 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
           Doubly_Linked_String_Lists.Prepend( theList.dlslList, itemExpr, cnt );
@@ -342,7 +342,7 @@ begin
   kind := identifiers( listId ).genKind;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        result := Doubly_Linked_String_Lists.First_Element( theList.dlslList );
      end;
   end if;
@@ -359,7 +359,7 @@ begin
   kind := identifiers( listId ).genKind;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        result := Doubly_Linked_String_Lists.Last_Element( theList.dlslList );
      end;
   end if;
@@ -378,7 +378,7 @@ procedure ParseDoublyDeleteFirst is
 begin
   expect( doubly_delete_first_t );
   ParseFirstListParameter( listId );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -388,7 +388,7 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
           Doubly_Linked_String_Lists.Delete_First( theList.dlslList, cnt );
@@ -414,7 +414,7 @@ procedure ParseDoublyDeleteLast is
 begin
   expect( doubly_delete_last_t );
   ParseFirstListParameter( listId );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -424,7 +424,7 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
           Doubly_Linked_String_Lists.Delete_Last( theList.dlslList, cnt );
@@ -475,8 +475,8 @@ begin
   genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
-       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        theCursor.dlslCursor := Doubly_Linked_String_Lists.First( theList.dlslList );
      end;
   end if;
@@ -496,8 +496,8 @@ begin
   genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
-       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        theCursor.dlslCursor := Doubly_Linked_String_Lists.Last( theList.dlslList );
      end;
   end if;
@@ -515,7 +515,7 @@ begin
   ParseSingleCursorParameter( cursId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        Doubly_Linked_String_Lists.Next( theCursor.dlslCursor );
      end;
   end if;
@@ -533,7 +533,7 @@ begin
   ParseSingleCursorParameter( cursId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        Doubly_Linked_String_Lists.Previous( theCursor.dlslCursor );
      end;
   end if;
@@ -550,7 +550,7 @@ begin
   kind := identifiers( cursId ).genKind;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        result := Doubly_Linked_String_Lists.Element( theCursor.dlslCursor );
      exception when constraint_error =>
        err( "position cursor has no element" );
@@ -577,8 +577,8 @@ begin
   ParseLastGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
-       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        Doubly_Linked_String_Lists.Replace_Element( theList.dlslList, theCursor.dlslCursor, itemExpr );
      end;
   end if;
@@ -632,10 +632,10 @@ begin
   genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
   ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
   genTypesOk( identifiers( listId ).genKind, itemType );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType );
      hasCnt := true;
-  elsif token = symbol_t and identifiers( token ).value = ")" then
+  elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
      err( ", or ) expected" );
@@ -644,8 +644,8 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
-       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
           Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr, cnt );
@@ -699,10 +699,10 @@ begin
      baseTypesOK( ref.kind, doubly_cursor_t );
      identifiers( ref.id ).genKind := identifiers( listId ).genKind;
      -- A cursor may be followed by an optional count
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
         hasCnt := true;
-     elsif token = symbol_t and identifiers( token ).value = ")" then
+     elsif token = symbol_t and identifiers( token ).value.all = ")" then
         expect( symbol_t, ")" );
      else
         err( ", or ) expected" );
@@ -718,10 +718,10 @@ begin
      ParseNextOutParameter( ref, doubly_cursor_t );
      baseTypesOK( ref.kind, doubly_cursor_t );
      identifiers( ref.id ).genKind := identifiers( listId ).genKind;
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         ParseLastNumericParameter( cntExpr, cntType );
         hasCnt := true;
-     elsif token = symbol_t and identifiers( token ).value = ")" then
+     elsif token = symbol_t and identifiers( token ).value.all = ")" then
         expect( symbol_t, ")" );
      else
         err( ", or ) expected" );
@@ -732,8 +732,8 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
-       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        -- the second cursor is the out parameter.  Declare it.  Then fetch it.
        identifiers( ref.id ).resource := true;
        declareResource( resId, doubly_linked_string_list_cursor, blocks_top );
@@ -778,7 +778,7 @@ begin
   ParseFirstListParameter( listId );
   ParseNextCursorParameter( cursId );
   genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -788,8 +788,8 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
-       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        if hasCnt then
           begin
             cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
@@ -820,7 +820,7 @@ begin
   ParseLastGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        result := to_bush_boolean( Doubly_Linked_String_Lists.Contains( theList.dlslList, itemExpr ) );
      end;
   end if;
@@ -843,8 +843,8 @@ begin
   genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
-       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        theCursor.dlslCursor := Doubly_Linked_String_Lists.Find( theList.dlslList, itemExpr );
      end;
   end if;
@@ -867,8 +867,8 @@ begin
   genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
-       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        theCursor.dlslCursor := Doubly_Linked_String_Lists.Reverse_Find( theList.dlslList, itemExpr );
      end;
   end if;
@@ -886,7 +886,7 @@ begin
   ParseSingleListParameter( listId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        Doubly_Linked_String_Lists.Reverse_Elements( theList.dlslList );
      end;
   end if;
@@ -902,7 +902,7 @@ begin
   ParseSingleListParameter( listId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        Doubly_Linked_String_Lists.Reverse_Elements( theList.dlslList );
      end;
   end if;
@@ -924,8 +924,8 @@ begin
      declare
        sourceCursor : doubly_linked_string_lists.Cursor;
      begin
-       findResource( to_resource_id( identifiers( targetListId ).value ), theTargetList );
-       findResource( to_resource_id( identifiers( sourceListId ).value ), theSourceList );
+       findResource( to_resource_id( identifiers( targetListId ).value.all ), theTargetList );
+       findResource( to_resource_id( identifiers( sourceListId ).value.all ), theSourceList );
        -- this is only available starting in GCC Ada 4.7 or 4.8 or newer
        --Doubly_Linked_String_Lists.Assign( theTargetList.dlslList, theSourceList.dlslList );
        -- we'll write our own
@@ -958,8 +958,8 @@ begin
   genTypesOk( identifiers( targetListId ).genKind, identifiers( sourceListId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( targetListId ).value ), theTargetList );
-       findResource( to_resource_id( identifiers( sourceListId ).value ), theSourceList );
+       findResource( to_resource_id( identifiers( targetListId ).value.all ), theTargetList );
+       findResource( to_resource_id( identifiers( sourceListId ).value.all ), theSourceList );
        Doubly_Linked_String_Lists.Move( theTargetList.dlslList, theSourceList.dlslList );
      end;
   end if;
@@ -984,9 +984,9 @@ begin
   genTypesOk( identifiers( listId ).genKind, identifiers( secondCursId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
-       findResource( to_resource_id( identifiers( firstCursId ).value ), theFirstCursor );
-       findResource( to_resource_id( identifiers( secondCursId ).value ), theSecondCursor );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( firstCursId ).value.all ), theFirstCursor );
+       findResource( to_resource_id( identifiers( secondCursId ).value.all ), theSecondCursor );
        Doubly_Linked_String_Lists.Swap( theList.dlslList, theFirstCursor.dlslCursor, theSecondCursor.dlslCursor );
      exception when constraint_error =>
        err( "a cursor has no element" );
@@ -1015,9 +1015,9 @@ begin
   genTypesOk( identifiers( listId ).genKind, identifiers( secondCursId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
-       findResource( to_resource_id( identifiers( firstCursId ).value ), theFirstCursor );
-       findResource( to_resource_id( identifiers( secondCursId ).value ), theSecondCursor );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( firstCursId ).value.all ), theFirstCursor );
+       findResource( to_resource_id( identifiers( secondCursId ).value.all ), theSecondCursor );
        Doubly_Linked_String_Lists.Swap_Links( theList.dlslList, theFirstCursor.dlslCursor, theSecondCursor.dlslCursor );
      exception when constraint_error =>
        err( "a cursor has no element" );
@@ -1056,7 +1056,7 @@ begin
      sourceListId := tempId;
      hasSourceId := true;
      genTypesOk( identifiers( targetListId ).genKind, identifiers( sourceListId ).genKind );
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         ParseLastCursorParameter( curs2Id );
         hasCurs2 := true;
         genTypesOk( identifiers( targetListId ).genKind, identifiers( curs2Id ).genKind );
@@ -1076,13 +1076,13 @@ begin
 
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( targetListId ).value ), theTargetList );
-       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       findResource( to_resource_id( identifiers( targetListId ).value.all ), theTargetList );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        if hasSourceId then
-          findResource( to_resource_id( identifiers( sourceListId ).value ), theSourceList );
+          findResource( to_resource_id( identifiers( sourceListId ).value.all ), theSourceList );
        end if;
        if hasCurs2 then
-          findResource( to_resource_id( identifiers( curs2Id ).value ), theSecondCursor );
+          findResource( to_resource_id( identifiers( curs2Id ).value.all ), theSecondCursor );
        end if;
 
        -- There are 3 variations to this function
@@ -1178,10 +1178,10 @@ begin
   kind := uni_string_t;
   expect( doubly_assemble_t );
   ParseFirstListParameter( listId );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( delimExpr, delimType, uni_string_t );
      hasDelim := true;
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         ParseLastStringParameter( finalExpr, finalType, uni_string_t );
         hasFinal := true;
      else
@@ -1196,7 +1196,7 @@ begin
           -- TODO: the eol delimiter should be based on the operating system
           delimExpr := to_unbounded_string( "" & ASCII.LF );
        end if;
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        curs := Doubly_Linked_String_Lists.First( theList.dlslList );
        if Doubly_Linked_String_Lists.Has_Element( curs ) then
           loop
@@ -1239,10 +1239,10 @@ begin
   expect( doubly_disassemble_t );
   ParseFirstStringParameter( strExpr, strType, uni_string_t );
   ParseNextListParameter( listId );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( delimExpr, delimType, uni_string_t );
      hasDelim := true;
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         ParseLastStringParameter( finalExpr, finalType, uni_string_t );
         hasFinal := true;
      else
@@ -1278,7 +1278,7 @@ begin
        delimLen := length( delimExpr );
        delimPos := 0;
        -- generate the list items
-       findResource( to_resource_id( identifiers( listId ).value ), theList );
+       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        while l >= i loop
           ch := element( strExpr, i );
           if ch = element( delimExpr, delimPos+1 ) then                           -- looking at delim?

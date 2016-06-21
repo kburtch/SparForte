@@ -192,7 +192,7 @@ begin
 
   findIdent( to_unbounded_string( "TERM" ), term_id );
   declare
-     termString : string := "TERM=" & to_string( identifiers( term_id ).value ) & ASCII.NUL;
+     termString : string := "TERM=" & to_string( identifiers( term_id ).value.all ) & ASCII.NUL;
      status : integer;
   begin
      findIdent( to_unbounded_string( "TERM" ), term_id );

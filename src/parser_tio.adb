@@ -64,7 +64,7 @@ begin
   elsif file = standard_error_t then
      b := true_t;
   elsif uniTypesOk( identifiers( file ).kind, file_type_t ) then
-     if length( identifiers( file ).value ) > 0 then
+     if length( identifiers( file ).value.all ) > 0 then
         b := true_t;
      end if;
   end if;
@@ -156,11 +156,11 @@ begin
   if isExecutingCommand then
      result := stringField( file_ref, mode_field );
      if identifier'value( to_string( result ) ) = in_file_t then
-        result := identifiers( in_file_t ).value;
+        result := identifiers( in_file_t ).value.all;
      elsif identifier'value( to_string( result ) ) = out_file_t then
-        result := identifiers( out_file_t ).value;
+        result := identifiers( out_file_t ).value.all;
      elsif identifier'value( to_string( result ) ) = append_file_t then
-        result := identifiers( append_file_t ).value;
+        result := identifiers( append_file_t ).value.all;
      else
         err( Gnat.Source_Info.Source_Location & ": internal error: unable to determine file mode" );
      end if;
@@ -199,7 +199,7 @@ begin
   file_ref.id := eof_t;
   str := null_unbounded_string;
   getNextToken;
-  if token = symbol_t and then identifiers( Token ).value = "(" then
+  if token = symbol_t and then identifiers( Token ).value.all = "(" then
       expect( symbol_t, "(" );
       ParseOpenFileOrSocket( file_ref, file_kind );
       expect( symbol_t, ")" );
@@ -254,17 +254,17 @@ begin
 
   if token = current_input_t then
      if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_input_t).value ) );
+        ref.id := identifier( to_numeric( identifiers(current_input_t).value.all ) );
      end if;
      getNextToken;
   elsif token = current_output_t then
      if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_output_t).value ) );
+        ref.id := identifier( to_numeric( identifiers(current_output_t).value.all ) );
      end if;
      getNextToken;
   elsif token = current_error_t then
      if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_error_t).value ) );
+        ref.id := identifier( to_numeric( identifiers(current_error_t).value.all ) );
      end if;
      getNextToken;
   else
@@ -279,7 +279,7 @@ begin
   -- syntax check).
 
   if not syntax_check then
-     if length( identifiers( ref.id ).value ) = 0 then
+     if length( identifiers( ref.id ).value.all ) = 0 then
         err( "file not open" );
      elsif not error_found then
         return_ref := ref;
@@ -306,17 +306,17 @@ begin
 
   if token = current_input_t then
      if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_input_t).value ) );
+        ref.id := identifier( to_numeric( identifiers(current_input_t).value.all ) );
      end if;
      getNextToken;
   elsif token = current_output_t then
      if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_output_t).value ) );
+        ref.id := identifier( to_numeric( identifiers(current_output_t).value.all ) );
      end if;
      getNextToken;
   elsif token = current_error_t then
      if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_error_t).value ) );
+        ref.id := identifier( to_numeric( identifiers(current_error_t).value.all ) );
      end if;
      getNextToken;
   else
@@ -331,7 +331,7 @@ begin
   -- syntax check).
 
   if not syntax_check then
-     if length( identifiers( ref.id ).value ) = 0 then
+     if length( identifiers( ref.id ).value.all ) = 0 then
         err( "file not open" );
      elsif not error_found then
         return_ref := ref;
@@ -358,17 +358,17 @@ begin
 
   if token = current_input_t then
      if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_input_t).value ) );
+        ref.id := identifier( to_numeric( identifiers(current_input_t).value.all ) );
      end if;
      getNextToken;
   elsif token = current_output_t then
      if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_output_t).value ) );
+        ref.id := identifier( to_numeric( identifiers(current_output_t).value.all ) );
      end if;
      getNextToken;
   elsif token = current_error_t then
      if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_error_t).value ) );
+        ref.id := identifier( to_numeric( identifiers(current_error_t).value.all ) );
      end if;
      getNextToken;
   else
@@ -384,7 +384,7 @@ begin
   -- not opened during a syntax check).
 
   if not syntax_check then
-     if length( identifiers( ref.id ).value ) = 0 then
+     if length( identifiers( ref.id ).value.all ) = 0 then
         err( "file not open" );
      elsif not error_found then
         return_ref := ref;
@@ -422,7 +422,7 @@ begin
      if getUniType( ref.kind ) /= file_type_t then
         err( "expected file_type variable" );
      elsif not syntax_check then
-        if length( identifiers( ref.id ).value ) > 0 then
+        if length( identifiers( ref.id ).value.all ) > 0 then
            err( "file already open" );
         elsif not error_found then
            r := ref;
@@ -459,7 +459,7 @@ begin
      if getUniType( identifiers( id ).kind ) /= socket_type_t then
         err( "expected socket_type variable" );
      elsif not syntax_check then
-        if length( identifiers( id ).value ) > 0 then
+        if length( identifiers( id ).value.all ) > 0 then
            err( "file already open" );
         elsif not error_found then
            f := id;
@@ -497,7 +497,7 @@ begin
      if kind /= file_type_t and kind /= socket_type_t then
         err( "file_type or socket_type variable expected" );
      elsif not syntax_check then
-        if length( identifiers( ref.id ).value ) > 0 then
+        if length( identifiers( ref.id ).value.all ) > 0 then
            err( "file already open" );
         elsif not error_found then
            return_ref := ref;
@@ -572,20 +572,20 @@ procedure DoInitFileVariableFields( file : identifier; fd : aFileDescriptor;
   -- Create the fields in a new file variable
 begin
   -- construct the file variable's value, a series of nul delimited fields
-  identifiers( file ).value := to_unbounded_string( "." & ASCII.NUL );
+  identifiers( file ).value.all := to_unbounded_string( "." & ASCII.NUL );
   -- 1. character buffer
-  identifiers( file ).value := identifiers( file ).value & to_unbounded_string(      fd'img ) & ASCII.NUL;
+  identifiers( file ).value.all := identifiers( file ).value.all & to_unbounded_string(      fd'img ) & ASCII.NUL;
   -- 2. file descriptor
-  identifiers( file ).value := identifiers( file ).value & to_unbounded_string(      " 0" ) & ASCII.NUL;
+  identifiers( file ).value.all := identifiers( file ).value.all & to_unbounded_string(      " 0" ) & ASCII.NUL;
   -- 3. lines
-  identifiers( file ).value := identifiers( file ).value & to_unbounded_string(      "0" ) & ASCII.NUL;
+  identifiers( file ).value.all := identifiers( file ).value.all & to_unbounded_string(      "0" ) & ASCII.NUL;
   -- 4. eol flag
-  identifiers( file ).value := identifiers( file ).value & name & ASCII.NUL;
+  identifiers( file ).value.all := identifiers( file ).value.all & name & ASCII.NUL;
   -- 5. name
-  identifiers( file ).value := identifiers( file ).value & to_unbounded_string(
+  identifiers( file ).value.all := identifiers( file ).value.all & to_unbounded_string(
      mode'img ) & ASCII.NUL;
   -- 6. mode
-  identifiers( file ).value := identifiers( file ).value & to_unbounded_string( "0" ) & ASCII.NUL;
+  identifiers( file ).value.all := identifiers( file ).value.all & to_unbounded_string( "0" ) & ASCII.NUL;
   -- 7. eof
 end DoInitFileVariableFields;
 
@@ -620,7 +620,7 @@ begin
      fileOpenRec := fileOpenRec & to_unbounded_string( " 0" ) & ASCII.NUL;
      -- 3. lines
      --if mode = in_file_t then
-     --   identifiers( file ).value := identifiers( file ).value & to_unbounded_string(
+     --   identifiers( file ).value.all := identifiers( file ).value.all & to_unbounded_string(
      --      isEOF( result )'img ) & ASCII.NUL;
      --else
         fileOpenRec := fileOpenRec & to_unbounded_string( "0" ) & ASCII.NUL;
@@ -686,7 +686,7 @@ begin
      fileInfo := fileInfo & to_unbounded_string( " 0" ) & ASCII.NUL;
      -- 3. lines
      --if mode = in_file_t then
-     --   identifiers( file ).value := identifiers( file ).value & to_unbounded_string(
+     --   identifiers( file ).value.all := identifiers( file ).value.all & to_unbounded_string(
      --      isEOF( result )'img ) & ASCII.NUL;
      --else
         fileInfo := fileInfo & to_unbounded_string( "0" ) & ASCII.NUL;
@@ -735,7 +735,7 @@ begin
      ParseClosedFile( file_ref );
      kind := file_type_t;
      -- the mode is optional, default to out_file
-     if token = symbol_t and identifiers( token ).value = ")" then
+     if token = symbol_t and identifiers( token ).value.all = ")" then
         mode := out_file_t;
      else
         expect( symbol_t, "," );
@@ -747,7 +747,7 @@ begin
         end if;
      end if;
      -- the name is optional, default to a temp file name
-     if token = symbol_t and identifiers( token ).value = ")" then
+     if token = symbol_t and identifiers( token ).value.all = ")" then
         makeTempFile( name );
      else
         expect( symbol_t, "," );
@@ -829,7 +829,7 @@ begin
   expect( reset_t );
   expect( symbol_t, "(" );
   ParseOpenFile( file_ref );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      expect( symbol_t, "," );
      if baseTypesOk( identifiers( token ).kind, file_mode_t ) then
         mode := token;
@@ -897,7 +897,7 @@ begin
         if trace then
            put_trace( "Closed file descriptor" & to_string( stringField( file_ref, fd_field ) ) );
         end if;
-        identifiers( file_ref.id ).value := null_unbounded_string;
+        identifiers( file_ref.id ).value.all := null_unbounded_string;
      end if;
   end if;
 end ParseClose;
@@ -934,7 +934,7 @@ begin
               goto retry;
            end if;
         end if;
-        identifiers( file_ref.id ).value := null_unbounded_string;
+        identifiers( file_ref.id ).value.all := null_unbounded_string;
         result := integer( unlink( to_string( name ) & ASCII.NUL ) );
         if result /= 0 then
            err( "unable to delete file: " & OSerror( C_errno ) );
@@ -959,7 +959,7 @@ begin
   file_ref.id := eof_t;
   expect( skip_line_t );
   --fd := stdin;
-  if token = symbol_t and then identifiers( Token ).value = "(" then
+  if token = symbol_t and then identifiers( Token ).value.all = "(" then
       getNextToken;
       ParseOpenFileOrSocket( file_ref, kind );
       expect( symbol_t, ")" );
@@ -979,7 +979,7 @@ begin
            replaceField( file_ref, doget_field, "0" );
         end if;
        loop
-         ch := Element( identifiers( file_ref.id ).value, 1 );
+         ch := Element( identifiers( file_ref.id ).value.all, 1 );
          if stringField(file_ref, eof_field ) = "1" then
              err( "end of file" );
              exit;
@@ -1324,7 +1324,7 @@ begin
      findEnumImage( expr_val, expr_type, expr_val );
   end if;
   -- apply optional numeric formatting
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      expect( symbol_t, "," );
      ParseExpression( pic_val, pic_type );
      if getUniType( pic_type ) /= uni_string_t then
@@ -1377,7 +1377,7 @@ procedure ParseNewLine is
   result : size_t;
 begin
   expect( new_line_t );
-  if token = symbol_t and identifiers( token ).value = "(" then
+  if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      ParseOpenFileOrSocket( target_ref, kind );
      expect( symbol_t, ")" );
@@ -1432,7 +1432,7 @@ begin
         err( "unable to set input: " & OSerror( C_errno ) );
      elsif not error_found then
         currentStandardInput := fd;
-        identifiers( current_input_t ).value :=
+        identifiers( current_input_t ).value.all :=
           to_unbounded_string( file_ref.id'img );
         if trace then
            put_trace( "input is currently from file descriptor" &
@@ -1468,7 +1468,7 @@ begin
         err( "unable to set output: " & OSerror( C_errno ) );
      elsif not error_found then
         currentStandardOutput := fd;
-        identifiers( current_output_t ).value :=
+        identifiers( current_output_t ).value.all :=
           to_unbounded_string( file_ref.id'img );
         if trace then
            put_trace( "output is currently to file descriptor" &
@@ -1504,7 +1504,7 @@ begin
         err( "unable to set error: " & OSerror( C_errno ) );
      elsif not error_found then
         currentStandardError := fd;
-        identifiers( current_error_t ).value :=
+        identifiers( current_error_t ).value.all :=
           to_unbounded_string( file_ref.id'img );
         if trace then
            put_trace( "error output is currently to file descriptor" &
@@ -1547,7 +1547,7 @@ begin
      file_ref.id := standard_input_t;
   end if;
   ParseOutParameter( id_ref, character_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      expect( symbol_t, "," );
      ParseOutParameter( avail_ref, boolean_t );
      hasAvail := true;

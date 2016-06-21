@@ -124,7 +124,7 @@ begin
   ParseSingleTableParameter( tableId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        Dynamic_String_Hash_Tables.Reset( theTable.dsht );
      exception when storage_error =>
        err( "storage error raised" );
@@ -148,7 +148,7 @@ begin
   ParseLastGenItemParameter( itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        Dynamic_String_Hash_Tables.Set(
           theTable.dsht,
           keyExpr,
@@ -173,7 +173,7 @@ begin
   ParseLastStringParameter( keyExpr, keyType, uni_string_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        result := Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr );
      end;
   end if;
@@ -193,7 +193,7 @@ begin
   ParseLastStringParameter( keyExpr, keyType, uni_string_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        result := to_bush_boolean( Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr ) /= null_unbounded_string );
      end;
   end if;
@@ -212,7 +212,7 @@ begin
   ParseLastStringParameter( keyExpr, keyType, uni_string_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        Dynamic_String_Hash_Tables.Remove( theTable.dsht, keyExpr );
      exception when storage_error =>
        err( "storage error raised" );
@@ -241,7 +241,7 @@ begin
      declare
        s : unbounded_string;
      begin
-       findResource( to_resource_id( identifiers( tableId ).value ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        s := Dynamic_String_Hash_Tables.Get_First( theTable.dsht );
        AssignParameter( itemRef, s );
        AssignParameter( eofRef, to_bush_boolean( s = null_unbounded_string ) );
@@ -270,7 +270,7 @@ begin
      declare
        s : unbounded_string;
      begin
-       findResource( to_resource_id( identifiers( tableId ).value ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        s := Dynamic_String_Hash_Tables.Get_Next( theTable.dsht );
        AssignParameter( itemRef, s );
        AssignParameter( eofRef, to_bush_boolean( s = null_unbounded_string ) );
@@ -298,7 +298,7 @@ begin
   ParseLastGenItemParameter( itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        oldItem := Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem = null_unbounded_string then
           Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr, itemExpr );
@@ -329,7 +329,7 @@ begin
   ParseLastGenItemParameter( itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        oldItem := Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= null_unbounded_string then
           Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr, itemExpr );
@@ -363,7 +363,7 @@ begin
   ParseLastGenItemParameter( itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        oldItem := Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= null_unbounded_string then
           Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem & itemExpr );
@@ -397,7 +397,7 @@ begin
   ParseLastGenItemParameter( itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        oldItem := Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= null_unbounded_string then
           Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr, itemExpr & oldItem );
@@ -430,17 +430,17 @@ begin
      err( "increment requires a numeric item type" );
   end if;
   ParseNextStringParameter( keyExpr, keyType, uni_string_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      hasAmt := true;
      ParseLastNumericParameter( amtExpr, amtType, natural_t );
-  elsif token = symbol_t and identifiers( token ).value = ")" then
+  elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
      err( ", or ) expected" );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        oldItem := Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= null_unbounded_string then
           oldItemValue := to_numeric( oldItem );
@@ -480,17 +480,17 @@ begin
      err( "decrement requires a numeric item type" );
   end if;
   ParseNextStringParameter( keyExpr, keyType, uni_string_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      hasAmt := true;
      ParseLastNumericParameter( amtExpr, amtType, natural_t );
-  elsif token = symbol_t and identifiers( token ).value = ")" then
+  elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
      err( ", or ) expected" );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        oldItem := Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= null_unbounded_string then
           oldItemValue := to_numeric( oldItem );

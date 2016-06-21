@@ -87,15 +87,15 @@ begin
      return;
   end if;
   ParseFirstStringParameter( dbnameExpr, dbnameType, string_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( userExpr, userType, string_t );
      hasUser := true;
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         ParseNextStringParameter( pswdExpr, pswdType, string_t );
-        if token = symbol_t and identifiers( token ).value = "," then
+        if token = symbol_t and identifiers( token ).value.all = "," then
            ParseNextStringParameter( hostExpr, hostType, string_t );
            hasHost := true;
-           if token = symbol_t and identifiers( token ).value = "," then
+           if token = symbol_t and identifiers( token ).value.all = "," then
               ParseNextNumericParameter( portExpr, portType, integer_t );
               hasPort := true;
            end if;
@@ -230,7 +230,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( sqlExpr, sqlType );
   if baseTypesOK( string_t, sqlType ) then
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
         ParseExpression( afterExpr, afterType );
         if baseTypesOK( string_t, sqlType ) then
@@ -271,7 +271,7 @@ procedure ParseMySQLPrepare is
 begin
   expect( mysql_prepare_t );
   ParseFirstStringParameter( sqlExpr, sqlType, string_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( afterExpr, afterType, string_t );
      hasAfter := true;
   end if;
@@ -307,7 +307,7 @@ procedure ParseMySQLAppend is
 begin
   expect( mysql_append_t );
   ParseFirstStringParameter( sqlExpr, sqlType, string_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( afterExpr, afterType, string_t );
      hasAfter := true;
   end if;
@@ -367,7 +367,7 @@ procedure ParseMySQLAppendQuoted is
 begin
   expect( mysql_append_quoted_t );
   ParseFirstStringParameter( sqlExpr, sqlType, string_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( afterExpr, afterType, string_t );
      hasAfter := true;
   end if;
@@ -425,7 +425,7 @@ procedure ParseMySQLExecuteChecked is
   hasMsg    : boolean := false;
 begin
   expect( mysql_execute_checked_t );
-  if token = symbol_t and identifiers( token ).value = "(" then
+  if token = symbol_t and identifiers( token ).value.all = "(" then
      ParseSingleStringParameter( msgExpr, msgType, string_t );
      hasMsg := true;
   end if;
@@ -679,7 +679,7 @@ procedure ParseMySQLOpenDBTrace is
 begin
   expect( mysql_open_db_trace_t );
   ParseFirstStringParameter( fnameExpr, fnameType, string_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( modeExpr, modeType, db_trace_mode_type_t );
      traceMode := Trace_Mode_Type'val( integer'value( ' ' & to_string( modeExpr ) ) );
      hasMode := true;
@@ -811,7 +811,7 @@ procedure ParseMySQLRaiseExceptions is
   raiseType : identifier;
 begin
   expect( mysql_raise_exceptions_t );
-  if token = symbol_t and identifiers( token ).value = "(" then
+  if token = symbol_t and identifiers( token ).value.all = "(" then
      ParseSingleEnumParameter( raiseExpr, raiseType, boolean_t );
   else
      raiseExpr := to_unbounded_string( "1" );
@@ -841,7 +841,7 @@ procedure ParseMySQLReportErrors is
   reportType : identifier;
 begin
   expect( mysql_report_errors_t );
-  if token = symbol_t and identifiers( token ).value = "(" then
+  if token = symbol_t and identifiers( token ).value.all = "(" then
      ParseSingleStringParameter( reportExpr, reportType, boolean_t );
   else
      reportExpr := to_unbounded_string( "1" );
@@ -968,7 +968,7 @@ procedure ParseMySQLFetch is
   haveIndex : boolean := false;
 begin
   expect( mysql_fetch_t );
-  if token = symbol_t and identifiers( token ).value = "(" then
+  if token = symbol_t and identifiers( token ).value.all = "(" then
      ParseSingleNumericParameter( expr_val, expr_type, mysql_tuple_index_type_t );
      haveIndex := true;
   end if;

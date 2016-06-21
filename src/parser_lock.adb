@@ -53,7 +53,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if baseTypesOk( expr_type, string_t ) then
-     if token = symbol_t and identifiers( token ).value = ")" then
+     if token = symbol_t and identifiers( token ).value.all = ")" then
         file_val := expr_val;
      else
         expect( symbol_t, "," );
@@ -61,11 +61,11 @@ begin
         -- first variation: file [,wait [,retry] ]
         if getUniType( expr_type ) = uni_string_t then
            dir_val := expr_val;
-           if token = symbol_t and identifiers( token ).value = "," then
+           if token = symbol_t and identifiers( token ).value.all = "," then
               expect( symbol_t, "," );
               ParseExpression( wait_val, expr_type );
               if baseTypesOk( expr_type, duration_t ) then
-                 if token = symbol_t and identifiers( token ).value = "," then
+                 if token = symbol_t and identifiers( token ).value.all = "," then
                     expect( symbol_t, "," );
                     ParseExpression( retry_val, expr_type );
                     if baseTypesOk( expr_type, duration_t ) then
@@ -77,11 +77,11 @@ begin
      elsif baseTypesOk( expr_type, duration_t ) then
         -- second variation: [,wait [,retry] ]
         file_val := expr_val;
-        if token = symbol_t and identifiers( token ).value = "," then
+        if token = symbol_t and identifiers( token ).value.all = "," then
            expect( symbol_t, "," );
            ParseExpression( wait_val, expr_type );
            if baseTypesOk( expr_type, duration_t ) then
-              if token = symbol_t and identifiers( token ).value = "," then
+              if token = symbol_t and identifiers( token ).value.all = "," then
                  ParseExpression( retry_val, expr_type );
                  if baseTypesOk( expr_type, duration_t ) then
                     null;
@@ -126,7 +126,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( file_val, expr_type );
   if baseTypesOk( expr_type, string_t ) then
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
         dir_val := file_val;
         ParseExpression( file_val, expr_type );

@@ -129,6 +129,9 @@ procedure err( msg : string );
 procedure err_exception_raised;
 -- generic error for when others => exceptions
 
+procedure err_renaming( ident : identifier );
+-- Show an error message for something disallowed for renaming
+
 procedure raise_exception( msg : string );
 
 procedure warn( msg : string );

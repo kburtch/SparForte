@@ -360,7 +360,7 @@ begin
   ParseSingleVectorParameter( vectorId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        Vector_String_Lists.Clear( theVector.vslVector );
      end;
   end if;
@@ -391,7 +391,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        theVector.vslVector := Vector_String_Lists.To_Vector( ada.containers.count_type'value( to_string( cntExpr ) ) );
      end;
   end if;
@@ -408,7 +408,7 @@ begin
   ParseSingleVectorParameter( vectorId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
 -- TODO: leading space
        result := to_unbounded_string( ada.containers.count_type'image( Vector_String_Lists.Capacity( theVector.vslVector ) ) );
      end;
@@ -436,7 +436,7 @@ begin
        cnt : ada.containers.count_type;
      begin
        cnt := ada.containers.count_type'value( to_string( cntExpr ) );
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        Vector_String_Lists.Reserve_Capacity( theVector.vslVector, cnt );
      exception when constraint_error =>
        err( "capacity count is the wrong type" ); -- TODO: say the type
@@ -457,7 +457,7 @@ begin
   ParseSingleVectorParameter( vectorId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
 -- TODO: leading space
        result := to_unbounded_string( ada.containers.count_type'image( Vector_String_Lists.Length( theVector.vslVector ) ) );
      end;
@@ -485,7 +485,7 @@ begin
        cnt : ada.containers.count_type;
      begin
        cnt := ada.containers.count_type'value( to_string( cntExpr ) );
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        Vector_String_Lists.Set_Length( theVector.vslVector, cnt );
      exception when constraint_error =>
        err( "length count is the wrong type" ); -- TODO: say the type
@@ -506,7 +506,7 @@ begin
   ParseSingleVectorParameter( vectorId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
 -- TODO: leading space
        result := to_bush_boolean( Vector_String_Lists.Is_Empty( theVector.vslVector ) );
      end;
@@ -527,7 +527,7 @@ begin
   expect( vectors_append_t );
   ParseFirstVectorParameter( vectorId );
   ParseNextGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -537,7 +537,7 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
           Vector_String_Lists.Append( theVector.vslVector, itemExpr, cnt );
@@ -566,7 +566,7 @@ begin
   expect( vectors_prepend_t );
   ParseFirstVectorParameter( vectorId );
   ParseNextGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -576,7 +576,7 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
           Vector_String_Lists.Prepend( theVector.vslVector, itemExpr, cnt );
@@ -602,7 +602,7 @@ begin
   ParseSingleVectorParameter( vectorId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
 -- TODO: leading space
        result := to_unbounded_string( vector_index'image( Vector_String_Lists.First_Index( theVector.vslVector ) ) );
      end;
@@ -620,7 +620,7 @@ begin
   ParseSingleVectorParameter( vectorId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
 -- TODO: leading space
        result := to_unbounded_string( vector_index'image( Vector_String_Lists.Last_Index( theVector.vslVector ) ) );
      end;
@@ -667,11 +667,11 @@ begin
 --put_line( to_string( idxExpr ) );
 --put_line( idx'img );
        if hasCursor then
-         findResource( to_resource_id( identifiers( cursorId ).value ), theCursor );
+         findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
          kind := identifiers( cursorId ).genKind; -- TODO
          result := Vector_String_Lists.Element( theCursor.vslCursor );
        else
-         findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+         findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
          kind := identifiers( vectorId ).genKind;
          idx := vector_index( to_numeric( idxExpr ) );
          idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
@@ -698,7 +698,7 @@ begin
   kind := identifiers( vectorId ).genKind;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        result := Vector_String_Lists.First_Element( theVector.vslVector );
      exception when constraint_error =>
        err( "vector is empty" );
@@ -717,7 +717,7 @@ begin
   kind := identifiers( vectorId ).genKind;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        result := Vector_String_Lists.Last_Element( theVector.vslVector );
      exception when constraint_error =>
        err( "vector is empty" );
@@ -736,7 +736,7 @@ procedure ParseVectorsDeleteFirst is
 begin
   expect( vectors_delete_first_t );
   ParseFirstVectorParameter( vectorId );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -746,7 +746,7 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
           Vector_String_Lists.Delete_First( theVector.vslVector, cnt );
@@ -772,7 +772,7 @@ procedure ParseVectorsDeleteLast is
 begin
   expect( vectors_delete_last_t );
   ParseFirstVectorParameter( vectorId );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -782,7 +782,7 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
           Vector_String_Lists.Delete_Last( theVector.vslVector, cnt );
@@ -811,7 +811,7 @@ begin
   ParseLastGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        result := to_bush_boolean( Vector_String_Lists.Contains( theVector.vslVector, itemExpr ) );
 
      end;
@@ -832,8 +832,8 @@ begin
   genTypesOk( identifiers( targetVectorId ).genKind, identifiers( sourceVectorId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( targetVectorId ).value ), theTargetVector );
-       findResource( to_resource_id( identifiers( sourceVectorId ).value ), theSourceVector );
+       findResource( to_resource_id( identifiers( targetVectorId ).value.all ), theTargetVector );
+       findResource( to_resource_id( identifiers( sourceVectorId ).value.all ), theSourceVector );
        Vector_String_Lists.Move( theTargetVector.vslVector, theSourceVector.vslVector );
      end;
   end if;
@@ -853,8 +853,8 @@ end ParseVectorsMove;
 --  genTypesOk( identifiers( targetVectorId ).genKind, identifiers( sourceVectorId ).genKind );
 --  if isExecutingCommand then
 --     begin
---       findResource( to_resource_id( identifiers( targetVectorId ).value ), theTargetVector );
---       findResource( to_resource_id( identifiers( sourceVectorId ).value ), theSourceVector );
+--       findResource( to_resource_id( identifiers( targetVectorId ).value.all ), theTargetVector );
+--       findResource( to_resource_id( identifiers( sourceVectorId ).value.all ), theSourceVector );
 --       Vector_String_Lists.Copy( theTargetVector.vslVector, theSourceVector.vslVector );
 --     end;
 --  end if;
@@ -870,7 +870,7 @@ begin
   ParseSingleVectorParameter( vectorId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        Vector_String_Lists.Reverse_Elements( theVector.vslVector );
      end;
   end if;
@@ -886,7 +886,7 @@ begin
   ParseSingleVectorParameter( vectorId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        Vector_String_Lists.Reverse_Elements( theVector.vslVector );
      end;
   end if;
@@ -930,8 +930,8 @@ begin
   genTypesOk( identifiers( vectorId ).genKind, identifiers( cursId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
-       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        theCursor.vslCursor := Vector_String_Lists.First( theVector.vslVector );
      end;
   end if;
@@ -951,8 +951,8 @@ begin
   genTypesOk( identifiers( vectorId ).genKind, identifiers( cursId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
-       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        theCursor.vslCursor := Vector_String_Lists.Last( theVector.vslVector );
      end;
   end if;
@@ -968,7 +968,7 @@ begin
   ParseSingleCursorParameter( cursId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        Vector_String_Lists.Next( theCursor.vslCursor );
      end;
   end if;
@@ -984,7 +984,7 @@ begin
   ParseSingleCursorParameter( cursId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).value ), theCursor );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        Vector_String_Lists.Previous( theCursor.vslCursor );
      end;
   end if;
@@ -1017,7 +1017,7 @@ begin
      -- should be extended index
      hasIdx := true;
   end if;
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      expect( symbol_t, "," );
      ParseNumericParameter( cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
@@ -1025,7 +1025,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( vectorId ).value ), theVector );
+        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
         if hasIdx then
            if hasCnt then
               cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
@@ -1036,7 +1036,7 @@ begin
               Vector_String_Lists.Delete( theVector.vslVector, idx );
            end if;
         else
-           findResource( to_resource_id( identifiers( cursorId ).value ), theCursor );
+           findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
            if hasCnt then
               cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
               Vector_String_Lists.Delete( theVector.vslVector, theCursor.vslCursor, cnt );

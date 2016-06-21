@@ -256,7 +256,7 @@ begin
   startCompiler;
   startScanner;
   findIdent( to_unbounded_string( "TERM" ), term_id );
-  checkDisplay( identifiers( term_id ).value );
+  checkDisplay( identifiers( term_id ).value.all );
   startParser;
 
   -- replace initialization message with copyright notice (if on

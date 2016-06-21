@@ -193,7 +193,7 @@ begin
      begin
        -- close the file / environment, if they are still open.  This doesn't
        -- close any cursors.
-       findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+       findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
        if theFile.hash.isOpen then
           Close( theFile.hash.session );
           Close( theFile.hash.env );
@@ -258,7 +258,7 @@ begin
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
 
         init( theFile.hash.env );
 
@@ -270,7 +270,7 @@ begin
            dirname2 := null_unbounded_string;
         elsif element( dirname2, 1 ) /= '/' then
            findIdent( to_unbounded_string( "PWD" ), pwdId );
-           dirname2 := identifiers( pwdId ).value & "/" & dirname;
+           dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
         end if;
         if trace then
            put_trace( "Base directory is '" & to_string( dirname2 ) & "'" );
@@ -373,7 +373,7 @@ begin
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         close( theFile.hash.session );
         close( theFile.hash.env );
         theFile.hash.isOpen := false;
@@ -435,7 +435,7 @@ begin
         pwdId : identifier;
      begin
         -- TODO: pathname handling
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
 
         -- Create an environment
         init( theFile.hash.env );
@@ -452,7 +452,7 @@ begin
            err( "file must be in current directory in a " & optional_bold( "restricted shell" ) );
         elsif element( dirname2, 1 ) /= '/' then
            findIdent( to_unbounded_string( "PWD" ), pwdId );
-           dirname2 := identifiers( pwdId ).value & "/" & dirname;
+           dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
         end if;
         if trace then
            put_trace( "Base directory is '" & to_string( dirname2 ) & "'" );
@@ -542,7 +542,7 @@ begin
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         result := to_bush_boolean( theFile.hash.isOpen );
      exception when berkeley_error =>
         result := to_bush_boolean( false );
@@ -571,7 +571,7 @@ begin
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         result := theFile.hash.name;
      end;
   end if;
@@ -601,7 +601,7 @@ begin
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if theFile.hash.isOpen then
            begin
               close( theFile.hash.session );
@@ -699,7 +699,7 @@ begin
         declare
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            DoRecordToJson( jsonString, valId );
            put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
         exception when msg: berkeley_error =>
@@ -709,7 +709,7 @@ begin
         declare
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            DoArrayToJson( jsonString, valId );
            put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
         exception when msg: berkeley_error =>
@@ -718,7 +718,7 @@ begin
      else
         -- normal scalar expression
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            put( theFile.hash.session, to_string( keyExpr ), to_string( valExpr ) );
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
@@ -782,7 +782,7 @@ begin
         declare
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            get( theFile.hash.session, to_string( keyExpr ), jsonString );
            DoJsonToRecord( itemRef.id, jsonString );
         exception when msg: berkeley_error =>
@@ -796,7 +796,7 @@ begin
         declare
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            get( theFile.hash.session, to_string( keyExpr ), jsonString );
            DoJsonToArray( itemRef.id, jsonString );
         exception when msg: berkeley_error =>
@@ -810,7 +810,7 @@ begin
         declare
            result : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            get( theFile.hash.session, to_string( keyExpr ), result );
            AssignParameter( itemRef, result );
         exception when msg: berkeley_error =>
@@ -848,7 +848,7 @@ begin
   ParseLastStringParameter( keyExpr, keyType, string_t );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         exists( theFile.hash.session, to_string( keyExpr ) );
         result := to_bush_boolean( true );
      exception when berkeley_error =>
@@ -892,10 +892,10 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if cursId /= eof_t then
         begin
-          findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+          findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
           delete( theFile.hash.session, theCurs.hash_cur );
         exception when msg: berkeley_error =>
             err( exception_message( msg ) );
@@ -946,17 +946,17 @@ begin
      err( "increment requires a numeric item type" );
   end if;
   ParseNextStringParameter( keyExpr, keyType, uni_string_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      hasAmt := true;
      ParseLastNumericParameter( amtExpr, amtType, natural_t );
-  elsif token = symbol_t and identifiers( token ).value = ")" then
+  elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
      err( ", or ) expected" );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+       findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
 
        get( theFile.hash.session, to_string( keyExpr ), oldItem );
        -- berkeley throws exception on not found
@@ -1014,17 +1014,17 @@ begin
      err( "increment requires a numeric item type" );
   end if;
   ParseNextStringParameter( keyExpr, keyType, uni_string_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      hasAmt := true;
      ParseLastNumericParameter( amtExpr, amtType, natural_t );
-  elsif token = symbol_t and identifiers( token ).value = ")" then
+  elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
      err( ", or ) expected" );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+       findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
 
        get( theFile.hash.session, to_string( keyExpr ), oldItem );
        -- berkeley throws exception on not found
@@ -1103,7 +1103,7 @@ begin
         declare
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            exists( theFile.hash.session, to_string( keyExpr ) );
         exception when storage_error =>
           err( "storage error raised" );
@@ -1119,7 +1119,7 @@ begin
         declare
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            exists( theFile.hash.session, to_string( keyExpr ) );
         exception when storage_error =>
           err( "storage error raised" );
@@ -1134,7 +1134,7 @@ begin
      else
         -- normal scalar expression
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            exists( theFile.hash.session, to_string( keyExpr ) );
         exception when storage_error =>
           err( "storage error raised" );
@@ -1215,8 +1215,8 @@ begin
            declare
               jsonString : unbounded_string;
            begin
-             findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-             findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+             findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+             findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
              DoRecordToJson( jsonString, itemId );
              put( theFile.hash.session,
                   theCurs.hash_cur,
@@ -1230,8 +1230,8 @@ begin
            declare
               jsonString : unbounded_string;
            begin
-             findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-             findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+             findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+             findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
              DoArrayToJson( jsonString, itemId );
              put( theFile.hash.session,
                   theCurs.hash_cur,
@@ -1243,8 +1243,8 @@ begin
            end;
         else
            begin
-             findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-             findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+             findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+             findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
              put( theFile.hash.session,
                   theCurs.hash_cur,
                   keyExpr, -- this is ignored
@@ -1260,7 +1260,7 @@ begin
            declare
               jsonString : unbounded_string;
            begin
-             findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+             findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
              exists( theFile.hash.session, to_string( keyExpr ) );
              DoRecordToJson( jsonString, itemId );
              put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
@@ -1275,7 +1275,7 @@ begin
            declare
               jsonString : unbounded_string;
            begin
-             findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+             findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
              exists( theFile.hash.session, to_string( keyExpr ) );
              DoArrayToJson( jsonString, itemId );
              put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
@@ -1288,7 +1288,7 @@ begin
            end;
         else
            begin
-             findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+             findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
              exists( theFile.hash.session, to_string( keyExpr ) );
              put( theFile.hash.session, to_string( keyExpr ), to_string( itemExpr ) );
            exception when storage_error =>
@@ -1336,7 +1336,7 @@ begin
   ParseLastGenItemParameter( itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+       findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
        get( theFile.hash.session, to_string( keyExpr ), oldItem );
        put( theFile.hash.session, to_string( keyExpr ), to_string( oldItem & itemExpr ) );
      exception when storage_error =>
@@ -1382,7 +1382,7 @@ begin
   ParseLastGenItemParameter( itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+       findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
        get( theFile.hash.session, to_string( keyExpr ), oldItem );
        put( theFile.hash.session, to_string( keyExpr ), to_string( itemExpr & oldItem ) );
      exception when storage_error =>
@@ -1415,7 +1415,7 @@ begin
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         sync( theFile.hash.session );
      exception when msg: berkeley_error =>
         err( exception_message( msg ) );
@@ -1448,7 +1448,7 @@ begin
      declare
         cnt : natural;
      begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         truncate( theFile.hash.session, cnt );
         if trace and cnt > 0 then
            put_trace( cnt'img & " records were erased" );
@@ -1522,8 +1522,8 @@ begin
   ParseFirstFileParameter( fileId );
   ParseLastCursorParameter( cursId );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-     findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
      new_berkeley_cursor( theFile.hash.session, theCurs.hash_cur );
   end if;
 end ParseHashOpenCursor;
@@ -1551,8 +1551,8 @@ begin
   ParseLastCursorParameter( cursId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-        findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
         close( theFile.hash.session, theCurs.hash_cur );
      exception when msg: berkeley_error =>
         err( exception_message( msg ) );
@@ -1621,8 +1621,8 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
            get( theFile.hash.session,
                 theCurs.hash_cur,
                 key,
@@ -1642,8 +1642,8 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
            get( theFile.hash.session,
                 theCurs.hash_cur,
                 key,
@@ -1663,8 +1663,8 @@ begin
            key : unbounded_string;
            data : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
            get( theFile.hash.session,
                 theCurs.hash_cur,
                 key,
@@ -1743,8 +1743,8 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
            get( theFile.hash.session,
                 theCurs.hash_cur,
                 key,
@@ -1764,8 +1764,8 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
            get( theFile.hash.session,
                 theCurs.hash_cur,
                 key,
@@ -1785,8 +1785,8 @@ begin
            key : unbounded_string;
            data : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
            get( theFile.hash.session,
                 theCurs.hash_cur,
                 key,
@@ -1865,8 +1865,8 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
            get( theFile.hash.session,
                 theCurs.hash_cur,
                 key,
@@ -1886,8 +1886,8 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
            get( theFile.hash.session,
                 theCurs.hash_cur,
                 key,
@@ -1907,8 +1907,8 @@ begin
            key : unbounded_string;
            data : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
            get( theFile.hash.session,
                 theCurs.hash_cur,
                 key,
@@ -1987,8 +1987,8 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
            get( theFile.hash.session,
                 theCurs.hash_cur,
                 key,
@@ -2008,8 +2008,8 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
            get( theFile.hash.session,
                 theCurs.hash_cur,
                 key,
@@ -2029,8 +2029,8 @@ begin
            key : unbounded_string;
            data : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value ), theCurs );
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
            get( theFile.hash.session,
                 theCurs.hash_cur,
                 key,
@@ -2069,7 +2069,7 @@ begin
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         result := to_bush_boolean( will_raise( theFile.hash.session ) );
      exception when berkeley_error =>
         result := to_bush_boolean( false );
@@ -2098,7 +2098,7 @@ begin
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         result := to_unbounded_string( db_error'image( last_error( theFile.hash.session ) ) );
      exception when msg: berkeley_error =>
         err( exception_message( msg ) );
@@ -2132,7 +2132,7 @@ begin
      declare
        raise_them : boolean := boolExpr = to_unbounded_string( "1" );
      begin
-        findResource( to_resource_id( identifiers( fileId ).value ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         raise_exceptions( theFile.hash.session, raise_them, boolean( traceOpt ) );
      exception when msg: berkeley_error =>
         err( exception_message( msg ) );

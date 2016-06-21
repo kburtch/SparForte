@@ -219,7 +219,7 @@ begin
   expect( index_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextStringParameter( pat_val, pat_type, string_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastEnumParameter( dir_val, dir_type, strings_direction_t );
      if isExecutingCommand then
         case natural( to_numeric( dir_val ) ) is
@@ -254,7 +254,7 @@ begin
   kind := natural_t;
   expect( index_non_blank_t );
   ParseFirstStringParameter( str_val, str_type );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastEnumParameter( dir_val, dir_type, strings_direction_t );
      if isExecutingCommand then
         case natural( to_numeric( dir_val ) ) is
@@ -475,7 +475,7 @@ begin
   expect( head_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastStringParameter( pad_val, pad_type, character_t );
      begin
         pad_char := element( pad_val, 1 );
@@ -510,7 +510,7 @@ begin
   expect( tail_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastStringParameter( pad_val, pad_type, character_t );
      begin
         pad_char := element( pad_val, 1 );
@@ -545,7 +545,7 @@ begin
   expect( field_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastStringParameter( del_val, del_type, character_t );
      if isExecutingCommand then
         begin
@@ -581,7 +581,7 @@ begin
   expect( csv_field_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastStringParameter( del_val, del_type, character_t );
      if isExecutingCommand then
         begin
@@ -735,7 +735,7 @@ begin
   expect( lookup_t );
   ParseFirstStringParameter( src_val, src_type );
   ParseNextStringParameter( tar_val, tar_type );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastStringParameter( del_val, del_type, character_t );
      if isExecutingCommand then
         begin
@@ -775,7 +775,7 @@ begin
   if uniTypesOk( src_ref.kind, string_t ) then
      ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
      ParseNextStringParameter( tar_val, tar_type, string_t );
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         ParseLastStringParameter( del_val, del_type, character_t );
         if isExecutingCommand then
            begin
@@ -821,7 +821,7 @@ begin
   if uniTypesOk( src_ref.kind, string_t ) then
      ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
      ParseNextStringParameter( tar_val, tar_type );
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         ParseLastStringParameter( del_val, del_type, character_t );
         if isExecutingCommand then
            begin

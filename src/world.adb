@@ -356,167 +356,8 @@ begin
 
   -- dereferences
   --
-  -- If this is an alias (e.g. a renaming, or in/out parameter) dereference it
-  -- and return the referred to identifier, rather than the actual one.
-  --
-  -- TODO: error handling may become confusing if the name of the referred to
-  -- identifier is returned rather than the one in the source code line.
-
-  while identifiers( id ).renaming_of /= identifier'first loop
-     id := identifiers( id ).renaming_of;
-  end loop;
 
 end findIdent;
-
-procedure findCanonicalIdent( name : unbounded_string; id : out identifier ) is
-      -- Return the id of a keyword / identifier in the symbol table.  If
-      -- it is not found, return the end-of-file token as the id
-      -- doesn't implement renamings.
-      i      : identifier;
-      p      : identifier;
-      save_i : identifier;
-      dotPos : natural;
-      prefix : unbounded_string;
-      --h      : actualHash;
-   begin
-      id := eof_t;                                                  -- assume bad
-
-      --put_line( "findIdent: " & to_string( name ) ); -- DEBUG
-
-      -- first, search the local namespace
-
-      --put_line( "local search" ); -- DEBUG
-      i := identifiers_top-1;
-      while i /= eof_t loop
-         exit when identifiers( i ).class = namespaceClass;
-         if identifiers( i ).name = name and not                -- exists and
-           identifiers( i ).deleted then                       -- not deleted?
-            id := i;                                            -- return id
-            exit;                                               -- we're done
-         end if;
-         i := i - 1;
-      end loop;
-      save_i := i;
-
-      -- second, check for
-      -- note that in this version of SparForte, the prefix could be for a
-      -- record instead of a package
-      -- this only affects identifiers with a prefix
-
-      if id = eof_t then
-         if length( name ) > 1 then
-            dotPos := length( name ) - 1;
-            while dotPos > 1 loop
-               if element( name, dotPos ) = '.' then
-                  prefix := unbounded_slice( name, 1, dotPos-1 );
-                  exit;
-               else
-                  dotPos := dotPos - 1;
-               end if;
-            end loop;
-         end if;
-
-         -- try the tiny hash cache
-
-         --getTinyHashCache( name, id, h );
-         --if id /= eof_t then
-         --   goto found;
-         --end if;
-
-         -- put_line( "prefix = " & to_string( prefix ) ); -- debug
-
-         -- for this initial version, we are not assuming nested namespaces
-         -- we're only looking to speed up finding idents in built-in packages
-
-         p := save_i;                                                                 -- start after local
-         if length( prefix ) > 0 then                                               -- a id prefix?
-            --put_line( "namespace search" ); -- DEBUG
-            while p > identifiers'first loop                                        -- while stuff
-               if identifiers( p ).class = namespaceClass then                      -- a ns?
-                  -- if it is a closed namespace
-                  if identifiers( p ).openNamespace /= identifiers'first then       -- a ns closed?
-                     --put_line( "closed namespace " & to_string( identifiers( p ).name ) ); -- DEBUG
-                     if identifiers( p ).name = prefix then -- TODO: value
-                        --put_line( "FOUND " & to_string( identifiers( p ).name ) ); -- DEBUG
-                        i := p-1;
-                        -- TODO: with open, this could be a for loop
-                        while i > identifiers'first loop
-                           exit when identifiers( i ).class = namespaceClass;
-                           if identifiers( i ).name = name and not                -- exists and
-                             identifiers( i ).deleted then                       -- not deleted?
-                              id := i;                                            -- return id
-                              --setTinyHashCache( name, h, id );
-                              goto found;                                         -- we're done
-                           end if;
-                           i := i - 1;                                            -- next id
-                        end loop;
-                        p := i;                                                    -- set pos
-                        exit when p = identifiers'first;                           -- bail if none
-                     else                                                          -- wrong ns?
-                        p := identifiers( p ).nextNamespace;                       -- skip it
-                        exit when p = identifiers'first;                           -- bail if none
-                     end if;
-                  else                                                             -- open ns?
-                     p := identifiers( p ).nextNamespace;                          -- next ns
-                     exit when p = identifiers'first;                              -- bail if none
-                  end if;
-               else                                                                -- global id?
-                  p := p - 1;                                                      -- look for ns
-               end if;
-            end loop;
-         else
-            --put_line( "global search" ); -- DEBUG
-            -- search for something without a prefix: skip namespace tags as they
-            -- only contain identifiers with a prefix.
-            while p > identifiers'first loop                                       -- while stuff
-               if identifiers( p ).class = namespaceClass then                     -- a ns?
-                  if identifiers( p ).openNamespace /= identifiers'first then      -- a ns closed?
-                     p := identifiers( p ).nextNamespace;                          -- skip it
-                     exit when p = identifiers'first;                              -- bail if none
-                  else                                                             -- open ns?
-                     p := p - 1;                                                   -- next id is global
-                     exit when p = identifiers'first;                              -- bail if none
-                  end if;
-               else                                                                -- not a ns? then global
-                  if identifiers( p ).name = name and not                          -- exists and
-                    identifiers( p ).deleted then                                 -- not deleted?
-                     --put_line( "FOUND global space " & to_string( identifiers( p ).name ) ); -- DEBUG
-                     id := p;                                                      -- return id
-                     --setTinyHashCache( name, h, id );
-                     goto found;                                                   -- we're done
-                  end if;
-                  p := p - 1;                                                      -- else next id
-               end if;
-            end loop;
-         end if;
-      end if;
-
-      <<found>>
-
-      -- global namespace types like integer will be tested here
-
-      -- fallback
-      --
-      -- brute-force from where we left off in the local search,
-      -- searching everything
-      -- new variables, records, pragma names will trigger here
-      -- enums like direction.forward will go here since the prefix doesn't match the namespace tags
-
-      if id = eof_t then
-         --put_line( standard_error, "brute force" ); -- DEBUG
-         for i in reverse 1..save_i loop                         -- from local ns
-            if i /= eof_t then
-               if identifiers( i ).name = name and not          -- exists and
-                 identifiers( i ).deleted then                 -- not deleted?
-                  id := i;                                      -- return id
-                  --put_line( standard_error, "internal error: brute force found " & to_string( name ) ); -- DEBUG
-                  exit;                                         -- we're done
-               end if;
-            end if;
-         end loop;
-      end if;
-
-end findCanonicalIdent;
 
 -- FIND ENUM IMAGE
 --
@@ -1236,6 +1077,29 @@ begin
      currentNamespaceId := identifiers( id ).parentNamespace;
   end if;
 end declareNamespaceClosed;
+
+-- Copy the value and type of one identifier to another
+procedure copyValue( to_decl : in out declaration; from_decl : declaration ) is
+begin
+   to_decl.svalue := from_decl.svalue;
+   to_decl.avalue := from_decl.avalue;
+   to_decl.list := from_decl.list;
+   to_decl.kind := from_decl.kind;
+   to_decl.class := from_decl.class;
+   to_decl.limit := from_decl.limit;
+   to_decl.genKind := from_decl.genKind;
+   to_decl.genKind2 := from_decl.genKind2;
+end copyValue;
+
+procedure copyValue( to_decl : in out declaration; from_id : identifier ) is
+begin
+  copyvalue( to_decl, identifiers( from_id ) );
+end copyValue;
+
+procedure copyValue( to_id, from_id : identifier ) is
+begin
+  copyvalue( identifiers( to_id ), identifiers( from_id ) );
+end copyValue;
 
 
 -- Type Conversions

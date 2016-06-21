@@ -176,11 +176,11 @@ begin
   if head( path, 5 ) = "$HOME" then
      findIdent( to_unbounded_string( "HOME" ), temp_id );
      Delete( path, 1, 5 );
-     Insert( path, 1, to_string( identifiers( temp_id ).value ) );
+     Insert( path, 1, to_string( identifiers( temp_id ).value.all ) );
   elsif head( path, 7 ) = "$OLDPWD" then
      findIdent( to_unbounded_string( "OLDPWD" ), temp_id );
      Delete( path, 1, 7 );
-     Insert( path, 1, to_string( identifiers( temp_id ).value ) );
+     Insert( path, 1, to_string( identifiers( temp_id ).value.all ) );
   end if;
 
   -- CDPATH support not yet implmeneted.  Should go HERE, but
@@ -193,9 +193,9 @@ begin
      findIdent( to_unbounded_string( "OLDPWD" ), oldpwd );
      if pwd /= eof_t then
         if oldpwd /= eof_t then
-           identifiers( oldpwd ).value := identifiers( pwd ).value;
+           identifiers( oldpwd ).value.all := identifiers( pwd ).value.all;
         end if;
-        identifiers( pwd ).value := current_working_directory;
+        identifiers( pwd ).value.all := current_working_directory;
      end if;
   else
      err( "cannot access '" & to_string( path ) & "'" );
@@ -204,7 +204,6 @@ begin
      put_line( current_working_directory );
   end if;
 end old_cd;
-
 
 -----------------------------------------------------------------------------
 --  ENV (POSIX SHELL COMMAND)
@@ -291,7 +290,7 @@ begin
      err( "zero argument expected" );
   elsif isExecutingCommand then
      findIdent( to_unbounded_string( "TERM" ), term_id );
-     terminalClear( identifiers( term_id ).value );
+     terminalClear( identifiers( term_id ).value.all );
   end if;
 end clear;
 
@@ -633,7 +632,7 @@ begin
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
-     findCanonicalIdent( tempStr, identToUnset );
+     findIdent( tempStr, identToUnset );
      if identToUnset = eof_t then
         err( "identifier not declared" );
      elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "PATH" then
@@ -649,15 +648,7 @@ begin
         err( "unsetting OLDPWD is not allowed in a " &
           optional_bold( "restricted shell" ) );
      elsif identifiers( identToUnset ).renamed_count > 0 then
-        if identifiers( identToUnset ).renamed_count = 1 then
-           err( "there is a renaming that still refers to " & optional_bold(
-              to_string( identifiers( identToUnset ).name ) ) );
-        else
-           err( "there are" &
-              optional_bold( identifiers( identToUnset ).renamed_count'img ) &
-              " renamings that still refer to " & optional_bold(
-              to_string( identifiers( identToUnset ).name ) ) );
-        end if;
+        err_renaming( identToUnset );
      elsif isExecutingCommand then
         -- record? delete any fields first (notice not recursive)
         if identifiers( identToUnset ).kind = root_record_t then
@@ -710,7 +701,7 @@ begin
         else
            -- remove ASCII.NUL from C string
            delete( tempStr, length( tempStr ), length( tempStr ) );
-           findCanonicalIdent( tempStr, identToShow );
+           findIdent( tempStr, identToShow );
            if identToShow = eof_t then
               err( "identifier not declared" );
            elsif boolean(rshOpt) and then identifiers( identToShow ).name =  "PATH" then
@@ -883,14 +874,14 @@ end vm;
          exprType : identifier;
        begin
          if pragmaKind = license_str then
-            if token = symbol_t and identifiers( token ).value = "(" then
+            if token = symbol_t and identifiers( token ).value.all = "(" then
                getNextToken;
                info := identifiers( token ).name;
                discardUnusedIdentifier( token );
                getNextToken;
-               if token = symbol_t and identifiers( token ).value = "," then
+               if token = symbol_t and identifiers( token ).value.all = "," then
                   expect( symbol_t, "," );
-                  info := info & ": " & identifiers( token ).value;
+                  info := info & ": " & identifiers( token ).value.all;
                   expect( strlit_t );
                end if;
                expect( symbol_t, ")" );
@@ -899,7 +890,7 @@ end vm;
                end if;
             end if;
          elsif pragmaKind = todo_str then
-            if token = symbol_t and identifiers( token ).value = "(" then
+            if token = symbol_t and identifiers( token ).value.all = "(" then
                todoTotal := todoTotal + 1;
                getNextToken;
                info := identifiers( token ).name; -- name
@@ -912,8 +903,8 @@ end vm;
                measure := token;
                getNextToken;
                expect( symbol_t, "," );
-               info := info & "," & identifiers( token ).value; -- unit
-               units := identifiers( token ).value;
+               info := info & "," & identifiers( token ).value.all; -- unit
+               units := identifiers( token ).value.all;
                -- calculate work by measure
                if measure = teams_work_measure_unknown_t then
                   workMeasureCntUnknown := workMeasureCntUnknown + 1;
@@ -942,8 +933,8 @@ end vm;
                measure := token;
                getNextToken;
                expect( symbol_t, "," );
-               info := info & "," & identifiers( token ).value; -- unit
-               units := identifiers( token ).value;
+               info := info & "," & identifiers( token ).value.all; -- unit
+               units := identifiers( token ).value.all;
                if measure = teams_work_priority_unknown_t then
                   workPriorityCntUnknown := workPriorityCntUnknown + 1;
                elsif measure = teams_work_priority_level_t and units = "l" then
@@ -984,9 +975,9 @@ end vm;
                end if;
                getNextToken;
                -- ticket is optional
-               if token = symbol_t and identifiers( token ).value = "," then
+               if token = symbol_t and identifiers( token ).value.all = "," then
                   expect( symbol_t, "," );
-                  info := info & "," & ToCSV( identifiers( token ).value );
+                  info := info & "," & ToCSV( identifiers( token ).value.all );
                   getNextToken;
                end if;
                expect( symbol_t, ")" );
@@ -1000,7 +991,7 @@ end vm;
                pragmaKind = dispute_str or
                pragmaKind = propose_str or
                pragmaKind = refactor_str then
-            if token = symbol_t and identifiers( token ).value = "(" then
+            if token = symbol_t and identifiers( token ).value.all = "(" then
                getNextToken;
                info := pragmaKind & "," & identifiers( token ).name; -- name
                getNextToken;
@@ -1016,7 +1007,7 @@ end vm;
                end if;
             end if;
          elsif pragmaKind = annotate_str then
-            if token = symbol_t and identifiers( token ).value = "(" then
+            if token = symbol_t and identifiers( token ).value.all = "(" then
                getNextToken;
                if identifiers( token ).name = to_unbounded_string( "author" ) then
                   if last_tag = "author" then
@@ -1218,8 +1209,8 @@ end vm;
          else
             -- Any other pragma skip to the ; or @ at the end
             loop
-              exit when token = symbol_t and identifiers( token ).value = to_unbounded_string( ";" );
-              exit when token = symbol_t and identifiers( token ).value = to_unbounded_string( "@" );
+              exit when token = symbol_t and identifiers( token ).value.all = to_unbounded_string( ";" );
+              exit when token = symbol_t and identifiers( token ).value.all = to_unbounded_string( "@" );
               exit when error_found or done or token = eof_t;
               getNextToken;
             end loop;
@@ -1239,9 +1230,9 @@ end vm;
             while token /= eof_t and token /= end_t loop
                -- an error check
                ParsePragmaStatementAsHelp( pragmaKind );
-               if token = symbol_t and identifiers( symbol_t ).value = to_unbounded_string( "@" ) then
+               if token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( "@" ) then
                   expect( symbol_t, "@" );
-               elsif token = symbol_t and identifiers( symbol_t ).value = to_unbounded_string( ";" ) then
+               elsif token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( ";" ) then
                   expect( symbol_t, ";" );
                   if token /= end_t then
                      pragmaKind := parsePragmaKindAsHelp;
@@ -1257,7 +1248,7 @@ end vm;
             pragmaKind := parsePragmaKindAsHelp;
             loop
                ParsePragmaStatementAsHelp( pragmaKind );
-               exit when done or token = eof_t or (token = symbol_t and identifiers( symbol_t ).value /= to_unbounded_string( "@" ) );
+               exit when done or token = eof_t or (token = symbol_t and identifiers( symbol_t ).value.all /= to_unbounded_string( "@" ) );
                expect( symbol_t, "@" );
             end loop;
          end if;

@@ -2158,7 +2158,7 @@ begin
 
   script := new string( 1..length( ci.compressedScript ) );   -- alloc script
   script.all := to_string( ci.compressedScript );             -- and copy
-  identifiers( source_info_script_size_t ).value := delete( to_unbounded_string( script.all'length'img), 1, 1 );
+  identifiers( source_info_script_size_t ).value.all := delete( to_unbounded_string( script.all'length'img), 1, 1 );
 end compileInclude;
 
 
@@ -2227,7 +2227,7 @@ begin
 
   script := new string( 1..length( ci.compressedScript ) );   -- alloc script
   script.all := to_string( ci.compressedScript );             -- and copy
-  identifiers( source_info_script_size_t ).value := delete( to_unbounded_string( script.all'length'img), 1, 1 );
+  identifiers( source_info_script_size_t ).value.all := delete( to_unbounded_string( script.all'length'img), 1, 1 );
 end compileCommandOrTemplate;
 
 
@@ -2335,7 +2335,7 @@ begin
   end if;
   script := new string( 1..length( ci.compressedScript ) );  -- alloc script
   script.all := to_string( ci.compressedScript );            -- and copy
-  identifiers( source_info_script_size_t ).value := delete( to_unbounded_string( script.all'length'img), 1, 1 );
+  identifiers( source_info_script_size_t ).value.all := delete( to_unbounded_string( script.all'length'img), 1, 1 );
 end compileScript;
 
 

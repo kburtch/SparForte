@@ -108,15 +108,15 @@ begin
   expect( mysqlm_connect_t );
   ParseFirstStringParameter( connectExpr, connectType, mysqlm_connection_t );
   ParseNextStringParameter( dbnameExpr, dbnameType, string_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( userExpr, userType, string_t );
      hasUser := true;
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         ParseNextStringParameter( pswdExpr, pswdType, string_t );
-        if token = symbol_t and identifiers( token ).value = "," then
+        if token = symbol_t and identifiers( token ).value.all = "," then
            ParseNextStringParameter( hostExpr, hostType, string_t );
            hasHost := true;
-           if token = symbol_t and identifiers( token ).value = "," then
+           if token = symbol_t and identifiers( token ).value.all = "," then
               ParseNextNumericParameter( portExpr, portType, integer_t );
               hasPort := true;
            end if;
@@ -295,7 +295,7 @@ begin
   expect( mysqlm_prepare_t );
   ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
   ParseNextStringParameter( sqlExpr, sqlType, string_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( afterExpr, afterType, string_t );
      hasAfter := true;
   end if;
@@ -335,7 +335,7 @@ begin
   expect( mysqlm_append_t );
   ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
   ParseNextStringParameter( sqlExpr, sqlType, string_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( afterExpr, afterType, string_t );
      hasAfter := true;
   end if;
@@ -407,7 +407,7 @@ begin
   ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
   ParseNextNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   ParseNextStringParameter( sqlExpr, sqlType, string_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( afterExpr, afterType, string_t );
      hasAfter := true;
   end if;
@@ -485,7 +485,7 @@ begin
   expect( mysqlm_execute_checked_t );
   ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
   ParseNextNumericParameter( connectExpr, connectType, mysqlm_connection_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( msgExpr, msgType, string_t );
      hasMsg := true;
   end if;
@@ -782,7 +782,7 @@ begin
   expect( mysqlm_open_db_trace_t );
   ParseFirstNumericParameter( connectExpr, connectType, mysqlm_connection_t );
   ParseNextStringParameter( fnameExpr, fnameType, string_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( modeExpr, modeType, db_trace_mode_type_t );
      traceMode := Trace_Mode_Type'val( integer'value( ' ' & to_string( modeExpr ) ) );
      hasMode := true;
@@ -938,7 +938,7 @@ procedure ParseMySQLMRaiseExceptions is
 begin
   expect( mysqlm_raise_exceptions_t );
   ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextEnumParameter( raiseExpr, raiseType, boolean_t );
   else
      raiseExpr := to_unbounded_string( "1" );
@@ -974,7 +974,7 @@ procedure ParseMySQLMReportErrors is
 begin
   expect( mysqlm_report_errors_t );
   ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextEnumParameter( reportExpr, reportType, boolean_t );
   else
      reportExpr := to_unbounded_string( "1" );
@@ -1142,7 +1142,7 @@ procedure ParseMySQLMFetch is
 begin
   expect( mysqlm_fetch_t );
   ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextNumericParameter( expr_val, expr_type, mysqlm_tuple_index_type_t );
      haveIndex := true;
   end if;
@@ -2689,7 +2689,7 @@ begin
 
        -- confirm the length
 -- TODO: is kind in the reference?
-       fieldsInRecord := long_integer'value( to_string( identifiers( identifiers( id ).kind ).value ) );
+       fieldsInRecord := long_integer'value( to_string( identifiers( identifiers( id ).kind ).value.all ) );
 --put_line( "fields in record = " &fieldsInRecord'img ); -- DEBUG
 --put_line( "fields in query = " & integer'image( columns( query.Q ) ) ); -- DEBUG
        if long_integer( columns( query.Q ) ) /= fieldsInRecord then
@@ -2719,9 +2719,9 @@ begin
                           begin
                             lf := to_numeric( field );
                             if lf = 0.0 then
-                               identifiers( j ).value := identifiers( false_t ).value;
+                               identifiers( j ).value.all := identifiers( false_t ).value.all;
                             else
-                               identifiers( j ).value := identifiers( true_t ).value;
+                               identifiers( j ).value.all := identifiers( true_t ).value.all;
                             end if;
                           exception when constraint_error =>
                             err( to_string( searchName ) & " is boolean but query value is not numeric" );
@@ -2735,20 +2735,20 @@ begin
 -- TODO: shouldn't catToType be used here to guarantee character values are
 -- only one letter long (probably doesn't matter for JSON, but matters here)
                           -- identifiers( j ).value := field;
-                          identifiers( j ).value := castToType( field,
+                          identifiers( j ).value.all := castToType( field,
                             identifiers( j ).kind );
                        elsif getUniType( elementKind ) = uni_numeric_t then
                           declare
                             lf : long_float;
                           begin
                             lf := to_numeric( field );
-                            identifiers( j ).value := castToType( field,
+                            identifiers( j ).value.all := castToType( field,
                               identifiers( j ).kind );
                           exception when constraint_error =>
                             err( to_string( searchName ) & " is numeric but query value is not numeric" );
                           end;
                        elsif getUniType( elementKind ) = universal_t then
-                            identifiers( j ).value := field;
+                            identifiers( j ).value.all := field;
                        else
                           err( "unsupported data type" );
                        end if;
@@ -2825,10 +2825,10 @@ begin
        append( query.Q, " (" );
 
        -- The basic logic is copied from DoRecordToJson()
-       for i in 1..integer'value( to_string( identifiers( identifiers( id ).kind ).value ) ) loop
+       for i in 1..integer'value( to_string( identifiers( identifiers( id ).kind ).value.all ) ) loop
            for j in 1..identifiers_top-1 loop
                if identifiers( j ).field_of = identifiers( id ).kind then
-                  if integer'value( to_string( identifiers( j ).value )) = i then
+                  if integer'value( to_string( identifiers( j ).value.all )) = i then
                      fieldName := identifiers( j ).name;
                      dotPos := length( fieldName );
                      while dotPos > 1 loop
@@ -2853,10 +2853,10 @@ begin
        append( query.Q, " ) VALUES ( " );
        firstField := true;
 
-       for i in 1..integer'value( to_string( identifiers( identifiers( id ).kind ).value ) ) loop
+       for i in 1..integer'value( to_string( identifiers( identifiers( id ).kind ).value.all ) ) loop
            for j in 1..identifiers_top-1 loop
                if identifiers( j ).field_of = identifiers( id ).kind then
-                  if integer'value( to_string( identifiers( j ).value )) = i then
+                  if integer'value( to_string( identifiers( j ).value.all )) = i then
                      if firstField then
                         firstField := false;
                      else
@@ -2876,16 +2876,16 @@ begin
                      elementUniKind := getUniType( identifiers( field_t ).kind );
 
                      if elementKind = boolean_t then
-                        Append( query.Q, to_string( identifiers( field_t ).value ) );
+                        Append( query.Q, to_string( identifiers( field_t ).value.all ) );
                      elsif elementUniKind = uni_string_t then
 -- TODO: shouldn't catToType be used here to guarantee character values are
 -- only one letter long (probably doesn't matter for JSON, but matters here)
-                          -- identifiers( j ).value := field;
-                        Append_Quoted( query.Q, connection.C, to_string( identifiers( field_t ).value ) );
+                          -- identifiers( j ).value.all := field;
+                        Append_Quoted( query.Q, connection.C, to_string( identifiers( field_t ).value.all ) );
                      elsif elementUniKind = uni_numeric_t then
-                        Append( query.Q, to_string( identifiers( field_t ).value ) );
+                        Append( query.Q, to_string( identifiers( field_t ).value.all ) );
                      elsif elementUniKind = universal_t then
-                        Append_Quoted( query.Q, connection.C, to_string( identifiers( field_t ).value ) );
+                        Append_Quoted( query.Q, connection.C, to_string( identifiers( field_t ).value.all ) );
                      else
                          err( "unsupported data type" );
                      end if;
@@ -2945,10 +2945,10 @@ begin
 
        Append( query.Q, " SET " );
        -- The basic logic is copied from DoRecordToJson()
-     for i in 1..integer'value( to_string( identifiers( identifiers( id ).kind ).value ) ) loop
+     for i in 1..integer'value( to_string( identifiers( identifiers( id ).kind ).value.all ) ) loop
          for j in 1..identifiers_top-1 loop
              if identifiers( j ).field_of = identifiers( id ).kind then
-                if integer'value( to_string( identifiers( j ).value )) = i then
+                if integer'value( to_string( identifiers( j ).value.all )) = i then
                    fieldName := identifiers( j ).name;
                    dotPos := length( fieldName );
                    while dotPos > 1 loop
@@ -2970,16 +2970,16 @@ begin
                    Append( query.Q, fieldSuffix & "=" );
 
                    if elementKind = boolean_t then
-                      Append( query.Q, identifiers( field_t ).value );
+                      Append( query.Q, identifiers( field_t ).value.all );
                    elsif elementUniKind = uni_string_t then
 -- TODO: shouldn't catToType be used here to guarantee character values are
 -- only one letter long (probably doesn't matter for JSON, but matters here)
-                          -- identifiers( j ).value := field;
-                      Append_Quoted( query.Q, connection.C, identifiers( field_t ).value );
+                          -- identifiers( j ).value.all := field;
+                      Append_Quoted( query.Q, connection.C, identifiers( field_t ).value.all );
                    elsif getUniType( elementKind ) = uni_numeric_t then
-                      Append( query.Q, identifiers( field_t ).value );
+                      Append( query.Q, identifiers( field_t ).value.all );
                    elsif getUniType( elementKind ) = universal_t then
-                      Append_Quoted( query.Q, connection.C, identifiers( field_t ).value );
+                      Append_Quoted( query.Q, connection.C, identifiers( field_t ).value.all );
                    else
                        err( "unsupported data type" );
                    end if;

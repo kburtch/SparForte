@@ -54,7 +54,7 @@ procedure AssignParameter( ref : in reference; value : unbounded_string ) is
   -- assign value to an out or in out parameter
 begin
    if ref.index = 0 then
-      identifiers( ref.id ).value := value;
+      identifiers( ref.id ).value.all := value;
    else
       -- assignElement( ref.a_id, ref.index, value ); -- OLDARRAY
       identifiers( ref.id ).avalue( ref.index ) := value; --NEWARRAY
@@ -68,7 +68,7 @@ procedure GetParameterValue( ref : in reference; value : out unbounded_string ) 
 -- return the value of the variable or array indicated by ref
 begin
    if ref.index = 0 then
-      value := identifiers( ref.id ).value;
+      value := identifiers( ref.id ).value.all;
    else
       --value := arrayElement( ref.a_id, ref.index );
       value := identifiers( ref.id ).avalue( ref.index ); -- NEWARRAY
@@ -515,10 +515,10 @@ begin
      -- ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
      ref.kind := identifiers( ref.id ).kind;
      if isNew then
-        for i in 1..integer'value( to_string( identifiers( ref.kind ).value ) ) loop
+        for i in 1..integer'value( to_string( identifiers( ref.kind ).value.all ) ) loop
             for j in 1..identifiers_top-1 loop
                 if identifiers( j ).field_of = ref.kind then
-                   if integer'value( to_string( identifiers( j ).value )) = i then
+                   if integer'value( to_string( identifiers( j ).value.all )) = i then
                       declare
                          fieldName   : unbounded_string;
                          dont_care_t : identifier;
@@ -638,10 +638,10 @@ begin
 
      -- ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
      ref.kind := identifiers( ref.id ).kind;
-     for i in 1..integer'value( to_string( identifiers( ref.kind ).value ) ) loop
+     for i in 1..integer'value( to_string( identifiers( ref.kind ).value.all ) ) loop
         for j in 1..identifiers_top-1 loop
              if identifiers( j ).field_of = ref.kind then
-                if integer'value( to_string( identifiers( j ).value )) = i then
+                if integer'value( to_string( identifiers( j ).value.all )) = i then
                    declare
                       fieldName   : unbounded_string;
                       dont_care_t : identifier;

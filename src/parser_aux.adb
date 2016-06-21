@@ -103,13 +103,13 @@ end makeTempFile;
 function stringField( i : identifier; f : natural ) return unbounded_string is
 -- same as string_util.stringField except uses an identifier's value
 begin
-  return stringField( identifiers( i ).value, recSep, f );
+  return stringField( identifiers( i ).value.all, recSep, f );
 end stringField;
 
 procedure replaceField( i : identifier; f : natural; field : string ) is
 -- same as string_util.replaceField except users an identifier's value
 begin
-  replaceField( identifiers( i ).value, recSep, f, field );
+  replaceField( identifiers( i ).value.all, recSep, f, field );
 end replaceField;
 
 function stringField( r : reference; f : natural ) return unbounded_string is
@@ -494,21 +494,21 @@ end DoReturn;
 procedure parseProcedureCallSemicolon is
 begin
   if token = symbol_t then
-     if identifiers( token ).value = ";" then
+     if identifiers( token ).value.all = ";" then
         getNextToken;
-     elsif identifiers( token ).value = "|" then
+     elsif identifiers( token ).value.all = "|" then
         err( "procedures cannot be used in a pipeline like commands" );
-     elsif identifiers( token ).value = ">" then
+     elsif identifiers( token ).value.all = ">" then
         err( "procedure output cannot be redirected like commands" );
-     elsif identifiers( token ).value = ">>" then
+     elsif identifiers( token ).value.all = ">>" then
         err( "procedure output cannot be redirected like commands" );
-     elsif identifiers( token ).value = "<" then
+     elsif identifiers( token ).value.all = "<" then
         err( "procedure input cannot be redirected like commands" );
-     elsif identifiers( token ).value = "2>" then
+     elsif identifiers( token ).value.all = "2>" then
         err( "procedure error output cannot be redirected like commands" );
-     elsif identifiers( token ).value = "2>>" then
+     elsif identifiers( token ).value.all = "2>>" then
         err( "procedure error output cannot be redirected like commands" );
-     elsif identifiers( token ).value = "&" then
+     elsif identifiers( token ).value.all = "&" then
         err( "procedures cannot be run in the background like commands" );
      else
         expect( symbol_t, ";" );
@@ -521,21 +521,21 @@ end parseProcedureCallSemicolon;
 procedure parseFunctionCallSemicolon is
 begin
   if token = symbol_t then
-     if identifiers( token ).value = ";" then
+     if identifiers( token ).value.all = ";" then
         getNextToken;
-     elsif identifiers( token ).value = "|" then
+     elsif identifiers( token ).value.all = "|" then
         err( "functions cannot be used in a pipeline like commands" );
-     elsif identifiers( token ).value = ">" then
+     elsif identifiers( token ).value.all = ">" then
         err( "function output cannot be redirected like commands" );
-     elsif identifiers( token ).value = ">>" then
+     elsif identifiers( token ).value.all = ">>" then
         err( "function output cannot be redirected like commands" );
-     elsif identifiers( token ).value = "<" then
+     elsif identifiers( token ).value.all = "<" then
         err( "function input cannot be redirected like commands" );
-     elsif identifiers( token ).value = "2>" then
+     elsif identifiers( token ).value.all = "2>" then
         err( "function error output cannot be redirected like commands" );
-     elsif identifiers( token ).value = "2>>" then
+     elsif identifiers( token ).value.all = "2>>" then
         err( "function error output cannot be redirected like commands" );
-     elsif identifiers( token ).value = "&" then
+     elsif identifiers( token ).value.all = "&" then
         err( "functions cannot be run in the background like commands" );
      else
         expect( symbol_t, ";" );

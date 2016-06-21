@@ -106,7 +106,7 @@ procedure ParseValue( result : out unbounded_string; kind : out identifier ) is
   expr_type : identifier;
   expr_val2 : unbounded_string := to_unbounded_string( " 1" ); -- default
   expr_type2: identifier;
-  expr_val3 : unbounded_string := identifiers( false_t ).value;
+  expr_val3 : unbounded_string := identifiers( false_t ).value.all;
   expr_type3: identifier;
 begin
   kind := string_t;
@@ -114,11 +114,11 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
         ParseExpression( expr_val2, expr_type2 );
         if uniTypesOk( expr_type2, positive_t ) then
-           if token = symbol_t and identifiers( token ).value = "," then
+           if token = symbol_t and identifiers( token ).value.all = "," then
               expect( symbol_t, "," );
               ParseExpression( expr_val3, expr_type3 );
               if uniTypesOk( expr_type3, boolean_t ) then
@@ -133,7 +133,7 @@ begin
      begin
        result := cgi.Value( expr_val,
          positive'value( to_string( expr_val2 ) ),
-         expr_val3 = identifiers( true_t ).value );
+         expr_val3 = identifiers( true_t ).value.all );
      exception when others =>
          err_exception_raised;
      end;
@@ -286,7 +286,7 @@ procedure ParsePut_CGI_Header is
   expr_type : identifier;
 begin
   expect( cgi_put_cgi_header_t );
-  if token = symbol_t and identifiers( token ).value = "(" then
+  if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      ParseExpression( expr_val, expr_type );
      if uniTypesOk( expr_type, uni_string_t ) then
@@ -315,7 +315,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
         ParseExpression( expr2_val, expr2_type );
         if uniTypesOk( expr2_type, uni_string_t ) then
@@ -539,7 +539,7 @@ procedure ParseURL_Decode( result : out unbounded_string; kind : out identifier 
 -- NOTE: procedure version not implemented
   expr_val  : unbounded_string;
   expr_type : identifier;
-  bool_val  : unbounded_string := identifiers( true_t ).value;
+  bool_val  : unbounded_string := identifiers( true_t ).value.all;
   bool_type : identifier;
 begin
   kind := string_t;
@@ -547,7 +547,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
         ParseExpression( bool_val, bool_type );
         if baseTypesOk( bool_type, boolean_t ) then
@@ -558,7 +558,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-        result := cgi.URL_Decode( expr_val, bool_val = identifiers( true_t ).value );
+        result := cgi.URL_Decode( expr_val, bool_val = identifiers( true_t ).value.all );
      exception when others =>
         err_exception_raised;
      end;
@@ -572,7 +572,7 @@ procedure ParseURL_Encode( result : out unbounded_string; kind : out identifier 
 -- Same as procedure, but returns a new Unbounded_String.
   expr_val  : unbounded_string;
   expr_type : identifier;
-  bool_val  : unbounded_string := identifiers( false_t ).value;
+  bool_val  : unbounded_string := identifiers( false_t ).value.all;
   bool_type : identifier;
 begin
   kind := string_t;
@@ -580,7 +580,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
         ParseExpression( bool_val, bool_type );
         if baseTypesOk( bool_type, boolean_t ) then
@@ -592,7 +592,7 @@ begin
   if isExecutingCommand then
      begin
         result := cgi.URL_Encode( expr_val, bool_val = identifiers( true_t
-).value );
+).value.all );
      exception when others =>
         err_exception_raised;
      end;
@@ -652,17 +652,17 @@ procedure ParseSet_Cookie is
   domain_type  : identifier;
   expires_val  : unbounded_string := null_unbounded_string;
   expires_type : identifier;
-  secure_val   : unbounded_string := identifiers( false_t ).value;
+  secure_val   : unbounded_string := identifiers( false_t ).value.all;
   secure_type  : identifier;
 begin
   -- lookup defaults
   findIdent( to_unbounded_string( "PATH_INFO" ), path_type );
   if path_type /= eof_t then
-     path_val := identifiers( path_type ).value;
+     path_val := identifiers( path_type ).value.all;
   end if;
   findIdent( to_unbounded_string( "SERVER_NAME" ), domain_type );
   if domain_type /= eof_t then
-     domain_val := identifiers( domain_type ).value;
+     domain_val := identifiers( domain_type ).value.all;
   end if;
   expect( cgi_set_cookie_t );
   expect( symbol_t, "(" );
@@ -672,20 +672,20 @@ begin
   end if;
   ParseExpression( cookie_val, cookie_type );
   if baseTypesOK( cookie_type, string_t ) then
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
         ParseExpression( expires_val, expires_type );
         if baseTypesOK( expires_type, string_t ) then
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      expect( symbol_t, "," );
      ParseExpression( path_val, path_type );
      if baseTypesOK( path_type, string_t ) then
-        if token = symbol_t and identifiers( token ).value = "," then
+        if token = symbol_t and identifiers( token ).value.all = "," then
            expect( symbol_t, "," );
            ParseExpression( domain_val, domain_type );
            if baseTypesOK( domain_type, string_t ) then
 
-           if token = symbol_t and identifiers( token ).value = "," then
+           if token = symbol_t and identifiers( token ).value.all = "," then
               expect( symbol_t, "," );
               ParseExpression( secure_val, secure_type );
               if baseTypesOK( secure_type, boolean_t ) then
@@ -706,7 +706,7 @@ begin
        to_string( expires_val ),
        to_string( path_val ),
        to_string( domain_val ),
-       (secure_val = identifiers( true_t ).value) );
+       (secure_val = identifiers( true_t ).value.all) );
   end if;
 end ParseSet_Cookie;
 
@@ -719,7 +719,7 @@ procedure ParseCookie_Value( result : out unbounded_string; kind : out identifie
   expr_type : identifier;
   pos_val  : unbounded_string := ' ' & to_unbounded_string( 1 );
   pos_type : identifier;
-  bool_val  : unbounded_string := identifiers( false_t ).value;
+  bool_val  : unbounded_string := identifiers( false_t ).value.all;
   bool_type : identifier;
 begin
   kind := string_t;
@@ -727,11 +727,11 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
         ParseExpression( pos_val, pos_type );
         if baseTypesOk( pos_type, positive_t ) then
-           if token = symbol_t and identifiers( token ).value = "," then
+           if token = symbol_t and identifiers( token ).value.all = "," then
               expect( symbol_t, "," );
               ParseExpression( bool_val, bool_type );
               if baseTypesOk( bool_type, boolean_t ) then
@@ -746,7 +746,7 @@ begin
      begin
         result := cgi.cookie_value( expr_val,
            positive( to_numeric( pos_val ) ),
-           bool_val = identifiers( true_t ).value );
+           bool_val = identifiers( true_t ).value.all );
      exception when others =>
         err_exception_raised;
      end;

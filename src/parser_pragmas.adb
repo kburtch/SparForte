@@ -140,7 +140,7 @@ function parsePragmaKind return aPragmaKind is
   pragmaKind : aPragmaKind := unknown_pragma;
 begin
    -- just an error message...if ( with no name
-   if token = symbol_t and identifiers( symbol_t ).value = to_unbounded_string( "(" ) then
+   if token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( "(" ) then
       err( "pragma name missing" );
   elsif name = "ada_95" then
      pragmaKind := ada_95;
@@ -370,9 +370,9 @@ procedure ParseLicenseKind( expr_val : out unbounded_string ) is
 
   procedure ParseLicenseExtra is
   begin
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
-        expr_val := expr_val & ": " & identifiers( token ).value;
+        expr_val := expr_val & ": " & identifiers( token ).value.all;
         expect( strlit_t );
      end if;
   end ParseLicenseExtra;
@@ -548,7 +548,7 @@ begin
 
   if pragmaKind /= ada_95 and pragmaKind /= inspection and pragmaKind /=
      noCommandHash and pragmaKind /= peek and pragmaKind /= gcc_errors then
-     if pragmaKind = debug and (token /= symbol_t or identifiers( token ).value /= "(") then
+     if pragmaKind = debug and (token /= symbol_t or identifiers( token ).value.all /= "(") then
         pragmaKind := debug_on;
      else
         expect( symbol_t, "(" );
@@ -596,12 +596,12 @@ begin
         end if;
      end if;
   when debug =>                              -- pragma debug
-     expr_val := identifiers( token ).value;
+     expr_val := identifiers( token ).value.all;
      expect( backlit_t );
   when debug_on =>                              -- pragma debug (no param)
      null;
   when depreciated =>                           -- pragma depreciated
-     expr_val := identifiers( token ).value;
+     expr_val := identifiers( token ).value.all;
      ParseStaticExpression( expr_val, var_id );
      baseTypesOK( var_id, uni_string_t );
   when dispute =>                               -- pragma dispute
@@ -632,7 +632,7 @@ begin
   when noCommandHash =>                      -- pragma no_command_hash
      null;
   when promptChange =>                       -- pragma prompt_script
-     expr_val := identifiers( token ).value;
+     expr_val := identifiers( token ).value.all;
      expect( backlit_t );
   when propose =>                           -- pragma refactor
      ParseIdentifier( var_id );
@@ -657,10 +657,10 @@ begin
         end if;
      end if;
   when register_memcache_server =>           -- pragma register_memcache_server
-     expr_val := identifiers( token ).value;
+     expr_val := identifiers( token ).value.all;
      expect( strlit_t );
      expect( symbol_t, "," );
-     expr_val2 := identifiers( token ).value;
+     expr_val2 := identifiers( token ).value.all;
      expect( number_t );
   when restriction =>                        -- pragma restriction
      if identifiers( token ).name = "no_auto_declarations" then
@@ -707,10 +707,10 @@ begin
   when software_model =>                     -- pragma software_model
      ParseSoftwareModelName( expr_val );
   when session_export_script =>              -- pragma session_export_script
-     expr_val := identifiers( token ).value;
+     expr_val := identifiers( token ).value.all;
      expect( backlit_t );
   when session_import_script =>              -- pragma session_import_script
-     expr_val := identifiers( token ).value;
+     expr_val := identifiers( token ).value.all;
      expect( backlit_t );
   when suppress =>                           -- pragma restriction
      if identifiers( token ).name = "word_quoting" then
@@ -737,7 +737,7 @@ begin
         expr_val := identifiers( token ).name;
         discardUnusedIdentifier( token );
         getNextToken;
-        if token = symbol_t and identifiers( token ).value = "," then
+        if token = symbol_t and identifiers( token ).value.all = "," then
            expect( symbol_t, "," );
            expect( strlit_t );
            var_id := strlit_t;
@@ -771,7 +771,7 @@ begin
         end if;
      end if;
   when test =>                               -- pragma test
-     expr_val := identifiers( token ).value;
+     expr_val := identifiers( token ).value.all;
      expect( backlit_t );
   when test_result =>                        -- pragma test_result
      declare
@@ -803,7 +803,7 @@ begin
        ParseIdentifier( var_id );              -- the person
        unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_member_t );
        expect( symbol_t, "," );
-       --expr_val := identifiers( token ).value;
+       --expr_val := identifiers( token ).value.all;
        --expect( strlit_t );
        ParseStaticExpression( expr_val, var_id );
        baseTypesOK( var_id, uni_string_t );
@@ -822,10 +822,10 @@ begin
           expect( number_t, " 0" );
           work_estimate_unknown := true;
        elsif var_id = teams_work_measure_size_t then
-          if identifiers( token ).value /= "s" and
-             identifiers( token ).value /= "m" and
-             identifiers( token ).value /= "l" and
-             identifiers( token ).value /= "xl" then
+          if identifiers( token ).value.all /= "s" and
+             identifiers( token ).value.all /= "m" and
+             identifiers( token ).value.all /= "l" and
+             identifiers( token ).value.all /= "xl" then
              err( "expected ""s"", ""m"", ""l"" or ""xl""" );
           end if;
          expect( strlit_t );
@@ -852,14 +852,14 @@ begin
        elsif var_id = teams_work_priority_completed_t then
           expect( number_t, " 0" );
        elsif var_id = teams_work_priority_level_t then
-          if identifiers( token ).value /= "l" and
-             identifiers( token ).value /= "m" and
-             identifiers( token ).value /= "h" then
+          if identifiers( token ).value.all /= "l" and
+             identifiers( token ).value.all /= "m" and
+             identifiers( token ).value.all /= "h" then
              err( "expected 'l', 'm' or 'h'" );
           end if;
           if not work_estimate_unknown and not allowAllTodosForRelease then
              if boolean( testOpt ) or boolean( maintenanceOpt ) then
-                if allowLowPriorityTodosForRelease and identifiers( token ).value = "l" then
+                if allowLowPriorityTodosForRelease and identifiers( token ).value.all = "l" then
                    null;
                 else
                    err( "priority todo task not yet completed" );
@@ -868,13 +868,13 @@ begin
           end if;
           expect( charlit_t );
        elsif var_id = teams_work_priority_severity_t then
-          if identifiers( token ).value < " 1" or
-             identifiers( token ).value > " 5" then
+          if identifiers( token ).value.all < " 1" or
+             identifiers( token ).value.all > " 5" then
              err( "expected 1..5" );
           end if;
           if not work_estimate_unknown and not allowAllTodosForRelease then
              if boolean( testOpt ) or boolean( maintenanceOpt ) then
-                if allowLowPriorityTodosForRelease and identifiers( token ).value < " 2" then
+                if allowLowPriorityTodosForRelease and identifiers( token ).value.all < " 2" then
                    null;
                 else
                    err( "priority todo task not yet completed" );
@@ -886,7 +886,7 @@ begin
           if not work_estimate_unknown and not allowAllTodosForRelease then
              if boolean( testOpt ) or boolean( maintenanceOpt ) then
                 -- any financial risk
-                if identifiers( token ).value /= " 0" then
+                if identifiers( token ).value.all /= " 0" then
                    err( "priority todo task not yet completed" );
                 end if;
              end if;
@@ -896,7 +896,7 @@ begin
           declare
              v1 : long_float;
           begin
-             v1 := to_numeric( identifiers( token ).value );
+             v1 := to_numeric( identifiers( token ).value.all );
              if v1 < 0.0 or v1 > 10.0 then
                 err( "expected 1..10" );
              end if;
@@ -917,7 +917,7 @@ begin
           err( "internal error: don't know how to handle this type of work priority value" );
        end if;
        -- optional ticket id
-       if token = symbol_t and identifiers( token ).value = "," then
+       if token = symbol_t and identifiers( token ).value.all = "," then
           expect( symbol_t, "," );
           expect( strlit_t );
        end if;
@@ -1128,21 +1128,21 @@ begin
               -- apply mapping, if any.  assume these are all set correctly
                      if identifiers( var_id ).mapping = json then                       -- json
                         if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
-                           DoJsonToString( identifiers( var_id ).value, newValue );
+                           DoJsonToString( identifiers( var_id ).value.all, newValue );
                         elsif identifiers( var_id ).list then                           -- array
                            DoJsonToArray( var_id, newValue );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
                            DoJsonToRecord( var_id, newValue );
                         elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
-                           DoJsonToNumber( newValue, identifiers( var_id ).value );
+                           DoJsonToNumber( newValue, identifiers( var_id ).value.all );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_enumerated_t then -- enum
-                           DoJsonToNumber( newValue, identifiers( var_id ).value );
+                           DoJsonToNumber( newValue, identifiers( var_id ).value.all );
                            -- identifiers( var_id ).value := newValue;
                         else
                            err( "internal error: unexpected import translation type" );
                         end if;
                      else                                                           -- no mapping
-                        identifiers( var_id ).value := newValue;
+                        identifiers( var_id ).value.all := newValue;
                      end if;
                   else
                     err( "unable to find variable " &
@@ -1172,29 +1172,29 @@ begin
                    findIdent( sessions_session_variable_name_str, temp1_t );
                    findIdent( sessions_session_variable_value_str, temp2_t );
                    if temp1_t /= eof_t then
-                      identifiers( temp1_t ).value := identifiers( var_id ).name;
+                      identifiers( temp1_t ).value.all := identifiers( var_id ).name;
                    end if;
                       CompileAndRun( sessionImportScript, 1, false );
-                      importValue := identifiers( temp2_t ).value;
+                      importValue := identifiers( temp2_t ).value.all;
                    --   b := deleteIdent( temp2_t );
                    --   b := deleteIdent( temp1_t );
                       case identifiers( var_id ).mapping is
                       when json =>
                          if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
-                            DoJsonToString( identifiers( var_id ).value, importValue );
+                            DoJsonToString( identifiers( var_id ).value.all, importValue );
                          elsif identifiers( var_id ).list then                           -- array
                             DoJsonToArray( var_id, importValue );
                          elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
                             DoJsonToRecord( var_id, importValue );
                          elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
-                            DoJsonToNumber( importValue, identifiers( var_id ).value );
+                            DoJsonToNumber( importValue, identifiers( var_id ).value.all );
                          elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_enumerated_t then -- enum
-                            DoJsonToNumber( importValue, identifiers( var_id ).value );
+                            DoJsonToNumber( importValue, identifiers( var_id ).value.all );
                          else
                             err( "internal error: unexpected import translation type" );
                          end if;
                       when none =>
-                         identifiers( var_id ).value := importValue;
+                         identifiers( var_id ).value.all := importValue;
                       when others =>
                          err( "internal error: unexpected mapping type" );
                       end case;
@@ -1227,7 +1227,7 @@ begin
           begin
             findIdent( to_unbounded_string( "System.Script_License" ), id );
             if id /= eof_t then
-               identifiers( id ).value := expr_val;
+               identifiers( id ).value.all := expr_val;
                licenseSet := true;
             end if;
           exception when others =>
@@ -1298,7 +1298,7 @@ begin
            begin
              findIdent( to_unbounded_string( "System.Script_Software_Model" ), id );
              if id /= eof_t then
-                identifiers( id ).value := expr_val;
+                identifiers( id ).value.all := expr_val;
                 softwareModelSet := true;
              end if;
            exception when others =>
@@ -1328,7 +1328,7 @@ begin
            end if;
            templatePath := templatePath & ".tmpl";
         else
-           templatePath := identifiers( strlit_t ).value;
+           templatePath := identifiers( strlit_t ).value.all;
         end if;
         processingTemplate := true;
         if pragmaKind = unrestricted_template then
@@ -1453,20 +1453,20 @@ begin
               -- apply mapping, if any.  assume these are all set correctly
                      if identifiers( var_id ).mapping = json then                       -- json
                         if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
-                           DoJsonToString( identifiers( var_id ).value, newValue );
+                           DoJsonToString( identifiers( var_id ).value.all, newValue );
                         elsif identifiers( var_id ).list then                           -- array
                            DoJsonToArray( var_id, newValue );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
                            DoJsonToRecord( var_id, newValue );
                         elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
-                           DoJsonToNumber( newValue, identifiers( var_id ).value );
+                           DoJsonToNumber( newValue, identifiers( var_id ).value.all );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_enumerated_t then -- enum
-                           DoJsonToNumber( newValue, identifiers(var_id ).value );
+                           DoJsonToNumber( newValue, identifiers(var_id ).value.all );
                         else
                            err( "internal error: unexpected import translation type" );
                         end if;
                      else                                                           -- no mapping
-                        identifiers( var_id ).value := newValue;
+                        identifiers( var_id ).value.all := newValue;
                      end if;
                   end if;
               end;
@@ -1537,12 +1537,12 @@ begin
      while token /= eof_t and token /= end_t and not error_found loop
         -- an error check
         ParsePragmaStatement( pragmaKind );
-        if token = symbol_t and identifiers( symbol_t ).value = to_unbounded_string( "@" ) then
+        if token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( "@" ) then
            if onlyAda95 then
               err( "@ is not allowed with " & optional_bold( "pragma ada_95" ) );
            end if;
            expect( symbol_t, "@" );
-        elsif token = symbol_t and identifiers( symbol_t ).value = to_unbounded_string( ";" ) then
+        elsif token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( ";" ) then
            expect( symbol_t, ";" );
            if token = pragma_t then
               err( "single pragma in a pragma block" );
@@ -1563,10 +1563,10 @@ begin
      loop
         ParsePragmaStatement( pragmaKind );
         -- bit of a more descriptive error
-        if token = symbol_t and identifiers( symbol_t ).value = to_unbounded_string( "(" ) then
+        if token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( "(" ) then
            err( "'@' or ';' expected" );
         end if;
-        exit when done or error_found or token = eof_t or (token = symbol_t and identifiers( symbol_t ).value /= to_unbounded_string( "@" ) );
+        exit when done or error_found or token = eof_t or (token = symbol_t and identifiers( symbol_t ).value.all /= to_unbounded_string( "@" ) );
         if onlyAda95 then
            err( "@ is not allowed with " & optional_bold( "pragma ada_95" ) );
         end if;

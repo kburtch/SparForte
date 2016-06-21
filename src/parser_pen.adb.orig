@@ -68,26 +68,26 @@ procedure bushRect2penRect( pen_rect : out aRect; bush_rect : identifier ) is
   left_field_t, top_field_t, right_field_t, bottom_field_t : identifier;
 begin
   findField( bush_rect, 1, left_field_t );
-     pen_rect.left := aCoordinate'Value( to_string( identifiers( left_field_t ).value ) );
+     pen_rect.left := aCoordinate'Value( to_string( identifiers( left_field_t ).value.all ) );
   findField( bush_rect, 2, top_field_t );
-     pen_rect.top := aCoordinate'Value( to_string( identifiers( top_field_t ).value ) );
+     pen_rect.top := aCoordinate'Value( to_string( identifiers( top_field_t ).value.all ) );
   findField( bush_rect, 3, right_field_t );
-     pen_rect.right := aCoordinate'Value( to_string( identifiers( right_field_t ).value ) );
+     pen_rect.right := aCoordinate'Value( to_string( identifiers( right_field_t ).value.all ) );
   findField( bush_rect, 4, bottom_field_t );
-     pen_rect.bottom := aCoordinate'Value( to_string( identifiers( bottom_field_t ).value ) );
+     pen_rect.bottom := aCoordinate'Value( to_string( identifiers( bottom_field_t ).value.all ) );
 end bushRect2penRect;
 
 procedure penRect2bushRect( pen_rect : aRect; bush_rect : identifier ) is
   left_field_t, top_field_t, right_field_t, bottom_field_t : identifier;
 begin
   findField( bush_rect, 1, left_field_t );
-     identifiers( left_field_t ).value := to_unbounded_string( long_float( pen_rect.left ) );
+     identifiers( left_field_t ).value.all := to_unbounded_string( long_float( pen_rect.left ) );
   findField( bush_rect, 2, top_field_t );
-     identifiers( top_field_t ).value := to_unbounded_string( long_float( pen_rect.top ) );
+     identifiers( top_field_t ).value.all := to_unbounded_string( long_float( pen_rect.top ) );
   findField( bush_rect, 3, right_field_t );
-     identifiers( right_field_t ).value := to_unbounded_string( long_float( pen_rect.right ) );
+     identifiers( right_field_t ).value.all := to_unbounded_string( long_float( pen_rect.right ) );
   findField( bush_rect, 4, bottom_field_t );
-     identifiers( bottom_field_t ).value := to_unbounded_string( long_float( pen_rect.bottom ) );
+     identifiers( bottom_field_t ).value.all := to_unbounded_string( long_float( pen_rect.bottom ) );
 end penRect2bushRect;
 
 #if OPENGL
@@ -204,13 +204,13 @@ begin
        left_field_t, top_field_t, right_field_t, bottom_field_t : identifier;
      begin
        findField( record_ref.id, 1, left_field_t );
-          identifiers( left_field_t ).value := left_val;
+          identifiers( left_field_t ).value.all := left_val;
        findField( record_ref.id, 2, top_field_t );
-          identifiers( top_field_t ).value := top_val;
+          identifiers( top_field_t ).value.all := top_val;
        findField( record_ref.id, 3, right_field_t );
-          identifiers( right_field_t ).value := right_val;
+          identifiers( right_field_t ).value.all := right_val;
        findField( record_ref.id, 4, bottom_field_t );
-          identifiers( bottom_field_t ).value := bottom_val;
+          identifiers( bottom_field_t ).value.all := bottom_val;
      exception when others =>
         err_exception_raised;
      end;
@@ -511,7 +511,7 @@ begin
 
   if isExecutingCommand then
      begin
-       setPenMode( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+       setPenMode( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
           aPenMode'val( natural( to_numeric( mode_val ) ) ) );
      exception when others =>
         err_exception_raised;
@@ -546,7 +546,7 @@ begin
   if isExecutingCommand then
      begin
        result := to_unbounded_string( aPenMode'pos( getPenMode(
-          aCanvasID( to_numeric( identifiers( canvas_id ).value ) )) )'img );
+          aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) )) )'img );
        delete( result, 1, 1 );
      exception when others =>
         err_exception_raised;
@@ -598,14 +598,14 @@ begin
   if isExecutingCommand then
      if colorNameVersion then
         begin
-          setPenInk( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+          setPenInk( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
              aColourName'val( integer( to_numeric( R_val ) ) ) );
         exception when others =>
            err_exception_raised;
         end;
      else
         begin
-          setPenInk( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+          setPenInk( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
              aRGBComponent( to_numeric( R_val ) ), aRGBComponent( to_numeric( G_val ) ), aRGBComponent( to_numeric( B_val ) ) );
         exception when others =>
            err_exception_raised;
@@ -654,11 +654,11 @@ begin
      declare
        R, G, B : aRGBComponent;
      begin
-       getPenInk( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+       getPenInk( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
        R, G, B );
-       identifiers( R_id ).value := to_unbounded_string( R'img );
-       identifiers( G_id ).value := to_unbounded_string( G'img );
-       identifiers( B_id ).value := to_unbounded_string( B'img );
+       identifiers( R_id ).value.all := to_unbounded_string( R'img );
+       identifiers( G_id ).value.all := to_unbounded_string( G'img );
+       identifiers( B_id ).value.all := to_unbounded_string( B'img );
      exception when others =>
         err_exception_raised;
      end;
@@ -696,7 +696,7 @@ begin
 
   if isExecutingCommand then
      begin
-       setPenBrush( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+       setPenBrush( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
           aPenBrush'val( natural( to_numeric( brush_val ) ) ) );
      exception when others =>
         err_exception_raised;
@@ -730,7 +730,7 @@ begin
 
   if isExecutingCommand then
      begin
-       result := to_unbounded_string( aPenBrush'pos( getPenBrush( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ) ) )'img );
+       result := to_unbounded_string( aPenBrush'pos( getPenBrush( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ) ) )'img );
        delete( result, 1, 1 );
      exception when others =>
         err_exception_raised;
@@ -768,8 +768,8 @@ begin
 
   if isExecutingCommand then
      begin
-       setPenPattern( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
-          aCanvasID( to_numeric( identifiers( brush_id ).value ) ) );
+       setPenPattern( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
+          aCanvasID( to_numeric( identifiers( brush_id ).value.all ) ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -857,7 +857,7 @@ begin
         newScreenCanvas( positive( to_numeric( h_val ) ),
                          positive( to_numeric( v_val ) ),
                          C_Res, id );
-        identifiers( canvas_ref.id ).value := to_unbounded_string( long_float( id ) );
+        identifiers( canvas_ref.id ).value.all := to_unbounded_string( long_float( id ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -923,7 +923,7 @@ begin
         newGLScreenCanvas( positive( to_numeric( h_val ) ),
                          positive( to_numeric( v_val ) ),
                          C_Res, id );
-        identifiers( canvas_ref.id ).value := to_unbounded_string( long_float( id ) );
+        identifiers( canvas_ref.id ).value.all := to_unbounded_string( long_float( id ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -985,7 +985,7 @@ begin
         newWindowCanvas( positive( to_numeric( h_val ) ),
                          positive( to_numeric( v_val ) ),
                          C_Res, id );
-        identifiers( canvas_ref.id ).value := to_unbounded_string( long_float( id ) );
+        identifiers( canvas_ref.id ).value.all := to_unbounded_string( long_float( id ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -1047,7 +1047,7 @@ begin
         newGLWindowCanvas( positive( to_numeric( h_val ) ),
                          positive( to_numeric( v_val ) ),
                          C_Res, id );
-        identifiers( canvas_ref.id ).value := to_unbounded_string( long_float( id ) );
+        identifiers( canvas_ref.id ).value.all := to_unbounded_string( long_float( id ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -1121,7 +1121,7 @@ begin
                          positive( to_numeric( v_val ) ),
                          old_canvas_id, id );
         end if;
-        identifiers( canvas_ref.id ).value := to_unbounded_string( long_float( id ) );
+        identifiers( canvas_ref.id ).value.all := to_unbounded_string( long_float( id ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -1160,7 +1160,7 @@ begin
   end if;
   if isExecutingCommand then
      begin
-        saveCanvas( to_string( h_val ), aCanvasID( to_numeric( identifiers( canvas_id ).value ) ) );
+        saveCanvas( to_string( h_val ), aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -1202,7 +1202,7 @@ begin
 
   if isExecutingCommand then
      begin
-       moveTo( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+       moveTo( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
              aCoordinate( to_numeric( x_val ) ),
              aCoordinate( to_numeric( y_val ) ) );
      exception when others =>
@@ -1246,7 +1246,7 @@ begin
 
   if isExecutingCommand then
      begin
-       move( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+       move( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
              aCoordinate( to_numeric( dx_val ) ),
              aCoordinate( to_numeric( dy_val ) ) );
      exception when others =>
@@ -1290,7 +1290,7 @@ begin
 
   if isExecutingCommand then
      begin
-       lineTo( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+       lineTo( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
              aCoordinate( to_numeric( x_val ) ),
              aCoordinate( to_numeric( y_val ) ) );
      exception when others =>
@@ -1334,7 +1334,7 @@ begin
 
   if isExecutingCommand then
      begin
-       line( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+       line( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
              aCoordinate( to_numeric( dx_val ) ),
              aCoordinate( to_numeric( dy_val ) ) );
      exception when others =>
@@ -1382,7 +1382,7 @@ begin
 
   if isExecutingCommand then
      begin
-       hline( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+       hline( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
               aCoordinate( to_numeric( x1_val ) ),
               aCoordinate( to_numeric( x2_val ) ),
               aCoordinate( to_numeric( y_val ) ) );
@@ -1431,7 +1431,7 @@ begin
 
   if isExecutingCommand then
      begin
-       vline( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+       vline( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
               aCoordinate( to_numeric( x_val ) ),
               aCoordinate( to_numeric( y1_val ) ),
               aCoordinate( to_numeric( y2_val ) ) );
@@ -1474,7 +1474,7 @@ begin
        pen_rect : aRect;
      begin
        bushRect2penRect( pen_rect, rect_id );
-       frameRect( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+       frameRect( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
           pen_rect );
      exception when others =>
         err_exception_raised;
@@ -1515,7 +1515,7 @@ begin
        pen_rect : aRect;
      begin
        bushRect2penRect( pen_rect, rect_id );
-       paintRect( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+       paintRect( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
           pen_rect );
      exception when others =>
         err_exception_raised;
@@ -1591,7 +1591,7 @@ begin
           pen_rect : aRect;
         begin
           bushRect2penRect( pen_rect, rect_id );
-          fillRect( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+          fillRect( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
              pen_rect,
              aRGBComponent( to_numeric( rexpr_val ) ),
              aRGBComponent( to_numeric( gexpr_val ) ),
@@ -1636,7 +1636,7 @@ begin
        pen_rect : aRect;
      begin
        bushRect2penRect( pen_rect, rect_id );
-       frameEllipse( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+       frameEllipse( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
           pen_rect );
      exception when others =>
         err_exception_raised;
@@ -1677,7 +1677,7 @@ begin
        pen_rect : aRect;
      begin
        bushRect2penRect( pen_rect, rect_id );
-       paintEllipse( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+       paintEllipse( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
           pen_rect );
      exception when others =>
         err_exception_raised;
@@ -1752,7 +1752,7 @@ begin
           pen_rect : aRect;
         begin
           bushRect2penRect( pen_rect, rect_id );
-          fillEllipse( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+          fillEllipse( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
              pen_rect,
              aRGBComponent( to_numeric( rexpr_val ) ),
              aRGBComponent( to_numeric( gexpr_val ) ),
@@ -1793,7 +1793,7 @@ begin
   expect( pen_clear_t );
   expect( symbol_t, "(" );
   ParseIdentifier( canvas_id );
-  if token = symbol_t and identifiers( token ).value = "," then
+  if token = symbol_t and identifiers( token ).value.all = "," then
      if baseTypesOk( identifiers( canvas_id ).kind, pen_canvas_id_t ) then
         expect( symbol_t, "," );
         ParseExpression( rexpr_val, rexpr_type );
@@ -1826,7 +1826,7 @@ begin
         end;
      elsif colorNameVersion then
         begin
-          clear( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+          clear( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
             aColourName'val( integer( to_numeric( rexpr_val ) ) ) );
         exception when others =>
           err_exception_raised;
@@ -1875,7 +1875,7 @@ begin
 
   if isExecutingCommand then
      begin
-       setTitle( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+       setTitle( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
          expr_val );
      exception when others =>
         err_exception_raised;
@@ -1908,7 +1908,7 @@ begin
 
   if isExecutingCommand then
      begin
-       closeCanvas( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ) );
+       closeCanvas( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ) );
        if canvasList.length( pen.canvas ) = 0 then
           pen.shutdownPen;
           penRunning := false;
@@ -1943,7 +1943,7 @@ begin
   end if;
   if isExecutingCommand then
      begin
-        WaitToReveal( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ) );
+        WaitToReveal( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -1974,7 +1974,7 @@ begin
   end if;
   if isExecutingCommand then
      begin
-        Reveal( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ) );
+        Reveal( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -2005,7 +2005,7 @@ begin
   end if;
   if isExecutingCommand then
      begin
-        RevealNow( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ) );
+        RevealNow( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -2269,7 +2269,7 @@ begin
      end if;
   end if;
   if isExecutingCommand then
-     -- array_id := arrayID( to_numeric( identifiers( array_var_id ).value ) );
+     -- array_id := arrayID( to_numeric( identifiers( array_var_id ).value.all ) );
      first := identifiers( array_var_id ).avalue'first;
      last  := identifiers( array_var_id ).avalue'last;
      declare
@@ -2279,7 +2279,7 @@ begin
         for i in first..last loop
             values(i) := to_numeric( identifiers( array_var_id ).avalue( i ) );
         end loop;
-        Plot( aCanvasID( to_numeric( identifiers( canvas_id ).value ) ), values );
+        Plot( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ), values );
      exception when others =>
         err_exception_raised;
      end;
@@ -2322,7 +2322,7 @@ begin
   if isExecutingCommand then
      begin
         setFont(
-           aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+           aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
            font_val,
            natural( to_numeric( points_val ) ) );
      exception when others =>
@@ -2361,7 +2361,7 @@ begin
   if isExecutingCommand then
      begin
         put(
-           aCanvasID( to_numeric( identifiers( canvas_id ).value ) ),
+           aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ),
            msg_val ) ;
      exception when others =>
         err_exception_raised;
@@ -2854,7 +2854,7 @@ begin
   ParseSingleInOutParameter( mask_id, pen_glubyte_t ); -- mask : GLubyte
   if isExecutingCommand then
     declare
-      mask : GLUbyte := GLubyte( to_numeric( identifiers( mask_id ).value ) );
+      mask : GLUbyte := GLubyte( to_numeric( identifiers( mask_id ).value.all ) );
     begin
       glPolygonStipple( mask );
     exception when others =>
@@ -2939,7 +2939,7 @@ begin
   ParseSingleInOutParameter( flag_id, pen_glboolean_t ); -- flag : GLboolean
   if isExecutingCommand then
     declare
-      flag : GLboolean := GLboolean( to_numeric( identifiers( flag_id ).value ) );
+      flag : GLboolean := GLboolean( to_numeric( identifiers( flag_id ).value.all ) );
     begin
       glEdgeFlagv( flag );
     exception when others =>
@@ -5162,7 +5162,7 @@ begin
     declare
       param_ptr   : GL_Double_Array_Ptr;
     begin
-      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
       param_ptr := GL_Double_Array_Conv.To_Address( theArray.gl_da );
       glVertex2dv( param_ptr );
     exception when storage_error =>
@@ -5196,7 +5196,7 @@ begin
     declare
       param_ptr   : GL_Float_Array_Ptr;
     begin
-      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
       param_ptr := GL_Float_Array_Conv.To_Address( theArray.gl_fa );
       glVertex2fv( param_ptr );
     exception when storage_error =>
@@ -5230,7 +5230,7 @@ begin
     declare
       param_ptr   : GL_Int_Array_Ptr;
     begin
-      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
       param_ptr := GL_Int_Array_Conv.To_Address( theArray.gl_ia );
       glVertex2iv( param_ptr );
     exception when storage_error =>
@@ -5264,7 +5264,7 @@ begin
     declare
       param_ptr   : GL_Short_Array_Ptr;
     begin
-      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
       param_ptr := GL_Short_Array_Conv.To_Address( theArray.gl_sa );
       glVertex2sv( param_ptr );
     exception when storage_error =>
@@ -5298,7 +5298,7 @@ begin
     declare
       param_ptr   : GL_Double_Array_Ptr;
     begin
-      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
       param_ptr := GL_Double_Array_Conv.To_Address( theArray.gl_da );
       glVertex3dv( param_ptr );
     exception when storage_error =>
@@ -5332,7 +5332,7 @@ begin
     declare
       param_ptr   : GL_Float_Array_Ptr;
     begin
-      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
       param_ptr := GL_Float_Array_Conv.To_Address( theArray.gl_fa );
       glVertex3fv( param_ptr );
     exception when storage_error =>
@@ -5366,7 +5366,7 @@ begin
     declare
       param_ptr   : GL_Int_Array_Ptr;
     begin
-      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
       param_ptr := GL_Int_Array_Conv.To_Address( theArray.gl_ia );
       glVertex3iv( param_ptr );
     exception when storage_error =>
@@ -5400,7 +5400,7 @@ begin
     declare
       param_ptr   : GL_Short_Array_Ptr;
     begin
-      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
       param_ptr := GL_Short_Array_Conv.To_Address( theArray.gl_sa );
       glVertex3sv( param_ptr );
     exception when storage_error =>
@@ -5434,7 +5434,7 @@ begin
     declare
       param_ptr   : GL_Double_Array_Ptr;
     begin
-      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
       param_ptr := GL_Double_Array_Conv.To_Address( theArray.gl_da );
       glVertex4dv( param_ptr );
     exception when storage_error =>
@@ -5468,7 +5468,7 @@ begin
     declare
       param_ptr   : GL_Float_Array_Ptr;
     begin
-      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
       param_ptr := GL_Float_Array_Conv.To_Address( theArray.gl_fa );
       glVertex4fv( param_ptr );
     exception when storage_error =>
@@ -5502,7 +5502,7 @@ begin
     declare
       param_ptr   : GL_Int_Array_Ptr;
     begin
-      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
       param_ptr := GL_Int_Array_Conv.To_Address( theArray.gl_ia );
       glVertex4iv( param_ptr );
     exception when storage_error =>
@@ -5536,7 +5536,7 @@ begin
     declare
       param_ptr   : GL_Short_Array_Ptr;
     begin
-      findResource( to_resource_id( identifiers( id ).value ), theArray );
+      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
       param_ptr := GL_Short_Array_Conv.To_Address( theArray.gl_sa );
       glVertex4sv( param_ptr );
     exception when storage_error =>
@@ -21470,7 +21470,7 @@ begin
   if isExecutingCommand then
      array_pos := size_t( to_numeric( pos_val ) );
      array_val := GLbyte( to_numeric( newval_val ) );
-     findResource( to_resource_id( identifiers( a_id ).value ), theArray );
+     findResource( to_resource_id( identifiers( a_id ).value.all ), theArray );
      if array_pos not in theArray.gl_ba'range then
         err( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_ba'first ) & " .." & size_t'image( theArray.gl_ba'last ) );
      else
@@ -21543,7 +21543,7 @@ begin
   if isExecutingCommand then
      array_pos := size_t( to_numeric( pos_val ) );
      array_val := GLint( to_numeric( newval_val ) );
-     findResource( to_resource_id( identifiers( a_id ).value ), theArray );
+     findResource( to_resource_id( identifiers( a_id ).value.all ), theArray );
      if array_pos not in theArray.gl_ia'range then
         err( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_ia'first ) & " .." & size_t'image( theArray.gl_ia'last ) );
      else
@@ -21617,7 +21617,7 @@ begin
   if isExecutingCommand then
      array_pos := size_t( to_numeric( pos_val ) );
      array_val := GLShort( to_numeric( newval_val ) );
-     findResource( to_resource_id( identifiers( a_id ).value ), theArray );
+     findResource( to_resource_id( identifiers( a_id ).value.all ), theArray );
      if array_pos not in theArray.gl_sa'range then
         err( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_sa'first ) & " .." & size_t'image( theArray.gl_sa'last ) );
      else
@@ -21690,7 +21690,7 @@ begin
   if isExecutingCommand then
      array_pos := size_t( to_numeric( pos_val ) );
      array_val := GLfloat( to_numeric( newval_val ) );
-     findResource( to_resource_id( identifiers( a_id ).value ), theArray );
+     findResource( to_resource_id( identifiers( a_id ).value.all ), theArray );
      if array_pos not in theArray.gl_fa'range then
         err( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_fa'first ) & " .." & size_t'image( theArray.gl_fa'last ) );
      else
@@ -21763,7 +21763,7 @@ begin
   if isExecutingCommand then
      array_pos := size_t( to_numeric( pos_val ) );
      array_val := GLdouble( to_numeric( newval_val ) );
-     findResource( to_resource_id( identifiers( a_id ).value ), theArray );
+     findResource( to_resource_id( identifiers( a_id ).value.all ), theArray );
      if array_pos not in theArray.gl_da'range then
         err( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_da'first ) & " .." & size_t'image( theArray.gl_da'last ) );
      else
@@ -22262,19 +22262,19 @@ begin
 
   declareIdent( pen_rect_t, "pen.rect", root_record_t, typeClass );
 
-  identifiers( pen_rect_t ).value := to_unbounded_string( "4" );
+  identifiers( pen_rect_t ).value.all := to_unbounded_string( "4" );
   declareIdent( pen_rect_left_t, "pen.rect.left", pen_coordinate_t, subClass );
   identifiers( pen_rect_left_t ).field_of := pen_rect_t;
-  identifiers( pen_rect_left_t ).value := to_unbounded_string( "1" );
+  identifiers( pen_rect_left_t ).value.all := to_unbounded_string( "1" );
   declareIdent( pen_rect_top_t, "pen.a_rect.top", pen_coordinate_t, subClass );
   identifiers( pen_rect_top_t ).field_of := pen_rect_t;
-  identifiers( pen_rect_top_t ).value := to_unbounded_string( "2" );
+  identifiers( pen_rect_top_t ).value.all := to_unbounded_string( "2" );
   declareIdent( pen_rect_right_t, "pen.rect.right", pen_coordinate_t, subClass );
   identifiers( pen_rect_right_t ).field_of := pen_rect_t;
-  identifiers( pen_rect_right_t ).value := to_unbounded_string( "3" );
+  identifiers( pen_rect_right_t ).value.all := to_unbounded_string( "3" );
   declareIdent( pen_rect_bottom_t, "pen.rect.bottom", pen_coordinate_t, subClass );
   identifiers( pen_rect_bottom_t ).field_of := pen_rect_t;
-  identifiers( pen_rect_bottom_t ).value := to_unbounded_string( "4" );
+  identifiers( pen_rect_bottom_t ).value.all := to_unbounded_string( "4" );
 
   declareIdent( pen_canvas_id_t, "pen.canvas_id", long_integer_t, typeClass );
 

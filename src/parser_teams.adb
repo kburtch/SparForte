@@ -51,79 +51,79 @@ procedure StartupTeams is
 begin
   declareNamespace( "teams" );
   declareIdent( teams_member_t, "teams.member", root_record_t, typeClass );
-  identifiers( teams_member_t ).value := to_unbounded_string( "18" );
+  identifiers( teams_member_t ).value.all := to_unbounded_string( "18" );
 
   declareIdent( teams_member_desc_t, "teams.member.description", string_t, subClass );
   identifiers(  teams_member_desc_t ).field_of := teams_member_t;
-  identifiers(  teams_member_desc_t ).value := to_unbounded_string( "1" );
+  identifiers(  teams_member_desc_t ).value.all := to_unbounded_string( "1" );
 
   declareIdent( teams_member_skills_t, "teams.member.skills", string_t, subClass );
   identifiers(  teams_member_skills_t ).field_of := teams_member_t;
-  identifiers(  teams_member_skills_t ).value := to_unbounded_string( "2" );
+  identifiers(  teams_member_skills_t ).value.all := to_unbounded_string( "2" );
 
   declareIdent( teams_member_lang_t, "teams.member.lang", string_t, subClass );
   identifiers(  teams_member_lang_t ).field_of := teams_member_t;
-  identifiers(  teams_member_lang_t ).value := to_unbounded_string( "3" );
+  identifiers(  teams_member_lang_t ).value.all := to_unbounded_string( "3" );
 
   declareIdent( teams_member_id_t, "teams.member.id", natural_t, subClass );
   identifiers(  teams_member_id_t ).field_of := teams_member_t;
-  identifiers(  teams_member_id_t ).value := to_unbounded_string( "4" );
+  identifiers(  teams_member_id_t ).value.all := to_unbounded_string( "4" );
 
   declareIdent( teams_member_prefcontact_t, "teams.member.preferred_contact", string_t, subClass );
   identifiers(  teams_member_prefcontact_t ).field_of := teams_member_t;
-  identifiers(  teams_member_prefcontact_t ).value := to_unbounded_string( "5" );
+  identifiers(  teams_member_prefcontact_t ).value.all := to_unbounded_string( "5" );
 
   declareIdent( teams_member_email_t, "teams.member.email", string_t, subClass );
   identifiers(  teams_member_email_t ).field_of := teams_member_t;
-  identifiers(  teams_member_email_t ).value := to_unbounded_string( "6" );
+  identifiers(  teams_member_email_t ).value.all := to_unbounded_string( "6" );
 
   declareIdent( teams_member_sec_email_t, "teams.member.secondary_email", string_t, subClass );
   identifiers(  teams_member_sec_email_t ).field_of := teams_member_t;
-  identifiers(  teams_member_sec_email_t ).value := to_unbounded_string( "7" );
+  identifiers(  teams_member_sec_email_t ).value.all := to_unbounded_string( "7" );
 
   declareIdent( teams_member_prefname_t, "teams.member.preferred_name", string_t, subClass );
   identifiers(  teams_member_prefname_t ).field_of := teams_member_t;
-  identifiers(  teams_member_prefname_t ).value := to_unbounded_string( "8" );
+  identifiers(  teams_member_prefname_t ).value.all := to_unbounded_string( "8" );
 
   declareIdent( teams_member_full_t, "teams.member.full_name", string_t, subClass );
   identifiers(  teams_member_full_t ).field_of := teams_member_t;
-  identifiers(  teams_member_full_t ).value := to_unbounded_string( "9" );
+  identifiers(  teams_member_full_t ).value.all := to_unbounded_string( "9" );
 
   declareIdent( teams_member_chair_t, "teams.member.chair", string_t, subClass );
   identifiers(  teams_member_chair_t ).field_of := teams_member_t;
-  identifiers(  teams_member_chair_t ).value := to_unbounded_string( "10" );
+  identifiers(  teams_member_chair_t ).value.all := to_unbounded_string( "10" );
 
   declareIdent( teams_member_nickname_t, "teams.member.nickname", string_t, subClass );
   identifiers(  teams_member_nickname_t ).field_of := teams_member_t;
-  identifiers(  teams_member_nickname_t ).value := to_unbounded_string( "11" );
+  identifiers(  teams_member_nickname_t ).value.all := to_unbounded_string( "11" );
 
   declareIdent( teams_member_business_phone_t, "teams.member.business_phone", string_t, subClass );
   identifiers(  teams_member_business_phone_t ).field_of := teams_member_t;
-  identifiers(  teams_member_business_phone_t ).value := to_unbounded_string( "12" );
+  identifiers(  teams_member_business_phone_t ).value.all := to_unbounded_string( "12" );
 
   declareIdent( teams_member_messenging_t, "teams.member.messenging", string_t, subClass );
   identifiers(  teams_member_messenging_t ).field_of := teams_member_t;
-  identifiers(  teams_member_messenging_t ).value := to_unbounded_string( "13" );
+  identifiers(  teams_member_messenging_t ).value.all := to_unbounded_string( "13" );
 
   declareIdent( teams_member_teams_t, "teams.member.teams", string_t, subClass );
   identifiers(  teams_member_teams_t ).field_of := teams_member_t;
-  identifiers(  teams_member_teams_t ).value := to_unbounded_string( "14" );
+  identifiers(  teams_member_teams_t ).value.all := to_unbounded_string( "14" );
 
   declareIdent( teams_member_manager_t, "teams.member.manager", string_t, subClass );
   identifiers(  teams_member_manager_t ).field_of := teams_member_t;
-  identifiers(  teams_member_manager_t ).value := to_unbounded_string( "15" );
+  identifiers(  teams_member_manager_t ).value.all := to_unbounded_string( "15" );
 
   declareIdent( teams_member_roles_t, "teams.member.roles", string_t, subClass );
   identifiers(  teams_member_roles_t ).field_of := teams_member_t;
-  identifiers(  teams_member_roles_t ).value := to_unbounded_string( "16" );
+  identifiers(  teams_member_roles_t ).value.all := to_unbounded_string( "16" );
 
   declareIdent( teams_member_active_t, "teams.member.active", boolean_t, subClass );
   identifiers(  teams_member_active_t ).field_of := teams_member_t;
-  identifiers(  teams_member_active_t ).value := to_unbounded_string( "17" );
+  identifiers(  teams_member_active_t ).value.all := to_unbounded_string( "17" );
 
   declareIdent( teams_member_active_t, "teams.member.is_team", boolean_t, subClass );
   identifiers(  teams_member_active_t ).field_of := teams_member_t;
-  identifiers(  teams_member_active_t ).value := to_unbounded_string( "18" );
+  identifiers(  teams_member_active_t ).value.all := to_unbounded_string( "18" );
 
   declareIdent( teams_work_measure_t, "teams.work_measure", root_enumerated_t, typeClass );
   declareIdent( teams_work_priority_t, "teams.work_priority", root_enumerated_t, typeClass );

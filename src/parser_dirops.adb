@@ -130,7 +130,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if baseTypesOk( expr_type, dirops_dir_name_str_t ) then
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
         ParseExpression( expr_val2, expr_type2 );
         if baseTypesOk( expr_type2, boolean_t ) then
@@ -200,7 +200,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if baseTypesOk( expr_type, dirops_path_name_t ) then
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
         ParseExpression( expr_val2, expr_type2 );
         if baseTypesOk( expr_type2, string_t ) then
@@ -267,7 +267,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if baseTypesOk( expr_type, dirops_path_name_t ) then
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
         ParseExpression( expr_val2, expr_type2 );
         if baseTypesOk( expr_type2, dirops_path_style_t ) then
@@ -310,7 +310,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if baseTypesOk( expr_type, dirops_path_name_t ) then
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
         ParseExpression( expr_val2, expr_type2 );
         if baseTypesOk( expr_type2, dirops_env_style_t ) then

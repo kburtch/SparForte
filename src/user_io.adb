@@ -232,7 +232,7 @@ end slashifyPath;
     -- A tilde?  Then substitute in the home directory.
     if length( dir ) > 0 and then element( dir, 1) = '~' then
        findIdent( to_unbounded_string( "HOME" ), home_id );
-       expandedDir := identifiers( home_id ).value & slice( dir, 2, length(dir));
+       expandedDir := identifiers( home_id ).value.all & slice( dir, 2, length(dir));
     else
        expandedDir := dir;
     end if;
@@ -519,7 +519,7 @@ begin
           history( historyNext ).line := line;           -- lines
           findIdent( to_unbounded_string( "PWD" ), pwd_id ); -- TODO: SLOW!
           if pwd_t /= eof_t then
-             history( historyNext ).pwd:= identifiers( pwd_id ).value;
+             history( historyNext ).pwd:= identifiers( pwd_id ).value.all;
           end if;
           history( historyNext ).time := Ada.Calendar.Clock; -- time
           historyNext := historyNext + 1;

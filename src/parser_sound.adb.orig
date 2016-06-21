@@ -58,7 +58,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if uniTypesOK( expr_type, uni_string_t ) then
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
         ParseExpression( pri_val, pri_type );
         if uniTypesOK( pri_type, uni_numeric_t ) then
@@ -120,7 +120,7 @@ procedure ParsePlayCD is
   dev_kind : identifier;
 begin
   expect( sound_playcd_t );
-  if token = symbol_t and identifiers( token ).value = "(" then
+  if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      ParseExpression( dev_name, dev_kind );
      if baseTypesOK( dev_kind, string_t ) then
