@@ -38,9 +38,22 @@ package parser_params is
 -- Parameter references
 ------------------------------------------------------------------------------
 
+-- a scalar reference
+
 type reference is record
      id    : identifier;             -- the identifier
-     -- a_id  : arrayID;                -- the array (if an array)
+     index : long_integer := 0;      -- the array index (if an array)
+     kind  : identifier;             -- the type name
+end record;
+
+-- a scalar or aggregate reference
+--
+-- This is done separately to avoid feature creep.  I don't want to
+-- re-engineer references at this time.
+
+type renamingReference is record
+     id    : identifier;             -- the identifier
+     hasIndex : boolean := false;    -- true if index
      index : long_integer := 0;      -- the array index (if an array)
      kind  : identifier;             -- the type name
 end record;
@@ -52,6 +65,13 @@ pragma inline( AssignParameter );
 procedure GetParameterValue( ref : in reference; value : out unbounded_string );
 pragma inline( GetParameterValue );
 -- return the value of the variable or array indicated by ref
+
+------------------------------------------------------------------------------
+-- Renaming Declarations
+------------------------------------------------------------------------------
+
+procedure ParseRenamingReference( ref : out renamingReference; expectedType : identifier );
+-- parse a reference used in a "renames" clause in a declaration
 
 ------------------------------------------------------------------------------
 -- Unchecked Parameters

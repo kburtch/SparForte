@@ -288,7 +288,7 @@ type aBuiltinFunctionCallback is access procedure( value : out unbounded_string;
 -- Each identifier has a single-dimension array of strings to hold the
 -- identifier's value(s)
 
-type storage is array( long_integer range <>) of unbounded_string;
+type storage is array( long_integer range <>) of aliased unbounded_string;
 type storagePtr is access all storage;
 procedure free is new unchecked_deallocation( storage, storagePtr );
 type valuePtr is access all unbounded_string;

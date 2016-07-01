@@ -545,4 +545,105 @@ begin
   end if;
 end parseFunctionCallSemicolon;
 
+-- Renaming Support
+--
+-- These will be refactored in the future to create cleaner renaming
+-- support.
+
+procedure FixRenamedRecordFields( canonicalRef : renamingReference;
+  renamingRec : identifier ) is
+-- Given a renamed record, search for and adjust the record fields to
+-- refer to the correct variables.
+begin
+  -- The renaming possibilities
+  --
+  -- canonicalRec      renamedRec       renamedRenamedRec
+  --   canonicalField    renamedField     renamedRenamedField
+  --                   renamed2Rec
+  --                     renamed2Field
+  --
+  -- For a record renaming, also create renamings for each field of the
+  -- record.  (A reference to the canonical record variable is not good
+  -- enough.)  Each field must reference to the canonical record's
+  -- fields (or the renaming target, in the cause of a double renaming).
+  --
+  -- SparForte currently treats record fields as regular variables.
+  --
+  -- 1. The field_of must point to the associated record, not
+  --    the canonical record.
+  -- 2. All values must point to the canonical record or field's
+  --    value.
+  -- 3. The variable referenced, even if a renaming, must have
+  --    it's counter incremented.
+  -- 4. Renaming of individual fields are treated as a regular
+  --    variable renaming.
+  --
+
+-- put( "Mapping " & canonicalRef.id'img & ":" );
+-- put( to_string( identifiers( canonicalRef.id ).name ) );
+-- put_line( " to " & to_string( identifiers( id ).name ) );
+
+  -- TODO: this search should be optimized.
+  -- Why not stop when all fields are found?
+  -- Skip namespaces.
+
+  -- The canonical record/fields could be, of course, another
+  -- renaming.
+
+  for canonicalField in reverse keywords_top..identifiers_top-1 loop
+      if identifiers( canonicalField ).field_of = canonicalRef.id then
+         declare
+            fieldName     : unbounded_string;
+            renamingField : identifier;
+            dotPos        : natural;
+         begin
+            -- construct a new field name using the renaming
+            fieldName := identifiers( canonicalField ).name;
+            dotPos := length( fieldName );
+            while dotPos > 1 loop
+               exit when element( fieldName, dotPos ) = '.';
+               dotPos := dotPos - 1;
+            end loop;
+            fieldName := delete( fieldName, 1, dotPos );
+            fieldName := identifiers( renamingRec ).name & "." & fieldName;
+
+            -- Locate the field of the renaming record
+            findIdent( fieldName, renamingField );
+            if renamingField = eof_t then
+               err( "internal error: " &
+                    "cannot find canonical field of renamed record field " &
+                    "Identifier" & canonicalField'img &
+                    ": Canonical field " &
+                    to_string( identifiers( canonicalField ).name ) & "/" &
+                    "Renaming Field " & to_string( fieldName ) );
+            else
+
+               -- The renaming is created by copying data.  Correct
+               -- the fields to be owned
+               -- by the renaming, not adding fields to the canonical
+               -- record.
+               identifiers( renamingField ).field_of := renamingRec;
+               -- link the renaming field to the canonical field
+               identifiers( canonicalField ).renamed_count :=
+                  identifiers( canonicalfield ).renamed_count + 1;
+               identifiers( renamingField ).value :=
+                  identifiers( canonicalField ).value;
+            end if;
+         end;
+      end if;
+   end loop;
+end FixRenamedRecordFields;
+
+procedure FixRenamedArray( canonicalRef : renamingReference;
+  renamingArray : identifier ) is
+-- Given a renamed array set up by ParseRenamingPart, fix the attributes
+-- for field type.
+begin
+  -- For full arrays, the code uses avalue directly.  avalue is a pointer
+  -- which is copied when the renaming is created in ParseRenamesPart.  So
+  -- nothing else should be done here.
+  identifiers( renamingArray ).list := true;
+  identifiers( renamingArray ).kind := canonicalRef.kind;
+end FixRenamedArray;
+
 end parser_aux;

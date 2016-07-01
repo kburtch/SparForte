@@ -97,10 +97,24 @@ procedure DoQuit;
 procedure DoReturn;
 -- return to execution in breakout mode
 
+-- Parsing Symbols
+
 procedure parseProcedureCallSemicolon;
 -- more informative than expect( .. ";" );
 
 procedure parseFunctionCallSemicolon;
 -- more informative than expect( .. ";" );
+
+-- Renaming Support
+
+procedure FixRenamedRecordFields( canonicalRef : renamingReference;
+  renamingRec : identifier );
+-- Given a renamed record, search for and adjust the record fields to
+-- refer to the correct variables.
+
+procedure FixRenamedArray( canonicalRef : renamingReference;
+  renamingArray : identifier );
+-- Given a renamed array set up by ParseRenamingPart, fix the attributes
+-- for field type.
 
 end parser_aux;

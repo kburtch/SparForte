@@ -43,6 +43,7 @@ with system,
     signal_flags,
     compiler,
     scanner,
+    parser_params,
     parser_pragmas,
     parser_tio,
     parser_strings,
@@ -88,6 +89,7 @@ use ada.text_io,
     signal_flags,
     compiler,
     scanner,
+    parser_params,
     parser_pragmas,
     parser_tio,
     parser_strings,
@@ -504,10 +506,14 @@ begin
      --end if;
   else
      if syntax_check then
-           -- for declared but not used checking, assign a value of "REF" to
-           -- the value (during syntax check only because value is otherwise
-           -- unused).  When blocks are pulled, this will be checked.
-           identifiers( token ).wasReferenced := true;
+           -- for a record field, mark the record itself as used.
+           -- record fields are ignored in the unused identifier checks.
+           if identifiers( token ).field_of /= eof_t then
+              identifiers( identifiers( token ).field_of ).wasReferenced := true;
+           else
+              -- mark the value as used because it was referred to
+              identifiers( token ).wasReferenced := true;
+           end if;
      end if;
      id := token;
   end if;
@@ -830,7 +836,12 @@ begin
            end if;
            expect( symbol_t, ")" );                  -- element type is k's k
            kind := identifiers( identifiers( array_id ).kind ).kind;
-        else                                          -- user identifier
+        -- regular variable with an array index?
+        else
+          if token = symbol_t and identifiers( token ).value.all = "(" then
+             err( optional_bold( to_string( identifiers( t ).name ) ) &
+                 " has an array index but is not an array" );
+           end if;
            f := identifiers( t ).value.all;
            kind := identifiers( t ).kind;
         end if;
@@ -1772,7 +1783,12 @@ begin
            end if;
            expect( symbol_t, ")" );                  -- element type is k's k
            kind := identifiers( identifiers( array_id ).kind ).kind;
-        else                                          -- user identifier
+        -- regular variable with an array index?
+        else
+          if token = symbol_t and identifiers( token ).value.all = "(" then
+             err( optional_bold( to_string( identifiers( t ).name ) ) &
+                 " has an array index but is not an array" );
+           end if;
            f := identifiers( t ).value.all;
            kind := identifiers( t ).kind;
         end if;
@@ -2477,26 +2493,35 @@ end ParseStaticExpression;
 -- Declarations
 -----------------------------------------------------------------------------
 
-procedure ParseRenamesPart( new_id, new_type_id : identifier ) is
+procedure ParseRenamesPart( canonicalRef : out renamingReference;
+  new_id, new_type_id : identifier ) is
   -- Syntax: ... renames ident ...
-  deref_id : identifier;
+  -- the caller must setup the value pointer for the renaming
+  -- new id / type refers to the renaming variable.
   name : unbounded_string;
 begin
   expect( renames_t );
-  deref_id := token;
-  -- if the identifer is a renaming itself, the scanner will return the
-  -- dereferenced variable, so (without changes to the scanner) we cannot
-  -- know what the original variable name was.
-  ParseIdentifier( deref_id );
-  -- In Ada, renames don't use "constant" be we do.
-  -- the identifiers must be of the same type
-   if baseTypesOK( new_type_id, identifiers( deref_id ).kind ) then
+  canonicalRef.id := token;
+  -- To support array element renaming, we need a reference not an identifier.
+
+  ParseRenamingReference( canonicalRef, new_type_id );
+
+  -- only copy attributes if no error because copying attributes will
+  -- declare the identifier as a side-effect.
+  if isExecutingCommand then
+     -- In Ada, renames don't use "constant" be we do.
      name := identifiers( new_id ).name;
-     identifiers( new_id ) := identifiers( deref_id );
+     identifiers( new_id ) := identifiers( canonicalRef.id );
      identifiers( new_id ).name := name;
-     identifiers( new_id ).renaming_of := deref_id;
-     identifiers( deref_id ).renamed_count := identifiers( deref_id ).renamed_count + 1;
-     --identifiers( new_id ).value := identifiers( deref_id ).value;
+     identifiers( new_id ).renaming_of := canonicalRef.id;
+     -- if the renaming is an array element, the type is the type of the
+     -- array element, not the array type itself.  The element type should
+     -- just be the "kind".
+     if identifiers( canonicalRef.id ).list and canonicalRef.hasIndex then
+        identifiers( new_id ).list := false;
+     end if;
+     identifiers( canonicalRef.id ).renamed_count :=
+        identifiers( canonicalRef.id ).renamed_count + 1;
   end if;
 end ParseRenamesPart;
 
@@ -2753,58 +2778,64 @@ procedure ParseArrayDeclaration( id : identifier; arrayType : identifier ) is
   -- array_id : arrayID;
   -- type_id : arrayID;
   base_type_id : identifier;
+  canonicalRef : renamingReference;
 begin
-
-  -- ParseDeclarationPart detected an array type, so let's set up the
-  -- array variable.
-  --
-  -- Note: Bounds are expressions and may not be defined during syntax check
-  -- (Constant assignments, etc. occur only when actually running a script)
-
-  if isExecutingCommand then
-     -- get the base type because this may be a subtype of another type
-     -- subtypes are just renamings right now and they have no values/bounds
-     if identifiers( arrayType ).class = subClass then
-        base_type_id := getBaseType( arrayType );
-     else
-        base_type_id := arrayType;
-     end if;
-     -- type id is the array id (e.g. in the old array package )
-     -- type_id := arrayID( to_numeric( identifiers( base_type_id ).value ) );
-     --declareArray( id => array_id,
-     --              name => identifiers( id ).value,
-     --              first => firstBound( type_id ),
-     --              last => lastBound( type_id ),
-     --              ind => indexType( type_id ),
-     --              blocklvl => blocks_top );
-     -- identifiers( id ).value := to_unbounded_string( array_id'img );
-     identifiers( id ).value.all := null_unbounded_string;
-     identifiers( id ).avalue := new storage( identifiers( base_type_id ).firstBound .. identifiers( base_type_id ).lastBound );  -- NEWARRAY
--- put_line( "parseArrayDecl: " & to_string( identifiers( id ).name ) & " is new array " & identifiers( base_type_id ).firstBound'img & ".." & identifiers( base_type_id ).lastBound'img & " => " & identifiers( id ).avalue'first'img & ".." & identifiers( id ).avalue'last'img ); -- NEWARRAY DEBUG
-     -- identifiers( id ).genKind := indexType( type_id ); -- NEWARRAY
-     identifiers( id ).genKind := identifiers( base_type_id ).genKind; -- NEWARRAY
-  end if;
-
-  -- Change variable into an array
-
-  identifiers( id ).list := true;                           -- var is an array
-  identifiers( id ).kind := arrayType;
-  --identifiers( id ).class:= varClass;
-
-  -- Any initial assignment?  Then do it.
-  --
-  -- Note: Array ID will not be valid at syntax check time
 
   -- Renames clause
   -- if it appears, one can only rename...cannot assign.
+  -- Renames part will copy the properties from the canonical array.
 
   if token = renames_t then
-     ParseRenamesPart( id, arrayType );
-  elsif token = symbol_t and identifiers( token ).value.all = ":=" then
-     --ParseArrayAssignPart( id, array_id );
-     ParseArrayAssignPart( id );
-  end if;
+     -- Full array renaming
+     ParseRenamesPart( canonicalRef, id, arrayType );
+     FixRenamedArray( canonicalRef, id );
+  else
 
+     -- ParseDeclarationPart detected an array type, so let's set up the
+     -- array variable.
+     --
+     -- Note: Bounds are expressions and may not be defined during syntax check
+     -- (Constant assignments, etc. occur only when actually running a script)
+
+     if isExecutingCommand then
+        -- get the base type because this may be a subtype of another type
+        -- subtypes are just renamings right now and they have no values/bounds
+        if identifiers( arrayType ).class = subClass then
+           base_type_id := getBaseType( arrayType );
+        else
+           base_type_id := arrayType;
+        end if;
+        -- type id is the array id (e.g. in the old array package )
+        -- type_id := arrayID( to_numeric( identifiers( base_type_id ).value ) );
+        --declareArray( id => array_id,
+        --              name => identifiers( id ).value,
+        --              first => firstBound( type_id ),
+        --              last => lastBound( type_id ),
+        --              ind => indexType( type_id ),
+        --              blocklvl => blocks_top );
+        -- identifiers( id ).value := to_unbounded_string( array_id'img );
+        identifiers( id ).value.all := null_unbounded_string;
+        identifiers( id ).avalue := new storage( identifiers( base_type_id ).firstBound .. identifiers( base_type_id ).lastBound );  -- NEWARRAY
+   -- put_line( "parseArrayDecl: " & to_string( identifiers( id ).name ) & " is new array " & identifiers( base_type_id ).firstBound'img & ".." & identifiers( base_type_id ).lastBound'img & " => " & identifiers( id ).avalue'first'img & ".." & identifiers( id ).avalue'last'img ); -- NEWARRAY DEBUG
+        -- identifiers( id ).genKind := indexType( type_id ); -- NEWARRAY
+        identifiers( id ).genKind := identifiers( base_type_id ).genKind; -- NEWARRAY
+     end if;
+
+     -- Change variable into an array
+
+     identifiers( id ).list := true;                           -- var is an array
+     identifiers( id ).kind := arrayType;
+     --identifiers( id ).class:= varClass;
+
+     -- Any initial assignment?  Then do it.
+     --
+     -- Note: Array ID will not be valid at syntax check time
+
+     if token = symbol_t and identifiers( token ).value.all = ":=" then
+        --ParseArrayAssignPart( id, array_id );
+        ParseArrayAssignPart( id );
+     end if;
+  end if;
 end ParseArrayDeclaration;
 
 procedure ParseRecordAssignPart( id : identifier; recType : identifier ) is
@@ -2927,6 +2958,8 @@ end ParseRecordAssignPart;
 
 procedure ParseRecordDeclaration( id : identifier; recType : identifier; canAssign : boolean := true ) is
   -- Syntax: rec-declaration = " := record_assign"
+  -- Syntax: rec-declaration renames canonical-rec
+  canonicalRef : renamingReference;
 begin
   identifiers( id ).kind := recType;
 
@@ -2960,6 +2993,10 @@ begin
                       fieldName := delete( fieldName, 1, dotPos );
                       fieldName := identifiers( id ).name & "." & fieldName;
                       declareIdent( dont_care_t, fieldName, identifiers( j ).kind, varClass );
+                      -- fields have not been marked as children of the parent
+                      -- record.  However, to make sure the record is used, it
+                      -- is convenient to track the field.
+                      identifiers( dont_care_t ).field_of := id;
                       -- at least, for now, don't worry if record fields are
                       -- declared but not accessed.  We'll just check the
                       -- main record identifier.
@@ -2978,7 +3015,9 @@ begin
   -- if it appears, one can only rename...cannot assign.
 
   if token = renames_t then
-     ParseRenamesPart( id, recType );
+     -- Full Record Renaming
+     ParseRenamesPart( canonicalRef, id, recType );
+     FixRenamedRecordFields( canonicalRef, id );
   elsif token = symbol_t and identifiers( token ).value.all = ":=" then
      if canAssign then
         ParseRecordAssignPart( id, recType );
@@ -3004,6 +3043,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
   expr_type     : identifier := eof_t;
   right_type    : identifier;
   expr_expected : boolean := false;
+  canonicalRef : renamingReference;
 begin
 
   expect( symbol_t, ":" );
@@ -3050,6 +3090,8 @@ begin
                   err( "exception status code " & optional_bold( to_string( trim( exception_status, ada.strings.both ) ) ) & " is out-of-range 0..255" );
                 end;
              end if;
+          elsif token = renames_t then
+             err( "exceptions cannot be renamed" );
           elsif token /= symbol_t and identifiers( token ).value.all /= ";" then
              err( "with or ';' expected" );
           end if;
@@ -3133,7 +3175,40 @@ begin
   -- if it appears, one can only rename...cannot assign.
 
   if token = renames_t then
-     ParseRenamesPart( id, type_token );
+
+     declare
+        -- the class will change when parsing the rename
+        originalClass : anIdentifierClass := identifiers( id ).class;
+        originalFieldOf : identifier := identifiers( id ).field_of;
+     begin
+        -- Variable or Constant renaming
+        ParseRenamesPart( canonicalRef, id, type_token );
+        -- Prevent a constant from being turned into a variable by a renaming
+        if identifiers( canonicalRef.id).class = constClass and originalClass /= constClass then
+           err( "a constant must be renamed by a constant" );
+        end if;
+        -- If the identifier is a record field, it must refer to the
+        -- renaming record, not the canonical record.
+        identifiers( id ).field_of := originalFieldOf;
+     end;
+
+     -- Complete the declaration
+     identifiers( id ).kind := type_token;
+
+     if identifiers( canonicalRef.id ).list then
+        if canonicalRef.hasIndex then
+           -- don't do this on an error or an excepion may be thrown
+           if isExecutingCommand then
+              begin
+                 identifiers( id ).value := identifiers( canonicalRef.id ).avalue( canonicalRef.index )'access;
+              exception when storage_error =>
+                 err( "internal error: storage_error exception raised" );
+              when others =>
+                 err( "internal error: exception raised" );
+              end;
+           end if;
+        end if;
+     end if;
 
   -- Check for optional assignment
 
@@ -3336,10 +3411,14 @@ begin
   -- (Constant assignments, etc. occur only when actually running a script)
 
    elementBaseType := getBaseType( elementType );
-   if identifiers( elementBaseType ).list  then
+   if token = symbol_t and identifiers( token ).value.all = ":=" then
+      err( "assignment not allowed in an array type declaration" );
+      b := deleteIdent( newtype_id );                       -- discard bad type
+   elsif identifiers( elementBaseType ).list  then
       err( "array of arrays not yet supported" );
+      b := deleteIdent( newtype_id );                       -- discard bad type
    elsif class_ok( elementType, typeClass, subClass ) then  -- item type OK?
-      if isExecutingCommand and not syntax_check then            -- not on synchk
+      if isExecutingCommand and not syntax_check then       -- not on synchk
          --declareArrayType( id => type_id,
          --           name => identifiers( newtype_id ).name,
          --           first => long_integer( to_numeric( ab1 ) ),

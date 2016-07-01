@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -74,6 +74,92 @@ begin
       value := identifiers( ref.id ).avalue( ref.index ); -- NEWARRAY
    end if;
 end GetParameterValue;
+
+------------------------------------------------------------------------------
+-- Renaming Declarations
+------------------------------------------------------------------------------
+
+--  PARSE RENAMING REFERENCE
+--
+-- Parse a reference used in a "renames" clause in a declaration
+------------------------------------------------------------------------------
+
+procedure ParseRenamingReference( ref : out renamingReference;
+  expectedType : identifier ) is
+  -- syntax: identifier [ (index) ]
+  expr_kind  : identifier;
+  expr_value : unbounded_string;
+  -- array_id2  : arrayID;
+  arrayIndex : long_integer;
+begin
+  -- Unlike out parameters, we do not autodeclare undeclared identifiers
+  -- in a renaming.
+
+  ParseIdentifier( ref.id );
+
+  -- Some sensible defaults for fields we will fill in
+
+  ref.index := 0;
+  ref.kind := eof_t;
+  ref.hasIndex := false;
+
+  -- If this is an array reference, read the index value.  Check that
+  -- the index value is within the index bounds for the array.
+
+  if identifiers( ref.id ).list then        -- array variable?
+        -- ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
+     if token = symbol_t and identifiers( token ).value.all = "(" then
+        expect( symbol_t, "(" );
+        ref.hasIndex := true;
+        ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
+        ParseExpression( expr_value, expr_kind );
+        if getUniType( expr_kind ) = uni_string_t or   -- index must be scalar
+           identifiers( getBaseType( expr_kind ) ).list then
+           err( "array index must be a scalar type" );
+        end if;
+        expect( symbol_t, ")" );
+     else
+        ref.kind := identifiers( ref.id ).kind;
+     end if;                                   -- variables are not
+     if baseTypesOK( ref.kind, expectedType ) then
+       null;
+     end if;
+
+     -- look up the index (if any)
+
+     if isExecutingCommand then                -- declared in syntax chk
+         if ref.hasIndex then
+            begin
+               arrayIndex := long_integer(to_numeric(expr_value));-- convert to number
+            exception when others =>
+               err_exception_raised;
+               arrayIndex := 0;
+            end;
+            if baseTypesOK( identifiers( ref.id ).genKind, expr_kind ) then -- TODO: probably needs a better error message
+               if arrayIndex not in identifiers( ref.id ).avalue'range then
+                  err( "array index " & to_string( trim( expr_value, ada.strings.both ) ) & " not in" & identifiers( ref.id ).avalue'first'img & " .." & identifiers( ref.id ).avalue'last'img );
+               else
+                 ref.index := arrayIndex;
+               end if;
+            end if;
+         end if;
+      end if;
+
+  else
+    -- don't worry about record.  The record fields will be declared when
+    -- the renaming is set up.
+
+    -- if it already exists it must match the default type.
+
+    if baseTypesOK( identifiers( ref.id ).kind, expectedType ) then
+       ref.kind := identifiers( ref.id ).kind;
+    end if;
+  end if;
+end ParseRenamingReference;
+
+------------------------------------------------------------------------------
+-- Unchecked Parameters
+------------------------------------------------------------------------------
 
 --  PARSE NEXT GEN ITEM PARAMETER
 --
