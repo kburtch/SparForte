@@ -3669,17 +3669,17 @@ declare
   type a_type is array( 1..2 ) of integer;
   a : a_type;
   a2 : a_type renames a;
---  a3 : a_type renames a2;
---  subtype a2_type is a_type;
---  a4 : a2_type renames a;
---  ae : integer renames a(1);
+  a3 : a_type renames a2;
+  subtype a2_type is a_type;
+  a4 : a2_type renames a;
+  ae : integer renames a(1);
 begin
   a(1) := 2;
   a(2) := 3;
   pragma assert( a2(2) = 3 );
---  pragma assert( a3(2) = 3 );
---  pragma assert( a4(2) = 3 );
---  pragma assert( ae = 2 );
+  pragma assert( a3(2) = 3 );
+  pragma assert( a4(2) = 3 );
+  pragma assert( ae = 2 );
 end;
 
 -- commands
