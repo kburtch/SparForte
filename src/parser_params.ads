@@ -38,26 +38,6 @@ package parser_params is
 -- Parameter references
 ------------------------------------------------------------------------------
 
--- a scalar reference
-
-type reference is record
-     id    : identifier;             -- the identifier
-     index : long_integer := 0;      -- the array index (if an array)
-     kind  : identifier;             -- the type name
-end record;
-
--- a scalar or aggregate reference
---
--- This is done separately to avoid feature creep.  I don't want to
--- re-engineer references at this time.
-
-type renamingReference is record
-     id    : identifier;             -- the identifier
-     hasIndex : boolean := false;    -- true if index
-     index : long_integer := 0;      -- the array index (if an array)
-     kind  : identifier;             -- the type name
-end record;
-
 procedure AssignParameter( ref : in reference; value : unbounded_string );
 pragma inline( AssignParameter );
 -- assign a value to the variable or array indicated by ref

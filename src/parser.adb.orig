@@ -2498,7 +2498,6 @@ procedure ParseRenamesPart( canonicalRef : out renamingReference;
   -- Syntax: ... renames ident ...
   -- the caller must setup the value pointer for the renaming
   -- new id / type refers to the renaming variable.
-  name : unbounded_string;
 begin
   expect( renames_t );
   canonicalRef.id := token;
@@ -2507,21 +2506,9 @@ begin
   ParseRenamingReference( canonicalRef, new_type_id );
 
   -- only copy attributes if no error because copying attributes will
-  -- declare the identifier as a side-effect.
+  -- declare the identifier as a side-effect
   if isExecutingCommand then
-     -- In Ada, renames don't use "constant" be we do.
-     name := identifiers( new_id ).name;
-     identifiers( new_id ) := identifiers( canonicalRef.id );
-     identifiers( new_id ).name := name;
-     identifiers( new_id ).renaming_of := canonicalRef.id;
-     -- if the renaming is an array element, the type is the type of the
-     -- array element, not the array type itself.  The element type should
-     -- just be the "kind".
-     if identifiers( canonicalRef.id ).list and canonicalRef.hasIndex then
-        identifiers( new_id ).list := false;
-     end if;
-     identifiers( canonicalRef.id ).renamed_count :=
-        identifiers( canonicalRef.id ).renamed_count + 1;
+     declareRenaming( new_id, canonicalRef );
   end if;
 end ParseRenamesPart;
 
@@ -7116,8 +7103,11 @@ begin
         end if;
      end if;
   elsif redirectedInputFd > 0 then                          -- input redirect?
-     result := dup2( currentStandardInput, stdout );        -- restore input
+<<retry25b>> result := dup2( currentStandardInput, stdout );-- restore input
      if result < 0 then                                     -- check for error
+        if C_errno = EINTR then
+           goto retry25b;
+        end if;
         err( "unable to restore current input: " & OSerror( C_errno ) );
      end if;
 <<retry26>> closeResult := close( redirectedInputFd );      -- done with file
@@ -7127,8 +7117,11 @@ begin
         end if;
      end if;
   elsif redirectedAppendFd > 0 then                         -- append redirect?
-     result := dup2( currentStandardOutput, stdout );       -- restore output
+<<retry26b>> result := dup2( currentStandardOutput, stdout );-- restore output
      if result < 0 then                                     -- check for error
+        if C_errno = EINTR then
+           goto retry26b;
+        end if;
         err( "unable to restore current output: " & OSerror( C_errno ) );
      end if;
 <<retry27>> closeResult := close( redirectedAppendFd );     -- done with file
@@ -7138,8 +7131,11 @@ begin
         end if;
      end if;
   elsif redirectedErrOutputFd > 0 then                      -- errout redirect?
-     result := dup2( currentStandardError, stderr );        -- restore stderr
+<<retry27b>> result := dup2( currentStandardError, stderr );-- restore stderr
      if result < 0 then                                     -- check for error
+        if C_errno = EINTR then
+           goto retry27b;
+        end if;
         err( "unable to restore current error output: " & OSerror( C_errno ) );
      end if;
 <<retry28>> closeResult := close( redirectedErrOutputFd );  -- done with file
@@ -7149,8 +7145,11 @@ begin
         end if;
      end if;
   elsif redirectedErrAppendFd > 0 then                      -- append redirect?
-     result := dup2( currentStandardError, stderr );        -- restore stderr
+<<retry28b>>result := dup2( currentStandardError, stderr ); -- restore stderr
      if result < 0 then                                     -- check for error
+        if C_errno = EINTR then
+           goto retry28b;
+        end if;
         err( "unable to restore current error output: " & OSerror( C_errno ) );
      end if;
 <<retry29>> closeResult := close( redirectedErrAppendFd );  -- done with file

@@ -82,6 +82,8 @@ end GetParameterValue;
 --  PARSE RENAMING REFERENCE
 --
 -- Parse a reference used in a "renames" clause in a declaration
+-- In the case of a double-renaming, the canonical id is of the earlier
+-- renaming variable, not the one at the root canonical.
 ------------------------------------------------------------------------------
 
 procedure ParseRenamingReference( ref : out renamingReference;

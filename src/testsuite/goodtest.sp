@@ -3,7 +3,7 @@ trace true;
 
 -- This is a comment
 
--- THIS IS A BASIC SYNTAX TEST FOR BUSH
+-- THIS IS A BASIC SYNTAX TEST FOR SPARFOTE
 -- IT SHOULD RUN THIS WITHOUT STOPPING WITH AN ERROR
 -- Run this script with the parameters a, b and c
 
@@ -2346,7 +2346,6 @@ pragma assert( s = "~" );
 -- pathname expansion with a single / as directory
 
 s := `echo /tmp ;`;
-? s;
 pragma assert( s = "/tmp" );
 
 
@@ -3572,6 +3571,124 @@ begin
   pragma assert( not doubly_linked_lists.has_element( sc ) );
 end;
 
+-- renaming tests
+
+begin
+
+-- integers
+
+declare
+  i : integer := 5;
+  j : integer renames i;
+begin
+  pragma assert( i = j );
+  j := 6;
+  pragma assert( i = j );
+end;
+
+-- two renamings
+
+declare
+  i : integer := 5;
+  j : integer renames i;
+  k : integer renames i;
+begin
+  k := 6;
+  pragma assert( i = k );
+  pragma assert( j = k );
+end;
+
+-- renaming of a renaming
+
+declare
+  i : integer := 5;
+  j : integer renames i;
+  m : integer renames j;
+begin
+  m := 7;
+  pragma assert( i = m );
+  pragma assert( j = m );
+end;
+
+-- constant
+
+declare
+  b : constant integer := 1;
+  b2 : constant integer renames b;
+begin
+  null;
+  pragma assert( b2 = b );
+end;
+
+-- read-only renaming
+
+declare
+  i : integer := 5;
+  c : constant integer renames i;
+begin
+  null;
+  pragma assert( c = i );
+end;
+
+-- subtypes and renamings
+
+declare
+  subtype int is integer;
+  i2 : integer := 9;
+  j2 : int renames i2;
+begin
+  null;
+  pragma assert( j2 = 9 );
+end;
+
+-- record fields
+
+declare
+  i : integer;
+  type rt is record
+    f : integer;
+  end record;
+  r : rt;
+  ra : integer renames r.f;
+  r2 : rt renames r;
+  r3 : rt renames r2;
+  --subtype rt2 is rt;
+  --r4 : rt2 renames r;
+begin
+  r.f := 8;
+  i := r.f;
+  pragma assert( ra = 8 );
+  pragma assert( r2.f = 8 );
+  pragma assert( r3.f = 8 );
+  --pragma assert( r4.f = 8 );
+end;
+
+-- arrays
+
+declare
+  type a_type is array( 1..2 ) of integer;
+  a : a_type;
+  a2 : a_type renames a;
+--  a3 : a_type renames a2;
+--  subtype a2_type is a_type;
+--  a4 : a2_type renames a;
+--  ae : integer renames a(1);
+begin
+  a(1) := 2;
+  a(2) := 3;
+  pragma assert( a2(2) = 3 );
+--  pragma assert( a3(2) = 3 );
+--  pragma assert( a4(2) = 3 );
+--  pragma assert( ae = 2 );
+end;
+
+-- commands
+
+x : constant command := "/bin/true";
+x2 : constant command renames x;
+
+end; -- renaming tests
+
 -- Pragma ada_95 tests
 
 pragma ada_95;
@@ -3614,5 +3731,5 @@ pragma assert( ada95_i=10 );
 
 trace( false );
 new_line;
-put_line( "CONGRATULATIONS! BUSH HAS SUCCESSFULLY RUN THIS TEST SCRIPT" );
+put_line( "CONGRATULATIONS! SPARFORTE HAS SUCCESSFULLY RUN THIS TEST SCRIPT" );
 

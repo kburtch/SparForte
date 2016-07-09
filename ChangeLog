@@ -78,17 +78,29 @@ CHANGES SINCE 1.5
 
 28. New (Jedi Tek'unum): Initial support for Darwin (OS/X)...not fully implemented, doesn't build yet.
 
-29. New. renames (identifier dereferencing)...variable declaration renaming.  [tests needed] [renamings of proc, funcs, aggregate elements] [env needs updating for renamings] [unset needs updating for renamings]
+29. New. renames (identifier dereferencing)...variable declaration renaming.  This involved some major design changes in how variable storage is handled.  [negative tests needed] [renamings of proc, funcs] 
 Examples:
-   j : integer renames i;
-   b : arrtype renames a;
-   s : rectype renames r;
+   a : integer renames i;
+   b : arrtype renames some_array;
+   c : integer renames some_array(1);
+   d : rectype renames r;
+   e : rectype renames r.f;
 
 30. New: experimental support for in, out and in out parameters in user-defined functions and procedures.  Note that only identifier names, not references to elements of arrays or records, are supported. [tests needed][unset needs updating]
 
 31. Fix: shell command no longer errors after a begin.
 
 32. Fix: mysql parser no longer has errors when compiling with --without-mysql.
+
+33. Fix: records are no longer treated as unused when only fields of the record are referenced.
+
+34. Fix: using an array index on a scalar variable no longer raises a storage error.
+
+35. Fix: using an undefined element type in an array declaration no longers leaves a half-declared variable.
+
+36. Fix: using an assignment in an array declaration now has a custom error and no longer leaves a half-declared variable.
+
+37. Fix: additional dup2 EINTR checks in shell pipeline execution added to hopefully eliminate or reduce intermittent interrupted system call errors.
 
 [David B wants shared library but didn't get it added in time]
 

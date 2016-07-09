@@ -253,6 +253,12 @@ begin
        put( "unknown" );
      end;
   end if;
+  if identifiers (token ).renaming_of /= identifiers'first then
+     put( "renaming of" & to_string( identifiers( identifiers( token ).renaming_of ).name ) );
+  end if;
+  if identifiers (token ).renamed_count /= 0 then
+     put( "renamed" & identifiers( token ).renamed_count'img & " times" );
+  end if;
   if is_keyword( token ) then
      Put( "(reserved keyword) " );
   end if;
@@ -3169,28 +3175,24 @@ begin
         -- into the list of resources.
   elsif id = identifiers_top-1 then                             -- last id?
      -- If a renaming, decrement the renaming count of the target first.
-     -- Because variables are dereferenced before the token is returned,
-     -- the renamed count is always for the last item in the linked list of
-     -- successive renamings.
      if identifiers( id ).renaming_of /= identifiers'first then
+        -- the avalue is a pointer to the canonical avalue, so just
+        -- remove it so declareIdent won't be confused and try to free it.
+        identifiers( id ).avalue := null;
         declare
-          derefed_id : identifier := id;
+          derefed_id : identifier := identifiers( id ).renaming_of;
         begin
-          while identifiers( derefed_id ).renaming_of /= identifiers'first loop
-             derefed_id := identifiers( derefed_id ).renaming_of;
-             if identifiers( derefed_id ).renaming_of = identifiers'first then
-                if identifiers( derefed_id ).renamed_count > 0 then
-                   identifiers( derefed_id ).renamed_count :=
-                      identifiers( derefed_id ).renamed_count - 1;
-                  exit;
-                end if;
-             else
-                err( "internal error: dereferenced identifier's renamed_count unexpectedly zero" );
-             end if;
-          end loop;
+          if identifiers( derefed_id ).renamed_count > 0 then
+             identifiers( derefed_id ).renamed_count :=
+              identifiers( derefed_id ).renamed_count - 1;
+          else
+              err( "internal error: dereferenced identifier's renamed_count " &
+                 "unexpectedly zero  for "  & optional_bold( to_string( identifiers( derefed_id ).name ) ) );
+          end if;
         end;
      end if;
-     --kind := identifiers( id ).kind;
+     -- when destroying an identifier, even if it as references to some
+     -- other variable, it is to be removed.
      if identifiers( id ).export then
         ExportValue( id );
      end if;
@@ -3198,15 +3200,46 @@ begin
      -- the anonymous array type.  Since the user cannot name the type,
      -- it will linger until the block is destroyed.
      identifiers_top := identifiers_top - 1;                -- pull stack
+
+  -- When a variable with the same name is encountered, it will be
+  -- reinitialized with a Kind of new but these will remain unchanged.
+  -- Reset these to defaults to avoid confusing SparForte...
+  identifiers( id ).import := false;                            -- clear these
+  identifiers( id ).export := false;
+  identifiers( id ).method := none;
+  identifiers( id ).mapping := none;
+  identifiers( id ).list   := false;
+  identifiers( id ).field_of  := eof_t;
+  identifiers( id ).renaming_of := identifiers'first;
+  identifiers( id ).volatile := false;
+  identifiers( id ).limit  := false;
+  identifiers( id ).inspect := false;
+  identifiers( id ).class  := otherClass;
+  identifiers( id ).renamed_count := 0;
+
+  -- TODO: avalue not released on unset.  it is left to be released on reuse
      return true;                                               -- delete ok
   end if;                                                       -- else
 
+  -- The following only occurs if a variable is not at the top of the
+  -- identifier stack.
+
   -- If a renaming, decrement the renaming count of the target first.
   if identifiers( id ).renaming_of /= identifiers'first then
-     if identifiers( identifiers( id ).renaming_of ).renamed_count > 0 then
-        identifiers( identifiers( id ).renaming_of ).renamed_count :=
-            identifiers( identifiers( id ).renaming_of ).renamed_count - 1;
-     end if;
+     -- the avalue is a pointer to the canonical avalue, so just
+     -- remove it so declareIdent won't be confused and try to free it.
+     identifiers( id ).avalue := null;
+     declare
+       derefed_id : identifier := identifiers( id ).renaming_of;
+     begin
+       if identifiers( derefed_id ).renamed_count > 0 then
+          identifiers( derefed_id ).renamed_count :=
+             identifiers( derefed_id ).renamed_count - 1;
+       else
+           err( "internal error: dereferenced identifier's renamed_count " &
+                "unexpectedly zero  for "  & optional_bold( to_string( identifiers( derefed_id ).name ) ) );
+       end if;
+     end;
   end if;
 
   -- If not the top-most identifier, then you can't just pull
@@ -3234,6 +3267,7 @@ begin
   identifiers( id ).limit  := false;
   identifiers( id ).inspect := false;
   identifiers( id ).class  := otherClass;
+  identifiers( id ).renamed_count := 0;
   -- TODO: avalue not released on unset.  it is left to be released on reuse
   return true;                                                  -- delete ok
 end deleteIdent;
@@ -4369,6 +4403,7 @@ begin
 
   -- Immediate Words
 
+-- Keep the following line for debugging
 --put_line( "first char: " & toEscaped( to_unbounded_string( "" & ch ) ) ); -- DEBUG
   if  ch = eof_character then
       token := eof_t;
@@ -4398,7 +4433,7 @@ begin
      -- Immediate SQL word string literals (sql_word_t)
      --
      -- This is the same as a word_t but a different token value is used so
-     -- BUSH will not try to expand the pattern (we don't want "select *"
+     -- SparForte will not try to expand the pattern (we don't want "select *"
      -- to be replaced with select and a list of file names).
      --
      -- The preprocessor will have placed delimiters around the word so we
@@ -4418,6 +4453,7 @@ begin
 
   elsif (ch >= 'a' and ch <='z') or
         (ch >= 'A' and ch <='Z') or ch = high_ascii_escape then  -- identifier?
+ --put_line( "GNT: " & ch ); -- DEBUG
 
   -- Identifiers or uncompressed keywords
   --
@@ -4442,6 +4478,7 @@ begin
      id := eof_t;                                             -- assume not
      lastpos := lastpos - 1;                                  -- before delim
      findIdent( word, id );
+
      --for i in reverse 1..identifiers_top-1 loop               -- search symbol
      --    if identifiers( i ).name = word then                 -- table
      --       id := i;
@@ -4449,11 +4486,13 @@ begin
      --    end if;
      --end loop;
      if id = eof_t then                                       -- not found?
+-- todo: should probably be "otherClass" by default
         declareIdent( token, word, new_t );                   -- declare it
      else                                                     -- otherwise
         if identifiers( id ).deleted then                     -- was deleted?
            identifiers( id ).deleted := false;                -- redeclare
            identifiers( id ).kind := new_t;                   -- with type new
+           identifiers( id ).renaming_of := identifiers'first; -- cautious
         end if;                                               -- either way
         token := id;                                          -- return id
      end if;                                                  -- skip delim

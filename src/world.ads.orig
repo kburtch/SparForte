@@ -388,6 +388,33 @@ predefined_top  : identifier := identifier'last; -- last predefined ident
 symbol_table_overflow : exception;
 
 ------------------------------------------------------------------------------
+-- Identifier References
+--
+-- These are for working with aggregate types, such as params passed into
+-- pre-defined functions.
+------------------------------------------------------------------------------
+
+-- a scalar reference
+
+type reference is record
+     id    : identifier;             -- the identifier
+     index : long_integer := 0;      -- the array index (if an array)
+     kind  : identifier;             -- the type name
+end record;
+
+-- a scalar or aggregate reference
+--
+-- This is done separately to avoid feature creep.  I don't want to
+-- re-engineer references at this time.
+
+type renamingReference is record
+     id    : identifier;             -- the identifier
+     hasIndex : boolean := false;    -- true if index
+     index : long_integer := 0;      -- the array index (if an array)
+     kind  : identifier;             -- the type name
+end record;
+
+------------------------------------------------------------------------------
 -- Block Table
 --
 -- The block table is defined in scanner.ads but the declarations are here
@@ -708,6 +735,10 @@ procedure findException( name : unbounded_string; id : out identifier );
 procedure declareException( id : out identifier; name : unbounded_string;
    default_message : unbounded_string; exception_status_code : anExceptionStatusCode );
 -- Declare an exception.  Check with findException first.
+
+procedure declareRenaming( new_id : identifier; canonicalRef :
+  renamingReference );
+-- recast a new identifier as a renaming of the given reference
 
 procedure declareNamespace( name : string );
 procedure declareGlobalNamespace;

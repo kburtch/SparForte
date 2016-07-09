@@ -261,7 +261,7 @@ begin
     --   goto found;
     --end if;
 
--- put_line( "prefix = " & to_string( prefix ) ); -- debug
+ --put_line( "prefix = " & to_string( prefix ) ); -- debug
 
      -- for this initial version, we are not assuming nested namespaces
      -- we're only looking to speed up finding idents in built-in packages
@@ -343,19 +343,21 @@ begin
   if id = eof_t then
 --put_line( standard_error, "brute force" ); -- DEBUG
      for i in reverse 1..save_i loop                         -- from local ns
-         if i /= eof_t then
-            if identifiers( i ).name = name and not          -- exists and
-               identifiers( i ).deleted then                 -- not deleted?
-               id := i;                                      -- return id
+         if i /= eof_t then                                  -- not this token
+            if not identifiers( i ).deleted then             -- not deleted
+               if identifiers( i ).name = name then          -- exists and
+                  id := i;                                   -- return id
 --put_line( standard_error, "internal error: brute force found " & to_string( name ) ); -- DEBUG
-               exit;                                         -- we're done
+                  exit;                                      -- we're done
+               end if;
             end if;
          end if;
      end loop;
   end if;
-
-  -- dereferences
-  --
+--put_line( standard_error, "findIdent: done" ); -- DEBUG
+--if id = eof_t then -- DEBUG
+   --put_line( "findIdent: not found" ); -- DEBUG
+--end if; -- DEBUG
 
 end findIdent;
 
@@ -806,6 +808,96 @@ begin
      identifiers( id ).value := identifiers( id ).svalue'access;
   end if;
 end declareException;
+
+-- DECLARE RENAMING
+--
+-- Declare a renaming in the symbol table, based on the given reference.
+-- This does not setup aggregate renamings, which must be done by the
+-- caller.  This also assumes that a new identifier is already created.
+-- The canonical identifier will have its renaming count incremented.
+-----------------------------------------------------------------------------
+
+procedure declareRenaming( new_id : identifier; canonicalRef :
+  renamingReference ) is
+begin
+  -- assumes a new identifier (kind = new_t) was previously declared
+
+  --if identifiers( new_id ).avalue /= null then
+  --   free( identifiers( new_id ).avalue );
+  --end if;
+
+  -- To do a renaming, you cannot do a straight copy of identifiers.
+  -- The structure is too complicated and it will destroy the name and
+  -- array storage, etc.
+
+     identifiers( new_id ) := declaration'(                     -- define
+       name     => identifiers( new_id ).name,                  -- identifier
+       kind     => identifiers( canonicalRef.id ).kind,
+       value    => null,
+       class    => identifiers( canonicalRef.id ).class,
+       import   => false,
+       method   => none,
+       mapping  => none,
+       export   => false,
+       volatile => false,
+       static   => identifiers( canonicalRef.id ).static,
+       limit    => identifiers( canonicalRef.id ).limit,
+       list     => identifiers( canonicalRef.id ).list,
+       resource => false,  -- can't really look up a resource
+       field_of => identifiers( canonicalRef.id ).field_of,
+       inspect  => identifiers( canonicalRef.id ).inspect,
+       deleted  => false,
+       wasReferenced => false,
+       procCB => identifiers( canonicalRef.id ).procCB,  -- don't apply for variables
+       funcCB => identifiers( canonicalRef.id ).funcCB,
+       genKind => identifiers( canonicalRef.id ).genKind,
+       genKind2 => identifiers( canonicalRef.id ).genKind2,
+       openNamespace => identifiers'first,  -- current namespace
+       nextNamespace => identifiers'first,
+       parentNamespace => identifiers'first,
+       firstBound => identifiers( canonicalRef.id ).firstBound,
+       lastBound => identifiers( canonicalRef.id ).lastBound,
+       -- not sure we need to copy svalue as it is not normally
+       -- read directly.
+       svalue => identifiers( canonicalRef.id ).svalue,
+       -- we need to refer to the canonical variables' avalue to
+       -- do array bounds tests in the parser...
+       avalue => identifiers( canonicalRef.id ).avalue,
+       renaming_of => canonicalRef.id,
+       renamed_count => 0,
+       passingMode => none
+     );
+
+     -- The canonical reference returned by ParseRenamingReference
+     -- isn't the root canonical variable.  So we must follow the chain
+     -- and assign value to the svalue of the root canonical.
+     --identifiers( new_id ).value := identifiers( canonicalRef.id ).svalue'access;
+
+     declare
+        deref_id : identifier := canonicalRef.id;
+        cnt : natural := 1;
+     begin
+        while identifiers( deref_id ).renaming_of /= identifiers'first loop
+           deref_id := identifiers( deref_id ).renaming_of;
+           cnt := cnt + 1;
+           if cnt > 1000 then
+              put_line( standard_error, "internal error: infinite renaming loop" );
+              exit;
+           end if;
+        end loop;
+        identifiers( new_id ).value := identifiers( deref_id ).svalue'access;
+     end;
+
+     -- if the renaming is an array element, the type is the type of the
+     -- array element, not the array type itself.  The element type should
+     -- just be the "kind".
+     if identifiers( canonicalRef.id ).list and canonicalRef.hasIndex then
+        identifiers( new_id ).list := false;
+     end if;
+     identifiers( canonicalRef.id ).renamed_count :=
+        identifiers( canonicalRef.id ).renamed_count + 1;
+
+end declareRenaming;
 
 -- DECLARE NAMESPACE
 --

@@ -733,6 +733,76 @@ object(stdClass)#1 (4) {<br>
 
 &nbsp;<br>
 
+<h3>Renamings</h3>
+
+<p>A renaming is a second name (or alias) for a variable.  Both the renaming
+variable and the original (or canonical) variable share the same value.</p>
+
+<p>Variables renaming other variables can be done for scalar variables or
+constants, command constants, arrays, array elements, records and record
+fields.  An exception cannot be renamed.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; this_month : string := "October"<br>
+
+=&gt; m : string <b>renames</b> this_month<br>
+&nbsp;? m<br>
+=&gt; October<br>
+&nbsp;<b>type</b> fruit_array <b>is</b> <b>array</b>(1..4) <b>of</b> <b>fruit </b><br>
+=&gt; fruits : fruit_array := (berry, cherry, apple, apple)<br>
+=&gt; the_cherry : fruit <b>renames</b> fruits(2)<br>
+=&gt; ? the_cherry<br>
+=&gt; cherry</p>
+        </div>
+        </center>
+
+<p>The type does not need to be identical, but it must be compatible
+with AdaScript's strong typing rules.</p>
+
+<p>Values can be assigned to the renaming variable (if the variable
+is not a constant, of course).  The original variable's value will
+also change.</p>
+
+<p>A renaming of a variable can be a constant, creating a read-only renaming.
+However, a constant must only be renamed by a constant.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt; q : constant character <b>renames</b> Latin_1.Quotation<br>
+? q<br>
+"</p>
+        </div>
+        </center>
+
+
+<p>There can be multiple renamings on one identifier, or you can have
+renamings of renamings.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">=&gt;  title := "My Report"<br>
+=&gt; (Assuming title is a new universal_string variable)<br>
+=&gt; t1 : string <b>renames</b> title<br>
+=&gt; t2 : string <b>renames</b> t1<br>
+=&gt; ? t2<br>
+My Report</p>
+        </div>
+        </center>
+
+
+<p>Commands that alter variables like <b>"unset"</b> and <b>"typeset"</b> will not work on
+variables referred to by existing renamings.  The renamings must be
+removed first.</p>
+
+<p>The <b>"env"</b> command, when used on a renaming, will show both the
+renaming and the original variable.</p>
+
+<p><b>Ada</b>: A constant renaming is not permitted in Ada.  When renaming
+a constant in Ada, the keyword "constant" is not used.</p>
+
+<p>Types can be renamed with the <tt>subtype</tt> statement.</p>
+
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
                                 <p class="rmt"><a class="rightmenutext" href="ref_adascript.html">&nbsp;AdaScript versus GCC</a></p>
