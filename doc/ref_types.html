@@ -757,15 +757,16 @@ fields.  An exception cannot be renamed.</p>
         </div>
         </center>
 
-<p>The type does not need to be identical, but it must be compatible
-with AdaScript's strong typing rules.</p>
+<p>The type must be identical, or subtypes of each other.  A
+universal_typeless variable must be renamed by another universal_typeless,
+for example.  Likewise, a constant must be renamed by another constant.</p>
 
 <p>Values can be assigned to the renaming variable (if the variable
 is not a constant, of course).  The original variable's value will
 also change.</p>
 
-<p>A renaming of a variable can be a constant, creating a read-only renaming.
-However, a constant must only be renamed by a constant.</p>
+<p>A renaming of a variable can be a constant, creating a read-only
+renaming.</p>
 
         <center>
         <div class="code">
