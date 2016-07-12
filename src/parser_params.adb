@@ -123,7 +123,11 @@ begin
      else
         ref.kind := identifiers( ref.id ).kind;
      end if;                                   -- variables are not
-     if baseTypesOK( ref.kind, expectedType ) then
+
+     -- The normal base type function is not good enough.  We have to prevent
+     -- types of greater area from renaming types of a smaller area.
+
+     if renamingTypesOk( expectedType, ref.kind ) then
        null;
      end if;
 
@@ -153,7 +157,7 @@ begin
 
     -- if it already exists it must match the default type.
 
-    if baseTypesOK( identifiers( ref.id ).kind, expectedType ) then
+    if renamingTypesOk( expectedType, identifiers( ref.id ).kind ) then
        ref.kind := identifiers( ref.id ).kind;
     end if;
   end if;

@@ -242,11 +242,14 @@ procedure baseTypesOk( leftType, rightType : identifier );
 -- same as a procedure
 
 function genTypesOk( leftType, rightType : identifier ) return boolean;
--- same as base types OK, but clearer error message for generic items
+-- stricter than base types OK, and clearer error message for generic items
 
 procedure genTypesOk( leftType, rightType : identifier );
 -- same as a procedure
 
+function renamingTypesOk( renamingType, canonicalType : identifier ) return
+  boolean;
+-- basically same as genTypesOK but different error message
 
 -- Type Casting
 -----------------------------------------------------------------------------

@@ -2946,6 +2946,45 @@ begin
 end genTypesOk;
 
 
+---> RENAMING TYPES OK
+--
+-- Basically the same as gen types OK, but different error message.
+-----------------------------------------------------------------------------
+-- TODO: the getUniType message will still just be "type".  Refactor
+-- getUniType and getBaseType to take an optional descriptive string
+-- (e.g. "item") and make genTypesOk pass this.
+-- TODO: should I allow smaller integers to rename larger integer types?
+
+function renamingTypesOk( renamingType, canonicalType : identifier ) return boolean is
+  effectiveRenamingType : identifier;
+  effectiveCanonicalType : identifier;
+begin
+  -- For our purposes, leftType is the renaming type.  Right
+  -- Basic checks: if the root types don't match, then the base types
+  -- won't.  If either type is universal typeless, they automatically
+  -- match.
+
+  if not uniTypesOk( renamingType, canonicalType ) then
+     return false;
+  end if;
+
+  effectiveRenamingType := getBaseType( renamingType );
+  effectiveCanonicalType := getBaseType( canonicalType );
+
+  -- The types must be identical.  For universal or integer types, unless
+  -- both types are identicial, either type may end up with values it should
+  -- not represent.
+
+  if effectiveRenamingType /= effectiveCanonicalType then
+     err_previous( "renaming type " & bold( to_string( identifiers( renamingType ).name) ) &
+          " is not equivalent to canonical identifier's type " &
+          bold( to_string( identifiers( canonicalType ).name ) ) );
+     return false;
+  end if;
+  return true;
+end renamingTypesOk;
+
+
 ---> CAST TO TYPE
 --
 -- If a value is an integer type (i.e. positive, natural or integer),

@@ -3620,6 +3620,15 @@ begin
   pragma assert( b2 = b );
 end;
 
+-- system constant
+
+declare
+  qu : constant character renames Latin_1.Quotation;
+begin
+  null;
+  pragma assert( qu = '"' );
+end;
+
 -- read-only renaming
 
 declare
@@ -3652,6 +3661,7 @@ declare
   ra : integer renames r.f;
   r2 : rt renames r;
   r3 : rt renames r2;
+  -- TODO: this is not passing
   --subtype rt2 is rt;
   --r4 : rt2 renames r;
 begin
