@@ -23,6 +23,7 @@
 
 with ada.text_io,
      Interfaces.C,
+     gnat.source_info,
      string_util,
      script_io,
      user_io,
@@ -452,7 +453,8 @@ begin
          end if;
 
       when others =>                             -- unexpected mode
-        err( "internal error: unknown template mode" );
+        err( gnat.source_info.source_location &
+             ": internal error: unknown template mode" );
       end case;
 
    end loop;                                     -- continue while text
@@ -610,12 +612,13 @@ begin
             -- Locate the field of the renaming record
             findIdent( fieldName, renamingField );
             if renamingField = eof_t then
-               err( "internal error: " &
-                    "cannot find canonical field of renamed record field " &
+               err( gnat.source_info.source_location &
+                    ": internal error: " &
+                    "cannot find field in the renaming record; " &
                     "Identifier" & canonicalField'img &
                     ": Canonical field " &
-                    to_string( identifiers( canonicalField ).name ) & "/" &
-                    "Renaming Field " & to_string( fieldName ) );
+                    optional_bold( to_string( identifiers( canonicalField ).name ) ) & "/" &
+                    "Renaming Field " & optional_bold( to_string( fieldName ) ) );
             else
 
                -- The renaming is created by copying data.  Correct

@@ -32,6 +32,7 @@ with system,
     ada.calendar,
     gnat.regexp,
     gnat.directory_operations,
+    gnat.source_info,
     cgi,
     bush_os.exec,
     pegasock.memcache,
@@ -819,7 +820,8 @@ begin
               --    end if;
               --end if;
               -- TODO: make a utility function for doing all this.
-              if baseTypesOK( identifiers( array_id ).genKind, kind ) then -- TODO: probably needs a better error message
+              -- TODO: probably needs a better error message
+              if baseTypesOK( identifiers( array_id ).genKind, kind ) then
                  if arrayIndex not in identifiers( array_id ).avalue'range then -- DEBUG
                     err( "array index " &  to_string( trim( f, ada.strings.both ) ) & " not in" & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
                  end if;
@@ -828,9 +830,13 @@ begin
                  begin
                    f := identifiers( array_id ).avalue( arrayIndex ); -- NEWARRAY
                  exception when CONSTRAINT_ERROR =>
-                   err( "internal error: constraint_error : index out of range " & identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
+                   err( gnat.source_info.source_location &
+                    ": internal error: constraint_error : index out of range " &
+                    identifiers( array_id ).avalue'first'img & " .. " &
+                    identifiers( array_id ).avalue'last'img );
                  when STORAGE_ERROR =>
-                   err( "internal error : storage error raised in ParseFactor" );
+                   err( gnat.source_info.source_location &
+                    ": internal error : storage error raised in ParseFactor" );
                  end;
               end if;
            end if;
@@ -1071,7 +1077,8 @@ begin
                    term := null_unbounded_string;
                 end;
              else
-                err( "Internal error: unable to handle term operator" );
+                err( gnat.source_info.source_location &
+                   ": Internal error: unable to handle term operator" );
              end if;
            end if;
         elsif operation = uni_string_t then
@@ -1332,7 +1339,8 @@ begin
                      b := to_numeric( se1 ) not in to_numeric( se2 )..to_numeric( se3 );
                   end if;
                else
-                  err( "Internal error: couldn't handle relational operator" );
+                  err( gnat.source_info.source_location &
+                    ": Internal error: couldn't handle relational operator" );
                end if;
                if b then
                   re := to_unbounded_string( "1" );
@@ -1404,7 +1412,8 @@ begin
                    end if;
                 end if;
              else
-                err( "Internal error: couldn't handle relational operator" );
+                err( gnat.source_info.source_location &
+                  ": Internal error: couldn't handle relational operator" );
              end if;
              if b then
                 re := to_unbounded_string( "1" );
@@ -1524,7 +1533,8 @@ begin
                  b := re1 = "1" xor re2 = "1";
               end if;
            else
-              err( "Internal error: unable to handle boolean operator" );
+              err( gnat.source_info.source_location &
+                ": Internal error: unable to handle boolean operator" );
            end if;
            if b then
               re1 := to_unbounded_string( "1" );
@@ -1766,7 +1776,8 @@ begin
               --    end if;
               --end if;
               -- TODO: make a utility function for doing all this.
-              if baseTypesOK( identifiers( array_id ).genKind, kind ) then -- TODO: probably needs a better error message
+              -- TODO: probably needs a better error message
+              if baseTypesOK( identifiers( array_id ).genKind, kind ) then
                  if arrayIndex not in identifiers( array_id ).avalue'range then -- DEBUG
                     err( "array index " &  to_string( trim( f, ada.strings.both ) ) & " not in" & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
                  end if;
@@ -1775,9 +1786,12 @@ begin
                  begin
                    f := identifiers( array_id ).avalue( arrayIndex ); -- NEWARRAY
                  exception when CONSTRAINT_ERROR =>
-                   err( "internal error: constraint_error : index out of range " & identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
+                   err( gnat.source_info.source_location &
+                     ": internal error: constraint_error : index out of range " &
+                     identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
                  when STORAGE_ERROR =>
-                   err( "internal error : storage error raised in ParseFactor" );
+                   err( gnat.source_info.source_location &
+                     ": internal error : storage error raised in ParseFactor" );
                  end;
               end if;
            end if;
@@ -2018,7 +2032,8 @@ begin
                    term := null_unbounded_string;
                 end;
              else
-                err( "Internal error: unable to handle term operator" );
+                err( gnat.source_info.source_location &
+                  ": Internal error: unable to handle term operator" );
              end if;
            end if;
         elsif operation = uni_string_t then
@@ -2279,7 +2294,8 @@ begin
                      b := to_numeric( se1 ) not in to_numeric( se2 )..to_numeric( se3 );
                   end if;
                else
-                  err( "Internal error: couldn't handle relational operator" );
+                  err( gnat.source_info.source_location &
+                    ": Internal error: couldn't handle relational operator" );
                end if;
                if b then
                   re := to_unbounded_string( "1" );
@@ -2351,7 +2367,8 @@ begin
                    end if;
                 end if;
              else
-                err( "Internal error: couldn't handle relational operator" );
+                err( gnat.source_info.source_location &
+                   ": Internal error: couldn't handle relational operator" );
              end if;
              if b then
                 re := to_unbounded_string( "1" );
@@ -2471,7 +2488,8 @@ begin
                  b := re1 = "1" xor re2 = "1";
               end if;
            else
-              err( "Internal error: unable to handle boolean operator" );
+              err( gnat.source_info.source_location &
+                ": Internal error: unable to handle boolean operator" );
            end if;
            if b then
               re1 := to_unbounded_string( "1" );
@@ -2559,7 +2577,8 @@ begin
              exception when CONSTRAINT_ERROR =>
                err( "constraint_error : index out of range " & identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
              when STORAGE_ERROR =>
-               err( "internal error : storage error raised in ParseAssignment" );
+               err( gnat.source_info.source_location &
+                 ": internal error : storage error raised in ParseAssignment" );
              end;
           --end if;
        end if;
@@ -2608,13 +2627,16 @@ begin
 -- copying one array to another
               if identifiers( array_id ).avalue = null then
 -- put_line( "internal error: target array storage unexpectedly null" );
-                 err( "internal error: target array storage unexpectedly null" );
+                 err( gnat.source_info.source_location &
+                   ": internal error: target array storage unexpectedly null" );
               elsif identifiers( array_id ).avalue'first /= arrayIndex then
 -- put_line( "internal error: target array first bound doesn't match: " & identifiers( array_id ).avalue'first'img & " vs " & arrayIndex'img );
-                 err( "internal error: target array first bound doesn't match: " & identifiers( array_id ).avalue'first'img & " vs " & arrayIndex'img );
+                 err( gnat.source_info.source_location &
+                   ": internal error: target array first bound doesn't match: " & identifiers( array_id ).avalue'first'img & " vs " & arrayIndex'img );
               elsif identifiers( array_id ).avalue'last /= lastIndex then
 -- put_line( "internal error: target array last bound doesn't match: " & identifiers( array_id ).avalue'last'img & " vs " &  lastIndex'img );
-                 err( "internal error: target array last bound doesn't match: " & identifiers( array_id ).avalue'last'img & " vs " &  lastIndex'img );
+                 err( gnat.source_info.source_location &
+                   ": internal error: target array last bound doesn't match: " & identifiers( array_id ).avalue'last'img & " vs " &  lastIndex'img );
               elsif not error_found then
                  identifiers( array_id ).avalue.all := identifiers( second_array_id ).avalue.all;
                  --for i in arrayIndex..lastIndex loop                 -- do the copy
@@ -2627,7 +2649,8 @@ begin
            exception when CONSTRAINT_ERROR =>
               err( "constraint_error : index out of range " & identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
            when STORAGE_ERROR =>
-              err( "internal error : storage error raised when copying arrays" );
+              err( gnat.source_info.source_location &
+                 ": internal error : storage error raised when copying arrays" );
            end;
            if trace then
               put_trace(
@@ -2914,7 +2937,8 @@ begin
                            sourceFieldName := identifiers( second_record_id ).name & "." & sourceFieldName;
                            findIdent( sourceFieldName, source_field_t );
                            if source_field_t = eof_t then
-                              err( "internal error: mismatched source field" );
+                              err( gnat.source_info.source_location &
+                                 ": internal error: mismatched source field" );
                               exit;
                            end if;
                            -- find target field
@@ -2923,7 +2947,8 @@ begin
                            targetFieldName := identifiers( id ).name & "." & targetFieldName;
                            findIdent( targetFieldName, target_field_t );
                            if target_field_t = eof_t then
-                              err( "internal error: mismatched target field" );
+                              err( gnat.source_info.source_location &
+                                 ": internal error: mismatched target field" );
                               exit;
                            end if;
                            -- copy it
@@ -2947,11 +2972,36 @@ procedure ParseRecordDeclaration( id : identifier; recType : identifier; canAssi
   -- Syntax: rec-declaration = " := record_assign"
   -- Syntax: rec-declaration renames canonical-rec
   canonicalRef : renamingReference;
+  numFields    : natural;
+  baseRecType  : identifier;
 begin
   identifiers( id ).kind := recType;
 
-  -- if isExecutingCommand then
+  -- Declare the record's fields.  This must be done whether syntax checking
+  -- or running for real.
+
   if not error_found then
+
+     -- Determine the number of fields for the record, as stored in the record
+     -- type's value.all (that is, svalue).  If recType is a derived type, get
+     -- the base type which contains the number of fields because it is not
+     -- stored in the value of the derived type.
+     --
+     -- TODO: perhaps the svalue SHOULD be copied by the declaration...but then
+     -- it must also create the field identifiers as well...
+     --
+     -- TODO: this may work for subtypes but not for new types...
+
+     baseRecType := getBaseType( recType );
+     begin
+       numFields := natural'value( to_string( identifiers( baseRecType ).value.all ) );
+     exception when constraint_error =>
+       err( gnat.source_info.source_location &
+          ": internal error: unable to determine number of fields in record " &
+          "type " & optional_bold( to_string( identifiers( recType ).name ) ) &
+          " for " & optional_bold( to_string( identifiers( id ).name ) ) );
+       numFields := 0;
+     end;
 
   -- Change variable into an record
   -- Fill record value with ASCII.NUL delimited fields
@@ -2962,9 +3012,9 @@ begin
   -- everything except the name after the final dot.  Then prefix the name of
   -- the record being declared (so that "rec_type.f" becomes "my_rec.f").
 
-     for i in 1..integer'value( to_string( identifiers( recType ).value.all ) ) loop
+     for i in 1..numFields loop
          for j in 1..identifiers_top-1 loop
-             if identifiers( j ).field_of = recType then
+             if identifiers( j ).field_of = baseRecType then
                 if integer'value( to_string( identifiers( j ).value.all )) = i then
                    declare
                       fieldName   : unbounded_string;
@@ -3189,9 +3239,11 @@ begin
               begin
                  identifiers( id ).value := identifiers( canonicalRef.id ).avalue( canonicalRef.index )'access;
               exception when storage_error =>
-                 err( "internal error: storage_error exception raised" );
+                 err( gnat.source_info.source_location &
+                    ": internal error: storage_error exception raised" );
               when others =>
-                 err( "internal error: exception raised" );
+                 err( gnat.source_info.source_location &
+                    ": internal error: exception raised" );
               end;
            end if;
         end if;
@@ -5065,9 +5117,9 @@ begin
   -- to be safe there should be no open quotes.
 
   if inSQuote then
-     err( "Internal error: missing single quote mark" );
+     err( gnat.source_info.source_location & ": Internal error: missing single quote mark" );
   elsif inDQuote then
-     err( "Internal error: missing double quote mark" );
+     err( gnat.source_info.source_location & ": Internal error: missing double quote mark" );
   end if;
 
   -- process special characters
@@ -6000,7 +6052,8 @@ begin
                           end if;
 
                        when others =>
-                          err( "internal error: unsupported parameter passing mode" );
+                          err( gnat.source_info.source_location &
+                             ": internal error: unsupported parameter passing mode" );
                       end case;
 
                       -- If tracing, show the initial values for each
@@ -6244,7 +6297,8 @@ begin
 --put_line( "DEBUG: has context " );
           findIdent( chain_count_str, chain_count_id );
           if chain_count_id = eof_t then
-             err( "internal error: chain count not found" );
+             err( gnat.source_info.source_location &
+                ": internal error: chain count not found" );
           else
              if isExecutingCommand then
                 -- values only exist if not syntax check
@@ -6254,7 +6308,8 @@ begin
                   );
                   findIdent( last_in_chain_str, last_in_chain_id );
                   if last_in_chain_id = eof_t then
-                     err( "internal error: last in chain not found" );
+                     err( gnat.source_info.source_location &
+                        ": internal error: last in chain not found" );
                   end if;
                 identifiers( last_in_chain_id ).value.all := to_bush_boolean( last_in_chain );
              end if;
@@ -7620,20 +7675,20 @@ begin
         begin
            if identifiers( var_id ).avalue = null then
 -- put_line( "internal error: target array storage unexpectedly null" ); -- DEBUG
-              err( "internal error: target array storage unexpectedly null" );
+              err( gnat.source_info.source_location & ": internal error: target array storage unexpectedly null" );
            elsif identifiers( var_id ).avalue'first > arrayIndex then -- DEBUG, this should never happen, checked above
 -- put_line( "internal error: array index out of bounds" ); -- DEBUG
-              err( "internal error: array index out of bounds " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+              err( gnat.source_info.source_location & ": internal error: array index out of bounds " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
            elsif identifiers( var_id ).avalue'last < arrayIndex then
 -- put_line( "internal error: array index out of bounds" ); -- DEBUG, this should never happen, checked above
-              err( "internal error: array index out of bounds " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+              err( gnat.source_info.source_location & ": internal error: array index out of bounds " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
            elsif not error_found then
               identifiers( var_id ).avalue( arrayIndex ) := expr_value; -- NEWARRAY
            end if;
         exception when CONSTRAINT_ERROR =>
           err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
         when STORAGE_ERROR =>
-          err( "internal error : storage error raised in ParseAssignment" );
+          err( gnat.source_info.source_location & ": internal error : storage error raised in ParseAssignment" );
         end;
         if trace then
            put_trace(

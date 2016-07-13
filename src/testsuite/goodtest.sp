@@ -3661,16 +3661,15 @@ declare
   ra : integer renames r.f;
   r2 : rt renames r;
   r3 : rt renames r2;
-  -- TODO: this is not passing
-  --subtype rt2 is rt;
-  --r4 : rt2 renames r;
+  subtype rt2 is rt;
+  r4 : rt2 renames r;
 begin
   r.f := 8;
   i := r.f;
   pragma assert( ra = 8 );
   pragma assert( r2.f = 8 );
   pragma assert( r3.f = 8 );
-  --pragma assert( r4.f = 8 );
+  pragma assert( r4.f = 8 );
 end;
 
 -- arrays

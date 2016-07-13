@@ -102,5 +102,7 @@ Examples:
 
 37. Fix: additional dup2 EINTR checks in shell pipeline execution added to hopefully eliminate or reduce intermittent interrupted system call errors.
 
+38. Fix: declarations using record subtypes now working.
+
 [David B wants shared library but didn't get it added in time]
 
