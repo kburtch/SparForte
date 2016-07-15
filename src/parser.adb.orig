@@ -3223,6 +3223,10 @@ begin
         -- Prevent a constant from being turned into a variable by a renaming
         if identifiers( canonicalRef.id).class = constClass and originalClass /= constClass then
            err( "a constant must be renamed by a constant" );
+        elsif identifiers( canonicalRef.id ).class = enumClass then
+           -- TODO: I could probably get this to work but it's a weird edge
+           -- case.
+           err( "enumerated items cannot be renamed" );
         end if;
         -- If the identifier is a record field, it must refer to the
         -- renaming record, not the canonical record.
@@ -3560,6 +3564,12 @@ begin
      end if;
      ParseIdentifier( parent_id );                         -- parent type name
      if class_ok( parent_id, typeClass, subClass ) then    -- not a type?
+        if identifiers( getBaseType( parent_id ) ).kind = root_record_t then
+           -- TODO: we would have to generate all the field identifiers
+           -- for the record, renamed for the new type, which is not done
+           -- yet.  I will need this for objects later.
+           err( "new types based on records not supported yet" );
+        end if;
         if isExecutingCommand then                         -- OK to do it?
            identifiers( newtype_id ).kind := parent_id;    -- define the type
            identifiers( newtype_id ).class := typeClass;

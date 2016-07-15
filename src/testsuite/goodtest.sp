@@ -3696,6 +3696,15 @@ end;
 x : constant command := "/bin/true";
 x2 : constant command renames x;
 
+-- enumerated variables
+
+type fruit is (apple, banana, cherry );
+f : fruit;
+g : fruit renames f;
+
+g := apple;
+pragma assert( f = g );
+
 end; -- renaming tests
 
 -- Pragma ada_95 tests
