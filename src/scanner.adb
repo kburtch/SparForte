@@ -2970,6 +2970,8 @@ begin
 
   effectiveRenamingType := getBaseType( renamingType );
   effectiveCanonicalType := getBaseType( canonicalType );
+-- put_line( to_string( identifiers( effectiveRenamingType ).name ) );
+-- put_line( to_string( identifiers( effectiveCanonicalType ).name ) );
 
   -- The types must be identical.  For universal or integer types, unless
   -- both types are identicial, either type may end up with values it should

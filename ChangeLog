@@ -78,7 +78,7 @@ CHANGES SINCE 1.5
 
 28. New (Jedi Tek'unum): Initial support for Darwin (OS/X)...not fully implemented, doesn't build yet.
 
-29. New. renames (identifier dereferencing)...variable declaration renaming.  This involved some major design changes in how variable storage is handled.  [negative tests needed] [renamings of proc, funcs] 
+29. New. renames (identifier dereferencing)...variable declaration renaming.  This involved some major design changes in how variable storage is handled. [renamings of proc, funcs] 
 Examples:
    a : integer renames i;
    b : arrtype renames some_array;
@@ -102,7 +102,7 @@ Examples:
 
 37. Fix: additional dup2 EINTR checks in shell pipeline execution added to hopefully eliminate or reduce intermittent interrupted system call errors.
 
-38. Fix: declarations using record subtypes now working.
+38. Fix: declarations using record subtypes now working, but not fully tested.  Creating a derived type from a record is now a "not implemented" error.
 
 [David B wants shared library but didn't get it added in time]
 

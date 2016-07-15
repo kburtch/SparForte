@@ -739,8 +739,8 @@ object(stdClass)#1 (4) {<br>
 variable and the original (or canonical) variable share the same value.</p>
 
 <p>Variables renaming other variables can be done for scalar variables or
-constants, command constants, arrays, array elements, records and record
-fields.  An exception cannot be renamed.</p>
+constants, command constants, arrays, array elements, records, record
+fields and enumerated variables.  An exception cannot be renamed.</p>
 
         <center>
         <div class="code">
@@ -799,10 +799,14 @@ removed first.</p>
 <p>The <b>"env"</b> command, when used on a renaming, will show both the
 renaming and the original variable.</p>
 
-<p><b>Ada</b>: A constant renaming is not permitted in Ada.  When renaming
-a constant in Ada, the keyword "constant" is not used.</p>
-
 <p>Types can be renamed with the <tt>subtype</tt> statement.</p>
+
+<p><b>Ada</b>: A constant renaming is not permitted in Ada.  When renaming
+a constant in Ada, the keyword "constant" is not used.
+Since SparForte doesn't implement value ranges for subtypes, natural and
+positive,  subtypes of integer, are equivalent to integer for
+renaming purposes.  Other types, like short_integer, remain incompatible
+with integer.</p>
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
