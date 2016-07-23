@@ -611,6 +611,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
   uniOp : aUniOp := noOp;
   t : identifier;
 begin
+
   if Token = symbol_t and identifiers( Token ).value.all = "+" then
      uniOp := doPlus;
      getNextToken;
@@ -5952,18 +5953,25 @@ begin
   expectSemicolon;
 end ParseProcedureBlock;
 
-procedure ParseActualParameters( proc_id : identifier ) is
--- Syntax: (field = declaration [; declaration ... ] )
--- Declare actual parameters to be used in a subprogram call such that
--- defintion "proc.x" (formal parameter) creates a usuable identifier
--- "x" (actual parameter).
--- Fields are implemented using records
+procedure ParseActualParameters( proc_id : identifier;
+  declareParams : boolean := true ) is
+-- Syntax: (param : declaration [; declaration ... ] )
+--
+-- For a call proc( x, y, z ), this procedure parses x, y, z and
+-- creates the equivalent parameters for running proc.  There are three
+-- kind of parameters involved:
+--
+-- * x is an actual parameter, the parameter passed into proc
+-- * proc.p1 is a formal parameter, the proc definition parameter
+-- * p1 is the usuable identifier created from the template of proc.p1.
+--   p1's value is filled in (on in-mode) or p1 renames x (in an out or
+--   in out mode)
    expr_value : unbounded_string;
    expr_type : identifier;
-   expr_id   : identifier;
    no_param : integer;
    found : boolean := false;
    typesOK : boolean;
+   actual_param_ref : renamingReference;
 begin
   expect( symbol_t, "(" );                                  -- read constant
   no_param := 1;
@@ -5976,6 +5984,8 @@ begin
     -- TODO: but now we have to declare the formal parameters because we
     -- have passing modes.  So this is broken.
     -- KB: is this still true?
+
+    -- TODO: this search is inefficent...it should take into account namespaces
 
     found := false;
     for j in 1..identifiers_top-1 loop
@@ -6002,13 +6012,15 @@ begin
                           ParseExpression( expr_value, expr_type );
                           typesOK := baseTypesOK( identifiers( formal_param_t ).kind, expr_type );
                           if typesOK then
-                             declareStandardConstant( actual_param_t,
-                                 to_string( paramName ),
-                                 identifiers( formal_param_t ).kind,
-                                 to_string( expr_value ) );
+                             if declareParams then
+                                declareStandardConstant( actual_param_t,
+                                    to_string( paramName ),
+                                    identifiers( formal_param_t ).kind,
+                                    to_string( expr_value ) );
 --would really be a different declare
-                              if isExecutingCommand then
-                                 identifiers( actual_param_t ).value.all := expr_value;
+                                 if isExecutingCommand then
+                                    identifiers( actual_param_t ).value.all := expr_value;
+                                 end if;
                               end if;
                            end if;
 
@@ -6019,23 +6031,52 @@ begin
 
                        when out_mode =>
                           -- TODO: parse out parameter here
-                          ParseIdentifier( expr_id );
-                          typesOK := baseTypesOK( identifiers( formal_param_t ).kind,
-                             identifiers( expr_id ).kind );
-                          if typesOK then
-                             declareIdent(
-                                 actual_param_t,
-                                 to_string( paramName ),
-                                 identifiers( formal_param_t ).kind );
-                             identifiers( actual_param_t ).renaming_of := expr_id;
+
+-- the reference is the formal parameter
+-- for now, scalar values only
+
+-- The thing being passed...
+ParseRenamingReference(
+   actual_param_ref,
+   identifiers( formal_param_t ).kind
+);
+-- ..should have the same type as the formal param...
+typesOK := baseTypesOK(
+   actual_param_ref.kind,
+  identifiers( formal_param_t ).kind
+);
+if typesOK then
+-- TODO: what are the effects of declare+renaming?  Perhaps a new function
+-- combining them is needed.
+-- TODO: i gets declared twice?
+   if declareParams then
+      declareIdent(
+         actual_param_t,
+         to_string( paramName ),
+         identifiers( formal_param_t ).kind
+      );
+     -- TODO: actually, an update not a declaration
+     declareRenaming( actual_param_t, actual_param_ref );
+     identifiers( actual_param_t ).wasReferenced := true; -- DEBUG temporary
+   end if;
+end if;
+--                          ParseIdentifier( expr_id );
+--                          typesOK := baseTypesOK( identifiers( formal_param_t ).kind,
+--                             identifiers( expr_id ).kind );
+--                          if typesOK then
+--                             declareIdent(
+--                                 actual_param_t,
+--                                 to_string( paramName ),
+--                                 identifiers( formal_param_t ).kind );
+--                             identifiers( actual_param_t ).renaming_of := expr_id;
                              -- KLUDGE: because the current system always dereferences
                              -- parameters when they are looked up, it is not possible
                              -- to mark them as referenced.  So we mark them as
                              -- referenced on creation.  In the future, if storage
                              -- is decoupled from the identifer name, this can be
                              -- removed.
-                             identifiers( actual_param_t ).wasReferenced := true;
-                          end if;
+--                             identifiers( actual_param_t ).wasReferenced := true;
+--                          end if;
 
                        -- For an in out mode parameter, expect an identifier.
                        -- declare a variable as a renaming for the
@@ -6043,23 +6084,54 @@ begin
 
                        when in_out_mode =>
                           -- TODO: parse in out parameter here
-                          ParseIdentifier( expr_id );
-                          typesOK := baseTypesOK( identifiers( formal_param_t ).kind,
-                             identifiers( expr_id ).kind );
-                          if typesOK then
-                             declareIdent(
-                                actual_param_t,
-                                to_string( paramName ),
-                                identifiers( formal_param_t ).kind );
-                             identifiers( actual_param_t ).renaming_of := expr_id;
+
+-- the reference is the formal parameter
+-- for now, scalar values only
+
+-- The thing being passed...
+ParseRenamingReference(
+   actual_param_ref,
+   identifiers( formal_param_t ).kind
+);
+-- ..should have the same type as the formal param...
+typesOK := baseTypesOK(
+   actual_param_ref.kind,
+  identifiers( formal_param_t ).kind
+);
+if typesOK then
+   if declareParams then
+-- TODO: what are the effects of declare+renaming?  Perhaps a new function
+-- combining them is needed.
+-- TODO: i gets declared twice?
+      declareIdent(
+         actual_param_t,
+         to_string( paramName ),
+         identifiers( formal_param_t ).kind
+      );
+  -- TODO: actually, an update not a declaration
+     declareRenaming( actual_param_t, actual_param_ref );
+   end if;
+end if;
+
+-- OLD CODE
+--                          ParseIdentifier( expr_id );
+--                          typesOK := baseTypesOK( identifiers( formal_param_t ).kind,
+--                             identifiers( expr_id ).kind );
+--                          if typesOK then
+--                             declareIdent(
+--                                actual_param_t,
+--                                to_string( paramName ),
+--                                identifiers( formal_param_t ).kind );
+
+--                             identifiers( actual_param_t ).renaming_of := expr_id;
                              -- KLUDGE: because the current system always dereferences
                              -- parameters when they are looked up, it is not possible
                              -- to mark them as referenced.  So we mark them as
                              -- referenced on creation.  In the future, if storage
                              -- is decoupled from the identifer name, this can be
                              -- removed.
-                             identifiers( actual_param_t ).wasReferenced := true;
-                          end if;
+--                             identifiers( actual_param_t ).wasReferenced := true;
+                          --end if;
 
                        when others =>
                           err( gnat.source_info.source_location &
@@ -6252,7 +6324,6 @@ procedure DoUserDefinedProcedure( s : unbounded_string ) is
   last_in_chain: boolean := false;
   contextName  : unbounded_string;
 begin
-  -- Interpret parameters
   proc_id := token;
   if syntax_check then
      -- for declared but not used checking
@@ -6285,7 +6356,7 @@ begin
     markScanner( paramStart );
     syntax_check := true;
     if token = symbol_t and identifiers( token ).value.all = "(" then
-       ParseActualParameters( proc_id );
+       ParseActualParameters( proc_id, declareParams => false );
     end if;
     if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = "@" then
        in_chain := true;
@@ -6359,9 +6430,6 @@ begin
 
   pushBlock( newScope => true,
      newName => to_string (identifiers( proc_id ).name ) );
-  if token = symbol_t and identifiers( token ).value.all = "(" then
-     ParseActualParameters( proc_id );
-  end if;
   -- token will be @ here if in a chain but the final ; may or may not
   -- indicate a chain
   -- declareIdent( formal_param_id, to_unbounded_string( "chain count" ), type_token, varClass );
@@ -6369,6 +6437,12 @@ begin
   --    identifiers( formal_param_id ).wasReferenced := true;
   -- end if;
   if isExecutingCommand then
+  -- Notice nothing gets executed during syntax check.  Any variables/parameters
+  -- will have wasReferenced as false.
+  -- TODO: perhaps using syntax_check inside PAP would fix this.
+     if token = symbol_t and identifiers( token ).value.all = "(" then
+        ParseActualParameters( proc_id );
+     end if;
      parseNewCommands( scriptState, s );
      results := null_unbounded_string;        -- no results (yet)
      expect( procedure_t );
@@ -6398,8 +6472,16 @@ begin
          expect( eof_t );                  -- should be nothing else
      end if;
      restoreScript( scriptState );               -- restore original script
-  elsif syntax_check and then length( s ) = 0 then
-     err( "(forward) procedure declaration not completed" );
+  elsif syntax_check then
+     -- at this point, we are still looking at call
+     if length( s ) = 0 then
+        err( "(forward) procedure declaration not completed" );
+     elsif token = symbol_t and identifiers( token ).value.all = "(" then
+        -- because nothing executes during a syntax check, we still need
+        -- to parse the parameters to check for errors, but don't declare
+        -- anything because wasReferenced will be false.
+        ParseActualParameters( proc_id, declareParams => false );
+     end if;
   end if;
   pullBlock;
 
