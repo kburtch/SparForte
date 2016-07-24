@@ -6518,10 +6518,10 @@ begin
   pushBlock( newScope => true,
      newName => to_string (identifiers( func_id ).name ) );
   -- Parameters?  Create storage space in the symbol table
-  if token = symbol_t and identifiers( token ).value.all = "(" then
-     ParseActualParameters( func_id );
-  end if;
   if isExecutingCommand then
+     if token = symbol_t and identifiers( token ).value.all = "(" then
+        ParseActualParameters( func_id );
+     end if;
      -- Prepare to execute.  This should probably be a utility function.
      parseNewCommands( scriptState, s );
      results := null_unbounded_string;        -- no results (yet)
@@ -6554,8 +6554,16 @@ begin
      findIdent( to_unbounded_string( "return value" ), return_id );
      result := identifiers( return_id ).value.all;
      restoreScript( scriptState );            -- restore original script
-  elsif syntax_check and then length( s ) = 0 then
-     err( "(forward) function declaration not completed" );
+  elsif syntax_check then
+     -- at this point, we are still looking at call
+     if length( s ) = 0 then
+        err( "(forward) function declaration not completed" );
+     elsif token = symbol_t and identifiers( token ).value.all = "(" then
+        -- because nothing executes during a syntax check, we still need
+        -- to parse the parameters to check for errors, but don't declare
+        -- anything because wasReferenced will be false.
+        ParseActualParameters( func_id, declareParams => false );
+     end if;
   end if;
   pullBlock;                                  -- discard locals
 end DoUserDefinedFunction;
