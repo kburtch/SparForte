@@ -5710,10 +5710,16 @@ begin
   ParseIdentifier( type_token );
 
   -- Check type
+  --
+  -- in mode for aggregates not yet written.
 
-  if identifiers( getBaseType( type_token ) ).list then
-     err( "array parameters not yet supported" );
-  elsif identifiers( getBaseType( type_token ) ).kind = root_record_t then
+  if passingMode = in_mode then
+     if identifiers( getBaseType( type_token ) ).list then
+         err( "array parameters not yet supported" );
+     end if;
+  end if;
+  --elsif identifiers( getBaseType( type_token ) ).kind = root_record_t then
+  if identifiers( getBaseType( type_token ) ).kind = root_record_t then
      err( "records not yet supported" );
   elsif getBaseType( type_token ) = command_t then
      err( "commands not yet supported" );
@@ -5789,8 +5795,12 @@ begin
 end ParseFunctionReturnPart;
 
 procedure DeclareActualParameters( proc_id : identifier ) is
+-- This function declare fake actual parameters for parsing the formal
+-- definition of a procedure or function.  It doesn't create the parameters
+-- used when a procedure or function is called (that's ParseActualParameters).
   actual_param_t : identifier;
   param_no : natural;
+  startAt : identifier;
 begin
   if not error_found then
      -- unlike arrays, user-defined functions and procedures do not have
@@ -5808,16 +5818,20 @@ begin
          end if;
      end if;
 
+     startAt := identifiers_top-1;
+
      -- this declares the actual parameters but does not set the value
      -- or implement the passing mode.
 
      param_no := 1;
      loop
-         declareActualParameter(
+         declareUsableFormalParameter(
             actual_param_t,
             proc_id,
             param_no,
-            null_unbounded_string );
+            null_unbounded_string,
+            startAt );
+         -- search for the next one starting one later
      exit when actual_param_t = eof_t;
          param_no := param_no + 1;
      end loop;
@@ -5968,14 +5982,14 @@ procedure ParseActualParameters( proc_id : identifier;
 --   in out mode)
    expr_value : unbounded_string;
    expr_type : identifier;
-   no_param : integer;
+   parameterNumber : integer;
    found : boolean := false;
    typesOK : boolean;
    actual_param_ref : renamingReference;
+   j : identifier;
+   dir : integer;
 begin
   expect( symbol_t, "(" );                                  -- read constant
-  no_param := 1;
-  loop                                                      -- read values
 
     -- In a syntax check, the formal parameters aren't created so there's
     -- no reason to look them up.  We're just reading through the parameters
@@ -5985,133 +5999,156 @@ begin
     -- have passing modes.  So this is broken.
     -- KB: is this still true?
 
-    -- TODO: this search is inefficent...it should take into account namespaces
+  -- Slightly less brutal search than the old one:
+  -- for i in 1..identifiers_top-1 loop
+  --
+  -- To speed up this search a little, if we don't know where the identifiers
+  -- are, start at the most recent and work backwards.  Otherwise, start
+  -- where we left off and move forwards.
+  --
+  -- TODO: handle namespaces would even be better
 
+  j := identifiers_top - 1;
+  dir := -1;
+  parameterNumber := 1;
+  loop
     found := false;
-    for j in 1..identifiers_top-1 loop
-        if identifiers( j ).field_of = proc_id then
-           if integer'value( to_string( identifiers( j ).value.all )) = no_param then
-              found := true;
-              declare
-                 paramName : unbounded_string;
-                 formal_param_t : identifier;
-                 actual_param_t : identifier;
-              begin
-                 formal_param_t := j;
-                 if formal_param_t = eof_t then
-                    err( "unable to find formal parameter" );
-                 else
-                       paramName := identifiers( j ).name;
-                       paramName := delete( paramName, 1, index( paramName, "." ) );
-                       case identifiers( formal_param_t ).passingMode is
+    while j >= reserved_top and j < identifiers_top loop
+       if identifiers( j ).field_of = proc_id then
+          if integer'value( to_string( identifiers( j ).value.all )) = parameterNumber then
+             found := true;
+             exit;
+          end if;
+       end if;
+       j := identifier( integer( j ) + dir );
+    end loop;
+    dir := +1;
 
-                       -- For an in mode parameter, expect an expression
-                       -- Create a constant containing the value.
+    exit when not found;
 
-                       when in_mode =>
-                          ParseExpression( expr_value, expr_type );
-                          typesOK := baseTypesOK( identifiers( formal_param_t ).kind, expr_type );
-                          if typesOK then
-                             if declareParams then
-                                declareStandardConstant( actual_param_t,
-                                    to_string( paramName ),
-                                    identifiers( formal_param_t ).kind,
-                                    to_string( expr_value ) );
+    declare
+       paramName : unbounded_string;
+       formal_param_id : identifier;
+       usable_param_id : identifier;
+    begin
+       formal_param_id := j;
+       if formal_param_id = eof_t then
+          err( "unable to find formal parameter" );
+       else
+          paramName := identifiers( j ).name;
+          paramName := delete( paramName, 1, index( paramName, "." ) );
+          case identifiers( formal_param_id ).passingMode is
+
+              -- For an in mode parameter, expect an expression
+              -- Create a constant containing the value.
+
+              when in_mode =>
+                 ParseExpression( expr_value, expr_type );
+                 typesOK := baseTypesOK( identifiers( formal_param_id ).kind, expr_type );
+                 if typesOK and then declareParams then
+                     declareStandardConstant( usable_param_id,
+                        to_string( paramName ),
+                        identifiers( formal_param_id ).kind,
+                        to_string( expr_value ) );
 --would really be a different declare
-                                 if isExecutingCommand then
-                                    identifiers( actual_param_t ).value.all := expr_value;
-                                 end if;
-                              end if;
-                           end if;
+                     if isExecutingCommand then
+                        identifiers( usable_param_id ).value.all := expr_value;
+                     end if;
+                 end if;
 
-                       -- For an out mode parameter, expect an identifier.
-                       -- declare a variable as a renaming for the
-                       -- identifier.  Technically the value is
-                       -- undefined.
+              -- For an out mode parameter, expect an identifier.
+              -- declare a variable as a renaming for the
+              -- identifier.  Technically the value is
+              -- undefined.
 
-                       when out_mode =>
-                          -- TODO: parse out parameter here
+              when out_mode =>
+              -- TODO: parse out parameter here
 
--- the reference is the formal parameter
--- for now, scalar values only
+              -- the reference is the formal parameter
+              -- for now, scalar values only
 
--- The thing being passed...
-ParseRenamingReference(
-   actual_param_ref,
-   identifiers( formal_param_t ).kind
-);
--- ..should have the same type as the formal param...
-typesOK := baseTypesOK(
-   actual_param_ref.kind,
-  identifiers( formal_param_t ).kind
-);
-if typesOK then
--- TODO: what are the effects of declare+renaming?  Perhaps a new function
--- combining them is needed.
--- TODO: i gets declared twice?
-   if declareParams then
-      declareIdent(
-         actual_param_t,
-         to_string( paramName ),
-         identifiers( formal_param_t ).kind
-      );
-     -- TODO: actually, an update not a declaration
-     declareRenaming( actual_param_t, actual_param_ref );
-     identifiers( actual_param_t ).wasReferenced := true; -- DEBUG temporary
-   end if;
-end if;
---                          ParseIdentifier( expr_id );
---                          typesOK := baseTypesOK( identifiers( formal_param_t ).kind,
---                             identifiers( expr_id ).kind );
---                          if typesOK then
---                             declareIdent(
---                                 actual_param_t,
---                                 to_string( paramName ),
---                                 identifiers( formal_param_t ).kind );
---                             identifiers( actual_param_t ).renaming_of := expr_id;
-                             -- KLUDGE: because the current system always dereferences
-                             -- parameters when they are looked up, it is not possible
-                             -- to mark them as referenced.  So we mark them as
-                             -- referenced on creation.  In the future, if storage
-                             -- is decoupled from the identifer name, this can be
-                             -- removed.
---                             identifiers( actual_param_t ).wasReferenced := true;
---                          end if;
+              -- The thing being passed...
+              ParseRenamingReference(
+                 actual_param_ref,
+                 identifiers( formal_param_id ).kind
+              );
+              -- ..should have the same type as the formal param...
+              typesOK := baseTypesOK(
+                 actual_param_ref.kind,
+                 identifiers( formal_param_id ).kind
+              );
+             if typesOK and then declareParams then
+                declareIdent(
+                   usable_param_id,
+                   to_string( paramName ),
+                   identifiers( formal_param_id ).kind
+                );
+                -- TODO: actually, an update not a declaration
+                declareRenaming( usable_param_id, actual_param_ref );
+             end if;
 
-                       -- For an in out mode parameter, expect an identifier.
-                       -- declare a variable as a renaming for the
-                       -- identifier.
+             -- For an in out mode parameter, expect an identifier.
+             -- declare a variable as a renaming for the
+             -- identifier.
 
-                       when in_out_mode =>
-                          -- TODO: parse in out parameter here
+             when in_out_mode =>
+             -- TODO: parse in out parameter here
 
--- the reference is the formal parameter
--- for now, scalar values only
+             -- the reference is the formal parameter
 
--- The thing being passed...
-ParseRenamingReference(
-   actual_param_ref,
-   identifiers( formal_param_t ).kind
-);
--- ..should have the same type as the formal param...
-typesOK := baseTypesOK(
-   actual_param_ref.kind,
-  identifiers( formal_param_t ).kind
-);
-if typesOK then
-   if declareParams then
--- TODO: what are the effects of declare+renaming?  Perhaps a new function
--- combining them is needed.
--- TODO: i gets declared twice?
-      declareIdent(
-         actual_param_t,
-         to_string( paramName ),
-         identifiers( formal_param_t ).kind
-      );
-  -- TODO: actually, an update not a declaration
-     declareRenaming( actual_param_t, actual_param_ref );
-   end if;
-end if;
+             -- The thing being passed...
+             ParseRenamingReference(
+                actual_param_ref,
+                identifiers( formal_param_id ).kind
+             );
+             -- ..should have the same type as the formal param...
+             typesOK := baseTypesOK(
+                actual_param_ref.kind,
+                identifiers( formal_param_id ).kind
+             );
+             if typesOK and then declareParams then
+             -- the actual parameter will be the canonical identifier for the renaming
+                declareIdent(
+                   usable_param_id, -- TODO: not actual param
+                   to_string( paramName ),
+                   identifiers( formal_param_id ).kind
+                );
+                if identifiers( actual_param_ref.id).class = constClass then
+                   err( "a constant cannot be used as an in out mode parameter" );
+                elsif identifiers( actual_param_ref.id ).class = enumClass then
+                   -- TODO: I could probably get this to work for out parameters but
+                   -- not yet implemented
+                   err( "enumerated items cannot be used as an in out mode parameter" );
+                else
+                   -- TODO: actually, an update not a declaration
+                   declareRenaming( usable_param_id, actual_param_ref ); -- basic renaming
+                   -- TODO: refactor to make this more general
+                   -- An array?  make it happen.
+                   if identifiers( actual_param_ref.id).list then        -- array/element?
+                      if actual_param_ref.hasIndex then                  -- element?
+                         if isExecutingCommand then                      -- no value change
+                            begin                                        -- on syntax chk
+                              identifiers( usable_param_id ).value :=    -- or error
+                                 identifiers( actual_param_ref.id ).avalue(
+                                 actual_param_ref.index )'access;
+                            exception when storage_error =>              -- prob freed mem
+                              err( gnat.source_info.source_location &
+                                 ": internal error: storage_error exception raised" );
+                            when others =>
+                              err( gnat.source_info.source_location &
+                                 ": internal error: exception raised" );
+                            end;
+                        end if;
+                      else                                                       -- whole array?
+put_line( to_string( identifiers( usable_param_id ).name ) ); -- DEBUG
+put_line( to_string( identifiers( identifiers( formal_param_id ).kind ).name ) ); -- DEBUG
+              identifiers( usable_param_id ).list := true;  -- TODO: no effect?
+              FixRenamedArray( actual_param_ref, usable_param_id );
+                      end if;
+                   end if;
+                end if;
+      --FixRenamedRecordFields( actual_param_ref, actual_param_t );
+            end if; -- types/params ok
 
 -- OLD CODE
 --                          ParseIdentifier( expr_id );
@@ -6133,43 +6170,38 @@ end if;
 --                             identifiers( actual_param_t ).wasReferenced := true;
                           --end if;
 
-                       when others =>
+             when others =>
                           err( gnat.source_info.source_location &
                              ": internal error: unsupported parameter passing mode" );
-                      end case;
+             end case;
 
                       -- If tracing, show the initial values for each
                       -- parameter.
 
-                      if trace then
+             if trace then
                          put_trace(
-                            to_string( identifiers( formal_param_t ).name ) & " := " &
+                            to_string( identifiers( formal_param_id ).name ) & " := " &
                             to_string( expr_value ) );
-                      end if;
+             end if;
 
-                 end if;
-              end;
-              exit; -- because found
-           end if;
-       end if;
-    end loop; -- for
+          end if;
+
+    end;
+
+    exit when error_found or identifiers( token ).value.all /= ","; -- more?
+    expect( symbol_t, "," );
+    parameterNumber := parameterNumber + 1;
+
+    j := identifier( integer( j ) + dir );
+  end loop;
 
     -- if the parameter is not found, we don't know if it misnamed
     -- or if there were too many given.
     -- TODO: distinguish these error messages
 
-    if not found then
-       err( "parameter not found or too many parameters" );
-    end if;
-
-    --end if;
-
-    -- stop when there appears to be no more parameters
-
-    exit when error_found or identifiers( token ).value.all /= ","; -- more?
-    expect( symbol_t, "," );
-    no_param := no_param + 1;
-  end loop;
+  if not found then
+     err( "parameter not found or too many parameters" );
+  end if;
 
   expect( symbol_t, ")" );
 end ParseActualParameters;

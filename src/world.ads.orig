@@ -719,10 +719,10 @@ procedure updateFormalParameter( id : identifier; kind : identifier;
 -- Update a formal parameter (ie. proc.param).  The id is not
 -- returned since we don't change the formal parameters once they are set.
 
-procedure declareActualParameter( id : out identifier;
+procedure declareUsableFormalParameter( id : out identifier;
 proc_id : identifier; parameterNumber : integer;
-value : unbounded_string );
--- Declare an actual parameter (ie. param for proc.param).
+value : unbounded_string; startingAt : in out identifier  );
+-- Declare a usable formal parameter (ie. param for proc.param).
 
 procedure declareReturnResult( id : out identifier; func_id : identifier );
 -- Declare space for the function return result.

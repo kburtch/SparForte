@@ -593,35 +593,76 @@ begin
     identifiers(id).passingMode  := passingMode;
 end updateFormalParameter;
 
--- DECLARE ACTUAL PARAMETER
+-- DECLARE USUAL FORMAL PARAMETER
 --
--- Declare an actual parameter (ie. param for proc.param) in the symbol
+-- Declare a usable formal parameter (ie. param for proc.param) in the symbol
 -- table.  proc_id is the id for the subprogram owning the parameter.
 -- value is ?
 -- symbol_table_overflow exception is raised if there is no more
 -- space in the symbol table
+-- startAt should be identifiers_top -1 for the first iteration
 -----------------------------------------------------------------------------
 
-procedure declareActualParameter( id : out identifier;
+procedure declareUsableFormalParameter( id : out identifier;
    proc_id : identifier; parameterNumber : integer;
-   value : unbounded_string ) is
+   value : unbounded_string;
+   startingAt : in out identifier ) is
    paramName : unbounded_string;
+   i : identifier;
+   dir : integer;
 begin
   id := eof_t;
-  for i in reverse reserved_top..identifiers_top-1 loop
+  -- TODO: improve search of formal parameters
+  -- one example is to remember where we left off, since they are probably
+  -- together
+
+  -- Search for the formal parameter
+  --
+  -- Slightly less brutal search than the old one:
+  -- for i in reverse reserved_top..startingAt loop
+  --
+  -- To speed up this search a little, if we don't know where the identifiers
+  -- are, start at the most recent and work backwards.  Otherwise, start
+  -- where we left off and move forwards.
+  --
+  -- TODO: handle namespaces would even be better
+
+  if startingAt = identifiers_top - 1 then
+     i := startingAt;
+     dir := -1;
+  else
+     i := startingAt;
+     dir := +1;
+  end if;
+
+  startingAt := eof_t;
+  while i >= reserved_top and i < identifiers_top loop
       if identifiers( i ).field_of = proc_id then
          if integer'value( to_string( identifiers( i ).value.all )) = parameterNumber then
-            paramName := identifiers( i ).name;
-            paramName := delete( paramName, 1, index( paramName, "." ));
-            if identifiers_top = identifier'last then           -- no room?
-               raise symbol_table_overflow;                     -- raise error
-            else                                                -- otherwise
-               id := identifiers_top;                           -- return id
-               identifiers_top := identifiers_top+1;            -- push stack
-               if identifiers( id ).avalue /= null then
-                  free( identifiers( id ).avalue );
-               end if;
-               identifiers( id ) := declaration'(               -- define
+            startingAt := identifier( integer( i ) + dir );
+            exit;
+         end if;
+      end if;
+      i := identifier( integer( i ) + dir );
+  end loop;
+
+  --- not found
+
+  if startingAt = eof_t then
+     return;
+  end if;
+
+  paramName := identifiers( i ).name;
+  paramName := delete( paramName, 1, index( paramName, "." ));
+  if identifiers_top = identifier'last then           -- no room?
+     raise symbol_table_overflow;                     -- raise error
+  else                                                -- otherwise
+     id := identifiers_top;                           -- return id
+     identifiers_top := identifiers_top+1;            -- push stack
+     if identifiers( id ).avalue /= null then
+        free( identifiers( id ).avalue );
+     end if;
+     identifiers( id ) := declaration'(               -- define
                  name     => paramName,                         -- identifier
                  kind     => identifiers( i ).kind,
                  --value    => svalue'access,
@@ -634,7 +675,7 @@ begin
                  volatile => false,
                  static   => false,
                  limit    => false,
-                 list     => false,
+                 list     => identifiers( identifiers( i ).kind ).list,   -- arrays now supported
                  resource => false,
                  field_of => eof_t,
                  inspect  => false,
@@ -654,19 +695,17 @@ begin
                  renaming_of => identifier'first,
                  renamed_count => 0,
                  passingMode => identifiers( i ).passingMode
-               );
-               -- svalue isn't defined until here
-               identifiers( id ).value := identifiers( id ).svalue'access;
-               -- out or in out can be assigned to
-               if identifiers( i ).passingMode = out_mode or
-                 identifiers( i ).passingMode = in_out_mode then
-                 identifiers( id ).class := varClass;
-               end if;
-            end if;
-         end if;
-      end if;
-  end loop;
-end declareActualParameter;
+     );
+     -- svalue isn't defined until here
+     identifiers( id ).value := identifiers( id ).svalue'access;
+     -- out or in out can be assigned to
+     if identifiers( i ).passingMode = out_mode or
+        identifiers( i ).passingMode = in_out_mode then
+        identifiers( id ).class := varClass;
+     end if;
+  end if;
+
+end declareUsableFormalParameter;
 
 -- DECLARE RETURN RESULT
 --
