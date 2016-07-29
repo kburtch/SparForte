@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2015 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -5716,12 +5716,12 @@ begin
   if passingMode = in_mode then
      if identifiers( getBaseType( type_token ) ).list then
          err( "array parameters not yet supported" );
+     elsif identifiers( getBaseType( type_token ) ).kind = root_record_t then
+        err( "records not yet supported" );
      end if;
   end if;
   --elsif identifiers( getBaseType( type_token ) ).kind = root_record_t then
-  if identifiers( getBaseType( type_token ) ).kind = root_record_t then
-     err( "records not yet supported" );
-  elsif getBaseType( type_token ) = command_t then
+  if getBaseType( type_token ) = command_t then
      err( "commands not yet supported" );
   end if;
 
@@ -5736,6 +5736,7 @@ begin
   if syntax_check then
      identifiers( formal_param_id ).wasReferenced := true;
   end if;
+
   updateFormalParameter( formal_param_id, type_token, proc_id, param_no,
     passingMode );
 
@@ -5801,6 +5802,7 @@ procedure DeclareActualParameters( proc_id : identifier ) is
   actual_param_t : identifier;
   param_no : natural;
   startAt : identifier;
+  recordBaseTypeId : identifier;
 begin
   if not error_found then
      -- unlike arrays, user-defined functions and procedures do not have
@@ -5831,13 +5833,18 @@ begin
             param_no,
             null_unbounded_string,
             startAt );
+         exit when actual_param_t = eof_t;
+         -- if a record, we need fields
+         recordBaseTypeId := getBaseType( identifiers( actual_param_t ).kind );
+         if identifiers( recordBaseTypeId ).kind = root_record_t then  -- record type?
+            -- if identifiers( actual_param_t ).kind = root_record_t then  -- record type?
+            declareRecordFields( actual_param_t, recordBaseTypeId );
+         end if;
          -- search for the next one starting one later
-     exit when actual_param_t = eof_t;
          param_no := param_no + 1;
      end loop;
   end if;
 end DeclareActualParameters;
-
 
 procedure ParseSeparateProcHeader( proc_id : identifier; procStart : out natural ) is
   -- Syntax: separate( parent ); procedure p [(param1...)] is
@@ -6092,6 +6099,7 @@ begin
              -- identifier.
 
              when in_out_mode =>
+--put_line( "...in out mode" ); -- DEBUG
              -- TODO: parse in out parameter here
 
              -- the reference is the formal parameter
@@ -6102,11 +6110,11 @@ begin
                 identifiers( formal_param_id ).kind
              );
              -- ..should have the same type as the formal param...
-             typesOK := baseTypesOK(
-                actual_param_ref.kind,
-                identifiers( formal_param_id ).kind
-             );
-             if typesOK and then declareParams then
+             --typesOK := baseTypesOK(
+             --   actual_param_ref.kind,
+             --   identifiers( formal_param_id ).kind
+             --);
+             if declareParams then
              -- the actual parameter will be the canonical identifier for the renaming
                 declareIdent(
                    usable_param_id, -- TODO: not actual param
@@ -6140,14 +6148,58 @@ begin
                             end;
                         end if;
                       else                                                       -- whole array?
-put_line( to_string( identifiers( usable_param_id ).name ) ); -- DEBUG
-put_line( to_string( identifiers( identifiers( formal_param_id ).kind ).name ) ); -- DEBUG
               identifiers( usable_param_id ).list := true;  -- TODO: no effect?
               FixRenamedArray( actual_param_ref, usable_param_id );
                       end if;
+--TODO: record should really not be "root_record" by a flag like list?
+                   elsif identifiers( getBaseType( actual_param_ref.kind ) ).kind = root_record_t then  -- record type?
+-- TODO: a function for this
+     declare
+        numFields : natural;
+     begin
+     -- TODO: use this above with formal parameters?
+     numFields := natural( to_numeric( identifiers( identifiers( actual_param_ref.id ).kind ).value.all ) );
+     for i in 1..numFields loop
+-- TODO: brutal search
+         for j in reverse 1..identifiers_top-1 loop
+-- TODO: should this be the base record type?  subtypes may break it
+             if identifiers( j ).field_of = identifiers( formal_param_id ).kind then
+                if integer'value( to_string( identifiers( j ).value.all )) = i then
+                   declare
+                      fieldName   : unbounded_string;
+                      field_id    : identifier;
+                      dotPos      : natural;
+                   begin
+                      fieldName := identifiers( j ).name;
+                      dotPos := length( fieldName );
+                      while dotPos > 1 loop
+                         exit when element( fieldName, dotPos ) = '.';
+                         dotPos := dotPos - 1;
+                      end loop;
+                      fieldName := delete( fieldName, 1, dotPos );
+                      fieldName := identifiers( usable_param_id ).name & "." & fieldName;
+--put_line( "field name = " & to_string( fieldName ) );
+                      declareIdent( field_id, fieldName, identifiers( j ).kind, varClass );
+                      -- fields have not been marked as children of the parent
+                      -- record.  However, to make sure the record is used, it
+                      -- is convenient to track the field.
+                      identifiers( field_id ).field_of := usable_param_id;
+                      -- at least, for now, don't worry if record fields are
+                      -- declared but not accessed.  We'll just check the
+                      -- main record identifier.
+                      if syntax_check then
+                         identifiers( field_id ).wasReferenced := true;
+                      end if;
+
+                   end;
+                      -- FixRenamedRecordFields( actual_param_ref, usable_param_id );
+                end if;
+             end if;
+         end loop;
+     end loop;
+     end;
                    end if;
                 end if;
-      --FixRenamedRecordFields( actual_param_ref, actual_param_t );
             end if; -- types/params ok
 
 -- OLD CODE
@@ -6199,11 +6251,12 @@ put_line( to_string( identifiers( identifiers( formal_param_id ).kind ).name ) )
     -- or if there were too many given.
     -- TODO: distinguish these error messages
 
+  expect( symbol_t, ")" );
+
   if not found then
      err( "parameter not found or too many parameters" );
   end if;
 
-  expect( symbol_t, ")" );
 end ParseActualParameters;
 
 procedure ParseSeparateFuncHeader( func_id : identifier; funcStart : out natural ) is

@@ -141,7 +141,8 @@ begin
                err_exception_raised;
                arrayIndex := 0;
             end;
-            if baseTypesOK( identifiers( ref.id ).genKind, expr_kind ) then -- TODO: probably needs a better error message
+            if baseTypesOK( identifiers( ref.id ).genKind, expr_kind ) then 
+               -- TODO: probably needs a better error message
                if arrayIndex not in identifiers( ref.id ).avalue'range then
                   err( "array index " & to_string( trim( expr_value, ada.strings.both ) ) & " not in" & identifiers( ref.id ).avalue'first'img & " .." & identifiers( ref.id ).avalue'last'img );
                else
@@ -157,6 +158,9 @@ begin
 
     -- if it already exists it must match the default type.
 
+--put( to_string( identifiers( expectedType ).name ) );
+--put( " <= " & to_string( identifiers( ref.id ).name ) );
+--put_line( "/" & to_string( identifiers( identifiers( ref.id ).kind ).name ) ); -- DEBUG
     if renamingTypesOk( expectedType, identifiers( ref.id ).kind ) then
        ref.kind := identifiers( ref.id ).kind;
     end if;

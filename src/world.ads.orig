@@ -6,7 +6,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2011 Free Software Foundation            --
+--              Copyright (C) 2001-2016 Free Software Foundation            --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -739,6 +739,8 @@ procedure declareException( id : out identifier; name : unbounded_string;
 procedure declareRenaming( new_id : identifier; canonicalRef :
   renamingReference );
 -- recast a new identifier as a renaming of the given reference
+
+procedure declareRecordFields( parentRecordOfFieldsId, recordBaseTypeId : identifier );
 
 procedure declareNamespace( name : string );
 procedure declareGlobalNamespace;
