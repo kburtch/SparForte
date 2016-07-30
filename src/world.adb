@@ -950,25 +950,19 @@ procedure declareRecordFields( parentRecordOfFieldsId, recordBaseTypeId : identi
    numFields : natural;
    recordTypeId : identifier;
 begin
-put_line( "declareRecordFields" ); -- DEBUG
-put_line( to_string( identifiers( parentRecordOfFieldsId ).name ) ); -- DEBUG
+   recordTypeId := identifiers( recordBaseTypeId ).kind;
 
--- TODO: getBaseType is not defined at this level.  Must be passed in.
-   recordTypeId := identifiers( parentRecordOfFieldsId ).kind;
-put_line( to_string( identifiers( recordTypeId ).name ) );
    begin
-   numFields := natural( to_numeric( identifiers( recordTypeId ).value.all ) );
+      numFields := natural( to_numeric( identifiers( recordTypeId ).value.all ) );
    exception when others =>
       put_line( "unable to get number of fields" );
       raise;
    end;
-put_line( "numFields: " & numFields'img );
    for i in 1..numFields loop
 -- TODO: brutal search
          for j in reverse 1..identifiers_top-1 loop
 -- TODO: should this be the base record type?  subtypes may break it
              if identifiers( j ).field_of = recordTypeId then
-put_line( "testing " & to_string( identifiers( j ).name ) ); -- DEBUG
                 if integer'value( to_string( identifiers( j ).value.all )) = i then
                    declare
                       fieldName   : unbounded_string;
@@ -984,7 +978,6 @@ put_line( "testing " & to_string( identifiers( j ).name ) ); -- DEBUG
                       fieldName := delete( fieldName, 1, dotPos );
                       fieldName := identifiers( parentRecordOfFieldsId ).name &
                          "." & fieldName;
-put_line( "field name = " & to_string( fieldName ) );
                       declareIdent( field_id, fieldName, identifiers( j ).kind, varClass );
                       -- fields have not been marked as children of the parent
                       -- record.  However, to make sure the record is used, it
