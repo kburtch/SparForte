@@ -2975,6 +2975,7 @@ procedure ParseRecordDeclaration( id : identifier; recType : identifier; canAssi
   canonicalRef : renamingReference;
   numFields    : natural;
   baseRecType  : identifier;
+  j            : identifier;
 begin
   identifiers( id ).kind := recType;
 
@@ -3013,40 +3014,59 @@ begin
   -- everything except the name after the final dot.  Then prefix the name of
   -- the record being declared (so that "rec_type.f" becomes "my_rec.f").
 
+     j := baseRecType + 1;
      for i in 1..numFields loop
-         for j in 1..identifiers_top-1 loop
-             if identifiers( j ).field_of = baseRecType then
-                if integer'value( to_string( identifiers( j ).value.all )) = i then
-                   declare
-                      fieldName   : unbounded_string;
-                      dont_care_t : identifier;
-                      dotPos      : natural;
-                   begin
-                      fieldName := identifiers( j ).name;
-                      dotPos := length( fieldName );
-                      while dotPos > 1 loop
-                         exit when element( fieldName, dotPos ) = '.';
-                         dotPos := dotPos - 1;
-                      end loop;
-                      fieldName := delete( fieldName, 1, dotPos );
-                      fieldName := identifiers( id ).name & "." & fieldName;
-                      declareIdent( dont_care_t, fieldName, identifiers( j ).kind, varClass );
-                      -- fields have not been marked as children of the parent
-                      -- record.  However, to make sure the record is used, it
-                      -- is convenient to track the field.
-                      identifiers( dont_care_t ).field_of := id;
-                      -- at least, for now, don't worry if record fields are
-                      -- declared but not accessed.  We'll just check the
-                      -- main record identifier.
-                      if syntax_check then
-                         identifiers( dont_care_t ).wasReferenced := true;
-                      end if;
-                   end;
-                end if;
-             end if;
-         end loop;
-     end loop;
 
+            -- brutal search was...
+            -- for j in 1..identifiers_top-1 loop
+            --
+            -- As an optimization, the fields are likely located immediately after
+            -- the record itself is defined.  Also assumes they are stored
+            -- sequentially.  In the future, records will be stored differently.
+
+            while j < identifiers_top loop
+              if identifiers( j ).field_of = baseRecType then
+                 if integer'value( to_string( identifiers( j ).value.all )) = i then
+                    exit;
+                 end if;
+              end if;
+              j := identifier( integer( j ) + 1 );
+            end loop;
+
+            -- no more identifiers means we didn't find it.
+            if j = identifiers_top then
+               err( gnat.source_info.source_location &
+                 "internal error: record field not found" );
+               exit;
+            end if;
+
+            declare
+               fieldName   : unbounded_string;
+               dont_care_t : identifier;
+               dotPos      : natural;
+            begin
+               fieldName := identifiers( j ).name;
+               dotPos := length( fieldName );
+               while dotPos > 1 loop
+                  exit when element( fieldName, dotPos ) = '.';
+                  dotPos := dotPos - 1;
+               end loop;
+               fieldName := delete( fieldName, 1, dotPos );
+               fieldName := identifiers( id ).name & "." & fieldName;
+               declareIdent( dont_care_t, fieldName, identifiers( j ).kind, varClass );
+               -- fields have not been marked as children of the parent
+               -- record.  However, to make sure the record is used, it
+               -- is convenient to track the field.
+               identifiers( dont_care_t ).field_of := id;
+               -- at least, for now, don't worry if record fields are
+               -- declared but not accessed.  We'll just check the
+               -- main record identifier.
+               if syntax_check then
+                  identifiers( dont_care_t ).wasReferenced := true;
+               end if;
+            end;
+         j := identifier( integer( j ) + 1 );
+     end loop;
   end if;
 
   -- Renames clause
@@ -6029,42 +6049,75 @@ procedure UpdateRenamedRecordParameter( actualRecordRef : renamingReference;
    fieldName     : unbounded_string;
    usableFieldId : identifier;
    dotPos        : natural;
+   recordTypeFieldId : identifier;
 begin
      -- TODO: use this above with formal parameters?
-  numFields := natural( to_numeric( identifiers( identifiers( actualRecordRef.id ).kind ).value.all ) );
+
+  -- Always a risk of an exception thrown here
+  begin
+    numFields := natural( to_numeric( identifiers( identifiers(
+        actualRecordRef.id ).kind ).value.all ) );
+  exception when storage_error =>
+    numFields := 0;
+    err( gnat.source_info.source_location &
+         "internal error: storage_error: unable to determine the number of fields" );
+  when constraint_error =>
+    numFields := 0;
+    err( gnat.source_info.source_location &
+         "internal error: constraint_error: unable to determine the number of fields" );
+  end;
+
+  recordTypeFieldId := identifiers( formalRecordParamId ).kind + 1;
+
   for fieldNumber in 1..numFields loop
-         -- dir := -1;
 
--- TODO: brutal search...we can do better
-         for recordTypeFieldId in reverse keywords_top..identifiers_top-1 loop
+      -- brutal search...we can do better than...
+      --  for recordTypeFieldId in reverse keywords_top..identifiers_top-1 loop
+      --
+      -- As an optimization, the fields are likely located immediately after
+      -- the record itself is defined.  Also assumes they are stored
+      -- sequentially.  In the future, records will be stored differently.
 
--- TODO: should this be the base record type?  subtypes may break it
-             if identifiers( recordTypeFieldId ).field_of = identifiers( formalRecordParamId ).kind then
-                if integer'value( to_string( identifiers( recordTypeFieldId ).value.all )) = fieldNumber then
-                      fieldName := identifiers( recordTypeFieldId ).name;
-                      dotPos := length( fieldName );
-                      while dotPos > 1 loop
-                         exit when element( fieldName, dotPos ) = '.';
-                         dotPos := dotPos - 1;
-                      end loop;
-                      fieldName := delete( fieldName, 1, dotPos );
-                      fieldName := identifiers( usableRecordParamId ).name & "." & fieldName;
+      while recordTypeFieldId < identifiers_top loop
+        if identifiers( recordTypeFieldId ).field_of = identifiers( formalRecordParamId ).kind then
+           if integer'value( to_string( identifiers( recordTypeFieldId ).value.all )) = fieldNumber then
+               exit;
+            end if;
+         end if;
+         recordTypeFieldId := identifier( integer( recordTypeFieldId ) + 1 );
+      end loop;
+
+     -- no more identifiers means we didn't find it.
+     if recordTypeFieldId = identifiers_top then
+        err( gnat.source_info.source_location &
+           "internal error: record field not found" );
+        exit;
+     end if;
+
+    -- TODO: should this be the base record type?  subtypes may break it
+    fieldName := identifiers( recordTypeFieldId ).name;
+    dotPos := length( fieldName );
+    while dotPos > 1 loop
+       exit when element( fieldName, dotPos ) = '.';
+       dotPos := dotPos - 1;
+    end loop;
+    fieldName := delete( fieldName, 1, dotPos );
+    fieldName := identifiers( usableRecordParamId ).name & "." & fieldName;
 --put_line( "field name = " & to_string( fieldName ) );
-                      declareIdent( usableFieldId, fieldName, identifiers( recordTypeFieldId ).kind, varClass );
-                      -- fields have not been marked as children of the parent
-                      -- record.  However, to make sure the record is used, it
-                      -- is convenient to track the field.
-                      identifiers( usableFieldId ).field_of := usableRecordParamId;
-                      -- at least, for now, don't worry if record fields are
-                      -- declared but not accessed.  We'll just check the
-                      -- main record identifier.
-                      if syntax_check then
-                         identifiers( usableFieldId ).wasReferenced := true;
-                      end if;
-                end if;
-             end if;
-         end loop;
-  end loop;
+    declareIdent( usableFieldId, fieldName, identifiers(
+        recordTypeFieldId ).kind, varClass );
+    -- fields have not been marked as children of the parent
+    -- record.  However, to make sure the record is used, it
+    -- is convenient to track the field.
+    identifiers( usableFieldId ).field_of := usableRecordParamId;
+    -- at least, for now, don't worry if record fields are
+    -- declared but not accessed.  We'll just check the
+    -- main record identifier.
+    if syntax_check then
+       identifiers( usableFieldId ).wasReferenced := true;
+     end if;
+     recordTypeFieldId := identifier( integer( recordTypeFieldId ) + 1 );
+  end loop; -- for
 
   -- We have to do another search for the actual parameter fields and
   -- link them to the usable parameter fields
@@ -6160,8 +6213,6 @@ begin
    parseUsableInoutModeParameter( formalParamId, paramName );
 end parseUsableOutModeParameter;
 
-   j : identifier;
-   dir : integer;
    parameterNumber : integer;
    paramName : unbounded_string;
    formalParamId : identifier;
@@ -6173,35 +6224,31 @@ begin
     -- no reason to look them up.  We're just reading through the parameters
     -- for the procedure call...
 
-  -- Slightly less brutal search than the old one:
+  -- Less brutal search than the old one:
   -- for i in 1..identifiers_top-1 loop
   --
-  -- To speed up this search a little, if we don't know where the identifiers
-  -- are, start at the most recent and work backwards.  Otherwise, start
-  -- where we left off and move forwards.
+  -- As an optimization, the params are likely located immediately after
+  -- the proc itself is defined.  params are assumed to be stored sequentially
+  -- In the future, params could be stored differently.
   --
-  -- TODO: handle namespaces would even be better
+  -- TODO: modify to handle namespaces
 
-  j := identifiers_top - 1;
-  dir := -1;
+  formalParamId := proc_id + 1;
   parameterNumber := 1;
   loop
-    formalParamId := eof_t;
-    while j >= reserved_top and j < identifiers_top loop
-       if identifiers( j ).field_of = proc_id then
-          if integer'value( to_string( identifiers( j ).value.all )) = parameterNumber then
-             formalParamId := j;
-             exit;
-          end if;
-       end if;
-       j := identifier( integer( j ) + dir );
-    end loop;
+      while formalParamId < identifiers_top loop
+        if identifiers( formalParamId ).field_of = proc_id then
+           if integer'value( to_string( identifiers( formalParamId ).value.all )) = parameterNumber then
+              exit;
+           end if;
+        end if;
+        formalParamId := identifier( integer( formalParamId ) + 1 );
+      end loop;
 
     if formalParamId = eof_t then
        err( "unable to find formal parameter" );
        exit;
     end if;
-    dir := +1;
 
     paramName := identifiers( formalParamId ).name;
     paramName := delete( paramName, 1, index( paramName, "." ) );
@@ -6224,7 +6271,7 @@ begin
      exit when error_found or identifiers( token ).value.all /= ","; -- more?
      expect( symbol_t, "," );
      parameterNumber := parameterNumber + 1;
-     j := identifier( integer( j ) + dir );
+     formalParamId := identifier( integer( formalParamId ) + 1 );
   end loop;
 
   expect( symbol_t, ")" );

@@ -556,6 +556,8 @@ procedure FixRenamedRecordFields( canonicalRef : renamingReference;
   renamingRec : identifier ) is
 -- Given a renamed record, search for and adjust the record fields to
 -- refer to the correct variables.
+  numFields : natural;
+  canonicalField : identifier;
 begin
   -- The renaming possibilities
   --
@@ -591,49 +593,86 @@ begin
 
   -- The canonical record/fields could be, of course, another
   -- renaming.
+  -- Always a risk of an exception thrown here
+  begin
+    numFields := natural( to_numeric( identifiers( identifiers(
+        canonicalRef.id ).kind ).value.all ) );
+  exception when storage_error =>
+    numFields := 0;
+    err( gnat.source_info.source_location &
+         "internal error: storage_error: unable to determine the number of fields" );
+  when constraint_error =>
+    numFields := 0;
+    err( gnat.source_info.source_location &
+         "internal error: constraint_error: unable to determine the number of fields" );
+  end;
 
-  for canonicalField in reverse keywords_top..identifiers_top-1 loop
-      if identifiers( canonicalField ).field_of = canonicalRef.id then
-         declare
-            fieldName     : unbounded_string;
-            renamingField : identifier;
-            dotPos        : natural;
-         begin
-            -- construct a new field name using the renaming
-            fieldName := identifiers( canonicalField ).name;
-            dotPos := length( fieldName );
-            while dotPos > 1 loop
-               exit when element( fieldName, dotPos ) = '.';
-               dotPos := dotPos - 1;
-            end loop;
-            fieldName := delete( fieldName, 1, dotPos );
-            fieldName := identifiers( renamingRec ).name & "." & fieldName;
+  canonicalField := canonicalRef.id + 1;
 
-            -- Locate the field of the renaming record
-            findIdent( fieldName, renamingField );
-            if renamingField = eof_t then
-               err( gnat.source_info.source_location &
-                    ": internal error: " &
-                    "cannot find field in the renaming record; " &
-                    "Identifier" & canonicalField'img &
-                    ": Canonical field " &
-                    optional_bold( to_string( identifiers( canonicalField ).name ) ) & "/" &
-                    "Renaming Field " & optional_bold( to_string( fieldName ) ) );
-            else
+  for fieldNumber in 1..numFields loop
 
-               -- The renaming is created by copying data.  Correct
-               -- the fields to be owned
-               -- by the renaming, not adding fields to the canonical
-               -- record.
-               identifiers( renamingField ).field_of := renamingRec;
-               -- link the renaming field to the canonical field
-               identifiers( canonicalField ).renamed_count :=
-                  identifiers( canonicalfield ).renamed_count + 1;
-               identifiers( renamingField ).value :=
-                  identifiers( canonicalField ).value;
-            end if;
-         end;
-      end if;
+      -- brutal search was...
+      -- for canonicalField in reverse keywords_top..identifiers_top-1 loop
+      --
+      -- As an optimization, the fields are likely located immediately after
+      -- the record itself is defined.  Also assumes they are stored
+      -- sequentially.  In the future, records will be stored differently.
+
+      while canonicalField < identifiers_top loop
+        if identifiers( canonicalField ).field_of = canonicalRef.id then
+           exit;
+        end if;
+        canonicalField := identifier( integer( canonicalField ) + 1 );
+      end loop;
+
+     -- no more identifiers means we didn't find it.
+     if canonicalField = identifiers_top then
+        err( gnat.source_info.source_location &
+           "internal error: record field not found" );
+        exit;
+     end if;
+
+     declare
+        fieldName     : unbounded_string;
+        renamingField : identifier;
+        dotPos        : natural;
+     begin
+        -- construct a new field name using the renaming
+        fieldName := identifiers( canonicalField ).name;
+        dotPos := length( fieldName );
+        while dotPos > 1 loop
+           exit when element( fieldName, dotPos ) = '.';
+           dotPos := dotPos - 1;
+        end loop;
+        fieldName := delete( fieldName, 1, dotPos );
+        fieldName := identifiers( renamingRec ).name & "." & fieldName;
+
+        -- Locate the field of the renaming record
+        -- TODO: this is slow, as fields are likely stored sequentially after
+        -- the record type, so there's no reason to do a brute-force lookup.
+        findIdent( fieldName, renamingField );
+        if renamingField = eof_t then
+           err( gnat.source_info.source_location &
+                ": internal error: " &
+                "cannot find field in the renaming record; " &
+                "Identifier" & canonicalField'img &
+                ": Canonical field " &
+                optional_bold( to_string( identifiers( canonicalField ).name ) ) & "/" &
+                "Renaming Field " & optional_bold( to_string( fieldName ) ) );
+        else
+           -- The renaming is created by copying data.  Correct
+           -- the fields to be owned
+           -- by the renaming, not adding fields to the canonical
+           -- record.
+           identifiers( renamingField ).field_of := renamingRec;
+           -- link the renaming field to the canonical field
+           identifiers( canonicalField ).renamed_count :=
+              identifiers( canonicalfield ).renamed_count + 1;
+           identifiers( renamingField ).value :=
+              identifiers( canonicalField ).value;
+         end if;
+     end;
+     canonicalField := identifier( integer( canonicalField ) + 1 );
    end loop;
 end FixRenamedRecordFields;
 

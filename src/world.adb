@@ -949,53 +949,78 @@ end declareRenaming;
 procedure declareRecordFields( parentRecordOfFieldsId, recordBaseTypeId : identifier ) is
    numFields : natural;
    recordTypeId : identifier;
+   j : identifier;
 begin
-   recordTypeId := identifiers( recordBaseTypeId ).kind;
+   recordTypeId := identifiers( parentRecordOfFieldsId ).kind;
 
    begin
-      numFields := natural( to_numeric( identifiers( recordTypeId ).value.all ) );
+      if recordBaseTypeId = root_record_t then
+         put_line( standard_error, gnat.source_info.source_location &
+           "internal errror: unexpected type " &
+          to_string( identifiers( recordBaseTypeId ).name ) );
+      end if;
+      numFields := natural( to_numeric( identifiers( recordBaseTypeId ).value.all ) );
    exception when others =>
-      put_line( "unable to get number of fields" );
+      put_line( standard_error, gnat.source_info.source_location &
+        "internal errror: unable to get number of fields for " &
+        to_string( identifiers( recordBaseTypeId ).name ) );
       raise;
    end;
    for i in 1..numFields loop
--- TODO: brutal search
-         for j in reverse 1..identifiers_top-1 loop
--- TODO: should this be the base record type?  subtypes may break it
-             if identifiers( j ).field_of = recordTypeId then
-                if integer'value( to_string( identifiers( j ).value.all )) = i then
-                   declare
-                      fieldName   : unbounded_string;
-                      field_id    : identifier;
-                      dotPos      : natural;
-                   begin
-                      fieldName := identifiers( j ).name;
-                      dotPos := length( fieldName );
-                      while dotPos > 1 loop
-                         exit when element( fieldName, dotPos ) = '.';
-                         dotPos := dotPos - 1;
-                      end loop;
-                      fieldName := delete( fieldName, 1, dotPos );
-                      fieldName := identifiers( parentRecordOfFieldsId ).name &
-                         "." & fieldName;
-                      declareIdent( field_id, fieldName, identifiers( j ).kind, varClass );
-                      -- fields have not been marked as children of the parent
-                      -- record.  However, to make sure the record is used, it
-                      -- is convenient to track the field.
-                      identifiers( field_id ).field_of := parentRecordOfFieldsId;
-                      -- at least, for now, don't worry if record fields are
-                      -- declared but not accessed.  We'll just check the
-                      -- main record identifier.
-                      if syntax_check then
-                         identifiers( field_id ).wasReferenced := true;
-                      end if;
 
-                   end;
-                      -- FixRenamedRecordFields( actual_param_ref, usable_param_id );
-                end if;
-             end if;
-         end loop;
-     end loop;
+      -- brutal search was ...
+      -- for j in reverse 1..identifiers_top-1 loop
+      --
+      -- As an optimization, the fields are likely located immediately after
+      -- the record itself is defined.  Also assumes they are stored
+      -- sequentially.  In the future, records will be stored differently.
+
+     j := recordTypeId + 1;
+     while j < identifiers_top loop
+        -- TODO: should this be the base record type?  subtypes may break it
+        if identifiers( j ).field_of = recordTypeId then
+           if integer'value( to_string( identifiers( j ).value.all )) = i then
+              exit;
+           end if;
+        end if;
+        j := identifier( integer( j ) + 1 );
+      end loop;
+
+     -- no more identifiers means we didn't find it.
+     if j = identifiers_top then
+        put_line( standard_error, gnat.source_info.source_location &
+           "internal error: record field not found" );
+        exit;
+     end if;
+
+     declare
+        fieldName   : unbounded_string;
+        field_id    : identifier;
+        dotPos      : natural;
+     begin
+        fieldName := identifiers( j ).name;
+        dotPos := length( fieldName );
+        while dotPos > 1 loop
+              exit when element( fieldName, dotPos ) = '.';
+              dotPos := dotPos - 1;
+        end loop;
+        fieldName := delete( fieldName, 1, dotPos );
+        fieldName := identifiers( parentRecordOfFieldsId ).name &
+           "." & fieldName;
+        declareIdent( field_id, fieldName, identifiers( j ).kind, varClass );
+           -- fields have not been marked as children of the parent
+           -- record.  However, to make sure the record is used, it
+           -- is convenient to track the field.
+        identifiers( field_id ).field_of := parentRecordOfFieldsId;
+           -- at least, for now, don't worry if record fields are
+           -- declared but not accessed.  We'll just check the
+           -- main record identifier.
+        if syntax_check then
+           identifiers( field_id ).wasReferenced := true;
+        end if;
+     end;
+     j := identifier( integer( j ) + 1 );
+   end loop;
 end declareRecordFields;
 
 -- DECLARE NAMESPACE
