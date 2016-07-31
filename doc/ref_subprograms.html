@@ -155,7 +155,11 @@ before the type of parameter.</p>
         </div>
         </center>
 
-<p><b>Experimental</b>: New with SparForte version 2.0, parameters may be explicitedly declared as <tt>in</tt>, or can also be <tt>out</tt> or <tt>in out</tt>.  <tt>out</tt> and <tt>in out</tt> parameters must be simple identifiers, not references to elements of an array or record.  "out" means the parameter is returned to the caller.  "in out" means the parameter can be read and modified before returning to the caller.  These can be used both for procedures and functions.</p>
+<p>Besides in mode parameters, parameters may also be <b>out</b> or <b>in out</b> mode.  Out parameters return values, and in out read, modify and return values.  These parameters may refer to arrays, records, array elements or record fields, in addition to the scalar types.</p>
+
+<p>Functions are not allowed to use out parameters.</p>
+
+<p><b>Ada</b>: Ada does not permit functions to use in out mode parameters.</p>
 
 <p>Procedures and functions can only declared inside the declaration section of
 a script's main procedure block (or declared nested inside other subprograms

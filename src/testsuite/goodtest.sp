@@ -3707,6 +3707,299 @@ pragma assert( f = g );
 
 end; -- renaming tests
 
+-- in out parameter tests
+
+begin
+
+-- basic in out procedure
+
+declare
+  procedure in_out_proc ( i : in out integer ) is
+  begin
+    i := i * 2;
+  end in_out_proc;
+  j : integer := 5;
+begin
+  in_out_proc( j );
+  pragma assert( j = 10 );
+end;
+
+-- basic in out procedure - string
+
+declare
+  procedure in_out_proc ( s : in out string ) is
+  begin
+    s := s & "bar";
+  end in_out_proc;
+  j : string := "foo";
+begin
+  in_out_proc( j );
+  pragma assert( j = "foobar" );
+end;
+
+-- basic in out procedure - enumerated (boolean)
+
+declare
+  procedure in_out_proc ( b : in out boolean ) is
+  begin
+    b := not b;
+  end in_out_proc;
+  j : boolean := true;
+begin
+  in_out_proc( j );
+  pragma assert( j = false );
+end;
+
+-- basic in out procedure - subtype
+
+declare
+  subtype int is integer;
+  procedure in_out_proc ( i : in out int ) is
+  begin
+    i := i * 2;
+  end in_out_proc;
+  j : integer := 3;
+begin
+  in_out_proc( j );
+  pragma assert( j = 6 );
+end;
+
+-- in out array element
+
+declare
+  procedure in_out_proc ( i : in out integer ) is
+  begin
+    i := i * 2;
+  end in_out_proc;
+  type param_array is array(1..1) of integer;
+  p : param_array;
+begin
+  p(1) := 6;
+  in_out_proc( p(1) );
+  pragma assert( p(1) = 12 );
+end;
+
+-- in out full array
+
+declare
+  type param_array is array(1..1) of integer;
+  procedure in_out_proc ( a : in out param_array ) is
+  begin
+    a(1) := a(1) * 2;
+  end in_out_proc;
+  p : param_array;
+begin
+  p(1) := 7;
+  in_out_proc( p );
+  pragma assert( p(1) = 14 );
+end;
+
+-- in out record field
+
+declare
+  procedure in_out_proc ( i : in out integer ) is
+  begin
+    i := i * 2;
+  end in_out_proc;
+  type rt is record
+    j : integer;
+  end record;
+  r : rt;
+begin
+  r.j := 8;
+  in_out_proc( r.j );
+  pragma assert( r.j = 16 );
+end;
+
+-- in out full record
+
+declare
+  type rt is record
+    j : integer;
+  end record;
+  procedure in_out_proc ( p : in out rt ) is
+  begin
+    p.j := p.j * 2;
+  end in_out_proc;
+  r : rt;
+begin
+  r.j := 9;
+  in_out_proc( r );
+  pragma assert( r.j = 18 );
+end;
+
+-- nested in out parameters
+
+declare
+  procedure in_out_proc1 ( i : in out integer ) is
+  begin
+    i := i * 2;
+  end in_out_proc1;
+  procedure in_out_proc2 ( i : in out integer ) is
+  begin
+    in_out_proc1( i );
+    i := i * 3;
+  end in_out_proc2;
+  j : integer := 4;
+begin
+  in_out_proc2( j );
+  pragma assert( j = 24 );
+end;
+
+-- in out function
+
+declare
+  function in_out_func ( i : in out integer ) return integer is
+  begin
+    i := i * 2;
+    return i * 2;
+  end in_out_func;
+  j : integer := 1;
+  v : integer;
+begin
+  v := in_out_func( j );
+  pragma assert( j = 2 );
+  pragma assert( v = 4 );
+end;
+
+end;
+
+-- out parameter tests
+
+begin
+
+-- basic out procedure
+
+declare
+  procedure out_proc ( i : in out integer ) is
+  begin
+    i := 1;
+  end out_proc;
+  j : integer;
+begin
+  out_proc( j );
+  pragma assert( j = 1 );
+end;
+
+-- basic out procedure - string
+
+declare
+  procedure out_proc ( s : in out string ) is
+  begin
+    s := "bar";
+  end out_proc;
+  j : string := "foo";
+begin
+  out_proc( j );
+  pragma assert( j = "bar" );
+end;
+
+-- basic out procedure - enumerated (boolean)
+
+declare
+  procedure out_proc ( b : out boolean ) is
+  begin
+    b := true;
+  end out_proc;
+  j : boolean := true;
+begin
+  out_proc( j );
+  pragma assert( j = true );
+end;
+
+-- basic out procedure - subtype
+
+declare
+  subtype int is integer;
+  procedure out_proc ( i : out int ) is
+  begin
+    i := 2;
+  end out_proc;
+  j : integer;
+begin
+  out_proc( j );
+  pragma assert( j = 2 );
+end;
+
+-- out array element
+
+declare
+  procedure out_proc ( i : out integer ) is
+  begin
+    i := 3;
+  end out_proc;
+  type param_array is array(1..1) of integer;
+  p : param_array;
+begin
+  out_proc( p(1) );
+  pragma assert( p(1) = 3 );
+end;
+
+-- out full array
+
+declare
+  type param_array is array(1..1) of integer;
+  procedure out_proc ( a : out param_array ) is
+  begin
+    a(1) := 4;
+  end out_proc;
+  p : param_array;
+begin
+  out_proc( p );
+  pragma assert( p(1) = 4 );
+end;
+
+-- out record field
+
+declare
+  procedure out_proc ( i : out integer ) is
+  begin
+    i := 5;
+  end out_proc;
+  type rt is record
+    j : integer;
+  end record;
+  r : rt;
+begin
+  out_proc( r.j );
+  pragma assert( r.j = 5 );
+end;
+
+-- out full record
+
+declare
+  type rt is record
+    j : integer;
+  end record;
+  procedure out_proc ( p : out rt ) is
+  begin
+    p.j := 6;
+  end out_proc;
+  r : rt;
+begin
+  out_proc( r );
+  pragma assert( r.j = 6 );
+end;
+
+-- nested out parameters
+
+declare
+  procedure out_proc1 ( i : out integer ) is
+  begin
+    i := 7;
+  end out_proc1;
+  procedure out_proc2 ( i : out integer ) is
+  begin
+    out_proc1( i );
+  end out_proc2;
+  j : integer;
+begin
+  out_proc2( j );
+  pragma assert( j = 7 );
+end;
+
+end;
+
 -- Pragma ada_95 tests
 
 pragma ada_95;

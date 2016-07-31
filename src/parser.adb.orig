@@ -2991,8 +2991,6 @@ begin
      --
      -- TODO: perhaps the svalue SHOULD be copied by the declaration...but then
      -- it must also create the field identifiers as well...
-     --
-     -- TODO: this may work for subtypes but not for new types...
 
      baseRecType := getBaseType( recType );
      begin
@@ -5682,7 +5680,7 @@ begin
   pullBlock;
 end ParseBeginBlock;
 
-procedure ParseFormalParameters( proc_id : identifier; param_no : in out integer ) is
+procedure ParseFormalParameters( proc_id : identifier; param_no : in out integer; is_function : boolean := false ) is
 -- Syntax: (field = declaration [; declaration ... ] )
 -- Fields are implemented using records
    formal_param_id : identifier;
@@ -5733,6 +5731,17 @@ begin
   --
   -- in mode for aggregates not yet written.
 
+   if passingMode = out_mode then
+      if is_function then
+         err( "out mode parameters not allowed in functions" );
+     end if;
+   end if;
+   if passingMode = in_out_mode then
+      if is_function and onlyAda95 then
+         err( "in out mode parameters not allowed in functions with " &
+             optional_bold( "pragma ada_95" ) );
+      end if;
+   end if;
   if passingMode = in_mode then
      if identifiers( getBaseType( type_token ) ).list then
          err( "array parameters not yet supported" );
@@ -5998,6 +6007,11 @@ procedure ParseActualParameters( proc_id : identifier;
   declareParams : boolean := true ) is
 -- Syntax: (param : declaration [; declaration ... ] )
 --
+-- declareparams is true, then the parameters will be created (e.g. this is
+--   false on a syntax check)
+-- is_function is true when this is called to setup a function's parameters
+--   (false is a procedure)
+--
 -- For a call proc( x, y, z ), this procedure parses x, y, z and
 -- creates the equivalent parameters for running proc.  There are three
 -- kind of parameters involved:
@@ -6166,14 +6180,15 @@ begin
     actual_param_ref,
     identifiers( formalParamId ).kind
   );
+  -- parameters may not be constants or enumerated items
+  if identifiers( actual_param_ref.id ).class = constClass then
+     err( "a constant cannot be used as an in out or out mode parameter" );
+  elsif identifiers( actual_param_ref.id ).class = enumClass then
+     -- TODO: I could probably get this to work for out parameters but
+     -- not yet implemented
+     err( "enumerated items cannot be used as an in out or out mode parameter" );
+  end if;
   if declareParams then
-     if identifiers( actual_param_ref.id).class = constClass then
-        err( "a constant cannot be used as an in out mode parameter" );
-     elsif identifiers( actual_param_ref.id ).class = enumClass then
-        -- TODO: I could probably get this to work for out parameters but
-        -- not yet implemented
-        err( "enumerated items cannot be used as an in out mode parameter" );
-     else
        -- the actual parameter will be the canonical identifier for
        -- the renaming
        declareIdent(
@@ -6191,13 +6206,11 @@ begin
            else
               updateRenamedFullArrayParameter( actual_param_ref, usableParamId );
            end if;
---TODO: record should really not be "root_record" by a flag like list?
         elsif identifiers( getBaseType( actual_param_ref.kind ) ).kind = root_record_t then  -- record type?
 -- TODO: a function for this
            UpdateRenamedRecordParameter( actual_param_ref, formalParamId,
    usableParamId );
         end if;
-     end if; --type/class OK
   end if; -- declareParams
 end parseUsableInoutModeParameter;
 
@@ -6379,7 +6392,7 @@ begin
      if token = symbol_t and identifiers( token ).value.all = "(" then
         expect( symbol_t, "(" );
         no_params := 0;
-        ParseFormalParameters( func_id, no_params );
+        ParseFormalParameters( func_id, no_params, is_function => true );
         expect( symbol_t, ")" );
      end if;
      ParseFunctionReturnPart( func_id );

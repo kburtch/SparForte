@@ -86,7 +86,7 @@ Examples:
    d : rectype renames r;
    e : rectype renames r.f;
 
-30. New: experimental support for in, out and in out parameters in user-defined functions and procedures.  Note that only identifier names, not references to elements of arrays or records, are supported. [tests needed][unset needs updating]
+30. New: support for in, out and in out parameters in user-defined functions and procedures.  Supports scalar and aggregate types. [negative tests needed] [unset needs updating]
 
 31. Fix: shell command no longer errors after a begin.
 
