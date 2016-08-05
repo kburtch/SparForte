@@ -38,6 +38,7 @@ with system,
     pegasock.memcache,
     string_util,
     user_io,
+    user_io.getline,
     script_io,
     builtins,
     jobs,
@@ -131,7 +132,7 @@ uppercase_o : unbounded_string := to_unbounded_string( "O" );
 -- this list because they are often used in examples.  "result" is often
 -- used in functions so is not included.
 
-nonmeaningful_words : unbounded_string := to_unbounded_string( " blah amount const data func proc equals info input output parm param parms params stuff thing things whatever whatnot whatsoever value values variable variables " );
+nonmeaningful_words : unbounded_string := to_unbounded_string( " blah amount asset assets const data func proc equals info input output parm param parms params stuff that thing things this whatever whatnot whatsoever value values variable variables " );
 
 -- CONFUSING PROGRAM WORDS
 --
@@ -8995,9 +8996,9 @@ begin
            put( ASCII.BEL  ); -- xterm window title
        end if;
     end if;
-    put_bold( prompt );                       -- show prompt in bold
+    --put_bold( prompt );                       -- show prompt in bold
     wasSIGINT := false;                       -- clear for getLine
-    getLine( command, keepHistory => true );  -- read command from keyboard
+    user_io.getline.getLine( command, prompt, keepHistory => true );  -- read command from keyboard
     if wasSIGINT then                         -- control-c?
        command := null_unbounded_string;      -- pretend empty command
        wasSIGINT := false;                    -- we handled it

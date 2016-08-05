@@ -177,6 +177,9 @@ By default, SparForte will install under /usr/local.
     --without-postgres (NO_POSTGRES variable): disable PostgreSQL database
             support
 
+    --without-readline (NO_READLINE variable): disable GNU readline support
+            and use the old SparFrote input functions
+
     --without-sound (NO_SOUND variable): disable gstreamer sound support.
 
     Common Problems

@@ -86,7 +86,7 @@ Examples:
    d : rectype renames r;
    e : rectype renames r.f;
 
-30. New: support for in, out and in out parameters in user-defined functions and procedures.  Supports scalar and aggregate types. [negative tests needed] [unset needs updating]
+30. New: support for in, out and in out parameters in user-defined functions and procedures.  Supports scalar and aggregate types. [unset needs updating]
 
 31. Fix: shell command no longer errors after a begin.
 
@@ -103,6 +103,8 @@ Examples:
 37. Fix: additional dup2 EINTR checks in shell pipeline execution added to hopefully eliminate or reduce intermittent interrupted system call errors.
 
 38. Fix: declarations using record subtypes now working, but not fully tested.  Creating a derived type from a record is now a "not implemented" error.
+
+39. New: GNU readline now the default command line input function.  The old Ada function can be used if you use the new configure flag --without-readline.
 
 [David B wants shared library but didn't get it added in time]
 

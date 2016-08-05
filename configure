@@ -37,6 +37,7 @@ while [ $# -gt 0 ] ; do
       echo "  --without-mysql       disable MySQL support"
       echo "  --without-opengl      disable OpenGL support"
       echo "  --without-postgres    disable PostgreSQL support"
+      echo "  --without-readline    disable GNU readline support"
 #      echo "  --without-sdl"
       echo "  --without-sound       disable OSS sound support"
       echo
@@ -69,6 +70,9 @@ while [ $# -gt 0 ] ; do
       ;;
   --without-postgres)
       NO_POSTGRES=0
+      ;;
+  --without-readline)
+      NO_READLINE=0
       ;;
   --without-sound)
       NO_SOUND=0
@@ -844,6 +848,37 @@ else
    echo "no"
 fi
 
+# GNU Readline
+
+if [ -z "$NO_READLINE" ] ; then
+   HAS_READLINE=1
+   echo -n "checking for readline (ldconfig -p, Linux)... "
+   TMP=`/sbin/ldconfig -p 2>/dev/null | grep libreadline.so.6`
+   if [ -z "$TMP" ] ; then
+      echo "no"
+      echo -n "checking for readline (ldconfig -r, FreeBSD)... "
+      TMP=`/sbin/ldconfig -r 2>/dev/null | grep libreadline`
+      if [ -z "$TMP" ] ; then
+         echo "no"
+         echo -n "checking for readline (locate, Darwin)... "
+         TMP=`"$LOCATE" libreadline`
+         if [ ! -z "$TMP" ] ; then
+             echo "yes"
+         else
+             HAS_READLINE=""
+             echo "no"
+         fi
+      else
+         echo "yes"
+      fi
+   else
+      echo "yes"
+   fi
+else
+   HAS_READLINE=""
+   echo "no"
+fi
+
 # Make
 
 echo -n "checking for gmake (\$GMAKE)... "
@@ -1007,6 +1042,11 @@ if [ ! -z "$HAS_MYSQL" ] ; then
 else
    GNATPREP_OPTS="$GNATPREP_OPTS -DMYSQL=false"
 fi
+if [ ! -z "$HAS_READLINE" ] ; then
+   GNATPREP_OPTS="$GNATPREP_OPTS -DREADLINE=true"
+else
+   GNATPREP_OPTS="$GNATPREP_OPTS -DREADLINE=false"
+fi
 if [ -z "$NO_SOUND" ] ; then
    GNATPREP_OPTS="$GNATPREP_OPTS -DSOUND=true"
 else
@@ -1034,6 +1074,12 @@ test -f world.ads && chmod 666 world.ads
 cp world.ads.orig temp.ads
 gnatprep $GNATPREP_OPTS temp.ads world.ads
 chmod 444 world.ads
+
+echo "Updating...user_io.getline.adb"
+test -f user_io-getline.adb && chmod 666 user_io-getline.adb
+cp user_io-getline.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb user_io-getline.adb
+chmod 444 user_io-getline.adb
 
 echo "Updating...scanner_res.ads"
 test -f scanner_res.ads && chmod 666 scanner_res.ads
@@ -1187,6 +1233,13 @@ if [ -z "$NO_BDB" ] ; then
 else
    BDBLIBS=
 fi
+if [ -z "$NO_READLINE" ] ; then
+   RLINCL="\-I\.\/areadline\/"
+   RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.6\ \-l:libhistory.so.6"
+else
+   RLINCL=
+   RLLIBS=
+fi
 
 PREFIX=`echo "$PREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 MANPREFIX=`echo "$MANPREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
@@ -1200,7 +1253,7 @@ touch c_gstreamer.c
 
 echo "Creating...src/GNUmakefile"
 
-sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g;s/MESAINCLSUB/$MESAINCLTYPE/g;s/MESALIBSSUB/$MESALIBSTYPE/g;s/BDBSUB/$BDBLIBS/g;s/BDBINCLSUB/$BDBINCL/g" < GNUmakefile.orig > GNUmakefile
+sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g;s/MESAINCLSUB/$MESAINCLTYPE/g;s/MESALIBSSUB/$MESALIBSTYPE/g;s/BDBSUB/$BDBLIBS/g;s/BDBINCLSUB/$BDBINCL/g;s/RLINCLSUB/$RLINCL/g;s/RLLIBSSUB/$RLLIBS/g" < GNUmakefile.orig > GNUmakefile
 
 cd ..
 echo "Creating...GNUmakefile"

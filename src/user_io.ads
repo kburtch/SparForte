@@ -73,12 +73,6 @@ procedure getKey( ch : out character; nonblock : boolean := false );
 -- read a single keypress and don't show the character to user
 -- when non-blocking, ASCII.EOT is returned if no key
 
-procedure getLine( line : out unbounded_string; keepHistory : boolean := false );
--- read a line from the keyboard
--- Note: the keymap is hard-coded, but really should be taken from
--- current terminal settings.
-
-
 ------------------------------------------------------
 -- User Output
 --

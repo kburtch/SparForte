@@ -27,6 +27,7 @@ with interfaces.c,
     gnat.source_info,
     string_util,
     user_io,
+    user_io.getline,
     script_io,
     signal_flags,
     scanner.calendar,
@@ -226,7 +227,7 @@ begin
           str := str & ch;
         end loop;
      else
-        getLine( str );
+        user_io.getline.getLine( str );
         if wasSIGINT then
            new_line;  -- user didn't press enter
            -- wasSIGINT will be cleared later
