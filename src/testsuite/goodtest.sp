@@ -926,19 +926,20 @@ history -c;
 
 pragma annotate( "This is a test" );
 pragma depreciated( "<This is not an error>" );
-FOOBAR : string;
+type import_string is new string;
+FOOBAR : import_string;
 pragma import( shell, FOOBAR );
 pragma export( shell, FOOBAR );
 pragma volatile( FOOBAR );
 foo_dummy_variable_123: string := "foo_123";
 pragma unchecked_import( shell, foo_dummy_variable_123 );
 pragma assert( foo_dummy_variable_123 = "foo_123" );
-FOOBAR1 : string;
-FOOBAR2 : string;
+FOOBAR1 : import_string;
+FOOBAR2 : import_string;
 pragma import( shell, FOOBAR1 ) @ ( shell, FOOBAR2 );
 pragma assert( FOOBAR2 = "foobar" );
-FOOBAR3 : string;
-FOOBAR4 : string;
+FOOBAR3 : import_string;
+FOOBAR4 : import_string;
 
 team : teams.member;
 ken  : teams.member;
@@ -1019,10 +1020,11 @@ pragma assert( FOOBAR4 = "foobar" );
 
 -- json pragmas
 
-FOOBAR_INT : integer;
+type import_integer is new integer;
+FOOBAR_INT : import_integer;
 pragma import_json( shell, FOOBAR_INT );
 pragma assert( FOOBAR_INT = 98 );
-FOOBAR_STRING : string;
+FOOBAR_STRING : import_string;
 pragma import_json( shell, FOOBAR_STRING );
 pragma export_json( shell, FOOBAR_STRING );
 pragma volatile( FOOBAR_STRING );
@@ -1308,9 +1310,9 @@ declare
   subtype int2 is int;
   i : int2 := 1;
   path2 : string := PATH; -- global path
-  PATH  : string; -- overshadows global path
+  PATH  : import_string; -- overshadows global path
   pragma import( shell, PATH );
-  pragma assert( PATH = path2 );
+  pragma assert( string( PATH ) = path2 );
 begin
   declare
     i : integer := 2;
