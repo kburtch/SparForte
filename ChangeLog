@@ -100,11 +100,13 @@ Examples:
 
 36. Fix: using an assignment in an array declaration now has a custom error and no longer leaves a half-declared variable.
 
-37. Fix: additional dup2 EINTR checks in shell pipeline execution added to hopefully eliminate or reduce intermittent interrupted system call errors.
+37. Fix: additional dup2 EINTR checks in shell pipeline execution added to hopefully eliminate (or reduce) intermittent interrupted system call errors.
 
 38. Fix: declarations using record subtypes now working, but not fully tested.  Creating a derived type from a record is now a "not implemented" error.
 
 39. New: GNU readline now the default command line input function.  The old Ada function can be used if you use the new configure flag --without-readline.
+
+40. Change: pragma import / import_json rejects imports to predefined types (or subtypes).  Type assume the user will want a different type to mark data as unvalidated/untrusted (at a minimum) and the value will need to go through a validation subprogram before use.  unchecked_import does not have this restriction.
 
 [David B wants shared library but didn't get it added in time]
 

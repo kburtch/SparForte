@@ -1058,6 +1058,9 @@ begin
               err( "functions cannot be imported" );
            elsif identifiers( var_id ).import then
               err( "variable is already imported" );
+           -- KLUDGE: there are so many standard types...
+           elsif getBaseType( identifiers( var_id ).kind ) <= complex_imaginary_t then
+              err( "for security import variable should be a derived type not a predefined type (or a subtype of one)" );
            end if;
         else
            identifiers( var_id ).mapping := none;
@@ -1073,6 +1076,11 @@ begin
               err( "variable is already imported" );
            elsif not uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
               err( "only string variables exported" );
+           -- Force users to import to use a derived type as a way of
+           -- tracking imported untrusted data.
+           elsif getBaseType( identifiers( var_id ).kind ) = string_t or
+                 getBaseType( identifiers( var_id ).kind ) = unbounded_string_t then
+              err( "for security import variable should be a derived type not a predefined type (or a subtype of one)" );
            end if;
         end if;
         -- All clear? Get the value
