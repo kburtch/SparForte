@@ -558,7 +558,8 @@ Some common tasks:</p>
                 <p class="code">
 <b>=&gt;</b> pragma prompt_script( `put( "$ ");` );<br />
 <b>$</b> <br />
-<b>$</b> LOGNAME : string;<br />
+<b>$</b> type import_string is new string;<br />
+<b>$</b> LOGNAME : import_string;<br />
 <b>$</b> pragma import(shell, LOGNAME )<br />
 <b>$</b> pragma prompt_script( `put( LOGNAME ) @ ( "$ ");` );<br />
 <b>ken$</b> <br />
@@ -613,7 +614,7 @@ as the environment variable.</p>
         <center>
         <div class="code">
                 <p class="code">
-		=&gt; JAVA_HOME : string<br>
+		=&gt; JAVA_HOME : import_string<br>
 		=&gt; <b>pragma</b> import( shell, JAVA_HOME )<br>
 		=&gt; ? JAVA_HOME<br>
 		/usr/lib64/jvm/java<br>&nbsp;<br></p>
@@ -646,6 +647,13 @@ or exported.</p>
 This behaviour can be overridden using <b>pragma unchecked_import</b>:
 if the variable doesn't exist in the environment, the value will
 be unchanged.  It is a good idea to assign a default value.</p>
+
+<p>With SparForte 2.0, the type of the variable must not be a
+predefined type (or a subtype of one).  SparForte assumes that the
+data being imported should be considered untrusted and unvalidated.
+You should use a new data type for the variable and not convert it
+to a predefined type unless the value has been checked and
+approved.  This restriction is not on an unchecked_import.</p>
 
 <p>If you are using SparForte as your login shell, there is nothing
 to import: there's no previous shell to import variable from to
