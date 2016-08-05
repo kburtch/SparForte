@@ -2018,7 +2018,7 @@ begin
      Put_Line( "  ..." );
      Put_Line( "  " & bold( "end" ) & " f;" );
      New_Line;
-     Put_Line( "  " & bold( "function" ) & " f( f1 : type [; f2:type...]) " & bold( "return" ) & " t " & bold( "is" ) );
+     Put_Line( "  " & bold( "function" ) & " f( f1 : mode type [; f2:mode type...]) " & bold( "return" ) & " t " & bold( "is" ) );
      Put_Line( "  ..." );
      Put_Line( "  " & bold( "begin" ) );
      Put_Line( "  ..." );
@@ -2027,7 +2027,7 @@ begin
      Put_Line( "  " & bold( "function" ) & " f " & bold( "return" ) & " t " & bold( "is separate" ) & ";" );
      Put_Line( "   --load function from include file ""f.bush""" );
      New_Line;
-     Put_Line( "Only constant ('in') parameters supported" );
+     Put_Line( "Mode may be 'in' or 'in out'" );
   elsif helpTopic = "get" then
      Put_Line( "get - read a character from a line of text" );
      Put_Line( "  get ([file,] ch)" );
@@ -2199,13 +2199,13 @@ begin
      Put_Line( "  ..." );
      Put_Line( "  " & bold( "end" ) & " p;" );
      New_Line;
-     Put_Line( "  " & bold( "procedure" ) & " p( f1 : type [; f2:type...]) " & bold( "is" ) );
+     Put_Line( "  " & bold( "procedure" ) & " p( f1 : mode type [; f2:mode type...]) " & bold( "is" ) );
      Put_Line( "  ..." );
      Put_Line( "  " & bold( "begin" ) );
      Put_Line( "  ..." );
      Put_Line( "  " & bold( "end" ) & " p;" );
      New_Line;
-     Put_Line( "Only constant ('in') parameters supported" );
+     Put_Line( "Mode may be 'in', 'out' or 'in out'" );
   elsif helpTopic = "pragma" then
      helpPragma;
   elsif helpTopic = "put" then
