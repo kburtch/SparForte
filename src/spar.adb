@@ -66,7 +66,7 @@ begin
   if Argument_Count = 1 then
      if Argument(1) = "-h" or Argument( 1 ) = "--help" then
         Put_Line( "SparForte (Business Shell) usage" );
-        Put_Line( "spar [-bcdeghilrtvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--restricted][--design|--maintenance|--test][--trace][--] [script [param1 ...] ]" );
+        Put_Line( "spar [-bcdDeghilLmrtvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--restricted][--design|--maintenance|--test][--trace][--] [script [param1 ...] ]" );
         Put_Line( "  --break or -b       - enable breakout debugging prompt" );
         Put_Line( "  --check or -c       - syntax check the script but do not run" );
         Put_Line( "  --debug or -d       - enable pragma assert and pragma debug" );

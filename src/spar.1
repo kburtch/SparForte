@@ -1,12 +1,11 @@
-.TH SPAR "1" "February 2011" "spar 1.2" "User Commands"
+.TH SPAR "1" "August 2016" "spar 2.0" "User Commands"
 .SH NAME
 spar \- SparForte, the Business Shell
 .SH SYNOPSIS
 .B spar
-[\-bcdeghilnrvVx] [\-\-break][\-\-check][\-\-debug][\-\-exec][\-\-gcc\-errors]
-[\-\-import\-all][\-\-login][\-\-no\-check][\-\-verbose][\-\-version]
-[\-\-restricted][\-\-trace][\-\-]
-[script [param1 ...] ]
+[\-bcdDeghilLmrtvVx] [\-\-break][\-\-check][\-\-debug][\-\-exec]
+[\-\-gcc-errors][\-\-login][\-\-verbose][\-\-version][\-\-restricted]
+[\-\-design|\-\-maintenance|\-\-test][\-\-trace][\-\-] [script [param1 ...] ]
 .SH DESCRIPTION
 .\" Add any additional description here
 .PP
@@ -31,6 +30,9 @@ syntax check the script but do not run
 \fB\-d\fR, \fB\-\-debug\fR
 enable pragma assert and pragma debug
 .TP
+\fB\-d\fR, \fB\-\-design\fR
+design phase mode
+.TP
 \fB\-e\fR, \fB\-\-exec\fR
 script is a string containing SparForte commands
 .TP
@@ -40,17 +42,20 @@ simple GCC-style errors (good for IDEs)
 \fB\-i\fR, \fB\-\-import\-all\fR
 import all environment variables
 .TP
+\fB\-d\fR, \fB\-\-Ld\fR
+add directory d to the separate files search list (may be repeated)
+.TP
 \fB\-l\fR, \fB\-\-login\fR
 simulate a login shell
 .TP
-\fB\-n\fR, \fB\-\-no\-check\fR
-run script without checking syntax
+\fB\-l\fR, \fB\-\-maintenance\fR
+maintenance phase mode
 .TP
 \fB\-r\fR, \fB\-\-restricted\fR
 restricted shell mode
 .TP
 \fB\-t\fR, \fB\-\-test\fR
-enable pragma assert and pragma test
+test phase mode; enable pragma assert and pragma test
 .TP
 \fB\-x\fR, \fB\-\-trace\fR
 show script lines as they run
@@ -72,7 +77,7 @@ Written by Ken O. Burtch.
 .SH "REPORTING BUGS"
 Report bugs to <ken@pegasoft.ca>.
 .SH COPYRIGHT
-SparForte is Copyright (c)2001-2011 Free Software Foundation, Inc.
+SparForte is Copyright (c)2001-2016 Free Software Foundation, Inc.
 .br
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
