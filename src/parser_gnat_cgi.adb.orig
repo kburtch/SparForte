@@ -158,14 +158,14 @@ bt : identifier;
 b : boolean;
 begin
   expect( gnat_cgi_put_header_t );
-  if token = symbol_t and identifiers( token ).value = "(" then
+  if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      ParseExpression( expr_val, expr_type );
      bt := getBaseType( expr_type );
      if bt = string_t or bt = uni_string_t or bt = universal_t then
         b := baseTypesOK( expr_type, string_t );
         header := expr_val;
-        if token = symbol_t and identifiers( token ).value = "," then
+        if token = symbol_t and identifiers( token ).value.all = "," then
            expect( symbol_t, "," );
            ParseExpression( expr2_val, expr2_type );
            if baseTypesOK( expr2_type, boolean_t ) then
@@ -278,7 +278,7 @@ procedure ParseGnatCGIMetavariable( result : out unbounded_string; kind : out id
   -- gnat.cgi.metavariable( key [, required] )
   meta_val   : unbounded_string;
   meta_type  : identifier;
-  bool_val   : unbounded_string := identifiers( false_t ).value;
+  bool_val   : unbounded_string := identifiers( false_t ).value.all;
   bool_type  : identifier := boolean_t;
 begin
   kind := string_t;
@@ -286,7 +286,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( meta_val, meta_type );
   if baseTypesOk( meta_type, gnat_cgi_metavariable_name_t ) then
-     if token = symbol_t and identifiers( token ).value = "," then
+     if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
         ParseExpression( bool_val, bool_type );
         if baseTypesOk( bool_type, boolean_t ) then
@@ -299,7 +299,7 @@ begin
      begin
        result := to_unbounded_string( Gnat.Cgi.Metavariable(
           gnat.cgi.metavariable_name'val( integer'value( " " & to_string( meta_val ) ) ),
-          bool_val = identifiers( true_t ).value
+          bool_val = identifiers( true_t ).value.all
        ) );
      exception when Gnat.Cgi.Data_Error =>
        err( "data_error exception" );
@@ -417,7 +417,7 @@ procedure ParseGnatCGIValue( result : out unbounded_string; kind : out identifie
   expr_val  : unbounded_string;
   expr_type : identifier;
   base_type : identifier;
-  bool_val  : unbounded_string := identifiers( false_t ).value;
+  bool_val  : unbounded_string := identifiers( false_t ).value.all;
   bool_type : identifier := boolean_t;
   key_version : boolean := false;
 begin
@@ -429,7 +429,7 @@ begin
   if base_type = string_t or base_type = uni_string_t or base_type = universal_t then
      key_version := true;
      if baseTypesOk( expr_type, string_t ) then
-        if token = symbol_t and identifiers( token ).value = "," then
+        if token = symbol_t and identifiers( token ).value.all = "," then
            expect( symbol_t, "," );
            ParseExpression( bool_val, bool_type );
            if baseTypesOk( bool_type, boolean_t ) then
@@ -451,7 +451,7 @@ begin
        if key_version then
           result := to_unbounded_string( gnat.cgi.value(
             to_string( expr_val ),
-            bool_val = identifiers( true_t ).value
+            bool_val = identifiers( true_t ).value.all
           ) );
        else
           result := to_unbounded_string( gnat.cgi.value(
@@ -565,14 +565,14 @@ bt : identifier;
 b : boolean;
 begin
   expect( gnat_cgi_cookie_put_header_t );
-  if token = symbol_t and identifiers( token ).value = "(" then
+  if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      ParseExpression( expr_val, expr_type );
      bt := getBaseType( expr_type );
      if bt = string_t or bt = uni_string_t or bt = universal_t then
         b := baseTypesOK( expr_type, string_t );
         header := expr_val;
-        if token = symbol_t and identifiers( token ).value = "," then
+        if token = symbol_t and identifiers( token ).value.all = "," then
            expect( symbol_t, "," );
            ParseExpression( expr2_val, expr2_type );
            if baseTypesOK( expr2_type, boolean_t ) then
@@ -677,7 +677,7 @@ procedure ParseGnatCGICookieValue( result : out unbounded_string; kind : out ide
   expr_val  : unbounded_string;
   expr_type : identifier;
   base_type : identifier;
-  bool_val  : unbounded_string := identifiers( false_t ).value;
+  bool_val  : unbounded_string := identifiers( false_t ).value.all;
   bool_type : identifier := boolean_t;
   key_version : boolean := false;
 begin
@@ -689,7 +689,7 @@ begin
   if base_type = string_t or base_type = uni_string_t or base_type = universal_t then
      key_version := true;
      if baseTypesOk( expr_type, string_t ) then
-        if token = symbol_t and identifiers( token ).value = "," then
+        if token = symbol_t and identifiers( token ).value.all = "," then
            expect( symbol_t, "," );
            ParseExpression( bool_val, bool_type );
            if baseTypesOk( bool_type, boolean_t ) then
@@ -711,7 +711,7 @@ begin
        if key_version then
           result := to_unbounded_string( gnat.cgi.cookie.value(
             to_string( expr_val ),
-            bool_val = identifiers( true_t ).value
+            bool_val = identifiers( true_t ).value.all
           ) );
        else
           result := to_unbounded_string( gnat.cgi.cookie.value(
@@ -847,28 +847,28 @@ begin
         -- all other parameters optional .  This presents a problem in SparForte
         -- since we don't have named parameters.  We can only assume the they
         -- are optional to the end of the positions.
-        if token = symbol_t and identifiers( token ).value /= right_bracket then
+        if token = symbol_t and identifiers( token ).value.all /= right_bracket then
            expect( symbol_t, "," );
            ParseExpression( com_val, com_type ); -- comment
            base_type := getBaseType( com_type );
            if base_type = string_t or base_type = uni_string_t or base_type = universal_t then
-              if token = symbol_t and identifiers( token ).value /= right_bracket  then
+              if token = symbol_t and identifiers( token ).value.all /= right_bracket  then
                  expect( symbol_t, "," );
                  ParseExpression( dom_val, dom_type ); -- domain
                  base_type := getBaseType( dom_type );
                  if base_type = string_t or base_type = uni_string_t or base_type = universal_t then
-                    if token = symbol_t and identifiers( token ).value /= right_bracket then
+                    if token = symbol_t and identifiers( token ).value.all /= right_bracket then
                        expect( symbol_t, "," );
                        ParseExpression( age_val, age_type ); -- max-age
                        base_type := getBaseType( age_type );
                        --if intTypesOK( age_type, natural_t ) or base_type = uni_numeric_t or base_type = universal_t then
                        if base_type = natural_t or base_type = uni_numeric_t or base_type = universal_t then
-                          if token = symbol_t and identifiers( token ).value /= right_bracket then
+                          if token = symbol_t and identifiers( token ).value.all /= right_bracket then
                              expect( symbol_t, "," );
                              ParseExpression( path_val, path_type ); -- path
                              base_type := getBaseType( path_type );
                              if base_type = string_t or base_type = uni_string_t or base_type = universal_t then
-                                if token = symbol_t and identifiers( token ).value /= right_bracket then
+                                if token = symbol_t and identifiers( token ).value.all /= right_bracket then
                                    expect( symbol_t, "," );
                                    ParseExpression( sec_val, sec_type ); -- max-age
                                    base_type := getBaseType( sec_type );
