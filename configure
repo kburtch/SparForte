@@ -271,6 +271,25 @@ if [ "$OS" = "Linux" -a "$CPU_ARCH" = "armv6" ] ; then
    #CFLAGSTYPE="-mfpu=vfp -mfloat-abi=hard"
    # GCC Ada 4.6's Gnatmake crashes on GCC -m switches on cargs
    #GMCARGSSUB="-mfpu=vfp -mfloat-abi=hard"
+elif [ "$OS" = "Linux" -a "$CPU_ARCH" = "armv7" ] ; then
+   echo -n "Linux/ARM7 (assuming Raspberry Pi 3)"
+   if test -r bush_os.ads ; then
+      echo " (cached, make distclean to remove)";
+   else
+      echo
+      # The standard linux file works with the Pi
+      cp bush_linux.ads bush_os.ads
+      if [ $? -ne 0 ] ; then
+         echo "Unable to find appropriate bush_os source files"
+         exit 1
+      fi
+   fi
+   # Rasp Pi FAQ: these C flags should be used.  However, they must be applied
+   # to the entire application and I don't have a way to pass them to the
+   # third-party libraries.  However, I document them here.
+   #CFLAGSTYPE="-mfpu=vfp -mfloat-abi=hard"
+   # GCC Ada 4.6's Gnatmake crashes on GCC -m switches on cargs
+   #GMCARGSSUB="-mfpu=vfp -mfloat-abi=hard"
 elif [ "$OS" = "Linux" -a "$CPU_ARCH" = "i386" ] ; then
    echo -n "Linux/Intel/AMD"
    if test -r bush_os.ads ; then
