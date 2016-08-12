@@ -110,5 +110,8 @@ Examples:
 
 41. New: Raspberry Pi 3 support in configuration file.
 
-[David B wants shared library but didn't get it added in time]
+42. Fix: help produces help for scripts again (misspelled annotate).
 
+[David B wants shared library but didn't get it added in time]
+[Empty bareword treated as a parameter but shouldn't be]
+[double import]

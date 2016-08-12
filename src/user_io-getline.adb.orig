@@ -53,26 +53,41 @@ package body user_io.getline is
 procedure getLine( line : out unbounded_string; prompt : unbounded_string := null_unbounded_string; keepHistory : boolean := false ) is
    pwd_id : identifier;
 #if READLINE
-   -- these are hard-coded: C preprocessor constants.  These mark
-   -- non-display characters in the prompot for GNU readline.
-   RL_PROMPT_START_IGNORE : constant character := ASCII.SOH; -- Ctrl-A
-   RL_PROMPT_END_IGNORE   : constant character := ASCII.STX; -- Ctrl-B
    bold_prompt : unbounded_string;
 begin
+  -- TODO: control-c should clear the line, not enter a control-c
   -- for consistent behaviour with the old getLine, bold the prompt.
+  -- The prompt, when bold, initialially places the cursor on the
+  -- space at the end of the prompt.  The next line will have it
+  -- placed currectly.  And when the command line gets long, the
+  -- line doesn't display properly...it drops to the next line.
   if length( prompt ) > 0 then
-     bold_prompt :=
-        RL_PROMPT_START_IGNORE &
-        term( bold ) &
-        RL_PROMPT_END_IGNORE &
-        prompt &
-        RL_PROMPT_START_IGNORE &
-        term( normal ) &
-        RL_PROMPT_END_IGNORE;
-  -- KLUDGE:
-  -- for some reason, these codes are not being honoured...UTF-8?
+     -- by default
+     -- [# 1][# 27][1m[# 2]=> [# 1][# 27](B[# 27][m[# 2]
+     --bold_prompt :=
+     --   RL_PROMPT_START_IGNORE &
+     --   term( bold ) &
+     --   RL_PROMPT_END_IGNORE &
+     --   prompt &
+     --   RL_PROMPT_START_IGNORE &
+     --   term( normal ) &
+     --   RL_PROMPT_END_IGNORE;
      bold_prompt := prompt;
   end if;
+  -- Debug the prompt characters
+  -- declare
+  -- ch : character;
+  -- begin
+  --for i in 1..length( bold_prompt ) loop
+  --    ch := Element( bold_prompt, i );
+  --    if ch < ' ' or ch > '~' then
+  --       put( "[#" & character'pos( ch )'img & "]" );
+  --    else
+  --       put( ch );
+  --    end if;
+  --end loop;
+  -- new_line;
+  -- end;
   begin
     line := to_unbounded_string( read_line( to_string( bold_prompt ) ) );
   exception when END_ERROR =>

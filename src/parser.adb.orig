@@ -8992,8 +8992,8 @@ begin
               elsif element( prompt, i ) = ASCII.LF then -- and CR?
                  put( ' ' );
               end if;
-           end loop;
-           put( ASCII.BEL  ); -- xterm window title
+          end loop;
+          put( ASCII.BEL  ); -- xterm window title
        end if;
     end if;
     --put_bold( prompt );                       -- show prompt in bold

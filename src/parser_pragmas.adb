@@ -1060,7 +1060,7 @@ begin
               err( "variable is already imported" );
            -- KLUDGE: there are so many standard types...
            elsif getBaseType( identifiers( var_id ).kind ) <= complex_imaginary_t then
-              err( "security issue: import variable should be a derived type not a predefined type (or a subtype of one)" );
+              err( "security issue: import variable " & optional_bold( to_string( identifiers( var_id ).name ) ) & " should be a derived type not a predefined type (or a subtype of one) like " & optional_bold( to_string( identifiers( identifiers( var_id ).kind ).name ) ) );
            end if;
         else
            identifiers( var_id ).mapping := none;
@@ -1080,7 +1080,7 @@ begin
            -- tracking imported untrusted data.
            elsif getBaseType( identifiers( var_id ).kind ) = string_t or
                  getBaseType( identifiers( var_id ).kind ) = unbounded_string_t then
-              err( "security issue: import variable should be a derived type not a predefined type (or a subtype of one)" );
+              err( "security issue: import variable " & optional_bold( to_string( identifiers( var_id ).name ) ) & " should be a derived type not a predefined type (or a subtype of one) like " & optional_bold( to_string( identifiers( identifiers( var_id ).kind ).name ) ) );
            end if;
         end if;
         -- All clear? Get the value

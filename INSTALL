@@ -241,16 +241,18 @@ Type "gmake help" for a list of all options.  There are more options in the
 src directory makefile.
 
 
-SPECIFIC DISTRIBUTIONS
+INSTALLING FOR WEB TEMPLATES
 
-* Fedora 20
+SparForte can run as a CGI program.  The exact requirements depends on
+your Linux distribution.
 
-  - edit src/GNUmakfile (created by configure)
-  - remove -lpgcommon
-  - create symbolic links for SDL_ttf and SDL_image
-    ln -s /usr/lib64/libSDL_ttf-2.0.so.0 /usr/lib64/libSDL_ttf.so
-    ln -s /usr/lib64/libSDL_image-2.0.so.0 /usr/lib64/libSDL_image.so
-    ldconfig
+On Unbuntu/Linux Mint, the CGI directory is /usr/lib/cgi-bin.  Apache
+will not run a program outside of this directory.  Copy the spar
+executable to /usr/lib/cgi-bin.
+
+Create your scripts using .cgi ending, and include #!/usr/lib/cgi-bin/spar
+in the bang path at the top of your scripts.
+
 
 CREATING A LAUNCHER (DESKTOP ICON)
 

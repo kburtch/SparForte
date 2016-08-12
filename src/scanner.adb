@@ -44,6 +44,8 @@ with system,
     software_models,
     -- scanner_arrays,
     --compiler,
+    --TODO: I need to fix this circular dependency between the scanner and
+    -- parser.
     parser,
     parser_os,
     parser_arrays,
@@ -79,7 +81,8 @@ with system,
     parser_sessions,
     parser_bdb,
     parser_btree_io,
-    parser_hash_io;
+    parser_hash_io,
+    parser_tinyserve;
 use ada.text_io,
     ada.integer_text_io,
     ada.command_line,
@@ -133,7 +136,8 @@ use ada.text_io,
     parser_sessions,
     parser_bdb,
     parser_btree_io,
-    parser_hash_io;
+    parser_hash_io,
+    parser_tinyserve;
 
 pragma Optimize( time );
 

@@ -36,4 +36,9 @@ procedure getLine( line : out unbounded_string; prompt : unbounded_string := nul
 function has_readline return boolean;
 -- return true if using GNU readline / history for getLine
 
+-- these are hard-coded: C preprocessor constants.  These mark
+-- non-display characters in the prompot for GNU readline.
+RL_PROMPT_START_IGNORE : constant character := ASCII.SOH; -- Ctrl-A
+RL_PROMPT_END_IGNORE   : constant character := ASCII.STX; -- Ctrl-B
+
 end user_io.getline;
