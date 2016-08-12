@@ -857,7 +857,7 @@ end vm;
        clarify_str  : constant unbounded_string := to_unbounded_string( "clarify" );
        dispute_str  : constant unbounded_string := to_unbounded_string( "dispute" );
        propose_str  : constant unbounded_string := to_unbounded_string( "propose" );
-       annotate_str : constant unbounded_string := to_unbounded_string( "propose" );
+       annotate_str : constant unbounded_string := to_unbounded_string( "annotate" );
        refactor_str : constant unbounded_string := to_unbounded_string( "refactor" );
 
        function ParsePragmaKindAsHelp return unbounded_string is
