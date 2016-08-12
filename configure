@@ -241,8 +241,8 @@ elif [ "$ARCH" = "armv7l" ] ; then
    # Rasp Pi 3: First, ARM 6L not a GCC option.  Second, not all Debian
    # packages build with an CPU march flag more specific than generic
    # v6.
-   CPU_ARCH="armv7"
-   ARCH="armv7"
+   CPU_ARCH="armv6"
+   ARCH="armv6"
 else
    CPU_ARCH="$ARCH"
 fi
@@ -1249,6 +1249,7 @@ if [ -z "$NO_SOUND" ] ; then
          exit 192
       fi
    fi
+   GSTREAMERLIBS="$GSTREAMERLIBS c_gstreamer.o"
 fi
 
 if [ -z "$NO_BDB" ] ; then

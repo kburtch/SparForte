@@ -108,5 +108,7 @@ Examples:
 
 40. Change: pragma import / import_json rejects imports to predefined types (or subtypes).  Type assume the user will want a different type to mark data as unvalidated/untrusted (at a minimum) and the value will need to go through a validation subprogram before use.  unchecked_import does not have this restriction.
 
+41. New: Raspberry Pi 3 support in configuration file.
+
 [David B wants shared library but didn't get it added in time]
 
