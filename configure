@@ -241,8 +241,8 @@ elif [ "$ARCH" = "armv7l" ] ; then
    # Rasp Pi 3: First, ARM 6L not a GCC option.  Second, not all Debian
    # packages build with an CPU march flag more specific than generic
    # v6.
-   CPU_ARCH="armv7"
-   ARCH="armv7"
+   CPU_ARCH="armv6"
+   ARCH="armv6"
 else
    CPU_ARCH="$ARCH"
 fi
@@ -254,6 +254,25 @@ CPU_FLAG="-march"
 # Pi.  I've only tested it on the one using armv6l.
 if [ "$OS" = "Linux" -a "$CPU_ARCH" = "armv6" ] ; then
    echo -n "Linux/ARM6 (assuming Raspberry Pi)"
+   if test -r bush_os.ads ; then
+      echo " (cached, make distclean to remove)";
+   else
+      echo
+      # The standard linux file works with the Pi
+      cp bush_linux.ads bush_os.ads
+      if [ $? -ne 0 ] ; then
+         echo "Unable to find appropriate bush_os source files"
+         exit 1
+      fi
+   fi
+   # Rasp Pi FAQ: these C flags should be used.  However, they must be applied
+   # to the entire application and I don't have a way to pass them to the
+   # third-party libraries.  However, I document them here.
+   #CFLAGSTYPE="-mfpu=vfp -mfloat-abi=hard"
+   # GCC Ada 4.6's Gnatmake crashes on GCC -m switches on cargs
+   #GMCARGSSUB="-mfpu=vfp -mfloat-abi=hard"
+elif [ "$OS" = "Linux" -a "$CPU_ARCH" = "armv7" ] ; then
+   echo -n "Linux/ARM7 (assuming Raspberry Pi 3)"
    if test -r bush_os.ads ; then
       echo " (cached, make distclean to remove)";
    else
@@ -1230,6 +1249,7 @@ if [ -z "$NO_SOUND" ] ; then
          exit 192
       fi
    fi
+   GSTREAMEROUT="c_gstreamer.o"
 fi
 
 if [ -z "$NO_BDB" ] ; then
@@ -1259,7 +1279,7 @@ touch c_gstreamer.c
 
 echo "Creating...src/GNUmakefile"
 
-sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g;s/MESAINCLSUB/$MESAINCLTYPE/g;s/MESALIBSSUB/$MESALIBSTYPE/g;s/BDBSUB/$BDBLIBS/g;s/BDBINCLSUB/$BDBINCL/g;s/RLINCLSUB/$RLINCL/g;s/RLLIBSSUB/$RLLIBS/g" < GNUmakefile.orig > GNUmakefile
+sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g;s/GSTREAMEROUTSUB/$GSTREAMEROUT/g;s/MESAINCLSUB/$MESAINCLTYPE/g;s/MESALIBSSUB/$MESALIBSTYPE/g;s/BDBSUB/$BDBLIBS/g;s/BDBINCLSUB/$BDBINCL/g;s/RLINCLSUB/$RLINCL/g;s/RLLIBSSUB/$RLLIBS/g" < GNUmakefile.orig > GNUmakefile
 
 cd ..
 echo "Creating...GNUmakefile"
