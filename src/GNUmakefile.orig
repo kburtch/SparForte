@@ -27,6 +27,7 @@ APQMAKE=APQMAKESUB
 #ADAVOXMAKE=ADAVOXMAKESUB
 GSTREAMERLIBS=GSTREAMERLIBSSUB
 GSTREAMERFLAG=GSTREAMERFLAGSUB
+GSTREAMEROUT=GSTREAMEROUTSUB
 MESAINCL=MESAINCLSUB
 MESALIBS=MESALIBSSUB
 BDBINCL=BDBINCLSUB
@@ -110,7 +111,7 @@ endif
 	@echo
 	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -gnat05 -gnatfaoN -gnatybdh -fstack-check -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
-	gnatlink spar.ali ${GSTREAMERLIBS} c_os.o c_scanner.o $(LIBS)
+	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "  Thanks for choosing SparForte"
@@ -130,7 +131,7 @@ c_scanner.o: c_scanner.c
 	$(CC) $(CFLAGS) $(INCLUDE) $(SDLINCL) -c c_scanner.c
 
 c_gstreamer.o: c_gstreamer.c
-ifneq ($(strip $(GSTREAMERLIBS)),)
+ifneq ($(strip $(GSTREAMERFLAG)),)
 	$(CC) $(CFLAGS) $(GSTREAMERFLAG) $(GSTREAMERLIBS) -Wall -c c_gstreamer.c
 else
 	@echo "GStreamer disabled"
@@ -183,7 +184,7 @@ max: clean c_os.o c_scanner.o c_gstreamer.o
 	@echo
 	$(GNATMAKE) -j2 -c -i -O3 $(CPU_FLAG)=$(CPU) -gnatf -gnatn -gnatp -ffast-math -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
-	gnatlink spar.ali ${GSTREAMERLIBS} c_os.o c_scanner.o $(LIBS)
+	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS)
 
 clean:
 	$(MAKE) -C areadline clean
@@ -238,7 +239,7 @@ rpm:	all
 
 bintar: c_os.o all
 	gnatbind -x $(INCLUDE_BIND) spar.ali
-	gnatlink spar.ali ${GSTREAMERLIBS} c_os.o c_scanner.o $(LIBS)
+	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS)
 	(cd ..; rm -f spar.tgz; tar cfvz spar.tgz src/spar src/spar.1 README COPYING INSTALL examples doc GNUmakefile sparforte_icon.xpm; rm -f spar )
 	@echo "Don't forget to unpack and repack under a descriptive directory"
 
