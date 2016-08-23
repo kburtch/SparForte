@@ -828,7 +828,13 @@ begin
   -- Decode a copy of the command line to show the error.  Also returns
   -- the current token position and the line number.
 
-  getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+  if script /= null then
+     getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+  else
+     -- can't use optional_inverse here because the text will be
+     -- escaped later
+     cmdLine := to_unbounded_string( "<No executable line to show> in <no script loaded>" );
+  end if;
 
   -- Clear any old error messages from both the screen error and the
   -- template error (if one exists)
@@ -850,53 +856,59 @@ begin
   -- The basic GCC message will be recorded in a separate "out line"
   -- as we may need both message formats for a web template.
 
-     if needGccVersion then                            -- gcc style?
-        lineStr := to_unbounded_string( lineno'img );  -- remove leading
-        if length( lineStr ) > 0 then                  -- space (if any)
-           if element( lineStr, 1 ) = ' ' then
-              delete( lineStr, 1, 1 );
+     if script /= null then
+
+        if needGccVersion then                            -- gcc style?
+           lineStr := to_unbounded_string( lineno'img );  -- remove leading
+           if length( lineStr ) > 0 then                  -- space (if any)
+              if element( lineStr, 1 ) = ' ' then
+                 delete( lineStr, 1, 1 );
+              end if;
            end if;
-        end if;
-        firstposStr := to_unbounded_string( firstpos'img );
-        if length( firstposStr ) > 0 then              -- here, too
-           if element( firstposStr, 1 ) = ' ' then
-              delete( firstposStr, 1, 1 );
+           firstposStr := to_unbounded_string( firstpos'img );
+           if length( firstposStr ) > 0 then              -- here, too
+              if element( firstposStr, 1 ) = ' ' then
+                 delete( firstposStr, 1, 1 );
+              end if;
            end if;
+           sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
+           gccOutLine := sfr.name
+             & ":" & lineStr
+             & ":" & firstposStr
+             & ":";                                       -- no traceback
+           gccOutLine := gccOutLine & ' ';                -- token start
+           gccOutLine := gccOutLine & msg;
         end if;
+
+        -- For the regular format, show the location and traceback
+
         sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-        gccOutLine := sfr.name
-          & ":" & lineStr
-          & ":" & firstposStr
-          & ":";                                       -- no traceback
-        gccOutLine := gccOutLine & ' ';                -- token start
-        gccOutLine := gccOutLine & msg;
-     end if;
+        outLine := sfr.name                               -- location
+           & ":" & lineno'img
+           & ":" & firstpos'img
+           & ": ";
 
-     -- For the regular format, show the location and traceback
+        -- TODO: we're using UNIX eof's but should ideally be o/s
+        -- independent
 
-     sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-     outLine := sfr.name                               -- location
-        & ":" & lineno'img
-        & ":" & firstpos'img
-        & ": ";
-
-     -- TODO: we're using UNIX eof's but should ideally be o/s
-     -- independent
-
-     if blocks_top > blocks'first then                 -- in a block?
-        for i in reverse blocks'first..blocks_top-1 loop -- show the
-            if i /= blocks_top-1 then                  -- simplified
-               outLine := outLine & " in ";            -- traceback
-            end if;
-            outLine := outLine & ToEscaped( blocks( i ).blockName );
-        end loop;
-        fullErrorMessage := outLine & ASCII.LF;
+        if blocks_top > blocks'first then                 -- in a block?
+           for i in reverse blocks'first..blocks_top-1 loop -- show the
+               if i /= blocks_top-1 then                  -- simplified
+                  outLine := outLine & " in ";            -- traceback
+               end if;
+               outLine := outLine & ToEscaped( blocks( i ).blockName );
+           end loop;
+           fullErrorMessage := outLine & ASCII.LF;
+           outLine := null_unbounded_string;
+        else                                              -- if no blocks
+           outLine := outLine & "in script";              -- just say
+           fullErrorMessage := outLine & ASCII.LF;        -- "in script"
+           outLine := null_unbounded_string;
+        end if;
+     else
+        -- no script?
         outLine := null_unbounded_string;
-     else                                              -- if no blocks
-        outLine := outLine & "in script";              -- just say
-        fullErrorMessage := outLine & ASCII.LF;        -- "in script"
-        outLine := null_unbounded_string;
-     end if;
+     end if; -- a script exists
   end if;
 
   -- For the normal version, we must follow the traceback with the
@@ -909,13 +921,15 @@ begin
 
   -- Draw the underline error pointer
 
-  outLine := outLine & to_string( (firstPos-1) * " " );      -- indent
-  outLine := outLine & '^';                                  -- token start
-  if lastpos > firstpos then                                 -- multi chars?
-     outLine := outLine & to_string( (lastpos-firstPos-1) * "-" );
-     outLine := outLine & '^';                               -- token end
+  if script /= null then
+     outLine := outLine & to_string( (firstPos-1) * " " );      -- indent
+     outLine := outLine & '^';                                  -- token start
+     if lastpos > firstpos then                                 -- multi chars?
+        outLine := outLine & to_string( (lastpos-firstPos-1) * "-" );
+        outLine := outLine & '^';                               -- token end
+     end if;
+     outLine := outLine & ' ';                                  -- token start
   end if;
-  outLine := outLine & ' ';                                  -- token start
   outLine := outLine & msg;
 
   -- Even for a template, if the user selected gccOpt specifically,

@@ -70,7 +70,8 @@ with system,
     parser_sound,
     parser_dirops,
     parser_memcache,
-    parser_gnat_cgi;
+    parser_gnat_cgi,
+    parser_tinyserve;
 use ada.text_io,
     ada.text_io.editing,
     ada.command_line,
@@ -116,7 +117,8 @@ use ada.text_io,
     parser_sound,
     parser_dirops,
     parser_memcache,
-    parser_gnat_cgi;
+    parser_gnat_cgi,
+    parser_tinyserve;
 
 package body parser is
 
