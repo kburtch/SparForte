@@ -807,7 +807,6 @@ procedure err( msg : string ) is
   gccOutLine : unbounded_string;
   sfr        : aSourceFile;
   needGccVersion : boolean := false;
-
 begin
 
   -- Already displayed one error or script is complete?
@@ -1208,6 +1207,179 @@ begin
      put_trace( "exception: " & msg );
   end if;
 end raise_exception;
+
+
+--  ERR TEST RESULT
+--
+-- Show a failed result from pragma test_result
+-----------------------------------------------------------------------------
+
+procedure err_test_result is
+  cmdline    : unbounded_string;
+  firstpos   : natural;
+  lastpos    : natural;
+  lineStr    : unbounded_string;
+  firstposStr : unbounded_string;
+  lineno     : natural;
+  fileno     : natural;
+  outLine    : unbounded_string;
+  gccOutLine : unbounded_string;
+  sfr        : aSourceFile;
+  needGccVersion : boolean := false;
+  msg        : unbounded_string := to_unbounded_string( "test failed" );
+  ourFullErrorMessage : unbounded_string;
+  ourFullTemplateErrorMessage : unbounded_string;
+begin
+  -- determine if gcc format is requested or required
+  needGccVersion := boolean( gccOpt ) or hasTemplate;
+
+  -- get the command line
+  if script /= null then
+     getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+  else
+     raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
+         "internal error: script unexpectly empty";
+  end if;
+
+  if inputMode /= interactive and inputMode /= breakout then
+        if needGccVersion then                            -- gcc style?
+           lineStr := to_unbounded_string( lineno'img );  -- remove leading
+           if length( lineStr ) > 0 then                  -- space (if any)
+              if element( lineStr, 1 ) = ' ' then
+                 delete( lineStr, 1, 1 );
+              end if;
+           end if;
+           firstposStr := to_unbounded_string( firstpos'img );
+           if length( firstposStr ) > 0 then              -- here, too
+              if element( firstposStr, 1 ) = ' ' then
+                 delete( firstposStr, 1, 1 );
+              end if;
+           end if;
+           sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
+           gccOutLine := sfr.name
+             & ":" & lineStr
+             & ":" & firstposStr
+             & ":";                                       -- no traceback
+           gccOutLine := gccOutLine & ' ';                -- token start
+           gccOutLine := gccOutLine & msg;
+        end if;
+
+
+        sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
+        outLine := sfr.name                               -- location
+           & ":" & lineno'img
+           & ":" & firstpos'img
+           & ": ";
+        -- TODO: we're using UNIX eof's but should ideally be o/s
+        -- independent
+        if blocks_top > blocks'first then                 -- in a block?
+           for i in reverse blocks'first..blocks_top-1 loop -- show the
+               if i /= blocks_top-1 then                  -- simplified
+                  outLine := outLine & " in ";            -- traceback
+               end if;
+               outLine := outLine & ToEscaped( blocks( i ).blockName );
+           end loop;
+           ourFullErrorMessage := outLine & ASCII.LF;
+           outLine := null_unbounded_string;
+        else                                              -- if no blocks
+           outLine := outLine & "in script";              -- just say
+           ourFullErrorMessage := outLine & ASCII.LF;        -- "in script"
+           outLine := null_unbounded_string;
+        end if;
+  end if;
+
+  ourFullErrorMessage := ourFullErrorMessage & toEscaped( cmdline );
+
+  -- Draw the underline error pointer
+
+  outLine := outLine & to_string( (firstPos-1) * " " );      -- indent
+  outLine := outLine & '^';                                  -- token start
+  if lastpos > firstpos then                                 -- multi chars?
+     outLine := outLine & to_string( (lastpos-firstPos-1) * "-" );
+     outLine := outLine & '^';                               -- token end
+  end if;
+  outLine := outLine & ' ';                                  -- token start
+  outLine := outLine & msg;
+
+  -- Even for a template, if the user selected gccOpt specifically,
+  -- use it.
+
+  -- Pick which format the user wants for the full message.
+  --
+  -- TODO: we're using UNIX eof's but should ideally be o/s
+  -- independent
+
+  if gccOpt then
+     ourFullErrorMessage := gccOutLine;
+  else
+     ourFullErrorMessage := ourFullErrorMessage & ASCII.LF & outLine;
+  end if;
+
+  -- If we are in any mode of the development cycle except maintenance
+  -- mode, create an error message to display.  If we're in maintenance
+  -- mode, create an error message only if debug is enabled.
+
+  if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
+     case templateHeader.templateType is
+     when htmlTemplate | wmlTemplate =>
+        ourFullTemplateErrorMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
+           "<div style=""float:left;font: 32px Times New Roman,serif; font-style:italic; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#00529B; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">i</div>" &
+           "<div style=""float:left;font: 12px Courier New,Courier,monospace; color: #00529B; background-color: transparent"">" &
+           "<p style=""font: 14px Verdana,Arial,Helvetica,sans-serif; font-weight:bold"">" & templateErrorHeader & "</p>" &
+           "<p>" & convertToHTML( ourFullErrorMessage ) & "</p>" &
+           "</div>" &
+           "</div>" &
+           "<br />";
+     when cssTemplate | jsTemplate =>
+        ourFullTemplateErrorMessage := "/* " & templateErrorHeader & " " & convertToPlainText( ourFullErrorMessage ) &  " */";
+     when xmlTemplate =>
+        fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & convertToPlainText( ourFullErrorMessage ) & " -->";
+     when noTemplate | textTemplate | jsonTemplate =>
+        ourFullTemplateErrorMessage := convertToPlainText( ourFullErrorMessage );
+     end case;
+     -- In the case of the template, the error output must always
+     -- be in gcc format (a single line) for the web server log.
+     --
+     -- This affects exception handling since HTML output for template
+     -- will differ from error message in exceptions package.  Also,
+     -- format this for Apache by stripping out the boldface or
+     -- other effects.
+     --
+     -- TODO: document this
+     ourFullErrorMessage := ConvertToPlainText( gccOutLine );
+  end if;
+
+  -- Show that this is an error, not an exception
+
+  -- this doesn't raise an exception or error
+  -- err_exception.name := null_unbounded_string;            -- not an exception
+  -- last_status := 0;
+
+  -- It is redundanct to output the message when tracing since it is always
+  -- output when it occurs anyway...it's not an error or exception.
+
+  -- Show the test result message immediately
+
+  put_line( standard_error, ourFullErrorMessage );
+  -- may or may not have a template at this point, so check
+  if hasTemplate then
+     putTemplateHeader( templateHeader );
+     put_line( ourFullTemplateErrorMessage );
+  end if;
+
+  -- Originally:
+  --
+  -- put( standard_error, scriptFilePath );
+  -- put( standard_error, ":" );
+  -- put( standard_error, getLineNo'img );
+  -- put( standard_error, ": " );
+  -- if gccOpt then
+  --     put_line( standard_error, "test failed" );
+  -- else
+  --     put_line( standard_error, to_string( getCommandLine ) );
+  --     put_line( standard_error, "^ test failed" );
+  -- end if;
+end err_test_result;
 
 
 --  WARN

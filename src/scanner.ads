@@ -132,6 +132,9 @@ procedure err_exception_raised;
 procedure err_renaming( ident : identifier );
 -- Show an error message for something disallowed for renaming
 
+procedure err_test_result;
+-- error for pragma test_result failure
+
 procedure raise_exception( msg : string );
 
 procedure warn( msg : string );

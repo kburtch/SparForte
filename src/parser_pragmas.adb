@@ -751,8 +751,11 @@ begin
         hasTemplate := true;
         templateHeader.templateType := noTemplate;
         templateHeader.status := 200;
+        -- if no type specified, assume HTML.
+        if var_id = eof_t then
+           templateHeader.templateType := htmlTemplate;
         -- http://www.webmaster-toolkit.com/mime-types.shtml
-        if expr_val = "html" then
+        elsif expr_val = "html" then
            templateHeader.templateType := htmlTemplate;
         elsif expr_val = "css" then
            templateHeader.templateType := cssTemplate;
@@ -1361,16 +1364,7 @@ begin
            if not syntax_check then
               if baseTypesOk( boolean_t, var_id ) then
                  if expr_val = "0" then
-                    put( standard_error, scriptFilePath );
-                    put( standard_error, ":" );
-                    put( standard_error, getLineNo'img );
-                    put( standard_error, ": " );
-                    if gccOpt then
-                       put_line( standard_error, "test failed" );
-                    else
-                       put_line( standard_error, to_string( getCommandLine ) );
-                       put_line( standard_error, "^ test failed" );
-                    end if;
+                    err_test_result;
                  end if;
               end if;
            end if;
