@@ -9012,19 +9012,19 @@ begin
     if currentStandardInput /= originalStandardInput then
        result := dup2( currentStandardInput, stdin );   -- restore stdin
        if result < 0 then
-          put_line( standard_error, "Unable to redirect standard input" );
+          err( "Unable to redirect standard input" );
        end if;
     end if;
     if currentStandardOutput /= originalStandardOutput then
        result := dup2( currentStandardOutput, stdout ); -- restore stdout
        if result < 0 then
-          put_line( standard_error, "Unable to redirect standard output" );
+          err( "Unable to redirect standard output" );
        end if;
     end if;
     if currentStandardError /= originalStandardError then
        result := dup2( currentStandardError, stderr );  -- restore stderr
        if result < 0 then
-          put_line( standard_error, "Unable to redirect standard error" );
+          err( "Unable to redirect standard error" );
        end if;
     end if;
     error_found := false;                               -- no err found (prompt)
@@ -9060,21 +9060,26 @@ begin
           end loop;
           if error_found then
              put_line( standard_error, fullErrorMessage );
+             -- Not sure if templates are possible here but...
+             if hasTemplate then
+                putTemplateHeader( templateHeader );
+                put_line( fullTemplateErrorMessage );
+             end if;
           end if;
        end if;
     end if;
     -- restore original standard input, output, error for the command line
     result := dup2( originalStandardInput, stdin );   -- restore standard input
     if result < 0 then
-       put_line( standard_error, "Unable to restore standard input" );
+       err( "Unable to restore standard input" );
     end if;
     result := dup2( originalStandardOutput, stdout ); -- restore standard output
     if result < 0 then
-       put_line( standard_error, "Unable to restore standard output" );
+       err( "Unable to restore standard output" );
     end if;
     result := dup2( originalStandardError, stderr );  -- restore standard error
     if result < 0 then
-       put_line( standard_error, "Unable to restore standard error" );
+       err( "Unable to restore standard error" );
     end if;
     exit when done;                                   -- and stop when done
   end loop;
@@ -9133,8 +9138,7 @@ begin
        error_found := false;                         -- no error found
        exit_block := false;                          -- not exit-ing a block
        if not LineRead( firstLine'access ) then        -- read first line
-          put_line( standard_error, "unable to read first line of script" );
-          error_found := true;
+          err( "unable to read first line of script" );
           goto error;                                -- and interpreting
        end if;
        if not alreadyCompiled then
@@ -9163,14 +9167,12 @@ begin
         end if;
      end if;
   elsif C_errno = 2 then                           -- file not found?
-     put_line( standard_error, "unable to open policy file '" &
+     err( "unable to open policy file '" &
        policyPath & "' : file not found" );
-       error_found := true;
   elsif C_errno /= 0 then                          -- some other error?
      -- use /= 0 in case user aborts with control-c
-     put_line( standard_error, "unable to open policy file '" &
+     err( "unable to open policy file '" &
        policyPath & "' : " & OSerror( C_errno ) );
-       error_found := true;
   end if;
 <<error>>
   if error_found then                              -- was there an error?
@@ -9242,8 +9244,7 @@ begin
        error_found := false;                         -- no error found
        exit_block := false;                          -- not exit-ing a block
        if not LineRead( firstLine'access ) then        -- read first line
-          put_line( standard_error, "unable to read first line of script" );
-          error_found := true;
+          err( "unable to read first line of script" );
           goto error;                                -- and interpreting
        end if;
        if not alreadyCompiled then
@@ -9267,14 +9268,12 @@ begin
         expect( eof_t );                        -- should be nothing else
      end if;
   elsif C_errno = 2 then                             -- file not found?
-     put_line( standard_error, "unable to open config file '" &
+     err( "unable to open config file '" &
        configPath & "' : file not found" );
-       error_found := true;
   elsif C_errno /= 0 then                          -- some other error?
      -- use /= 0 in case user aborts with control-c
-     put_line( standard_error, "unable to open config file '" &
+     err( "unable to open config file '" &
        configPath & "' : " & OSerror( C_errno ) );
-       error_found := true;
   end if;
 <<error>>
   if error_found then                              -- was there an error?
@@ -9383,8 +9382,7 @@ begin
        error_found := false;                         -- no error found
        exit_block := false;                          -- not exit-ing a block
        if not LineRead( firstLine'access ) then        -- read first line
-          put_line( standard_error, "unable to read first line of script" );
-          error_found := true;
+          err( "unable to read first line of script" );
           goto error;                                -- and interpreting
        end if;
        if not alreadyCompiled then
@@ -9402,14 +9400,12 @@ begin
   if (scriptFile > 0 or boolean(execOpt)) and not done then -- file open or -e?
      parse;
   elsif C_errno = 2 then                             -- file not found?
-     put_line( standard_error, "unable to open script file '" &
+     err( "unable to open script file '" &
        scriptPath & "' : file not found" );
-       error_found := true;
   elsif C_errno /= 0 then                          -- some other error?
      -- use /= 0 in case user aborts with control-c
-     put_line( standard_error, "unable to open script file '" &
+     err( "unable to open script file '" &
        scriptPath & "' : " & OSerror( C_errno ) );
-       error_found := true;
   end if;
 <<error>>
   if error_found then                              -- was there an error?

@@ -98,7 +98,7 @@ begin
   C_reset_errno;
   getcwd( buffer, buffer'length );
   if C_errno /= 0 then
-     put_line( standard_error, "findPwd: error getting current working directory, errno "
+     err( "findPwd: error getting current working directory, errno "
        & C_errno'img );
      current_working_directory := null_unbounded_string;
   end if;
@@ -1284,8 +1284,7 @@ end vm;
              error_found := false;                         -- no error found
              exit_block := false;                          -- not exit-ing a block
              if not LineRead( firstLine'access ) then        -- read first line
-                put_line( standard_error, "unable to read first line of script" );
-                error_found := true;
+                err( "help command is unable to read first line of script" );
              end if;
              if script = null then
                 if verboseOpt then
