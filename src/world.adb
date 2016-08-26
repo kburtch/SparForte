@@ -920,8 +920,8 @@ begin
            deref_id := identifiers( deref_id ).renaming_of;
            cnt := cnt + 1;
            if cnt > 1000 then
-              put_line( standard_error, "internal error: infinite renaming loop" );
-              exit;
+              raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
+                 "internal error: infinite renaming loop";
            end if;
         end loop;
         identifiers( new_id ).value := identifiers( deref_id ).svalue'access;
@@ -955,9 +955,9 @@ begin
 
    begin
       if recordBaseTypeId = root_record_t then
-         put_line( standard_error, gnat.source_info.source_location &
+         raise SPARFORTE_ERROR with gnat.source_info.source_location &
            "internal errror: unexpected type " &
-          to_string( identifiers( recordBaseTypeId ).name ) );
+          to_string( identifiers( recordBaseTypeId ).name );
       end if;
       numFields := natural( to_numeric( identifiers( recordBaseTypeId ).value.all ) );
    exception when others =>
@@ -988,9 +988,8 @@ begin
 
      -- no more identifiers means we didn't find it.
      if j = identifiers_top then
-        put_line( standard_error, gnat.source_info.source_location &
-           "internal error: record field not found" );
-        exit;
+        raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
+          "internal error: record field not found";
      end if;
 
      declare
@@ -1398,8 +1397,7 @@ function toHighASCII( ch : character ) return character is
    -- exception.  We'll do the range checking manually as a work around...
 begin
    if ch > ASCII.DEL then
-      put_line( standard_error, Gnat.Source_Info.Source_Location & ": Internal error: cannot set high bit on character" & character'pos( ch )'img );
-      raise PROGRAM_ERROR;
+      raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location & ": Internal error: cannot set high bit on character" & character'pos( ch )'img;
    end if;
    return character'val( 128+character'pos( ch ) );
 end toHighASCII;
@@ -1410,8 +1408,7 @@ function toHighASCII( id : identifier ) return character is
    -- exception.  We'll do the range checking manually as a work around...
 begin
    if id > 127 then
-      put_line( standard_error, Gnat.Source_Info.Source_Location & ": Internal error: cannot set high bit on identifier number" & id'img );
-      raise PROGRAM_ERROR;
+      raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location & ": Internal error: cannot set high bit on identifier number" & id'img;
    end if;
    return character'val( 128+integer(id) );
 end toHighASCII;
@@ -1453,7 +1450,7 @@ begin
 exception when constraint_error =>
   ch1 := ASCII.DEL;
   ch2 := ASCII.DEL;
-  put_line( standard_error, Gnat.Source_Info.Source_Location & ": Internal error: cannot encode natural number" & id'img );
+  raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location & ": Internal error: cannot encode natural number" & id'img;
 end toByteCode;
 
 function toByteCode( id : reservedWordRange ) return string is
@@ -1479,8 +1476,7 @@ procedure toIdentifier( ch1, ch2 : character; id : out reservedWordRange; advanc
   i2 : reservedWordRange;
 begin
   if i1 < 128 then
-     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Internal error: byte code sequence is not an identifier: " & i1'img );
-     advance := 1;
+    raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location & ": Internal error: byte code sequence is not an identifier: " & i1'img;
   elsif i1 < 224 then
      id := reservedWordRange( i1 - 127 );
      advance := 1;
@@ -1504,8 +1500,7 @@ function toLowASCII( ch : character ) return character is
    -- exception.  We'll do the range checking manually as a work around...
 begin
    if ch <= ASCII.DEL then
-      put_line( standard_error, Gnat.Source_Info.Source_Location & ": Internal error: cannot clear high bit on character" & character'pos( ch )'img );
-      raise PROGRAM_ERROR;
+      raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location & ": Internal error: cannot clear high bit on character" & character'pos( ch )'img;
    end if;
    return character'val( character'pos( ch )-128 );
 end toLowASCII;
@@ -1516,8 +1511,7 @@ function toLowASCII( id : identifier ) return character is
    -- exception.  We'll do the range checking manually as a work around...
 begin
    if id <= 128 then
-      put_line( standard_error, Gnat.Source_Info.Source_Location & ": Internal error: cannot clear high bit on identifier number" & id'img );
-      raise PROGRAM_ERROR;
+      raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location & ": Internal error: cannot clear high bit on identifier number" & id'img;
    end if;
    return character'val( integer(id)-128 );
 end toLowASCII;
@@ -1685,8 +1679,8 @@ begin
   when 504 => s := s & "Gateway Timeout";
   when 505 => s := s & "HTTP Version Not Supported";
   when others => -- includes 500
-     put_line( standard_error, "internal error: unknown http status" );
-     s := to_unbounded_string( "HTTP/1.1 500 Internal Server Error" );
+     --s := to_unbounded_string( "HTTP/1.1 500 Internal Server Error" );
+     raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location & ": Internal error: unknown http status";
   end case;
   s := s & ASCII.CR & ASCII.LF;
 
@@ -1702,8 +1696,10 @@ begin
   when xmlTemplate  => s := s & "text/xml";
   when wmlTemplate  => s := s & "text/vnd.wap.wml";
   when others => -- includes textTemplate
-     put_line( standard_error, "internal error: unknown template type" );
-     s := to_unbounded_string( "Content-type: text/plain" );
+     --s := to_unbounded_string( "HTTP/1.1 500 Internal Server Error" );
+     raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
+       ": Internal error: internal error: unknown template type " &
+       header.templateType'img;
   end case;
   s := s & ASCII.CR & ASCII.LF;
   -- put( s & ASCII.CR & ASCII.LF );
