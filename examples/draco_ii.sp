@@ -23,7 +23,8 @@ procedure draco_ii is
 
   -- General Player Info
 
-  LOGNAME : string;                             -- Linux/UNIX user login name
+  type import_string is new string;
+  LOGNAME : import_string;                      -- Linux/UNIX user login name
   pragma import( shell, LOGNAME );              -- get it from the environment
 
   damage_to_creature : integer;                 -- inflicted on creature (E)

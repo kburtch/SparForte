@@ -9,16 +9,17 @@
 <b>pragma</b> annotate( param, "remote-command - the command to run" );
 <b>pragma</b> annotate( description, "Run a command across a pre-defined set of computers " );
 <b>pragma</b> annotate( description, "using Secure Shell (SSH)." );
-<b>pragma</b> annotate( return, "On success, returns status code 0." );
+<b>pragma</b> annotate( <b>return</b>, "On success, returns status code 0." );
 <b>pragma</b> annotate( errors, "192 - cannot log into a server" );
 <b>pragma</b> annotate( errors, "193 - the ssh command failed" );
 <b>pragma</b> annotate( author, "Ken. O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>procedure</b> dispatch <b>is</b>
+  <b>type</b> import_string <b>is</b> <b>new</b> string;
 
   <FONT COLOR=green><EM>-- my login account</EM></FONT>
-  LOGNAME : string := "unknown";
+  LOGNAME : import_string := "unknown";
   <b>pragma</b> import( shell, LOGNAME );
 
   <FONT COLOR=green><EM>-- node_names is an enumerated list of servers</EM></FONT>
@@ -126,5 +127,4 @@
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
-
 </PRE></BODY></HTML>

@@ -20,21 +20,22 @@ WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "rle" );
-<b>pragma</b> annotate( description, "Given a string containing uppercase characters (A-Z)," );
-<b>pragma</b> annotate( description, "compress repeated 'runs' of the same character by" );
-<b>pragma</b> annotate( description, "storing the length of that run, and provide a function to" );
-<b>pragma</b> annotate( description, "reverse the compression. The output can be anything, as" );
-<b>pragma</b> annotate( description, "long as you can recreate the input with it." );
-<b>pragma</b> annotate( description, "" );
-<b>pragma</b> annotate( description, "Example:" );
-<b>pragma</b> annotate( description, "Input: WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW" );
-<b>pragma</b> annotate( description, "Output: 12W1B12W3B24W1B14W" );
-<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Run-length_encoding" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
-<b>pragma</b> license( unrestricted );
-
-<b>pragma</b> restriction( no_external_commands );
+<b>pragma</b> <b>is</b>
+  annotate( summary, "rle" );
+  annotate( description, "Given a string containing uppercase characters (A-Z)," );
+  annotate( description, "compress repeated 'runs' of the same character by" );
+  annotate( description, "storing the length of that run, and provide a function to" );
+  annotate( description, "reverse the compression. The output can be anything, as" );
+  annotate( description, "long as you can recreate the input with it." );
+  annotate( description, "" );
+  annotate( description, "Example:" );
+  annotate( description, "Input: WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW" );
+  annotate( description, "Output: 12W1B12W3B24W1B14W" );
+  annotate( see_also, "http://rosettacode.org/wiki/Run-length_encoding" );
+  annotate( author, "Ken O. Burtch" );
+  license( unrestricted );
+  restriction( no_external_commands );
+<b>end</b> <b>pragma</b>;
 
 <b>procedure</b> rle <b>is</b>
 
@@ -59,7 +60,7 @@ WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW
           index := @+1;
           <b>exit</b> <b>when</b> index-first = 99;
         <b>end</b> <b>loop</b>;
-        prefix := strings.trim( strings.image( index - first ), trim_end.left ); 
+        prefix := strings.trim( strings.image( index - first ), trim_end.left );
         result := @ &amp; prefix &amp; code;
       <b>end</b> <b>loop</b>;
       <b>return</b> result;

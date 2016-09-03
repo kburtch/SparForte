@@ -1,20 +1,21 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "rle" );
-pragma annotate( description, "Given a string containing uppercase characters (A-Z)," );
-pragma annotate( description, "compress repeated 'runs' of the same character by" );
-pragma annotate( description, "storing the length of that run, and provide a function to" );
-pragma annotate( description, "reverse the compression. The output can be anything, as" );
-pragma annotate( description, "long as you can recreate the input with it." );
-pragma annotate( description, "" );
-pragma annotate( description, "Example:" );
-pragma annotate( description, "Input: WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW" );
-pragma annotate( description, "Output: 12W1B12W3B24W1B14W" );
-pragma annotate( see_also, "http://rosettacode.org/wiki/Run-length_encoding" );
-pragma annotate( author, "Ken O. Burtch" );
-pragma license( unrestricted );
-
-pragma restriction( no_external_commands );
+pragma is
+  annotate( summary, "rle" );
+  annotate( description, "Given a string containing uppercase characters (A-Z)," );
+  annotate( description, "compress repeated 'runs' of the same character by" );
+  annotate( description, "storing the length of that run, and provide a function to" );
+  annotate( description, "reverse the compression. The output can be anything, as" );
+  annotate( description, "long as you can recreate the input with it." );
+  annotate( description, "" );
+  annotate( description, "Example:" );
+  annotate( description, "Input: WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW" );
+  annotate( description, "Output: 12W1B12W3B24W1B14W" );
+  annotate( see_also, "http://rosettacode.org/wiki/Run-length_encoding" );
+  annotate( author, "Ken O. Burtch" );
+  license( unrestricted );
+  restriction( no_external_commands );
+end pragma;
 
 procedure rle is
 
@@ -39,7 +40,7 @@ procedure rle is
           index := @+1;
           exit when index-first = 99;
         end loop;
-        prefix := strings.trim( strings.image( index - first ), trim_end.left ); 
+        prefix := strings.trim( strings.image( index - first ), trim_end.left );
         result := @ & prefix & code;
       end loop;
       return result;

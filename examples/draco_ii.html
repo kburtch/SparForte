@@ -62,7 +62,8 @@ What will you do? *
 
   <FONT COLOR=green><EM>-- General Player Info</EM></FONT>
 
-  LOGNAME : string;                             <FONT COLOR=green><EM>-- Linux/UNIX user login name</EM></FONT>
+  <b>type</b> import_string <b>is</b> <b>new</b> string;
+  LOGNAME : import_string;                      <FONT COLOR=green><EM>-- Linux/UNIX user login name</EM></FONT>
   <b>pragma</b> import( shell, LOGNAME );              <FONT COLOR=green><EM>-- get it from the environment</EM></FONT>
 
   damage_to_creature : integer;                 <FONT COLOR=green><EM>-- inflicted on creature (E)</EM></FONT>
@@ -228,7 +229,7 @@ What will you do? *
     water := 20;
     creature_here := false;
     quest_bonus := 0;
-    
+
     round := 0;
 
     <b>case</b> level <b>is</b>
@@ -365,7 +366,7 @@ What will you do? *
   <b>declare</b>
     ch : character;
   <b>begin</b>
-    <b>ch := inkey</b>;
+    ch := inkey;
   <b>end</b>;
 
   <FONT COLOR=green><EM>-- Game loop: loop for each level</EM></FONT>
@@ -456,7 +457,7 @@ What will you do? *
        <b>if</b> creature_hp &lt; 10 <b>then</b>
           put_line( tty_inverse &amp; "Blood gushes from its wounds" &amp; tty_normal );
        <b>end</b> <b>if</b>;
-  
+
        <FONT COLOR=green><EM>-- Creature attack</EM></FONT>
 
        <b>declare</b>

@@ -12,9 +12,10 @@ pragma annotate( author, "Ken. O. Burtch" );
 pragma license( unrestricted );
 
 procedure dispatch is
+  type import_string is new string;
 
   -- my login account
-  LOGNAME : string := "unknown";
+  LOGNAME : import_string := "unknown";
   pragma import( shell, LOGNAME );
 
   -- node_names is an enumerated list of servers
