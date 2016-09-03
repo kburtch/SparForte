@@ -192,6 +192,8 @@ begin
        put_line( "hash cursor" );
   when recno_cursor =>
        put_line( "recno cursor" );
+  when tinyserve_socket_server =>
+       put_line( "tinyserve socket server" );
   when none =>
        put_line( "undefined resource" );
   when others =>
@@ -287,6 +289,7 @@ begin
   elsif  rp.rt =recno_cursor then
        null;
   end if;
+-- TODO: shoul close tinyserve server if open
   resHandleList.clear( resHandles, long_integer( id ) );
 end clearResource;
 

@@ -40,13 +40,15 @@ with gen_list,
      bdb,
 #end if;
      bush_os.opengl,
+     pegasock.tinyserve,
      world;
 use  world,
      Ada.Numerics.Long_Complex_Types,
      Ada.Strings.Unbounded,
      Interfaces.C,
      Gnat.Directory_Operations,
-     bush_os.opengl;
+     bush_os.opengl,
+     pegasock.tinyserve;
 
 package scanner_res is
 
@@ -91,7 +93,8 @@ type aResourceType is (
    recno_file,
    btree_cursor,
    hash_cursor,
-   recno_cursor
+   recno_cursor,
+   tinyserve_socket_server
 );
 
 --- Resource Defnitions
@@ -251,6 +254,8 @@ type resHandle( rt : aResourceType ) is record
 #else
           null; -- no Berkeley DB
 #end if;
+     when tinyserve_socket_server =>
+          tinyserve_server : pegasock.tinyserve.aSocketServer;
      when none => null;
      end case;
 

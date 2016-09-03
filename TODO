@@ -2,6 +2,15 @@ LOTS TO WORK ON
 ---------------
 Languages are complicated.
 
+UNSORTED NEW ISSUES
+
+[David B wants shared library but didn't get it added in time]
+[Empty bareword treated as a parameter but shouldn't be]
+[check double import]
+[close tinyserve if open]
+[pragma test_result - output in JUNIT format?]
+[need template package to set return HTTP status]
+[check pragma block with @ ]
 
 ISSUES (SparForte Environment)
 

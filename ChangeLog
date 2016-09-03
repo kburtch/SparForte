@@ -112,6 +112,11 @@ Examples:
 
 42. Fix: help produces help for scripts again (misspelled annotate).
 
-[David B wants shared library but didn't get it added in time]
-[Empty bareword treated as a parameter but shouldn't be]
-[double import]
+43. Fix: if no template type is specified, HTML is assumed for compatibility with older versions of SparForte.
+
+44. Fix: pragma test_result now works with templates.
+
+45. Change: internal errors in world package now raise exceptions instead of printing a message to standard error.
+
+46. Change: some errors rewritten to use err() to improve chances of displaying in a template.
+

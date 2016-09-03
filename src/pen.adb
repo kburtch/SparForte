@@ -638,7 +638,6 @@ procedure startupPen is
   res_int : integer;
   res     : SDL_success;
 begin
-
   res_int := SDL_Init( SDL_INIT_VIDEO );
   if res_int < 0 then
      put_line( standard_error, "startupPen: sdl_init failed, SDL error = " & to_string( get_sdl_error ) );

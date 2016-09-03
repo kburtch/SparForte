@@ -89,7 +89,7 @@ begin
   theMemcacheClusterEntry.id := cluster_id;
   memcacheClusterList.Find( memcacheCluster, theMemcacheClusterEntry, 1, clusterIndex );
   if clusterIndex = 0 then
-     put_line( standard_error, "no such cluster id -" & cluster_id'img );
+     err( "cluster id " & cluster_id'img & " not found" );
   else
      memcacheClusterList.Find( memcacheCluster, clusterIndex, theMemcacheClusterEntry );
   end if;
@@ -138,7 +138,7 @@ begin
   theMemcacheClusterEntry.id := cluster_id;
   memcacheDualClusterList.Find( memcacheDualCluster, theMemcacheClusterEntry, 1, clusterIndex );
   if clusterIndex = 0 then
-     put_line( standard_error, "no such cluster id -" & cluster_id'img );
+     err( "cluster id " & cluster_id'img & " not found" );
   else
      memcacheDualClusterList.Find( memcacheDualCluster, clusterIndex, theMemcacheClusterEntry );
   end if;

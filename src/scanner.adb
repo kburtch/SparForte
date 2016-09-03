@@ -45,7 +45,7 @@ with system,
     -- scanner_arrays,
     --compiler,
     --TODO: I need to fix this circular dependency between the scanner and
-    -- parser.
+    -- parser.  That is, move start/shutdown to separate packages.
     parser,
     parser_os,
     parser_arrays,
@@ -1788,7 +1788,7 @@ end dumpSymbolTable;
 
 procedure shutdownScanner is
 begin
-
+  ShutdownTinyServe;
   ShutdownHashIO;
   ShutdownBTreeIO;
   ShutdownBDB;
@@ -2470,6 +2470,7 @@ begin
   StartupBDB;
   StartupBTreeIO;
   StartupHashIO;
+  StartupTinyServe;
 
   -- Declare all Environment Variables
   --

@@ -30,6 +30,10 @@ package parser_tinyserve is
 -- TinyServe package identifiers
 ------------------------------------------------------------------------------
 
+tinyserve_socket_server_t       : identifier;
+tinyserve_client_id_t           : identifier;
+
+tinyserve_new_socket_server_t   : identifier;
 tinyserve_startup_t             : identifier;
 tinyserve_shutdown_t            : identifier;
 tinyserve_manage_connections_t  : identifier;

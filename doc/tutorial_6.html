@@ -40,21 +40,55 @@
 				<!-- Content Area -->
 
 <h2><a name="2.6"></a>Template Tutorial 1: Basic Templates</h2>
-<p>Tools like PHP can run commands embedded in a web page. SparForte scripts
-can
-also be embedded in a web page.</p>
+<p>Some programming languages designed for web development can be embedded
+into an HTML template to generate a dynamic web page.  SparForte scripts
+can also be embedded into HTML templates in this way, or can be embedded
+in templates for several other types of documents.</p>
+
 <h3>Running SparForte From a Web Server</h3>
 
+<p>SparForte can be run from a web server using CGI (Common Gateway
+Interface).  The exact configuration depends on your operating system
+and your web server.</p>
+
+<p>As an example, with Apache, you can create scripts with a <tt>.cgi</tt>
+ending in a <tt>cgi-bin</tt> directory.  The specify the location of the
+SparForte interpreter in the "#!" line at the top of script.</p>
+
+<p>CGI scripts can work with or without templates.</p>
+
 <h3>Using SparForte with CGI</h3>
-<p>CGI scripts can be written in SparForte, in the same way as they are
-written
-in other scripting languages like PERL or PHP. Write your CGI script in
-SparForte
-and make sure that the "#!" path has the correct location of the SparForte
-interpreter. Your web server can then run the SparForte script.</p>
-<p>Using the SparForte <tt>cgi</tt> package you should now be able to write
-a CGI
-script using SparForte.</p>
+
+<p>The SparForte <tt>cgi</tt> package contains the basic functionality for
+writing CGI scripts.  This is included by default.  If you prefer, support
+for the <tt>gnat.cgi</tt> can be added when SparForte is built, though this
+disables certain features.  See the gnat.cgi package reference for more
+information.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">
+-- Display a web page with "Hello World"<br />
+<br />
+cgi.put_cgi_header;<br />
+cgi.put_html_head( "test", "" );<br />
+<br />
+? cgi.html_encode( "Hello World" ) @ "&lt;/body&gt;" @ "&lt;/html&gt;";<br />
+&nbsp;<br />
+        </p>
+        <div class="code_caption">
+        <b>Example</b>: Display all pre-defined variables</span>
+        </div>
+        </div>
+        </center>
+
+<p>This draws a web page similar to this:</p>
+<hr>
+Hello World
+<hr>
+
+<p>The following is a very simple CGI script using the <tt>cgi</tt>
+package.  It shows the values submitted through a HTML form.</p>
 
         <center>
         <div class="code">
@@ -86,6 +120,9 @@ script using SparForte.</p>
         </div>
         </div>
         </center>
+
+<p>Any errors reported by SparForte will be written to the web server's
+error log.</p>
 
 <h3>Using SparForte with Web Templates</h3>
 
