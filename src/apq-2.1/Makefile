@@ -52,6 +52,7 @@ apq-mysql.ads: apq-mysql.ads-in mysql_generr.c mysql_xcr2 mysql_xcr3
 	./mysql_opts >opts.tmp
 	./mysql_generr | sort -k1,1n | sed '/ER_ERROR_FIRST/d;/CR_UNKNOWN_ERROR/d;/ER_ERROR_LAST/d;/CR_ERROR_LAST/d'  | ./mysql_xcr2 >gen.tmp
 	./mysql_gentyp | sort -k1,1n | ./mysql_xcr3
+	#KB
 	rm -f mysql_generr mysql_errmsg.h mysql_gentyp mysql_type_codes.h gen.tmp opts.tmp mysql_opts
 
 postgresql1: numeric.o notices.o

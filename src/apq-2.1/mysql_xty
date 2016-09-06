@@ -2,13 +2,40 @@
 
 PATH=".:$PATH"
 
-HDRFILE=$(mysql_incl)/mysql_com.h
+# Old location (mysql_com.h)
 
+HDRFILE=$(mysql_incl)/mysql_com.h
+TMP=`fgrep  'enum enum_field_types' < "$HDRFILE"`
+if [ -n "$TMP" ] ; then
 sed <$HDRFILE -n '/enum_field_types/,/};/p' | sed 's|enum||;s|enum_field_types||;s|[{};]||g;s|,|\
 |g;s|[ 	]*||g' | sed '/^$/d;s|=[0-9]*||g' \
         | while read NAME ; do
                 echo "  { \"$NAME\", $NAME },"
         done
         echo "  { 0, 0 }"
+
+fi
+
+# New location (binary_log_types.h)
+
+if [ -z "$TMP" ] ; then
+   HDRFILE=$(mysql_incl)/binary_log_types.h
+   TMP=`fgrep  'enum enum_field_types' < "$HDRFILE"`
+   if [ -n "$TMP" ] ; then
+sed <$HDRFILE -n '/enum_field_types/,/};/p;/}/q' | sed 's|typedef||;s|enum||;s|enum_field_types||;s|[{};]||g;s|,|\
+|g;s|[ 	]*||g' | sed '/^$/d;s|=[0-9]*||g;' \
+        | while read NAME ; do
+#KB: kludge - having difficulty getting the right sed...
+          if [ "$NAME" != "_field_types" ] ; then
+                echo "  { \"$NAME\", $NAME },"
+          fi
+        done
+        echo "  { 0, 0 }"
+
+   fi
+fi
+if [ -z "$TMP" ] ; then
+   echo "Unable to find enum enum_field_types" 1>&2
+fi
 
 # End

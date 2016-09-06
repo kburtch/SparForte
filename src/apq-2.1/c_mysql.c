@@ -21,6 +21,8 @@
  */
 
 #include <stdio.h>
+#include <my_global.h>
+#include <my_sys.h>
 #ifdef _WINDOWS
 #include <my_global.h>
 #endif

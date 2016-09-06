@@ -21,6 +21,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <errmsg.h>
 #include <mysqld_error.h>
 
@@ -36,8 +37,12 @@ main(int argc,char **argv) {
 	};
 	int x;
 
-	for ( x=0; codes[x].name != 0; ++x )
-		printf("%d %s\n",codes[x].code,codes[x].name);
+	for ( x=0; codes[x].name != 0; ++x ) {
+		/* KB: double underscores not allowed */
+		if ( strstr( codes[x].name, "__" ) == NULL ) {
+			printf("%d %s\n",codes[x].code,codes[x].name);
+		}
+	}
 	return 0;
 }
 
