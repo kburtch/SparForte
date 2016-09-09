@@ -82,6 +82,7 @@ with system,
     parser_bdb,
     parser_btree_io,
     parser_hash_io,
+    parser_templates,
     parser_tinyserve;
 use ada.text_io,
     ada.integer_text_io,
@@ -137,6 +138,7 @@ use ada.text_io,
     parser_bdb,
     parser_btree_io,
     parser_hash_io,
+    parser_templates,
     parser_tinyserve;
 
 pragma Optimize( time );
@@ -1788,6 +1790,7 @@ end dumpSymbolTable;
 
 procedure shutdownScanner is
 begin
+  ShutdownTemplates;
   ShutdownTinyServe;
   ShutdownHashIO;
   ShutdownBTreeIO;
@@ -2471,6 +2474,7 @@ begin
   StartupBTreeIO;
   StartupHashIO;
   StartupTinyServe;
+  StartupTemplates;
 
   -- Declare all Environment Variables
   --

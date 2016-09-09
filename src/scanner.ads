@@ -1,4 +1,3 @@
-
 ------------------------------------------------------------------------------
 -- Lexical Scanner (the thing that reads your source code)                  --
 -- Also, the semantic checking such as type mismatch checking.              --
