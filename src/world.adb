@@ -1635,10 +1635,12 @@ begin
   end if;
   header.templateHeaderSent := true;
 
-  -- CGI programs cannot directly return HTTP 404.  Instead, it must use
-  -- a Status: header
+  -- CGI programs cannot directly return HTTP 404.  e.g. this is bad:
+  -- s := to_unbounded_string( "HTTP/1.1" & header.status'img & " " );
+  --
+  -- Instead, it must use a Status header field.
 
-  s := to_unbounded_string( "Status: " & header.status'img & " " );
+  s := to_unbounded_string( "Status:" & header.status'img & " " );
   case header.status is
   when 100 => s := s & "Continue";
   when 200 => s := s & "OK";

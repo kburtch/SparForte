@@ -4,10 +4,11 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <META NAME="description" CONTENT="SparForte language documentation">
-	<title>SparForte - Packages - Summary</title>
+	<title>SparForte - Packages - Templates</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
-	<link rel="index" href="index.html" />
-	<link rel="next" href="pkg_arrays.html" />
+	<link rel="index" href="packages.html" />
+	<link rel="prev" href="pkg_numerics.html" />
+	<link rel="next" href="pkg_pen.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -28,7 +29,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="ref_php.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_arrays.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_numerics.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_pen.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -40,174 +41,94 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-<h2><a NAME="4.1"></a>Package Summary</h2>
+<h2><a NAME="4.4"></a>Templates Package</h3>
+<p>The SparForte Templates package contains addtional features for tempates.
+This includes controlling the HTTP result header.</p>
 
-<img class="padded_right" src="pictures/ryu_sheng_long.jpg" width="192" height="153" alt="[Ryu and Ken]" \>
+        <center>
+        <div class="code">
+<pre>
+  <a href="#templates.has_put_template_header">b := has_put_template_header</a>
+  <a href="#templates.put_template_header">put_template_header</a>
+  <a href="#templates.set_http_location">set_http_location( n )</a>
+  <a href="#templates.set_http_status">set_http_status( i )</a>
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Help Command</b>: Contents of the Templates package</span>
+        </div>
+        </div>
+        </center>
 
-<p>AdaScript contains hundreds of built-in constants, variables, functions and
-procedures. Many of these are grouped into collections called packages.</p>
-
-<h3>Built-in Packages</h3>
-
-<p>AdaScript includes the following packages:
-<ul>
-<li>
-<b>arrays</b> - contains general array operations</li>
-
-<li>
-<b>btree_io</b> - Berkeley DB B-Tree files</li>
-
-<li>
-<b>calendar</b> - contains time operations</li>
-
-<li>
-<b>cgi</b> - CGI variables and HTML cookie handling</li>
-
-<li>
-<b>chains</b> - contains information on the current chain</li>
-
-<li>
-<b>command_line</b> - the script name, parameters and return value</li>
-
-<li>
-<b>db</b> - PostgreSQL database interface</li>
-
-<li>
-<b>dbm</b> - PostgreSQL database (multiple connections) interface</li>
-
-<li>
-<b>directory_operations</b> - manage directories</li>
-
-<li>
-<b>doubly_linked_lists</b> - contains linked list operations</li>
-
-<li>
-<b>dynamic_hash_tables</b> - contains hash table operations</li>
-
-<li>
-<b>enums</b> - contains general enumerated type operations</li>
-
-<li>
-<b>exceptions</b> - contains exception handling operations</li>
-
-<li>
-<b>files</b> - contains general file and directory operations</li>
-
-<li>
-<b>gnat.cgi</b> - contains GNAT.CGI functions</li>
-
-<li>
-<b>gnat.crc32</b> - cyclic redundancy check calculator</li>
-
-<li>
-<b>hash_io</b> - Berkeley DB Hash files</li>
-
-<li>
-<b>lock_files</b> - create and destroy lock files</li>
-
-<li>
-<b>memcache</b> - memcache network cache interface</li>
-
-<li>
-<b>memcache.highread</b> - memcache network cache interface - high reading / high redundancy</li>
-
-<li>
-<b>mysql</b> - MySQL database interface</li>
-
-<li>
-<b>mysqlm</b> - MySQL multiple connections database interface</li>
-
-<li>
-<b>numerics</b> - contains mathematical functions and constants</li>
-
-<li>
-<b>os</b> - miscellaneous operating system functions</li>
-
-<li>
-<b>pen</b> - graphics, drawing and animation</li>
-
-<li>
-<b>pen (OpenGL)</b> - OpenGL bindings for pen package</li>
-
-<li>
-<b>records</b> - contains general record operations</li>
-
-<li>
-<b>sound</b> - play sounds, music or adjust the system mixer</li>
-
-<li>
-<b>source_info</b> - the script file name and current statistics</li>
-
-<li>
-<b>stats</b> - statistics on numeric arrays</li>
-
-<li>
-<b>strings</b> - contains string operations</li>
-
-<li>
-<b>System</b> - contains information about the computer a script is running</li>
-
-<li>
-<b>teams</b> - the development team</li>
-
-<li>
-<b>templates</b> - additional capabilities for templates</li>
-
-<li>
-<b>text_io</b> - console and text file input and output</li>
-
-<li>
-<b>units</b> - conversion between common measurements</li>
-</ul>
-
-<p>These packages are referenced by name and are described in detail later
-in this guide.</p>
-
-<h3>Using Built-in Package Subprograms</h3>
-
-<p>To use a function or constant inside a package, prefix the function
-with the name of the package.&nbsp; For example, to use the "length" function
-in the "strings" package, refer to it as "strings.length".
-
-<p><tt>=&gt; ? strings.length( "PegaSoft" )</tt>
-<br><tt>8</tt>
-<p>The built-in Text_IO package is treated as an inherent part of the language
-and doesn't use a prefx of "Text_IO".  This is the only package that doesn't
-use a package prefix.</p>
-
-<h3>Parameter Types</h3>
-
-<p>Parameters to a command have a mode which determine how the parameter
-is treated:</p>
-<ul>
-<li>
-<b>in</b> - the parameter is read only.  This is not the same as C/C++/Java's
-<i>call-by-value</i> because an in parameter is a constant and the value
-cannot be changed.</li>
-
-<li>
-<b>out</b> - the paramter is write only.  SparForte can create a new variable
-automatically (if this feature has not been disabled by the user).</li>
-
-<li>
-<b>in out</b> - the parameter is read and changed by the command.  The
-variable must exist.  This is the same as <i>call-by-reference</i> in
-languages like C/C++/Java.</li>
- 
-<li>
-
-<b>return value</b> - the type of value returned for functions.</li>
-</ul>
-<h3>An Example</h3>
-
-<h4>n := strings.length( s )</h4>
+<a name="templates.has_put_template_header"></a><h3>b := has_put_template_header</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the number of characters in the string.  Returns zero if the string is empty.</p></td>
+<td><p>True if the template header has already been written.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">n := strings.length( "bounce" ); -- retuns 6</span></td>
+<td><span class="code">if templates.has_put_template_header then<br>&nbsp;&nbsp;put_line( "Safe to write!");<br>end if;</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>True if the header has been written</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#templates.put_template_header">templates.put_template_header</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="templates.put_template_header"></a><h3>put_template_header</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Write the HTTP result header.  If it has already been written, do
+nothing.  Normally, SparForte will write an HTTP header before processing
+a template.  Use this procedure to write it out earlier, used before any
+output from your script.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">templates.put_template_header;<br>-- Status: 200 OK<br>-- ... etc.</span></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception may be raised of pragma template is not called first.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#templates.has_put_template_header">templates.has_put_template_header</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="templates.set_http_location"></a><h3>set_http_location( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Set the template header HTTP location field to the URL string s.
+This is typically used with redirect HTTP responses.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">templates.set_http_status( 302 );<br>templates.set_http_location( "/redirect.html" );</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -220,69 +141,64 @@ languages like C/C++/Java.</li>
 </tr><tr>
 <td><span>s</span></td>
 <td><span>in</span></td>
-<td><span>universal_string</span></td>
+<td><span>string</span></td>
 <td><span>required</span></td>
-<td><span>the string to count</span></td>
-</tr>
-<tr>
-<td><span>n</span></td>
-<td><span>return value</span></td>
-<td><span>natural</span></td>
-<td><span>required</span></td>
-<td><span>the number of characters</span></td>
+<td><span>the redirect URL</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
+<td><p>It is an error to set an empty URL.</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Strings.Unbounded.Length<br>PHP: strlen</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
-<hr>
-
-<p>This example uses the description of the strings.length function.  Here is
-how to read the description.</p>
-
-<p>"n := strings.length( s )" shows the syntax of the function...often this
-is all you need to look at to remind yourself of how to use the function.</p>
-
-<p>Following this is a summary of what the function does, including an
-example.  If this is a GCC Ada function, the full name of the Ada function
-appears in the "Ada Equivalent" section.  This is to help you move your SparForte
-scripts to other Ada-based tools and languages.</p>
-
-<p>There is a detailed list of parameters.  In the case of
-strings.length, there is one parameter. It is an "in" parameter and it is
-required (there is no default value for the parameter).  The parameter is a
-universal_string type (any kind of string variable).</p>
-
-<p>strings.length returns a natural value (a zero or positive integer) which is
-the number of characters in the string.</p>
-
-<h3>Additional Headings</h3>
-
-<p>There may be additional sections such as:</p>
-
-<ul>
-<li>See Also: names of similar or related subprograms</li>
-<li>Compare With: names of similar functions in other popular languages</li>
-<li>Exceptions: conditions for or names of exceptions which may be raised</li>
-<li>Restrictions: pragmas that may prevent this subprogram from executing</li>
-<li>Rationale: notes on how or why the subprogram was designed the way that it is</li>
-<li>Implementation Note: notes on unusual behaviour caused by the way a subprogram was built</li>
-</ul>
-
-&nbsp;<br>
+<a name="templates.set_http_status"></a><h3>set_http_status( n )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Set the template header HTTP status code to the natural n.
+The default status for a template is 200 (OK).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">templates.set_http_status( 404 ); -- not found</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the status code</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>The status code must be range 100..505.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
-                                <p class="rmt"><a class="rightmenutext" href="packages.html">&nbsp;<b>Summary</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="packages.html">&nbsp;Summary</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_arrays.html">&nbsp;arrays</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_btree_io.html">&nbsp;btree_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_calendar.html">&nbsp;calendar</a></p>
@@ -306,7 +222,7 @@ the number of characters in the string.</p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_mysqlm.html">&nbsp;mysqlm</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_numerics.html">&nbsp;numerics</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;os</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_os.html">&nbsp;<b>os</b></a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_pen.html">&nbsp;pen</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_pengl.html">&nbsp;pen (OpenGL)</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_records.html">&nbsp;records</a></p>

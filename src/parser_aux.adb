@@ -287,15 +287,32 @@ procedure processTemplate is
    -- save_lineno    : aLineNumber;                    -- swap space for line no
    lastLine : Positive_Count := 1;
 begin
-   gccOpt := true; -- force gcc errors since these will go into
-   -- web servers (text) log so hilighting will be annoying
+   -- no longer force GCC-style errors.  That's handled in the err
+   -- function now.
+   -- gccOpt := true;
+
+   -- Switch to a restricted shell and disable external commands
+   -- for normal templates.
+
    if not unrestrictedTemplate then
       rshOpt := true;
       restriction_no_external_commands := true;
    end if;
+
+   -- Write the HTTP header. If already written, nothing happens.
+
+   if isExecutingCommand then
+      putTemplateHeader( templateHeader );
+   end if;
+
+   -- Open the template file
+
    scriptFilePath := templatePath;
    open( f, in_file, to_string( templatePath ) );   -- open the template
    setTemplateName;
+
+   -- Read the template, interpret tags and execute commands
+
    while not end_of_file( f ) loop                  -- while text to do
       get( f, ch );                                 -- get next character
 

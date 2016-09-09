@@ -1345,7 +1345,7 @@ begin
         if pragmaKind = unrestricted_template then
            unrestrictedTemplate := true;
         end if;
-        putTemplateHeader( templateHeader );
+        --putTemplateHeader( templateHeader );
      when test =>
         if testOpt then
            if not syntax_check then

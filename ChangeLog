@@ -120,3 +120,7 @@ Examples:
 
 46. Change: some errors rewritten to use err() to improve chances of displaying in a template.
 
+47. Change: pragma template no longer immediately writes a HTTP header.  The header is now written on-demand on an error or when template execution starts.
+
+48. New: template package: put_template_header, set_http_status, set_http_location. [docs needed] [tests needed]
+
