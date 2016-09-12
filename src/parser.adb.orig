@@ -40,6 +40,7 @@ with system,
     user_io,
     user_io.getline,
     script_io,
+    performance_monitoring,
     builtins,
     jobs,
     signal_flags,
@@ -86,6 +87,7 @@ use ada.text_io,
     pegasock.memcache,
     user_io,
     script_io,
+    performance_monitoring,
     string_util,
     builtins,
     jobs,
@@ -9398,7 +9400,19 @@ begin
     end if;
   end if;
   if (scriptFile > 0 or boolean(execOpt)) and not done then -- file open or -e?
+     if perfOpt then
+        if syntax_check then
+           perfStats.startTime := ada.calendar.clock;
+        end if;
+     end if;
      parse;
+     if perfOpt then
+        if syntax_check then
+           staticByteCodeAnalysis;
+        else
+           perfStats.endTime := ada.calendar.clock;
+        end if;
+     end if;
   elsif C_errno = 2 then                             -- file not found?
      err( "unable to open script file '" &
        scriptPath & "' : file not found" );
@@ -9829,6 +9843,12 @@ begin
            pullBlock;
         end if;
      end if;
+  end if;
+
+  -- Show performance statistics
+
+  if perfOpt then
+     put_perf_summary;
   end if;
 
   -- Apply the return error status

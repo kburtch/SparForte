@@ -124,3 +124,5 @@ Examples:
 
 48. New: template package: put_template_header, set_http_status, set_http_location. [docs needed] [tests needed]
 
+49. New. --perf/-p command option to show source code metrics and performance statistics.  It can be combined with --check/-c command option to hide performance statistics.
+

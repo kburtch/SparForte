@@ -245,6 +245,9 @@ procedure compileInclude( command : unbounded_string );
 function copyByteCodeLines( point1, point2 : natural ) return string;
 -- copy the byte code lines containing point1 through point2
 
+procedure staticByteCodeAnalysis;
+-- perform systatic byte code analysis during --perf option
+
 ------------------------------------------------------------------------------
 PRIVATE
 ------------------------------------------------------------------------------

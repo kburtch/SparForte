@@ -221,6 +221,7 @@ execOpt      : commandLineOption := false;           -- true if -e
 gccOpt       : commandLineOption := false;           -- true if -g
 importOpt    : commandLineOption := false;           -- true if -i
 maintenanceOpt : commandLineOption := false;         -- true if -m
+perfOpt      : commandLineOption := false;           -- true if -p
 rshOpt       : commandLineOption := false;           -- true if -r
 verboseOpt   : commandLineOption := false;           -- true if -v
 designOpt    : commandLineOption := false;           -- true if -t

@@ -3,9 +3,10 @@
 spar \- SparForte, the Business Shell
 .SH SYNOPSIS
 .B spar
-[\-bcdDeghilLmrtvVx] [\-\-break][\-\-check][\-\-debug][\-\-exec]
+[\-bcdDeghilLmprtvVx] [\-\-break][\-\-check][\-\-debug][\-\-exec]
 [\-\-gcc-errors][\-\-login][\-\-verbose][\-\-version][\-\-restricted]
-[\-\-design|\-\-maintenance|\-\-test][\-\-trace][\-\-] [script [param1 ...] ]
+[\-\-perf][\-\-design|\-\-maintenance|\-\-test][\-\-trace][\-\-]
+ [script [param1 ...] ]
 .SH DESCRIPTION
 .\" Add any additional description here
 .PP
@@ -50,6 +51,9 @@ simulate a login shell
 .TP
 \fB\-l\fR, \fB\-\-maintenance\fR
 maintenance phase mode
+.TP
+\fB\-p\fR, \fB\-\-perf\fR
+show performance stats
 .TP
 \fB\-r\fR, \fB\-\-restricted\fR
 restricted shell mode

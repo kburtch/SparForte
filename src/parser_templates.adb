@@ -129,8 +129,6 @@ procedure ParseTemplatesHasPutTemplateHeader( result : out unbounded_string;
   kind : out identifier ) is
   -- Syntax: b := templates.has_put_template_header
   -- Ada:    N/A
-  exprVal : unbounded_string;
-  exprKind : identifier;
 begin
   expect( templates_has_put_template_header_t );
   kind := boolean_t;

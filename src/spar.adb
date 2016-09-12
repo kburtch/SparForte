@@ -66,7 +66,7 @@ begin
   if Argument_Count = 1 then
      if Argument(1) = "-h" or Argument( 1 ) = "--help" then
         Put_Line( "SparForte (Business Shell) usage" );
-        Put_Line( "spar [-bcdDeghilLmrtvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--restricted][--design|--maintenance|--test][--trace][--] [script [param1 ...] ]" );
+        Put_Line( "spar [-bcdDeghilLmprtvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--perf][--restricted][--design|--maintenance|--test][--trace][--] [script [param1 ...] ]" );
         Put_Line( "  --break or -b       - enable breakout debugging prompt" );
         Put_Line( "  --check or -c       - syntax check the script but do not run" );
         Put_Line( "  --debug or -d       - enable pragma assert and pragma debug" );
@@ -79,6 +79,7 @@ begin
         Put_Line( "                       (may be repeated)" );
         Put_Line( "  --login or -l       - simulate a login shell" );
         Put_Line( "  --maintenance or -m - maintenance phase mode" );
+        Put_Line( "  --pref or -p        - show performance stats" );
         Put_Line( "  --restricted or -r  - restricted shell mode" );
         Put_Line( "  --test or -t        - test phase mode" );
         Put_Line( "  --trace or -x       - show script lines as they run" );
@@ -134,6 +135,8 @@ begin
             isLoginShell := true;
          elsif Argument(i) = "--maintenance" then
             maintenanceOpt := true;
+         elsif Argument(i) = "--perf" then
+            perfOpt := true;
          elsif Argument(i) = "--restricted" then
             rshOpt := true;
          elsif Argument(i) = "--test" then
@@ -201,6 +204,8 @@ begin
                       isLoginShell := true;
                    elsif Args(letter) = 'm' then
                       maintenanceOpt := true;
+                   elsif Args(letter) = 'p' then
+                      perfOpt := true;
                    elsif Args(letter) = 'g' then
                       gccOpt := true;
                    elsif Args(letter) = 'r' then

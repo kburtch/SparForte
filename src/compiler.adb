@@ -41,7 +41,8 @@ with system,
     script_io,
     user_io,
     string_util,
-    world;
+    world,
+    performance_monitoring;
 use ada.text_io,
     ada.integer_text_io,
     ada.command_line,
@@ -57,7 +58,8 @@ use ada.text_io,
     script_io,
     user_io,
     string_util,
-    world;
+    world,
+    performance_monitoring;
 
 pragma Optimize( time );
 
@@ -2399,6 +2401,56 @@ begin
 
 end copyByteCodeLines;
 
+
+-- STATIC BYTE CODE ANALYSIS
+--
+-- Determine LOC for the script (including any include files)
+--
+-- After syntax check, all include files will be loaded into the
+-- script.
+--
+-- This will loop through to the end of the script, counting the
+-- end of line markers (ASCII.NUL), etc.
+-----------------------------------------------------------------------------
+
+procedure staticByteCodeAnalysis is
+   pos : natural := firstScriptCommandOffset;
+   -- TODO: these depend on the byte code
+   procedure_char : character := character'val( 169 );
+   function_char  : character := character'val( 151 );
+   begin_char     : character := character'val( 138 );
+begin
+   while pos < script'last loop
+      if script( pos ) = ASCII.NUL then
+         perfStats.loc := perfStats.loc + 1;
+         -- skip start of line bytes
+         pos := pos + 4;
+         -- this assumes "procedure" tokens only occur in definitions
+         -- forward declarations, for example, will break this
+      elsif script( pos ) = procedure_char then
+         perfStats.numProcs := perfStats.numProcs + 1;
+         -- this assumes "function" tokens only occur in definitions
+         -- forward declarations, for example, will break this
+         pos := pos + 1;
+      elsif script( pos ) = function_char then
+         perfStats.numFuncs := perfStats.numFuncs + 1;
+         pos := pos + 1;
+      elsif script( pos ) = begin_char then
+         perfStats.numBlocks := perfStats.numBlocks + 1;
+         pos := pos + 1;
+      else
+         pos := pos + 1;
+      end if;
+   end loop;
+   -- Ignore ASCII.NUL in sentinal record of the byte code
+   perfStats.loc := perfStats.loc + 1;
+end staticByteCodeAnalysis;
+
+
+-- START COMPILER
+--
+-----------------------------------------------------------------------------
+
 procedure startCompiler is
     discard_char : character;
 begin
@@ -2643,14 +2695,24 @@ begin
 
 end startCompiler;
 
+
+-- RESET COMPILER
+--
+-----------------------------------------------------------------------------
+
 procedure resetCompiler is
 begin
-null;
+  null;
 end resetCompiler;
+
+
+-- SHUTDOWN COMPILER
+--
+-----------------------------------------------------------------------------
 
 procedure shutdownCompiler is
 begin
-null;
+  null;
 end shutdownCompiler;
 
 end compiler;
