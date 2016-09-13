@@ -26,9 +26,9 @@ cpp -P $HDRFILE | sed -n '/enum_field_types/,/};/p;/}/q' | sed 's|typedef||;s|en
 |g;s|[ 	]*||g' | sed '/^$/d;s|=[0-9]*||g;' \
         | while read NAME ; do
 #KB: kludge - having difficulty getting the right sed...
-#          if [ "$NAME" != "_field_types" ] ; then
+          if [ "$NAME" != "_field_types" ] ; then
                 echo "  { \"$NAME\", $NAME },"
-#          fi
+          fi
         done
         echo "  { 0, 0 }"
 
