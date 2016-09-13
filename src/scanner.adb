@@ -42,6 +42,7 @@ with system,
     user_io,
     string_util,
     software_models,
+    performance_monitoring,
     -- scanner_arrays,
     --compiler,
     --TODO: I need to fix this circular dependency between the scanner and
@@ -100,6 +101,7 @@ use ada.text_io,
     user_io,
     string_util,
     software_models,
+    performance_monitoring,
     --compiler,
     -- scanner_arrays,
     parser,
@@ -4616,6 +4618,10 @@ begin
             put( standard_error, lineno'img );
             put_line( standard_error, "]" );
             cmdpos := cmdpos - 2;
+         end if;
+      elsif perfOpt then
+         if not syntax_check and (not exit_block or not error_found) then
+            perfStats.lineCnt := perfStats.lineCnt + 1;
          end if;
       end if;
       cmdpos := cmdpos+nextScriptCommandOffset; -- line header and indent marker

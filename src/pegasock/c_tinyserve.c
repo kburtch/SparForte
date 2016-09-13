@@ -60,7 +60,7 @@ int getListenerSocket( SocketData *socket_data ) {
 // Return the maximum possible number of active connections.
 // --------------------------------------------------------------------------
 
-int getFDSetSize( null ) {
+int getFDSetSize() {
   return FD_SETSIZE;
 }
 

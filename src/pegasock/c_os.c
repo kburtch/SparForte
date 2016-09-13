@@ -18,7 +18,7 @@
 /*                                                          */
 /* Patch for GCC 3.x / GNAT 5.x which won't import errno.   */
 
-int C_pegasock_errno( void ) {
+int C_pegasock_errno() {
     return errno;
 }
 
@@ -26,7 +26,7 @@ int C_pegasock_errno( void ) {
 /*                                                          */
 /* Patch for GCC 3.x / GNAT 5.x which won't import errno.   */
 
-void C_pegasock_reset_errno( void ) {
+void C_pegasock_reset_errno() {
      errno = 0;
 }
 
