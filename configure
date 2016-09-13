@@ -1020,12 +1020,12 @@ else
    fi
 fi
 
-if [ -z "$NO_MYSQL" -a -z "$NO_POSTGRES" ] ; then
+if [ ! -z "$HAS_MYSQL" -o ! -z "$HAS_POSTGRES" ] ; then
    cd apq-2.1
-   if [ ! -z "$NO_MYSQL" -a -z "$NO_POSTGRES" ] ; then
+   if [ -z "$HAS_MYSQL" -a ! -z "$HAS_POSTGRES" ] ; then
       echo "Running APQ's configure (no MySQL)..."
       HAVE_MY=0 ./configure
-   elif [ -z "$NO_MYSQL" -a ! -z "$NO_POSTGRES" ] ; then
+   elif [ ! -z "$HAS_MYSQL" -a -z "$HAS_POSTGRES" ] ; then
       echo "Running APQ's configure (no PostgreSQL)..."
       HAVE_PG=0 ./configure
    else
@@ -1033,6 +1033,8 @@ if [ -z "$NO_MYSQL" -a -z "$NO_POSTGRES" ] ; then
       ./configure
    fi
    cd -
+else
+    echo "No MySQL or PostgreSQL support."
 fi
 #if test -f Makeincl ; then
 #   mv -f Makeincl apq-2.1/Makeincl
@@ -1197,6 +1199,7 @@ test -f temp.adb && rm temp.adb
 # options into the file with sed.
 
 if [ \( -z "$HAS_MYSQL" \) -a \( -z "$HAS_POSTGRES" \) ] ; then
+   echo "Disable APQ"
    APQMAKESUB="@echo \"Disabled\""
 else
    APQMAKESUB='$(MAKE) -C apq-2.1\/'
@@ -1261,7 +1264,7 @@ else
 fi
 if [ -z "$NO_READLINE" ] ; then
    RLINCL="\-I\.\/areadline\/"
-   RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.6\ \-l:libhistory.so.6"
+   RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.6\ \-l:libhistory.so.6 \-lncurses"
 else
    RLINCL=
    RLLIBS=
