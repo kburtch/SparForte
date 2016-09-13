@@ -1264,7 +1264,7 @@ else
 fi
 if [ -z "$NO_READLINE" ] ; then
    RLINCL="\-I\.\/areadline\/"
-   RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.6\ \-l:libhistory.so.6"
+   RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.6\ \-l:libhistory.so.6 \-lncurses"
 else
    RLINCL=
    RLLIBS=
