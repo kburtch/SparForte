@@ -1020,12 +1020,12 @@ else
    fi
 fi
 
-if [ ! -z "$HAS_MYSQL" -o ! -z "$HAS_POSTGRES" ] ; then
+if [ -z "$NO_MYSQL" -a -z "$NO_POSTGRES" ] ; then
    cd apq-2.1
-   if [ -z "$HAS_MYSQL" -a ! -z "$HAS_POSTGRES" ] ; then
+   if [ ! -z "$NO_MYSQL" -a -z "$NO_POSTGRES" ] ; then
       echo "Running APQ's configure (no MySQL)..."
       HAVE_MY=0 ./configure
-   elif [ ! -z "$HAS_MYSQL" -a -z "$HAS_POSTGRES" ] ; then
+   elif [ -z "$NO_MYSQL" -a ! -z "$NO_POSTGRES" ] ; then
       echo "Running APQ's configure (no PostgreSQL)..."
       HAVE_PG=0 ./configure
    else
