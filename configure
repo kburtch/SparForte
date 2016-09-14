@@ -9,11 +9,38 @@
 # default tcsh (which is based on csh and is not Bourne shell compatible).
 #set -eu
 
+# Default installation prefix
 PREFIX="/usr/local"
+
+# Default man page installation prefix
 MANPREFIX="/usr/local"
-NO_GCGI=0
+
+# These variables may be passed into this script from the environment.
+#
+# For example, ARCH=i386 ./configure
+# Or export ARCH=i386; ./configure
+#
+# ARCH        - the hardware architecture
+# GMAKE       - the GNU make command to use
+# PREFIX      - the installation prefix
+# MANPREFIX   - the man page directory prefix
+# NO_BDB      - request to disable Berkeley DB
+# NO_MYSQL    - request to disable MySQL
+# NO_OPENGL   - request to disable OpenGL
+# NO_POSTGRES - request to disable PostgreSQL
+# NO_READLINE - request to use old Ada input routines not readline
+# NO_SOUND    - request to disable sound support
+
+NO_GCGI=1
+# Gnat.CGI is default "no"
+# Gnat CGI breaks some SparForte features when enabled
+# It must be enabled by a configuration option
 
 # Get command line options
+#
+# Throughout this script, true is non-blank, and false is blank.  These
+# variables may be passed in from the environment (as described in the
+# INSTALL file).  Any configure options overrides them here.
 
 while [ $# -gt 0 ] ; do
   TMP=`echo "$1" | cut -d= -f1`
@@ -60,22 +87,22 @@ while [ $# -gt 0 ] ; do
       NO_GCGI=
       ;;
   --without-bdb)
-      NO_BDB=0
+      NO_BDB=1
       ;;
   --without-mysql)
-      NO_MYSQL=0
+      NO_MYSQL=1
       ;;
   --without-opengl)
-      NO_OPENGL=0
+      NO_OPENGL=1
       ;;
   --without-postgres)
-      NO_POSTGRES=0
+      NO_POSTGRES=1
       ;;
   --without-readline)
-      NO_READLINE=0
+      NO_READLINE=1
       ;;
   --without-sound)
-      NO_SOUND=0
+      NO_SOUND=1
       ;;
 # Unused RPM options
 # When building an RPM on OpenSUSE, many unnecesssary options were passed
@@ -108,15 +135,16 @@ while [ $# -gt 0 ] ; do
 done
 
 # Configure SparForte
-
-# OS Environment
 #
-# Use an ARCH variable if one exists.  Otherwise, determine the operating
-# system type and processor architecture type by uname.
+# The sleep 1 is to make the messages more readable.
 
 echo "Configuring SparForte..."
 sleep 1
 echo
+
+# Check for pkg-config command
+#
+# PKGCONFIG is non-blank if it is found
 
 PKGCONFIG="pkg-config"
 echo -n "checking for pkg_config... "
@@ -127,6 +155,10 @@ if [ $? -ne 0 ] ; then
 else
    echo "yes"
 fi
+
+# Check for GNU locate command
+#
+# LOCATE is set to the name of the locate command
 
 LOCATE="glocate"
 echo -n "checking for locate ($LOCATE)... "
@@ -155,6 +187,11 @@ if [ $? -ne 0 ] ; then
    echo "Please install GNU locate and run updatedb (as root)."
    exit 1
 fi
+
+# OS Environment
+#
+# The name of the operating system, such as linux, darwin, cygwin, etc.
+
 cd src
 echo -n "checking for OS (uname -s)... "
 OS=`uname -s 2>/dev/null`
@@ -172,6 +209,12 @@ if [ "$TMP" = "Darwin" ] ; then
     OS="darwin"
 fi
 echo "yes"
+
+# CPU architecture
+#
+# Use an ARCH variable if one exists.  Otherwise, determine the operating
+# system type and processor architecture type by uname.
+
 echo -n "checking for architecture (\$ARCH)... "
 if [ -z "$ARCH" ] ; then
    echo "no"
@@ -192,11 +235,17 @@ if [ -z "$ARCH" ] ; then
    fi
 fi
 echo "yes"
+
+# Display the Operating System and the CPU Architecture
+#
+# These will determine which bush_os binding file to use.
+
 echo -n "making for... "
 # The ARCH comes from uname and indicates the version of Linux, not the
 # actual processor being used.  There's a lot of aliases for Intel
 # Pentium-4-ish processors.  Not all appear here.  CPU_ARCH is used to
-# determine the bush_os binding file.
+# determine the bush_os binding file...we don't necessarily have one for
+# every architecture.
 # Intel 32-bit Pentium
 if [ "$ARCH" = "i486" ] ; then
    CPU_ARCH="i386"
@@ -238,7 +287,7 @@ elif [ "$ARCH" = "armv6l" ] ; then
    CPU_ARCH="armv6"
    ARCH="armv6"
 elif [ "$ARCH" = "armv7l" ] ; then
-   # Rasp Pi 3: First, ARM 6L not a GCC option.  Second, not all Debian
+   # Rasp Pi 3: First, ARM 7L not a GCC option.  Second, not all Debian
    # packages build with an CPU march flag more specific than generic
    # v6.
    CPU_ARCH="armv6"
@@ -372,7 +421,11 @@ else
    echo "in the documentation on how to port SparForte to a new operating system."
    exit 1
 fi
+
 # Check compiler
+#
+# CC is set to the name of the compiler
+
 if test -f bush_os.ali ; then
    if test ! -w bush_os.ali ; then
       echo "bush_os.ali exists and is not writable...please remove it"
@@ -494,6 +547,7 @@ if [ -z "$TMP" ] ; then
  else
   echo "yes"
 fi
+
 # Test version of scanner-calendar for this GCC Ada
 
 if test ! -d ../test ; then
@@ -788,6 +842,10 @@ if [ -z "$TMP" ] ; then
   echo "yes"
 fi
 
+# Check for OpenGL
+#
+# HAS_OPENGL is non-blank if it is detected on the system
+
 echo -n "configuring OpenGL (pkg-config)... "
 if [ -z "$NO_OPENGL" ] ; then
    HAS_OPENGL=1
@@ -824,7 +882,10 @@ else
    echo "no"
 fi
 
-# Databases
+# Check for PostgreSQL
+#
+# HAS_POSTGRES is non-blank if it is detected on the system
+# Note: APQ uses pg_config but it probably shouldn't.
 
 echo -n "checking for postgresql (pg_config)..."
 if [ -z "$NO_POSTGRES" ] ; then
@@ -858,6 +919,11 @@ fi
 #      echo "yes"
 #   fi
 #fi
+
+# Check for MySQL
+#
+# HAS_MYSQL is non-blank if it is detected on the system
+
 echo -n "checking for mysql (mysql_config)..."
 if [ -z "$NO_MYSQL" ] ; then
    HAS_MYSQL=1
@@ -874,6 +940,8 @@ else
 fi
 
 # GNU Readline
+#
+# HAS_READLIE is non-blank if detected on the system
 
 if [ -z "$NO_READLINE" ] ; then
    HAS_READLINE=1
@@ -904,7 +972,10 @@ else
    echo "no"
 fi
 
-# Make
+# Check for Make
+#
+# GMAKETYPE is the name of the make command.
+# Only search if a make command was not given.
 
 echo -n "checking for gmake (\$GMAKE)... "
 if [ ! -z "$GMAKE" ] ; then
@@ -959,6 +1030,9 @@ else
 fi
 
 # Check for the libgstreamer
+#
+# GSTREAMERFLAG is the C pre-processor flag to enable gstreamer support
+# (blank means no suport)
 
 if [ -z "$NO_SOUND" ] ; then
    echo -n "checking for gstreamer (ldconfig -p, Linux)... "
@@ -992,7 +1066,7 @@ fi
 
 echo "SparForte is configured"
 
-# APQ library
+# Configure the APQ library
 
 echo
 sleep 3
@@ -1019,6 +1093,14 @@ else
       echo "yes"
    fi
 fi
+
+# APQ will not build with no database selected.  If no database is selected,
+# skip this step.  Otherwise, select one database or both through the APQ
+# configure script.  If APQ is not built, we not try to load it in SparForte
+# (this is done later in the make file).
+#
+# NO_MYSQL means the user requests no MSYQL support, not that MySQL is not
+# installed (that is HAS_MYSQL).
 
 if [ -z "$NO_MYSQL" -a -z "$NO_POSTGRES" ] ; then
    cd apq-2.1
@@ -1095,6 +1177,9 @@ if [ ! -z "$NEEDS_APQ" ] ; then
 else
    GNATPREP_OPTS="$GNATPREP_OPTS -DAPQ=false"
 fi
+
+# Run each ".orig" file through GnatPrep Ada pre-processor to create the
+# final file, with any disabled features removed.
 
 echo "Updating...world.ads"
 test -f world.ads && chmod 666 world.ads
@@ -1279,6 +1364,8 @@ MANPREFIX=`echo "$MANPREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 touch c_gstreamer.c
 
 # Create the makefiles
+#
+# A very long sed to substitute all the values into the top of the make file.
 
 echo "Creating...src/GNUmakefile"
 
