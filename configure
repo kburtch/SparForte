@@ -1349,7 +1349,9 @@ else
 fi
 if [ -z "$NO_READLINE" ] ; then
    RLINCL="\-I\.\/areadline\/"
-   RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.6\ \-l:libhistory.so.6 \-lncurses"
+   # Linux Mint doesn't need ncurses and breaks...needed for Slackware?
+   #RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.6\ \-l:libhistory.so.6\ \-lncurses"
+   RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.6\ \-l:libhistory.so.6"
 else
    RLINCL=
    RLLIBS=
