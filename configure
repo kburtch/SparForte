@@ -788,9 +788,9 @@ if [ -z "$TMP" ] ; then
   echo "yes"
 fi
 
+HAS_OPENGL=
 echo -n "configuring OpenGL (pkg-config)... "
 if [ -z "$NO_OPENGL" ] ; then
-   HAS_OPENGL=1
    if [ -n "$PKGCONFIG" ] ; then
       MESALIBSTYPE=`(exec $PKGCONFIG --libs gl glu 2>/dev/null)`
       TMP=$?
@@ -805,6 +805,7 @@ if [ -z "$NO_OPENGL" ] ; then
          MESALIBSTYPE="-lGLU\ -lGL\ \ "
          MESAINCLTYPE="-I\/usr\/include\/libdrm\ \ "
       else
+         HAS_OPENGL=1
          echo "yes"
       fi
    else
@@ -820,63 +821,57 @@ if [ -z "$NO_OPENGL" ] ; then
       fi
    fi
 else
-   HAS_OPENGL=""
    echo "no"
 fi
 
-# Databases
+# Databases - PostgreSQL
+#
+# HAS_POSTGRES will be non-empty if support has been requested (NO_POSTGRES is
+# not empty) and the database was found.
+#
+# Note: pg_config is used by APQ, but is for configuring the database server,
+# not the client, and is technically the wrong tool.
 
 echo -n "checking for postgresql (pg_config)..."
+HAS_POSTGRES=
 if [ -z "$NO_POSTGRES" ] ; then
-   HAS_POSTGRES=1
    TMP=`(exec pg_config --version 2>/dev/null)`
    if [ -z "$TMP" ] ; then
       echo "no"
-      HAS_POSTGRES=""
    else
+	  HAS_POSTGRES=1
       echo "yes"
    fi
 else
-   HAS_POSTGRES=""
    echo "no"
 fi
-#if [ -n "$HAS_POSTGRES" ] ; then
-#   echo -n "checking for postgresql configuration (Linux)..."
-#   TMP=`/sbin/ldconfig -p 2>/dev/null | grep libxslt`
-#   if [ -z "$TMP" ] ; then
-#      echo "no"
-#      echo -n "checking for postgresql configuration (FreeBSD)..."
-#      TMP=`/sbin/ldconfig -r 2>/dev/null | grep libxslt`
-#      if [ -z "$TMP" ] ; then
-#         echo "no"
-#         echo "OpenSuSE (maybe other systems) link with libxslt unnecessarily"
-#         exit 192
-#      else
-#         echo "yes"
-#      fi
-#   else
-#      echo "yes"
-#   fi
-#fi
+
+# Databases - MySQL
+#
+# HAS_MYSQL will be non-empty if support has been requested (NO_MYSQL is not
+# empty) and the database was found.
+
+HAS_MYSQL=
 echo -n "checking for mysql (mysql_config)..."
 if [ -z "$NO_MYSQL" ] ; then
-   HAS_MYSQL=1
    TMP=`(exec mysql_config --version 2>/dev/null)`
    if [ -z "$TMP" ] ; then
       echo "no"
-      HAS_MYSQL=""
    else
+	  HAS_MYSQL=1
       echo "yes"
    fi
 else
-   HAS_MYSQL=""
    echo "no"
 fi
 
 # GNU Readline
+#
+# HAS_READLINE will be non-empty if support has been requested (NO_READLINE is
+# not empty) and the library is found.
 
+HAS_READLINE=
 if [ -z "$NO_READLINE" ] ; then
-   HAS_READLINE=1
    echo -n "checking for readline (ldconfig -p, Linux)... "
    TMP=`/sbin/ldconfig -p 2>/dev/null | grep libreadline.so.6`
    if [ -z "$TMP" ] ; then
@@ -888,23 +883,27 @@ if [ -z "$NO_READLINE" ] ; then
          echo -n "checking for readline (locate, Darwin)... "
          TMP=`"$LOCATE" libreadline`
          if [ ! -z "$TMP" ] ; then
+             HAS_READLINE=1
              echo "yes"
          else
-             HAS_READLINE=""
              echo "no"
          fi
       else
+         HAS_READLINE=1
          echo "yes"
       fi
    else
+      HAS_READLINE=1
       echo "yes"
    fi
 else
-   HAS_READLINE=""
    echo "no"
 fi
 
-# Make
+# GNU Make
+#
+# GMAKETYPE is the name of the make command.  If the user supplied a command,
+# use that command instead of trying alternatives.
 
 echo -n "checking for gmake (\$GMAKE)... "
 if [ ! -z "$GMAKE" ] ; then
@@ -958,11 +957,14 @@ else
    fi
 fi
 
-# Check for the libgstreamer
+# Sound - GStreamer
+#
+# GSTREAMERFLAG is the C pre-processor flag to enable GSstreamer support.
+# It will be non-blank if GStreamer is detected.
 
+GSTREAMERFLAG=
 if [ -z "$NO_SOUND" ] ; then
    echo -n "checking for gstreamer (ldconfig -p, Linux)... "
-   GSTREAMERFLAG=
    TMP=`/sbin/ldconfig -p 2>/dev/null | grep libgstreamer`
    if [ -z "$TMP" ] ; then
       echo "no"
@@ -992,7 +994,9 @@ fi
 
 echo "SparForte is configured"
 
-# APQ library
+# Configure APQ library
+#
+# Require a database unless the user explicitly requested no database.
 
 echo
 sleep 3
@@ -1000,7 +1004,7 @@ echo "Configuring third-party APQ (Database Library)..."
 sleep 1
 
 echo -n "apq library: checking for one or more database config scripts... "
-if [ ! -z "$NO_MYSQL" -a ! -z "$NO_POSTGRES" ] ; then
+if [ -n "$NO_MYSQL" -a -n "$NO_POSTGRES" ] ; then
    echo "no"
 else
    if [ -z "$HAS_POSTGRES" ] ; then
@@ -1022,10 +1026,10 @@ fi
 
 if [ -z "$NO_MYSQL" -a -z "$NO_POSTGRES" ] ; then
    cd apq-2.1
-   if [ ! -z "$NO_MYSQL" -a -z "$NO_POSTGRES" ] ; then
+   if [ -n "$NO_MYSQL" -a -z "$NO_POSTGRES" ] ; then
       echo "Running APQ's configure (no MySQL)..."
       HAVE_MY=0 ./configure
-   elif [ -z "$NO_MYSQL" -a ! -z "$NO_POSTGRES" ] ; then
+   elif [ -z "$NO_MYSQL" -a -n"$NO_POSTGRES" ] ; then
       echo "Running APQ's configure (no PostgreSQL)..."
       HAVE_PG=0 ./configure
    else
@@ -1047,29 +1051,30 @@ echo
 echo "Returning to SparForte..."
 
 # Update the source files, disabling optional libraries, using the gnatprep
-# preprocessor.
+# preprocessor.  Any source file called ".orig" must be processed with
+# gnatprep
 
 echo "Updating SparForte source files for this configuration..."
 
 NEEDS_APQ=
-if [ ! -z "$HAS_POSTGRES" ] ; then
+if [ -n "$HAS_POSTGRES" ] ; then
    GNATPREP_OPTS="-DPOSTGRES=true"
    NEEDS_APQ=1
 else
    GNATPREP_OPTS="-DPOSTGRES=false"
 fi
-if [ ! -z "$HAS_OPENGL" ] ; then
+if [ -n "$HAS_OPENGL" ] ; then
    GNATPREP_OPTS="$GNATPREP_OPTS -DOPENGL=true"
 else
    GNATPREP_OPTS="$GNATPREP_OPTS -DOPENGL=false"
 fi
-if [ ! -z "$HAS_MYSQL" ] ; then
+if [ -n "$HAS_MYSQL" ] ; then
    GNATPREP_OPTS="$GNATPREP_OPTS -DMYSQL=true"
    NEEDS_APQ=1
 else
    GNATPREP_OPTS="$GNATPREP_OPTS -DMYSQL=false"
 fi
-if [ ! -z "$HAS_READLINE" ] ; then
+if [ -n "$HAS_READLINE" ] ; then
    GNATPREP_OPTS="$GNATPREP_OPTS -DREADLINE=true"
 else
    GNATPREP_OPTS="$GNATPREP_OPTS -DREADLINE=false"
@@ -1090,7 +1095,7 @@ else
    GNATPREP_OPTS="$GNATPREP_OPTS -DBDB=false"
 fi
 # this is for world.ads. APQ=true if either DB is installed
-if [ ! -z "$NEEDS_APQ" ] ; then
+if [ -n "$NEEDS_APQ" ] ; then
    GNATPREP_OPTS="$GNATPREP_OPTS -DAPQ=true"
 else
    GNATPREP_OPTS="$GNATPREP_OPTS -DAPQ=false"
@@ -1264,7 +1269,7 @@ else
 fi
 if [ -z "$NO_READLINE" ] ; then
    RLINCL="\-I\.\/areadline\/"
-   RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.6\ \-l:libhistory.so.6 \-lncurses"
+   RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.6\ \-l:libhistory.so.6" # \-lncurses"
 else
    RLINCL=
    RLLIBS=
