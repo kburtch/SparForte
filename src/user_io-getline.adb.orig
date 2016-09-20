@@ -50,6 +50,46 @@ use ada.text_io,
 
 package body user_io.getline is
 
+#if not READLINE
+function getPromptIndent return natural is
+  -- determine how far the command prompt indents from the
+  -- left hand side of the screen, taking into account
+  -- control characters and carriage returns / line feeds
+  len : natural := 0;
+begin
+  for i in 1..length( prompt ) loop
+      if element( prompt, i ) = ASCII.CR then      -- carriage return?
+         len := 0;                                 -- back to left side
+      elsif element( prompt, i ) = ASCII.LF then   -- line feed?
+         len := 0;                                 -- back to left side
+      elsif element( prompt, i ) >= ' ' then       -- not a control char?
+         len := len + 1;                           -- count it
+      end if;
+  end loop;
+  return len;
+end getPromptIndent;
+
+function getPromptExtraLines return natural is
+  -- determine how far the command prompt indents from the
+  -- left hand side of the screen, taking into account
+  -- control characters and carriage returns / line feeds
+  last : character := ASCII.NUL;
+  extra : natural := 0;
+begin
+  for i in 1..length( prompt ) loop
+      if element( prompt, i ) = ASCII.CR then      -- carriage return?
+         extra := extra + 1;                       -- back to left side
+      elsif element( prompt, i ) = ASCII.LF then   -- line feed?
+         if last /= ASCII.CR then                  -- for MS-DOS
+            extra := extra + 1;                    -- back to left side
+         end if;
+      end if;
+      last := element( prompt, i );
+  end loop;
+  return extra;
+end getPromptExtraLines;
+#end if;
+
 procedure getLine( line : out unbounded_string; prompt : unbounded_string := null_unbounded_string; keepHistory : boolean := false ) is
    pwd_id : identifier;
 #if READLINE
@@ -260,7 +300,7 @@ end slashifyPath;
       noPWD := true;
     end;
     if noPWD then
-       beep;
+       simpleBeep;
        result := null_unbounded_string;
        return;
     end if;
@@ -309,10 +349,10 @@ end slashifyPath;
     end loop;
     close( dir2test );
     if count > 1 then
-       beep;
+       simpleBeep;
        result := bestCommon;
     elsif count = 0 then
-       beep;
+       simpleBeep;
        result := null_unbounded_string;
     end if;
   end completePathname;
@@ -344,7 +384,6 @@ end slashifyPath;
   crit_pos   : natural;   -- for searching history
   criteria   : unbounded_string;
   justCompleted : boolean := false;
-  pwd_id     : identifier;
 begin
 
   -- if a prompt, show it in bold first
@@ -394,7 +433,7 @@ begin
           last_was_esc_sq_3 := true;
           goto retry;
        else
-          beep;                               -- otherwise unknown
+          simpleBeep;                         -- otherwise unknown
        end if;
     elsif last_was_esc_sq_3 then              -- ESC + [ + 3 + ...?
        last_was_esc_sq_3 := false;
@@ -409,7 +448,7 @@ begin
         elsif ch = 'F' then                   -- end key (ESC+O+F)
            ch := ASCII.ENQ;
         else
-           beep;                              -- otherwise unknown
+           simpleBeep;                        -- otherwise unknown
         end if;
     elsif vi_escape then
        last_was_esc := false;
@@ -437,7 +476,7 @@ begin
           goto retry;
        else                                   -- else not supported
           vi_escape := false;                 -- drop out of vi escape mode
-          beep;                               -- beep at illegal character
+          simpleBeep;                         -- beep at illegal character
           goto retry;                         -- and get next key
        end if;
     elsif ch = ASCII.EOT then                 -- control-d / end of file?
@@ -471,7 +510,7 @@ begin
           end if;
           lastWord( line, path, lp );
           if length( path ) = 0 then
-             beep;
+             simpleBeep;
              goto retry;
           end if;
           -- as a special case, if the path is the name of a directory,
@@ -555,7 +594,7 @@ begin
           pos := pos - 1;                     -- new position is one to left
           redrawLine( old_pos, pos );         -- redraw line, cursor at end
        else                                   -- nothing to delete?
-          beep;                               -- beep
+          simpleBeep;                         -- beep
        end if;
     when ASCII.NAK =>                         -- control-u or del key
        if length( line ) > 0 then
@@ -572,7 +611,7 @@ begin
           end if;                             -- and don't move
           redrawLine( old_pos, pos );         -- redraw line
        else                                   -- nothing to delete?
-          beep;                               -- beep
+          simpleBeep;                         -- beep
        end if;
     when ASCII.STX =>                         -- control-b
        if pos > 1 then
@@ -580,7 +619,7 @@ begin
           pos := pos - 1;                     -- new position is one to left
           put( ASCII.BS );                    -- move cursor
        else                                   -- no place to go?
-          beep;                               -- beep
+          simpleBeep;                         -- beep
        end if;
     when ASCII.ACK =>                         -- control-f
           if pos <= length( line ) then
@@ -588,11 +627,11 @@ begin
              pos := pos + 1;                  -- new position is one to right
              put( term( right ) );            -- move cursor
           else                                -- no place to go?
-             beep;                            -- beep
+             simpleBeep;                      -- beep
           end if;
     when ASCII.SO =>                          -- control-n
       if histpos = historyNext or not keepHistory then
-         beep;
+         simpleBeep;
       else
          histpos := histpos + 1;
          if histpos > historyArray'last then
@@ -605,7 +644,7 @@ begin
       end if;
     when ASCII.DLE =>                         -- control-p
       if not keepHistory then
-         beep;
+         simpleBeep;
       else
          old_pos := histpos;
          histpos := histpos - 1;
@@ -614,7 +653,7 @@ begin
          end if;
          if histpos = historyNext then
             histpos := old_pos;
-            beep;
+            simpleBeep;
          else
             old_pos := pos;                     -- remember old position
             line := history( histpos ).line;
@@ -636,7 +675,7 @@ begin
       redrawLine( old_pos, pos );         -- redraw line, cursor at end
     when ASCII.DC2 =>                         -- control-r
       if pos = 1 then
-         beep;
+         simpleBeep;
          goto retry;
       elsif pos > length( line ) then
          criteria := line;
@@ -653,7 +692,7 @@ begin
         if histpos = historyNext then         -- out of history?
            line := criteria;                  -- restore old line
            histpos := old_pos;                -- that's all folks
-           beep;
+           simpleBeep;
            exit;
         end if;
         line := history( histpos ).line;      -- next history line
@@ -673,7 +712,7 @@ begin
           end if;
       end loop;
       if pos = old_pos then
-         beep;
+         simpleBeep;
       else
          redrawLine( old_pos, pos );
       end if;
