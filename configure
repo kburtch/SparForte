@@ -1090,12 +1090,14 @@ fi
 # NO_MYSQL means the user requests no MSYQL support, not that MySQL is not
 # installed (that is HAS_MYSQL).
 
-if [ -z "$NO_MYSQL" -a -z "$NO_POSTGRES" ] ; then
+if [ -n "$NO_MYSQL" -a -n "$NO_POSTGRES" ] ; then
+    echo "No MySQL or PostgreSQL support."
+else
    cd apq-2.1
    if [ -n "$NO_MYSQL" -a -z "$NO_POSTGRES" ] ; then
       echo "Running APQ's configure (no MySQL)..."
       HAVE_MY=0 ./configure
-   elif [ -z "$NO_MYSQL" -a -n"$NO_POSTGRES" ] ; then
+   elif [ -z "$NO_MYSQL" -a -n "$NO_POSTGRES" ] ; then
       echo "Running APQ's configure (no PostgreSQL)..."
       HAVE_PG=0 ./configure
    else
@@ -1103,8 +1105,6 @@ if [ -z "$NO_MYSQL" -a -z "$NO_POSTGRES" ] ; then
       ./configure
    fi
    cd -
-else
-    echo "No MySQL or PostgreSQL support."
 fi
 #if test -f Makeincl ; then
 #   mv -f Makeincl apq-2.1/Makeincl

@@ -207,9 +207,15 @@ distclean:
 
 test:	all
 	@echo "---------------------------------------------------------------"
-	@echo "  RUNNING TEST SUITE"
+	@echo "  RUNNING REGRESSION TEST SUITE"
 	@echo "---------------------------------------------------------------"
 	(cd testsuite; sh runtests.sh)
+
+releasetest: test
+	@echo "---------------------------------------------------------------"
+	@echo "  RUNNING BUILD SYSTEM TEST SUITE"
+	@echo "---------------------------------------------------------------"
+	(cd testsuite; sh build_tests.sh)
 
 zip: distclean
 	(cd ..; zip -9r *; cd src)
@@ -274,7 +280,8 @@ help:
 	@echo "  uninstall - remove sparforte binary file in /usr/local/bin"
 	@echo "  clean     - remove temporary and binary files"
 	@echo "  distclean - clean and remove operating system choice"
-	@echo "  test      - make all, then run test.bush script"
+	@echo "  test      - make all, then run regression tests"
+	@echo "  releasetest - make all, then run regression and built tests"
 	@echo "  zip       - create a .zip source archive with important files"
 	@echo "  srczip    - create a .zip source archive to share with others"
 	@echo "  srctar    - create a .tgz source archive to share with others"

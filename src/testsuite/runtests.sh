@@ -228,7 +228,7 @@ good_test_in_dir() {
 # ---------------------------------------------------------------------------
 
 if [ "$1" = "-h" ] ; then
-   echo "Bush test suite"
+   echo "SparForte test suite"
    echo
    echo "usage: $0 [-b]"
    echo " -b - bad syntax tests only"
