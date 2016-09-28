@@ -126,3 +126,5 @@ Examples:
 
 49. New. --perf/-p command option to show source code metrics and performance statistics.  It can be combined with --check/-c command option to hide performance statistics.
 
+50. Fix (Zhu Qun-Ying): Overhaul of configure script handling of databases, should eliminate the problem of compiling for a single database.  The release testing now tests all "without" flags, building SparForte with each of them to ensure they work.
+

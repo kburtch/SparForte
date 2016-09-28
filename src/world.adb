@@ -208,12 +208,16 @@ begin
 end declareProcedure;
 
 procedure findIdent( name : unbounded_string; id : out identifier ) is
--- Return the id of a keyword / identifier in the symbol table.  If
--- it is not found, return the end-of-file token as the id
+  -- Return the id of a keyword / identifier in the symbol table.  If
+  -- it is not found, return the end-of-file token as the id
+  -- This function gets called a lot
+  -- These make a slight speed improvement
+  pragma suppress( range_check );
+  pragma suppress( index_check );
   i      : identifier;
   p      : identifier;
   save_i : identifier;
-  dotPos : natural;
+  dotPos : natural := 0;
   prefix : unbounded_string;
   --h      : actualHash;
 begin
@@ -331,13 +335,39 @@ begin
 
 <<found>>
 
+  -- I THINK THIS IS NO LONGER TRUE:
   -- global namespace types like integer will be tested here
+
+  -- Quick Kludge
+  --
+  -- If there was no period in the name, don't both with a global search because
+  -- you won't find it by searching twice.
+  --
+  -- dotPos will be zero if it was found in the local search.
+  -- Skipping the brute-force search increases speed on my benchmark by 15%
+  --
+  -- TODO: refactor this.  The fallback should be eliminated, or folded in
+  -- above.
+
+  if dotPos <= 1 then
+     --put_line( to_string( prefix ) );
+     --put_line( dotPos'img );
+     --if id = eof_t then
+     --   put_line( "no prefix and not found: " & to_string( name ) );
+     --else
+     --   put_line( "no prefix and found: " & to_string( name ) );
+     --end if;
+     return;
+  end if;
+
+  -- The fallback should only run for records and enumerated types with a
+  -- period in their name that we're found in the local search.
 
   -- fallback
   --
   -- brute-force from where we left off in the local search,
   -- searching everything
-  -- new variables, records, pragma names will trigger here
+  -- records
   -- enums like direction.forward will go here since the prefix doesn't match the namespace tags
 
   if id = eof_t then
