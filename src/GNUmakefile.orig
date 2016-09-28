@@ -213,6 +213,10 @@ test:	all
 
 releasetest: test
 	@echo "---------------------------------------------------------------"
+	@echo "  RUNNING EXAMPLE SCRIPT TEST SUITE"
+	@echo "---------------------------------------------------------------"
+	(cd testsuite; sh example_tests.sh)
+	@echo "---------------------------------------------------------------"
 	@echo "  RUNNING BUILD SYSTEM TEST SUITE"
 	@echo "---------------------------------------------------------------"
 	(cd testsuite; sh build_tests.sh)
