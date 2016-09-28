@@ -1452,27 +1452,27 @@ procedure helpMain is
 begin
      Put_Line( "The following topics are available:" );
      New_Line;
-     Put_Line( "  arrays            enums           logout              return           " );
-     Put_Line( "  calendar          env             loop                set_input        " );
-     Put_Line( "  case              exceptions      memcache            skip_line        " );
-     Put_Line( "  cd                exit            mode                sound            " );
-     Put_Line( "  cgi               expressions     mysql               source_info      " );
-     Put_Line( "  chains            files           mysqlm              stats            " );
-     Put_Line( "  clear             for             name                step             " );
-     Put_Line( "  close             function        new_line            strings          " );
-     Put_Line( "  command_line      get             null                strings.match    " );
-     Put_Line( "  create            get_immediate   numerics            subtype          " );
-     Put_Line( "  db                get_line        open                System           " );
-     Put_Line( "  dbm               gnat.cgi        os                  trace            " );
-     Put_Line( "  declare           gnat.crc32      pen                 type             " );
-     Put_Line( "  delay             history         pragma              typeset              " );
-     Put_Line( "  delete            if              procedure           units            " );
-     Put_Line( "  directory_operations inkey        put                 unset            " );
-     Put_Line( "  doubly_linked_lists is_open       put_line            variables        " );
-     Put_Line( "  dynamic_hash_tables jobs          raise               wait             " );
-     Put_Line( "  end_of_file       keys            reset               while            " );
-     Put_Line( "  end_of_line       line            records             ""?""                 " );
-     Put_Line( "  btree_io                                                                    " );
+     Put_Line( "  arrays            enums           logout              set_input        " );
+     Put_Line( "  calendar          env             loop                skip_line        " );
+     Put_Line( "  case              exceptions      memcache            sound            " );
+     Put_Line( "  cd                exit            mode                source_info      " );
+     Put_Line( "  cgi               expressions     mysql               stats            " );
+     Put_Line( "  chains            files           mysqlm              step             " );
+     Put_Line( "  clear             for             name                strings          " );
+     Put_Line( "  close             function        new_line            strings.match    " );
+     Put_Line( "  command_line      get             null                subtype          " );
+     Put_Line( "  create            get_immediate   numerics            System           " );
+     Put_Line( "  db                get_line        open                teams            " );
+     Put_Line( "  dbm               gnat.cgi        os                  templates        " );
+     Put_Line( "  declare           gnat.crc32      pen                 trace            " );
+     Put_Line( "  delay             hash_io         pragma              type             " );
+     Put_Line( "  delete            history         procedure           typeset          " );
+     Put_Line( "  directory_operations if           put                 units            " );
+     Put_Line( "  doubly_linked_lists inkey         put_line            unset            " );
+     Put_Line( "  dynamic_hash_tables is_open       raise               variables        " );
+     Put_Line( "  end_of_file       jobs            reset               wait             " );
+     Put_Line( "  end_of_line       keys            records             while            " );
+     Put_Line( "  btree_io          line            return              ""?""           " );
      New_Line;
      Put_Line( "You can also type an O/S word or a SparForte script name." );
 end helpMain;
@@ -1555,6 +1555,27 @@ begin
      Put_line( "fetch_values( q, c, r )      s := notice_message( c )" );
      Put_line( "append_for_insert( q, c, r ) append_for_update( q, c, r )" );
 end helpDbm;
+
+procedure helpHashIO is
+begin
+     Put_Line( "hash_io (package) - Berkeley DB hash files" );
+     New_Line;
+     Put_Line( "add( f, k, v )                   get_previous( f, c, k, v )" );
+     Put_Line( "append( f, k, v )                b := has_element( f, k )" );
+     Put_Line( "clear( f )                       increment( f, k [,n] )" );
+     Put_Line( "close( f )                       b := is_open( f )" );
+     Put_Line( "close_cursor( f, c )             e := last_error( f )" );
+     Put_Line( "create( f, p, kl, vl )           new_cursor( c, t )" );
+     Put_Line( "decrement( f, k [,n] )           new_file( f, t )" );
+     Put_Line( "delete( f )                      prepend( f, k, v )" );
+     Put_Line( "flush( f )                       raise_exceptions( f, b )" );
+     Put_Line( "v := get( f, k )                 remove( f, k )" );
+     Put_Line( "get_first( f, c, k, v )          replace( f, k, v )" );
+     Put_Line( "get_last( f, c, k, v )           set( f, k, v )" );
+     Put_Line( "get_next( f, c, k, v )           b := will_raise( f )" );
+     Put_Line( "open( f, p, kl, vl ) open_cursor( f, c )" );
+     Put_Line( "truncate( f )" );
+end helpHashIO;
 
 procedure helpMySQL is
 begin
@@ -2071,6 +2092,8 @@ begin
      Put_Line( "  -l - show script license" );
      Put_Line( "  -m - UNIX manual page output" );
      Put_Line( "  -t - show todo pragmas and summarize" );
+  elsif helpTopic = "hash_io" then
+     helpHashIo;
   elsif helpTopic = "history" then
      Put_Line( "history - list or clear the command line history" );
      Put_Line( "  history -c" );
@@ -2295,6 +2318,13 @@ begin
      Put_Line( "  teams.member - a team member" );
      Put_Line( "  teams.work_measure - the measure of work effort" );
      Put_Line( "  teams.work_priority - the measure of work priority" );
+  elsif helpTopic = "templates" then
+     Put_Line( "templates - the templates package" );
+     New_Line;
+     Put_Line( "  b := has_put_template_header" );
+     Put_Line( "  put_template_header" );
+     Put_Line( "  set_http_location( n )" );
+     Put_Line( "  set_http_status( i )" );
   elsif helpTopic = "trace" then
      Put_Line( "trace - show verbose debugging information" );
      Put_Line( "  " & bold( "trace" ) & " " &
