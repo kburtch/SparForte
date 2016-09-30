@@ -440,9 +440,21 @@ else
 fi
 
 # This one is really slow.
-EXAMPLE="randdist.sp"
-RESULT=`src/spar examples/$EXAMPLE | tail -n 1 | cut -d. -f1`
-EXPECTED="heth  6"
+#EXAMPLE="randdist.sp"
+#RESULT=`src/spar examples/$EXAMPLE | tail -n 1 | cut -d. -f1`
+#EXPECTED="heth  6"
+#if [ "$RESULT" != "$EXPECTED" ] ; then
+#   echo "Failed - $EXAMPLE Failed"
+#   echo "$RESULT"
+#   exit 192
+#else
+#   echo "OK - $EXAMPLE"
+#fi
+
+EXAMPLE="rle.sp"
+RESULT=`src/spar examples/$EXAMPLE`
+EXPECTED="12W1B12W3B24W1B14W
+WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
@@ -451,6 +463,87 @@ else
    echo "OK - $EXAMPLE"
 fi
 
+EXAMPLE="rot13.sp"
+RESULT=`src/spar examples/$EXAMPLE`
+EXPECTED="Ovt swbeqf irk dhvpx jnygm alzcu!"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
+EXAMPLE="sieve.sp"
+RESULT=`src/spar examples/$EXAMPLE`
+EXPECTED=" 2
+ 3
+ 5
+ 7
+ 11
+ 13
+ 17
+ 19"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
+EXAMPLE="sleep.sp"
+RESULT=`echo "1" | src/spar examples/$EXAMPLE | tail -n 4`
+EXPECTED="Sleeping...
+Awake!
+Sleeping...
+Awake!"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
+EXAMPLE="stringcase.sp"
+RESULT=`src/spar examples/$EXAMPLE`
+EXPECTED="ALPHABETA
+alphabeta
+Alphabeta"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
+EXAMPLE="tmpfile.sp"
+RESULT=`src/spar examples/$EXAMPLE`
+EXPECTED="Creating a temporary file
+Reading a temporary file
+File contains: Hello World
+Discarding a temporary file"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
+EXAMPLE="yorn.sp"
+RESULT=`echo "y" | src/spar examples/$EXAMPLE`
+echo "$RESULT"
+EXPECTED="Your answer? (Y/N) Y"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
 # ---------------------------------------------------------------------------
 
 echo "$0: "`date`
