@@ -7821,16 +7821,10 @@ begin
      end if;
      expect( symbol_t, ")" );
      if isExecutingCommand then
-        -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-        -- arrayIndex := long_integer( to_numeric( index_value ) );
-        -- if inBounds( array_id, arrayIndex ) then
-        --    itself := arrayElement( array_id, arrayIndex );
-        --    itself_type := identifiers( itself_type ).kind;
-        -- else
-        --    err( "Internal error: unable to find array" );
-        -- end if;
         arrayIndex := long_integer( to_numeric( index_value ) );
-        if identifiers( var_id ).avalue'first > arrayIndex then -- DEBUG
+        if identifiers( var_id ).avalue = null then
+           err( gnat.source_info.source_location & ": internal error: target array storage unexpectedly null" );
+        elsif identifiers( var_id ).avalue'first > arrayIndex then -- DEBUG
 -- put_line( "internal error: array index out of bounds" ); -- DEBUG
            err( "array index " & to_string( trim( index_value, ada.strings.both ) ) & " not in" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
         elsif identifiers( var_id ).avalue'last < arrayIndex then
@@ -7903,18 +7897,16 @@ begin
         --else
            -- assignElement( array_id, arrayIndex, expr_value );
         begin
-           if identifiers( var_id ).avalue = null then
--- put_line( "internal error: target array storage unexpectedly null" ); -- DEBUG
-              err( gnat.source_info.source_location & ": internal error: target array storage unexpectedly null" );
-           elsif identifiers( var_id ).avalue'first > arrayIndex then -- DEBUG, this should never happen, checked above
--- put_line( "internal error: array index out of bounds" ); -- DEBUG
-              err( gnat.source_info.source_location & ": internal error: array index out of bounds " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
-           elsif identifiers( var_id ).avalue'last < arrayIndex then
--- put_line( "internal error: array index out of bounds" ); -- DEBUG, this should never happen, checked above
-              err( gnat.source_info.source_location & ": internal error: array index out of bounds " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
-           elsif not error_found then
-              identifiers( var_id ).avalue( arrayIndex ) := expr_value; -- NEWARRAY
-           end if;
+           -- KB: 16/10/02: these appear to be checked above
+           --if identifiers( var_id ).avalue = null then
+           --   err( gnat.source_info.source_location & ": internal error: target array storage unexpectedly null" );
+           --elsif identifiers( var_id ).avalue'first > arrayIndex then -- DEBUG, this should never happen, checked above
+           --   err( gnat.source_info.source_location & ": internal error: array index out of bounds " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+           --elsif identifiers( var_id ).avalue'last < arrayIndex then
+           --   err( gnat.source_info.source_location & ": internal error: array index out of bounds " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+           --elsif not error_found then
+           identifiers( var_id ).avalue( arrayIndex ) := expr_value; -- NEWARRAY
+           --end if;
         exception when CONSTRAINT_ERROR =>
           err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
         when STORAGE_ERROR =>
