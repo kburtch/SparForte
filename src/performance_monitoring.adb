@@ -68,7 +68,7 @@ begin
   realTime := perfStats.endTime - perfStats.startTime;
   rate     := natural( duration( perfstats.lineCnt ) / realTime );
   begin
-    linesBlock := perfStats.loc / perfStats.numBlocks;
+    linesBlock := natural( perfStats.loc / perfStats.numBlocks );
   exception when constraint_error =>
     linesBlock := 0;
   end;

@@ -57,11 +57,11 @@ package dynamic_string_hash_tables is
 type performanceStats is record
   startTime : time;
   endTime   : time;
-  lineCnt   : natural := 0; -- executed lines
-  loc       : natural := 0; -- lines of code
-  numProcs  : natural := 0; -- number of procedures
-  numFuncs  : natural := 0; -- number of functions
-  numBlocks : natural := 0; -- number of begins
+  lineCnt   : long_long_integer := 0; -- executed lines
+  loc       : natural := 0;           -- lines of code
+  numProcs  : natural := 0;           -- number of procedures
+  numFuncs  : natural := 0;           -- number of functions
+  numBlocks : natural := 0;           -- number of begins
   -- code coverage (not done yet)
   lines     : dynamic_string_hash_tables.Instance;
 end record;

@@ -4621,7 +4621,11 @@ begin
          end if;
       elsif perfOpt then
          if not syntax_check and (not exit_block or not error_found) then
-            perfStats.lineCnt := perfStats.lineCnt + 1;
+            begin
+               perfStats.lineCnt := perfStats.lineCnt + 1;
+            exception when constraint_error =>
+               err( "performance stats: line count overflow" );
+            end;
          end if;
       end if;
       cmdpos := cmdpos+nextScriptCommandOffset; -- line header and indent marker
