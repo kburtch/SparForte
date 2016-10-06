@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -53,6 +53,82 @@ package body parser_numerics is
 type hash_integer is mod 2**32;
 
 serialNumber : long_float := 0.0;
+
+------------------------------------------------------------------------------
+-- Numerics package identifiers
+------------------------------------------------------------------------------
+
+numerics_e_t : identifier;  -- numerics constants
+numerics_log2_e_t : identifier;
+numerics_log10_e_t : identifier;
+numerics_ln10_t : identifier;
+numerics_ln2_t : identifier;
+numerics_pi_t : identifier;
+numerics_pi_by_2_t : identifier;
+numerics_pi_by_4_t : identifier;
+numerics_pi_under_1_t : identifier;
+numerics_pi_under_2_t : identifier;
+numerics_sqrt_pi_under_2_t : identifier;
+numerics_sqrt_2_t : identifier;
+numerics_sqrt_2_under_1_t : identifier;
+
+random_t       : identifier;      -- built-in ada.numerics.float_random.random
+shift_left_t   : identifier;      -- Interfaces.shift_left
+shift_right_t  : identifier;      -- Interfaces.shift_right
+rotate_left_t  : identifier;      -- Interfaces.rotate_left
+rotate_right_t : identifier;      -- Interfaces.rotate_right
+shift_right_arith_t : identifier; -- Interfaces.shift_right_arithmetic
+sqrt_t       : identifier; -- ada.numerics.long_elementary_functions
+log_t        : identifier;
+exp_t        : identifier;
+sin_t        : identifier;
+cos_t        : identifier;
+tan_t        : identifier;
+cot_t        : identifier;
+arcsin_t     : identifier;
+arccos_t     : identifier;
+arctan_t     : identifier;
+arccot_t     : identifier;
+sinh_t       : identifier;
+cosh_t       : identifier;
+tanh_t       : identifier;
+coth_t       : identifier;
+arcsinh_t    : identifier;
+arccosh_t    : identifier;
+arctanh_t    : identifier;
+arccoth_t    : identifier;
+floor_t      : identifier;  -- numeric attributes
+ceiling_t    : identifier;
+rounding_t : identifier;
+unbiased_rounding_t : identifier;
+truncation_t : identifier;
+remainder_t  : identifier;
+exponent_t   : identifier;
+fraction_t   : identifier;
+leading_part_t : identifier;
+copy_sign_t  : identifier;
+max_t        : identifier;
+min_t        : identifier;
+machine_t    : identifier;
+scaling_t    : identifier;
+value_t      : identifier;
+pos_t        : identifier;
+sturges_t    : identifier;    -- other
+numerics_md5_t : identifier;
+serial_t     : identifier;
+rnd_t        : identifier;
+odd_t        : identifier;
+even_t       : identifier;
+numerics_re_t : identifier;
+numerics_im_t : identifier;
+numerics_set_re_t : identifier;
+numerics_set_im_t : identifier;
+numerics_argument_t : identifier;
+numerics_modulus_t : identifier;
+hash_of_t         : identifier;
+sdbm_hash_of_t    : identifier;
+fnv_hash_of_t     : identifier;
+murmur_hash_of_t  : identifier;
 
 -----------------------------------------------------------------------------
 

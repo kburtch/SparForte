@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -26,25 +26,11 @@ use  ada.strings.unbounded, world, scanner;
 
 package parser_records is
 
-------------------------------------------------------------------------------
--- Records package identifiers
-------------------------------------------------------------------------------
-
-records_to_json_t        : identifier;
-records_to_record_t      : identifier;
-
 -----------------------------------------------------------------------------
 -- HOUSEKEEPING
 ------------------------------------------------------------------------------
 
 procedure StartupRecords;
 procedure ShutdownRecords;
-
-------------------------------------------------------------------------------
--- PARSE THE RECORDS PACKAGE
-------------------------------------------------------------------------------
-
---procedure ParseRecordsToJson;
---procedure ParseRecordsToRecord;
 
 end parser_records;

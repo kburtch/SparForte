@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -25,17 +25,6 @@ with ada.strings.unbounded, world, scanner;
 use  ada.strings.unbounded, world, scanner;
 
 package parser_stats is
-
-------------------------------------------------------------------------------
--- Stats package identifiers
-------------------------------------------------------------------------------
-
-stats_average_t  : identifier;
-stats_max_t      : identifier;
-stats_min_t      : identifier;
-stats_standard_deviation_t : identifier;
-stats_sum_t      : identifier;
-stats_variance_t : identifier;
 
 -----------------------------------------------------------------------------
 -- HOUSEKEEPING

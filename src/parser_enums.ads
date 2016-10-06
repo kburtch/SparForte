@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -26,29 +26,11 @@ use  ada.strings.unbounded, world, scanner;
 
 package parser_enums is
 
-------------------------------------------------------------------------------
--- Arrays package identifiers
-------------------------------------------------------------------------------
-
-enums_first_t        : identifier;
-enums_last_t         : identifier;
-enums_pred_t         : identifier;
-enums_succ_t         : identifier;
-
 -----------------------------------------------------------------------------
 -- HOUSEKEEPING
 ------------------------------------------------------------------------------
 
 procedure StartupEnums;
 procedure ShutdownEnums;
-
-------------------------------------------------------------------------------
--- PARSE THE ENUMS PACKAGE
-------------------------------------------------------------------------------
-
--- procedure ParseEnumsFirst( f : out unbounded_string; kind : out identifier );
--- procedure ParseEnumsLast( f : out unbounded_string; kind : out identifier );
--- procedure ParseEnumsPred( f : out unbounded_string; kind : out identifier );
--- procedure ParseEnumsSucc( f : out unbounded_string; kind : out identifier );
 
 end parser_enums;

@@ -4,7 +4,7 @@
 -- Part of BUSH                                                             --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2008 Ken O. Burtch & FSF                 --
+--              Copyright (C) 2001-2016 Ken O. Burtch & FSF                 --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -39,6 +39,16 @@ use interfaces,
     parser_params;
 
 package body parser_gnat_crc is
+
+------------------------------------------------------------------------------
+-- CGI package identifiers
+------------------------------------------------------------------------------
+
+gnat_crc32_crc32_t : identifier;
+
+gnat_crc32_initialize_t : identifier;
+gnat_crc32_update_t : identifier;
+gnat_crc32_get_value_t : identifier;
 
 ------------------------------------------------------------------------------
 -- PARSE THE CGI PACKAGE

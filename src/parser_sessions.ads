@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2014 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -26,22 +26,11 @@ use  ada.strings.unbounded, world, scanner;
 
 package parser_sessions is
 
-------------------------------------------------------------------------------
--- Team package identifiers
-------------------------------------------------------------------------------
-
-session_variable_name_t : identifier;
-session_variable_value_t : identifier;
-
 -----------------------------------------------------------------------------
 -- HOUSEKEEPING
 ------------------------------------------------------------------------------
 
 procedure StartupSessions;
 procedure ShutdownSessions;
-
-------------------------------------------------------------------------------
--- PARSE THE SESSIONS PACKAGE
-------------------------------------------------------------------------------
 
 end parser_sessions;

@@ -4,7 +4,7 @@
 -- Part of BUSH                                                             --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2009 Ken O. Burtch & FSF                 --
+--              Copyright (C) 2001-2016 Ken O. Burtch & FSF                 --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -20,7 +20,6 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
--- CVS: $Id$
 
 with ada.strings.unbounded, world;
 use  ada.strings.unbounded, world;
@@ -28,28 +27,10 @@ use  ada.strings.unbounded, world;
 package parser_gnat_crc is
 
 ------------------------------------------------------------------------------
--- CGI package identifiers
-------------------------------------------------------------------------------
-
-gnat_crc32_crc32_t : identifier;
-
-gnat_crc32_initialize_t : identifier;
-gnat_crc32_update_t : identifier;
-gnat_crc32_get_value_t : identifier;
-
-------------------------------------------------------------------------------
 -- HOUSEKEEPING
 ------------------------------------------------------------------------------
 
 procedure StartupGnatCRC;
 procedure ShutdownGnatCRC;
-
-------------------------------------------------------------------------------
--- PARSE THE CGI PACKAGE
-------------------------------------------------------------------------------
-
--- procedure ParseGnatCRC32Initialize;
--- procedure ParseGnatCRC32Update;
--- procedure ParseGnatCRC32GetValue( result : out unbounded_string; kind : out identifier );
 
 end parser_gnat_crc;

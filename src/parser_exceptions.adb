@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -38,6 +38,14 @@ use
     bush_os;
 
 package body parser_exceptions is
+
+------------------------------------------------------------------------------
+-- Exceptions package identifiers
+------------------------------------------------------------------------------
+
+exceptions_exception_name_t : identifier;
+exceptions_exception_info_t : identifier;
+exceptions_exception_status_code_t : identifier;
 
 procedure ParseExceptionsExceptionName( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: s := exceptions.exception_name

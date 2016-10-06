@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -47,6 +47,16 @@ pragma warnings( on );
 
 package body parser_cmd is
 
+------------------------------------------------------------------------------
+-- Command_Line package identifiers
+------------------------------------------------------------------------------
+
+cmd_argument_t    : identifier;
+cmd_argcount_t    : identifier;
+cmd_commandname_t : identifier;
+cmd_setexit_t     : identifier;
+cmd_envcnt_t      : identifier;
+cmd_envval_t      : identifier;
 
 procedure ParseArgument( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;

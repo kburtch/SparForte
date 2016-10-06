@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -28,21 +28,29 @@ with gnat.bubble_sort_a,
      bush_os,
      string_util,
      world,
-     -- scanner_arrays,
      parser,
      parser_aux;
 use  ada.numerics.long_elementary_functions,
      bush_os,
      string_util,
      world,
-     -- scanner_arrays,
      parser,
      parser_aux;
 
-with ada.text_io; use ada.text_io;
+--with ada.text_io; use ada.text_io;
 
 package body parser_stats is
 
+------------------------------------------------------------------------------
+-- Stats package identifiers
+------------------------------------------------------------------------------
+
+stats_average_t  : identifier;
+stats_max_t      : identifier;
+stats_min_t      : identifier;
+stats_standard_deviation_t : identifier;
+stats_sum_t      : identifier;
+stats_variance_t : identifier;
 
 ---------------------------------------------------------
 -- PARSE THE STATS PACKAGE

@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -42,6 +42,38 @@ use gnat.directory_operations,
     bush_os;
 
 package body parser_dirops is
+
+------------------------------------------------------------------------------
+-- Directory_Operations package identifiers
+------------------------------------------------------------------------------
+
+dirops_dir_type_t       : identifier;
+dirops_dir_name_str_t   : identifier;
+dirops_dir_separator_t  : identifier;
+dirops_change_dir_t     : identifier;
+dirops_make_dir_t       : identifier;
+dirops_remove_dir_t     : identifier;
+dirops_get_current_dir_t : identifier;
+dirops_path_name_t      : identifier;
+dirops_dir_name_t       : identifier;
+dirops_base_name_t      : identifier;
+dirops_file_extension_t : identifier;
+dirops_file_name_t      : identifier;
+dirops_path_style_t     : identifier;
+dirops_path_style_unix_t : identifier;
+dirops_path_style_dos_t : identifier;
+dirops_path_style_system_default_t : identifier;
+dirops_format_pathname_t : identifier;
+dirops_env_style_t      : identifier;
+dirops_env_style_unix_t : identifier;
+dirops_env_style_dos_t  : identifier;
+dirops_env_style_both_t : identifier;
+dirops_env_style_system_default_t : identifier;
+dirops_expand_path_t    : identifier;
+dirops_open_t           : identifier;
+dirops_close_t          : identifier;
+dirops_is_open_t        : identifier;
+dirops_read_t          : identifier;
 
 procedure ParseSingleDirNameStrExpression( expr_val : out unbounded_string;
   expr_type : out identifier ) is

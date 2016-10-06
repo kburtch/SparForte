@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2013 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -25,21 +25,6 @@ with ada.strings.unbounded, world;
 use  ada.strings.unbounded, world;
 
 package parser_chains is
-
-
-------------------------------------------------------------------------------
--- Exceptions package identifiers
-------------------------------------------------------------------------------
-
-chain_context_t         : identifier;
-chains_context_first_t  : identifier;
-chains_context_middle_t : identifier;
-chains_context_last_t   : identifier;
-chains_context_not_in_chain_t : identifier;
-
-chains_in_chain_t       : identifier;
-chains_chain_context_t  : identifier;
-chains_chain_count_t    : identifier;
 
 ------------------------------------------------------------------------------
 -- HOUSEKEEPING

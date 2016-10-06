@@ -28,6 +28,11 @@ APQMAKE=APQMAKESUB
 GSTREAMERLIBS=GSTREAMERLIBSSUB
 GSTREAMERFLAG=GSTREAMERFLAGSUB
 GSTREAMEROUT=GSTREAMEROUTSUB
+# -D copies files to a new directory but doesn't delete them
+# from where they were originally created.
+# Make Max not updated
+#GNATMAKEOBJDIR=-D/dev/shm/sparforte/ -I/dev/shm/sparforte/
+#GNATBINDOBJDIR=-I/dev/shm/sparforte/
 MESAINCL=MESAINCLSUB
 MESALIBS=MESALIBSSUB
 BDBINCL=BDBINCLSUB
@@ -109,7 +114,7 @@ endif
 	@echo "   http://www.sparforte.com"
 	@echo "---------------------------------------------------------------"
 	@echo
-	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -gnat05 -gnatfaoN -gnatybdh -fstack-check -c $(INCLUDE) spar
+	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -we -gnat05 -gnatfaoN -gnatybdh -fstack-check -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS)
 	@echo

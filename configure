@@ -24,6 +24,7 @@ MANPREFIX="/usr/local"
 # GMAKE       - the GNU make command to use
 # PREFIX      - the installation prefix
 # MANPREFIX   - the man page directory prefix
+# DEV_SHM     - request to use /dev/shm
 # NO_BDB      - request to disable Berkeley DB
 # NO_MYSQL    - request to disable MySQL
 # NO_OPENGL   - request to disable OpenGL
@@ -101,6 +102,32 @@ while [ $# -gt 0 ] ; do
   --without-readline)
       NO_READLINE=1
       ;;
+  # gnatmake -D copies files to a new directory, but does not delete them
+  # afterwards.  So using /dev/shm doesn't seem to speedup compilation.
+  #--with-devshm)
+  #    # Check for Linux RAM disk
+  #    if [ ! -d "/dev/shm" ] ; then
+  #       echo "/dev/shm not found"
+  #       exit 192
+  #    fi
+  #    if [ ! -w "/dev/shm" ] ; then
+  #       echo "/dev/shm not writable"
+  #       exit 192
+  #    fi
+  #    # Create a sparforte subdirectory
+  #    if [ ! -d "/dev/shm/sparforte" ] ; then
+  #       mkdir "/dev/shm/sparforte"
+  #       if [ $? -ne 0 ] ; then
+  #          echo "unable to make /dev/shm/sparforte"
+  #          exit 192
+  #       fi
+  #    fi
+  #    if [ ! -w "/dev/shm/sparforte" ] ; then
+  #       echo "/dev/shm/sparforte not writable"
+  #       exit 192
+  #    fi            
+  #    DEV_SHM=1
+  #    ;;
   --without-sound)
       NO_SOUND=1
       ;;
@@ -1372,9 +1399,9 @@ echo "-------------------------------------------------------------------"
 echo "Please read the INSTALL file if you have problems making SparForte."
 echo
 if [ "$GMAKE" != "" ] ; then
-   echo "Type $GMAKE all"
+   echo "Type $GMAKE all (or make help for more options)"
 else
-   echo "Type $GMAKETYPE all"
+   echo "Type $GMAKETYPE all (or make help for more options)"
 fi
 exit 0
 

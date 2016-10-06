@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -26,15 +26,11 @@ use  ada.strings.unbounded;
 
 package parser_sound is
 
+-----------------------------------------------------------------------------
+-- HOUSEKEEPING
+------------------------------------------------------------------------------
+
 procedure StartupSound;
 procedure ShutdownSound;
-
----------------------------------------------------------
--- PARSE THE SOUND PACKAGE
----------------------------------------------------------
-
--- procedure ParsePlay;
--- procedure ParsePlayCD;
--- procedure ParseStopCD;
 
 end parser_sound;

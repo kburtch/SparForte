@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -43,6 +43,28 @@ use  bush_os,
      gnat.os_lib;
 
 package body parser_files is
+
+------------------------------------------------------------------------------
+-- Files package identifiers
+------------------------------------------------------------------------------
+
+files_exists_t           : identifier;
+files_is_absolute_path_t : identifier;
+files_is_regular_file_t  : identifier;
+files_is_directory_t     : identifier;
+files_is_readable_file_t : identifier;
+files_is_readable_t      : identifier;
+files_is_writable_file_t : identifier;
+files_is_writable_t      : identifier;
+files_is_executable_file_t : identifier;
+files_is_executable_t    : identifier;
+files_basename_t         : identifier;
+files_dirname_t          : identifier;
+files_is_waiting_file_t  : identifier;
+files_size_t             : identifier;
+files_last_modified_t    : identifier;
+files_last_changed_t     : identifier;
+files_last_accessed_t    : identifier;
 
 --epoch        : time := time_of( 1970, 1, 1, 0.0 );
 --secondsInDay : day_duration := day_duration'last;

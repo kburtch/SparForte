@@ -67,6 +67,48 @@ use
 package body parser_btree_io is
 
 ------------------------------------------------------------------------------
+-- BTree package identifiers
+------------------------------------------------------------------------------
+
+btree_file_t          : identifier;
+btree_cursor_t        : identifier;
+
+btree_new_file_t      : identifier;
+btree_clear_t         : identifier;
+
+btree_will_raise_t    : identifier;
+btree_last_error_t    : identifier;
+btree_raise_exceptions_t : identifier;
+
+btree_create_t        : identifier;
+btree_close_t         : identifier;
+btree_open_t          : identifier;
+btree_delete_t        : identifier;
+btree_is_open_t       : identifier;
+btree_name_t          : identifier;
+btree_flush_t         : identifier;
+btree_truncate_t      : identifier;
+
+btree_set_t           : identifier;
+btree_get_t           : identifier;
+btree_has_element_t   : identifier;
+btree_remove_t        : identifier;
+btree_increment_t     : identifier;
+btree_decrement_t     : identifier;
+btree_add_t           : identifier;
+btree_replace_t       : identifier;
+btree_append_t        : identifier;
+btree_prepend_t       : identifier;
+
+btree_new_cursor_t    : identifier;
+btree_open_cursor_t   : identifier;
+btree_close_cursor_t  : identifier;
+btree_get_first_t     : identifier;
+btree_get_last_t      : identifier;
+btree_get_next_t      : identifier;
+btree_get_previous_t  : identifier;
+
+------------------------------------------------------------------------------
 -- Utility subprograms
 ------------------------------------------------------------------------------
 

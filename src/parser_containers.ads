@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2014 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -28,6 +28,8 @@ package parser_containers is
 
 ------------------------------------------------------------------------------
 -- Containers package identifiers
+--
+-- These are shared with other packages.
 ------------------------------------------------------------------------------
 
 containers_count_type_t : identifier;

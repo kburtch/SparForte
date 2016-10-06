@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2013 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -45,6 +45,31 @@ use
     bush_os;
 
 package body parser_dht is
+
+------------------------------------------------------------------------------
+-- Dynmaic Hash Tables package identifiers
+------------------------------------------------------------------------------
+
+dht_table_t         : identifier;
+
+dht_new_table_t     : identifier;
+dht_set_t           : identifier;
+dht_reset_t         : identifier;
+dht_get_t           : identifier;
+dht_has_element_t   : identifier;
+dht_remove_t        : identifier;
+dht_get_first_t     : identifier;
+dht_get_next_t      : identifier;
+
+dht_add_t           : identifier;
+dht_append_t        : identifier;
+dht_prepend_t       : identifier;
+dht_replace_t       : identifier;
+dht_increment_t     : identifier;
+dht_decrement_t     : identifier;
+
+--dht_assemble_t      : identifier;
+--dht_disassemble_t   : identifier;
 
 ------------------------------------------------------------------------------
 -- Utility subprograms

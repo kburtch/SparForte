@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -48,6 +48,25 @@ use  ada.text_io;
 
 package body parser_arrays is
 
+------------------------------------------------------------------------------
+-- Arrays package identifiers
+------------------------------------------------------------------------------
+
+arrays_first_t       : identifier;
+arrays_last_t        : identifier;
+arrays_length_t      : identifier;
+arrays_bubble_sort_t : identifier;
+arrays_bubble_sort_descending_t : identifier;
+arrays_heap_sort_t   : identifier;
+arrays_heap_sort_descending_t : identifier;
+arrays_shuffle_t     : identifier;
+arrays_flip_t        : identifier;
+arrays_rotate_left_t : identifier;
+arrays_rotate_right_t: identifier;
+arrays_shift_left_t  : identifier;
+arrays_shift_right_t : identifier;
+arrays_to_array_t    : identifier;
+arrays_to_json_t     : identifier;
 
 ---------------------------------------------------------
 -- PARSE THE ARRAYS PACKAGE

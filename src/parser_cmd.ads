@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -27,32 +27,10 @@ use  ada.strings.unbounded, world;
 package parser_cmd is
 
 ------------------------------------------------------------------------------
--- Command_Line package identifiers
-------------------------------------------------------------------------------
-
-cmd_argument_t    : identifier;
-cmd_argcount_t    : identifier;
-cmd_commandname_t : identifier;
-cmd_setexit_t     : identifier;
-cmd_envcnt_t      : identifier;
-cmd_envval_t      : identifier;
-
-------------------------------------------------------------------------------
 -- HOUSEKEEPING
 ------------------------------------------------------------------------------
 
 procedure StartupCommandLine;
 procedure ShutdownCommandLine;
-
-------------------------------------------------------------------------------
--- PARSE THE COMMAND LINE PACKAGE
-------------------------------------------------------------------------------
-
--- procedure ParseArgument( result : out unbounded_string; kind : out identifier );
--- procedure ParseArgument_Count( result : out unbounded_string; kind : out identifier );
--- procedure ParseCommand_Name( result : out unbounded_string; kind : out identifier );
--- procedure ParseSetExitStatus;
--- procedure ParseEnvironment_Count( result : out unbounded_string; kind : out identifier );
--- procedure ParseEnvironment_Value( result : out unbounded_string; kind : out identifier );
 
 end parser_cmd;
