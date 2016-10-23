@@ -122,7 +122,71 @@ distributedMemcacheClusterInitialized : boolean := false;
 --    end if;
 --end getTinyHashCache;
 
+-----------------------------------------------------------------------------
+-- STORAGE CACHE
+-- 
+-- Allocating/deallocating memory is a slow operation.
 --
+-- To make slightly better use of allocated storage memory, instead of
+-- freeing the last storage pointer, store it here so it can be resued.
+--
+-- This is the same technique I used in my single-linked list library.
+--
+-- Since only arrays currently use storage pointers, this only affects arrays.
+-- I didn't see much of a speed improvement.
+-----------------------------------------------------------------------------
+
+storageCache     : storagePtr := null;
+storageCacheMiss : natural := 0;
+
+-- CACHE OR FREE STORAGE
+--
+-- Cache or destory storage pointer sp.
+-----------------------------------------------------------------------------
+
+procedure cacheOrFreeStorage( sp : storagePtr ) is
+begin
+  if storageCache = null then
+     storageCache := sp;
+  else
+     free( storageCache );
+     storageCache := sp;
+  end if;
+end cacheOrFreeStorage;
+pragma inline( cacheOrFreeStorage );
+
+-- FIND STORAGE
+--
+-- Allocate storage space (or get it from the cache) and return a
+-- pointer to it.  If what is in the cache is missed three times,
+-- forcably discard it.
+-----------------------------------------------------------------------------
+
+function findStorage( lbound, ubound : long_integer ) return storagePtr is
+  sp : storagePtr;
+begin
+  if storageCache = null then
+     sp := new Storage( lbound..ubound );
+     storageCacheMiss := 0;
+  else
+     if storageCacheMiss >= 3 then
+        free( storageCache );
+        storageCache := null;
+        storageCacheMiss := 0;
+     elsif storageCache'first = lbound and
+           storageCache'last = ubound then
+        sp := storageCache;
+        storageCache := null;
+        storageCacheMiss := 0;
+     else
+        sp := new Storage( lbound..ubound );
+        storageCacheMiss := storageCacheMiss + 1;
+     end if;
+  end if;
+  return sp;
+end findStorage;
+pragma inline( findStorage );
+
 -- Symbol Table Utilities
 --
 
@@ -484,7 +548,8 @@ begin
      id := identifiers_top;                                     -- return id
      identifiers_top := identifiers_top+1;                      -- push stack
      if identifiers( id ).avalue /= null then
-        free( identifiers( id ).avalue );
+        cacheOrFreeStorage( identifiers( id ).avalue );
+        --free( identifiers( id ).avalue );
      end if;
      identifiers( id ) := declaration'(                         -- define
        name     => name,                                        -- identifier
@@ -543,7 +608,7 @@ begin
        sc : declaration renames identifiers( identifiers_top );
      begin
        if sc.avalue /= null then
-          free( sc.avalue );
+          cacheOrFreeStorage( sc.avalue );
        end if;
        sc.name  := to_unbounded_string( name );                 -- define
        sc.kind  := kind;                                        -- identifier
@@ -581,7 +646,7 @@ begin
        sc : declaration renames identifiers( identifiers_top );
      begin
        if sc.avalue /= null then
-          free( sc.avalue );
+          cacheOrFreeStorage( sc.avalue );
        end if;
        sc.name  := to_unbounded_string( name );                 -- define
        sc.kind  := kind;                                        -- identifier
@@ -690,7 +755,8 @@ begin
      id := identifiers_top;                           -- return id
      identifiers_top := identifiers_top+1;            -- push stack
      if identifiers( id ).avalue /= null then
-        free( identifiers( id ).avalue );
+        cacheOrFreeStorage( identifiers( id ).avalue );
+        --free( identifiers( id ).avalue );
      end if;
      identifiers( id ) := declaration'(               -- define
                  name     => paramName,                         -- identifier
@@ -756,7 +822,8 @@ begin
      id := identifiers_top;                           -- return id
      identifiers_top := identifiers_top+1;            -- push stack
      if identifiers( id ).avalue /= null then
-        free( identifiers( id ).avalue );
+        cacheOrFreeStorage( identifiers( id ).avalue );
+        --free( identifiers( id ).avalue );
      end if;
      identifiers( id ) := declaration'(               -- define
        name     => paramName,                         -- identifier
@@ -837,7 +904,8 @@ begin
      id := identifiers_top;                                  -- return id
      identifiers_top := identifiers_top+1;                   -- push stack
      if identifiers( id ).avalue /= null then
-        free( identifiers( id ).avalue );
+        cacheOrFreeStorage( identifiers( id ).avalue );
+        --free( identifiers( id ).avalue );
      end if;
      identifiers( id ) := declaration'(                      -- define
        name     => name,                                     -- identifier
@@ -1072,7 +1140,8 @@ begin
      id := identifiers_top;                                  -- return id
      identifiers_top := identifiers_top+1;                   -- push stack
      if identifiers( id ).avalue /= null then
-        free( identifiers( id ).avalue );
+        cacheOrFreeStorage( identifiers( id ).avalue );
+        --free( identifiers( id ).avalue );
      end if;
      identifiers( id ) := declaration'(                      -- define
        name     => to_unbounded_string( name ),              -- identifier
@@ -1195,7 +1264,8 @@ begin
      id := identifiers_top;                                  -- return id
      identifiers_top := identifiers_top+1;                   -- push stack
      if identifiers( id ).avalue /= null then
-        free( identifiers( id ).avalue );
+        cacheOrFreeStorage( identifiers( id ).avalue );
+        --free( identifiers( id ).avalue );
      end if;
      identifiers( id ) := declaration'(                      -- define
        name     => to_unbounded_string( name ),              -- identifier

@@ -2763,7 +2763,8 @@ begin
      --              blocklvl => blocks_top );
      -- identifiers( id ).value := to_unbounded_string( array_id'img );
      identifiers( id ).value.all := null_unbounded_string;
-     identifiers( id ).avalue := new storage( long_integer( to_numeric( ab1 ) ) .. long_integer( to_numeric( ab2 ) ) );  -- NEWARRAY
+     identifiers( id ).avalue := findStorage( long_integer( to_numeric( ab1 ) ), long_integer( to_numeric( ab2 ) ) );  -- NEWARRAY
+     --identifiers( id ).avalue := new storage( long_integer( to_numeric( ab1 ) ) .. long_integer( to_numeric( ab2 ) ) );  -- NEWARRAY
 -- put_line( "parseAnonArray: " & to_string( identifiers( id ).name ) & " is new array " & identifiers( kind1 ).firstBound'img & ".." & identifiers( kind1 ).lastBound'img & " => " & identifiers( id ).avalue'first'img & ".." & identifiers( id ).avalue'first'img );
      identifiers( id ).genKind := kind1; -- NEWARRAY
   end if;
@@ -2831,7 +2832,8 @@ begin
         --              blocklvl => blocks_top );
         -- identifiers( id ).value := to_unbounded_string( array_id'img );
         identifiers( id ).value.all := null_unbounded_string;
-        identifiers( id ).avalue := new storage( identifiers( base_type_id ).firstBound .. identifiers( base_type_id ).lastBound );  -- NEWARRAY
+        identifiers( id ).avalue := findStorage( identifiers( base_type_id ).firstBound, identifiers( base_type_id ).lastBound );  -- NEWARRAY
+        --identifiers( id ).avalue := new storage( identifiers( base_type_id ).firstBound .. identifiers( base_type_id ).lastBound );  -- NEWARRAY
    -- put_line( "parseArrayDecl: " & to_string( identifiers( id ).name ) & " is new array " & identifiers( base_type_id ).firstBound'img & ".." & identifiers( base_type_id ).lastBound'img & " => " & identifiers( id ).avalue'first'img & ".." & identifiers( id ).avalue'last'img ); -- NEWARRAY DEBUG
         -- identifiers( id ).genKind := indexType( type_id ); -- NEWARRAY
         identifiers( id ).genKind := identifiers( base_type_id ).genKind; -- NEWARRAY

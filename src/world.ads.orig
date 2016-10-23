@@ -298,6 +298,10 @@ type storagePtr is access all storage;
 procedure free is new unchecked_deallocation( storage, storagePtr );
 type valuePtr is access all unbounded_string;
 
+function findStorage( lbound, ubound : long_integer ) return storagePtr;
+pragma inline( findStorage );
+-- find/allocate storage
+
 -- Ways to pass parameters
 
 type aParameterPassingMode is (none, in_mode, out_mode, in_out_mode );
