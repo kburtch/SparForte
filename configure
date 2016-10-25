@@ -835,39 +835,39 @@ fi
 
 # Check for the libSDL_ttf (Simple DirectMedia Layer truetype font) Library
 
-echo -n "checking for libSDL_ttf (ldconfig -p, Linux)... "
-TMP=`/sbin/ldconfig -p 2>/dev/null | grep libSDL_ttf`
-if [ -z "$TMP" ] ; then
-   echo "no"
-   echo -n "checking for libSDL_image (ldconfig -r, FreeBSD)... "
-   TMP=`/sbin/ldconfig -r 2>/dev/null | grep libSDL_ttf`
-   if [ -z "$TMP" ] ; then
-      echo "no"
-      echo -n "checking for libSDL_ttf (locate, Darwin)... "
-      TMP=`"$LOCATE" libSDL_ttf`
-      if [ ! -z "$TMP" ] ; then
-          SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_ttf\ "
-          echo "yes"
-      else
-          echo "no"
-          echo "No version of the Simple DirectMedia Layer truetype font library (libSDL_ttf) was found"
-          echo "This is a third-party  library not normally included with libSDL."
-          echo "Fedora users can install it using this command: yum install SDL_ttf"
-          echo "If you have installed libSDL_ttf, you may need to use ldconfig (as"
-          echo "root) to update the shared library search paths for libSDL_ttf"
-          echo
-          echo "libSDL_ttf is not currently used.  It will be used by the pen package to"
-          echo "to display text."
-          exit 1
-      fi
-    else
-       SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_ttf\ "
-       echo "yes"
-    fi
- else
-  SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_ttf\ "
-  echo "yes"
-fi
+#echo -n "checking for libSDL_ttf (ldconfig -p, Linux)... "
+#TMP=`/sbin/ldconfig -p 2>/dev/null | grep libSDL_ttf`
+#if [ -z "$TMP" ] ; then
+#   echo "no"
+#   echo -n "checking for libSDL_image (ldconfig -r, FreeBSD)... "
+#   TMP=`/sbin/ldconfig -r 2>/dev/null | grep libSDL_ttf`
+#   if [ -z "$TMP" ] ; then
+#      echo "no"
+#      echo -n "checking for libSDL_ttf (locate, Darwin)... "
+#      TMP=`"$LOCATE" libSDL_ttf`
+#      if [ ! -z "$TMP" ] ; then
+#          SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_ttf\ "
+#          echo "yes"
+#      else
+#          echo "no"
+#          echo "No version of the Simple DirectMedia Layer truetype font library (libSDL_ttf) was found"
+#          echo "This is a third-party  library not normally included with libSDL."
+#          echo "Fedora users can install it using this command: yum install SDL_ttf"
+#          echo "If you have installed libSDL_ttf, you may need to use ldconfig (as"
+#          echo "root) to update the shared library search paths for libSDL_ttf"
+#          echo
+#          echo "libSDL_ttf is not currently used.  It will be used by the pen package to"
+#          echo "to display text."
+#          exit 1
+#      fi
+#    else
+#       SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_ttf\ "
+#       echo "yes"
+#    fi
+# else
+#  SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_ttf\ "
+#  echo "yes"
+#fi
 
 # Check for OpenGL
 #
