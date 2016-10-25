@@ -313,6 +313,10 @@ begin
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
+  -- mark as being altered for later tests
+  if syntax_check and not error_found then
+     identifiers( var_id ).wasWritten := true;
+  end if;
   if isExecutingCommand then
      arrayBeingSortedId := var_id;
      -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
@@ -350,6 +354,10 @@ begin
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
+  -- mark as being altered for later tests
+  if syntax_check then
+     identifiers( var_id ).wasWritten := true;
+  end if;
   if isExecutingCommand then
      arrayBeingSortedId := var_id;
      -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
@@ -387,6 +395,10 @@ begin
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
+  -- mark as being altered for later tests
+  if syntax_check then
+     identifiers( var_id ).wasWritten := true;
+  end if;
   if isExecutingCommand then
      arrayBeingSortedId := var_id;
      -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
@@ -424,6 +436,10 @@ begin
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
+  -- mark as being altered for later tests
+  if syntax_check then
+     identifiers( var_id ).wasWritten := true;
+  end if;
   if isExecutingCommand then
      arrayBeingSortedId := var_id;
      -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
@@ -458,6 +474,10 @@ begin
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
+  -- mark as being altered for later tests
+  if syntax_check then
+     identifiers( var_id ).wasWritten := true;
+  end if;
   if isExecutingCommand then
      -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
      -- first := firstBound( array_id );
@@ -499,6 +519,10 @@ begin
      err( "Array expected" );
   end if;
   expect( symbol_t, ")" );
+  -- mark as being altered for later tests
+  if syntax_check then
+     identifiers( var_id ).wasWritten := true;
+  end if;
   if isExecutingCommand then
      --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
      --first := firstBound( array_id );
@@ -539,6 +563,10 @@ begin
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array expected" );
   end if;
+  -- mark as being altered for later tests
+  if syntax_check then
+     identifiers( var_id ).wasWritten := true;
+  end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
      --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
@@ -571,6 +599,10 @@ begin
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
+  -- mark as being altered for later tests
+  if syntax_check then
+     identifiers( var_id ).wasWritten := true;
+  end if;
   if isExecutingCommand then
      --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      --first := firstBound( arrayIdBeingSorted );
@@ -603,6 +635,10 @@ begin
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
+  -- mark as being altered for later tests
+  if syntax_check then
+     identifiers( var_id ).wasWritten := true;
+  end if;
   if isExecutingCommand then
      -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      -- first := firstBound( arrayIdBeingSorted );
@@ -641,6 +677,10 @@ begin
      err( "Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
+  -- mark as being altered for later tests
+  if syntax_check then
+     identifiers( var_id ).wasWritten := true;
+  end if;
   if isExecutingCommand then
      --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      --first := firstBound( arrayIdBeingSorted );
@@ -698,6 +738,10 @@ begin
   if baseTypesOK( source_type, json_string_t ) then
      expect( symbol_t, ")" );
   end if;
+  -- mark as being altered for later tests
+  if syntax_check then
+     identifiers( target_var_id ).wasWritten := true;
+  end if;
   if isExecutingCommand then
      -- DoJsonToArray actually populates the array, so you don't use assign parameter
      -- assignParameter( target_var_id, jsonString );
@@ -728,7 +772,6 @@ begin
      err( "Array expected" );
   end if;
   expect( symbol_t, ")" );
-
   if isExecutingCommand then
      DoArrayToJson( jsonString, source_var_id );
      assignParameter( target_ref, jsonString );

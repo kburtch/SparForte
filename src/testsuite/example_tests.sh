@@ -11,7 +11,7 @@ cd ../..
 echo "$0: Testing some example programs..."
 echo "$0: "`date`
 EXAMPLE="aplusb.sp"
-RESULT=`echo "1 2" | src/spar examples/$EXAMPLE`
+RESULT=`echo "1 2" | src/spar --test examples/$EXAMPLE`
 EXPECTED="1 2
  3"
 if [ "$RESULT" != "$EXPECTED" ] ; then
@@ -23,7 +23,7 @@ else
 fi
 
 EXAMPLE="bases.sp"
-RESULT=`src/spar examples/$EXAMPLE 11`
+RESULT=`src/spar --test examples/$EXAMPLE 11`
 EXPECTED="hex=B
 dec=11
 oct=13
@@ -37,7 +37,7 @@ else
 fi
 
 EXAMPLE="arraycat.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED=" 1 2 3 4 5 6"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
@@ -48,7 +48,7 @@ else
 fi
 
 EXAMPLE="arrayloop.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED="aA1
 bB2
 cC3"
@@ -61,7 +61,7 @@ else
 fi
 
 EXAMPLE="arraysum.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED=" 55
  3628800"
 if [ "$RESULT" != "$EXPECTED" ] ; then
@@ -73,7 +73,7 @@ else
 fi
 
 EXAMPLE="bitarith.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED="A and B =  170
 A or  B =  255
 A xor B =  85
@@ -92,7 +92,7 @@ else
 fi
 
 EXAMPLE="bottles.sp"
-RESULT=`src/spar examples/$EXAMPLE | tail -3`
+RESULT=`src/spar --test examples/$EXAMPLE | tail -3`
 EXPECTED="Take one down, pass it around
  0 bottles of beer on the wall"
 if [ "$RESULT" != "$EXPECTED" ] ; then
@@ -104,7 +104,7 @@ else
 fi
 
 EXAMPLE="calcrms.sp"
-RESULT=`src/spar examples/$EXAMPLE | cut -c1-7`
+RESULT=`src/spar --test examples/$EXAMPLE | cut -c1-7`
 EXPECTED=" 6.2048"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
@@ -115,7 +115,7 @@ else
 fi
 
 EXAMPLE="charcode.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED="character code 97 = character a
 character a = character code 97"
 if [ "$RESULT" != "$EXPECTED" ] ; then
@@ -127,7 +127,7 @@ else
 fi
 
 EXAMPLE="combinations.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED=" 0 1 2
  0 1 3
  0 1 4
@@ -147,7 +147,7 @@ else
 fi
 
 EXAMPLE="distance.sp"
-RESULT=`src/spar examples/$EXAMPLE <<HERE
+RESULT=`src/spar --test examples/$EXAMPLE <<HERE
 1
 2
 3
@@ -169,7 +169,7 @@ else
 fi
 
 EXAMPLE="doors.sp"
-RESULT=`src/spar examples/$EXAMPLE | tail -2`
+RESULT=`src/spar --test examples/$EXAMPLE | tail -2`
 EXPECTED=" 99 is Closed
  100 is Open"
 if [ "$RESULT" != "$EXPECTED" ] ; then
@@ -181,7 +181,7 @@ else
 fi
 
 EXAMPLE="dotproduct.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED=" 3"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
@@ -192,7 +192,7 @@ else
 fi
 
 EXAMPLE="dynamic_css.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 RESULT=`echo "$RESULT" | tr -d '\n\r'`
 EXPECTED="Content-type: text/cssbody {  margin: 0;  padding: 0;  background-color: #FFFFFF;  font: 12px arial;}"
 if [ "$RESULT" != "$EXPECTED" ] ; then
@@ -204,7 +204,7 @@ else
 fi
 
 EXAMPLE="factorial.sp"
-RESULT=`src/spar examples/$EXAMPLE 5`
+RESULT=`src/spar --test examples/$EXAMPLE 5`
 EXPECTED=" 120"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
@@ -215,7 +215,7 @@ else
 fi
 
 EXAMPLE="fibonacci.sp"
-RESULT=`src/spar examples/$EXAMPLE 6`
+RESULT=`src/spar --test examples/$EXAMPLE 6`
 EXPECTED=" 8"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
@@ -226,7 +226,7 @@ else
 fi
 
 EXAMPLE="fizzbuzz.sp"
-RESULT=`src/spar examples/$EXAMPLE | tail -n 3`
+RESULT=`src/spar --test examples/$EXAMPLE | tail -n 3`
 EXPECTED=" 98
 Fizz
 Buzz"
@@ -239,7 +239,7 @@ else
 fi
 
 EXAMPLE="gray.sp"
-RESULT=`src/spar examples/$EXAMPLE | tail -n 3`
+RESULT=`src/spar --test examples/$EXAMPLE | tail -n 3`
 EXPECTED="    29 2#11101# 2#10011#      29
     30 2#11110# 2#10001#      30
     31 2#11111# 2#10000#      31"
@@ -252,7 +252,7 @@ else
 fi
 
 EXAMPLE="gss.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED=" 3
  5
  6
@@ -268,7 +268,7 @@ else
 fi
 
 EXAMPLE="incstr.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED="12346"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
@@ -279,7 +279,7 @@ else
 fi
 
 EXAMPLE="int_sort.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED=" 0
  1
  2
@@ -298,7 +298,7 @@ else
 fi
 
 EXAMPLE="mapping.sp"
-RESULT=`src/spar examples/$EXAMPLE | tail -n 4`
+RESULT=`src/spar --test examples/$EXAMPLE | tail -n 4`
 EXPECTED=" 9.00000000000000E+00 maps to: -1.00000000000000E-01
 -1.00000000000000E-01 maps back to:  9.00000000000000E+00
  1.00000000000000E+01 maps to:  0.00000000000000E+00
@@ -312,7 +312,7 @@ else
 fi
 
 EXAMPLE="minsort.sp"
-RESULT=`src/spar examples/$EXAMPLE <<HERE
+RESULT=`src/spar --test examples/$EXAMPLE <<HERE
 1
 3
 2
@@ -329,7 +329,7 @@ else
 fi
 
 EXAMPLE="monte.sp"
-RESULT=`src/spar examples/$EXAMPLE | tail -n 1 | cut -c1-16`
+RESULT=`src/spar --test examples/$EXAMPLE | tail -n 1 | cut -c1-16`
 EXPECTED="  1_000_000: 3.1"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
@@ -340,7 +340,7 @@ else
 fi
 
 EXAMPLE="monty.sp"
-RESULT=`src/spar examples/$EXAMPLE | cut -d: -f1`
+RESULT=`src/spar --test examples/$EXAMPLE | cut -d: -f1`
 EXPECTED="Stay
 Switch"
 if [ "$RESULT" != "$EXPECTED" ] ; then
@@ -352,7 +352,7 @@ else
 fi
 
 EXAMPLE="neartime.sp"
-RESULT=`src/spar examples/$EXAMPLE | cut -c1-4`
+RESULT=`src/spar --test examples/$EXAMPLE | cut -c1-4`
 EXPECTED="It's"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
@@ -363,7 +363,7 @@ else
 fi
 
 EXAMPLE="nonsquares.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED=" 2 3 5 6 7 8 10 11 12 13 14 15 17 18 19 20 21 22 23 24 26 27"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
@@ -374,7 +374,7 @@ else
 fi
 
 EXAMPLE="palindrome.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED="this is a test : false
 ablewasiereisawelba : true"
 if [ "$RESULT" != "$EXPECTED" ] ; then
@@ -386,7 +386,7 @@ else
 fi
 
 EXAMPLE="perfect.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED=" 6 : true
  18 : false
  28 : true"
@@ -399,7 +399,7 @@ else
 fi
 
 EXAMPLE="prime.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED=" 6 : false
  7 : true
  8 : false"
@@ -412,7 +412,7 @@ else
 fi
 
 EXAMPLE="printargs.sp"
-RESULT=`src/spar examples/$EXAMPLE 1 2 3`
+RESULT=`src/spar --test examples/$EXAMPLE 1 2 3`
 EXPECTED="The command is 'src/spar'
 Argument 1 is '1'
 Argument 2 is '2'
@@ -426,7 +426,7 @@ else
 fi
 
 EXAMPLE="radices.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED=" 180154659
  4009
  666
@@ -452,7 +452,7 @@ fi
 #fi
 
 EXAMPLE="rle.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED="12W1B12W3B24W1B14W
 WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW"
 if [ "$RESULT" != "$EXPECTED" ] ; then
@@ -464,7 +464,7 @@ else
 fi
 
 EXAMPLE="rot13.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED="Ovt swbeqf irk dhvpx jnygm alzcu!"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
@@ -475,7 +475,7 @@ else
 fi
 
 EXAMPLE="sieve.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED=" 2
  3
  5
@@ -493,7 +493,7 @@ else
 fi
 
 EXAMPLE="sleep.sp"
-RESULT=`echo "1" | src/spar examples/$EXAMPLE | tail -n 4`
+RESULT=`echo "1" | src/spar --test examples/$EXAMPLE | tail -n 4`
 EXPECTED="Sleeping...
 Awake!
 Sleeping...
@@ -507,7 +507,7 @@ else
 fi
 
 EXAMPLE="stringcase.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED="ALPHABETA
 alphabeta
 Alphabeta"
@@ -520,7 +520,7 @@ else
 fi
 
 EXAMPLE="tmpfile.sp"
-RESULT=`src/spar examples/$EXAMPLE`
+RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED="Creating a temporary file
 Reading a temporary file
 File contains: Hello World
@@ -534,7 +534,7 @@ else
 fi
 
 EXAMPLE="yorn.sp"
-RESULT=`echo "y" | src/spar examples/$EXAMPLE`
+RESULT=`echo "y" | src/spar --test examples/$EXAMPLE`
 echo "$RESULT"
 EXPECTED="Your answer? (Y/N) Y"
 if [ "$RESULT" != "$EXPECTED" ] ; then

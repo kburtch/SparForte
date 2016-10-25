@@ -336,6 +336,7 @@ type declaration is record
      inspect  : boolean := false;               -- show value on breakout
      deleted  : boolean := false;               -- marked for deletion
      wasReferenced : boolean := false;          -- true if ref'd in syn chk
+     wasWritten    : boolean := false;          -- true if written in syn chk
      renaming_of : identifier := identifier'first; -- renaming or dereference
      -- TODO: renaming should be a reference
      -- TODO: renaming should be about storage, not dereference whole ident

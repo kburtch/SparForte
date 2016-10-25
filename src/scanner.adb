@@ -1484,37 +1484,50 @@ begin
    --put_line( "checkSoftwareModelRequirements: no block" ); -- DEBUG
 --end if;
   if not hasTemplate then
-  for i in reverse blocks(blocks_top-1).identifiers_top..identifiers_top-1 loop
+     for i in reverse blocks(blocks_top-1).identifiers_top..identifiers_top-1 loop
 --put( " id:" ); put( i'img ); -- DEBUG
 --put_line( " " & to_string( identifiers( i ).name ) ); -- DEBUG
-      if identifiers( i ).wasReferenced then
+         -- Test for variables that are never written to.  This is only done
+         -- in testing phase mode as code under development may indeed have
+         -- variables like this, and many things are unwritten in design phase.
+         if not identifiers( i ).wasWritten then
+            if testOpt then
+               if identifiers( i ).class = varClass then
+-- TODO: don't apply to records
+                  err( optional_bold( to_string( identifiers( i ).name ) ) &
+                     " is a " & optional_bold( "variable" ) &
+                     " but expected a " & optional_bold( "constant" ) &
+                     ".  It (or its elements) are never written to." );
+               end if;
+            end if;
+         elsif identifiers( i ).wasReferenced then
 --put( " REF'D: " ); put_identifier( i ); -- DEBUG
          -- TODO: Refactor out
-         if softwareModelSet then
-            recordSoftwareModelRequirements( i );
-         end if;
+            if softwareModelSet then
+               recordSoftwareModelRequirements( i );
+            end if;
       -- Unused variables are always checked.  Check all identifiers if
       -- in design mode or test mode.
       --elsif boolean( designOpt ) or boolean( testOpt ) or identifiers( i ).class = varClass then
       -- elsif boolean( designOpt ) or boolean( testOpt ) or identifiers( i ).class = varClass then
-      else
+         else
         -- in design mode, only check types
-        if designOpt then
-           if identifiers( i ).class = typeClass and identifiers( i ).class = subClass then
-              err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
-           end if;
+           if designOpt then
+              if identifiers( i ).class = typeClass and identifiers( i ).class = subClass then
+                 err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+               end if;
         -- when testing or maintenance, check all identifiers, even
         -- variables
-        elsif testOpt or maintenanceOpt then
-           err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+            elsif testOpt or maintenanceOpt then
+               err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
         -- in development, only check variables
-        elsif identifiers( i ).class = varClass then
-           err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
-        end if;
-      end if;
+            elsif identifiers( i ).class = varClass then
+               err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+            end if;
+          end if;
 -- TODO declaration line would be helpful if two identifiers have the same
 -- name.
-  end loop;
+      end loop;
   end if;
 end checkIdentifiersInCurrentBlock;
 

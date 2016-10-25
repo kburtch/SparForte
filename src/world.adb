@@ -124,7 +124,7 @@ distributedMemcacheClusterInitialized : boolean := false;
 
 -----------------------------------------------------------------------------
 -- STORAGE CACHE
--- 
+--
 -- Allocating/deallocating memory is a slow operation.
 --
 -- To make slightly better use of allocated storage memory, instead of
@@ -185,7 +185,6 @@ begin
   end if;
   return sp;
 end findStorage;
-pragma inline( findStorage );
 
 -- Symbol Table Utilities
 --
@@ -516,6 +515,7 @@ begin
        inspect  => false,
        deleted  => false,
        wasReferenced => false,
+       wasWritten => false,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -569,6 +569,7 @@ begin
        inspect  => false,
        deleted  => false,
        wasReferenced => false,
+       wasWritten => false,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -777,6 +778,7 @@ begin
                  inspect  => false,
                  deleted  => false,
                  wasReferenced => false,
+                 wasWritten => false,
                  procCB => null,
                  funcCB => null,
                  genKind => eof_t,
@@ -844,6 +846,7 @@ begin
        inspect  => false,
        deleted  => false,
        wasReferenced => false,
+       wasWritten => false,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -926,6 +929,7 @@ begin
        inspect  => false,
        deleted  => false,
        wasReferenced => false,
+       wasWritten => false,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,
@@ -985,6 +989,7 @@ begin
        inspect  => identifiers( canonicalRef.id ).inspect,
        deleted  => false,
        wasReferenced => false,
+       wasWritten => false,
        procCB => identifiers( canonicalRef.id ).procCB,  -- don't apply for variables
        funcCB => identifiers( canonicalRef.id ).funcCB,
        genKind => identifiers( canonicalRef.id ).genKind,
@@ -1114,6 +1119,7 @@ begin
            -- main record identifier.
         if syntax_check then
            identifiers( field_id ).wasReferenced := true;
+           identifiers( field_id ).wasWritten := true;
         end if;
      end;
      j := identifier( integer( j ) + 1 );
@@ -1161,6 +1167,7 @@ begin
        inspect  => false,
        deleted  => false,
        wasReferenced => false,
+       wasWritten => false,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,
@@ -1286,6 +1293,7 @@ begin
        inspect  => false,
        deleted  => false,
        wasReferenced => false,
+       wasWritten => false,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,

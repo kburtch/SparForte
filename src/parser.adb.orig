@@ -511,9 +511,11 @@ begin
      --   discardUnusedIdentifier( token );
      --end if;
   else
-     if syntax_check then
+     if syntax_check and then not error_found then
            -- for a record field, mark the record itself as used.
            -- record fields are ignored in the unused identifier checks.
+           -- also do this for writing since it is hard to determine if
+           -- all record fields have been written to.
            if identifiers( token ).field_of /= eof_t then
               identifiers( identifiers( token ).field_of ).wasReferenced := true;
            else
@@ -3066,8 +3068,9 @@ begin
                -- at least, for now, don't worry if record fields are
                -- declared but not accessed.  We'll just check the
                -- main record identifier.
-               if syntax_check then
+               if syntax_check and then not error_found then
                   identifiers( dont_care_t ).wasReferenced := true;
+                  identifiers( dont_care_t ).wasWritten := true;
                end if;
             end;
          j := identifier( integer( j ) + 1 );
@@ -3108,7 +3111,6 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
   expr_expected : boolean := false;
   canonicalRef : renamingReference;
 begin
-
   expect( symbol_t, ":" );
 
   -- Exceptions
@@ -3283,6 +3285,7 @@ begin
 
   elsif (token = symbol_t and identifiers( token ).value.all = ":=") or -- assign part?
      expr_expected then
+
      if identifiers( type_token ).limit then
         err( "limited type variables cannot be assigned a value" );
      end if;
@@ -4298,8 +4301,9 @@ begin
      declareIdent( for_var, for_name, uni_numeric_t);   -- declare for var
      -- the for index is not covered by unused identifiers because it
      -- might not be used within the loop...might just be a repeat loop
-     if syntax_check then
+     if syntax_check and then not error_found then
         identifiers( for_var ).wasReferenced := true;
+        identifiers( for_var ).wasWritten := true;
      end if;
      if baseTypesOk( expr1_type, expr2_type ) then      -- check types
         if getUniType( expr1_type ) = uni_numeric_t then
@@ -4329,6 +4333,8 @@ begin
            declareIdent( for_var,                          -- will be const below
               identifiers( token ).name,
               uni_numeric_t );
+           -- This variable is written to by the for command itself.  So
+           -- mark that for later identifier usage tests.
         end if;
         getNextToken;
         expect( in_t );                                    -- "in"
@@ -6206,6 +6212,9 @@ begin
         -- TODO: actually, an update not a declaration.  But can it be
         -- combined with declareIdent?
         declareRenaming( usableParamId, actual_param_ref ); -- basic renaming
+        if syntax_check and then not error_found then
+           identifiers( usableParamId ).wasWritten := true;
+        end if;
         -- An array?  make it happen.
         if identifiers( actual_param_ref.id).list then        -- array/element?
            if actual_param_ref.hasIndex then                  -- element?
@@ -7812,6 +7821,7 @@ begin
   end if;
   if identifiers( var_kind ).limit then
      err( "limited variables cannot be assigned a value" );
+  -- TODO: this will break when we can create derived record types
   elsif identifiers( var_id ).kind = root_record_t then
      err( "cannot assign to an entire record" );
   elsif identifiers( var_id ).list then
@@ -7887,6 +7897,20 @@ begin
   elsif baseTypesOk( var_kind, right_type ) then
      if isExecutingCommand then
         expr_value := castToType( expr_value, var_kind );
+     end if;
+  end if;
+
+  -- Before assignment, remember that this identifier was written to
+  -- by the assignment for later identifier usage checks.  If this is
+  -- the field of the record, mark the whole record as being written
+  -- to.  Otherwise, mark just the identifier.
+  -- Check for error in case var_id is eof_t.
+
+  if syntax_check and then not error_found then
+     if identifiers( var_id ).field_of /= eof_t then
+        identifiers( identifiers( var_id ).field_of ).wasWritten := true;
+     else
+        identifiers( var_id ).wasWritten := true;
      end if;
   end if;
 
@@ -8598,7 +8622,7 @@ begin
      eof_flag := true;
      -- a script could be a single comment without a ;
   elsif Token = symbol_t and identifiers( token ).value.all = "@" then
-     err( "@ must appear after a command or pragma or in an assignment expression" );
+     err( "unexpeced @.  Itself can appear after a command or pragma (and no preceding semi-colon) or in an assignment expression" );
            getNextToken;
   elsif Token = symbol_t and identifiers( token ).value.all = ";" then
      err( "statement expected" );
@@ -8641,6 +8665,9 @@ begin
         elsif identifiers( startToken ).class = varClass and then identifiers( startToken ).kind /= new_t and then getBaseType( identifiers( startToken ).kind ) = boolean_t and then not identifiers( startToken ).deleted then
            if onlyAda95 then
               err( "use " & optional_bold( ":= true " ) & " with " & optional_bold( "pragma ada_95" ) );
+           end if;
+           if syntax_check and then not error_found then
+              identifiers( startToken ).wasWritten := true;
            end if;
            if isExecutingCommand then
               identifiers( startToken ).value.all := to_unbounded_string( "1" );

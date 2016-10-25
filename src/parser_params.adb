@@ -259,6 +259,9 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( param_id ); -- in out
   discard_result := baseTypesOk( identifiers( param_id ).kind, expected_type );
+  if syntax_check and then not error_found then
+     identifiers( param_id ).wasWritten := true;
+  end if;
 end ParseFirstInOutParameter;
 
 
@@ -272,6 +275,9 @@ begin
   expect( symbol_t, "," );
   ParseIdentifier( param_id ); -- in out
   discard_result := baseTypesOk( identifiers( param_id ).kind, expected_type );
+  if syntax_check and then not error_found then
+     identifiers( param_id ).wasWritten := true;
+  end if;
 end ParseNextInOutParameter;
 
 
@@ -289,6 +295,9 @@ begin
   --   expr_val := castToType( expr_val, expected_type );
   --end if;
   discard_result := baseTypesOk( identifiers( param_id ).kind, expected_type );
+  if syntax_check and then not error_found then
+     identifiers( param_id ).wasWritten := true;
+  end if;
   expect( symbol_t, ")" );
 end ParseLastInOutParameter;
 
@@ -307,6 +316,9 @@ begin
   --   expr_val := castToType( expr_val, expected_type );
   --end if;
   discard_result := baseTypesOk( identifiers( param_id ).kind, expected_type );
+  if syntax_check and then not error_found then
+     identifiers( param_id ).wasWritten := true;
+  end if;
   expect( symbol_t, ")" );
 end ParseSingleInOutParameter;
 
@@ -319,6 +331,9 @@ procedure ParseLastInOutRecordParameter( param_id : out identifier ) is
 begin
   expect( symbol_t, "," );
   ParseIdentifier( param_id ); -- in out
+  if syntax_check and then not error_found then
+     identifiers( param_id ).wasWritten := true;
+  end if;
   expect( symbol_t, ")" );
 end ParseLastInOutRecordParameter;
 
@@ -331,6 +346,9 @@ procedure ParseNextInOutRecordParameter( param_id : out identifier ) is
 begin
   expect( symbol_t, "," );
   ParseIdentifier( param_id ); -- in out
+  if syntax_check and then not error_found then
+     identifiers( param_id ).wasWritten := true;
+  end if;
 end ParseNextInOutRecordParameter;
 
 
@@ -644,6 +662,14 @@ begin
        ref.kind := identifiers( ref.id ).kind;
     end if;
   end if;
+  -- Mark the variable as having been written for future tests.
+  if syntax_check and then not error_found then
+     if identifiers( ref.id ).field_of /= eof_t then
+        identifiers( identifiers( ref.id ).field_of ).wasWritten := true;
+     else
+        identifiers( ref.id ).wasWritten := true;
+     end if;
+  end if;
 end ParseOutParameter;
 
 procedure ParseSingleOutParameter( ref : out reference; defaultType : identifier ) is
@@ -677,6 +703,8 @@ end ParseLastOutParameter;
 --
 -- Parse an "in out" parameter for a procedure call.  Return a reference
 -- to it.  The variable being referenced must already exist.
+--
+-- TODO: check this fits with the other in out param fns here
 
 procedure ParseInOutParameter( ref : out reference ) is
   -- syntax: identifier [ (index) ]
@@ -759,6 +787,14 @@ begin
      end loop;
   else
      ref.kind := identifiers( ref.id ).kind;
+  end if;
+  -- Mark the variable as having been written for future tests.
+  if syntax_check and then not error_found then
+     if identifiers( ref.id ).field_of /= eof_t then
+        identifiers( identifiers( ref.id ).field_of ).wasWritten := true;
+     else
+        identifiers( ref.id ).wasWritten := true;
+     end if;
   end if;
 end ParseInOutParameter;
 
