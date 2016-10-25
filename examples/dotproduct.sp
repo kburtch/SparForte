@@ -1,25 +1,25 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "dotproduct" );
-pragma annotate( description, "Create a function/use an in-built function, to compute" );
-pragma annotate( description, "the dot product, also known as the scalar product of two" );
-pragma annotate( description, "vectors. If possible, make the vectors of arbitrary length." );
-pragma annotate( description, "As an example, compute the dot product of the vectors [1," );
-pragma annotate( description, " 3, -5] and [4, -2, -1]." );
-pragma annotate( description, "If implementing the dot product of two vectors directly," );
-pragma annotate( description, "each vector must be the same length; multiply" );
-pragma annotate( description, "corresponding terms from each vector then sum the results" );
-pragma annotate( description, "to produce the answer. " );
-pragma annotate( see_also, "http://rosettacode.org/wiki/Dot_product" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "dotproduct" )
+       @( description, "Create a function/use an in-built function, to compute" )
+       @( description, "the dot product, also known as the scalar product of two" )
+       @( description, "vectors. If possible, make the vectors of arbitrary length." )
+       @( description, "As an example, compute the dot product of the vectors [1," )
+       @( description, " 3, -5] and [4, -2, -1]." )
+       @( description, "If implementing the dot product of two vectors directly," )
+       @( description, "each vector must be the same length; multiply" )
+       @( description, "corresponding terms from each vector then sum the results" )
+       @( description, "to produce the answer. " )
+       @( see_also, "http://rosettacode.org/wiki/Dot_product" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
 procedure dotproduct is
   type vect3 is array(1..3) of integer;
-  v1 : vect3 := (1,3,-5);
-  v2 : vect3 := (4,-2,-1);
+  v1 : constant vect3 := (1,3,-5);
+  v2 : constant vect3 := (4,-2,-1);
 
   sum : integer := 0;
 begin

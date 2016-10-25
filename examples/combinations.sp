@@ -1,12 +1,12 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "combinations" );
-pragma annotate( description, "Given non-negative integers m and n, generate all size m" );
-pragma annotate( description, "combinations of the integers from 0 to n-1 in sorted" );
-pragma annotate( description, "order (each combination is sorted and the entire table" );
-pragma annotate( description, "is sorted" );
-pragma annotate( see_also, "http://rosettacode.org/wiki/Combinations" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "combinations" )
+       @( description, "Given non-negative integers m and n, generate all size m" )
+       @( description, "combinations of the integers from 0 to n-1 in sorted" )
+       @( description, "order (each combination is sorted and the entire table" )
+       @( description, "is sorted" )
+       @( see_also, "http://rosettacode.org/wiki/Combinations" )
+       @( author, "Ken O. Burtch" );
 
 pragma restriction( no_external_commands );
 
@@ -40,7 +40,7 @@ procedure combinations is
   end get_last_combination;
 
   combination : string := get_first_combination;
-  last_combination : string := get_last_combination;
+  last_combination : constant string := get_last_combination;
 
   item : natural; -- a number from the combination
   bad : boolean; -- true if we know a value is too big
@@ -69,7 +69,7 @@ begin
                  s := strings.delete( s, 1, 1 );
                  strings.replace( combination, j+1, s, ' ' );
               else
-                 bad := true;
+                 bad;
 	          end if;
            end loop;
            exit;

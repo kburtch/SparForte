@@ -1,17 +1,17 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "stripcomment" );
-pragma annotate( description, "The task is to remove text that follow any of a set of" );
-pragma annotate( description, "comment markers, (in these examples either a hash or a" );
-pragma annotate( description, "semicolon) from a string or input line." );
-pragma annotate( see_also, "http://rosettacode.org/wiki/Strip_comments_from_a_string" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "stripcomment" )
+       @( description, "The task is to remove text that follow any of a set of" )
+       @( description, "comment markers, (in these examples either a hash or a" )
+       @( description, "semicolon) from a string or input line." )
+       @( see_also, "http://rosettacode.org/wiki/Strip_comments_from_a_string" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
 procedure stripcomment is
-  line : string := get_line;
+  line : constant string := get_line;
   eol  : natural := 0;
   ch   : character;
 begin

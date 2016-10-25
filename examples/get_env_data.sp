@@ -1,4 +1,4 @@
-#! /opt/bin/bush -gd
+#! /usr/local/bin/spar -gd
 
 --                         TITLE : Generate Build Environ File (ADS)
 --                  LANGUAGE : AdaScript
@@ -121,9 +121,9 @@ is
     Pkg_Name                    : string ;
     Pkg_File_Name               : string ;
     Pkg_File                    : file_type ;
-    LOGNAME                     : string ;
+    LOGNAME                     : constant string := "unknown";
         pragma unchecked_import( shell, LOGNAME );
-    USER                        : string ;
+    USER                        : string := "unknown";
         pragma unchecked_import( shell, USER ) ;
     Compiler                    : constant string
         := `gcc( "--version" ) ;` ;

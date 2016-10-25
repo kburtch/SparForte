@@ -2,11 +2,11 @@
 
 procedure audio is
 
-pragma annotate( summary, "audio [-l] file..." );
-pragma annotate( description, "play audio files" );
-pragma annotate( description, "Translated from a shell script by Heiner Steven" );
-pragma annotate( see_also, "http://www.shelldorado.com/scripts/cmds/audio.txt" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "audio [-l] file..." )
+       @( description, "play audio files" )
+       @( description, "Translated from a shell script by Heiner Steven" )
+       @( see_also, "http://www.shelldorado.com/scripts/cmds/audio.txt" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 sound_path : constant string := "/usr/share/doc/packages/sox/";
@@ -39,7 +39,8 @@ begin
          ls -C "$sound_path";
       else
          declare
-           sound_file :string := sound_path & command_line.argument(i);
+           sound_file : constant string := sound_path &
+             command_line.argument(i);
          begin
            if files.is_readable_file( sound_file ) then
               -- audio exists? try to play sound if an .au file
@@ -64,4 +65,3 @@ end audio;
 
 -- VIM editor formatting instructions
 -- vim: ft=spar
-

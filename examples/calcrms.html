@@ -19,20 +19,20 @@ $ spar calcrms
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "calcrms" );
-<b>pragma</b> annotate( description, "Compute the Root mean square of the numbers 1..10." );
-<b>pragma</b> annotate( description, "The root mean square is also known by its initial RMS (or rms), and as the" );
-<b>pragma</b> annotate( description, "quadratic mean.  The RMS is calculated as the mean of the squares of the" );
-<b>pragma</b> annotate( description, "numbers, square-rooted" );
-<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Averages/Root_mean_square" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "calcrms" )
+       @( description, "Compute the Root mean square of the numbers 1..10." )
+       @( description, "The root mean square is also known by its initial RMS (or rms), and as the" )
+       @( description, "quadratic mean.  The RMS is calculated as the mean of the squares of the" )
+       @( description, "numbers, square-rooted" )
+       @( see_also, "http://rosettacode.org/wiki/Averages/Root_mean_square" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> calcrms <b>is</b>
   <b>type</b> float_arr <b>is</b> <b>array</b>(1..10) <b>of</b> float;
-  list : float_arr := (1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0);
+  list : <b>constant</b> float_arr := (1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0);
   sum  : float := 0.0;
   rms  : float;
 <b>begin</b>

@@ -1,15 +1,31 @@
 <HEAD><TITLE>cecho.sp</TITLE></HEAD>
 <BODY>
 <HR><DIV ALIGN="center"><H1> File : cecho.sp</H1></DIV><HR>
-<!-- IMG SRC="distance.gif" -->
-<P>An "echo" beautifier - supports colours and boldface</P>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar cecho "red" "this is red"
+<span style="color:red">this is red</span>
+$ spar cecho "bold" "this is bold"
+<b>this is bold</b>
+$ spar cecho "blue" "this is blue"
+<span style="color:blue">this is blue</span>
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "usage: cecho style text" );
-<b>pragma</b> annotate( description, "echo with color or boldface" );
-<b>pragma</b> annotate( see_also, "http://www.zazzybob.com/bin/cecho.html" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "usage: cecho style text" )
+              @( description, "echo with color or boldface" )
+              @( see_also, "http://www.zazzybob.com/bin/cecho.html" )
+              @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
@@ -24,7 +40,7 @@
   <b>end</b> usage;
 
   open_escape : string := ASCII.ESC &amp; "[0m";
-  close_escape : string := ASCII.ESC &amp; "[0m";
+  close_escape : <b>constant</b> string := ASCII.ESC &amp; "[0m";
 
 <b>begin</b>
 
@@ -62,7 +78,7 @@
 
   <FONT COLOR=green><EM>-- Display the message with colour</EM></FONT>
 
-  put_line( open_escape &amp; $1 &amp; close_escape );
+  put_line( open_escape &amp; $2 &amp; close_escape );
 
   command_line.set_exit_status( 0 );
 

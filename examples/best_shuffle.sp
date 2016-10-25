@@ -1,15 +1,15 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "best_shuffle" );
-pragma annotate( description, "Shuffle the characters of a string in such a" );
-pragma annotate( description, "way that as many of the character values are" );
-pragma annotate( description, "in a different position as possible. Print" );
-pragma annotate( description, "the result as follows: original string," );
-pragma annotate( description, "shuffled string, (score). The score gives the" );
-pragma annotate( description, "number of positions whose character value" );
-pragma annotate( description, "did not change." );
-pragma annotate( author, "Ken O. Burtch" );
-pragma annotate( see_also, "http://rosettacode.org/wiki/Best_shuffle" );
+pragma annotate( summary, "best_shuffle" )
+       @( description, "Shuffle the characters of a string in such a" )
+       @( description, "way that as many of the character values are" )
+       @( description, "in a different position as possible. Print" )
+       @( description, "the result as follows: original string," )
+       @( description, "shuffled string, (score). The score gives the" )
+       @( description, "number of positions whose character value" )
+       @( description, "did not change." )
+       @( author, "Ken O. Burtch" )
+       @( see_also, "http://rosettacode.org/wiki/Best_shuffle" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
@@ -40,8 +40,8 @@ begin
 
   while not stop loop
     declare
-      original : string := get_line;
-      shuffled : string := shuffle( original );
+      original : constant string := get_line;
+      shuffled : constant string := shuffle( original );
       score : natural := 0;
    begin
       if original = "" then
@@ -65,4 +65,3 @@ end best_shuffle;
 
 -- VIM editor formatting instructions
 -- vim: ft=spar
-

@@ -1,10 +1,10 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "dateformat");
-pragma annotate( description, "Display the current date in the formats of '2007-11-10' " );
-pragma annotate( description, "and 'Sunday, November 10, 2007'." );
-pragma annotate( see_also, "http://rosettacode.org/wiki/Date_format" );
-pragma annotate( "Ken O. Burtch" );
+pragma annotate( summary, "dateformat")
+       @( description, "Display the current date in the formats of '2007-11-10' " )
+       @( description, "and 'Sunday, November 10, 2007'." )
+       @( see_also, "http://rosettacode.org/wiki/Date_format" )
+       @( "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
@@ -39,7 +39,7 @@ procedure dateformat is
          when others => return "Sunday";
       end case;
    end Day_Image;
-   Today : calendar.time := calendar.clock;
+   Today : constant calendar.time := calendar.clock;
 begin
    --put_line(
    --Put_Line (Image (Today) (1..10));

@@ -2,11 +2,11 @@
 
 procedure attention is
 
-pragma annotate( summary, "attention" );
-pragma annotate( description, "Plays a sound to get the user's attention" );
-pragma annotate( description, "Translated from a shell script by Heiner Steven" );
-pragma annotate( see_also, "http://www.shelldorado.com/scripts/cmds/attention.txt" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "attention" )
+       @( description, "Plays a sound to get the user's attention" )
+       @( description, "Translated from a shell script by Heiner Steven" )
+       @( see_also, "http://www.shelldorado.com/scripts/cmds/attention.txt" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 sound_path : constant string := "/usr/share/doc/packages/sox/monkey.au";

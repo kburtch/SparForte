@@ -1,8 +1,8 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "web_summary" );
-pragma annotate( description, "Simple web summary of an Apache server log" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "web_summary" )
+       @( description, "Simple web summary of an Apache server log" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 procedure web_summary is
@@ -28,7 +28,7 @@ begin
   end if;
 
   declare
-    this_month : calendar.month_number := calendar.month( calendar.clock );
+    this_month : constant calendar.month_number := calendar.month( calendar.clock );
     current_month : string;
     today : string;
 

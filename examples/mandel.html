@@ -15,9 +15,9 @@
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "mandel" );
-<b>pragma</b> annotate( description, "Create a color image of the Mandelbrot set" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "mandel" )
+       @( description, "Create a color image of the Mandelbrot set" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
@@ -27,8 +27,8 @@
   mandel_limit : <b>constant</b> long_float := 4.0;       <FONT COLOR=green><EM>-- reach this? it's the set</EM></FONT>
   max_iterations : <b>constant</b> integer := 128;        <FONT COLOR=green><EM>-- quit if looped this amt</EM></FONT>
 
-  center_r : long_float := -0.75;                  <FONT COLOR=green><EM>-- center of set (x=real)</EM></FONT>
-  center_i : long_float := 0.0;                    <FONT COLOR=green><EM>-- center of set (i=imag.)</EM></FONT>
+  center_r : <b>constant</b> long_float := -0.75;         <FONT COLOR=green><EM>-- center of set (x=real)</EM></FONT>
+  center_i : <b>constant</b> long_float := 0.0;           <FONT COLOR=green><EM>-- center of set (i=imag.)</EM></FONT>
 
   c_r : long_float;                                <FONT COLOR=green><EM>-- current point (x=real)</EM></FONT>
   c_i : long_float;                                <FONT COLOR=green><EM>-- current point (i=imag.)</EM></FONT>
@@ -88,11 +88,11 @@
             blue := 0.0;
          <b>else</b>
             bits := (loop_count <b>and</b> 3 );
-            red := 100.0-pen.rgbcomponent((100*bits/3)); 
+            red := 100.0-pen.rgbcomponent((100*bits/3));
             bits := (loop_count / 3 ) <b>and</b> 3;
-            green := 100.0-pen.rgbcomponent((100*bits/3)); 
+            green := 100.0-pen.rgbcomponent((100*bits/3));
             bits := (loop_count / 27 ) <b>and</b> 2;
-            blue := 100.0-pen.rgbcomponent((100*bits)/2); 
+            blue := 100.0-pen.rgbcomponent((100*bits)/2);
          <b>end</b> <b>if</b>;
          pen.set_pen_ink( c, red, green, blue );
 

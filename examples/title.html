@@ -6,9 +6,9 @@
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "usage: title new-title" );
-<b>pragma</b> annotate( description, "Change the title of an xterm window" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "usage: title new-title" )
+       @( description, "Change the title of an xterm window" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
@@ -37,7 +37,7 @@
   <FONT COLOR=green><EM>-- Print out the control sequence to change the title</EM></FONT>
 
   <b>declare</b>
-    new_title : string := command_line.argument(1);
+    new_title : <b>constant</b> string := command_line.argument(1);
   <b>begin</b>
     put_line( ASCII.ESC &amp; "]0;" &amp; new_title &amp; ASCII.BEL );
   <b>end</b>;

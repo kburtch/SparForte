@@ -25,17 +25,17 @@ $ spar doors
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "doors" );
-<b>pragma</b> annotate( description, "Problem: You have 100 doors in a row that are all initially closed. You" );
-<b>pragma</b> annotate( description, "make 100 passes by the doors. The first time through, you visit every door" );
-<b>pragma</b> annotate( description, "and toggle the door (if the door is closed, you open it; if it is open, you" );
-<b>pragma</b> annotate( description, "close it). The second time you only visit every 2nd door (door #2, #4, #6," );
-<b>pragma</b> annotate( description, "...). The third time, every 3rd door (door #3, #6, #9, ...), etc, until you" );
-<b>pragma</b> annotate( description, "only visit the 100th door." );
-<b>pragma</b> annotate( description, "Question: What state are the doors in after the last pass? Which are open," );
-<b>pragma</b> annotate( description, "which are closed?" );
-<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/100_doors" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "doors" )
+       @( description, "Problem: You have 100 doors in a row that are all initially closed. You" )
+       @( description, "make 100 passes by the doors. The first time through, you visit every door" )
+       @( description, "and toggle the door (if the door is closed, you open it; if it is open, you" )
+       @( description, "close it). The second time you only visit every 2nd door (door #2, #4, #6," )
+       @( description, "...). The third time, every 3rd door (door #3, #6, #9, ...), etc, until you" )
+       @( description, "only visit the 100th door." )
+       @( description, "Question: What state are the doors in after the last pass? Which are open," )
+       @( description, "which are closed?" )
+       @( see_also, "http://rosettacode.org/wiki/100_doors" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );

@@ -39,14 +39,14 @@ $ spar mapping.sp
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "mapping" );
-<b>pragma</b> annotate( description, "The task is to write a function/subroutine/... that takes" );
-<b>pragma</b> annotate( description, "two ranges and a real number, and returns the mapping of" );
-<b>pragma</b> annotate( description, "the real number from the first to the second range. Use" );
-<b>pragma</b> annotate( description, "this function to map values from the range [0, 10] to the" );
-<b>pragma</b> annotate( description, "range [-1, 0]." );
-<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Map_range" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "mapping" )
+       @( description, "The task is to write a function/subroutine/... that takes" )
+       @( description, "two ranges and a real number, and returns the mapping of" )
+       @( description, "the real number from the first to the second range. Use" )
+       @( description, "this function to map values from the range [0, 10] to the" )
+       @( description, "range [-1, 0]." )
+       @( see_also, "http://rosettacode.org/wiki/Map_range" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
@@ -61,10 +61,10 @@ $ spar mapping.sp
    second_range_last : <b>constant</b> second_range := 0.0;
 
    <b>function</b> translate (first_range_value : first_range) <b>return</b> second_range <b>is</b>
-      b1 : float := float( second_range_first );
-      b2 : float := float( second_range_last );
-      a1 : float := float( first_range_first );
-      a2 : float := float( first_range_last );
+      b1 : <b>constant</b> float := float( second_range_first );
+      b2 : <b>constant</b> float := float( second_range_last );
+      a1 : <b>constant</b> float := float( first_range_first );
+      a2 : <b>constant</b> float := float( first_range_last );
       result : float;
    <b>begin</b>
       result := b1 + (float (first_range_value) - a1) * (b2 - b1) / (a2 - a1);
@@ -72,10 +72,10 @@ $ spar mapping.sp
    <b>end</b> translate;
 
    <b>function</b> translate_back (second_range_value : second_range) <b>return</b> first_range <b>is</b>
-      b1 : float := float (first_range_first);
-      b2 : float := float (first_range_last);
-      a1 : float := float (second_range_first);
-      a2 : float := float (second_range_last);
+      b1 : <b>constant</b> float := float (first_range_first);
+      b2 : <b>constant</b> float := float (first_range_last);
+      a1 : <b>constant</b> float := float (second_range_first);
+      a2 : <b>constant</b> float := float (second_range_last);
       result : float;
    <b>begin</b>
       result := b1 + (float (second_range_value) - a1) * (b2 - b1) / (a2 - a1);

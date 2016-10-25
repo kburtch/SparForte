@@ -31,16 +31,16 @@ a, a, ( 1 )
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "best_shuffle" );
-<b>pragma</b> annotate( description, "Shuffle the characters of a string in such a" );
-<b>pragma</b> annotate( description, "way that as many of the character values are" );
-<b>pragma</b> annotate( description, "in a different position as possible. Print" );
-<b>pragma</b> annotate( description, "the result as follows: original string," );
-<b>pragma</b> annotate( description, "shuffled string, (score). The score gives the" );
-<b>pragma</b> annotate( description, "number of positions whose character value" );
-<b>pragma</b> annotate( description, "did not change." );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
-<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Best_shuffle" );
+<b>pragma</b> annotate( summary, "best_shuffle" )
+       @( description, "Shuffle the characters of a string in such a" )
+       @( description, "way that as many of the character values are" )
+       @( description, "in a different position as possible. Print" )
+       @( description, "the result as follows: original string," )
+       @( description, "shuffled string, (score). The score gives the" )
+       @( description, "number of positions whose character value" )
+       @( description, "did not change." )
+       @( author, "Ken O. Burtch" )
+       @( see_also, "http://rosettacode.org/wiki/Best_shuffle" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
@@ -71,8 +71,8 @@ a, a, ( 1 )
 
   <b>while</b> <b>not</b> stop <b>loop</b>
     <b>declare</b>
-      original : string := get_line;
-      shuffled : string := shuffle( original );
+      original : <b>constant</b> string := get_line;
+      shuffled : <b>constant</b> string := shuffle( original );
       score : natural := 0;
    <b>begin</b>
       <b>if</b> original = "" <b>then</b>

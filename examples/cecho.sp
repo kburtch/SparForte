@@ -1,9 +1,9 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "usage: cecho style text" );
-pragma annotate( description, "echo with color or boldface" );
-pragma annotate( see_also, "http://www.zazzybob.com/bin/cecho.html" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "usage: cecho style text" )
+              @( description, "echo with color or boldface" )
+              @( see_also, "http://www.zazzybob.com/bin/cecho.html" )
+              @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
@@ -18,7 +18,7 @@ procedure cecho is
   end usage;
 
   open_escape : string := ASCII.ESC & "[0m";
-  close_escape : string := ASCII.ESC & "[0m";
+  close_escape : constant string := ASCII.ESC & "[0m";
 
 begin
 
@@ -56,7 +56,7 @@ begin
 
   -- Display the message with colour
 
-  put_line( open_escape & $1 & close_escape );
+  put_line( open_escape & $2 & close_escape );
 
   command_line.set_exit_status( 0 );
 

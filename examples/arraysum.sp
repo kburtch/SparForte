@@ -1,9 +1,9 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "arraysum" );
-pragma annotate( description, "Compute the sum and product of an array of integers." );
-pragma annotate( see_also, "http://rosettacode.org/wiki/Sum_and_product_of_an_array" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "arraysum" )
+       @( description, "Compute the sum and product of an array of integers." )
+       @( see_also, "http://rosettacode.org/wiki/Sum_and_product_of_an_array" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );

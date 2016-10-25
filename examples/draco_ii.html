@@ -6,7 +6,7 @@
 <TR>
 <TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
 <PRE>
-<b>Draco II</b>
+<SPAN STYLE="color:black;background-color:green">Draco II</SPAN>
 
 1) Evade            2) Strike with mace
 3) Search for water 4) Run like crazy
@@ -28,6 +28,28 @@ Her father awards you with gorgeous furs.
 BONUS:  40
 
 What will you do? *
+</PRE>
+<HR>
+<PRE>
+<SPAN STYLE="color:black;background-color:green">Draco II</SPAN>
+
+1) Evade            2) Strike with mace
+3) Search for water 4) Run like crazy
+5) Proceed          6) Surrender          R) Review stats
+
+(Level 2) There are 100 miles to go.
+
+<SPAN STYLE="color:black;background-color:green">You're badly wounded</SPAN>
+Something lurks in the shadows.
+<SPAN STYLE="color:black;background-color:green">Blood gushes from its wounds</SPAN>
+It lashes out with its claws.
+
+What will you do? 2
+Pow!!
+
+You have defeated the wolf.
+<SPAN STYLE="color:black;background-color:green">BONUS: </SPAN> 40
+Press any key *
 
 </PRE>
 </SPAN>
@@ -41,13 +63,13 @@ What will you do? *
 
 <FONT COLOR=green><EM>-- Draco II</EM></FONT>
 
-<b>pragma</b> annotate( summary, "draco_ii" );
-<b>pragma</b> annotate( description, "Survive a hostile wilderness and slay monsters." );
-<b>pragma</b> annotate( description, "Originally written in AppleSoft BASIC" );
-<b>pragma</b> annotate( description, "by Ken O. Burtch circa 1980" );
-<b>pragma</b> annotate( description, "Adapted to SparForte in April 2003" );
-<b>pragma</b> annotate( description, "Usage: draco_ii" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "draco_ii" )
+       @( description, "Survive a hostile wilderness and slay monsters." )
+       @( description, "Originally written in AppleSoft BASIC" )
+       @( description, "by Ken O. Burtch circa 1980" )
+       @( description, "Adapted to SparForte in April 2003" )
+       @( description, "Usage: draco_ii" )
+       @( author, "Ken O. Burtch" );
 
 <b>pragma</b> ada_95;                               <FONT COLOR=green><EM>-- enforce Ada 95 rules and style</EM></FONT>
 
@@ -63,7 +85,7 @@ What will you do? *
   <FONT COLOR=green><EM>-- General Player Info</EM></FONT>
 
   <b>type</b> import_string <b>is</b> <b>new</b> string;
-  LOGNAME : import_string;                      <FONT COLOR=green><EM>-- Linux/UNIX user login name</EM></FONT>
+  LOGNAME : <b>constant</b> import_string := "unknown";<FONT COLOR=green><EM>-- Linux/UNIX user login name</EM></FONT>
   <b>pragma</b> import( shell, LOGNAME );              <FONT COLOR=green><EM>-- get it from the environment</EM></FONT>
 
   damage_to_creature : integer;                 <FONT COLOR=green><EM>-- inflicted on creature (E)</EM></FONT>
@@ -461,7 +483,7 @@ What will you do? *
        <FONT COLOR=green><EM>-- Creature attack</EM></FONT>
 
        <b>declare</b>
-         attack : positive := numerics.rnd( 5 );
+         attack : <b>constant</b> positive := numerics.rnd( 5 );
        <b>begin</b>
          <b>case</b> attack <b>is</b>
          <b>when</b> 1|2 =&gt;
@@ -505,7 +527,7 @@ What will you do? *
              <b>case</b> scene <b>is</b>
              <b>when</b> 1 =&gt;
                  <b>declare</b>
-                    gypsie_distance : positive := numerics.rnd(7)+2;
+                    gypsie_distance : <b>constant</b> positive := numerics.rnd(7)+2;
                  <b>begin</b>
                     put( "You travel" );
                     put( gypsie_distance );
@@ -683,7 +705,7 @@ What will you do? *
                  <b>end</b>;
               <b>when</b> 14 =&gt;
                 <b>declare</b>
-                   bad_luck : positive := numerics.rnd( 4 );
+                   bad_luck : <b>constant</b> positive := numerics.rnd( 4 );
                 <b>begin</b>
                    <b>if</b> has_item( ring ) <b>then</b>
                       <b>case</b> bad_luck <b>is</b>
@@ -713,7 +735,7 @@ What will you do? *
                   hit_points := hit_points + 0.5;
                <b>when</b> 18 =&gt;
                   <b>declare</b>
-                     strange_luck : positive := numerics.rnd( 7 );
+                     strange_luck : <b>constant</b> positive := numerics.rnd( 7 );
                      gold : <b>constant</b> positive := numerics.rnd( 60 )+20;
                   <b>begin</b>
                      <b>if</b> maybe <b>then</b>
@@ -978,7 +1000,7 @@ What will you do? *
           <b>if</b> creature_hp &lt;= 0 <b>then</b>
              <b>declare</b>
                 ch : character;
-                bonus_points : natural := level * 20;
+                bonus_points : <b>constant</b> natural := level * 20;
              <b>begin</b>
                 new_line;
                 put_line( "You have defeated the " &amp; creature_name &amp; "." );
@@ -1044,7 +1066,7 @@ What will you do? *
         new_line;
         put( "Press any key *" &amp; ASCII.BS );
         <b>declare</b>
-          ch : character := inkey;
+          ch : <b>constant</b> character := inkey;
         <b>begin</b>
           put_line( ch );
         <b>end</b>;

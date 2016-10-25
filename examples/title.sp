@@ -1,8 +1,8 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "usage: title new-title" );
-pragma annotate( description, "Change the title of an xterm window" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "usage: title new-title" )
+       @( description, "Change the title of an xterm window" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
@@ -31,7 +31,7 @@ begin
   -- Print out the control sequence to change the title
 
   declare
-    new_title : string := command_line.argument(1);
+    new_title : constant string := command_line.argument(1);
   begin
     put_line( ASCII.ESC & "]0;" & new_title & ASCII.BEL );
   end;

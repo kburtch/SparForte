@@ -27,24 +27,24 @@ A rotr B =  64
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "bitarith" );
-<b>pragma</b> annotate( description, "Write a routine to perform a bitwise AND, OR, and XOR on" );
-<b>pragma</b> annotate( description, "two integers, a bitwise NOT on the first integer, a left" );
-<b>pragma</b> annotate( description, "shift, right shift, right arithmetic shift, left rotate," );
-<b>pragma</b> annotate( description, "and right rotate. All shifts and rotates should be done on" );
-<b>pragma</b> annotate( description, "the first integer with a shift/rotate amount of the second" );
-<b>pragma</b> annotate( description, "integer." );
-<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Bitwise_operations" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "bitarith" )
+       @( description, "Write a routine to perform a bitwise AND, OR, and XOR on" )
+       @( description, "two integers, a bitwise NOT on the first integer, a left" )
+       @( description, "shift, right shift, right arithmetic shift, left rotate," )
+       @( description, "and right rotate. All shifts and rotates should be done on" )
+       @( description, "the first integer with a shift/rotate amount of the second" )
+       @( description, "integer." )
+       @( see_also, "http://rosettacode.org/wiki/Bitwise_operations" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> bitarith <b>is</b>
-  A : natural := 255;
-  B : natural := 170;
-  X : natural := 128;
-  N : natural := 1;
+  A : <b>constant</b> natural := 255;
+  B : <b>constant</b> natural := 170;
+  X : <b>constant</b> natural := 128;
+  N : <b>constant</b> natural := 1;
 <b>begin</b>
   put( "A and B = " ) @ (A <b>and</b> B); new_line;
   put( "A or  B = " ) @ (A <b>or</b>  B); new_line;

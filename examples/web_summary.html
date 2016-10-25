@@ -4,9 +4,9 @@
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "web_summary" );
-<b>pragma</b> annotate( description, "Simple web summary of an Apache server log" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "web_summary" )
+       @( description, "Simple web summary of an Apache server log" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>procedure</b> web_summary <b>is</b>
@@ -32,7 +32,7 @@
   <b>end</b> <b>if</b>;
 
   <b>declare</b>
-    this_month : calendar.month_number := calendar.month( calendar.clock );
+    this_month : <b>constant</b> calendar.month_number := calendar.month( calendar.clock );
     current_month : string;
     today : string;
 

@@ -16,18 +16,16 @@ $ spar aplusb
 </TABLE>
 </DIV>
 <HR>
-
-
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "aplusb" );
-<b>pragma</b> annotate( description, "A+B - in programming contests, classic problem, which is given so" );
-<b>pragma</b> annotate( description, "contestants can gain familiarity with online judging system being used. " );
-<b>pragma</b> annotate( description, "A+B is one of few problems on contests, which traditionally lacks fabula." );
-<b>pragma</b> annotate( description, "Given 2 integer numbers, A and B. One needs to find their sum. " );
-<b>pragma</b> annotate( description, "A Rosetta Code Example" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "aplusb" )
+       @( description, "A+B - in programming contests, classic problem, which is given so" )
+       @( description, "contestants can gain familiarity with online judging system being used. " )
+       @( description, "A+B is one of few problems on contests, which traditionally lacks fabula." )
+       @( description, "Given 2 integer numbers, A and B. One needs to find their sum. " )
+       @( description, "A Rosetta Code Example" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
@@ -37,7 +35,7 @@ $ spar aplusb
   a : integer;
   b : integer;
 <b>begin</b>
-  <FONT COLOR=green><EM>-- get( a ) @ ( b ) doesn't work in Bush since there's no integer_io.get()</EM></FONT>
+  <FONT COLOR=green><EM>-- get( a ) @ ( b ) doesn't work in AdaScript since there's no integer_io.get()</EM></FONT>
   s := get_line;
   a := numerics.value( strings.field( s, 1, ' ' ) );
   b := numerics.value( strings.field( s, 2, ' ' ) );
@@ -48,4 +46,3 @@ $ spar aplusb
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>
-

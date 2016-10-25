@@ -2,17 +2,17 @@
 
 procedure isxwindows is
 
-pragma annotate( summary, "isxwindows" );
-pragma annotate( description, "return status zero if is started under X-Windows" );
-pragma annotate( description, "Translated from a shell script by Heiner Steven" );
-pragma annotate( see_also, "http://www.shelldorado.com/scripts/cmds/isxwindows.txt" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "isxwindows" )
+       @( description, "return status zero if is started under X-Windows" )
+       @( description, "Translated from a shell script by Heiner Steven" )
+       @( see_also, "http://www.shelldorado.com/scripts/cmds/isxwindows.txt" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
-DISPLAY : string := "";
+DISPLAY : constant string := "";
 pragma unchecked_import( shell, DISPLAY );
 
-WINDOWID : string := "";
+WINDOWID : constant string := "";
 pragma unchecked_import( shell, WINDOWID );
 
 procedure usage is

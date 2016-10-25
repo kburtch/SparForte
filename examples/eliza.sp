@@ -1,10 +1,10 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "eliza" );
-pragma annotate( description, "The psychologist imitation program" );
-pragma annotate( description, "Original author: Joseph Weizenbaum" );
-pragma annotate( description, "Usage: eliza" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "eliza" )
+       @( description, "The psychologist imitation program" )
+       @( description, "Original author: Joseph Weizenbaum" )
+       @( description, "Usage: eliza" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );

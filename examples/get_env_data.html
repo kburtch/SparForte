@@ -4,53 +4,54 @@
 <P>Create an Ada package describing the software build environment.</p>
 <IMG SRC="get_env_data.gif"><HR>
 <PRE>
-#! /opt/bin/spar -gd
-<FONT COLOR=green><EM>--			   TITLE : Generate Build Environ File (ADS)</EM></FONT>
-    <FONT COLOR=green><EM>--		        LANGUAGE : AdaScript</EM></FONT>
-    <FONT COLOR=green><EM>--			  MODULE : gen_env_data</EM></FONT>
-    <FONT COLOR=green><EM>--		    COMPONENT OF : BuZco Software (Gazelle)</EM></FONT>
-    <FONT COLOR=green><EM>--	     PARENT ORGANIZATION : BuzCo Systems</EM></FONT>
-    <FONT COLOR=green><EM>--		   LATEST AUTHOR : Buz Cory</EM></FONT>
-    <FONT COLOR=green><EM>--			 $RCSfile: gen_env_data,v $</EM></FONT>
-    <FONT COLOR=green><EM>--			$Revision: 0.0 $</EM></FONT>
-    <FONT COLOR=green><EM>--			    $Date: 2003/12/22 12:34:52 $</EM></FONT>
-<FONT COLOR=green><EM>--  --------------------------------------------------------------------</EM></FONT>
-<FONT COLOR=green><EM>--  EXTERNAL MODULES USED</EM></FONT>
-<FONT COLOR=green><EM>--  --------------------------------------------------------------------</EM></FONT>
-<FONT COLOR=green><EM>--  PURPOSE :</EM></FONT>
-<FONT COLOR=green><EM>--  --------------------------------------------------------------------</EM></FONT>
-<FONT COLOR=green><EM>--  OVERVIEW:</EM></FONT>
-<FONT COLOR=green><EM>--  --------------------------------------------------------------------</EM></FONT>
-<FONT COLOR=green><EM>--  NOTICES, LICENSE follow; NOTES, HISTORY at end</EM></FONT>
-<FONT COLOR=green><EM>--  ----------------------------------------</EM></FONT>
-    <FONT COLOR=green><EM>--  This software is part of the Gazelle suite of useful,</EM></FONT>
-<FONT COLOR=green><EM>--  lightweight, fast tools, developed and distributed by BuzCo</EM></FONT>
-<FONT COLOR=green><EM>--  Systems.</EM></FONT>
-    <FONT COLOR=green><EM>--</EM></FONT>
-    <FONT COLOR=green><EM>--  UNREGISTERED COPIES OF GAZELLE SOFTWARE COME WITH NO WARRANTY,</EM></FONT>
-<FONT COLOR=green><EM>--  EXPRESSED OR IMPLIED, AND EXPRESSLY WITHOUT THE IMPLIED</EM></FONT>
-<FONT COLOR=green><EM>--  WARRANTIES OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR</EM></FONT>
-<FONT COLOR=green><EM>--  PURPOSE.</EM></FONT>
-    <FONT COLOR=green><EM>--</EM></FONT>
-    <FONT COLOR=green><EM>--  Registered users may have additional rights, depending on the</EM></FONT>
-<FONT COLOR=green><EM>--  terms under which they choose to register. See the file</EM></FONT>
-<FONT COLOR=green><EM>--  GAZELLE.REGISTER in the root directory of the distribution.</EM></FONT>
-    <FONT COLOR=green><EM>--</EM></FONT>
-    <FONT COLOR=green><EM>--  IF THE COUNTRY, STATE, OR PROVINCE IN WHICH YOU ARE USING THIS</EM></FONT>
-<FONT COLOR=green><EM>--  GAZELLE SOFTWARE DOES NOT ALLOW SUCH LIMITATIONS, YOU HAVE NO</EM></FONT>
-<FONT COLOR=green><EM>--  LEGAL RIGHT TO USE AN UNREGISTERED COPY.</EM></FONT>
-    <FONT COLOR=green><EM>--</EM></FONT>
-    <FONT COLOR=green><EM>--  GAZELLE software is distributed under the GNU General Public</EM></FONT>
-<FONT COLOR=green><EM>--  License. It may be freely copied, modified, redistributed</EM></FONT>
-<FONT COLOR=green><EM>--  under the terms of that license.</EM></FONT>
-    <FONT COLOR=green><EM>--</EM></FONT>
-    <FONT COLOR=green><EM>--  You should have gotten a copy of that license in the file</EM></FONT>
-<FONT COLOR=green><EM>--  COPYING. If not, a copy may be obtained by sending E-mail to</EM></FONT>
-<FONT COLOR=green><EM>--  BuzCo Systems or by writing:</EM></FONT>
-<FONT COLOR=green><EM>--	The Free Software Foundation</EM></FONT>
-<FONT COLOR=green><EM>--	59 Temple Place - Suite 330</EM></FONT>
-<FONT COLOR=green><EM>--	Boston, MA 02111-1307, USA.</EM></FONT>
-<FONT COLOR=green><EM>--  ====================================================================</EM></FONT>
+#! /usr/local/bin/spar -gd
+
+<FONT COLOR=green><EM>--                         TITLE : Generate Build Environ File (ADS)</EM></FONT>
+<FONT COLOR=green><EM>--                  LANGUAGE : AdaScript</EM></FONT>
+<FONT COLOR=green><EM>--                    MODULE : gen_env_data</EM></FONT>
+<FONT COLOR=green><EM>--              COMPONENT OF : BuZco Software (Gazelle)</EM></FONT>
+<FONT COLOR=green><EM>--       PARENT ORGANIZATION : BuzCo Systems</EM></FONT>
+<FONT COLOR=green><EM>--             LATEST AUTHOR : Buz Cory</EM></FONT>
+<FONT COLOR=green><EM>--                   $RCSfile: gen_env_data,v $</EM></FONT>
+<FONT COLOR=green><EM>--                  $Revision: 0.0 $</EM></FONT>
+<FONT COLOR=green><EM>--                      $Date: 2003/12/22 12:34:52 $</EM></FONT>
+<FONT COLOR=green><EM>--  --------------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>--  EXTERNAL MODULES USED</EM></FONT>
+<FONT COLOR=green><EM>--  --------------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>--  PURPOSE :</EM></FONT>
+<FONT COLOR=green><EM>--  --------------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>--  OVERVIEW:</EM></FONT>
+<FONT COLOR=green><EM>--  --------------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>--  NOTICES, LICENSE follow; NOTES, HISTORY at end</EM></FONT>
+<FONT COLOR=green><EM>--  ----------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>--  This software is part of the Gazelle suite of useful,</EM></FONT>
+<FONT COLOR=green><EM>--  lightweight, fast tools, developed and distributed by BuzCo</EM></FONT>
+<FONT COLOR=green><EM>--  Systems.</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>--  UNREGISTERED COPIES OF GAZELLE SOFTWARE COME WITH NO WARRANTY,</EM></FONT>
+<FONT COLOR=green><EM>--  EXPRESSED OR IMPLIED, AND EXPRESSLY WITHOUT THE IMPLIED</EM></FONT>
+<FONT COLOR=green><EM>--  WARRANTIES OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR</EM></FONT>
+<FONT COLOR=green><EM>--  PURPOSE.</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>--  Registered users may have additional rights, depending on the</EM></FONT>
+<FONT COLOR=green><EM>--  terms under which they choose to register. See the file</EM></FONT>
+<FONT COLOR=green><EM>--  GAZELLE.REGISTER in the root directory of the distribution.</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>--  IF THE COUNTRY, STATE, OR PROVINCE IN WHICH YOU ARE USING THIS</EM></FONT>
+<FONT COLOR=green><EM>--  GAZELLE SOFTWARE DOES NOT ALLOW SUCH LIMITATIONS, YOU HAVE NO</EM></FONT>
+<FONT COLOR=green><EM>--  LEGAL RIGHT TO USE AN UNREGISTERED COPY.</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>--  GAZELLE software is distributed under the GNU General Public</EM></FONT>
+<FONT COLOR=green><EM>--  License. It may be freely copied, modified, redistributed</EM></FONT>
+<FONT COLOR=green><EM>--  under the terms of that license.</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>--  You should have gotten a copy of that license in the file</EM></FONT>
+<FONT COLOR=green><EM>--  COPYING. If not, a copy may be obtained by sending E-mail to</EM></FONT>
+<FONT COLOR=green><EM>--  BuzCo Systems or by writing:</EM></FONT>
+<FONT COLOR=green><EM>--      The Free Software Foundation</EM></FONT>
+<FONT COLOR=green><EM>--      59 Temple Place - Suite 330</EM></FONT>
+<FONT COLOR=green><EM>--      Boston, MA 02111-1307, USA.</EM></FONT>
+<FONT COLOR=green><EM>--  ====================================================================</EM></FONT>
 
     <b>procedure</b>
 gen_env_data
@@ -65,16 +66,16 @@ gen_env_data
 
     body_Copyright              : <b>constant</b> string
         := "Gazelle .gen_env_data " &amp;  New_Line
-         &amp; "body Copyright © 2003, BuzCo Systems" &amp; New_Line
+         &amp; "body Copyright Â© 2003, BuzCo Systems" &amp; New_Line
          &amp; "Licensed under the GNU General Progam License (GPL)." &amp; New_Line
         ;
-    <FONT COLOR=green><EM>-- pragma Unreferenced( body_RCSid, body_Copyright ) ;</EM></FONT>
-    <FONT COLOR=green><EM>--  ================================================================</EM></FONT>
+    <FONT COLOR=green><EM>-- pragma Unreferenced( body_RCSid, body_Copyright ) ;</EM></FONT>
+    <FONT COLOR=green><EM>--  ================================================================</EM></FONT>
 
     Me                          : <b>constant</b> string
         := command_line.command_name ;
 
-    <FONT COLOR=green><EM>-- Time Stuff</EM></FONT>
+    <FONT COLOR=green><EM>-- Time Stuff</EM></FONT>
         Now                             : <b>constant</b> calendar.time
             := calendar.clock ;
         YR                              : calendar.year_number ;
@@ -85,7 +86,7 @@ gen_env_data
         Min                             : integer ;
         Sec                             : integer ;
         The_Time                        : string ;
- 
+
             <b>procedure</b>
         fix_time
         <b>is</b>
@@ -126,12 +127,12 @@ gen_env_data
     Pkg_Name                    : string ;
     Pkg_File_Name               : string ;
     Pkg_File                    : file_type ;
-    LOGNAME                     : string ;
+    LOGNAME                     : <b>constant</b> string := "unknown";
         <b>pragma</b> unchecked_import( shell, LOGNAME );
-    USER                        : string ;
+    USER                        : string := "unknown";
         <b>pragma</b> unchecked_import( shell, USER ) ;
     Compiler                    : <b>constant</b> string
-        := `gcc( "--version" ) ;` ;
+        := `gcc( "<FONT COLOR=green><EM>--version" ) ;` ;</EM></FONT>
     Plat                        : <b>constant</b> string
         := `uname( "-m" ) ;` &amp; '-' &amp; `uname( "-s" ) ;` ;
     HOST                        : <b>constant</b> string
@@ -143,7 +144,7 @@ gen_env_data
     cstr                        : <b>constant</b> string
         := " :aliased constant Build_Info_String := " &amp; '"' ;
     EOL                         : <b>constant</b> string       := '"' &amp; " ;" ;
-    <FONT COLOR=green><EM>--  ================================================================</EM></FONT>
+    <FONT COLOR=green><EM>--  ================================================================</EM></FONT>
 
 <b>begin</b>
     <b>if</b> strings.length( LOGNAME ) &gt; 0 <b>then</b>
@@ -163,7 +164,7 @@ gen_env_data
     <b>declare</b>
         Source_Name                     : <b>constant</b> string
             := command_line.argument( 1 ) ;
-            <FONT COLOR=green><EM>-- expected to be *.ad?</EM></FONT>
+            <FONT COLOR=green><EM>-- expected to be *.ad?</EM></FONT>
         Base_Name                       : <b>constant</b> string
             := files.basename( strings.head
                 ( Source_Name
@@ -181,7 +182,7 @@ gen_env_data
         fix_time ;
 
         <b>if</b> strings.glob( "*-*", Base_Name ) <b>then</b>
-            <FONT COLOR=green><EM>-- This is a child package.</EM></FONT>
+            <FONT COLOR=green><EM>-- This is a child package.</EM></FONT>
             Sep := '-' ;
         <b>else</b>
             Sep := '_' ;
@@ -221,19 +222,18 @@ gen_env_data
    <b>end</b>;
 <b>end</b> gen_env_data ;
 
-<FONT COLOR=green><EM>--  ====================================================================</EM></FONT>
-    <FONT COLOR=green><EM>--  NOTES, HISTORY follow:</EM></FONT>
-<FONT COLOR=green><EM>--  ----------------------------------------</EM></FONT>
-<FONT COLOR=green><EM>--  NOTE: The coding and comment style were chosen to provide nice</EM></FONT>
-            <FONT COLOR=green><EM>--  indent folding until the ViM syntax folding works well.</EM></FONT>
-    <FONT COLOR=green><EM>--  ================================================================</EM></FONT>
-<FONT COLOR=green><EM>--  Changelog</EM></FONT>
-<FONT COLOR=green><EM>--  -------------------------------------------------------------------</EM></FONT>
-<FONT COLOR=green><EM>--  $Log: gen_env_data,v $</EM></FONT>
-<FONT COLOR=green><EM>--  Revision 0.0  2003/12/22 12:34:52  buzCo_as_toolmakr</EM></FONT>
-<FONT COLOR=green><EM>--  First Cut</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>--  vim: sw=4 tw=72 fdm=indent ft=ada</EM></FONT>
+<FONT COLOR=green><EM>--  ====================================================================</EM></FONT>
+<FONT COLOR=green><EM>--  NOTES, HISTORY follow:</EM></FONT>
+<FONT COLOR=green><EM>--  ----------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>--  NOTE: The coding and comment style were chosen to provide nice</EM></FONT>
+<FONT COLOR=green><EM>--  indent folding until the ViM syntax folding works well.</EM></FONT>
+<FONT COLOR=green><EM>--  ================================================================</EM></FONT>
+<FONT COLOR=green><EM>--  Changelog</EM></FONT>
+<FONT COLOR=green><EM>--  -------------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>--  $Log: gen_env_data,v $</EM></FONT>
+<FONT COLOR=green><EM>--  Revision 0.0  2003/12/22 12:34:52  buzCo_as_toolmakr</EM></FONT>
+<FONT COLOR=green><EM>--  First Cut</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>--  vim: sw=4 tw=72 fdm=indent ft=ada</EM></FONT>
 
 </PRE></BODY></HTML>

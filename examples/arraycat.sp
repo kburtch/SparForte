@@ -1,17 +1,17 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "arraycat" );
-pragma annotate( description, "Show how to concatenate two arrays in your language." );
-pragma annotate( description, "From a Rosetta Code example" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "arraycat" )
+       @( description, "Show how to concatenate two arrays in your language." )
+       @( description, "From a Rosetta Code example" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
 procedure arraycat is
   type arrayOf3 is array(1..3) of integer;
-  a1 : arrayOf3 := (1, 2, 3);
-  a2 : arrayOf3 := (4, 5, 6);
+  a1 : constant arrayOf3 := (1, 2, 3);
+  a2 : constant arrayOf3 := (4, 5, 6);
   type arrayOf6 is array(1..6) of integer;
   a3 : arrayOf6;
   p  : natural := arrays.first(a3);

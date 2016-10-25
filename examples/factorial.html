@@ -19,15 +19,15 @@ $ spar factorial 5
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "factorial n" );
-<b>pragma</b> annotate( description, "Write a function to return the factorial of a number." );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "factorial n" )
+       @( description, "Write a function to return the factorial of a number." )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> factorial <b>is</b>
-  fact_pos : integer := numerics.value( $1 );
+  fact_pos : <b>constant</b> integer := numerics.value( $1 );
   result : natural;
   count  : natural;
 <b>begin</b>

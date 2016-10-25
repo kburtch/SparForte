@@ -1,10 +1,10 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "neartime" );
-pragma annotate( description, "Display the time in a 'relaxed' format" );
-pragma annotate( description, "usage: neartime" );
-pragma annotate( see_also, "http://www.zazzybob.com/bin/neartime.html" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "neartime" )
+       @( description, "Display the time in a 'relaxed' format" )
+       @( description, "usage: neartime" )
+       @( see_also, "http://www.zazzybob.com/bin/neartime.html" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
@@ -17,9 +17,9 @@ procedure neartime is
      command_line.set_exit_status( 0 );
   end usage;
 
-  now    : calendar.time := calendar.clock;
+  now    : constant calendar.time := calendar.clock;
   hour   : natural := numerics.floor( calendar.seconds( now ) / 3600 );
-  minute : natural := numerics.floor( ( calendar.seconds( now ) - hour * 3600 ) / 60 );
+  minute : constant natural := numerics.floor( ( calendar.seconds( now ) - hour * 3600 ) / 60 );
 
   nearbefore : string;
   nearafter  : string;

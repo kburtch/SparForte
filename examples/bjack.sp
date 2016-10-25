@@ -2,10 +2,10 @@
 
 -- Basic Blackjack
 
-pragma annotate( summary, "blackjack" );
-pragma annotate( description, "A basic version of the Blackjack or 21 card game" );
-pragma annotate( description, "Usage: bjack" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "blackjack" )
+       @( description, "A basic version of the Blackjack or 21 card game" )
+       @( description, "Usage: bjack" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands ); -- O/S independent
@@ -27,7 +27,7 @@ deck : aDeck := (
   21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
   39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52
 );
-card_name : array(1..52) of string := (
+card_name : constant array(1..52) of string := (
  "Ace of Clubs", "2 of Clubs", "3 of Clubs", "4 of Clubs",
  "5 of Clubs", "6 of Clubs", "7 of Clubs", "8 of Clubs",
  "9 of Clubs", "10 of Clubs", "Jack of Clubs", "Queen of Clubs",
@@ -45,7 +45,7 @@ card_name : array(1..52) of string := (
  "9 of Spades", "10 of Spades", "Jack of Spades", "Queen of Spades",
  "King of Spades"
 );
-card_value : array(1..52) of natural := (
+card_value : constant array(1..52) of natural := (
  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
@@ -71,7 +71,7 @@ loop
 
   -- ante
 
-  wallet := wallet - 10;
+  wallet := @ - 10;
 
   -- Shuffle Deck
 

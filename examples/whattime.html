@@ -4,9 +4,9 @@
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "usage: whattime [timezone]" );
-<b>pragma</b> annotate( description, "Show the time for different time zones" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "usage: whattime [timezone]" )
+       @( description, "Show the time for different time zones" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>procedure</b> whattime <b>is</b>
@@ -18,7 +18,7 @@
      command_line.set_exit_status( 0 );
   <b>end</b> usage;
 
-  default_TZ : <b>array</b>( 1..6 ) <b>of</b> string := (
+  default_TZ : <b>constant</b> <b>array</b>( 1..6 ) <b>of</b> string := (
       "Europe/Dublin", "Europe/Berlin", "US/Eastern", "US/Central",
       "US/Mountain", "US/Pacific" );
   <FONT COLOR=green><EM>-- default time zones to display</EM></FONT>

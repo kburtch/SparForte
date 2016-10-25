@@ -1,14 +1,14 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "factorial n" );
-pragma annotate( description, "Write a function to return the factorial of a number." );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "factorial n" )
+       @( description, "Write a function to return the factorial of a number." )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
 procedure factorial is
-  fact_pos : integer := numerics.value( $1 );
+  fact_pos : constant integer := numerics.value( $1 );
   result : natural;
   count  : natural;
 begin

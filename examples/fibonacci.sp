@@ -1,8 +1,8 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "fibonacci n" );
-pragma annotate( description, "Write a function to generate the nth Fibonacci number." );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "fibonacci n" )
+       @( description, "Write a function to generate the nth Fibonacci number." )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
@@ -25,7 +25,7 @@ procedure fibonacci is
     return sum;
   end fib;
 
-  fib_pos : integer := numerics.value( $1 );
+  fib_pos : constant integer := numerics.value( $1 );
 
 begin
   if fib_pos < 0 then

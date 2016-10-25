@@ -44,10 +44,10 @@ Player: (H)it, (S)tand or (Q)uit?
 
 <FONT COLOR=green><EM>-- Basic Blackjack</EM></FONT>
 
-<b>pragma</b> annotate( summary, "blackjack" );
-<b>pragma</b> annotate( description, "A basic version of the Blackjack or 21 card game" );
-<b>pragma</b> annotate( description, "Usage: bjack" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "blackjack" )
+       @( description, "A basic version of the Blackjack or 21 card game" )
+       @( description, "Usage: bjack" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands ); <FONT COLOR=green><EM>-- O/S independent</EM></FONT>
@@ -69,7 +69,7 @@ deck : aDeck := (
   21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
   39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52
 );
-card_name : <b>array</b>(1..52) <b>of</b> string := (
+card_name : <b>constant</b> <b>array</b>(1..52) <b>of</b> string := (
  "Ace of Clubs", "2 of Clubs", "3 of Clubs", "4 of Clubs",
  "5 of Clubs", "6 of Clubs", "7 of Clubs", "8 of Clubs",
  "9 of Clubs", "10 of Clubs", "Jack of Clubs", "Queen of Clubs",
@@ -87,7 +87,7 @@ card_name : <b>array</b>(1..52) <b>of</b> string := (
  "9 of Spades", "10 of Spades", "Jack of Spades", "Queen of Spades",
  "King of Spades"
 );
-card_value : <b>array</b>(1..52) <b>of</b> natural := (
+card_value : <b>constant</b> <b>array</b>(1..52) <b>of</b> natural := (
  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
@@ -113,7 +113,7 @@ status : a_status := player_turn;
 
   <FONT COLOR=green><EM>-- ante</EM></FONT>
 
-  wallet := wallet - 10;
+  wallet := @ - 10;
 
   <FONT COLOR=green><EM>-- Shuffle Deck</EM></FONT>
 
@@ -277,7 +277,7 @@ status : a_status := player_turn;
              put_line( "Computer: bust" );
           <b>end</b> <b>if</b>;
           status := done;
-       <b>end</b> <b>if</b>;       
+       <b>end</b> <b>if</b>;
        <b>delay</b> 0.5; <FONT COLOR=green><EM>-- suspense</EM></FONT>
     <b>elsif</b> status = done <b>then</b>
        new_line;

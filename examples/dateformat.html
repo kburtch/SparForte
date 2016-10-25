@@ -20,11 +20,11 @@ Saturday, September 23, 2010
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "dateformat");
-<b>pragma</b> annotate( description, "Display the current date in the formats of '2007-11-10' " );
-<b>pragma</b> annotate( description, "and 'Sunday, November 10, 2007'." );
-<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Date_format" );
-<b>pragma</b> annotate( "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "dateformat")
+       @( description, "Display the current date in the formats of '2007-11-10' " )
+       @( description, "and 'Sunday, November 10, 2007'." )
+       @( see_also, "http://rosettacode.org/wiki/Date_format" )
+       @( "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
@@ -59,9 +59,9 @@ Saturday, September 23, 2010
          <b>when</b> <b>others</b> =&gt; <b>return</b> "Sunday";
       <b>end</b> <b>case</b>;
    <b>end</b> Day_Image;
-   Today : calendar.time := calendar.clock;
+   Today : <b>constant</b> calendar.time := calendar.clock;
 <b>begin</b>
-   <FONT COLOR=green><EM>--put_line( </EM></FONT>
+   <FONT COLOR=green><EM>--put_line(</EM></FONT>
    <FONT COLOR=green><EM>--Put_Line (Image (Today) (1..10));</EM></FONT>
 
    put( calendar.year( Today ), "9999" ) @( "-" )

@@ -1,21 +1,21 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "dispatch server-type remote-command" );
-pragma annotate( param, "server-type - the type of server to run the command on" );
-pragma annotate( param, "remote-command - the command to run" );
-pragma annotate( description, "Run a command across a pre-defined set of computers " );
-pragma annotate( description, "using Secure Shell (SSH)." );
-pragma annotate( return, "On success, returns status code 0." );
-pragma annotate( errors, "192 - cannot log into a server" );
-pragma annotate( errors, "193 - the ssh command failed" );
-pragma annotate( author, "Ken. O. Burtch" );
+pragma annotate( summary, "dispatch server-type remote-command" )
+       @( param, "server-type - the type of server to run the command on" )
+       @( param, "remote-command - the command to run" )
+       @( description, "Run a command across a pre-defined set of computers " )
+       @( description, "using Secure Shell (SSH)." )
+       @( return, "On success, returns status code 0." )
+       @( errors, "192 - cannot log into a server" )
+       @( errors, "193 - the ssh command failed" )
+       @( author, "Ken. O. Burtch" );
 pragma license( unrestricted );
 
 procedure dispatch is
   type import_string is new string;
 
   -- my login account
-  LOGNAME : import_string := "unknown";
+  LOGNAME : constant import_string := "unknown";
   pragma import( shell, LOGNAME );
 
   -- node_names is an enumerated list of servers

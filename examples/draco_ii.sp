@@ -2,13 +2,13 @@
 
 -- Draco II
 
-pragma annotate( summary, "draco_ii" );
-pragma annotate( description, "Survive a hostile wilderness and slay monsters." );
-pragma annotate( description, "Originally written in AppleSoft BASIC" );
-pragma annotate( description, "by Ken O. Burtch circa 1980" );
-pragma annotate( description, "Adapted to SparForte in April 2003" );
-pragma annotate( description, "Usage: draco_ii" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "draco_ii" )
+       @( description, "Survive a hostile wilderness and slay monsters." )
+       @( description, "Originally written in AppleSoft BASIC" )
+       @( description, "by Ken O. Burtch circa 1980" )
+       @( description, "Adapted to SparForte in April 2003" )
+       @( description, "Usage: draco_ii" )
+       @( author, "Ken O. Burtch" );
 
 pragma ada_95;                               -- enforce Ada 95 rules and style
 
@@ -24,7 +24,7 @@ procedure draco_ii is
   -- General Player Info
 
   type import_string is new string;
-  LOGNAME : import_string;                      -- Linux/UNIX user login name
+  LOGNAME : constant import_string := "unknown";-- Linux/UNIX user login name
   pragma import( shell, LOGNAME );              -- get it from the environment
 
   damage_to_creature : integer;                 -- inflicted on creature (E)
@@ -422,7 +422,7 @@ begin
        -- Creature attack
 
        declare
-         attack : positive := numerics.rnd( 5 );
+         attack : constant positive := numerics.rnd( 5 );
        begin
          case attack is
          when 1|2 =>
@@ -466,7 +466,7 @@ begin
              case scene is
              when 1 =>
                  declare
-                    gypsie_distance : positive := numerics.rnd(7)+2;
+                    gypsie_distance : constant positive := numerics.rnd(7)+2;
                  begin
                     put( "You travel" );
                     put( gypsie_distance );
@@ -644,7 +644,7 @@ begin
                  end;
               when 14 =>
                 declare
-                   bad_luck : positive := numerics.rnd( 4 );
+                   bad_luck : constant positive := numerics.rnd( 4 );
                 begin
                    if has_item( ring ) then
                       case bad_luck is
@@ -674,7 +674,7 @@ begin
                   hit_points := hit_points + 0.5;
                when 18 =>
                   declare
-                     strange_luck : positive := numerics.rnd( 7 );
+                     strange_luck : constant positive := numerics.rnd( 7 );
                      gold : constant positive := numerics.rnd( 60 )+20;
                   begin
                      if maybe then
@@ -939,7 +939,7 @@ begin
           if creature_hp <= 0 then
              declare
                 ch : character;
-                bonus_points : natural := level * 20;
+                bonus_points : constant natural := level * 20;
              begin
                 new_line;
                 put_line( "You have defeated the " & creature_name & "." );
@@ -1005,7 +1005,7 @@ begin
         new_line;
         put( "Press any key *" & ASCII.BS );
         declare
-          ch : character := inkey;
+          ch : constant character := inkey;
         begin
           put_line( ch );
         end;

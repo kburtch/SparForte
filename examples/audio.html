@@ -6,11 +6,11 @@
 
 <b>procedure</b> audio <b>is</b>
 
-<b>pragma</b> annotate( summary, "audio [-l] file..." );
-<b>pragma</b> annotate( description, "play audio files" );
-<b>pragma</b> annotate( description, "Translated from a shell script by Heiner Steven" );
-<b>pragma</b> annotate( see_also, "http://www.shelldorado.com/scripts/cmds/audio.txt" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "audio [-l] file..." )
+       @( description, "play audio files" )
+       @( description, "Translated from a shell script by Heiner Steven" )
+       @( see_also, "http://www.shelldorado.com/scripts/cmds/audio.txt" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 sound_path : <b>constant</b> string := "/usr/share/doc/packages/sox/";
@@ -43,7 +43,8 @@ played     : boolean := false;
          ls -C "$sound_path";
       <b>else</b>
          <b>declare</b>
-           sound_file :string := sound_path &amp; command_line.argument(i);
+           sound_file : <b>constant</b> string := sound_path &amp;
+             command_line.argument(i);
          <b>begin</b>
            <b>if</b> files.is_readable_file( sound_file ) <b>then</b>
               <FONT COLOR=green><EM>-- audio exists? try to play sound if an .au file</EM></FONT>
@@ -62,7 +63,7 @@ played     : boolean := false;
               put_line( standard_error, source_info.source_location &amp; ": sound file doesn't exist or isn't readable" );
            <b>end</b> <b>if</b>;
          <b>end</b>;
-      <b>end</b> <b>if</b>;      
+      <b>end</b> <b>if</b>;
   <b>end</b> <b>loop</b>;
 <b>end</b> audio;
 

@@ -1,8 +1,8 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "mandel" );
-pragma annotate( description, "Create a color image of the Mandelbrot set" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "mandel" )
+       @( description, "Create a color image of the Mandelbrot set" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
@@ -12,8 +12,8 @@ procedure mandel is
   mandel_limit : constant long_float := 4.0;       -- reach this? it's the set
   max_iterations : constant integer := 128;        -- quit if looped this amt
 
-  center_r : long_float := -0.75;                  -- center of set (x=real)
-  center_i : long_float := 0.0;                    -- center of set (i=imag.)
+  center_r : constant long_float := -0.75;         -- center of set (x=real)
+  center_i : constant long_float := 0.0;           -- center of set (i=imag.)
 
   c_r : long_float;                                -- current point (x=real)
   c_i : long_float;                                -- current point (i=imag.)

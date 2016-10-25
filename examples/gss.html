@@ -24,15 +24,15 @@ $ spar gss
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "gss" );
-<b>pragma</b> annotate( description, "greatest sequential sum" );
-<b>pragma</b> annotate( description, "Given a sequence of integers, find a continuous subsequence which maximizes the" );
-<b>pragma</b> annotate( description, "sum of its elements, that is, the elements of no other single subsequence add" );
-<b>pragma</b> annotate( description, "up to a value larger than this one. An empty subsequence is considered to have" );
-<b>pragma</b> annotate( description, "the sum 0; thus if all elements are negative, the result must be the empty" );
-<b>pragma</b> annotate( description, "sequence. " );
-<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Greatest_subsequential_sum" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "gss" )
+       @( description, "greatest sequential sum" )
+       @( description, "Given a sequence of integers, find a continuous subsequence which maximizes the" )
+       @( description, "sum of its elements, that is, the elements of no other single subsequence add" )
+       @( description, "up to a value larger than this one. An empty subsequence is considered to have" )
+       @( description, "the sum 0; thus if all elements are negative, the result must be the empty" )
+       @( description, "sequence." )
+       @( see_also, "http://rosettacode.org/wiki/Greatest_subsequential_sum" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
@@ -41,8 +41,8 @@ $ spar gss
 
   <b>type</b> int_array <b>is</b> <b>array</b>( 1..11 ) <b>of</b> integer;
 
-  a : int_array := (-1 , -2 , 3 , 5 , 6 , -2 , -1 , 4 , -4 , 2 , -1);
-  length : integer := 11;
+  a : <b>constant</b> int_array := (-1 , -2 , 3 , 5 , 6 , -2 , -1 , 4 , -4 , 2 , -1);
+  length : <b>constant</b> integer := arrays.length( a );
 
   beginmax : integer := 0;
   endmax : integer := -1;
@@ -50,7 +50,7 @@ $ spar gss
   sum : integer := 0;
 
 <b>begin</b>
- 
+
  <b>for</b> start <b>in</b> arrays.first(a)..length-1 <b>loop</b>
      sum := 0;
      <b>for</b> finish <b>in</b> start..length-1 <b>loop</b>
@@ -65,7 +65,7 @@ $ spar gss
 
   <b>for</b> i <b>in</b> beginmax..endmax <b>loop</b>
       ? a(i);
-  <b>end</b> <b>loop</b>; 
+  <b>end</b> <b>loop</b>;
 
 <b>end</b> gss;
 

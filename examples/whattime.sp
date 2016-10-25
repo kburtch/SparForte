@@ -1,8 +1,8 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "usage: whattime [timezone]" );
-pragma annotate( description, "Show the time for different time zones" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "usage: whattime [timezone]" )
+       @( description, "Show the time for different time zones" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 procedure whattime is
@@ -14,7 +14,7 @@ procedure whattime is
      command_line.set_exit_status( 0 );
   end usage;
 
-  default_TZ : array( 1..6 ) of string := (
+  default_TZ : constant array( 1..6 ) of string := (
       "Europe/Dublin", "Europe/Berlin", "US/Eastern", "US/Central",
       "US/Mountain", "US/Pacific" );
   -- default time zones to display

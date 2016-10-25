@@ -1,4 +1,4 @@
-#! /opt/bin/bush
+#!/usr/local/bin/spar
 
 --              TITLE : Gather RPM files.
 --           LANGUAGE : Bush (AdaScript)
@@ -158,15 +158,16 @@ begin
 
 -- Now do the work.
     declare
-        files                   : string        := `rpm( "-ql", Pkg_Nm) ;` ;
+        files                   : constant string
+                                := `rpm( "-ql", Pkg_Nm) ;` ;
         path                    : string
                                 := strings.field( files, 1, ASCII.LF )
                                 ;
         dest_dir                : string ;
-        path_len                : natural
+        path_len                : constant natural
                                 := strings.length( path )
                                 ;
-        EOL                     : string
+        EOL                     : constant string
             := strings.slice( files, positive( path_len ) + 1, path_len + 1 )
             ;
         file_cnt                : natural

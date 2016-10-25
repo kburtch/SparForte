@@ -1,13 +1,13 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "camel" );
-pragma annotate( description, "Outrun pygmies across the GOBI Desert." );
-pragma annotate( description, "Originally written in BASIC by David Ahl, Creative Computing" );
-pragma annotate( description, "From his book 'BASIC COmputer Games'" );
-pragma annotate( description, "SparForte port by Ken O. Burtch, March 2003" );
-pragma annotate( description, "Usage: camel" );
-pragma annotate( see_also, "http://www.swapmeetdave.com" );
-pragma annotate( author, "Ken O. Burth" );
+pragma annotate( summary, "camel" )
+       @( description, "Outrun pygmies across the GOBI Desert." )
+       @( description, "Originally written in BASIC by David Ahl, Creative Computing" )
+       @( description, "From his book 'BASIC COmputer Games'" )
+       @( description, "SparForte port by Ken O. Burtch, March 2003" )
+       @( description, "Usage: camel" )
+       @( see_also, "http://www.swapmeetdave.com" )
+       @( author, "Ken O. Burth" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
@@ -24,30 +24,30 @@ scene   : positive;
 type a_player_status is (alive, captured, dead, won);
 status : a_player_status := alive;
 
-put_line( "CAMEL" );
-put_line( "Originally by David Ahl, Creative Computing" );
+put_line( "CAMEL" )
+       @( "Originally by David Ahl, Creative Computing" );
 new_line;
 put( "WOUD YOU LIKE INSTRUCTIONS? (Y/N) " );
 reply := inkey;
 put_line( reply );
 if reply = 'y' or reply = 'Y' then
-   put_line( "  Welcome to Camel.  The object is to travel 200 miles" );
-   put_line( "across the great GOBI Desert." );
-   put_line( "A tribe of knocked keed pygmies will be chasing you.  You will" );
-   put_line( "be asked for commands every so often." );
+   put_line( "  Welcome to Camel.  The object is to travel 200 miles" )
+          @( "across the great GOBI Desert." )
+          @( "A tribe of knocked kneed pygmies will be chasing you.  You will" )
+          @( "be asked for commands every so often." );
    new_line;
-   put_line( "C O M M A N D S :" );
-   put_line( "1# Drink form your canteen" );
-   put_line( "2# Ahead modrate speed" );
-   put_line( "3# ahead full speed" );
-   put_line( "4# stop for the night" );
-   put_line( "5# Status check" );
-   put_line( "6# Hope for help" );
+   put_line( "C O M M A N D S :" )
+          @( "1# Drink form your canteen" )
+          @( "2# Ahead modrate speed" )
+          @( "3# ahead full speed" )
+          @( "4# stop for the night" )
+          @( "5# Status check" )
+          @( "6# Hope for help" );
    new_line;
-   put_line( "You have one quart of water which will last you six drinks." );
-   put_line( "You must renew your water supply completely at an oases." );
-   put_line( "You get a half a quart if found by help." );
-   put_line( "If help does not find you after command six, you lose." );
+   put_line( "You have one quart of water which will last you six drinks." )
+          @( "You must renew your water supply completely at an oases." )
+          @( "You get a half a quart if found by help." )
+          @( "If help does not find you after command six, you lose." );
 end if;
 put_line( "Good luck and good cameling!!!" );
 new_line;
@@ -59,8 +59,8 @@ loop
     if reply /= '5' then -- didn't move on status
        thirst := @-1;
        if thirst = 1 then
-          put_line( "-------------------W A R N I N G------------" );
-          put_line( "GET A DRINK" );
+          put_line( "-------------------W A R N I N G------------" )
+                 @( "GET A DRINK" );
        elsif thirst < 0 then
           put_line( "You ran out of water......sorry chum!!!" );
           status := dead;
@@ -69,27 +69,28 @@ loop
        if pdelay > 3 then
           pdist := @+integer(numerics.rnd(10))-1;
           if pdist >= dist then
-             put_line( "The pygmies have captured you.  Camel and people soup is their" );
-             put_line( "favorite dish !!!!!!" );
+             put_line( "The pygmies have captured you.  Camel and people soup is their" )
+                    @( "favorite dish !!!!!!" );
              status := dead;
            end if;
        end if;
     end if;
     if status /= dead then
-       put( "The pygmies are " );
-       put( pdist );
-       put_line( " miles behind you." );
-       put( "You have travelled " );
-       put( dist );
-       put_line( " miles altogether." );
+       put( "The pygmies are " )
+         @( pdist )
+         @( " miles behind you." )
+         @( "You have travelled " )
+         @( dist )
+         @( " miles altogether." );
+       new_line;
     end if;
     if status = captured then
        new_line;
-       put_line( "You have a new choice of sub-commands:" );
-       put_line( "#1 TAKE A DRINK" );
-       put_line( "#7 ATTEMPT AN ESCAPE" );
-       put_line( "#8 WAIT FOR PAYMENT" );
-       put_line( "Your sub-command? " );
+       put_line( "You have a new choice of sub-commands:" )
+              @( "#1 TAKE A DRINK" )
+              @( "#7 ATTEMPT AN ESCAPE" )
+              @( "#8 WAIT FOR PAYMENT" )
+              @( "Your sub-command? " );
        reply := inkey;
        put_line( reply );
        case reply is
@@ -122,14 +123,14 @@ loop
        when 4 => put_line( "People with little intellegence should stay out of the desert!" );
        when 5 => put_line( "TURKEYS SHOULD FLY, NOT RIDE CAMELS !!!!!!!!!!!!!!!!!!!!!!" );
        when others =>
-          put( "error: unexpected scene: '" );
-          put( scene );
+          put( "error: unexpected scene: '" )
+            @( scene );
           put_line( "'" );
        end case;
        exit;
     elsif status = won then
-       put_line( "You win, a party is being given in your honor............" );
-       put_line( "............The pygmies are planning to attend..............." );
+       put_line( "You win, a party is being given in your honor............" )
+              @( "............The pygmies are planning to attend..............." );
        exit;
     else
       new_line;
@@ -168,14 +169,14 @@ loop
            camel := 0;
            put_line( "Your camel thanks you !" );
       when '5' =>
-           put( "Your camel has " );
-           put( 7-camel );
+           put( "Your camel has " )
+             @( 7-camel );
            put_line( " good days left." );
-           put( "You have " );
-           put( canteen );
+           put( "You have " )
+             @( canteen );
            put_line( " drinks left in your canteen." );
-           put( "You can go " );
-           put( thirst );
+           put( "You can go " )
+             @( thirst );
            put_line( " commands without drinking." );
       when '6' =>
            if numerics.rnd(10) = 1 then
@@ -192,28 +193,28 @@ loop
          scene := numerics.rnd( 1000 );
          if scene in 1..50 then
             new_line;
-            put_line( "WILD BERBERS HIDDEN IN THE SAND HAVE CAPTURED YOU." );
-            put_line( "Luckily the local sheik has agreed to their ransom----" );
-            put_line( "demands.....but........watch for the pygmies!!!!!!" );
+            put_line( "WILD BERBERS HIDDEN IN THE SAND HAVE CAPTURED YOU." )
+                   @( "Luckily the local sheik has agreed to their ransom----" )
+                   @( "demands.....but........watch for the pygmies!!!!!!" );
             status := captured;
          elsif scene in 51..240 then
             thirst := 4;
             canteen := 6;
             new_line;
-            put_line( "You have arrived at an oases--------Your camel is filling " );
-            put_line( "your canteen and eating figs." );
+            put_line( "You have arrived at an oases--------Your camel is filling " )
+                   @( "your canteen and eating figs." );
          elsif scene in 241..277 then
             dist := @+integer(numerics.rnd(19)-10);
             new_line;
             put_line( "You have been caught in a sandstorm......GOOD LUCK!" );
-            put( "Your new postion is " );
-            put( dist );
+            put( "Your new postion is " )
+              @( dist );
             put_line( " miles so far!" );
          elsif scene in 278..312 then
             pdist := @+1;
             new_line;
-            put_line( "Your camel hurt his hump." );
-            put_line( "Luckily the pygmies were footweary  !!!" );
+            put_line( "Your camel hurt his hump." )
+                   @( "Luckily the pygmies were footweary  !!!" );
          end if;
        end if;
      end if;
@@ -232,9 +233,10 @@ loop
      camel := 0;
      status := alive;
   else
-     put( "------------------" );
-     put( "     CHICKEN     " );
-     put_line( "------------------" );
+     put( "------------------" )
+       @( "     CHICKEN     " )
+       @( "------------------" );
+     new_line;
      exit;
   end if;
 end loop;

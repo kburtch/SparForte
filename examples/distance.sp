@@ -1,8 +1,8 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "Distance" );
-pragma annotate( description, "Calculate the distance between two points on the Earth's surface" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "Distance" )
+       @( description, "Calculate the distance between two points on the Earth's surface" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma ada_95;
@@ -37,7 +37,7 @@ begin
     numerics.cos( here_lat, 360 ) * numerics.cos( there_lat, 360 ) *
     numerics.cos( there_long - here_long, 360 );
 
-  distance : float := earth_radius * numerics.arccos( distance_raw );
+  distance : constant float := earth_radius * numerics.arccos( distance_raw );
 
   put_line( "Distance between the two places is" );
   put( distance, "ZZZZZ.99999" );

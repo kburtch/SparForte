@@ -1,84 +1,85 @@
-<HEAD><TITLE>de_RPM.adb</TITLE></HEAD>
+<HEAD><TITLE>de_RPM.sp</TITLE></HEAD>
 <BODY>
-<HR><DIV ALIGN="center"><H1> File : de_RPM.adb </H1></DIV><HR>
+<HR><DIV ALIGN="center"><H1> File : de_RPM.sp </H1></DIV><HR>
 <PRE>
-#! /opt/bin/spar
-    <FONT COLOR=green><EM>--              TITLE : Gather RPM files.</EM></FONT>
-    <FONT COLOR=green><EM>--           LANGUAGE : Bush (AdaScript)</EM></FONT>
-    <FONT COLOR=green><EM>--             MODULE : Gazelle Utils</EM></FONT>
-    <FONT COLOR=green><EM>--       COMPONENT OF : BuZco Software (Gazelle)</EM></FONT>
-    <FONT COLOR=green><EM>-- PARENT ORGANIZATION : BuzCo Systems</EM></FONT>
-    <FONT COLOR=green><EM>--      LATEST AUTHOR : Buz Cory</EM></FONT>
-    <FONT COLOR=green><EM>--             $RCSfile: de_RPM,v $</EM></FONT>
-    <FONT COLOR=green><EM>--            $Revision: 0.1 $</EM></FONT>
-    <FONT COLOR=green><EM>--                $Date: 2003/11/29 19:42:01 $</EM></FONT>
-    <FONT COLOR=green><EM>-- $Id: de_RPM,v 0.1 2003/11/29 19:42:01 buzCo_as_toolmakr Exp $</EM></FONT>
-<FONT COLOR=green><EM>-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</EM></FONT>
-<FONT COLOR=green><EM>-- PURPOSE :</EM></FONT>
-    <FONT COLOR=green><EM>-- collect all the files from an RPM into a single package.</EM></FONT>
-<FONT COLOR=green><EM>-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</EM></FONT>
-<FONT COLOR=green><EM>-- OVERVIEW:</EM></FONT>
-    <FONT COLOR=green><EM>-- Queries for an installed RPM, gets all the filenames that are part</EM></FONT>
-    <FONT COLOR=green><EM>-- of the RPM, and mirrors them inside a package with the same name.</EM></FONT>
-    <FONT COLOR=green><EM>-- syntax:</EM></FONT>
-        <FONT COLOR=green><EM>-- gather-RPM [options] &lt;rpm-name&gt;</EM></FONT>
-    <FONT COLOR=green><EM>-- where options are:</EM></FONT>
-        <FONT COLOR=green><EM>-- --version or -V</EM></FONT>
-            <FONT COLOR=green><EM>-- put version # on Std Output and exit success.</EM></FONT>
-        <FONT COLOR=green><EM>-- --help or -[hH]</EM></FONT>
-            <FONT COLOR=green><EM>-- print usage info and exit success.</EM></FONT>
-        <FONT COLOR=green><EM>-- -[dp]&lt;dir&gt;</EM></FONT>
-            <FONT COLOR=green><EM>-- directory prefix for package dir, need not exist.</EM></FONT>
-    <FONT COLOR=green><EM>--</EM></FONT>
-    <FONT COLOR=green><EM>-- The &lt;rpm-name&gt; can be the complete name or the base name of the</EM></FONT>
-    <FONT COLOR=green><EM>-- RPM (without version info) to be gathered. It will become the</EM></FONT>
-    <FONT COLOR=green><EM>-- package name w/ the first "-" converted to a slash. (EG:</EM></FONT>
-    <FONT COLOR=green><EM>-- gather-RPM Some_RPM, where "rpm -q Some_RPM" returns</EM></FONT>
-    <FONT COLOR=green><EM>-- "Some_RPM-1.3-5" will become ./Some_RPM/1.3-5). All paths from the</EM></FONT>
-    <FONT COLOR=green><EM>-- original RPM will be kept inside the package, so /usr/bin/junk</EM></FONT>
-    <FONT COLOR=green><EM>-- becomes Some_RPM/&lt;version&gt;/usr/bin/junk.</EM></FONT>
-    <FONT COLOR=green><EM>--     If invoked by root, ownerships will be set to man.man for all</EM></FONT>
-    <FONT COLOR=green><EM>-- man or doc directories and their contents, everything else will</EM></FONT>
-    <FONT COLOR=green><EM>-- become owned by bin.bin except for SUID executables, which will</EM></FONT>
-    <FONT COLOR=green><EM>-- keep their original ownerships. Otherwise, of course, everything</EM></FONT>
-    <FONT COLOR=green><EM>-- will be owned by the invoking user.</EM></FONT>
-<FONT COLOR=green><EM>-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</EM></FONT>
-    <FONT COLOR=green><EM>-- NOTICES, LICENSE, follow; HISTORY at end</EM></FONT>
-    <FONT COLOR=green><EM>-- --------------------------------------------------------------------</EM></FONT>
-        <FONT COLOR=green><EM>-- This software is part of the Gazelle suite of useful,</EM></FONT>
-            <FONT COLOR=green><EM>-- lightweight, fast tools, developed and distributed by BuzCo</EM></FONT>
-            <FONT COLOR=green><EM>-- Systems.</EM></FONT>
-        <FONT COLOR=green><EM>--</EM></FONT>
-        <FONT COLOR=green><EM>-- UNREGISTERED COPIES OF GAZELLE SOFTWARE COME WITH NO WARRANTY,</EM></FONT>
-            <FONT COLOR=green><EM>-- EXPRESSED OR IMPLIED, AND EXPRESSLY WITHOUT THE IMPLIED</EM></FONT>
-            <FONT COLOR=green><EM>-- WARRANTIES OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR</EM></FONT>
-            <FONT COLOR=green><EM>-- PURPOSE.</EM></FONT>
-        <FONT COLOR=green><EM>--</EM></FONT>
-        <FONT COLOR=green><EM>-- Registered users may have additional rights, depending on the terms</EM></FONT>
-            <FONT COLOR=green><EM>-- under which they choose to register. See the file</EM></FONT>
-            <FONT COLOR=green><EM>-- GAZELLE.REGISTER in the root directory of the distribution.</EM></FONT>
-        <FONT COLOR=green><EM>--</EM></FONT>
-        <FONT COLOR=green><EM>-- IF THE COUNTRY, STATE, OR PROVINCE IN WHICH YOU ARE USING THIS</EM></FONT>
-            <FONT COLOR=green><EM>-- SOFTWARE DOES NOT ALLOW SUCH LIMITATIONS, YOU HAVE NO LEGAL RIGHT</EM></FONT>
-            <FONT COLOR=green><EM>-- TO USE AN UNREGISTERED COPY.</EM></FONT>
-        <FONT COLOR=green><EM>--</EM></FONT>
-        <FONT COLOR=green><EM>-- GAZELLE software is distributed under the GNU General Public License.</EM></FONT>
-            <FONT COLOR=green><EM>-- It may be freely copied, modified, redistributed under the terms</EM></FONT>
-            <FONT COLOR=green><EM>-- of that license.</EM></FONT>
-        <FONT COLOR=green><EM>--</EM></FONT>
-        <FONT COLOR=green><EM>-- You should have gotten a copy of that license in the file COPYING. If</EM></FONT>
-            <FONT COLOR=green><EM>-- not, a copy may be obtained by sending E-mail to BuzCo Systems or</EM></FONT>
-            <FONT COLOR=green><EM>-- by writing: the Free Software Foundation 59 Temple Place - Suite</EM></FONT>
-            <FONT COLOR=green><EM>-- 330 Boston, MA 02111-1307, USA.</EM></FONT>
-<FONT COLOR=green><EM>-- --------------------------------------------------------------------</EM></FONT>
+#!/usr/local/bin/spar
+
+<FONT COLOR=green><EM>--              TITLE : Gather RPM files.</EM></FONT>
+<FONT COLOR=green><EM>--           LANGUAGE : Bush (AdaScript)</EM></FONT>
+<FONT COLOR=green><EM>--             MODULE : Gazelle Utils</EM></FONT>
+<FONT COLOR=green><EM>--       COMPONENT OF : BuZco Software (Gazelle)</EM></FONT>
+<FONT COLOR=green><EM>-- PARENT ORGANIZATION : BuzCo Systems</EM></FONT>
+<FONT COLOR=green><EM>--      LATEST AUTHOR : Buz Cory</EM></FONT>
+<FONT COLOR=green><EM>--             $RCSfile: de_RPM,v $</EM></FONT>
+<FONT COLOR=green><EM>--            $Revision: 0.1 $</EM></FONT>
+<FONT COLOR=green><EM>--                $Date: 2003/11/29 19:42:01 $</EM></FONT>
+<FONT COLOR=green><EM>-- $Id: de_RPM,v 0.1 2003/11/29 19:42:01 buzCo_as_toolmakr Exp $</EM></FONT>
+<FONT COLOR=green><EM>-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</EM></FONT>
+<FONT COLOR=green><EM>-- PURPOSE :</EM></FONT>
+<FONT COLOR=green><EM>-- collect all the files from an RPM into a single package.</EM></FONT>
+<FONT COLOR=green><EM>-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</EM></FONT>
+<FONT COLOR=green><EM>-- OVERVIEW:</EM></FONT>
+<FONT COLOR=green><EM>-- Queries for an installed RPM, gets all the filenames that are part</EM></FONT>
+<FONT COLOR=green><EM>-- of the RPM, and mirrors them inside a package with the same name.</EM></FONT>
+<FONT COLOR=green><EM>-- syntax:</EM></FONT>
+<FONT COLOR=green><EM>-- gather-RPM [options] &lt;rpm-name&gt;</EM></FONT>
+<FONT COLOR=green><EM>-- where options are:</EM></FONT>
+<FONT COLOR=green><EM>-- --version or -V</EM></FONT>
+<FONT COLOR=green><EM>-- put version # on Std Output and exit success.</EM></FONT>
+<FONT COLOR=green><EM>-- --help or -[hH]</EM></FONT>
+<FONT COLOR=green><EM>-- print usage info and exit success.</EM></FONT>
+<FONT COLOR=green><EM>-- -[dp]&lt;dir&gt;</EM></FONT>
+<FONT COLOR=green><EM>-- directory prefix for package dir, need not exist.</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- The &lt;rpm-name&gt; can be the complete name or the base name of the</EM></FONT>
+<FONT COLOR=green><EM>-- RPM (without version info) to be gathered. It will become the</EM></FONT>
+<FONT COLOR=green><EM>-- package name w/ the first "-" converted to a slash. (EG:</EM></FONT>
+<FONT COLOR=green><EM>-- gather-RPM Some_RPM, where "rpm -q Some_RPM" returns</EM></FONT>
+<FONT COLOR=green><EM>-- "Some_RPM-1.3-5" will become ./Some_RPM/1.3-5). All paths from the</EM></FONT>
+<FONT COLOR=green><EM>-- original RPM will be kept inside the package, so /usr/bin/junk</EM></FONT>
+<FONT COLOR=green><EM>-- becomes Some_RPM/&lt;version&gt;/usr/bin/junk.</EM></FONT>
+<FONT COLOR=green><EM>--     If invoked by root, ownerships will be set to man.man for all</EM></FONT>
+<FONT COLOR=green><EM>-- man or doc directories and their contents, everything else will</EM></FONT>
+<FONT COLOR=green><EM>-- become owned by bin.bin except for SUID executables, which will</EM></FONT>
+<FONT COLOR=green><EM>-- keep their original ownerships. Otherwise, of course, everything</EM></FONT>
+<FONT COLOR=green><EM>-- will be owned by the invoking user.</EM></FONT>
+<FONT COLOR=green><EM>-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</EM></FONT>
+<FONT COLOR=green><EM>-- NOTICES, LICENSE, follow; HISTORY at end</EM></FONT>
+<FONT COLOR=green><EM>-- --------------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>-- This software is part of the Gazelle suite of useful,</EM></FONT>
+<FONT COLOR=green><EM>-- lightweight, fast tools, developed and distributed by BuzCo</EM></FONT>
+<FONT COLOR=green><EM>-- Systems.</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- UNREGISTERED COPIES OF GAZELLE SOFTWARE COME WITH NO WARRANTY,</EM></FONT>
+<FONT COLOR=green><EM>-- EXPRESSED OR IMPLIED, AND EXPRESSLY WITHOUT THE IMPLIED</EM></FONT>
+<FONT COLOR=green><EM>-- WARRANTIES OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR</EM></FONT>
+<FONT COLOR=green><EM>-- PURPOSE.</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Registered users may have additional rights, depending on the terms</EM></FONT>
+<FONT COLOR=green><EM>-- under which they choose to register. See the file</EM></FONT>
+<FONT COLOR=green><EM>-- GAZELLE.REGISTER in the root directory of the distribution.</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- IF THE COUNTRY, STATE, OR PROVINCE IN WHICH YOU ARE USING THIS</EM></FONT>
+<FONT COLOR=green><EM>-- SOFTWARE DOES NOT ALLOW SUCH LIMITATIONS, YOU HAVE NO LEGAL RIGHT</EM></FONT>
+<FONT COLOR=green><EM>-- TO USE AN UNREGISTERED COPY.</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- GAZELLE software is distributed under the GNU General Public License.</EM></FONT>
+<FONT COLOR=green><EM>-- It may be freely copied, modified, redistributed under the terms</EM></FONT>
+<FONT COLOR=green><EM>-- of that license.</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- You should have gotten a copy of that license in the file COPYING. If</EM></FONT>
+<FONT COLOR=green><EM>-- not, a copy may be obtained by sending E-mail to BuzCo Systems or</EM></FONT>
+<FONT COLOR=green><EM>-- by writing: the Free Software Foundation 59 Temple Place - Suite</EM></FONT>
+<FONT COLOR=green><EM>-- 330 Boston, MA 02111-1307, USA.</EM></FONT>
+<FONT COLOR=green><EM>-- --------------------------------------------------------------------</EM></FONT>
     <b>pragma</b> ada_95 ;
     <b>procedure</b>
 de_RPM                          <b>is</b>
     arg_cnt                     : integer ;
     Arg                         : string ;
 
-    Pkg_Nm      : string ;      <FONT COLOR=green><EM>-- actually used as a renaming for "Arg".</EM></FONT>
-    Pkg_FN                      : string ;      <FONT COLOR=green><EM>-- for full package name</EM></FONT>
+    Pkg_Nm      : string ;      <FONT COLOR=green><EM>-- actually used as a renaming for "Arg".</EM></FONT>
+    Pkg_FN                      : string ;      <FONT COLOR=green><EM>-- for full package name</EM></FONT>
     Pkg_Vrsn                    : string ;
     Me                          : <b>constant</b> string
                                 := command_line.command_name
@@ -86,7 +87,7 @@ de_RPM                          <b>is</b>
 
 <b>begin</b>
 
-<FONT COLOR=green><EM>-- First process arguments</EM></FONT>
+<FONT COLOR=green><EM>-- First process arguments</EM></FONT>
     arg_cnt := command_line.argument_count ;
     <b>if</b> arg_cnt = 0 <b>then</b>
         put_line( standard_error, Me &amp; ": no args!" ) ;
@@ -94,12 +95,12 @@ de_RPM                          <b>is</b>
         <b>end</b> <b>if</b> ;
     <b>for</b> i <b>in</b> 1 .. arg_cnt <b>loop</b>
         Arg := command_line.argument( i ) ;
-        <FONT COLOR=green><EM>-- must be -h, -V or Pkg_FN name.</EM></FONT>
-        <b>if</b> Arg = "-h" <b>or</b> strings.glob( "<FONT COLOR=green><EM>--h*", Arg )</EM></FONT>
+        <FONT COLOR=green><EM>-- must be -h, -V or Pkg_FN name.</EM></FONT>
+        <b>if</b> Arg = "-h" <b>or</b> strings.glob( "<FONT COLOR=green><EM>--h*", Arg )</EM></FONT>
         <b>then</b>
             put_line( "help needed" ) ;
             command_line.set_exit_status( 0 ) ; <b>return</b> ;
-        <b>elsif</b> Arg = "-V" <b>or</b> strings.glob( "<FONT COLOR=green><EM>--[vV]*", Arg )</EM></FONT>
+        <b>elsif</b> Arg = "-V" <b>or</b> strings.glob( "<FONT COLOR=green><EM>--[vV]*", Arg )</EM></FONT>
         <b>then</b>
             put_line( "version needed!" ) ;
             command_line.set_exit_status( 0 ) ; <b>return</b> ;
@@ -107,41 +108,41 @@ de_RPM                          <b>is</b>
         <b>then</b>
             put_line( standard_error, "Other option not recognized!" ) ;
             command_line.set_exit_status( 1 ) ; <b>return</b> ;
-        <b>else</b>                    <FONT COLOR=green><EM>-- must be package name.</EM></FONT>
+        <b>else</b>                    <FONT COLOR=green><EM>-- must be package name.</EM></FONT>
             <b>if</b> i /= arg_cnt <b>then</b>
                 put_line( standard_error, "Too many argumentsj" ) ;
                 command_line.set_exit_status( 1 ) ; <b>return</b> ;
                 <b>end</b> <b>if</b> ;
         <b>end</b> <b>if</b> ;
-        <FONT COLOR=green><EM>--| put_line( "file_nm given is " &amp; Arg ) ;</EM></FONT>
+        <FONT COLOR=green><EM>--| put_line( "file_nm given is " &amp; Arg ) ;</EM></FONT>
         <b>end</b> <b>loop</b> ;
 
     Pkg_Nm := Arg ;
-    <FONT COLOR=green><EM>-- Pkg_FN := $( rpm -q $Pkg_Nm 2&gt;&amp;1 )</EM></FONT>
+    <FONT COLOR=green><EM>-- Pkg_FN := $( rpm -q $Pkg_Nm 2&gt;&amp;1 )</EM></FONT>
     Pkg_FN := `set_error( standard_output ) ; rpm( "-q", Pkg_Nm ) ;` ;
-        <FONT COLOR=green><EM>-- does not catch error output inside backquotes!</EM></FONT>
-    <FONT COLOR=green><EM>--| put_line( "RPM said " &amp; Pkg_FN ) ;</EM></FONT>
+        <FONT COLOR=green><EM>-- does not catch error output inside backquotes!</EM></FONT>
+    <FONT COLOR=green><EM>--| put_line( "RPM said " &amp; Pkg_FN ) ;</EM></FONT>
 
     <b>if</b> strings.glob( "*not installed", Pkg_FN ) <b>or</b> Pkg_FN = "" <b>then</b>
         put_line( standard_error, Pkg_FN ) ;
         command_line.set_exit_status( 1 ) ; <b>return</b> ;
-    <b>elsif</b> strings.glob( "*", Pkg_FN ) <b>then</b>      <FONT COLOR=green><EM>-- Pkg_FN is full Pkg_FN name.</EM></FONT>
-        <FONT COLOR=green><EM>--| put_line( "full name is " &amp; Pkg_FN ) ;</EM></FONT>
+    <b>elsif</b> strings.glob( "*", Pkg_FN ) <b>then</b>      <FONT COLOR=green><EM>-- Pkg_FN is full Pkg_FN name.</EM></FONT>
+        <FONT COLOR=green><EM>--| put_line( "full name is " &amp; Pkg_FN ) ;</EM></FONT>
         <b>null</b> ;
     <b>end</b> <b>if</b> ;
 
-<FONT COLOR=green><EM>-- Next determine package path</EM></FONT>
-    <b>if</b> Pkg_FN = Pkg_Nm <b>then</b>             <FONT COLOR=green><EM>-- full name was given on command line.</EM></FONT>
+<FONT COLOR=green><EM>-- Next determine package path</EM></FONT>
+    <b>if</b> Pkg_FN = Pkg_Nm <b>then</b>             <FONT COLOR=green><EM>-- full name was given on command line.</EM></FONT>
         Pkg_Vrsn := Pkg_FN ;
         <b>for</b> i <b>in</b> 1 .. 5 <b>loop</b>
             Pkg_Vrsn :=
-                strings.delete
+                strings.<b>delete</b>
                     ( Pkg_Vrsn
                     , 1
                     , strings.index( Pkg_Vrsn, "-" )
                     )
                 ;
-            <FONT COLOR=green><EM>--| put_line( "Version is " &amp; Pkg_Vrsn ) ;</EM></FONT>
+            <FONT COLOR=green><EM>--| put_line( "Version is " &amp; Pkg_Vrsn ) ;</EM></FONT>
             <b>exit</b> <b>when</b> strings.glob( "[0-9]*", Pkg_Vrsn ) ;
             <b>end</b> <b>loop</b> ;
         Pkg_Nm := strings.head
@@ -149,27 +150,28 @@ de_RPM                          <b>is</b>
             , strings.index( Pkg_FN, "-" &amp; Pkg_Vrsn ) -1
             )
         ;
-       <FONT COLOR=green><EM>--| put_line( "Pkg_Nm = " &amp; Pkg_Nm ) ;</EM></FONT>
+       <FONT COLOR=green><EM>--| put_line( "Pkg_Nm = " &amp; Pkg_Nm ) ;</EM></FONT>
     <b>else</b>
-        <FONT COLOR=green><EM>--| put_line( "No version given." ) ;</EM></FONT>
+        <FONT COLOR=green><EM>--| put_line( "No version given." ) ;</EM></FONT>
         Pkg_Vrsn := strings.tail
             ( Pkg_FN
             , strings.length( Pkg_Nm ) -1
             ) ;
     <b>end</b> <b>if</b> ;
-    <FONT COLOR=green><EM>--| put_line( Pkg_Nm &amp; "/" &amp; Pkg_Vrsn ) ;</EM></FONT>
+    <FONT COLOR=green><EM>--| put_line( Pkg_Nm &amp; "/" &amp; Pkg_Vrsn ) ;</EM></FONT>
 
-<FONT COLOR=green><EM>-- Now do the work.</EM></FONT>
+<FONT COLOR=green><EM>-- Now do the work.</EM></FONT>
     <b>declare</b>
-        files                   : string        := `rpm( "-ql", Pkg_Nm) ;` ;
+        files                   : <b>constant</b> string
+                                := `rpm( "-ql", Pkg_Nm) ;` ;
         path                    : string
                                 := strings.field( files, 1, ASCII.LF )
                                 ;
         dest_dir                : string ;
-        path_len                : natural
+        path_len                : <b>constant</b> natural
                                 := strings.length( path )
                                 ;
-        EOL                     : string
+        EOL                     : <b>constant</b> string
             := strings.slice( files, positive( path_len ) + 1, path_len + 1 )
             ;
         file_cnt                : natural
@@ -180,38 +182,37 @@ de_RPM                          <b>is</b>
             path := strings.field( files, i, ASCII.LF ) ;
             dest_dir :=  Pkg_Nm &amp; "/" &amp; Pkg_Vrsn ;
             mkdir( "-p", dest_dir ) ;
-            <FONT COLOR=green><EM>--| put_line( "dest dir is " &amp; dest_dir ) ;</EM></FONT>
+            <FONT COLOR=green><EM>--| put_line( "dest dir is " &amp; dest_dir ) ;</EM></FONT>
             put_line
                 ( Me &amp; ": copying "
                 &amp; path
                 &amp; " -&gt; " &amp; dest_dir
                 ) ;
-            cp( "<FONT COLOR=green><EM>--preserve"</EM></FONT>
-                , "<FONT COLOR=green><EM>--no-dereference", "--parents"</EM></FONT>
+            cp( "<FONT COLOR=green><EM>--preserve"</EM></FONT>
+                , "<FONT COLOR=green><EM>--no-dereference", "--parents"</EM></FONT>
                 , path
                 , dest_dir
                 ) ;
             <b>end</b> <b>loop</b> ;
-    <b>end</b> ; <FONT COLOR=green><EM>-- declare</EM></FONT>
+    <b>end</b> ; <FONT COLOR=green><EM>-- declare</EM></FONT>
 
     <b>return</b> ;
 
 <b>end</b> de_RPM ;
 
-<FONT COLOR=green><EM>-- --------------------------------------------------------------------</EM></FONT>
-    <FONT COLOR=green><EM>-- NOTES, HISTORY follow:</EM></FONT>
-    <FONT COLOR=green><EM>-- ----------------------------------------------------------------</EM></FONT>
-        <FONT COLOR=green><EM>-- NOTE: The coding and comment style were chosen to provide nice</EM></FONT>
-            <FONT COLOR=green><EM>-- indent folding until the ViM syntax folding works well.</EM></FONT>
-    <FONT COLOR=green><EM>-- ----------------------------------------------------------------</EM></FONT>
-        <FONT COLOR=green><EM>-- $Log: de_RPM,v $</EM></FONT>
-        <FONT COLOR=green><EM>-- Revision 0.1  2003/11/29 19:42:01  buzCo_as_toolmakr</EM></FONT>
-        <FONT COLOR=green><EM>-- Changed args for "cp" and related vars.</EM></FONT>
-        <FONT COLOR=green><EM>--</EM></FONT>
-        <FONT COLOR=green><EM>-- Revision 0.0  2003/11/29 14:20:53  buzCo_as_toolmakr</EM></FONT>
-        <FONT COLOR=green><EM>-- First Cut</EM></FONT>
-        <FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- vim: ts=8 sw=4 tw=72 fdm=indent ft=ada smarttab noexpandtab</EM></FONT>
+<FONT COLOR=green><EM>-- --------------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>-- NOTES, HISTORY follow:</EM></FONT>
+<FONT COLOR=green><EM>-- ----------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>-- NOTE: The coding and comment style were chosen to provide nice</EM></FONT>
+<FONT COLOR=green><EM>-- indent folding until the ViM syntax folding works well.</EM></FONT>
+<FONT COLOR=green><EM>-- ----------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>-- $Log: de_RPM,v $</EM></FONT>
+<FONT COLOR=green><EM>-- Revision 0.1  2003/11/29 19:42:01  buzCo_as_toolmakr</EM></FONT>
+<FONT COLOR=green><EM>-- Changed args for "cp" and related vars.</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Revision 0.0  2003/11/29 14:20:53  buzCo_as_toolmakr</EM></FONT>
+<FONT COLOR=green><EM>-- First Cut</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ts=8 sw=4 tw=72 fdm=indent ft=ada smarttab noexpandtab</EM></FONT>
 
 </PRE></BODY></HTML>

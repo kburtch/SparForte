@@ -21,11 +21,11 @@ attention.sp: Don't Forget!
 
 <b>procedure</b> attention <b>is</b>
 
-<b>pragma</b> annotate( summary, "attention" );
-<b>pragma</b> annotate( description, "Plays a sound to get the user's attention" );
-<b>pragma</b> annotate( description, "Translated from a shell script by Heiner Steven" );
-<b>pragma</b> annotate( see_also, "http://www.shelldorado.com/scripts/cmds/attention.txt" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "attention" )
+       @( description, "Plays a sound to get the user's attention" )
+       @( description, "Translated from a shell script by Heiner Steven" )
+       @( see_also, "http://www.shelldorado.com/scripts/cmds/attention.txt" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 sound_path : <b>constant</b> string := "/usr/share/doc/packages/sox/monkey.au";

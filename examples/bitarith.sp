@@ -1,23 +1,23 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "bitarith" );
-pragma annotate( description, "Write a routine to perform a bitwise AND, OR, and XOR on" );
-pragma annotate( description, "two integers, a bitwise NOT on the first integer, a left" );
-pragma annotate( description, "shift, right shift, right arithmetic shift, left rotate," );
-pragma annotate( description, "and right rotate. All shifts and rotates should be done on" );
-pragma annotate( description, "the first integer with a shift/rotate amount of the second" );
-pragma annotate( description, "integer." );
-pragma annotate( see_also, "http://rosettacode.org/wiki/Bitwise_operations" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "bitarith" )
+       @( description, "Write a routine to perform a bitwise AND, OR, and XOR on" )
+       @( description, "two integers, a bitwise NOT on the first integer, a left" )
+       @( description, "shift, right shift, right arithmetic shift, left rotate," )
+       @( description, "and right rotate. All shifts and rotates should be done on" )
+       @( description, "the first integer with a shift/rotate amount of the second" )
+       @( description, "integer." )
+       @( see_also, "http://rosettacode.org/wiki/Bitwise_operations" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
 procedure bitarith is
-  A : natural := 255;
-  B : natural := 170;
-  X : natural := 128;
-  N : natural := 1;
+  A : constant natural := 255;
+  B : constant natural := 170;
+  X : constant natural := 128;
+  N : constant natural := 1;
 begin
   put( "A and B = " ) @ (A and B); new_line;
   put( "A or  B = " ) @ (A or  B); new_line;

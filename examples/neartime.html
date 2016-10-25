@@ -16,14 +16,13 @@ It's almost a quarter to Nine at night
 </DIV>
 <HR>
 <PRE>
-
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "neartime" );
-<b>pragma</b> annotate( description, "Display the time in a 'relaxed' format" );
-<b>pragma</b> annotate( description, "usage: neartime" );
-<b>pragma</b> annotate( see_also, "http://www.zazzybob.com/bin/neartime.html" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "neartime" )
+       @( description, "Display the time in a 'relaxed' format" )
+       @( description, "usage: neartime" )
+       @( see_also, "http://www.zazzybob.com/bin/neartime.html" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
@@ -36,9 +35,9 @@ It's almost a quarter to Nine at night
      command_line.set_exit_status( 0 );
   <b>end</b> usage;
 
-  now    : calendar.time := calendar.clock;
+  now    : <b>constant</b> calendar.time := calendar.clock;
   hour   : natural := numerics.floor( calendar.seconds( now ) / 3600 );
-  minute : natural := numerics.floor( ( calendar.seconds( now ) - hour * 3600 ) / 60 );
+  minute : <b>constant</b> natural := numerics.floor( ( calendar.seconds( now ) - hour * 3600 ) / 60 );
 
   nearbefore : string;
   nearafter  : string;

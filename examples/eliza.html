@@ -34,11 +34,11 @@ WHY DO YOU LOVE HOW YOUR LAMP GROWS
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "eliza" );
-<b>pragma</b> annotate( description, "The psychologist imitation program" );
-<b>pragma</b> annotate( description, "Original author: Joseph Weizenbaum" );
-<b>pragma</b> annotate( description, "Usage: eliza" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "eliza" )
+       @( description, "The psychologist imitation program" )
+       @( description, "Original author: Joseph Weizenbaum" )
+       @( description, "Usage: eliza" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
@@ -221,7 +221,7 @@ i := ' ' &amp; i &amp; ' ';
          <b>begin</b>
            k := 1;
            <b>while</b> k &lt; positive( num_multi ) <b>loop</b>
-               testword := strings.field( multi_keywords, k, delimiter ); 
+               testword := strings.field( multi_keywords, k, delimiter );
                <b>if</b> strings.index( i, ' ' &amp; testword &amp; ' ' ) &gt; 0 <b>then</b>
                   response_pos := numerics.value( strings.field( multi_keywords, k+1, delimiter ) );
                   <b>exit</b>;

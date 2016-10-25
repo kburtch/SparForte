@@ -28,13 +28,13 @@ $ spar combinations
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "combinations" );
-<b>pragma</b> annotate( description, "Given non-negative integers m and n, generate all size m" );
-<b>pragma</b> annotate( description, "combinations of the integers from 0 to n-1 in sorted" );
-<b>pragma</b> annotate( description, "order (each combination is sorted and the entire table" );
-<b>pragma</b> annotate( description, "is sorted" );
-<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Combinations" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "combinations" )
+       @( description, "Given non-negative integers m and n, generate all size m" )
+       @( description, "combinations of the integers from 0 to n-1 in sorted" )
+       @( description, "order (each combination is sorted and the entire table" )
+       @( description, "is sorted" )
+       @( see_also, "http://rosettacode.org/wiki/Combinations" )
+       @( author, "Ken O. Burtch" );
 
 <b>pragma</b> restriction( no_external_commands );
 
@@ -66,10 +66,10 @@ $ spar combinations
     <b>end</b> <b>loop</b>;
     <b>return</b> c;
   <b>end</b> get_last_combination;
-  
+
   combination : string := get_first_combination;
-  last_combination : string := get_last_combination;
-  
+  last_combination : <b>constant</b> string := get_last_combination;
+
   item : natural; <FONT COLOR=green><EM>-- a number from the combination</EM></FONT>
   bad : boolean; <FONT COLOR=green><EM>-- true if we know a value is too big</EM></FONT>
   s : string;    <FONT COLOR=green><EM>-- a temp string for deleting leading space</EM></FONT>
@@ -97,7 +97,7 @@ $ spar combinations
                  s := strings.<b>delete</b>( s, 1, 1 );
                  strings.replace( combination, j+1, s, ' ' );
               <b>else</b>
-                 bad := true;
+                 bad;
                   <b>end</b> <b>if</b>;
            <b>end</b> <b>loop</b>;
            <b>exit</b>;

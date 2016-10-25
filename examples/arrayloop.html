@@ -21,35 +21,35 @@ cC3
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "arrayloop" );
-<b>pragma</b> annotate( description, "Loop over multiple arrays simultaneously" );
-<b>pragma</b> annotate( description, "You are encouraged to solve this task according to the" );
-<b>pragma</b> annotate( description, "task description, using any language you may know. Loop" );
-<b>pragma</b> annotate( description, "over multiple arrays (or lists or tuples or whatever" );
-<b>pragma</b> annotate( description, "they're called in your language) and print the ith" );
-<b>pragma</b> annotate( description, "element of each. Use your language's 'for each' loop if" );
-<b>pragma</b> annotate( description, "it has one, otherwise iterate through the collection in" );
-<b>pragma</b> annotate( description, "order with some other loop." );
-<b>pragma</b> annotate( description, "" );
-<b>pragma</b> annotate( description, "For this example, loop over the arrays (a,b,c), (A,B,C)" );
-<b>pragma</b> annotate( description, "and (1,2,3) to produce the output" );
-<b>pragma</b> annotate( description, "" );
-<b>pragma</b> annotate( description, "aA1" );
-<b>pragma</b> annotate( description, "bB2" );
-<b>pragma</b> annotate( description, "cC3" );
-<b>pragma</b> annotate( description, "" );
-<b>pragma</b> annotate( description, "If possible, also describe what happens when the arrays" );
-<b>pragma</b> annotate( description, "are of different lengths. " );
-<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Loop_over_multiple_arrays_simultaneously" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "arrayloop" )
+       @( description, "Loop over multiple arrays simultaneously" )
+       @( description, "You are encouraged to solve this task according to the" )
+       @( description, "task description, using any language you may know. Loop" )
+       @( description, "over multiple arrays (or lists or tuples or whatever" )
+       @( description, "they're called in your language) and print the ith" )
+       @( description, "element of each. Use your language's 'for each' loop if" )
+       @( description, "it has one, otherwise iterate through the collection in" )
+       @( description, "order with some other loop." )
+       @( description, "" )
+       @( description, "For this example, loop over the arrays (a,b,c), (A,B,C)" )
+       @( description, "and (1,2,3) to produce the output" )
+       @( description, "" )
+       @( description, "aA1" )
+       @( description, "bB2" )
+       @( description, "cC3" )
+       @( description, "" )
+       @( description, "If possible, also describe what happens when the arrays" )
+       @( description, "are of different lengths. " )
+       @( see_also, "http://rosettacode.org/wiki/Loop_over_multiple_arrays_simultaneously" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> arrayloop <b>is</b>
-  a1 : <b>array</b>( 1..3 ) <b>of</b> character := ('a', 'b', 'c');
-  a2 : <b>array</b>( 1..3 ) <b>of</b> character := ('A', 'B', 'C');
-  a3 : <b>array</b>( 1..3 ) <b>of</b> integer   := (1, 2, 3);
+  a1 : <b>constant</b> <b>array</b>( 1..3 ) <b>of</b> character := ('a', 'b', 'c');
+  a2 : <b>constant</b> <b>array</b>( 1..3 ) <b>of</b> character := ('A', 'B', 'C');
+  a3 : <b>constant</b> <b>array</b>( 1..3 ) <b>of</b> integer   := (1, 2, 3);
 <b>begin</b>
   <b>for</b> i <b>in</b> arrays.first( a1 )..arrays.last( a1 ) <b>loop</b>
       put( a1( i ) )

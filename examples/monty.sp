@@ -1,21 +1,21 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "monty" );
-pragma annotate( description, "Run random simulations of the Monty Hall game. Show the" );
-pragma annotate( description, "effects of a strategy of the contestant always keeping" );
-pragma annotate( description, "his first guess so it can be contrasted with the" );
-pragma annotate( description, "strategy of the contestant always switching his guess." );
-pragma annotate( description, "Simulate at least a thousand games using three doors" );
-pragma annotate( description, "for each strategy and show the results in such a way as" );
-pragma annotate( description, "to make it easy to compare the effects of each strategy." );
-pragma annotate( see_also, "http://rosettacode.org/wiki/Monty_Hall_problem" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "monty" )
+       @( description, "Run random simulations of the Monty Hall game. Show the" )
+       @( description, "effects of a strategy of the contestant always keeping" )
+       @( description, "his first guess so it can be contrasted with the" )
+       @( description, "strategy of the contestant always switching his guess." )
+       @( description, "Simulate at least a thousand games using three doors" )
+       @( description, "for each strategy and show the results in such a way as" )
+       @( description, "to make it easy to compare the effects of each strategy." )
+       @( see_also, "http://rosettacode.org/wiki/Monty_Hall_problem" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );
 
 procedure monty is
-  num_iterations : positive := 100_000;
+  num_iterations : constant positive := 100_000;
   type action_type is (stay, switch);
   type prize_type is (goat, pig, car);
   doors : array(1..3) of prize_type;

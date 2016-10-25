@@ -25,9 +25,9 @@ Distance between the two places is
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "Distance" );
-<b>pragma</b> annotate( description, "Calculate the distance between two points on the Earth's surface" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "Distance" )
+       @( description, "Calculate the distance between two points on the Earth's surface" )
+       @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> ada_95;
@@ -62,7 +62,7 @@ Distance between the two places is
     numerics.cos( here_lat, 360 ) * numerics.cos( there_lat, 360 ) *
     numerics.cos( there_long - here_long, 360 );
 
-  distance : float := earth_radius * numerics.arccos( distance_raw );
+  distance : <b>constant</b> float := earth_radius * numerics.arccos( distance_raw );
 
   put_line( "Distance between the two places is" );
   put( distance, "ZZZZZ.99999" );

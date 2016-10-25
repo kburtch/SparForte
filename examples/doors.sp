@@ -1,16 +1,16 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "doors" );
-pragma annotate( description, "Problem: You have 100 doors in a row that are all initially closed. You" );
-pragma annotate( description, "make 100 passes by the doors. The first time through, you visit every door" );
-pragma annotate( description, "and toggle the door (if the door is closed, you open it; if it is open, you" );
-pragma annotate( description, "close it). The second time you only visit every 2nd door (door #2, #4, #6," );
-pragma annotate( description, "...). The third time, every 3rd door (door #3, #6, #9, ...), etc, until you" );
-pragma annotate( description, "only visit the 100th door." );
-pragma annotate( description, "Question: What state are the doors in after the last pass? Which are open," );
-pragma annotate( description, "which are closed?" );
-pragma annotate( see_also, "http://rosettacode.org/wiki/100_doors" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "doors" )
+       @( description, "Problem: You have 100 doors in a row that are all initially closed. You" )
+       @( description, "make 100 passes by the doors. The first time through, you visit every door" )
+       @( description, "and toggle the door (if the door is closed, you open it; if it is open, you" )
+       @( description, "close it). The second time you only visit every 2nd door (door #2, #4, #6," )
+       @( description, "...). The third time, every 3rd door (door #3, #6, #9, ...), etc, until you" )
+       @( description, "only visit the 100th door." )
+       @( description, "Question: What state are the doors in after the last pass? Which are open," )
+       @( description, "which are closed?" )
+       @( see_also, "http://rosettacode.org/wiki/100_doors" )
+       @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma restriction( no_external_commands );

@@ -37,14 +37,14 @@ Want a new camel and a new game?
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "camel" );
-<b>pragma</b> annotate( description, "Outrun pygmies across the GOBI Desert." );
-<b>pragma</b> annotate( description, "Originally written in BASIC by David Ahl, Creative Computing" );
-<b>pragma</b> annotate( description, "From his book 'BASIC COmputer Games'" );
-<b>pragma</b> annotate( description, "SparForte port by Ken O. Burtch, March 2003" );
-<b>pragma</b> annotate( description, "Usage: camel" );
-<b>pragma</b> annotate( see_also, "http://www.swapmeetdave.com" );
-<b>pragma</b> annotate( author, "Ken O. Burth" );
+<b>pragma</b> annotate( summary, "camel" )
+       @( description, "Outrun pygmies across the GOBI Desert." )
+       @( description, "Originally written in BASIC by David Ahl, Creative Computing" )
+       @( description, "From his book 'BASIC COmputer Games'" )
+       @( description, "SparForte port by Ken O. Burtch, March 2003" )
+       @( description, "Usage: camel" )
+       @( see_also, "http://www.swapmeetdave.com" )
+       @( author, "Ken O. Burth" );
 <b>pragma</b> license( unrestricted );
 
 <b>pragma</b> restriction( no_external_commands );
@@ -61,30 +61,30 @@ scene   : positive;
 <b>type</b> a_player_status <b>is</b> (alive, captured, dead, won);
 status : a_player_status := alive;
 
-put_line( "CAMEL" );
-put_line( "Originally by David Ahl, Creative Computing" );
+put_line( "CAMEL" )
+       @( "Originally by David Ahl, Creative Computing" );
 new_line;
 put( "WOUD YOU LIKE INSTRUCTIONS? (Y/N) " );
 reply := inkey;
 put_line( reply );
 <b>if</b> reply = 'y' <b>or</b> reply = 'Y' <b>then</b>
-   put_line( "  Welcome to Camel.  The object is to travel 200 miles" );
-   put_line( "across the great GOBI Desert." );
-   put_line( "A tribe of knocked keed pygmies will be chasing you.  You will" );
-   put_line( "be asked for commands every so often." );
+   put_line( "  Welcome to Camel.  The object is to travel 200 miles" )
+          @( "across the great GOBI Desert." )
+          @( "A tribe of knocked kneed pygmies will be chasing you.  You will" )
+          @( "be asked for commands every so often." );
    new_line;
-   put_line( "C O M M A N D S :" );
-   put_line( "1# Drink form your canteen" );
-   put_line( "2# Ahead modrate speed" );
-   put_line( "3# ahead full speed" );
-   put_line( "4# stop for the night" );
-   put_line( "5# Status check" );
-   put_line( "6# Hope for help" );
+   put_line( "C O M M A N D S :" )
+          @( "1# Drink form your canteen" )
+          @( "2# Ahead modrate speed" )
+          @( "3# ahead full speed" )
+          @( "4# stop for the night" )
+          @( "5# Status check" )
+          @( "6# Hope for help" );
    new_line;
-   put_line( "You have one quart of water which will last you six drinks." );
-   put_line( "You must renew your water supply completely at an oases." );
-   put_line( "You get a half a quart if found by help." );
-   put_line( "If help does not find you after command six, you lose." );
+   put_line( "You have one quart of water which will last you six drinks." )
+          @( "You must renew your water supply completely at an oases." )
+          @( "You get a half a quart if found by help." )
+          @( "If help does not find you after command six, you lose." );
 <b>end</b> <b>if</b>;
 put_line( "Good luck and good cameling!!!" );
 new_line;
@@ -96,8 +96,8 @@ put_line("You are in the middle of the desert at an oasis." );
     <b>if</b> reply /= '5' <b>then</b> <FONT COLOR=green><EM>-- didn't move on status</EM></FONT>
        thirst := @-1;
        <b>if</b> thirst = 1 <b>then</b>
-          put_line( "<FONT COLOR=green><EM>-------------------W A R N I N G------------" );</EM></FONT>
-          put_line( "GET A DRINK" );
+          put_line( "<FONT COLOR=green><EM>-------------------W A R N I N G------------" )</EM></FONT>
+                 @( "GET A DRINK" );
        <b>elsif</b> thirst &lt; 0 <b>then</b>
           put_line( "You ran out of water......sorry chum!!!" );
           status := dead;
@@ -106,27 +106,28 @@ put_line("You are in the middle of the desert at an oasis." );
        <b>if</b> pdelay &gt; 3 <b>then</b>
           pdist := @+integer(numerics.rnd(10))-1;
           <b>if</b> pdist &gt;= dist <b>then</b>
-             put_line( "The pygmies have captured you.  Camel and people soup is their" );
-             put_line( "favorite dish !!!!!!" );
+             put_line( "The pygmies have captured you.  Camel and people soup is their" )
+                    @( "favorite dish !!!!!!" );
              status := dead;
            <b>end</b> <b>if</b>;
        <b>end</b> <b>if</b>;
     <b>end</b> <b>if</b>;
     <b>if</b> status /= dead <b>then</b>
-       put( "The pygmies are " );
-       put( pdist );
-       put_line( " miles behind you." );
-       put( "You have travelled " );
-       put( dist );
-       put_line( " miles altogether." );
+       put( "The pygmies are " )
+         @( pdist )
+         @( " miles behind you." )
+         @( "You have travelled " )
+         @( dist )
+         @( " miles altogether." );
+       new_line;
     <b>end</b> <b>if</b>;
     <b>if</b> status = captured <b>then</b>
        new_line;
-       put_line( "You have a new choice of sub-commands:" );
-       put_line( "#1 TAKE A DRINK" );
-       put_line( "#7 ATTEMPT AN ESCAPE" );
-       put_line( "#8 WAIT FOR PAYMENT" );
-       put_line( "Your sub-command? " );
+       put_line( "You have a new choice of sub-commands:" )
+              @( "#1 TAKE A DRINK" )
+              @( "#7 ATTEMPT AN ESCAPE" )
+              @( "#8 WAIT FOR PAYMENT" )
+              @( "Your sub-command? " );
        reply := inkey;
        put_line( reply );
        <b>case</b> reply <b>is</b>
@@ -159,14 +160,14 @@ put_line("You are in the middle of the desert at an oasis." );
        <b>when</b> 4 =&gt; put_line( "People with little intellegence should stay out of the desert!" );
        <b>when</b> 5 =&gt; put_line( "TURKEYS SHOULD FLY, NOT RIDE CAMELS !!!!!!!!!!!!!!!!!!!!!!" );
        <b>when</b> <b>others</b> =&gt;
-          put( "error: unexpected scene: '" );
-          put( scene );
+          put( "error: unexpected scene: '" )
+            @( scene );
           put_line( "'" );
        <b>end</b> <b>case</b>;
        <b>exit</b>;
     <b>elsif</b> status = won <b>then</b>
-       put_line( "You win, a party is being given in your honor............" );
-       put_line( "............The pygmies are planning to attend..............." );
+       put_line( "You win, a party is being given in your honor............" )
+              @( "............The pygmies are planning to attend..............." );
        <b>exit</b>;
     <b>else</b>
       new_line;
@@ -205,14 +206,14 @@ put_line("You are in the middle of the desert at an oasis." );
            camel := 0;
            put_line( "Your camel thanks you !" );
       <b>when</b> '5' =&gt;
-           put( "Your camel has " );
-           put( 7-camel );
+           put( "Your camel has " )
+             @( 7-camel );
            put_line( " good days left." );
-           put( "You have " );
-           put( canteen );
+           put( "You have " )
+             @( canteen );
            put_line( " drinks left in your canteen." );
-           put( "You can go " );
-           put( thirst );
+           put( "You can go " )
+             @( thirst );
            put_line( " commands without drinking." );
       <b>when</b> '6' =&gt;
            <b>if</b> numerics.rnd(10) = 1 <b>then</b>
@@ -229,28 +230,28 @@ put_line("You are in the middle of the desert at an oasis." );
          scene := numerics.rnd( 1000 );
          <b>if</b> scene <b>in</b> 1..50 <b>then</b>
             new_line;
-            put_line( "WILD BERBERS HIDDEN IN THE SAND HAVE CAPTURED YOU." );
-            put_line( "Luckily the local sheik has agreed to their ransom<FONT COLOR=green><EM>----" );</EM></FONT>
-            put_line( "demands.....but........watch for the pygmies!!!!!!" );
+            put_line( "WILD BERBERS HIDDEN IN THE SAND HAVE CAPTURED YOU." )
+                   @( "Luckily the local sheik has agreed to their ransom<FONT COLOR=green><EM>----" )</EM></FONT>
+                   @( "demands.....but........watch for the pygmies!!!!!!" );
             status := captured;
-         <b>elsif</b> scene <b>in</b> 51..240 <b>then</b> 
+         <b>elsif</b> scene <b>in</b> 51..240 <b>then</b>
             thirst := 4;
             canteen := 6;
             new_line;
-            put_line( "You have arrived <b>at</b> an oases<FONT COLOR=green><EM>--------Your camel is filling " );</EM></FONT>
-            put_line( "your canteen and eating figs." );
+            put_line( "You have arrived <b>at</b> an oases<FONT COLOR=green><EM>--------Your camel is filling " )</EM></FONT>
+                   @( "your canteen and eating figs." );
          <b>elsif</b> scene <b>in</b> 241..277 <b>then</b>
             dist := @+integer(numerics.rnd(19)-10);
             new_line;
             put_line( "You have been caught in a sandstorm......GOOD LUCK!" );
-            put( "Your new postion is " );
-            put( dist );
+            put( "Your new postion is " )
+              @( dist );
             put_line( " miles so far!" );
          <b>elsif</b> scene <b>in</b> 278..312 <b>then</b>
             pdist := @+1;
             new_line;
-            put_line( "Your camel hurt his hump." );
-            put_line( "Luckily the pygmies were footweary  !!!" );
+            put_line( "Your camel hurt his hump." )
+                   @( "Luckily the pygmies were footweary  !!!" );
          <b>end</b> <b>if</b>;
        <b>end</b> <b>if</b>;
      <b>end</b> <b>if</b>;
@@ -269,9 +270,10 @@ put_line("You are in the middle of the desert at an oasis." );
      camel := 0;
      status := alive;
   <b>else</b>
-     put( "<FONT COLOR=green><EM>------------------" );</EM></FONT>
-     put( "     CHICKEN     " );
-     put_line( "<FONT COLOR=green><EM>------------------" );</EM></FONT>
+     put( "<FONT COLOR=green><EM>------------------" )</EM></FONT>
+       @( "     CHICKEN     " )
+       @( "<FONT COLOR=green><EM>------------------" );</EM></FONT>
+     new_line;
      <b>exit</b>;
   <b>end</b> <b>if</b>;
 <b>end</b> <b>loop</b>;
