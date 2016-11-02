@@ -1,0 +1,201 @@
+<HEAD><TITLE>add_swap.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : add_swap.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar add_swap.sp 15
+1536+0 records in
+1536+0 records out
+15728640 bytes (16 MB, 15 MiB) copied, 0.0113015 s, 1.4 GB/s
+Setting up swapspace version 1, size = 15 MiB (15724544 bytes)
+no label, UUID=5d350544-679e-43aa-ac04-d941d6232ed7
+add_swap.sp: 129: Ready
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+<b>pragma</b> annotate( summary, "add_swap" )
+       @( description, "Add a Linux swap file to use memory more efficiently" )
+       @( description, "on cloud servers and computers with no or small" )
+       @( description, "swap partitions." )
+       @( description, "Usage: add_swap [-v] megs" )
+       @( author, "Ken O. Burth" )
+       @( errors, "1 - usage shown" )
+       @( errors, "2 - user is not root" )
+       @( errors, "3 - command failed" )
+       @( errors, "4 - bad size" );
+<b>pragma</b> license( unrestricted );
+<b>pragma</b> software_model( shell_script );
+
+<b>procedure</b> add_swap <b>is</b>
+
+<FONT COLOR=green><EM>-- Constants</EM></FONT>
+
+swapfile : <b>constant</b> string := "/root/swapfile.dat";
+
+<FONT COLOR=green><EM>-- Environment variables</EM></FONT>
+
+<b>type</b> import_string <b>is</b> <b>new</b> string;
+
+LOGNAME : <b>constant</b> import_string := "unknown";
+<b>pragma</b> import( shell, LOGNAME );
+
+<FONT COLOR=green><EM>-- Commands we are using</EM></FONT>
+
+chmod      : <b>constant</b> command := "/bin/chmod";
+dd         : <b>constant</b> command := "/bin/dd";
+free       : <b>constant</b> command := "/usr/bin/free";
+mkswap     : <b>constant</b> command := "/sbin/mkswap";
+rm         : <b>constant</b> command := "/bin/rm";
+swapon     : <b>constant</b> command := "/sbin/swapon";
+
+<FONT COLOR=green><EM>-- Command Options / Arguments</EM></FONT>
+
+verbose_option : boolean := false;   <FONT COLOR=green><EM>-- -v/--verbose</EM></FONT>
+size_in_megs   : float;              <FONT COLOR=green><EM>-- size in megs</EM></FONT>
+blocks         : positive;           <FONT COLOR=green><EM>-- num 10K blocks</EM></FONT>
+
+<FONT COLOR=green><EM>-- Other Variables</EM></FONT>
+
+command_error : <b>exception</b> <b>with</b> "command exception" <b>use</b> 3;
+
+
+<FONT COLOR=green><EM>-- USAGE</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Show the built-in help</EM></FONT>
+<FONT COLOR=green><EM>-----------------------------------------------------------------------------</EM></FONT>
+
+<b>procedure</b> usage <b>is</b>
+<b>begin</b>
+  put( source_info.file ) @ ( " [-v] size-in-bytes" );
+  new_line;
+  put( "size is rounded to 10K blocks" );
+  new_line;
+  command_line.set_exit_status( 1 );
+<b>end</b> usage;
+
+
+<FONT COLOR=green><EM>-- CREATE SWAP FILE</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Create the Swap File</EM></FONT>
+<FONT COLOR=green><EM>-----------------------------------------------------------------------------</EM></FONT>
+
+<b>procedure</b> create_swap_file <b>is</b>
+<b>begin</b>
+  <FONT COLOR=green><EM>-- Use dd to create a zero-filled file of the right size</EM></FONT>
+
+  <b>if</b> verbose_option <b>then</b>
+     put_line( source_info.source_location &amp;
+        ": Creating the swap file" );
+  <b>end</b> <b>if</b>;
+  dd(
+     "if=/dev/zero",
+     "of=" &amp; swapfile,
+     "bs=10240",
+     "count=" &amp; strings.image( blocks ) );
+  <b>if</b> $? /= 0 <b>then</b>
+     <b>raise</b> command_error <b>with</b> "dd failed...swap file in use or are you out of disk space?";
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- Change the access rights</EM></FONT>
+
+  chmod( "600", swapfile ); <FONT COLOR=green><EM>-- TRIGGER EXCEPTION</EM></FONT>
+  <b>if</b> $? /= 0 <b>then</b>
+     <b>raise</b> command_error <b>with</b> "chmod failed";
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- Format as a swap file</EM></FONT>
+
+  mkswap( swapfile );
+  <b>if</b> $? /= 0 <b>then</b>
+     <b>raise</b> command_error <b>with</b> "mkswap failed...is your size large enough?";
+  <b>end</b> <b>if</b>;
+
+<b>exception</b> <b>when</b> command_error =&gt;
+  <b>if</b> files.exists( swapfile ) <b>then</b>
+     rm( swapfile );
+  <b>end</b> <b>if</b>;
+  <b>raise</b>;
+<b>end</b> create_swap_file;
+
+
+<FONT COLOR=green><EM>-- ENABLE SWAP FILE</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Enable the Swap File</EM></FONT>
+<FONT COLOR=green><EM>-----------------------------------------------------------------------------</EM></FONT>
+
+<b>procedure</b> enable_swap_file <b>is</b>
+<b>begin</b>
+  <b>if</b> verbose_option <b>then</b>
+     put_line( source_info.source_location &amp;
+        ": Enabling the swap file" );
+  <b>end</b> <b>if</b>;
+  swapon( swapfile );
+  <b>if</b> $? /= 0 <b>then</b>
+     <b>raise</b> command_error <b>with</b> "swapon failed";
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- If verbose, show free space</EM></FONT>
+
+  <b>if</b> verbose_option <b>then</b>
+     free( "-m" );
+  <b>end</b> <b>if</b>;
+
+  put_line( source_info.source_location &amp; ": Ready" );
+  command_line.set_exit_status( 0 );
+<b>end</b> enable_swap_file;
+
+<b>begin</b>
+
+  <FONT COLOR=green><EM>-- Process Options</EM></FONT>
+
+  <b>if</b> $# = 0 <b>or</b> $# &gt; 2 <b>then</b>
+     usage;
+     <b>return</b>;
+  <b>elsif</b> $1 = "-h" <b>or</b> $1 = "<FONT COLOR=green><EM>--help" then</EM></FONT>
+     usage;
+     <b>return</b>;
+  <b>elsif</b> $1 = "-v" <b>or</b> $1 = "<FONT COLOR=green><EM>--verbose" then</EM></FONT>
+     verbose_option;
+     size_in_megs := numerics.value( $2 );
+  <b>else</b>
+     size_in_megs := numerics.value( $1 );
+  <b>end</b> <b>if</b>;
+  <b>if</b> size_in_megs &lt;= 0 <b>then</b>
+     put_line( standard_error, source_info.source_location &amp;
+       ": Size in megs must be a positive" );
+     command_line.set_exit_status( 4 );
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- Convert size in megabytes to a unit of 10K blocks</EM></FONT>
+
+  blocks := numerics.rounding( units.mb2bytes( size_in_megs ) / 10240 );
+
+  <FONT COLOR=green><EM>-- Sanity Checks</EM></FONT>
+
+  <b>if</b> LOGNAME /= "root" <b>then</b>
+     put_line( standard_error, source_info.source_location &amp;
+       ": You must be root" );
+     command_line.set_exit_status( 2 );
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  create_swap_file;
+  enable_swap_file;
+<b>end</b> add_swap;
+
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>

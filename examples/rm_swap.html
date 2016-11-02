@@ -1,0 +1,124 @@
+<HEAD><TITLE>rm_swap.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : rm_swap.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar rm_swap.sp
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+<b>pragma</b> annotate( summary, "rm_swap" )
+       @( description, "Remove a Linux swap file added with add_swap.sp" )
+       @( description, "Usage: rm_swap [-v]" )
+       @( author, "Ken O. Burth" )
+       @( errors, "1 - usage shown" )
+       @( errors, "2 - user is not root" )
+       @( errors, "3 - command failed" );
+<b>pragma</b> license( unrestricted );
+<b>pragma</b> software_model( shell_script );
+
+<b>procedure</b> rm_swap <b>is</b>
+
+<FONT COLOR=green><EM>-- Constants</EM></FONT>
+
+swapfile : <b>constant</b> string := "/root/swapfile.dat";
+
+<FONT COLOR=green><EM>-- Environment variables</EM></FONT>
+
+<b>type</b> import_string <b>is</b> <b>new</b> string;
+
+LOGNAME : <b>constant</b> import_string := "unknown";
+<b>pragma</b> import( shell, LOGNAME );
+
+<FONT COLOR=green><EM>-- Commands we are using</EM></FONT>
+
+swapoff    : <b>constant</b> command := "/sbin/swapoff";
+rm         : <b>constant</b> command := "/bin/rm";
+
+<FONT COLOR=green><EM>-- Command Options / Arguments</EM></FONT>
+
+verbose_option : boolean := false;   <FONT COLOR=green><EM>-- -v/--verbose</EM></FONT>
+
+<FONT COLOR=green><EM>-- Other Variables</EM></FONT>
+
+command_error : <b>exception</b> <b>with</b> "command exception" <b>use</b> 3;
+
+
+<FONT COLOR=green><EM>-- USAGE</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Show the built-in help</EM></FONT>
+<FONT COLOR=green><EM>-----------------------------------------------------------------------------</EM></FONT>
+
+<b>procedure</b> usage <b>is</b>
+<b>begin</b>
+  put( source_info.file ) @ ( " [-v]" );
+  new_line;
+  command_line.set_exit_status( 1 );
+<b>end</b> usage;
+
+
+<FONT COLOR=green><EM>-- CREATE SWAP FILE</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Create the Swap File</EM></FONT>
+<FONT COLOR=green><EM>-----------------------------------------------------------------------------</EM></FONT>
+
+<b>procedure</b> delete_swap_file <b>is</b>
+<b>begin</b>
+  <FONT COLOR=green><EM>-- Use dd to create a zero-filled file of the right size</EM></FONT>
+
+  <b>if</b> verbose_option <b>then</b>
+     put_line( source_info.source_location &amp;
+        ": Deleteing the swap file" );
+  <b>end</b> <b>if</b>;
+  swapoff( swapfile );
+  <b>if</b> $? /= 0 <b>then</b>
+     <b>raise</b> command_error <b>with</b> "swapoff failed...is swap not in use?";
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- Change the access rights</EM></FONT>
+
+  rm( swapfile );
+<b>end</b> delete_swap_file;
+
+<b>begin</b>
+
+  <FONT COLOR=green><EM>-- Process Options</EM></FONT>
+
+  <b>if</b> $# &gt; 1 <b>then</b>
+     usage;
+     <b>return</b>;
+  <b>elsif</b> $# = 1 <b>then</b>
+     <b>if</b> $1 = "-h" <b>or</b> $1 = "<FONT COLOR=green><EM>--help" then</EM></FONT>
+        usage;
+        <b>return</b>;
+     <b>elsif</b> $1 = "-v" <b>or</b> $1 = "<FONT COLOR=green><EM>--verbose" then</EM></FONT>
+        verbose_option;
+     <b>end</b> <b>if</b>;
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- Sanity Checks</EM></FONT>
+
+  <b>if</b> LOGNAME /= "root" <b>then</b>
+     put_line( standard_error, source_info.source_location &amp;
+       ": You must be root" );
+     command_line.set_exit_status( 2 );
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  delete_swap_file;
+<b>end</b> rm_swap;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>
