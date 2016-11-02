@@ -1,12 +1,14 @@
-<HEAD><TITLE>rm_swap.sp</TITLE></HEAD>
+<HEAD><TITLE>add_ramdisk.sp</TITLE></HEAD>
 <BODY>
-<HR><DIV ALIGN="center"><H1> File : rm_swap.sp </H1></DIV><HR>
+<HR><DIV ALIGN="center"><H1> File : add_ramdisk.sp </H1></DIV><HR>
 <DIV ALIGN="center">
 <TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
 <TR>
 <TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
 <PRE>
-# spar rm_swap
+# spar add_ramdisk 10
+# df | fgrep ramdisk
+none                          10240         0     10240   0% /media/ramdisk
 
 </PRE>
 </SPAN>
@@ -17,9 +19,9 @@
 <HR>
 <PRE>
 #!/usr/local/bin/spar
-<b>pragma</b> annotate( summary, "rm_swap" )
-       @( description, "Remove a Linux swap file added with add_swap.sp" )
-       @( description, "Usage: rm_swap [-v]" )
+<b>pragma</b> annotate( summary, "add_ramdisk" )
+       @( description, "Create a Linux ramdisk of a given size" )
+       @( description, "Usage: add_ramdisk [size-in-mb]" )
        @( author, "Ken O. Burth" )
        @( errors, "1 - usage shown" )
        @( errors, "2 - user is not root" )
@@ -27,11 +29,12 @@
 <b>pragma</b> license( unrestricted );
 <b>pragma</b> software_model( shell_script );
 
-<b>procedure</b> rm_swap <b>is</b>
+<b>procedure</b> add_ramdisk <b>is</b>
 
 <FONT COLOR=green><EM>-- Constants</EM></FONT>
 
-swapfile : <b>constant</b> string := "/root/swapfile.dat";
+mount_point  : <b>constant</b> string := "/media/ramdisk";
+default_size : <b>constant</b> positive := 1; <FONT COLOR=green><EM>-- one mb</EM></FONT>
 
 <FONT COLOR=green><EM>-- Environment variables</EM></FONT>
 
@@ -42,17 +45,14 @@ LOGNAME : <b>constant</b> import_string := "unknown";
 
 <FONT COLOR=green><EM>-- Commands we are using</EM></FONT>
 
-swapoff    : <b>constant</b> command := "/sbin/swapoff";
-rm         : <b>constant</b> command := "/bin/rm";
-
-<FONT COLOR=green><EM>-- Command Options / Arguments</EM></FONT>
-
-verbose_option : boolean := false;   <FONT COLOR=green><EM>-- -v/--verbose</EM></FONT>
+mkdir : <b>constant</b> command := "/bin/mkdir";
+mount : <b>constant</b> command := "/bin/mount";
+rmdir : <b>constant</b> command := "/bin/rmdir";
 
 <FONT COLOR=green><EM>-- Other Variables</EM></FONT>
 
 command_error : <b>exception</b> <b>with</b> "command exception" <b>use</b> 3;
-
+size  : positive;
 
 <FONT COLOR=green><EM>-- USAGE</EM></FONT>
 <FONT COLOR=green><EM>--</EM></FONT>
@@ -61,49 +61,57 @@ command_error : <b>exception</b> <b>with</b> "command exception" <b>use</b> 3;
 
 <b>procedure</b> usage <b>is</b>
 <b>begin</b>
-  put( source_info.file ) @ ( " [-v]" );
+  put( source_info.file ) @ ( " [size-in-mb]" );
   new_line;
   command_line.set_exit_status( 1 );
 <b>end</b> usage;
 
 
-<FONT COLOR=green><EM>-- CREATE SWAP FILE</EM></FONT>
+<FONT COLOR=green><EM>-- CREATE RAMDISK</EM></FONT>
 <FONT COLOR=green><EM>--</EM></FONT>
-<FONT COLOR=green><EM>-- Create the Swap File</EM></FONT>
+<FONT COLOR=green><EM>-- Create the ramfile</EM></FONT>
 <FONT COLOR=green><EM>-----------------------------------------------------------------------------</EM></FONT>
 
-<b>procedure</b> delete_swap_file <b>is</b>
+<b>procedure</b> create_ramdisk <b>is</b>
+  size_option : string;
 <b>begin</b>
-  <FONT COLOR=green><EM>-- Use dd to create a zero-filled file of the right size</EM></FONT>
+  <FONT COLOR=green><EM>-- Make the mount point</EM></FONT>
 
-  <b>if</b> verbose_option <b>then</b>
-     put_line( source_info.source_location &amp;
-        ": Deleteing the swap file" );
-  <b>end</b> <b>if</b>;
-  swapoff( swapfile );
+  mkdir( mount_point );
   <b>if</b> $? /= 0 <b>then</b>
-     <b>raise</b> command_error <b>with</b> "swapoff failed...is swap not in use?";
+     <b>raise</b> command_error <b>with</b> "mkdir failed...cannot create the mount point";
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- Calculate the size option</EM></FONT>
+
+  size_option := strings.image( size );
+  size_option := strings.<b>delete</b>( size_option, 1, 1 );
+  size_option := "size=" &amp; size_option &amp; "m";
+
+  <FONT COLOR=green><EM>-- Mount the Ramdisk</EM></FONT>
+
+  mount( "-t", "tmpfs", "none", mount_point, "-o", size_option );
+  <b>if</b> $? /= 0 <b>then</b>
+     <b>raise</b> command_error <b>with</b> "mount failed";
   <b>end</b> <b>if</b>;
 
   <FONT COLOR=green><EM>-- Change the access rights</EM></FONT>
 
-  rm( swapfile );
-<b>end</b> delete_swap_file;
+<b>exception</b> <b>when</b> command_error =&gt;
+  rmdir( mount_point );
+  <b>raise</b>;
+<b>end</b> create_ramdisk;
 
 <b>begin</b>
-
   <FONT COLOR=green><EM>-- Process Options</EM></FONT>
 
   <b>if</b> $# &gt; 1 <b>then</b>
      usage;
      <b>return</b>;
-  <b>elsif</b> $# = 1 <b>then</b>
-     <b>if</b> $1 = "-h" <b>or</b> $1 = "<FONT COLOR=green><EM>--help" then</EM></FONT>
-        usage;
-        <b>return</b>;
-     <b>elsif</b> $1 = "-v" <b>or</b> $1 = "<FONT COLOR=green><EM>--verbose" then</EM></FONT>
-        verbose_option;
-     <b>end</b> <b>if</b>;
+  <b>elsif</b> $# = 0 <b>then</b>
+     size := default_size;
+  <b>else</b>
+     size := positive( numerics.value( $1 ) );
   <b>end</b> <b>if</b>;
 
   <FONT COLOR=green><EM>-- Sanity Checks</EM></FONT>
@@ -115,8 +123,8 @@ command_error : <b>exception</b> <b>with</b> "command exception" <b>use</b> 3;
      <b>return</b>;
   <b>end</b> <b>if</b>;
 
-  delete_swap_file;
-<b>end</b> rm_swap;
+  create_ramdisk;
+<b>end</b> add_ramdisk;
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
