@@ -544,9 +544,9 @@ void SDL_EXT_plot( SDL_Surface *screen, Sint16 x, Sint16 y, Uint32 colour,
 /* ------------------------------------------------------------------------ */
 
 void SDL_EXT_hline( SDL_Surface *screen, Sint16 x, Sint16 x2, Sint16 y, Uint32 colour, int pen_mode ) {
-  Uint8  *ubuff8;
-  Uint16 *ubuff16;
-  Uint32 *ubuff32;
+  Uint8  *ubuff8 = NULL;
+  Uint16 *ubuff16 = NULL;
+  Uint32 *ubuff32 = NULL;
   Uint8 c1;
   Uint8 c2;
   Uint8 c3;
@@ -845,9 +845,9 @@ void SDL_EXT_hline( SDL_Surface *screen, Sint16 x, Sint16 x2, Sint16 y, Uint32 c
 /* ------------------------------------------------------------------------ */
 
 void SDL_EXT_vline( SDL_Surface *screen, Sint16 x, Sint16 y1, Sint16 y2, Uint32 colour, int pen_mode ) {
-  Uint8  *ubuff8;
-  Uint16 *ubuff16;
-  Uint32 *ubuff32;
+  Uint8  *ubuff8 = NULL;
+  Uint16 *ubuff16 = NULL;
+  Uint32 *ubuff32 = NULL;
   Uint8 c1;
   Uint8 c2;
   Uint8 c3;
