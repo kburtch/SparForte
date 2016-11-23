@@ -114,7 +114,7 @@ endif
 	@echo "   http://www.sparforte.com"
 	@echo "---------------------------------------------------------------"
 	@echo
-	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -we -gnat05 -gnatfaoN -gnatybdh -fstack-check -c $(INCLUDE) spar
+	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -we -gnat05 -gnatfaoN -gnatybdh -fstack-check -fstack-protector-strong -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS)
 	@echo
@@ -130,14 +130,14 @@ c_os.o:	c_os.c
 	@echo "  To Make SparForte Portable"
 	@echo "---------------------------------------------------------------"
 	@echo
-	$(CC) $(CFLAGS) $(INCLUDE) -Wall -c c_os.c
+	$(CC) $(CFLAGS) $(INCLUDE) -Wall -fstack-check -fstack-protector-strong -O1 -D_FORTIFY_SOURCE=2 -c c_os.c
 
 c_scanner.o: c_scanner.c
-	$(CC) $(CFLAGS) $(INCLUDE) $(SDLINCL) -c c_scanner.c
+	$(CC) $(CFLAGS) $(INCLUDE) $(SDLINCL) -fstack-check -fstack-protector-strong -O1 -D_FORTIFY_SOURCE=2 -c c_scanner.c
 
 c_gstreamer.o: c_gstreamer.c
 ifneq ($(strip $(GSTREAMERFLAG)),)
-	$(CC) $(CFLAGS) $(GSTREAMERFLAG) $(GSTREAMERLIBS) -Wall -c c_gstreamer.c
+	$(CC) $(CFLAGS) $(GSTREAMERFLAG) $(GSTREAMERLIBS) -Wall -fstack-check -fstack-protector-strong -O1 -D_FORTIFY_SOURCE=2 -c c_gstreamer.c
 else
 	@echo "GStreamer disabled"
 endif
