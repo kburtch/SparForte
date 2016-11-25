@@ -4,6 +4,7 @@ Languages are complicated.
 
 UNSORTED NEW ISSUES
 
+[add category to annotations]
 [David B wants shared library but didn't get it added in time]
 [Empty bareword treated as a parameter but shouldn't be]
 [check double import]
@@ -11,9 +12,21 @@ UNSORTED NEW ISSUES
 [pragma test_result - output in JUNIT format?]
 [need template package to set return HTTP status]
 [check pragma block with @ ]
+[allow users to create their own universal types]
+[record system refactor (in prep for aggregate expressions)]
 [blocks still allow declarations, even in formal mode - see distance examples]
 [constant records are permitted but the fields are variables...the fields should all be constants]
 
+IDEAS
+
+- SELinux-like ability to control who access what.
+  - for any function, restrict it to a list of parent functions which
+    may call it.
+  - for any command, restrict it to a list of parent functions which
+    may call it.
+  - objects more complicated but not an issue now.
+  - have an option for open access
+  - how to you lock the list and enforce it?
 
 ISSUES (SparForte Environment)
 

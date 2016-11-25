@@ -137,7 +137,10 @@ begin
     -- a NULL pointer for the line.
     if keepHistory then  -- nothing at prompt?
        line := to_unbounded_string( "return" ); -- treat as "return"
-       put( line );
+       -- TODO: this is a bit of a hack, simulating the line of input.
+       -- may be done better?
+       new_line;
+       --put( line );
        return;
     end if;
   end;

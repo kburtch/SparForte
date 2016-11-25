@@ -8,3 +8,7 @@ CHANGES SINCE 2.0
 
 2. Change: Release tests now test example programs with --test phase mode (instead of the default development phase mode) to ensure the most error checking is applied.  (Also, they really are being tested for a release so --test is the correct flag.)
 
+3. Change: Additional debugging options on GCC C compiles.
+
+4. Fix: for GNU readline prompt, added a newline so "return" displays properly on control-d exit.
+
