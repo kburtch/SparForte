@@ -21,7 +21,6 @@ are in a login shell, in a login shell]
 [csrf example - this is a random token stored in the user's session,
 changing each request  It is encoded as base64 just to make it
 compatible with HTML - numerics.md5( strings.image( numerics.rnd( 100000000 ) ) ) - the md5 is just to make it HTML compatible]
-[add category to annotations]
 Cmp. http://www.adapower.com/adapower1/alg/base64.html
 
 [David B wants shared library but didn't get it added in time]

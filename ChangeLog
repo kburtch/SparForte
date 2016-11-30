@@ -12,3 +12,7 @@ CHANGES SINCE 2.0
 
 4. Fix: for GNU readline prompt, added a newline so "return" displays properly on control-d exit.
 
+5. Change: New, more meaningful message when a -- or comment hides last semi-colon at a command prompt.
+
+6. New: pragma annotate( category ... ) to designate a group of scripts.
+

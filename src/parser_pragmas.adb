@@ -248,6 +248,7 @@ begin
      annotationTodoFound := name = "todo";
      if name /= "author" and
         name /= "created" and
+        name /= "category" and
         name /= "description" and
         name /= "errors" and
         name /= "modified" and

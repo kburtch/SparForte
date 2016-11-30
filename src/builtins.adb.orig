@@ -1051,6 +1051,20 @@ end vm;
                   discardUnusedIdentifier( token );
                   getNextToken;
                   expect( symbol_t, "," );
+               elsif identifiers( token ).name = to_unbounded_string( "category" ) then
+                  if last_tag = "category" then
+                     info := null_unbounded_string;
+                  elsif HTMLOutput then
+                     info := to_unbounded_string( "</p><p><b>Category</b>: " );
+                  elsif MANOutput then
+                     info := to_unbounded_string( ".SH CATEGORY" );
+                  else
+                     info := to_unbounded_string( "Category: " );
+                  end if;
+                  last_tag := identifiers( token ).name;
+                  discardUnusedIdentifier( token );
+                  getNextToken;
+                  expect( symbol_t, "," );
                elsif identifiers( token ).name = to_unbounded_string( "description" ) then
                   if last_tag = "description" then
                      info := null_unbounded_string;
