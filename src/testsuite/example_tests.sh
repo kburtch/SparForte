@@ -10,6 +10,18 @@
 cd ../..
 echo "$0: Testing some example programs..."
 echo "$0: "`date`
+
+EXAMPLE="minimal.sp"
+RESULT=`src/spar --test examples/$EXAMPLE`
+EXPECTED=""
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
 EXAMPLE="aplusb.sp"
 RESULT=`echo "1 2" | src/spar --test examples/$EXAMPLE`
 EXPECTED="1 2

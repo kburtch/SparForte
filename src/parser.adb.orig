@@ -8049,7 +8049,6 @@ begin
 
   startToken := Token;
   markScanner( cmdStart );
-  --put( "PGS: " ); put_token; -- DEBUG
 
   -- interrupt handling
 
@@ -8720,6 +8719,12 @@ begin
         end if;
      else
         itself_type := new_t;
+        -- interactive?
+        if inputMode = interactive or inputMode = breakout then
+           if token = eof_t then
+              err( "';' expected. Possibly hidden by a comment or unescaped '--'" );
+           end if;
+        end if;
         expectSemicolon;
      end if;
   end if;
