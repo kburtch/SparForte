@@ -860,6 +860,8 @@ end vm;
        annotate_str : constant unbounded_string := to_unbounded_string( "annotate" );
        refactor_str : constant unbounded_string := to_unbounded_string( "refactor" );
 
+       --authorId     : identifier := eof_t;
+
        function ParsePragmaKindAsHelp return unbounded_string is
           pragmaKind : unbounded_string;
        begin
@@ -1023,6 +1025,15 @@ end vm;
                   discardUnusedIdentifier( token );
                   getNextToken;
                   expect( symbol_t, "," );
+                  -- handle a teams.member variable for an author
+                  -- declarations don't happen so this doesn't work.
+                  --if token /= strlit_t then
+                  --   if identifiers( token ).class = VarClass then
+                  --      if getBaseType( identifiers( token ).kind ) = teams_member_t then
+                  --         ParseIdentifier( authorId );
+                  --      end if;
+                  --   end if;
+                  --end if;
                elsif identifiers( token ).name = to_unbounded_string( "bugs" ) then
                   if last_tag = "bugs" then
                      info := null_unbounded_string;
@@ -1194,7 +1205,13 @@ end vm;
                else
                   info := null_unbounded_string;
                end if;
-               ParseStaticExpression( exprVal, exprType );
+               --if authorId = eof_t then
+                  ParseStaticExpression( exprVal, exprType );
+               --else
+                  -- don't let it carry over for multiple authors
+               --   authorId := eof_t;
+               --end if;
+               --ParseStaticExpression( exprVal, exprType );
                if HTMLoutput then
                   if length( exprVal ) = 0 then
                      info := info & "<br>&nbsp;";

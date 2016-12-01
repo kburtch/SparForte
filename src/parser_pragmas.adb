@@ -242,6 +242,7 @@ procedure ParseAnnotateKind is
   name : string := to_string( identifiers( token ).name );
   exprVal  : unbounded_string;
   exprType : identifier;
+  --authorId : identifier := eof_t;
 begin
   annotationsFound := true;
   if token /= strlit_t and token /= charlit_t and not identifiers( token ).static then
@@ -265,8 +266,24 @@ begin
         expect( symbol_t, "," );
      end if;
   end if;
-  ParseStaticExpression( exprVal, exprType );
-  baseTypesOK( exprType, uni_string_t );
+  -- allow a team.member variable for the author
+  -- This doesn't work because variables aren't declared when help runs and
+  -- parses output.
+  -- note: a string literal is also treated as a variable...
+  --if name = "author" then
+     --if token /= strlit_t then
+     --   if identifiers( token ).class = VarClass then
+     --      if getBaseType( identifiers( token ).kind ) = teams_member_t then
+     --         ParseIdentifier( authorId );
+     --      end if;
+     --   end if;
+     --end if;
+  --end if;
+  -- Otherwise, author is an expression
+  --if authorId = eof_t then
+     ParseStaticExpression( exprVal, exprType );
+     baseTypesOK( exprType, uni_string_t );
+  --end if;
 end ParseAnnotateKind;
 
 --  PARSE IMPORT KIND
