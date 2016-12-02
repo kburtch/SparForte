@@ -16,3 +16,5 @@ CHANGES SINCE 2.0
 
 6. New: pragma annotate( category ... ) to designate a group of scripts.
 
+7. new --profile / -P - run profile without logging in or using --login.
+

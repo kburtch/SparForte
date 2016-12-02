@@ -79,6 +79,7 @@ begin
         Put_Line( "                       (may be repeated)" );
         Put_Line( "  --login or -l       - simulate a login shell" );
         Put_Line( "  --maintenance or -m - maintenance phase mode" );
+        Put_Line( "  --profile or -P     - run the profile script when not logging in" );
         Put_Line( "  --pref or -p        - show performance stats" );
         Put_Line( "  --restricted or -r  - restricted shell mode" );
         Put_Line( "  --test or -t        - test phase mode" );
@@ -137,6 +138,8 @@ begin
             maintenanceOpt := true;
          elsif Argument(i) = "--perf" then
             perfOpt := true;
+         elsif Argument(i) = "--profile" then
+            profileOpt := true;
          elsif Argument(i) = "--restricted" then
             rshOpt := true;
          elsif Argument(i) = "--test" then
@@ -206,6 +209,8 @@ begin
                       maintenanceOpt := true;
                    elsif Args(letter) = 'p' then
                       perfOpt := true;
+                   elsif Args(letter) = 'P' then
+                      profileOpt := true;
                    elsif Args(letter) = 'g' then
                       gccOpt := true;
                    elsif Args(letter) = 'r' then
@@ -236,6 +241,9 @@ begin
          optionOffset := optionOffset + 1;
      end loop;
   end if;
+
+  -- Missing arguments / commands
+
   if libraryPathNext then
      Put_Line( standard_error, Command_Name & ": missing argument for -L" );
      Set_Exit_Status( 192 );
@@ -247,16 +255,27 @@ begin
      Set_Exit_Status( 192 );
      return;
   end if;
+  if optionOffset > Argument_Count then
+     optionOffset := 0;
+  end if;
+
+  -- Illegal option switch combinations
+
   if (designOpt and maintenanceOpt) or (designOpt and testOpt) or (maintenanceOpt and testOpt) then
      Put_Line( standard_error, Command_Name & ": only one of --design, --maintenance or --test is allowed" );
      Set_Exit_Status( 192 );
      return;
   end if;
-  if optionOffset > Argument_Count then
-     optionOffset := 0;
+  if isLoginShell and boolean( profileOpt ) then
+     Put_Line( standard_error, Command_Name & ": only one of --login and --profile is allowed" );
+     Set_Exit_Status( 192 );
+     return;
   end if;
 
-  -- initialize
+  -- Initialize
+  --
+  -- Start the byte code compiler, scanner.  Setup the display.  Start the
+  -- parser.
 
   startCompiler;
   startScanner;
@@ -271,11 +290,11 @@ begin
      displayCopyrightSplash; -- located in user_io
   end if;
 
-  -- run
+  -- Run SparForte: load profile, etc. and run script or start command line
 
   interpret;
 
-  -- shutdown
+  -- Shutdown
 
   shutdownParser;
   shutdownScanner;

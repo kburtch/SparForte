@@ -222,6 +222,7 @@ gccOpt       : commandLineOption := false;           -- true if -g
 importOpt    : commandLineOption := false;           -- true if -i
 maintenanceOpt : commandLineOption := false;         -- true if -m
 perfOpt      : commandLineOption := false;           -- true if -p
+profileOpt   : commandLineOption := false;           -- true if -P
 rshOpt       : commandLineOption := false;           -- true if -r
 verboseOpt   : commandLineOption := false;           -- true if -v
 designOpt    : commandLineOption := false;           -- true if -t

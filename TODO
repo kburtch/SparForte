@@ -15,7 +15,6 @@ cms requirements(ideas only)
 
 [forked jobs in a pipeline aren't logging out because they think they
 are in a login shell, in a login shell]
-[--profile - profile but do not make a login session]
 [csrf example - this is a random token stored in the user's session,
 changing each request  It is encoded as base64 just to make it
 compatible with HTML - numerics.md5( strings.image( numerics.rnd( 100000000 ) ) ) - the md5 is just to make it HTML compatible]

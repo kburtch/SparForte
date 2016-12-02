@@ -218,7 +218,7 @@ begin
      err( optional_bold( "shell word" ) & " expected, not a " &
           optional_bold( "(shell immediate) word" ) );
   elsif token = eof_t then
-     err( optional_bold( "shell word" ) & " or semi-colon expected" );
+     err( optional_bold( "shell word" ) & " or semi-colon expected. Possibly hidden by an unescaped '--'?" );
   elsif is_keyword( token ) then
      err( optional_bold( "shell word" ) & " expected, not a " &
           optional_bold( "keyword" ) );
@@ -9899,8 +9899,8 @@ end checkAndInterpretScript;
 procedure interpret is
 begin
   if optionOffset = 0 then                       -- no arguments or '-'?
-     if isLoginShell then                        -- login shell? find profile
-        doGlobalProfile;
+     if isLoginShell or boolean(profileOpt) then -- login shell? find profile
+        doGlobalProfile;                         -- or --profile option
         if not error_found then
            doLocalProfile;
         end if;
