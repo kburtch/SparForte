@@ -16,5 +16,7 @@ CHANGES SINCE 2.0
 
 6. New: pragma annotate( category ... ) to designate a group of scripts.
 
-7. new --profile / -P - run profile without logging in or using --login.
+7. New: --profile / -P - run profile without logging in or using --login.
+
+8. Fix: Control-C/SIGINT no longer aborts an interactive session if pragma prompt_script has been used.
 

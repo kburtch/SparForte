@@ -1757,6 +1757,12 @@ begin
      ci.context := startOfParameters;
      return;
 
+  -- Get the first token on the line.  This could be a shell command or an
+  -- AdaScript identifier...we don't know which.
+  --
+  -- Note: for shell command, it could be a PATH "e.g. bin/foobar".  This is
+  -- not handled yet.
+
   elsif (ch >= 'a' and ch <='z') or (ch >= 'A' and ch <='Z') or
         ch > ASCII.DEL then
      lastpos := cmdpos+1;
