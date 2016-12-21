@@ -7060,12 +7060,8 @@ begin
                        goto retry2;
                     end if;
                     err( "unable to set output: " & OSerror( C_errno ) );
-<<retry3>>          closeResult := close( redirectedOutputFd );
-                    if closeResult < 0 then
-                       if C_errno = EINTR then
-                          goto retry3;
-                       end if;
-                    end if;
+                    closeResult := close( redirectedOutputFd );
+                    -- close EINTR is a diagnostic message.  Do not handle.
                     redirectedOutputFd := 0;
                  end if;
               end if;
@@ -7090,12 +7086,8 @@ begin
                        goto retry5;
                     end if;
                     err( "unable to redirect input: " & OSerror( C_errno ) );
-<<retry6>>          closeResult := close( redirectedInputFd );
-                    if result < 0 then
-                       if C_errno = EINTR then
-                          goto retry6;
-                       end if;
-                    end if;
+                    closeResult := close( redirectedInputFd );
+                    -- close EINTR is a diagnostic message.  Do not handle.
                     redirectedInputFd := 0;
                  end if;
               end if;
@@ -7122,12 +7114,8 @@ begin
                        goto retry8;
                     end if;
                     err( "unable to append output: " & OSerror( C_errno ) );
-<<retry9>>          closeResult := close( redirectedAppendFd );
-                    if closeResult < 0 then
-                       if C_errno = EINTR then
-                          goto retry9;
-                       end if;
-                    end if;
+                    closeResult := close( redirectedAppendFd );
+                    -- close EINTR is a diagnostic message.  Do not handle.
                     redirectedAppendFd := 0;
                  end if;
               end if;
@@ -7144,12 +7132,8 @@ begin
                  end if;
                  err( "unable to restore current error output: " & OSerror( C_errno ) );
               end if;
-<<retry11>>   closeResult := close( redirectedErrOutputFd );        -- done with file
-              if closeResult < 0 then
-                 if C_errno = EINTR then
-                    goto retry11;
-                 end if;
-              end if;
+              closeResult := close( redirectedErrOutputFd );        -- done with file
+              -- close EINTR is a diagnostic message.  Do not handle.
               redirectedErrOutputFD := 0;
               err( "cannot redirect using both 2> and 2>>" );
            elsif pipe2Next then
@@ -7171,12 +7155,8 @@ begin
                        goto retry13;
                     end if;
                     err( "unable to set error output: " & OSerror( C_errno ) );
-<<retry14>>         closeResult := close( redirectedErrOutputFd );
-                    if closeResult < 0 then
-                       if C_errno = EINTR then
-                          goto retry14;
-                       end if;
-                    end if;
+                    closeResult := close( redirectedErrOutputFd );
+                    -- close EINTR is a diagnostic message.  Do not handle.
                     redirectedErrOutputFd := 0;
                  end if;
               end if;
@@ -7193,12 +7173,8 @@ begin
                  end if;
                  err( "unable to restore current error output: " & OSerror( C_errno ) );
               end if;
-<<retry16>>   closeResult := close( redirectedErrOutputFd );           -- done with file
-              if closeResult < 0 then
-                 if C_errno = EINTR then
-                    goto retry16;
-                 end if;
-              end if;
+              closeResult := close( redirectedErrOutputFd );           -- done with file
+              -- close EINTR is a diagnostic message.  Do not handle.
               redirectedErrOutputFD := 0;
               err( "cannot redirect using both 2> and 2>>" );
            elsif pipe2Next then
@@ -7217,12 +7193,8 @@ begin
                        goto retry18;
                     end if;
                     err( "unable to append error output: " & OSerror( C_errno ) );
-<<retry19>>         closeResult := close( redirectedErrAppendFd );
-                    if closeResult < 0 then
-                       if C_errno = EINTR then
-                          goto retry19;
-                       end if;
-                    end if;
+                    closeResult := close( redirectedErrAppendFd );
+                    -- close EINTR is a diagnostic message.  Do not handle.
                     redirectedErrAppendFd := 0;
                  end if;
               end if;
@@ -7263,12 +7235,8 @@ begin
                  end if;
                  err( "unable to restore current error output: " & OSerror( C_errno ) );
               end if;
-<<retry21>>   closeResult := close( redirectedErrOutputFd );          -- done with file
-              if closeResult < 0 then
-                 if C_errno = EINTR then
-                    goto retry21;
-                 end if;
-              end if;
+              closeResult := close( redirectedErrOutputFd );          -- done with file
+              -- close EINTR is a diagnostic message.  Do not handle.
               redirectedErrOutputFD := 0;
               err( "cannot redirect using two of 2>, 2>> and 2>&1" );
            elsif redirectedErrAppendFD > 0 then       -- no file for this one
@@ -7279,12 +7247,8 @@ begin
                  end if;
                  err( "unable to restore current error output: " & OSerror( C_errno ) );
               end if;
-<<retry23>>   closeResult := close( redirectedErrAppendFd );   -- done with file
-              if closeResult < 0 then
-                 if C_errno = EINTR then
-                    goto retry23;
-                 end if;
-              end if;
+              closeResult := close( redirectedErrAppendFd );   -- done with file
+              -- close EINTR is a diagnostic message.  Do not handle.
               redirectedErrAppendFD := 0;
               err( "cannot redirect using two of 2>, 2>> and 2>&1" );
            elsif pipe2Next then
@@ -7392,12 +7356,8 @@ begin
         end if;
         err( "unable to restore current output: " & OSerror( C_errno ) );
      end if;
-<<retry25>> closeResult := close( redirectedOutputFd );     -- done with file
-     if closeResult < 0 then
-        if C_errno = EINTR then
-           goto retry25;
-        end if;
-     end if;
+     closeResult := close( redirectedOutputFd );     -- done with file
+     -- close EINTR is a diagnostic message.  Do not handle.
   elsif redirectedInputFd > 0 then                          -- input redirect?
 <<retry25b>> result := dup2( currentStandardInput, stdout );-- restore input
      if result < 0 then                                     -- check for error
@@ -7406,12 +7366,8 @@ begin
         end if;
         err( "unable to restore current input: " & OSerror( C_errno ) );
      end if;
-<<retry26>> closeResult := close( redirectedInputFd );      -- done with file
-     if result < 0 then
-        if C_errno = EINTR then
-           goto retry26;
-        end if;
-     end if;
+     closeResult := close( redirectedInputFd );      -- done with file
+     -- close EINTR is a diagnostic message.  Do not handle.
   elsif redirectedAppendFd > 0 then                         -- append redirect?
 <<retry26b>> result := dup2( currentStandardOutput, stdout );-- restore output
      if result < 0 then                                     -- check for error
@@ -7420,12 +7376,8 @@ begin
         end if;
         err( "unable to restore current output: " & OSerror( C_errno ) );
      end if;
-<<retry27>> closeResult := close( redirectedAppendFd );     -- done with file
-     if result < 0 then
-        if C_errno = EINTR then
-           goto retry27;
-        end if;
-     end if;
+     closeResult := close( redirectedAppendFd );     -- done with file
+     -- close EINTR is a diagnostic message.  Do not handle.
   elsif redirectedErrOutputFd > 0 then                      -- errout redirect?
 <<retry27b>> result := dup2( currentStandardError, stderr );-- restore stderr
      if result < 0 then                                     -- check for error
@@ -7434,12 +7386,8 @@ begin
         end if;
         err( "unable to restore current error output: " & OSerror( C_errno ) );
      end if;
-<<retry28>> closeResult := close( redirectedErrOutputFd );  -- done with file
-     if closeResult < 0 then
-        if C_errno = EINTR then
-           goto retry28;
-        end if;
-     end if;
+     closeResult := close( redirectedErrOutputFd );  -- done with file
+     -- close EINTR is a diagnostic message.  Do not handle.
   elsif redirectedErrAppendFd > 0 then                      -- append redirect?
 <<retry28b>>result := dup2( currentStandardError, stderr ); -- restore stderr
      if result < 0 then                                     -- check for error
@@ -7448,12 +7396,8 @@ begin
         end if;
         err( "unable to restore current error output: " & OSerror( C_errno ) );
      end if;
-<<retry29>> closeResult := close( redirectedErrAppendFd );  -- done with file
-     if closeResult < 0 then
-        if C_errno = EINTR then
-           goto retry29;
-        end if;
-     end if;
+     closeResult := close( redirectedErrAppendFd );  -- done with file
+     -- close EINTR is a diagnostic message.  Do not handle.
   end if;
 
   -- restore the semi-colon we threw away at the beginning
@@ -7594,12 +7538,8 @@ begin
      else                                               -- no error?
         currentStandardOutput := oldStandardOutput;     -- track fd
      end if;
-<<retry>> closeResult := close( resultFile );           -- reopen results
-     if closeResult < 0 then
-        if C_errno = EINTR then
-           goto retry;
-        end if;
-     end if;
+     closeResult := close( resultFile );           -- reopen results
+     -- close EINTR is a diagnostic message.  Do not handle.
      resultFile := open( to_string(resultName) & ASCII.NUL, O_RDONLY,
          8#644# );
      if resultFile < 0 then                                -- error?
@@ -7621,12 +7561,8 @@ begin
           end if;
           results := results & ch;                         -- add to results
         end loop;
-<<reclose>> closeResult := close( resultFile );            -- close and delete
-        if closeResult < 0 then
-           if C_errno = EINTR then
-              goto reclose;
-           end if;
-        end if;
+        closeResult := close( resultFile );            -- close and delete
+        -- close EINTR is a diagnostic message.  Do not handle.
      end if;
      unlinkResult := unlink( to_string( resultName ) & ASCII.NUL );
      if unlinkResult < 0 then                              -- unable to delete?
@@ -9219,12 +9155,8 @@ begin
      end if;
   end if;
   if not execOpt then                              -- not -e?
-<<retry>> res := close( scriptFile );              -- close the script file
-     if res < 0 then
-        if C_errno = EINTR then
-           goto retry;
-        end if;
-     end if;
+     res := close( scriptFile );              -- close the script file
+     -- close EINTR is a diagnostic message.  Do not handle.
   end if;
 
 end interpretPolicy;
@@ -9332,12 +9264,8 @@ begin
      --end if;
   end if;
   if not execOpt then                              -- not -e?
-<<retry>> res := close( scriptFile );              -- close the script file
-     if res < 0 then
-        if C_errno = EINTR then
-           goto retry;
-        end if;
-     end if;
+     res := close( scriptFile );              -- close the script file
+     -- close EINTR is a diagnostic message.  Do not handle.
   end if;
 end interpretConfig;
 
@@ -9469,12 +9397,8 @@ begin
      end if;
   end if;
   if not execOpt then                              -- not -e?
-<<retry>> res := close( scriptFile );              -- close the script file
-     if res < 0 then
-        if C_errno = EINTR then
-           goto retry;
-        end if;
-     end if;
+     res := close( scriptFile );              -- close the script file
+     -- close EINTR is a diagnostic message.  Do not handle.
   end if;
 end interpretScript;
 
@@ -9604,12 +9528,8 @@ begin
   rshOpt := false;                               -- turn off for profile
   scriptFile := open( path & ASCII.NUL, 0, 660 ); -- open script
   if scriptFile > 0 then                         -- good?
-<<retry>> res := close( scriptFile );            -- close test fd
-     if res < 0 then
-        if C_errno = EINTR then
-           goto retry;
-        end if;
-     end if;
+     res := close( scriptFile );            -- close test fd
+     -- close EINTR is a diagnostic message.  Do not handle.
   end if;
   if C_errno /= ENOENT then
      if C_errno = 0 and C_is_includable_file( path & ASCII.NUL ) then
@@ -9652,12 +9572,8 @@ begin
   C_reset_errno;
   scriptFile := open( path & ASCII.NUL, 0, 660 ); -- open script
   if scriptFile > 0 then                         -- good?
-<<retry>> res := close( scriptFile );            -- close test fd
-     if res < 0 then
-        if C_errno = EINTR then
-           goto retry;
-        end if;
-     end if;
+     res := close( scriptFile );            -- close test fd
+     -- close EINTR is a diagnostic message.  Do not handle.
   end if;
   if C_errno /= ENOENT then
      if C_errno = 0 and C_is_includable_file( path & ASCII.NUL ) then
@@ -9694,12 +9610,8 @@ begin
   C_reset_errno;
   scriptFile := open( path & ASCII.NUL, 0, 660 ); -- open script
   if scriptFile > 0 then                         -- good?
-<<retry>> res := close( scriptFile );            -- close test fd
-     if res < 0 then
-        if C_errno = EINTR then
-           goto retry;
-        end if;
-     end if;
+     res := close( scriptFile );            -- close test fd
+     -- close EINTR is a diagnostic message.  Do not handle.
   end if;
   if C_errno /= ENOENT then
      if C_errno = 0 and C_is_includable_file( path & ASCII.NUL ) then
@@ -9744,12 +9656,8 @@ begin
      C_reset_errno;
      scriptFile := open( to_string( profilePath ) & ASCII.NUL, 0, 660 ); -- open script
      if scriptFile > 0 then                       -- profile opened OK?
-<<retry>> res := close( scriptFile );               -- close test fd
-        if res < 0 then
-           if C_errno = EINTR then
-              goto retry;
-           end if;
-        end if;
+        res := close( scriptFile );               -- close test fd
+        -- close EINTR is a diagnostic message.  Do not handle.
      end if;
      if C_errno /= ENOENT then
         if C_errno = 0 and C_is_includable_file( to_string( profilePath ) & ASCII.NUL ) then

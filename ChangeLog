@@ -20,3 +20,7 @@ CHANGES SINCE 2.0
 
 8. Fix: Control-C/SIGINT no longer aborts an interactive session if pragma prompt_script has been used.
 
+9. Fix: Clear login shell flag on background processes in pipelines so they don't report a "must use logout" error.  Hopefully fixed, anyway.
+
+10. Fix: Added a SIGPIPE handler but not yet implemented.
+

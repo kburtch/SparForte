@@ -272,7 +272,8 @@ void C_day_of_week( int * wday, int year, int month, int day ) {
 
 int *sigchld_flag = 0;         // Address of Ada boolean variable
 int *sigint_flag = 0;          // Address of Ada boolean variable
-int *sigwinch_flag = 0;          // Address of Ada boolean variable
+int *sigwinch_flag = 0;        // Address of Ada boolean variable
+int *sigpipe_flag = 0;         // Address of Ada boolean variable
 
 void sigint_handler( int sig ) {
   *sigint_flag = 1;
@@ -335,6 +336,28 @@ int C_install_sigwinch_handler( int *flag_address ) {
   sa.sa_mask    = signalmask;                    // mask all signals
   sa.sa_flags   = 0;                             // trap zombie children
   res = sigaction( SIGWINCH, &sa, &old_sigwinch ); // setup signal trap
+  if ( res == 0 )                                // OK?
+     handler_installed = 1;                      // mark as installed
+  return handler_installed;
+}
+
+void sigpipe_handler( int sig ) {
+  *sigpipe_flag = 1;
+}
+
+int C_install_sigpipe_handler( int *flag_address ) {
+  static unsigned int handler_installed = 0;
+  sigset_t signalmask;
+  struct sigaction old_sigpipe;
+  struct sigaction sa;
+  int res = 0;
+
+  sigpipe_flag = flag_address;                   // where to flag occurence
+  sigfillset( &signalmask );                     // block all during handling
+  sa.sa_handler = sigpipe_handler;               // what to do on signal
+  sa.sa_mask    = signalmask;                    // mask all signals
+  sa.sa_flags   = 0;                             // trap zombie children
+  res = sigaction( SIGPIPE, &sa, &old_sigpipe ); // setup signal trap
   if ( res == 0 )                                // OK?
      handler_installed = 1;                      // mark as installed
   return handler_installed;

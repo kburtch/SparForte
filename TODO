@@ -2,9 +2,41 @@ LOTS TO WORK ON
 ---------------
 Languages are complicated.
 
+
 UNSORTED NEW ISSUES
 
-cms requirements(ideas only)
+Shell Improvments
+
+* control-c sometimes leaves the command line in the wrong state (typing is invisible)
+* Empty bareword treated as a single parameter but should be ignored
+* x/y relative path doesn't work for a command at the command prompt
+  - the compiler must handle this, creating a shell word...but not break
+    other things
+  - should 'x-y' also be a shell word?
+* fixed (maybe) - forked jobs in a pipeline sometimes aren't logging out because they think they are in a login shell, in a login shell
+* broken pipes
+  * env | head/less - gives a broken pipe, or finalize/adjust error
+  * ls -1 | head - ls reports broken pipe
+  * env | wc -l - OK, no error
+  * broken pipe = SIGPIPE signal (or, possibly EPIPE error), the reader has gone away
+    and the pipe is closed before the writer is finished.
+    * login shells behave differently
+    * installed a sigpipe handler
+      * perhaps needs to be set to SIG_DFL to ignore SIGPIPE errors
+    * no SIGPIPE...perhaps EPIPE isn't handled correctly in teardown of command pipes
+      in jobs.adb
+
+Teamwork Improvments
+
+* Test concept...what is missing?
+* Generating burndown charts?
+* xUnit support for tests (pragma test_result - output in JUNIT format?)
+
+
+Web System
+
+* REPL needs to run in a chroot environment
+* cms library requirements(ideas only)
   - get_content (page [, section [, user]] )
   - set_content( page [, section [, user]][, template] )
   - get_static_content( file ) - must supply id/class/both
@@ -13,20 +45,17 @@ cms requirements(ideas only)
   - set_content_param( name, value )
   - login system
 
-[forked jobs in a pipeline aren't logging out because they think they
-are in a login shell, in a login shell]
 [csrf example - this is a random token stored in the user's session,
 changing each request  It is encoded as base64 just to make it
 compatible with HTML - numerics.md5( strings.image( numerics.rnd( 100000000 ) ) ) - the md5 is just to make it HTML compatible]
 Cmp. http://www.adapower.com/adapower1/alg/base64.html
 
-[David B wants shared library but didn't get it added in time]
 
-[Empty bareword treated as a parameter but shouldn't be]
+Lanaguage
+
 [check double import test case]
 [close tinyserve if open]
 [complete tinyserve package]
-[pragma test_result - output in JUNIT format?]
 [need template package to set return HTTP status]
 [check pragma block with @ ]
 [allow users to create their own universal types]
@@ -38,9 +67,6 @@ ParseGeneralStatement]
 [with include doesn't work on the command because it is loaded at syntax check time and the
 command line has no syntax check...but it would be good to load libraries at the command line
 so can I come up with a strategy to make it work?]
-
-IDEAS
-
 - SELinux-like ability to control who access what.
   - for any function, restrict it to a list of parent functions which
     may call it.
@@ -49,6 +75,13 @@ IDEAS
   - objects more complicated but not an issue now.
   - have an option for open access
   - how to you lock the list and enforce it?
+- SDL - hardware accelleration not working with SDL...why not?
+- SDL needs to be upgraded for version 2.0
+
+Built System
+
+[David B wants shared library but didn't get it added in time]
+
 
 ISSUES (SparForte Environment)
 

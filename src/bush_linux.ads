@@ -629,5 +629,9 @@ function C_install_sigwinch_handler( flag : system.address ) return boolean;
 pragma import( C, C_install_sigwinch_handler, "C_install_sigwinch_handler" );
 --  Mark an Ada boolean variable that will be TRUE if SIGWINCH occurs
 
+function C_install_sigpipe_handler( flag : system.address ) return boolean;
+pragma import( C, C_install_sigpipe_handler, "C_install_sigpipe_handler" );
+--  Mark an Ada boolean variable that will be TRUE if SIGWINCH occurs
+
 end bush_os;
 

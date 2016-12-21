@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2016 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -23,7 +23,7 @@
 -- CVS: $Id: signal_flags.adb,v 1.2 2005/02/11 02:59:31 ken Exp $
 
 with Ada.Text_IO, Gnat.Source_Info, bush_os;
-use Ada.Text_IO,  Gnat.Source_Info,bush_os;
+use Ada.Text_IO,  Gnat.Source_Info, bush_os;
 
 package body signal_flags is
 
@@ -37,6 +37,9 @@ package body signal_flags is
     end if;
     if not C_install_sigwinch_handler( wasSIGWINCH'address ) then
        put_line( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGWINCH handler" );
+    end if;
+    if not C_install_sigpipe_handler( wasSIGPIPE'address ) then
+       put_line( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGPIPE handler" );
     end if;
   end startSignalFlags;
 
