@@ -22,5 +22,10 @@ CHANGES SINCE 2.0
 
 9. Fix: Clear login shell flag on background processes in pipelines so they don't report a "must use logout" error.  Hopefully fixed, anyway.
 
-10. Fix: Added a SIGPIPE handler but not yet implemented.
+10. Fix: removed EINTR handling on close...this is a diagnosic message and should not result in another close attempt.
+
+11. Fix: env no longer raises PROGRAM_ERROR due to broken pipe (e.g. env | head ).
+
+12. Fix: Added a SIGPIPE handler.  The results are ignored but it prevents broken pipe warnings from other commands (e.g. ls -1 | head ).
+
 

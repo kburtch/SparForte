@@ -631,14 +631,19 @@ begin
          else
             escapedValue := null_unbounded_string;
          end if;
+         -- break up output into chunks of the column width
          loop
            if round = 1 then
+              --put_line( "A" );
+              --put_line( identifiers( i ).name );
               if length( identifiers( i ).name ) > maxNameWidth then
                  put( identifiers( i ).name );
               else
+                 -- pad name to fit
                  put( head( identifiers( i ).name, maxNameWidth ) );
               end if;
            else
+              -- additional rounds is blank space in name column
               put( head( " ", maxNameWidth ) );
            end if;
            put( " | " );
@@ -662,6 +667,10 @@ begin
          end loop;
       end if;
   end loop;
+exception
+   -- DEVICE ERROR is typically a broken pipe... e.g. env | head . If it
+   -- occurs, just stop outputing and exit.
+   when DEVICE_ERROR => raise;
 end put_all_identifiers;
 
 

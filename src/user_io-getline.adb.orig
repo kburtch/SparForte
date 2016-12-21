@@ -129,25 +129,7 @@ begin
   -- new_line;
   -- end;
   begin
-   -- TODO: test with alternative prompt
-    put_line("A"); -- DEBUG
-    declare
-       --line := to_unbounded_string( read_line( to_string( bold_prompt ) ) );
-       prompt : string := to_string( bold_prompt );
-    begin
-       put_line("B"); -- DEBUG
-       wasSIGPIPE := false; -- DEBUG
-       declare
-          -- THIS IS PRODUCING A PROGRAM_ERROR after an earlier EPIPE
-          str : string := read_line( prompt );
-       begin
-          put_line("C"); -- DEBUG
-          put_line( wasSIGPIPE'img ); -- DEBUG
-          line := to_unbounded_string( str );
-          put_line( "D" ); -- DEBUG
-       end;
-    end;
-put_line("E"); -- DEBUG
+    line := to_unbounded_string( read_line( to_string( bold_prompt ) ) );
   exception when END_ERROR =>
     -- EOT: control-d
     --if length( line ) = 0 and keepHistory then  -- nothing at prompt?
@@ -162,7 +144,6 @@ put_line("E"); -- DEBUG
        return;
     end if;
   end;
-put_line("C"); -- DEBUG
 
   -- history
 

@@ -236,12 +236,10 @@ begin
   Put( "% full with" );
   Put( identifier'image( identifiers_top-1 ) );
   Put_Line( " identifiers." );
-  exception
-  -- A Text_IO DEVICE_ERROR / PROGRAM_ERROR is typically a broken pipe
-  -- (i.e. env | head). Just stop writing to it.
-  -- TODO: a more graceful way in case of some device error?
-  when DEVICE_ERROR => null;
-  when PROGRAM_ERROR => null;
+exception
+   -- DEVICE ERROR is typically a broken pipe... e.g. env | head . If it
+   -- occurs, just stop outputing and exit.
+   when DEVICE_ERROR => null;
 end env;
 
 
@@ -728,6 +726,10 @@ begin
         end if;
      end if;
   end if;
+exception
+   -- DEVICE ERROR is typically a broken pipe... e.g. env | head . If it
+   -- occurs, just stop outputing and exit.
+   when DEVICE_ERROR => null;
 end env;
 
 

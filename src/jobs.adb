@@ -466,7 +466,6 @@ procedure run_inpipe( cmd : unbounded_string;
    result   : integer;
    closeResult : int;
 begin
-put_line(standard_error, "in pipe" ); -- DEBUG
 
    -- setup the pipeline
 
@@ -570,7 +569,6 @@ procedure run_frompipe( cmd : unbounded_string;
    result   : integer;
    closeResult : int;
 begin
-put_line(standard_error, "from pipe" ); -- DEBUG
 
    -- Locate the command
 
@@ -674,7 +672,6 @@ procedure run_bothpipe( cmd : unbounded_string;
    newJob   : aJob;
    result   : integer;
 begin
-put_line(standard_error, "both pipe" ); -- DEBUG
 
    -- Setup the pipeline
 

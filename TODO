@@ -8,28 +8,23 @@ UNSORTED NEW ISSUES
 Shell Improvments
 
 * control-c sometimes leaves the command line in the wrong state (typing is invisible)
+  (i.e. repeatedly hitting control-c)
 * Empty bareword treated as a single parameter but should be ignored
 * x/y relative path doesn't work for a command at the command prompt
   - the compiler must handle this, creating a shell word...but not break
     other things
   - should 'x-y' also be a shell word?
-* fixed (maybe) - forked jobs in a pipeline sometimes aren't logging out because they think they are in a login shell, in a login shell
 * broken pipes
-  * env | head/less - gives a broken pipe, or finalize/adjust error
-  * ls -1 | head - ls reports broken pipe
-  * env | wc -l - OK, no error
-  * broken pipe = SIGPIPE signal (or, possibly EPIPE error), the reader has gone away
-    and the pipe is closed before the writer is finished.
-    * login shells behave differently
-    * installed a sigpipe handler
-      * perhaps needs to be set to SIG_DFL to ignore SIGPIPE errors
-    * no SIGPIPE...perhaps EPIPE isn't handled correctly in teardown of command pipes
-      in jobs.adb
+  - fixed ... but env |head
+  - TODO: broken pipe errors fixed...but extra blank lines occurring with env
+    (e.g. help | head -1 has no issue)
 
 Teamwork Improvments
 
 * Test concept...what is missing?
-* Generating burndown charts?
+* JIRA features
+  * status board?
+  * Generating burndown charts?
 * xUnit support for tests (pragma test_result - output in JUNIT format?)
 
 
