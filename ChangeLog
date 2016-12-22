@@ -28,4 +28,6 @@ CHANGES SINCE 2.0
 
 12. Fix: Added a SIGPIPE handler.  The results are ignored but it prevents broken pipe warnings from other commands (e.g. ls -1 | head ).
 
+13. Fix: Bourne shell barewords now expand properly to multiple words if they contain whitespace. Commands names, however, don't support his yet and will give an error).
+
 

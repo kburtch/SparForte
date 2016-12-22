@@ -4603,6 +4603,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
   inBQuote    : boolean := false;                      -- in double quoted part
   inBackslash : boolean := false;                      -- in backquoted part
   inDollar    : boolean := false;                      -- $ expansion
+  wasDQuote   : boolean := false;                      -- TEST
   expansionVar: unbounded_string;                      -- the $ name
   escapeGlobs : boolean := false;                      -- escaping glob chars
   ignoreTerminatingWhitespace : boolean := false;                 -- SQL word has whitespace in it (do not use whitespace as a word terminator)
@@ -4629,7 +4630,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
      subword : unbounded_string;
      ch      : character;
   begin
-    -- put_line( "dollarExpansion for var """ & expansionVar & """" ); -- DEBUG
+    --put_line( "dollarExpansion for var """ & expansionVar & """" ); -- DEBUG
     -- Handle Special Substitutions ($#, $? $$, $0...$9 )
     if expansionVar = "#" then
        if isExecutingCommand then
@@ -4747,6 +4748,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
   begin
     --put_line( "pathnameExpansion for original pattern """ & pattern & """" ); -- DEBUG
     --put_line( "pathnameExpansion for expanded word """ & word & """" ); -- DEBUG
+    --put_line( "wasDQuote: " & wasDQuote'img ); -- DEBUG
     -- In the case of a syntax check, return the word as-is as a place holder.
     -- Don't try to glob it.
     if syntax_check then
@@ -4834,6 +4836,64 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
   when DIRECTORY_ERROR =>
     err( "directory error on directory " & dirPath );
   end pathnameExpansion;
+
+  -- Breakup barewords into subwords and do pathname expansion.
+  -- Quoted words pathname expanded as-is
+  -- TODO: is this too high?  Probably goes lower in the logic. What about the pattern?
+
+  procedure pathnameExpansionWithIFS( word, pattern : unbounded_string; list : in out shellWordList.List ) is
+    subword    : unbounded_string;
+    subpattern : unbounded_string;
+    ch         : character;
+    word_pos   : natural := 1;
+    pattern_pos: natural := 1;
+  begin
+    --put_line( "pathnameExpansionWithIFS for original pattern """ & pattern & """" ); -- DEBUG
+    --put_line( "pathnameExpansionWithIFS for expanded word """ & word & """" ); -- DEBUG
+    --put_line( "wasDQuote: " & wasDQuote'img ); -- DEBUG
+    -- if in double quotes, then no IFS handling
+    if wasDQuote then
+       pathnameExpansion( word, pattern, list );
+    elsif length( pattern ) = 0 or length( word ) = 0 then
+       pathnameExpansion( word, pattern, list );
+    else
+       -- If this is a bareword, break up each piece separated by whitespace
+       -- into separate worders to be handled individually.
+       while word_pos <= length( word ) loop
+          -- break up the word
+          while word_pos <= length( word ) loop
+             ch := element( word, word_pos );
+             exit when ch /= ASCII.HT and ch /= ' ';
+             word_pos := word_pos + 1;
+          end loop;
+          while word_pos <= length( word ) loop
+             ch := element( word, word_pos );
+             exit when ch = ASCII.HT or ch = ' ';
+             subword := subword & ch;
+             word_pos := word_pos + 1;
+          end loop;
+          -- break up the pattern
+          while pattern_pos <= length( pattern ) loop
+             ch := element( pattern, pattern_pos );
+             exit when ch /= ASCII.HT and ch /= ' ';
+             pattern_pos := pattern_pos + 1;
+          end loop;
+          while pattern_pos <= length( pattern ) loop
+             ch := element( pattern, pattern_pos );
+             --exit when not is_graphic( ch );
+             exit when ch = ASCII.HT or ch = ' ';
+             subpattern := subpattern & ch;
+             pattern_pos := pattern_pos + 1;
+          end loop;
+          -- expand the whitespace delinated subword
+          pathnameExpansion( subword, subpattern, list );
+          subword := null_unbounded_string;
+          subpattern := null_unbounded_string;
+          word_pos := word_pos + 1;
+          pattern_pos := pattern_pos + 1;
+       end loop;
+    end if;
+  end pathnameExpansionWithIFS;
 
 begin
 
@@ -5009,7 +5069,8 @@ begin
        if inDollar then                                      -- was doing $?
           dollarExpansion;                                    -- complete it
        end if;
-       inDQuote := not inDQuote;                          -- toggle " flag
+       wasDQuote := inDQuote;                                -- remember
+       inDQuote := not inDQuote;                             -- toggle " flag
        if not stripQuoteMarks then                           -- SQL word?
           if inDollar then                                   -- in an exp?
              addExpansionDQuote := true;                     -- add after exp
@@ -5182,7 +5243,7 @@ begin
   -- and expand paths--instead, a dummy word will be queued and no other
   -- action is taken.
 
-  pathnameExpansion( word, pattern, wordList );
+  pathnameExpansionWithIFS( word, pattern, wordList );
 
   if isExecutingCommand then
 
