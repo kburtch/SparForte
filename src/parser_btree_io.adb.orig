@@ -343,7 +343,7 @@ begin
            end;
            begin
               if verboseOpt then
-                 set_verbose( theFile.btree.env, 0, 1 );
+                 set_verbose( theFile.btree.env, 1, 1 );
               end if;
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on changing verbose setting"  );
@@ -525,7 +525,7 @@ begin
            end;
            begin
               if verboseOpt then
-                 set_verbose( theFile.btree.env, 0, 1 );
+                 set_verbose( theFile.btree.env, 1, 1 );
               end if;
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on changing verbose setting"  );

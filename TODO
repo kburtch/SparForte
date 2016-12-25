@@ -6,7 +6,11 @@ Languages are complicated.
 UNSORTED NEW ISSUES
 
 BTree
-  - invalid argument on changing verbose setting
+  - bdb set_verbose - invalid argument on changing verbose setting
+    - set_verbose - 0, 1 is failing with invalid argument
+    - set_verbose - 0, 0 is also failing with invalid argument
+    - the flag of 0 must be wrong - setting it to 1 works...what is 1?
+    - e_verbose has DB_VERB flags associated with it
 
 Teamwork Improvments
 
