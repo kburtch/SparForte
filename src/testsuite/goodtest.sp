@@ -2293,7 +2293,17 @@ s := `echo $s1;`;
 pragma assert( s = "h" );
 s1 := " h ";
 s := `echo " $s1 ";`;
-pragma assert( s = "  h  " );
+s1 := "-n c";
+-- bareword
+s := `echo $s1;`;
+pragma assert( s = "c" );
+-- double quotes
+s := `echo "$s1";`;
+pragma assert( s = "-n c" );
+-- single quotes
+s := `echo '$s1';`;
+? s;
+pragma assert( s = "$s1" );
 
 -- Shell Globbing Tests
 

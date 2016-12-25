@@ -4603,7 +4603,8 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
   inBQuote    : boolean := false;                      -- in double quoted part
   inBackslash : boolean := false;                      -- in backquoted part
   inDollar    : boolean := false;                      -- $ expansion
-  wasDQuote   : boolean := false;                      -- TEST
+  wasSQuote   : boolean := false;                      -- is $ expan in sin qu
+  wasDQuote   : boolean := false;                      -- is $ expan in dbl qu
   expansionVar: unbounded_string;                      -- the $ name
   escapeGlobs : boolean := false;                      -- escaping glob chars
   ignoreTerminatingWhitespace : boolean := false;                 -- SQL word has whitespace in it (do not use whitespace as a word terminator)
@@ -4854,6 +4855,8 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
     -- if in double quotes, then no IFS handling
     if wasDQuote then
        pathnameExpansion( word, pattern, list );
+    elsif wasSQuote then
+       shellWordList.Queue( list, aShellWord'( normalWord, pattern, word ) );
     elsif length( pattern ) = 0 or length( word ) = 0 then
        pathnameExpansion( word, pattern, list );
     else
@@ -5088,6 +5091,7 @@ begin
        if inDollar then                                      -- was doing $?
           dollarExpansion;                                   -- complete it
        end if;
+       wasSQuote := inSQuote;                                -- remember
        inSQuote := not inSQuote;                             -- toggle ' flag
        if not stripQuoteMarks then                           -- SQL word?
           if inDollar then                                   -- in an exp?
