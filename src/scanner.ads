@@ -206,6 +206,9 @@ procedure GetFullParentUnitName( fullUnitName : out unbounded_string; unique : o
 function isLocal( id : identifier ) return boolean;
 -- true if identifier is local to the current scope
 
+function getIdentifierBlock( id : identifier ) return block;
+-- return the block number for an identifier
+
 function getBlockName( b : block ) return unbounded_string;
 -- return the name of the given block
 

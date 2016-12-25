@@ -183,14 +183,6 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
 
 
 -----------------------------------------------------------------------------
--- Current Source File Location
------------------------------------------------------------------------------
-
-sourceFileNo   : natural := 0;
-sourceLineNoLo : natural := 0;
-sourceLineNoHi : natural := 0;
-
------------------------------------------------------------------------------
 -- PUT TOKEN
 --
 -- For debugging, show the current token, its value, type and properities.
@@ -1764,6 +1756,29 @@ begin
 --put_line( "isLocal: " & id'img & " >= " & blockStart'img );
    return id >= blockStart;
 end isLocal;
+
+
+-----------------------------------------------------------------------------
+-- GET INDENTIFIER BLOCK
+--
+-- Return the block number for an identifier
+-----------------------------------------------------------------------------
+
+function getIdentifierBlock( id : identifier ) return block is
+  theBlock : block;
+begin
+  for b in reverse blocks'first..blocks_top-1 loop     -- from top down
+      if blocks( b ).newScope then                     -- new scope?
+         if id >= blocks( b ).identifiers_top then     -- id in it?
+            theBlock := b;                             -- return block
+--put_line( "getidentBlock: " & theBlock'img & ' ' & to_string( blocks( b ).blockName ) ); -- DEBUG
+            exit;
+         end if;
+      end if;
+  end loop;
+  return theBlock;
+end getIdentifierBlock;
+
 
 -----------------------------------------------------------------------------
 -- GET BLOCK NAME
@@ -5403,7 +5418,7 @@ begin
      -- Set the new source file number
      oldSourceFileNo := sourceFileNo;
      sourceFilesList.Queue( sourceFiles, sfr );
-     sourceFileNo := natural( sourceFilesList.Length( sourceFiles ) -1 );
+     sourceFileNo := natural( sourceFilesList.Length( sourceFiles ) - 1 );
 
      -- save position, compile include file and insert the byte code
      -- record the size of the new script for source_info.script_size

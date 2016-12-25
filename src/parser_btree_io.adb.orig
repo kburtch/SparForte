@@ -174,7 +174,6 @@ begin
   CheckCursorIsInitialized( cursId );
 end ParseLastCursorParameter;
 
-
 ------------------------------------------------------------------------------
 -- Parser subprograms
 ------------------------------------------------------------------------------
@@ -206,7 +205,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, btree_file, blocks_top );
+     declareResource( resId, btree_file, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParseBtreeNewFile;
@@ -1537,7 +1536,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, btree_cursor, blocks_top );
+     declareResource( resId, btree_cursor, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParseBtreeNewCursor;

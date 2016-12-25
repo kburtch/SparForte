@@ -236,7 +236,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, doubly_linked_string_list, blocks_top );
+     declareResource( resId, doubly_linked_string_list, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParseDoublyNewList;
@@ -500,7 +500,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, doubly_linked_string_list_cursor, blocks_top );
+     declareResource( resId, doubly_linked_string_list_cursor, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParseDoublyNewCursor;
@@ -780,7 +780,7 @@ begin
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        -- the second cursor is the out parameter.  Declare it.  Then fetch it.
        identifiers( ref.id ).resource := true;
-       declareResource( resId, doubly_linked_string_list_cursor, blocks_top );
+       declareResource( resId, doubly_linked_string_list_cursor, getIdentifierBlock( ref.id ) );
        AssignParameter( ref, to_unbounded_string( resId ) );
        findResource( resId, theSecondCursor );
        -- there are four variations

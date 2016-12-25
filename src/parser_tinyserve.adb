@@ -100,7 +100,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, tinyserve_socket_server, blocks_top );
+     declareResource( resId, tinyserve_socket_server, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParseTSNewSocketServer;

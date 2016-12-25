@@ -83,12 +83,19 @@ end String_Hash;
 -- Allocate a new resource record of the given type.  Record the block level
 -- so it will be deallocated when that block is pulled from the scanner's
 -- block table.  Returns 0 if the resource could not be allocated.
+--
+-- When assigning the block level, we want the block level of the variable
+-- declaration, not the block level of the the current line.  For example,
+-- a global variable (block level 1) and declaring a resource in a proc
+-- (block level 2,3) will mean the resource will be discarded when the
+-- procedure stops running if it's assigned block level 2 or 3.
 -----------------------------------------------------------------------------
 
 procedure declareResource( id : out resHandleID; rt : aResourceType; blocklvl : block; max_length : size_t := 0 ) is
   rp : resPtr;
 begin
   rp := new resHandle( rt );
+
   rp.blocklvl := blocklvl;
 
   case rt is
@@ -302,7 +309,7 @@ begin
       -- TODO: destroy handle
       resHandleList.Clear( resHandles, i );                  -- destroy array rec
       if trace then
-         put_trace( "resource handle" & i'img & " deallocated" );
+         put_trace( "Resource handle" & i'img & " deallocated" );
       end if;
   end loop;
   if trace then

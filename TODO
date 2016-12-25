@@ -5,21 +5,8 @@ Languages are complicated.
 
 UNSORTED NEW ISSUES
 
-Shell Improvments
-
-* control-c sometimes leaves the command line in the wrong state (typing is invisible)
-  (i.e. repeatedly hitting control-c)
-* Empty bareword treated as a single parameter but should be ignored
-  - Bareword handling implemented but not thoroughly tested
-  - ParseShellCommand/ParseOneShellWord is used for the first command, even though a
-    bareword can expand to more than one word.
-* x/y relative path doesn't work for a command at the command prompt
-  - the compiler must handle this, creating a shell word...but not break
-    other things
-  - should 'x-y' also be a shell word?
-* broken pipes
-  - TODO: broken pipe errors fixed...but extra blank lines occurring with env
-    (e.g. help | head -1 has no issue)
+BTree
+  - invalid argument on changing verbose setting
 
 Teamwork Improvments
 
@@ -32,7 +19,6 @@ Teamwork Improvments
 
 Web System
 
-* REPL needs to run in a chroot environment
 * cms library requirements(ideas only)
   - get_content (page [, section [, user]] )
   - set_content( page [, section [, user]][, template] )
@@ -41,14 +27,16 @@ Web System
   - get_content_param( name )
   - set_content_param( name, value )
   - login system
-
 [csrf example - this is a random token stored in the user's session,
 changing each request  It is encoded as base64 just to make it
 compatible with HTML - numerics.md5( strings.image( numerics.rnd( 100000000 ) ) ) - the md5 is just to make it HTML compatible]
 Cmp. http://www.adapower.com/adapower1/alg/base64.html
+* REPL needs to run in a chroot environment
+
 
 
 Lanaguage
+
 
 [check double import test case]
 [close tinyserve if open]
@@ -255,6 +243,20 @@ ISSUES (AdaScript)
       array expression value.
 
 ISSUES (Bourne Shell)
+
+  - broken pipes
+    - extra blank lines occurring with env if it is cut short on a broken pipe
+      env | head -1 (e.g. help | head -1 has no issue)
+
+  - x/y command name relative paths
+    - ./foobar works as expected
+    - dir/foobar doesn't work - it must be quoted
+    - foo-bar also doesn't work - it must be quoted
+    - the byte code compiler could handle this, creating a shell word...but not break
+      other things
+
+  - control-c sometimes leaves the command line in the wrong state (typing is invisible)
+     (i.e. repeatedly hitting control-c)
 
   - redirections (Shell Issues)
     - advanced job control (control-Z, fg, bg, etc.)

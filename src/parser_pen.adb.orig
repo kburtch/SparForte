@@ -21435,7 +21435,7 @@ begin
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
      len := size_t( to_numeric( len_expr ) );
-     declareResource( resId, gl_byte_array, blocks_top, len );
+     declareResource( resId, gl_byte_array, getIdentifierBlock( ref.id ), len );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParsePenNewGLByteArray;
@@ -21508,7 +21508,7 @@ begin
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
      len := size_t( to_numeric( len_expr ) );
-     declareResource( resId, gl_int_array, blocks_top, len );
+     declareResource( resId, gl_int_array, getIdentifierBlock( ref.id ), len );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParsePenNewGLIntArray;
@@ -21582,7 +21582,7 @@ begin
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
      len := size_t( to_numeric( len_expr ) );
-     declareResource( resId, gl_short_array, blocks_top, len );
+     declareResource( resId, gl_short_array, getIdentifierBlock( ref.id ), len );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParsePenNewGLShortArray;
@@ -21655,7 +21655,7 @@ begin
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
      len := size_t( to_numeric( len_expr ) );
-     declareResource( resId, gl_float_array, blocks_top, len );
+     declareResource( resId, gl_float_array, getIdentifierBlock( ref.id ), len );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParsePenNewGLFloatArray;
@@ -21728,7 +21728,7 @@ begin
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
      len := size_t( to_numeric( len_expr ) );
-     declareResource( resId, gl_double_array, blocks_top, len );
+     declareResource( resId, gl_double_array, getIdentifierBlock( ref.id ), len );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParsePenNewGLDoubleArray;

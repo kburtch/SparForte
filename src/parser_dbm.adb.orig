@@ -2616,7 +2616,7 @@ begin
   end if;
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, postgresql_connection, blocks_top );
+     declareResource( resId, postgresql_connection, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParseDBMNewConnection;
@@ -2641,7 +2641,7 @@ begin
   end if;
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, postgresql_query, blocks_top );
+     declareResource( resId, postgresql_query, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParseDBMNewQuery;

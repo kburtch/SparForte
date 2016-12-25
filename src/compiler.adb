@@ -66,14 +66,6 @@ pragma Optimize( time );
 package body compiler is
 
 -----------------------------------------------------------------------------
--- Current Source File Location
------------------------------------------------------------------------------
-
-sourceFileNo   : natural := 0;
-sourceLineNoLo : natural := 0;
-sourceLineNoHi : natural := 0;
-
------------------------------------------------------------------------------
 -- getSourceFileName
 --
 -- Determine the current source file as stored against the byte code line.

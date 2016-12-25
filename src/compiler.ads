@@ -85,6 +85,15 @@ nextScriptCommandOffset  : constant aByteCodePosition := 5;
 -- byte code (for now)
 
 
+-----------------------------------------------------------------------------
+-- Current Source File Location
+-----------------------------------------------------------------------------
+
+sourceFileNo   : natural := 0;
+sourceLineNoLo : natural := 0;
+sourceLineNoHi : natural := 0;
+
+
 ------------------------------------------------------------------------------
 -- Predefined identifiers
 --

@@ -5286,7 +5286,7 @@ procedure ParseOneShellWord( wordType : out aShellWordType;
 begin
    ParseShellWord( wordList, First );
    if shellWordList.Length( wordList ) > 1 then
-      err( "one word expected but there were multiple matches" );
+      err( "one shell word expected but it expanded to multiple words.  (SparForte requires commands that expand to one shell word.)" );
    else
       shellWordList.Find( wordList, 1, theWord );
       wordType := theWord.wordType;
@@ -6976,6 +6976,16 @@ begin
 
   -- Expand command variable (if any).  Otherwise, parse the first shell
   -- word.
+  --
+  -- Basically, we can't have a bareword expansion because of this: if the
+  -- command is AdaScript syntax, the tokens need to be read from the script.
+  -- It can't read tokens from the shell word list.  (e.g. if $cmd = "ls (",
+  -- a $cmd bareword will put the paranthesis in the word list, not in the
+  -- command line, after parsing.)
+  --
+  -- So, for now, I require the first shell word not to be a bareword with
+  -- multiple subwords after expansion.  However, some of this could be
+  -- improved in the future.
 
      cmdNameToken := token;                       -- avoid prob below w/discard
      ParseOneShellWord( wordType, pattern, cmdName, First => true );

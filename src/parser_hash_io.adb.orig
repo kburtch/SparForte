@@ -207,7 +207,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, hash_file, blocks_top );
+     declareResource( resId, hash_file, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParseHashNewFile;
@@ -1538,7 +1538,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, hash_cursor, blocks_top );
+     declareResource( resId, hash_cursor, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParseHashNewCursor;

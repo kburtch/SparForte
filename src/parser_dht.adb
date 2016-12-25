@@ -134,7 +134,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, dynamic_string_hash_table, blocks_top );
+     declareResource( resId, dynamic_string_hash_table, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParseDHTNewTable;

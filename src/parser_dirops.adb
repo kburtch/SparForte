@@ -409,7 +409,7 @@ begin
   if isExecutingCommand then
      begin
        identifiers( ref.id ).resource := true;
-       declareResource( resId, directory, blocks_top );
+       declareResource( resId, directory, getIdentifierBlock( ref.id ) );
        AssignParameter( ref, to_unbounded_string( resId ) );
        findResource( resId, theDir );
        Open( theDir.dir, to_string( expr_val ) );

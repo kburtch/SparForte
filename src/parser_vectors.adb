@@ -345,7 +345,7 @@ put_line( to_string( identifiers( baseIndexKind ).name ) );
   if isExecutingCommand then
      -- TODO: don't reinitialize if already initialized
      identifiers( ref.id ).resource := true;
-     declareResource( resId, vector_string_list, blocks_top );
+     declareResource( resId, vector_string_list, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParseVectorsNewVector;
@@ -911,7 +911,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, vector_string_list_cursor, blocks_top );
+     declareResource( resId, vector_string_list_cursor, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParseVectorsNewCursor;

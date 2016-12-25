@@ -2677,7 +2677,7 @@ begin
   end if;
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, mysql_connection, blocks_top );
+     declareResource( resId, mysql_connection, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParseMySQLMNewConnection;
@@ -2702,7 +2702,7 @@ begin
   end if;
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
-     declareResource( resId, mysql_query, blocks_top );
+     declareResource( resId, mysql_query, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
   end if;
 end ParseMySQLMNewQuery;
