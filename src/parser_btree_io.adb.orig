@@ -807,6 +807,14 @@ begin
      isRecord := true;
      ParseIdentifier( itemRef.id );
      genTypesOk( identifiers( itemRef.id ).kind, genKindId );
+     -- Mark the variable as having been written for future tests.
+     if syntax_check and then not error_found then
+        if identifiers( itemRef.id ).field_of /= eof_t then
+           identifiers( identifiers( itemRef.id ).field_of ).wasWritten := true;
+        else
+           identifiers( itemRef.id ).wasWritten := true;
+        end if;
+     end if;
   -- array?
   elsif identifiers( genKindId ).list then
      -- ParseOutParam doesn't handle full records or arrays
@@ -814,6 +822,14 @@ begin
      ParseIdentifier( itemRef.id );
      genTypesOk( identifiers( itemRef.id ).kind, genKindId );
      --ParseLastOutParameter(  itemRef, genKindId );
+     -- Mark the variable as having been written for future tests.
+     if syntax_check and then not error_found then
+        if identifiers( itemRef.id ).field_of /= eof_t then
+           identifiers( identifiers( itemRef.id ).field_of ).wasWritten := true;
+        else
+           identifiers( itemRef.id ).wasWritten := true;
+        end if;
+     end if;
   else
      -- This will still auto-declare scalars
      ParseOutParameter(  itemRef, genKindId );

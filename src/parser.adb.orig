@@ -5769,7 +5769,6 @@ procedure ParseFormalParameters( proc_id : identifier; param_no : in out integer
 begin
   param_no := param_no + 1;
   ParseNewIdentifier( formal_param_id );
-
   expect( symbol_t, ":" );
 
   -- Check the parameter mode
@@ -6214,6 +6213,7 @@ begin
   -- We have to do another search for the actual parameter fields and
   -- link them to the usable parameter fields
   FixRenamedRecordFields( actualRecordRef, usableRecordParamId );
+
 end updateRenamedRecordParameter;
 
 ------------------------------------------------------------------------------
@@ -6266,6 +6266,16 @@ begin
      -- not yet implemented
      err( "enumerated items cannot be used as an in out or out mode parameter" );
   end if;
+  -- whether declaring the params or not, during a syntax check, the actual
+  -- parameter must be marked as "written" to avoid an error over not being
+  -- a constant
+  if syntax_check and then not error_found then
+     if identifiers( actual_param_ref.id ).field_of /= eof_t then
+        identifiers( identifiers( actual_param_ref.id ).field_of ).wasWritten := true;
+     else
+        identifiers( actual_param_ref.id ).wasWritten := true;
+     end if;
+  end if;
   if declareParams then
        -- the actual parameter will be the canonical identifier for
        -- the renaming
@@ -6277,6 +6287,7 @@ begin
         -- TODO: actually, an update not a declaration.  But can it be
         -- combined with declareIdent?
         declareRenaming( usableParamId, actual_param_ref ); -- basic renaming
+        -- Usuable parameter was "written"
         if syntax_check and then not error_found then
            identifiers( usableParamId ).wasWritten := true;
         end if;
