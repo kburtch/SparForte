@@ -1,6 +1,6 @@
 For the latest news, visit the Linux Cafe at the PegaSoft web site. 
 
-SparForte 2.0's focus was on symbol table changes to support packages, and extending the maximum number of reserved words so more keywords can be defined.
+SparForte 2.0.1's focus was but fixes for SparForte 2.0
 
 CHANGES SINCE 2.0
 
@@ -34,4 +34,5 @@ CHANGES SINCE 2.0
 
 15. Fix: name of include files displayed properly in error messages.
 
+16. Fix: constant test works correctly with user function out, in out parameters.
 
