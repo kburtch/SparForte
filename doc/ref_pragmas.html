@@ -358,22 +358,27 @@ contents of any or all annotate pragmas are shown when you use the help
 command on a script.  The text is a static string expression.  Type type of
 annotation field can be:
 <ul>
-<li><b>author</b> - who wrote the script</li>
+<li><b>author</b> - who wrote the script. (This cannot be a team.member
+variable</li>
 <li><b>bugs</b> - known bugs</li>
 <li><b>created</b> - when the script was first released</li>
-<li><b>category</b> - a user string to organize this script by</li>
+<li><b>category</b> - a user string to organize scripts into groups</li>
 <li><b>description</b> - a detailed description of what the script does</li>
 <li><b>errors</b> - errors returned from the script</li>
 <li><b>modified</b> - when the script was last modified</li>
 <li><b>param</b> - description of a parameter to the script</li>
 <li><b>return</b> - return value</li>
-<li><b>see_also</b> - a eeference to another document or script</li>
+<li><b>see_also</b> - a reference to another document or script</li>
 <li><b>summary</b> - a short description of what the script does</li>
 <li><b>todo</b> - unfinished work</li>
 <li><b>version</b> - the version of the script</li>
 </ul></li>
 </ul>
 <p>Annotations are used by the help command to produce documentation.</p>
+
+<p><b>Implementation Note</b>: author cannot be a team.member variable
+because the help command scans to source for pragmas and doesn't actually
+perform variable declarations.</p>
 
 <h4>Teamwork Pragmas</h4>
 
