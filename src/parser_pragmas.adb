@@ -80,6 +80,9 @@ type aPragmaKind is (
      ada_95,
      advise,
      asserting,
+     assumption,
+     assumption_used,
+     assumption_written,
      annotate,
      blocked,
      clarify,
@@ -148,6 +151,8 @@ begin
      pragmaKind :=  advise;
   elsif name = "assert" then
      pragmaKind :=  asserting;
+  elsif name = "assumption" then
+     pragmaKind :=  assumption;
   elsif name = "debug" then
      pragmaKind :=  debug;
   elsif name = "annotate" then
@@ -285,6 +290,34 @@ begin
      baseTypesOK( exprType, uni_string_t );
   --end if;
 end ParseAnnotateKind;
+
+--  PARSE ASSUMPTION KIND
+--
+-- Assumptions are workarounds...
+----------------------------------------------------------------------------
+
+procedure ParseAssumptionKind( var_id : out identifier; assumeKind: out aPragmaKind ) is
+  name_unbounded : unbounded_string := identifiers( token ).name;
+  name : string := to_string( name_unbounded );
+begin
+  if name = "used" then
+     assumeKind := assumption_used;
+     discardUnusedIdentifier( token );
+     getNextToken;
+     expect( symbol_t, "," );
+     ParseIdentifier( var_id );
+  elsif name = "written" then
+     assumeKind := assumption_written;
+     discardUnusedIdentifier( token );
+     getNextToken;
+     expect( symbol_t, "," );
+     ParseIdentifier( var_id );
+  else
+     assumeKind := assumption;
+     discardUnusedIdentifier( token );
+     err( "only 'used', 'written' assumptions supported" );
+  end if;
+end ParseAssumptionKind;
 
 --  PARSE IMPORT KIND
 --
@@ -591,6 +624,8 @@ begin
      ParseExpression( expr_val, var_id );
   when annotate =>                           -- pragma annotate
      ParseAnnotateKind;
+  when assumption =>                         -- pragma assumption
+     ParseAssumptionKind( var_id, pragmaKind );
   when blocked =>                            -- pragma clarify
      ParseIdentifier( var_id );
      if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
@@ -959,19 +994,26 @@ begin
 
   -- Execute the pragma
 
-  -- this pragma only affects syntax checking.  syntax checking doesn't
+  -- these pragma only affects syntax checking.  syntax checking doesn't
   -- happen at the command prompt.
   if syntax_check then
-     if pragmaKind = restriction_unused then
+     if pragmaKind = assumption_used then
+        identifiers( var_id ).wasReferenced := true;
+     elsif pragmaKind = assumption_written then
+        if identifiers( var_id ).field_of /= eof_t and
+           -- KLUDGE: should never be zero...should be eof_t
+           identifiers( var_id ).field_of /= 0 then
+            identifiers( identifiers( var_id ).field_of ).wasWritten := true;
+        else
+            identifiers( var_id ).wasWritten := true;
+         end if;
+     elsif pragmaKind = restriction_unused then
         restriction_no_unused_identifiers := true;
-     end if;
-     if pragmaKind = suppress_word_quoting then
+     elsif pragmaKind = suppress_word_quoting then
         world.suppress_word_quoting := true;
-     end if;
-     if pragmaKind = suppress_low_priority_todos then
+     elsif pragmaKind = suppress_low_priority_todos then
         allowLowPriorityTodosForRelease := true;
-     end if;
-     if pragmaKind = suppress_all_todos then
+     elsif pragmaKind = suppress_all_todos then
         allowAllTodosForRelease := true;
      end if;
   end if;
@@ -993,6 +1035,8 @@ begin
            end if;
         end if;
      when annotate =>
+        null;
+     when assumption|assumption_used|assumption_written =>
         null;
      when blocked =>
         null;

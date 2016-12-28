@@ -36,3 +36,6 @@ CHANGES SINCE 2.0
 
 16. Fix: constant test works correctly with user function out, in out parameters.
 
+17. New: pragma assumption( used, var ) / assumption( written, var ) as a workaround when the language guesses incorrectly if a variable is unused or is not written to.
+
+

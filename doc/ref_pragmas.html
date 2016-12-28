@@ -54,6 +54,8 @@ environment.</p>
   <b>pragma</b> advise( from, message )
   <b>pragma</b> annotate( [type,]"text" )
   <b>pragma</b> assert( condition )
+  <b>pragma</b> assumption( referenced )
+  <b>pragma</b> assumption( written )
   <b>pragma</b> clarify( from, message )
   <b>pragma</b> debug( `commands` )
   <b>pragma</b> depreciated/deprecated( "newscript" )
@@ -300,6 +302,14 @@ suppress certain error messages.</p>
 If it isn't true, the program stops and "assertion failed" is displayed.
 Use this to check the expected results during development.
 Requires --debug or --test options or asserts will have no effect.</li>
+  <li> <b>pragma assumption( used, var )</b> - assume a variable is
+used in the source code, even if it isn't, for unused variable
+errors.  This is to be used as a work-around if the language makes a
+mistake.</li>
+  <li> <b>pragma assumption( written, var )</b> - assume a variable is
+written to in the source code, even if it isn't, for constant/variable
+errors.  This is to be used as a work-around if the language makes a
+mistake.</li>
   <li> <b>pragma debug( `commands` )</b> - these are a set of
 debugging commands to run when debugging mode (the --debug option)
 is turned on with --debug.&nbsp; Make sure the final command ends with
