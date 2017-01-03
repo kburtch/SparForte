@@ -345,7 +345,10 @@ begin
            end;
            begin
               if verboseOpt then
-                 set_verbose( theFile.hash.env, 0, 1 );
+                 set_verbose( theFile.btree.env, DB_VERB_BACKUP, 1 );
+                 set_verbose( theFile.btree.env, DB_VERB_DEADLOCK, 1 );
+                 set_verbose( theFile.btree.env, DB_VERB_FILEOPS_ALL, 1 );
+                 set_verbose( theFile.btree.env, DB_VERB_WAITSFOR, 1 )
               end if;
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on changing verbose setting"  );

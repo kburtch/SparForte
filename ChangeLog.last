@@ -1,0 +1,41 @@
+For the latest news, visit the Linux Cafe at the PegaSoft web site. 
+
+SparForte 2.0.1's focus was bug fixes for SparForte 2.0
+
+CHANGES SINCE 2.0
+
+1. New: in --test phase mode, variables that are not written to (that is, assigned to or are in out / out parameters) are an error: they should be constants.  If a record field is written to, the whole record is treated as written to.
+
+2. Change: Release tests now test example programs with --test phase mode (instead of the default development phase mode) to ensure the most error checking is applied.  (Also, they really are being tested for a release so --test is the correct flag.)
+
+3. Change: Additional debugging options on GCC C compiles.
+
+4. Fix: for GNU readline prompt, added a newline so "return" displays properly on control-d exit.
+
+5. Change: New, more meaningful message when a -- or comment hides last semi-colon at a command prompt.
+
+6. New: pragma annotate( category ... ) to designate a group of scripts.
+
+7. New: --profile / -P - run profile without logging in or using --login.
+
+8. Fix: Control-C/SIGINT no longer aborts an interactive session if pragma prompt_script has been used.
+
+9. Fix: Clear login shell flag on background processes in pipelines so they don't report a "must use logout" error.  Hopefully fixed, anyway.
+
+10. Fix: removed EINTR handling on close...this is a diagnosic message and should not result in another close attempt.
+
+11. Fix: env no longer raises PROGRAM_ERROR due to broken pipe (e.g. env | head ).
+
+12. Fix: Added a SIGPIPE handler.  The results are ignored but it prevents broken pipe warnings from other commands (e.g. ls -1 | head ).
+
+13. Fix: Bourne shell barewords now expand properly to multiple words if they contain whitespace. (e.g. s := "*.ads *.adb" ; ls $s lists all files matching those endings.  Bareword expansion is not permitted with command names because it complicates AdaScript parameter handling.
+
+14. Fix: Resources are now declared at the block level of the identifier, not the block level of the source line.  Resources are no longer deallocated prematurely.
+
+15. Fix: name of include files displayed properly in error messages.
+
+16. Fix: constant test works correctly with user function out, in out parameters.
+
+17. New: pragma assumption( used, var ) / assumption( written, var ) as a workaround when the language guesses incorrectly if a variable is unused or is not written to.
+
+
