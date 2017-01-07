@@ -6,4 +6,5 @@ CHANGES SINCE 2.0.1
 
 1. Fix: When the verbose option is used, Berkeley DB verbose options are enabled for DB_VERB_BACKUP, DB_VERB_DEADLOCK, DB_VERB_FILEOPS, DB_VERB_WAITSFOR.
 
+2. Fix: If btree_io.create fails to create a file, an exception is no longer raised when truncate is attempted.
 

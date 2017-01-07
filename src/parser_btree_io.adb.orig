@@ -382,16 +382,20 @@ begin
         theFile.btree.isOpen := true;
         theFile.btree.name := fname_val;
 
-        declare
-           cnt : natural;
-        begin
-           truncate( theFile.btree.session, cnt );
-           if trace and cnt > 0 then
-              put_trace( cnt'img & " records were erased" );
-           end if;
-        exception when msg: berkeley_error =>
-           err( exception_message( msg ) & " on truncating the data file"  );
-        end;
+        -- Do not truncate if create failed
+
+        if not error_found then
+           declare
+              cnt : natural;
+           begin
+              truncate( theFile.btree.session, cnt );
+                 if trace and cnt > 0 then
+                 put_trace( cnt'img & " records were erased" );
+              end if;
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) & " on truncating the data file"  );
+           end;
+       end if;
      --exception when berkeley_error:s =>
      --   err( to_string( last_error( theFile.btree.session ) );
      end;
