@@ -298,6 +298,9 @@ begin
   end if;
 -- TODO: shoul close tinyserve server if open
   resHandleList.clear( resHandles, long_integer( id ) );
+  if trace then
+     put_trace( "Resource id" & id'img & " memory freed" );
+  end if;
 end clearResource;
 
 procedure pullResourceBlock( blocklvl : block ) is
@@ -306,8 +309,8 @@ begin
   for i in reverse 1..resHandleList.length( resHandles ) loop  -- look thru arrays
       resHandleList.Find( resHandles, i, rp );               -- next array
       exit when rp.blocklvl < blocklvl;                      -- completed block?
-      -- TODO: destroy handle
-      resHandleList.Clear( resHandles, i );                  -- destroy array rec
+      clearResource( resHandleID( i ) );                     -- dealloc memory
+      resHandleList.Clear( resHandles, i );                  -- destroy entry
       if trace then
          put_trace( "Resource handle" & i'img & " deallocated" );
       end if;
