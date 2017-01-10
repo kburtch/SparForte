@@ -6,7 +6,7 @@ pragma annotate( summary, "neartime" )
        @( see_also, "http://www.zazzybob.com/bin/neartime.html" )
        @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
-
+pragma software_model( shell_script );
 pragma restriction( no_external_commands );
 
 procedure neartime is
