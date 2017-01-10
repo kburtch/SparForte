@@ -299,7 +299,7 @@ begin
 -- TODO: shoul close tinyserve server if open
   resHandleList.clear( resHandles, long_integer( id ) );
   if trace then
-     put_trace( "Resource id" & id'img & " memory freed" );
+     put_trace( "Resource handle" & id'img & " memory freed" );
   end if;
 end clearResource;
 

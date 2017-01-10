@@ -8,3 +8,5 @@ CHANGES SINCE 2.0.1
 
 2. Fix: If btree_io.create fails to create a file, an exception is no longer raised when truncate is attempted.
 
+3. Fix: Dynamic memory within resource handles is freed and files closed prior to deallocation the resource handle.
+

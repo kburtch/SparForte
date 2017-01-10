@@ -5,10 +5,28 @@ Languages are complicated.
 
 UNSORTED NEW ISSUES
 
+- GitHub "badges" (see also shields)
+  - you need to be able to point at Jenkins.  A URL to the shields.io site
+    containing an embedded URL to your Jenkings to get the data for the
+    badge
+  - http://shields.io/
+  - example - https://github.com/seiyria/c
+
 - constant check fails if assignment is in `..` (compiled after main program is
   compiled)
 - btree_io.get failed on not initialized resource but should have had
   a message
+  - using BDB's get() in a _template_
+    - there is a bad pointer thrown by BDB's get()
+    - the resource is allocated...
+    - but BDB get() runs fine in the main script
+- safety check that a file cannot include itself
+- files.is_directory on a file...confirm no exception is thrown
+- files.is_writable didn't work on skiffmouse
+- exceptions that propogate to the top aren't formatted properly in the
+  Apache log (single chars)
+  - some error messages may not appear in log or on screen - need to confirm
+- when tracing, shows main script name, not template name
 
 BTree
   - bdb set_verbose - invalid argument on changing verbose setting
@@ -25,7 +43,6 @@ Teamwork Improvments
   * Generating burndown charts?
 * xUnit support for tests (pragma test_result - output in JUNIT format?)
 
-
 Web System
 
 * cms library requirements(ideas only)
@@ -36,15 +53,13 @@ Web System
   - get_content_param( name )
   - set_content_param( name, value )
   - login system
+  - content as page content (articles, blogs, comments, etc.)
+  - name for cms library
 
-[csrf example - this is a random token stored in the user's session,
-changing each request  It is encoded as base64 just to make it
-compatible with HTML - numerics.md5( strings.image( numerics.rnd( 100000000 ) ) ) - the md5 is just to make it HTML compatible]
-Cmp. http://www.adapower.com/adapower1/alg/base64.html
+- base64 encoding (for csrf token)
+  - Cmp. http://www.adapower.com/adapower1/alg/base64.html
 
 * REPL needs to run in a chroot environment
-
-
 
 Lanaguage
 
@@ -120,6 +135,8 @@ ISSUES (AdaScript)
   * latest
     - SOCK_NONBLOCK - obsolete in Linux, must be replaced
     - rpmlint complains about gethostbyname (IP4-specific) -> getaddrinfo
+  * terminal control character escaping isn't working on readline prompt
+    - bold is turned off temporarily on prompt
 
 
   * general syntax (AdaScript Issues)
@@ -131,7 +148,6 @@ ISSUES (AdaScript)
       parseRange
     - enumerateds should be upper-case, if this doesn't conflict with type-
       sensitivity
-    - byte code changed to support more compressed reserved words
     - vim syntax - $$ doesn't work
     - unreachable code error doesn't indent token hilight properly
 
@@ -338,16 +354,10 @@ MAJOR REDESIGNS
     - records should allow nested arrays
     - arrays should support nested arrays
     - linked lists or other container types
-
- - exception handling
-    - rewrite parser so that err doesn't set eof_t (ie have loops that look
-      for eof also look for error_found)
-    - save error message to err_message variable
-    - ParseExceptionPart
-    - allow raise, don't worry about declaring exceptions until later
+  - ParseExpression should return a storage record, not a string, so
+    arrays can be returned (and future records, objects)
 
  - performance enhancements
-    - arrays are very slow
     - lineRead still reads as unbounded_string instead of copying directly
       into script variable, causing double buffering and conversion slowdowns
     - more sophisticated byte code for speed
@@ -357,12 +367,12 @@ MAJOR REDESIGNS
          tokenize the script file.
     - change system calls to get tput results - remove system() reliance
     - "kind" field should be a pointer for speed, not an array index
-    - no type-checking after syntax-check stage?
+    - no type-checking after syntax-check stage for performance?  But command
+      prompt has no syntax check so must be excluded?
     - a pragma inline should be created in order to cache other scripts
     - DoRunTimeStatments should probably fork and use pipes to read results
       instead of using a temp file
       - otherwise, DoRunTimeStatements only read results one char at a time
-    - would arrays be faster as real dynamic ada arrays?
     - instead of the fast string library, just store the first character in
       the identifier record and (optionally) test on that?  Use a new record
       type to prevent string assignments without updating the first character.
@@ -373,10 +383,6 @@ MAJOR REDESIGNS
     - review parser/child package structure.  A better way to organize?
 
   * Platform issues
-    - ADAVOX:
-      wc-streams-endian.ads:160:04: representation item appears too late
-      wc-streams-endian.ads:183:04: representation item appears too late
-      on Fedora Core 3 - commented out (for now)
    - Spar hangs with vt52 40x8 login, throws exception (perhaps division by
      zero because attributes like bold null strings??)  Also has ctrl-q's
      so maybe a flow of control problem

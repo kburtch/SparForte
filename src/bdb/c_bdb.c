@@ -218,7 +218,6 @@ void C_db_get(
 
 	memcpy( data, data_dbt.data, data_dbt.size );
 	*data_length = data_dbt.size;
-
 }
 
 // C_db_get_recno

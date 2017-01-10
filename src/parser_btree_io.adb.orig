@@ -374,17 +374,18 @@ begin
            theFile.btree.env,
            keyLen,
            valLen );
+        theFile.btree.isOpen := false;
         begin
            create( theFile.btree.session, filename, "", DB_BTREE, 0, 0 );
         exception when msg: berkeley_error =>
            err( exception_message( msg ) & " on creating the data file"  );
         end;
-        theFile.btree.isOpen := true;
-        theFile.btree.name := fname_val;
 
         -- Do not truncate if create failed
 
         if not error_found then
+           theFile.btree.isOpen := true;
+           theFile.btree.name := fname_val;
            declare
               cnt : natural;
            begin
@@ -559,13 +560,14 @@ begin
            keyLen,
            valLen );
 
+        theFile.btree.isOpen := false;
         begin
            open( theFile.btree.session, filename, "", DB_BTREE, 0, 0 );
+           theFile.btree.isOpen := true;
+           theFile.btree.name := fname_val;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) & " on opening the data file"  );
         end;
-        theFile.btree.isOpen := true;
-        theFile.btree.name := fname_val;
      end;
   end if;
 end ParseBTreeOpen;
@@ -771,6 +773,8 @@ begin
            put( theFile.btree.session, to_string( keyExpr ), to_string( valExpr ) );
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
+        when STORAGE_ERROR =>
+           err( "internal error: unable to reference BDB session" );
         end;
      end if;
   end if;
@@ -856,6 +860,8 @@ begin
            else
                err( exception_message( msg ) );
            end if;
+        when STORAGE_ERROR =>
+           err( "internal error: unable to reference BDB session" );
         end;
      elsif isArray then
         declare
@@ -870,6 +876,8 @@ begin
            else
                err( exception_message( msg ) );
            end if;
+        when STORAGE_ERROR =>
+           err( "internal error: unable to reference BDB session" );
         end;
      else
         declare
@@ -884,6 +892,8 @@ begin
            else
                err( exception_message( msg ) );
            end if;
+        when STORAGE_ERROR =>
+           err( "internal error: unable to reference BDB session" );
         end;
      end if;
   end if;
@@ -918,6 +928,8 @@ begin
         result := to_bush_boolean( true );
      exception when berkeley_error =>
         result := to_bush_boolean( false );
+     when STORAGE_ERROR =>
+        err( "internal error: unable to reference BDB session" );
      end;
   end if;
 end ParseBTreeHasElement;
@@ -974,6 +986,8 @@ begin
            else
               err( exception_message( msg ) );
            end if;
+        when STORAGE_ERROR =>
+           err( "internal error: unable to reference BDB session" );
         end;
      end if;
   end if;

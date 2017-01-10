@@ -48,16 +48,16 @@ begin
   -- Hour as English Text
 
   case hour is
-  when 00|12|24 => nearhour := "Twelve" ;
-  when 01|13 =>  nearhour := "One" ;
-  when 02|14 =>  nearhour := "Two" ;
-  when 03|15 =>  nearhour := "Three" ;
-  when 04|16 =>  nearhour := "Four" ;
-  when 05|17 =>  nearhour := "Five" ;
-  when 06|18 =>  nearhour := "Six" ;
-  when 07|19 =>  nearhour := "Seven" ;
-  when 08|20 =>  nearhour := "Eight" ;
-  when 09|21 =>  nearhour := "Nine" ;
+  when  0|12|24 => nearhour := "Twelve" ;
+  when  1|13 =>  nearhour := "One" ;
+  when  2|14 =>  nearhour := "Two" ;
+  when  3|15 =>  nearhour := "Three" ;
+  when  4|16 =>  nearhour := "Four" ;
+  when  5|17 =>  nearhour := "Five" ;
+  when  6|18 =>  nearhour := "Six" ;
+  when  7|19 =>  nearhour := "Seven" ;
+  when  8|20 =>  nearhour := "Eight" ;
+  when  9|21 =>  nearhour := "Nine" ;
   when 10|22 =>  nearhour := "Ten" ;
   when 11|23 =>  nearhour := "Eleven" ;
   when others =>
