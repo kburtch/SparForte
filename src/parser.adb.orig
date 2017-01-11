@@ -8109,6 +8109,8 @@ begin
   itself_type := token;
   itself_question := false;
 
+--put_token; -- DEBUG
+
   if Token = command_t then
      err( "Bourne shell command command not implemented" );
      --getNextToken;
@@ -8168,20 +8170,6 @@ begin
      -- So we flag this as a special case.
      itself_question := true;
      ParseQuestion;
-  --elsif Token = put_t then
-  --   ParsePut;
-  --elsif Token = new_line_t then
-  --   ParseNewLine;
-  --elsif Token = skip_line_t then
-  --   ParseSkipLine;
-  --elsif Token = set_input_t then
-  --   ParseSetInput;
-  --elsif Token = set_output_t then
-  --   ParseSetOutput;
-  --elsif Token = set_error_t then
-  --   ParseSetError;
-  --elsif Token = cmd_setexit_t then
-  --   ParseSetExitStatus;
   elsif Token = reset_t then
      ParseReset;
   elsif Token = delete_t then                     -- special case
@@ -8194,372 +8182,12 @@ begin
         resumeScanning( cmdStart );
         ParseShellCommand;                        -- SQL delete
      end if;
-  --elsif Token = get_t then
-  --   ParseGet;
-  --elsif Token = os_system_t then
-  --   ParseOSSystem;
   elsif Token = delay_t then
      ParseDelay;
-  --elsif Token = locks_lock_t then
-  --   ParseLockLockFile;
-  --elsif Token = locks_unlock_t then
-  --   ParseLockUnlockFile;
-  --elsif token = cgi_put_cgi_header_t then               -- CGI.put_cgi_headr
-  --   ParsePut_CGI_Header;
-  --elsif token = cgi_put_HTML_head_t then                -- CGI.put_html_head
-  --   ParsePut_HTML_Head;
-  --elsif token = cgi_put_HTML_heading_t then             -- CGI.put_html_heading
-  --   ParsePut_HTML_Heading;
-  --elsif token = cgi_put_HTML_tail_t then                -- CGI.put_html_tail
-  --   ParsePut_HTML_Tail;
-  --elsif token = cgi_put_error_message_t then            -- CGI.put_error_msg
-  --   ParsePut_Error_Message;
-  --elsif token = cgi_put_variables_t then                -- CGI.put_variables
-  --   ParsePut_Variables;
-  --elsif token = cgi_set_cookie_t then                   -- CGI.set_cookie
-  --   ParseSet_Cookie;
-  --elsif token = cal_split_t then                        -- Calendar.Split
-  --   ParseCalSplit;
-  --elsif Token = sound_play_t then
-  --   ParsePlay;
-  --elsif Token = sound_playcd_t then
-  --   ParsePlayCD;
-  --elsif Token = sound_stopcd_t then
-  --   ParseStopCD;
-  --elsif Token = sound_mute_t then
-  --   ParseMute;
-  --elsif Token = sound_unmute_t then
-  --   ParseUnmute;
-  --elsif Token = replace_t then
-  --   ParseStringsReplace;
-  --elsif Token = csv_replace_t then
-  --   ParseStringsCSVReplace;
-  --elsif Token = set_unbounded_string_t then         -- Strings.set_unbounded_string
-  --   ParseStringsSetUnboundedString;
-  --elsif Token = split_t then
-  --   ParseStringsSplit;
-  --elsif token = mysql_connect_t then                -- MYSQL.Connect
---#if MYSQL
-     --ParseMySQLConnect;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_disconnect_t then             -- MYSQL.Disconnect
---#if MYSQL
-     --ParseMySQLDisconnect;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_reset_t then                  -- MYSQL.Reset
---#if MYSQL
-     --ParseMySQLReset;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_set_rollback_on_finalize_t then  -- MYSQL.SetRollbackOnFinalize
---#if MYSQL
-     --ParseMySQLSetRollbackOnFinalize;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_open_db_trace_t then          -- MYSQL.OpenDBTrace
---#if MYSQL
-     --ParseMySQLOpenDBTrace;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_close_db_trace_t then         -- MYSQL.CloseDBTrace
---#if MYSQL
-     --ParseMySQLCloseDBTrace;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_set_trace_t then              -- MYSQL.SetTrace
---#if MYSQL
-     --ParseMySQLSetTrace;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_clear_t then                  -- MYSQL.Clear
---#if MYSQL
-     --ParseMySQLClear;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_prepare_t then                -- MYSQL.Prepare
---#if MYSQL
-     --ParseMySQLPrepare;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_append_t then                 -- MYSQL.Append
---#if MYSQL
-     --ParseMySQLAppend;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_append_line_t then            -- MYSQL.Append_Line
---#if MYSQL
-     --ParseMySQLAppendLine;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_append_quoted_t then          -- MYSQL.Append_Quoted
---#if MYSQL
-     --ParseMySQLAppendQuoted;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_execute_t then                -- MYSQL.Execute
---#if MYSQL
-     --ParseMySQLExecute;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_execute_checked_t then        -- MYSQL.Execute_Checked
---#if MYSQL
-     --ParseMySQLExecuteChecked;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_raise_exceptions_t then       -- MYSQL.Raise_Exceptions
---#if MYSQL
-     --ParseMySQLRaiseExceptions;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_report_errors_t then          -- MYSQL.Report_Errors
---#if MYSQL
-     --ParseMySQLReportErrors;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_begin_work_t then             -- MYSQL.Begin_Work
---#if MYSQL
-     --ParseMySQLBeginWork;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_rollback_work_t then          -- MYSQL.Rollback_Work
---#if MYSQL
-     --ParseMySQLRollbackWork;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_commit_work_t then            -- MYSQL.Commit_Work
---#if MYSQL
-     --ParseMySQLCommitWork;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_rewind_t then                 -- MYSQL.Rewind
---#if MYSQL
-     --ParseMySQLRewind;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_fetch_t then                  -- MYSQL.Fetch
---#if MYSQL
-     --ParseMySQLFetch;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_show_t then                   -- MYSQL.Show
---#if MYSQL
-     --ParseMySQLShow;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_list_t then                   -- MYSQL.List
---#if MYSQL
-     --ParseMySQLList;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_schema_t then                 -- MYSQL.Schema
---#if MYSQL
-     --ParseMySQLSchema;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_users_t then                  -- MYSQL.Users
---#if MYSQL
-     --ParseMySQLUsers;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = mysql_databases_t then               -- MYSQL.Databases
---#if MYSQL
-     --ParseMySQLDatabases;
---#else
-     --err( "mysql support not configured" );
---#end if;
-  --elsif token = numerics_set_re_t then              -- Set_Re (complex)
-  --   ParseNumericsSetRe;
-  --elsif token = numerics_set_im_t then              -- Set_Im (complex)
-  --   ParseNumericsSetIm;
-  --elsif token = arrays_bubble_sort_t then           -- Bubble_Sort
-  --   ParseArraysBubbleSort;
-  --elsif token = arrays_bubble_sort_descending_t then  -- Bubble_Sort_Desc
-  --   ParseArraysBubbleSortDescending;
-  --elsif token = arrays_heap_sort_t then             -- Heap_Sort
-  --   ParseArraysHeapSort;
-  --elsif token = arrays_heap_sort_descending_t then  -- Heap_Sort_Desc
-  --   ParseArraysHeapSortDescending;
-  --elsif token = arrays_shuffle_t then               -- Shuffle
-  --   ParseArraysShuffle;
-  --elsif token = arrays_flip_t then                  -- Flip
-  --   ParseArraysFlip;
-  --elsif token = arrays_rotate_left_t then           -- Rotate_Left
-  --   ParseArraysRotateLeft;
-  --elsif token = arrays_rotate_right_t then          -- Rotate_Left
-  --   ParseArraysRotateRight;
-  --elsif token = arrays_shift_left_t then            -- Shift_Left
-  --   ParseArraysShiftLeft;
-  --elsif token = arrays_shift_right_t then           -- Shift_Right
-  --   ParseArraysShiftRight;
-  --elsif token = arrays_to_array_t then              -- To_Array
-  --   ParseArraysToArray;
-  --elsif token = arrays_to_json_t then               -- To_JSON
-  --   ParseArraysToJSON;
-  --elsif token = records_to_record_t then            -- To_Record
-  --   ParseRecordsToRecord;
-  --elsif token = records_to_json_t then              -- To_JSON
-  --   ParseRecordsToJSON;
-  -- elsif token = sdl_init_t then                     -- SDL.Init
-  --    ParseSDLInit;
-  -- elsif token = sdl_quit_t then                     -- SDL.Quit
-  --    ParseSDLQuit;
-  --elsif token = pen_set_rect_t then                -- Pen.Set_Rect
-  --   ParsePenSetRect;
-  --elsif token = pen_offset_rect_t then             -- Pen.Offset_Rect
-  --   ParsePenOffsetRect;
-  --elsif token = pen_inset_rect_t then              -- Pen.Inset_Rect
-  --   ParsePenInsetRect;
-  --elsif token = pen_intersect_rect_t then          -- Pen.Intersect_Rect
-  --   ParsePenIntersectRect;
-  --elsif token = pen_set_pen_mode_t then            -- Pen.Set_Pen_Mode
-  --   ParsePenSetPenMode;
-  --elsif token = pen_set_pen_ink_t then             -- Pen.Set_Pen_Ink
-  --   ParsePenSetPenInk;
-  --elsif token = pen_set_pen_brush_t then           -- Pen.Set_Pen_Brush
-  --   ParsePenSetPenBrush;
-  --elsif token = pen_set_pen_pattern_t then         -- Pen.Set_Pen_Pattern
-  --   ParsePenSetPenPattern;
-  --elsif token = pen_move_to_t then                 -- Pen.Move_To
-  --   ParsePenMoveTo;
-  --elsif token = pen_move_t then                    -- Pen.Move
-  --   ParsePenMove;
-  --elsif token = pen_line_to_t then                 -- Pen.Line_To
-  --   ParsePenLineTo;
-  --elsif token = pen_line_t then                    -- Pen.Line
-  --   ParsePenLine;
-  --elsif token = pen_hline_t then                   -- Pen.HLine
-  --   ParsePenHLine;
-  --elsif token = pen_vline_t then                   -- Pen.VLine
-  --   ParsePenVLine;
-  --elsif token = pen_frame_rect_t then              -- Pen.Frame_Rect
-  --   ParsePenFrameRect;
-  --elsif token = pen_paint_rect_t then              -- Pen.Paint_Rect
-  --   ParsePenPaintRect;
-  --elsif token = pen_fill_rect_t then               -- Pen.Fill_Rect
-  --   ParsePenFillRect;
-  --elsif token = pen_frame_ellipse_t then           -- Pen.Fill_Ellipse
-  --   ParsePenFrameEllipse;
-  --elsif token = pen_paint_ellipse_t then           -- Pen.Paint_Ellipse
-  --   ParsePenPaintEllipse;
-  --elsif token = pen_fill_ellipse_t then            -- Pen.Fill_Ellipse
-  --   ParsePenFillEllipse;
-  --elsif token = pen_clear_t then                   -- Pen.Clear
-  --   ParsePenClear;
-  --elsif token = pen_new_screen_canvas_t then       -- Pen.New_Screen_Canvas
-  --   ParsePenNewScreenCanvas;
-  --elsif token = pen_new_window_canvas_t then       -- Pen.New_Window_Canvas
-  --   ParsePenNewWindowCanvas;
-  --elsif token = pen_new_gl_window_canvas_t then    -- Pen.New_GL_Window_Canvas
-  --   ParsePenNewGLWindowCanvas;
-  --elsif token = pen_new_canvas_t then              -- Pen.New_Canvas
-  --   ParsePenNewCanvas;
-  --elsif token = pen_save_canvas_t then             -- Pen.Save_Canvas
-  --   ParsePenSaveCanvas;
-  --elsif token = pen_wait_to_reveal_t then          -- Pen.Wait_To_Reveal
-  --   ParsePenWaitToReveal;
-  --elsif token = pen_reveal_t then                  -- Pen.Reveal
-  --   ParsePenReveal;
-  --elsif token = pen_reveal_now_t then              -- Pen.Reveal_Now
-  --   ParsePenRevealNow;
-  --elsif token = pen_get_pen_ink_t then             -- Pen.Get_Pen_Ink
-  --   ParsePenGetPenInk;
-  --elsif token = pen_set_title_t then               -- Pen.Set_Title
-  --   ParsePenSetTitle;
-  --elsif token = pen_blend_t then                   -- Pen.Blend
-  --   ParsePenBlend;
-  --elsif token = pen_fade_t then                    -- Pen.Fade
-  --   ParsePenFade;
-  --elsif token = pen_plot_t then                    -- Pen.Plot
-  --   ParsePenPlot;
-  --elsif token = pen_close_canvas_t then            -- Pen.Close_Canvas
-  --   ParsePenCloseCanvas;
   elsif token = pen_set_font_t then                -- Pen.Set_Font
      ParsePenSetFont;
   elsif token = pen_put_t then                     -- Pen.Put
      ParsePenPut;
-  --elsif token = dirops_change_dir_t then           -- Dir_Ops.Change_Dir
-  --   ParseDirOpsChangeDir;
-  --elsif token = dirops_make_dir_t then             -- Dir_Ops.Make_Dir
-  --   ParseDirOpsMakeDir;
-  --elsif token = dirops_remove_dir_t then           -- Dir_Ops.Remove_Dir
-  --   ParseDirOpsRemoveDir;
-  --elsif token = memcache_register_server_t then    -- memcache.register_server
-  --   ParseMemcacheRegisterServer;
-  --elsif token = memcache_clear_servers_t then      -- memcache.clear_servers
-  --   ParseMemcacheClearServers;
-  --elsif token = memcache_set_cluster_name_t then   -- memcache.set_cluster_name
-  --   ParseMemcacheSetClusterName;
-  --elsif token = memcache_set_t then                -- memcache.set
-  --   ParseMemcacheSet;
-  --elsif token = memcache_add_t then                -- memcache.add
-  --   ParseMemcacheAdd;
-  --elsif token = memcache_replace_t then            -- memcache.replace
-  --   ParseMemcacheReplace;
-  --elsif token = memcache_append_t then             -- memcache.append
-  --   ParseMemcacheAppend;
-  --elsif token = memcache_prepend_t then            -- memcache.prepend
-  --   ParseMemcachePrepend;
-  --elsif token = memcache_delete_t then             -- memcache.delete
-  --   ParseMemcacheDelete;
-  --elsif token = memcache_flush_t then              -- memcache.flush
-  --   ParseMemcacheFlush;
-  --elsif token = memcache_set_cluster_type_t then   -- memcache.set_cluster_type
-  --   ParseMemcacheSetClusterType;
-  --elsif token = highread_register_alpha_server_t then  -- memcache.highread.register_alpha_server
-  --   ParseHighreadRegisterAlphaServer;
-  --elsif token = highread_register_beta_server_t then  -- memcache.highread.register_beta_server
-  --   ParseHighreadRegisterBetaServer;
-  --elsif token = highread_clear_servers_t then      -- memcache.highread.clear_servers
-  --   ParseHighreadClearServers;
-  --elsif token = highread_set_cluster_name_t then   -- memcache.highread.set_cluster_name
-  --   ParseHighreadSetClusterName;
-  --elsif token = highread_set_t then                -- memcache.highread.set
-  --   ParseHighreadSet;
-  --elsif token = highread_add_t then                -- memcache.highread.add
-  --   ParseHighreadAdd;
-  --elsif token = highread_replace_t then            -- memcache.highread.replace
-  --   ParseHighreadReplace;
-  --elsif token = highread_append_t then             -- memcache.highread.append
-  --   ParseHighreadAppend;
-  --elsif token = highread_prepend_t then            -- memcache.highread.prepend
-  --   ParseHighreadPrepend;
-  --elsif token = highread_delete_t then             -- memcache.highread.delete
-  --   ParseHighreadDelete;
-  --elsif token = highread_flush_t then              -- memcache.highread.flush
-  --   ParseHighreadFlush;
-  --elsif token = highread_set_cluster_type_t then   -- memcache.highread.set_cluster_type
-  --   ParseHighreadSetClusterType;
-  --elsif token = gnat_crc32_initialize_t then       -- gnat.crc32.initialize
-  --   ParseGnatCRC32Initialize;
-  --elsif token = gnat_crc32_update_t then           -- gnat.crc32.update
-  --   ParseGnatCRC32Update;
   elsif Token = else_t then
      err( "else without if" );
   elsif Token = elsif_t then
@@ -8708,8 +8336,6 @@ begin
         end if;
      end if;
   end if;
-
-  -- End of Statement
 
   if not eof_flag then
      -- itself?
@@ -8889,6 +8515,7 @@ begin
   ParseDeclarations;
   expect( begin_t );
   ParseBlock;
+
   if token = exception_t then
      ParseExceptionHandler;
   end if;
@@ -8954,11 +8581,15 @@ begin
 
      -- If we're not done, then there's no main program and it's a simple
      -- script with general statements.
+     --
+     -- If there was a main program, we should be at EOF so this section
+     -- should not run
 
      -- TODO: if there was a main program, none of this is done
      -- so I should clean this up to make that obvious.  This also allows
      -- simple scripts to follow the main program??
-     if not done or token = eof_t then
+     --if not done or token = eof_t then
+     if not done and token /= eof_t then
         loop
           ParseGeneralStatement;                   -- process the first statement
           exit when done or token = eof_t;         -- continue until done

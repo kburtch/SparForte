@@ -12,14 +12,17 @@ UNSORTED NEW ISSUES
   - http://shields.io/
   - example - https://github.com/seiyria/c
 
+- check and remove any textra withs from parser.adb
+- btree_io
+  - all commands must check for isOpen or risk STORAGE_ERROR
+  - some updated, not all
+  - none tested
+- errors in text/plain templates aren't nicely aligned
+  - because 3 lines of text are combined into one line, the default behaviour
+  - for a text file, we can do it a little nicer.
+
 - constant check fails if assignment is in `..` (compiled after main program is
   compiled)
-- btree_io.get failed on not initialized resource but should have had
-  a message
-  - using BDB's get() in a _template_
-    - there is a bad pointer thrown by BDB's get()
-    - the resource is allocated...
-    - but BDB get() runs fine in the main script
 - safety check that a file cannot include itself
 - files.is_directory on a file...confirm no exception is thrown
 - files.is_writable didn't work on skiffmouse
