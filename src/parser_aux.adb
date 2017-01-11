@@ -422,12 +422,11 @@ begin
       -- We have a script.  Run it.
       ----------------------------------------------------------------------
 
-         if mode = outputTemplate then
+         if mode = outputTemplate and not error_found then
             -- interpretCommand( uncompressedScript );
             -- there should be a proc for this
             compileTemplate( uncompressedScript, startingLineNo );
             inputMode := fromScriptFile;               -- running a script
-            error_found := false;                      -- no error found
             exit_block := false;                       -- not exit-ing a block
             cmdpos := firstScriptCommandOffset;        -- start at first char
             token := identifiers'first;                -- dummy, replaced by g_n_t

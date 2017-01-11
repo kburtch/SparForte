@@ -10,3 +10,5 @@ CHANGES SINCE 2.0.1
 
 3. Fix: Dynamic memory within resource handles is freed and files closed prior to deallocation the resource handle.
 
+4. Fix: In web templates, scripts tags are no longer run if a previous error occurred.  The error flag is not reset either, so errors will appear in the browser window.
+
