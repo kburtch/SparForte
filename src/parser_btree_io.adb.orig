@@ -640,7 +640,7 @@ end ParseBTreeName;
 
 procedure ParseBTreeDelete is
   -- Syntax: btree.delete( f );
-  -- Ada:    bdb.remove( f );
+  -- Ada:    btree_io.delete( f );
   -- TODO:   option to the keep environment in case other files use it
   fileId     : identifier;
   theFile    : resPtr;
@@ -974,10 +974,10 @@ end ParseBTreeHasElement;
 
 procedure ParseBTreeRemove is
   -- Syntax: v := btree.remove( f, k | c );
-  -- Ada:    bdb.delete( f, k | c );
+  -- Ada:    bdb.remove( f, k | c );
   fileId     : identifier;
   theFile    : resPtr;
-  cursId     : identifier;
+  cursId     : identifier := eof_t;
   theCurs    : resPtr;
   keyExpr    : unbounded_string;
   keyType    : identifier;
@@ -1567,7 +1567,7 @@ end ParseBTreePrepend;
 
 procedure ParseBTreeFlush is
   -- Syntax: btree.flush( f, flags );
-  -- Ada:    bbd.sync( f, flags );
+  -- Ada:    bdb.sync( f, flags );
   fileId     : identifier;
   theFile    : resPtr;
 begin
@@ -1599,7 +1599,7 @@ end ParseBTreeFlush;
 
 procedure ParseBTreeTruncate is
   -- Syntax: btree.truncate( f );
-  -- Ada:    bbd.sync( f, cnt );
+  -- Ada:    bdb.sync( f, cnt );
   fileId     : identifier;
   theFile    : resPtr;
 begin
