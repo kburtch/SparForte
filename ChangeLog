@@ -12,3 +12,5 @@ CHANGES SINCE 2.0.1
 
 4. Fix: In web templates, scripts tags are no longer run if a previous error occurred.  The error flag is not reset either, so errors will appear in the browser window.
 
+5. Fix: btree_io.remove no longer throws an exception when a cursor isn't used (uninitialized variable).
+
