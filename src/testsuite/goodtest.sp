@@ -2739,6 +2739,24 @@ begin
   exc5 := 0;
 end;
 
+-- inner handler should not run
+
+begin
+  i := 1;
+  i := 1/0;
+  begin
+    i := 2;
+  exception when others =>
+    i := 3;
+  end;
+  i := 4;
+ exception when others =>
+    i := 5;
+end;
+pragma assert( i = 5 );
+
+-- chains
+
 declare
   procedure itself_test is
   begin
@@ -4055,4 +4073,7 @@ pragma assert( ada95_i=10 );
 trace( false );
 new_line;
 put_line( "CONGRATULATIONS! SPARFORTE HAS SUCCESSFULLY RUN THIS TEST SCRIPT" );
+
+-- VIM editor formatting instructions
+-- vim: ft=spar
 

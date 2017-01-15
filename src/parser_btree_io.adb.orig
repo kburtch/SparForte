@@ -207,6 +207,9 @@ begin
      identifiers( ref.id ).resource := true;
      declareResource( resId, btree_file, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
+     -- TODO: this won't work if the cursor is in an array or other
+     -- aggregate type
+     identifiers( ref.id ).wasWritten := true;
   end if;
 end ParseBtreeNewFile;
 
@@ -424,9 +427,13 @@ begin
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        close( theFile.btree.session );
-        close( theFile.btree.env );
-        theFile.btree.isOpen := false;
+        if theFile.btree.isOpen then
+           close( theFile.btree.session );
+           close( theFile.btree.env );
+           theFile.btree.isOpen := false;
+        else
+           err( "file is already closed" );
+        end if;
       exception when msg: berkeley_error =>
         err( exception_message( msg ) );
      end;
@@ -644,6 +651,7 @@ procedure ParseBTreeDelete is
   -- TODO:   option to the keep environment in case other files use it
   fileId     : identifier;
   theFile    : resPtr;
+  dirname2 : unbounded_string;
 begin
   if rshOpt then
      err( "delete not allowed in a " & optional_bold( "restricted shell" ) );
@@ -661,28 +669,98 @@ begin
            end;
         end if;
 
+        -- Close closes the environment.  We need to reopen it.
+
+        declare
+           filename : string := base_name( to_string( theFile.btree.name ) );
+           dirname  : string := dir_name( to_string( theFile.btree.name ) );
+           pwdId : identifier;
+        begin
+           -- TODO: pathname handling
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+
+           -- Create an environment
+           init( theFile.btree.env );
+
+           -- berkeley db paths must be absolute paths when creating (opening
+           -- an exisiting data file is OK for relative paths).  We're doing this
+           -- here to be consistent with create but it shouldn't be necessary
+
+           dirname2 := to_unbounded_string( dirname );
+           if dirname = "." then
+              dirname2 := null_unbounded_string;
+           elsif rshOpt then
+              -- TODO: probably could be in directories in current PATH as well
+              err( "file must be in current directory in a " & optional_bold( "restricted shell" ) );
+           elsif element( dirname2, 1 ) /= '/' then
+              findIdent( to_unbounded_string( "PWD" ), pwdId );
+              dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
+           end if;
+           if trace then
+              put_trace( "Base directory is '" & to_string( dirname2 ) & "'" );
+           end if;
+
+           -- Berkeley puts the files in the current directory, though you can
+           -- move the env because it is shared.  To put the project in a specific
+           -- directory, you have you configure it.  A sophisiticated setup would
+           -- place all of these in different directories.
+           --
+           -- For our purposes (simple files), keep everything in one directory
+
+           if length( dirname2 ) > 0 then
+              begin
+                 set_data_dir( theFile.btree.env, to_string( dirname2 ) );
+              exception when msg: berkeley_error =>
+                 err( exception_message( msg ) & " on setting the data directory" );
+              end;
+              begin
+                 set_tmp_dir( theFile.btree.env, to_string( dirname2 ) );
+              exception when msg: berkeley_error =>
+                 err( exception_message( msg ) & " on setting the temp directory"  );
+              end;
+              begin
+                 set_lg_dir( theFile.btree.env, to_string( dirname2 ) );
+              exception when msg: berkeley_error =>
+                 err( exception_message( msg ) & " on setting the logging directory"  );
+              end;
+              begin
+                 if verboseOpt then
+                    set_verbose( theFile.btree.env, 1, 1 );
+                 end if;
+              exception when msg: berkeley_error =>
+                 err( exception_message( msg ) & " on changing verbose setting"  );
+              end;
+           end if;
+        end;
+
+        begin
+           open( theFile.btree.env,
+                to_string( dirname2 ),
+                -- I assume we don't need logging or transactions but
+                -- they could be implemented.
+                DB_E_OPEN_INIT_LOCK OR
+                DB_E_OPEN_INIT_MPOOL,
+                0 );
+           theFile.btree.envhome := dirname2;
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) & " on opening the environment" );
+        end;
+
         begin
            dbremove( theFile.btree.env,
-             to_string( theFile.btree.name ),
+             --to_string( theFile.btree.name ),
+             --TODO: this is calculated above
+             base_name( to_string( theFile.btree.name ) ),
              "",
              0 );
         exception when msg: berkeley_error =>
             err( exception_message( msg ) & " on removing the data file"  );
         end;
 
-        -- keep the environment
-        if theFile.btree.isOpen then
-           begin
-              close( theFile.btree.env );
-           exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on closing the environment"  );
-           end;
-          -- remove( theFile.btree.env, dbhome )
-        end if;
-
         begin
-           init( theFile.btree.env );
-           remove( theFile.btree.env, to_string( theFile.btree.envhome ) );
+           --init( theFile.btree.env );
+           close( theFile.btree.env );
+           --remove( theFile.btree.env, to_string( theFile.btree.envhome ) );
         exception when msg: berkeley_error =>
            err( exception_message( msg ) & " on removing the environment"  );
         end;
@@ -1664,6 +1742,9 @@ begin
      identifiers( ref.id ).resource := true;
      declareResource( resId, btree_cursor, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
+     -- TODO: this won't work if the cursor is in an array or other
+     -- aggregate type
+     identifiers( ref.id ).wasWritten := true;
   end if;
 end ParseBtreeNewCursor;
 
@@ -1747,8 +1828,8 @@ end ParseBTreeCloseCursor;
 #if BDB
 
 procedure ParseBTreeFirst is
-  -- Syntax: btree_io.first( f, c, k, v );
-  -- Ada:    bdb.get( f );
+  -- Syntax: btree_io.get_first( f, c, k, v );
+  -- Ada:    bdb.get_first( f, ... );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
   -- TODO: open cursor check would prevent storage error messages
@@ -1793,68 +1874,80 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        declare
-           key : unbounded_string;
-           jsonString : unbounded_string;
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
-                key,
-                jsonString,
-                DB_C_GET_FIRST );
-           AssignParameter( keyRef, key );
-           DoJsonToRecord( valRef.id, jsonString );
-        exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
-        when STORAGE_ERROR =>
-           err( "storage_error raised" );
-        when others =>
-           raise;
-        end;
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if not theFile.btree.isOpen then
+           err( "file is not open" );
+        else
+           declare
+              key : unbounded_string;
+              jsonString : unbounded_string;
+           begin
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              get( theFile.btree.session,
+                   theCurs.btree_cur,
+                   key,
+                   jsonString,
+                   DB_C_GET_FIRST );
+              AssignParameter( keyRef, key );
+              DoJsonToRecord( valRef.id, jsonString );
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) );
+           when STORAGE_ERROR =>
+              err( "storage_error raised" );
+           when others =>
+              raise;
+           end;
+        end if;
      elsif isArray then
-        declare
-           key : unbounded_string;
-           jsonString : unbounded_string;
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
-                key,
-                jsonString,
-                DB_C_GET_FIRST );
-           AssignParameter( keyRef, key );
-           DoJsonToArray( valRef.id, jsonString );
-        exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
-        when STORAGE_ERROR =>
-           err( "storage_error raised" );
-        when others =>
-           raise;
-        end;
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if not theFile.btree.isOpen then
+           err( "file is not open" );
+        else
+           declare
+              key : unbounded_string;
+              jsonString : unbounded_string;
+           begin
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              get( theFile.btree.session,
+                   theCurs.btree_cur,
+                   key,
+                   jsonString,
+                   DB_C_GET_FIRST );
+              AssignParameter( keyRef, key );
+              DoJsonToArray( valRef.id, jsonString );
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) );
+           when STORAGE_ERROR =>
+              err( "storage_error raised" );
+           when others =>
+              raise;
+           end;
+        end if;
      else
-        declare
-           key : unbounded_string;
-           data : unbounded_string;
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
-                key,
-                data,
-                DB_C_GET_FIRST );
-           AssignParameter( keyRef, key );
-           AssignParameter( valRef, data );
-        exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
-        when STORAGE_ERROR =>
-           err( "storage_error raised" );
-        when others =>
-           raise;
-        end;
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if not theFile.btree.isOpen then
+           err( "file is not open" );
+        else
+           declare
+              key : unbounded_string;
+              data : unbounded_string;
+           begin
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              get( theFile.btree.session,
+                   theCurs.btree_cur,
+                   key,
+                   data,
+                   DB_C_GET_FIRST );
+              AssignParameter( keyRef, key );
+              AssignParameter( valRef, data );
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) );
+           when STORAGE_ERROR =>
+              err( "storage_error raised" );
+           when others =>
+              raise;
+           end;
+        end if;
      end if;
   end if;
 end ParseBTreeFirst;
@@ -2274,8 +2367,8 @@ begin
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        result := to_unbounded_string( db_error'image( last_error( theFile.btree.session ) ) );
+       findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+       result := to_unbounded_string( db_error'image( last_error( theFile.btree.session ) ) );
      exception when msg: berkeley_error =>
         err( exception_message( msg ) );
      end;

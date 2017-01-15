@@ -5564,8 +5564,11 @@ begin
   skipping_block := old_skipping;
 end SkipExceptionBlock;
 
-procedure ParseExceptionHandler is
+procedure ParseExceptionHandler( errorOnEntry : boolean ) is
   -- syntax: exception when others => (block)
+  -- errorOnEntry - true if there was already an error when the block
+  -- this handler was attached to was started (thus, this handler does
+  -- not apply)
   found_exception     : boolean := false;
   formal_exception_id : identifier;
   handling_exceptions : boolean;
@@ -5576,7 +5579,7 @@ procedure ParseExceptionHandler is
   occurrence_status    : aStatusCode;
   occurrence_full      : unbounded_string;
 begin
-  handling_exceptions := (error_found and not done and not syntax_check);
+  handling_exceptions := (error_found and not done and not syntax_check and not errorOnEntry);
 
   -- for trace purposes, turn off errors as soon as possible.  Also, save
   -- the information about the exception for re-raising.
@@ -5688,6 +5691,7 @@ begin
 end ParseExceptionHandler;
 
 procedure ParseDeclareBlock is
+  errorOnEntry : boolean := error_found;
 begin
   pushBlock( newScope => true, newName => "declare block" );
   expect( declare_t );
@@ -5695,19 +5699,20 @@ begin
   expect( begin_t );
   ParseBlock;
   if token = exception_t then
-     ParseExceptionHandler;
+     ParseExceptionHandler( errorOnEntry );
   end if;
   expect( end_t );
   pullBlock;
 end ParseDeclareBlock;
 
 procedure ParseBeginBlock is
+  errorOnEntry : boolean := error_found;
 begin
   pushBlock( newScope => true, newName => "begin block" );
   expect( begin_t );
   ParseBlock;
   if token = exception_t then
-     ParseExceptionHandler;
+     ParseExceptionHandler( errorOnEntry );
   end if;
   expect( end_t );
   pullBlock;
@@ -5977,6 +5982,7 @@ procedure ParseProcedureBlock is
   procStart : natural;
   procEnd   : natural;
   no_params   : integer;
+  errorOnEntry : boolean := error_found;
 begin
   procStart := firstPos;
   expect( procedure_t );
@@ -6021,7 +6027,7 @@ begin
      expect( begin_t );
      skipBlock;                                       -- never execute now
      if token = exception_t then
-        ParseExceptionHandler;
+        ParseExceptionHandler( errorOnEntry );
      end if;
      pullBlock;
      expect( end_t );
@@ -6420,6 +6426,7 @@ procedure ParseFunctionBlock is
   funcStart : natural;
   funcEnd   : natural;
   no_params   : integer;
+  errorOnEntry : boolean := error_found;
 begin
   funcStart := firstPos;
   expect( function_t );
@@ -6463,7 +6470,7 @@ begin
      expect( begin_t );
      SkipBlock;                                       -- never execute
      if token = exception_t then
-        ParseExceptionHandler;
+        ParseExceptionHandler( errorOnEntry );
      end if;
      pullBlock;
      expect( end_t );
@@ -6495,6 +6502,7 @@ procedure DoUserDefinedProcedure( s : unbounded_string ) is
   has_context  : boolean := false;
   last_in_chain: boolean := false;
   contextName  : unbounded_string;
+  errorOnEntry : boolean := error_found;
 begin
   proc_id := token;
   if syntax_check then
@@ -6628,7 +6636,7 @@ begin
      expect( begin_t );
      ParseBlock;
      if token = exception_t then
-        ParseExceptionHandler;
+        ParseExceptionHandler( errorOnEntry );
      end if;
      -- Check to see if we're return-ing early
      -- TODO: Not pretty, but will work.  This should be improved.
@@ -6677,6 +6685,7 @@ procedure DoUserDefinedFunction( s : unbounded_string; result : out unbounded_st
   return_id   : identifier;
   resultName  : unbounded_string;
   results     : unbounded_string;
+  errorOnEntry : boolean := error_found;
 begin
   -- Get the name of the function being called
   func_id := token;
@@ -6707,7 +6716,7 @@ begin
      expect( begin_t );                       -- begin
      ParseBlock;                              -- executable block
      if token = exception_t then
-        ParseExceptionHandler;
+        ParseExceptionHandler( errorOnEntry );
      end if;
      -- Check to see if we're return-ing early
      -- TODO: Not pretty, but will work.  This should be improved.
@@ -8472,7 +8481,7 @@ begin
   ParseBlock;
 
   if token = exception_t then
-     ParseExceptionHandler;
+     ParseExceptionHandler( false );
   end if;
   -- If we are processing a web template, we can't pull the block because it
   -- would destroy the global variables used by the template.

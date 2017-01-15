@@ -739,10 +739,12 @@ end convertToHTML;
 --  CONVERT TO PLAIN TEXT
 --
 -- Change an error message so that it is formatted as plain text
--- for a web server log file.
+-- for a web server log file.  By default, all line feeds are removed.
 -----------------------------------------------------------------------------
 
-function convertToPlainText( oldString : unbounded_string ) return unbounded_string is
+type plainTextOptions is ( no_lf, with_lf );
+
+function convertToPlainText( oldString : unbounded_string; options : plainTextOptions := no_lf ) return unbounded_string is
   s : unbounded_string := oldString;
   p : natural;
   timeout : natural;
@@ -750,14 +752,16 @@ begin
 
   -- remove any end-of-lines to ensure message is on one line
 
-  p := 1;
-  while p <= length( s ) loop
-     if element( s, p ) = ASCII.LF then
-        delete( s, p, p );
-        insert( s, p, " " );
-     end if;
-     p := p + 1;
-  end loop;
+  if options = no_lf then
+     p := 1;
+     while p <= length( s ) loop
+        if element( s, p ) = ASCII.LF then
+           delete( s, p, p );
+           insert( s, p, " " );
+        end if;
+        p := p + 1;
+     end loop;
+  end if;
 
   -- remove boldface on
 
@@ -969,7 +973,9 @@ begin
         fullTemplateErrorMessage := "/* " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) &  " */";
      when xmlTemplate =>
         fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) & " -->";
-     when noTemplate | textTemplate | jsonTemplate =>
+     when textTemplate =>
+        fullTemplateErrorMessage := convertToPlainText( fullErrorMessage, with_lf );
+     when noTemplate | jsonTemplate =>
         fullTemplateErrorMessage := convertToPlainText( fullErrorMessage );
      end case;
      -- In the case of the template, the error output must always

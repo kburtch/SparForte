@@ -12,5 +12,13 @@ CHANGES SINCE 2.0.1
 
 4. Fix: In web templates, scripts tags are no longer run if a previous error occurred.  The error flag is not reset either, so errors will appear in the browser window.
 
-5. Fix: btree_io.remove no longer throws an exception when a cursor isn't used (uninitialized variable).
+5. Fix: btree_io.remove no longer throws an exception when a cursor isn't used (uninitialized variable).  It no longer tries to remove the environment.
+
+6. Fix: btree_io cursors and files no longer give a constant expected message in test phase mode.
+
+7. Change: text templates no longer show error messages on a single line.  Other templates remain unchanged.
+
+8. New: third party tests added to "make releasetest".  First is btree_io positive tests.
+
+9. Fix: exception handlers in inner blocks no longer run when an error occurs in the outer block.
 

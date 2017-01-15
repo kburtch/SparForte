@@ -218,6 +218,10 @@ test:	all
 
 releasetest: test
 	@echo "---------------------------------------------------------------"
+	@echo "  RUNNING THIRD PARTY TEST SUITE"
+	@echo "---------------------------------------------------------------"
+	(cd testsuite; sh third_party_tests.sh)
+	@echo "---------------------------------------------------------------"
 	@echo "  RUNNING EXAMPLE SCRIPT TEST SUITE"
 	@echo "---------------------------------------------------------------"
 	(cd testsuite; sh example_tests.sh)
