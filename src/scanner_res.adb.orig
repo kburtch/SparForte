@@ -262,8 +262,8 @@ begin
   elsif rp.rt = btree_file then
 #if BDB
      if rp.btree.isOpen then
-        close( rp.btree.env );
         close( rp.btree.session );
+        close( rp.btree.env );
      end if;
      free_berkeley_session( rp.btree.session );
 #else
@@ -301,6 +301,8 @@ begin
   if trace then
      put_trace( "Resource handle" & id'img & " memory freed" );
   end if;
+  exception when STORAGE_ERROR =>
+    err( "internal error: STORAGE_ERROR raised when clearning resource" & id'img & " a " & rp.rt'img );
 end clearResource;
 
 procedure pullResourceBlock( blocklvl : block ) is
