@@ -492,19 +492,27 @@ procedure ParseStringsTrim( result : out unbounded_string; kind : out identifier
   trim_end_val : unbounded_string;
   trim_end_type : identifier;
   the_trim_end : trim_end := both;
+  has_end : boolean := false;
 begin
   kind := string_t;
   expect( trim_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseLastEnumParameter( trim_end_val, trim_end_type, strings_trim_end_t );
+  if token = symbol_t and identifiers( token ).value.all = "," then
+     has_end := true;
+     ParseLastEnumParameter( trim_end_val, trim_end_type, strings_trim_end_t );
+  else
+     expect( symbol_t, ")" );
+  end if;
   if isExecutingCommand then
-     case natural( to_numeric( trim_end_val ) ) is
-     when 0 => the_trim_end := left;
-     when 1 => the_trim_end := right;
-     when 2 => the_trim_end := both;
-     when others =>
-        err_exception_raised;
-     end case;
+     if has_end then
+        case natural( to_numeric( trim_end_val ) ) is
+        when 0 => the_trim_end := left;
+        when 1 => the_trim_end := right;
+        when 2 => the_trim_end := both;
+        when others =>
+           err_exception_raised;
+        end case;
+      end if;
   end if;
   begin
      if isExecutingCommand then
