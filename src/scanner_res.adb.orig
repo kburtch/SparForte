@@ -290,17 +290,20 @@ begin
      null;
 #end if;
   elsif rp.rt = btree_cursor then
+      null; -- we need the file to close the cursor and we don't have it
+      --if rp.btree_cur.isOpen then
+      --   close( rp.btree_cur.cursor );
+      --end if;
+  elsif  rp.rt = hash_cursor then
        null;
-  elsif  rp.rt =hash_cursor then
-       null;
-  elsif  rp.rt =recno_cursor then
+  elsif  rp.rt = recno_cursor then
        null;
   end if;
 -- TODO: shoul close tinyserve server if open
   resHandleList.clear( resHandles, long_integer( id ) );
-  if trace then
-     put_trace( "Resource handle" & id'img & " memory freed" );
-  end if;
+  --if trace then
+  --   put_trace( "Resource handle" & id'img & " memory freed" );
+  --end if;
   exception when STORAGE_ERROR =>
     err( "internal error: STORAGE_ERROR raised when clearning resource" & id'img & " a " & rp.rt'img );
 end clearResource;

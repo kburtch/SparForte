@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -140,6 +140,11 @@ type btree_file_type is record
     envhome : unbounded_string;
 end record;
 
+type btree_cursor_type is record
+     cursor : bdb.berkeley_cursor;
+     isOpen : boolean := false;
+end record;
+
 type hash_file_type is record
     session : bdb.berkeley_session;
     env     : bdb.berkeley_environment;
@@ -148,6 +153,8 @@ type hash_file_type is record
     envhome : unbounded_string;
 end record;
 
+-- TODO: hash_cursor_type
+
 type recno_file_type is record
     session : bdb.berkeley_session;
     env     : bdb.berkeley_environment;
@@ -155,6 +162,9 @@ type recno_file_type is record
     name    : unbounded_string;
     envhome : unbounded_string;
 end record;
+
+-- TODO: recno cursor_type
+
 #end if;
 
 --- Resource Handle
@@ -238,7 +248,7 @@ type resHandle( rt : aResourceType ) is record
 #end if;
      when btree_cursor =>
 #if BDB
-          btree_cur : bdb.berkeley_cursor;
+          btree_cur : btree_cursor_type;
 #else
           null; -- no Berkeley DB
 #end if;

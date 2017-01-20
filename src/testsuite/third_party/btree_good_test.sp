@@ -28,11 +28,14 @@ begin
 if not files.is_directory( "btree_test" ) then
    mkdir btree_test ;
 else
-   rm btree_test/* ;
+   rm -f btree_test/* ;
 end if;
 
 btree_io.new_file( f, person_type );
 pragma assert( not btree_io.is_open( f ) );
+
+btree_io.create( f, "btree_test/person.btree", 80, 80 );
+pragma assert( btree_io.is_open( f ) );
 
 b := btree_io.will_raise( f );
 pragma assert( b = true );
@@ -42,10 +45,6 @@ pragma assert( b = true );
 
 e := btree_io.last_error( f );
 pragma assert( e = 0 );
-
-btree_io.create( f, "btree_test/person.btree", 80, 80 );
-pragma assert( btree_io.is_open( f ) );
-
 person.first_name := "John";
 person.age  := 18;
 btree_io.set( f, person.first_name, person );

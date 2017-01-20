@@ -115,7 +115,8 @@ btree_get_previous_t  : identifier;
 procedure CheckFileIsInitialized( fileId : identifier ) is
 begin
   if identifiers( fileId ).genKind = eof_t then
-     err( "new_file has not been called to initialize the file" );
+     err( "new_file has not been called to initialize " &
+          optional_bold( to_string( identifiers( fileId ).name ) ) );
   end if;
 end CheckFileIsInitialized;
 
@@ -358,47 +359,53 @@ begin
 
         -- Create an environment
 
-        begin
-           create( theFile.btree.env,
-                to_string( dirname2 ),
-                -- I assume we don't need logging or transactions but
-                -- they could be implemented.
-                DB_E_OPEN_INIT_LOCK OR
-                DB_E_OPEN_INIT_MPOOL,
-                0 );
-           theFile.btree.envhome := dirname2;
-           exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on creating the environment" );
-           end;
-
-        -- Create the file
-        new_berkeley_session(
-           theFile.btree.session,
-           theFile.btree.env,
-           keyLen,
-           valLen );
-        theFile.btree.isOpen := false;
-        begin
-           create( theFile.btree.session, filename, "", DB_BTREE, 0, 0 );
-        exception when msg: berkeley_error =>
-           err( exception_message( msg ) & " on creating the data file"  );
-        end;
-
-        -- Do not truncate if create failed
-
-        if not error_found then
-           theFile.btree.isOpen := true;
-           theFile.btree.name := fname_val;
-           declare
-              cnt : natural;
+        if theFile.btree.isOpen then
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              " is already open" );
+        else
            begin
-              truncate( theFile.btree.session, cnt );
-                 if trace and cnt > 0 then
-                 put_trace( cnt'img & " records were erased" );
-              end if;
+              create( theFile.btree.env,
+                   to_string( dirname2 ),
+                   -- I assume we don't need logging or transactions but
+                   -- they could be implemented.
+                   DB_E_OPEN_INIT_LOCK OR
+                   DB_E_OPEN_INIT_MPOOL,
+                   0 );
+              theFile.btree.envhome := dirname2;
+              exception when msg: berkeley_error =>
+                 err( exception_message( msg ) & " on creating the environment" );
+              end;
+
+           -- Create the file
+           new_berkeley_session(
+              theFile.btree.session,
+              theFile.btree.env,
+              keyLen,
+              valLen );
+           theFile.btree.isOpen := false;
+           begin
+              create( theFile.btree.session, filename, "", DB_BTREE, 0, 0 );
            exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on truncating the data file"  );
+              err( exception_message( msg ) & " on creating the data file"  );
            end;
+
+           -- Do not truncate if create failed
+
+           if not error_found then
+              theFile.btree.isOpen := true;
+              theFile.btree.name := fname_val;
+              declare
+                 cnt : natural;
+              begin
+                 truncate( theFile.btree.session, cnt );
+                    if trace and cnt > 0 then
+                    put_trace( cnt'img & " records were erased" );
+                 end if;
+              exception when msg: berkeley_error =>
+                 err( exception_message( msg ) & " on truncating the data file"  );
+              end;
+          end if;
        end if;
      --exception when berkeley_error:s =>
      --   err( to_string( last_error( theFile.btree.session ) );
@@ -432,7 +439,9 @@ begin
            close( theFile.btree.env );
            theFile.btree.isOpen := false;
         else
-           err( "file is already closed" );
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+               " is not open" );
         end if;
       exception when msg: berkeley_error =>
         err( exception_message( msg ) );
@@ -547,34 +556,40 @@ begin
            end;
         end if;
 
-        begin
-           open( theFile.btree.env,
-                to_string( dirname2 ),
-                -- I assume we don't need logging or transactions but
-                -- they could be implemented.
-                DB_E_OPEN_INIT_LOCK OR
-                DB_E_OPEN_INIT_MPOOL,
-                0 );
-           theFile.btree.envhome := dirname2;
+        if theFile.btree.isOpen then
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              " is already open" );
+        else
+           begin
+              open( theFile.btree.env,
+                   to_string( dirname2 ),
+                   -- I assume we don't need logging or transactions but
+                   -- they could be implemented.
+                   DB_E_OPEN_INIT_LOCK OR
+                   DB_E_OPEN_INIT_MPOOL,
+                   0 );
+              theFile.btree.envhome := dirname2;
+              exception when msg: berkeley_error =>
+                 err( exception_message( msg ) & " on opening the environment" );
+              end;
+
+           -- Create the file
+           new_berkeley_session(
+              theFile.btree.session,
+              theFile.btree.env,
+              keyLen,
+              valLen );
+
+           theFile.btree.isOpen := false;
+           begin
+              open( theFile.btree.session, filename, "", DB_BTREE, 0, 0 );
+              theFile.btree.isOpen := true;
+              theFile.btree.name := fname_val;
            exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on opening the environment" );
+              err( exception_message( msg ) & " on opening the data file"  );
            end;
-
-        -- Create the file
-        new_berkeley_session(
-           theFile.btree.session,
-           theFile.btree.env,
-           keyLen,
-           valLen );
-
-        theFile.btree.isOpen := false;
-        begin
-           open( theFile.btree.session, filename, "", DB_BTREE, 0, 0 );
-           theFile.btree.isOpen := true;
-           theFile.btree.name := fname_val;
-        exception when msg: berkeley_error =>
-           err( exception_message( msg ) & " on opening the data file"  );
-        end;
+        end if;
      end;
   end if;
 end ParseBTreeOpen;
@@ -827,7 +842,9 @@ begin
      if isRecord then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if not theFile.btree.isOpen then
-           err( "file is not open" );
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              " is not open" );
         else
            declare
               jsonString : unbounded_string;
@@ -841,7 +858,9 @@ begin
      elsif isArray then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if not theFile.btree.isOpen then
-           err( "file is not open" );
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              " is not open" );
         else
            declare
               jsonString : unbounded_string;
@@ -856,7 +875,9 @@ begin
         -- normal scalar expression
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if not theFile.btree.isOpen then
-           err( "file is not open" );
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              " is not open" );
         else
            begin
               put( theFile.btree.session, to_string( keyExpr ), to_string( valExpr ) );
@@ -940,7 +961,9 @@ begin
      if isRecord then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if not theFile.btree.isOpen then
-           err( "file is not open" );
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              " is not open" );
         else
            declare
               jsonString : unbounded_string;
@@ -960,7 +983,9 @@ begin
      elsif isArray then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if not theFile.btree.isOpen then
-           err( "file is not open" );
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              " is not open" );
         else
            declare
               jsonString : unbounded_string;
@@ -980,7 +1005,9 @@ begin
      else
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if not theFile.btree.isOpen then
-           err( "file is not open" );
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              " is not open" );
         else
            declare
               result : unbounded_string;
@@ -1026,7 +1053,9 @@ begin
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if not theFile.btree.isOpen then
-        err( "file is not open" );
+        err( "file " &
+           optional_bold( to_string( identifiers( fileId ).name ) ) &
+           " is not open" );
      else
         begin
            exists( theFile.btree.session, to_string( keyExpr ) );
@@ -1077,11 +1106,13 @@ begin
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if not theFile.btree.isOpen then
-        err( "file is not open" );
+        err( "file " &
+           optional_bold( to_string( identifiers( fileId ).name ) ) &
+           " is not open" );
      elsif cursId /= eof_t then
         begin
           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-          delete( theFile.btree.session, theCurs.btree_cur );
+          delete( theFile.btree.session, theCurs.btree_cur.cursor );
         exception when msg: berkeley_error =>
             err( exception_message( msg ) );
         end;
@@ -1144,7 +1175,9 @@ begin
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if not theFile.btree.isOpen then
-        err( "file is not open" );
+        err( "file " &
+           optional_bold( to_string( identifiers( fileId ).name ) ) &
+           " is not open" );
      else
         begin
           get( theFile.btree.session, to_string( keyExpr ), oldItem );
@@ -1215,7 +1248,9 @@ begin
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if not theFile.btree.isOpen then
-        err( "file is not open" );
+        err( "file " &
+           optional_bold( to_string( identifiers( fileId ).name ) ) &
+           " is not open" );
      else
        begin
          get( theFile.btree.session, to_string( keyExpr ), oldItem );
@@ -1295,7 +1330,9 @@ begin
      if isRecord then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if not theFile.btree.isOpen then
-           err( "file is not open" );
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              " is not open" );
         else
            declare
               jsonString : unbounded_string;
@@ -1316,7 +1353,9 @@ begin
      elsif isArray then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if not theFile.btree.isOpen then
-           err( "file is not open" );
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              " is not open" );
         else
            declare
               jsonString : unbounded_string;
@@ -1337,7 +1376,9 @@ begin
         -- normal scalar expression
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if not theFile.btree.isOpen then
-           err( "file is not open" );
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              " is not open" );
         else
            begin
               exists( theFile.btree.session, to_string( keyExpr ) );
@@ -1420,7 +1461,9 @@ begin
         if isRecord then
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            if not theFile.btree.isOpen then
-              err( "file is not open" );
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                 " is not open" );
            else
               declare
                  jsonString : unbounded_string;
@@ -1428,7 +1471,7 @@ begin
                 findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
                 DoRecordToJson( jsonString, itemId );
                 put( theFile.btree.session,
-                     theCurs.btree_cur,
+                     theCurs.btree_cur.cursor,
                      keyExpr, -- this is ignored
                      jsonString,
                      DB_C_PUT_CURRENT );
@@ -1439,7 +1482,9 @@ begin
         elsif isArray then
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            if not theFile.btree.isOpen then
-              err( "file is not open" );
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                 " is not open" );
            else
               declare
                  jsonString : unbounded_string;
@@ -1447,7 +1492,7 @@ begin
                 findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
                 DoArrayToJson( jsonString, itemId );
                 put( theFile.btree.session,
-                     theCurs.btree_cur,
+                     theCurs.btree_cur.cursor,
                      keyExpr, -- this is ignored
                      jsonString,
                      DB_C_PUT_CURRENT );
@@ -1458,12 +1503,14 @@ begin
         else
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            if not theFile.btree.isOpen then
-              err( "file is not open" );
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                 " is not open" );
            else
              begin
                findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
                put( theFile.btree.session,
-                    theCurs.btree_cur,
+                    theCurs.btree_cur.cursor,
                     keyExpr, -- this is ignored
                     itemExpr,
                     DB_C_PUT_CURRENT );
@@ -1477,7 +1524,9 @@ begin
         if isRecord then
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            if not theFile.btree.isOpen then
-              err( "file is not open" );
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                 " is not open" );
            else
               declare
                  jsonString : unbounded_string;
@@ -1495,7 +1544,9 @@ begin
            end if;
         elsif isArray then
            if not theFile.btree.isOpen then
-              err( "file is not open" );
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                 " is not open" );
            else
               declare
                  jsonString : unbounded_string;
@@ -1515,7 +1566,9 @@ begin
         else
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            if not theFile.btree.isOpen then
-              err( "file is not open" );
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                 " is not open" );
            else
              begin
                exists( theFile.btree.session, to_string( keyExpr ) );
@@ -1567,7 +1620,9 @@ begin
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if not theFile.btree.isOpen then
-        err( "file is not open" );
+        err( "file " &
+           optional_bold( to_string( identifiers( fileId ).name ) ) &
+            " is not open" );
      else
         begin
           get( theFile.btree.session, to_string( keyExpr ), oldItem );
@@ -1617,7 +1672,9 @@ begin
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if not theFile.btree.isOpen then
-        err( "file is not open" );
+        err( "file " &
+           optional_bold( to_string( identifiers( fileId ).name ) ) &
+            " is not open" );
      else
         begin
           get( theFile.btree.session, to_string( keyExpr ), oldItem );
@@ -1654,7 +1711,9 @@ begin
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if not theFile.btree.isOpen then
-        err( "file is not open" );
+        err( "file " &
+           optional_bold( to_string( identifiers( fileId ).name ) ) &
+            " is not open" );
      else
         begin
            sync( theFile.btree.session );
@@ -1689,7 +1748,9 @@ begin
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if not theFile.btree.isOpen then
-        err( "file is not open" );
+        err( "file " &
+           optional_bold( to_string( identifiers( fileId ).name ) ) &
+            " is not open" );
      else
         declare
            cnt : natural;
@@ -1773,10 +1834,19 @@ begin
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if not theFile.btree.isOpen then
-        err( "file is not open" );
+        err( "file " &
+           optional_bold( to_string( identifiers( fileId ).name ) ) &
+            " is not open" );
      else
         findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-        new_berkeley_cursor( theFile.btree.session, theCurs.btree_cur );
+        if theCurs.btree_cur.isOpen then
+           err( "cursor " &
+              optional_bold( to_string( identifiers( cursId ).name ) ) &
+              " is already open" );
+        else
+           new_berkeley_cursor( theFile.btree.session, theCurs.btree_cur.cursor );
+           theCurs.btree_cur.isOpen := true;
+        end if;
      end if;
   end if;
 end ParseBtreeOpenCursor;
@@ -1806,10 +1876,19 @@ begin
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if not theFile.btree.isOpen then
-           err( "file is not open" );
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+               " is not open" );
         else
            findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           close( theFile.btree.session, theCurs.btree_cur );
+           if not theCurs.btree_cur.isOpen then
+              err( "cursor " &
+                 optional_bold( to_string( identifiers( cursId ).name ) ) &
+                " is not open" );
+           else
+              close( theFile.btree.session, theCurs.btree_cur.cursor );
+              theCurs.btree_cur.isOpen := false;
+           end if;
         end if;
      exception when msg: berkeley_error =>
         err( exception_message( msg ) );
@@ -1876,20 +1955,28 @@ begin
      if isRecord then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if not theFile.btree.isOpen then
-           err( "file is not open" );
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+               " is not open" );
         else
            declare
               key : unbounded_string;
               jsonString : unbounded_string;
            begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-              get( theFile.btree.session,
-                   theCurs.btree_cur,
+              if not theCurs.btree_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                   " is not open" );
+              else
+                 get( theFile.btree.session,
+                   theCurs.btree_cur.cursor,
                    key,
                    jsonString,
                    DB_C_GET_FIRST );
-              AssignParameter( keyRef, key );
-              DoJsonToRecord( valRef.id, jsonString );
+                 AssignParameter( keyRef, key );
+                 DoJsonToRecord( valRef.id, jsonString );
+              end if;
            exception when msg: berkeley_error =>
               err( exception_message( msg ) );
            when STORAGE_ERROR =>
@@ -1901,20 +1988,28 @@ begin
      elsif isArray then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if not theFile.btree.isOpen then
-           err( "file is not open" );
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+               " is not open" );
         else
            declare
               key : unbounded_string;
               jsonString : unbounded_string;
            begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-              get( theFile.btree.session,
-                   theCurs.btree_cur,
+              if not theCurs.btree_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                   " is not open" );
+              else
+                 get( theFile.btree.session,
+                   theCurs.btree_cur.cursor,
                    key,
                    jsonString,
                    DB_C_GET_FIRST );
-              AssignParameter( keyRef, key );
-              DoJsonToArray( valRef.id, jsonString );
+                 AssignParameter( keyRef, key );
+                 DoJsonToArray( valRef.id, jsonString );
+              end if;
            exception when msg: berkeley_error =>
               err( exception_message( msg ) );
            when STORAGE_ERROR =>
@@ -1926,20 +2021,28 @@ begin
      else
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if not theFile.btree.isOpen then
-           err( "file is not open" );
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              " is not open" );
         else
            declare
               key : unbounded_string;
               data : unbounded_string;
            begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-              get( theFile.btree.session,
-                   theCurs.btree_cur,
+              if not theCurs.btree_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                   " is not open" );
+              else
+                 get( theFile.btree.session,
+                   theCurs.btree_cur.cursor,
                    key,
                    data,
                    DB_C_GET_FIRST );
-              AssignParameter( keyRef, key );
-              AssignParameter( valRef, data );
+                 AssignParameter( keyRef, key );
+                 AssignParameter( valRef, data );
+              end if;
            exception when msg: berkeley_error =>
               err( exception_message( msg ) );
            when STORAGE_ERROR =>
@@ -2013,14 +2116,26 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
-                key,
-                jsonString,
-                DB_C_GET_NEXT );
-           AssignParameter( keyRef, key );
-           DoJsonToRecord( valRef.id, jsonString );
+           if not theFile.btree.isOpen then
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                 " is not open" );
+           else
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.btree_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.btree.session,
+                   theCurs.btree_cur.cursor,
+                   key,
+                   jsonString,
+                   DB_C_GET_NEXT );
+                 AssignParameter( keyRef, key );
+                 DoJsonToRecord( valRef.id, jsonString );
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -2034,14 +2149,26 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
-                key,
-                jsonString,
-                DB_C_GET_NEXT );
-           AssignParameter( keyRef, key );
-           DoJsonToArray( valRef.id, jsonString );
+           if not theFile.btree.isOpen then
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                 " is not open" );
+           else
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.btree_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.btree.session,
+                   theCurs.btree_cur.cursor,
+                   key,
+                   jsonString,
+                   DB_C_GET_NEXT );
+                 AssignParameter( keyRef, key );
+                 DoJsonToArray( valRef.id, jsonString );
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -2055,14 +2182,26 @@ begin
            data : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
-                key,
-                data,
-                DB_C_GET_NEXT );
-           AssignParameter( keyRef, key );
-           AssignParameter( valRef, data );
+           if not theFile.btree.isOpen then
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                 " is not open" );
+           else
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.btree_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.btree.session,
+                   theCurs.btree_cur.cursor,
+                   key,
+                   data,
+                   DB_C_GET_NEXT );
+                 AssignParameter( keyRef, key );
+                 AssignParameter( valRef, data );
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -2135,14 +2274,26 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
-                key,
-                jsonString,
-                DB_C_GET_LAST );
-           AssignParameter( keyRef, key );
-           DoJsonToRecord( valRef.id, jsonString );
+           if not theFile.btree.isOpen then
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                 " is not open" );
+           else
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.btree_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.btree.session,
+                   theCurs.btree_cur.cursor,
+                   key,
+                   jsonString,
+                   DB_C_GET_LAST );
+                 AssignParameter( keyRef, key );
+                 DoJsonToRecord( valRef.id, jsonString );
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -2156,14 +2307,26 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
-                key,
-                jsonString,
-                DB_C_GET_LAST );
-           AssignParameter( keyRef, key );
-           DoJsonToArray( valRef.id, jsonString );
+           if not theFile.btree.isOpen then
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                 " is not open" );
+           else
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.btree_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.btree.session,
+                   theCurs.btree_cur.cursor,
+                   key,
+                   jsonString,
+                   DB_C_GET_LAST );
+                 AssignParameter( keyRef, key );
+                 DoJsonToArray( valRef.id, jsonString );
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -2177,14 +2340,26 @@ begin
            data : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
-                key,
-                data,
-                DB_C_GET_LAST );
-           AssignParameter( keyRef, key );
-           AssignParameter( valRef, data );
+           if not theFile.btree.isOpen then
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                 " is not open" );
+           else
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.btree_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.btree.session,
+                   theCurs.btree_cur.cursor,
+                   key,
+                   data,
+                   DB_C_GET_LAST );
+                 AssignParameter( keyRef, key );
+                 AssignParameter( valRef, data );
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -2257,14 +2432,26 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
-                key,
-                jsonString,
-                DB_C_GET_PREV );
-           AssignParameter( keyRef, key );
-           DoJsonToRecord( valRef.id, jsonString );
+           if not theFile.btree.isOpen then
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                 " is not open" );
+           else
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.btree_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.btree.session,
+                   theCurs.btree_cur.cursor,
+                   key,
+                   jsonString,
+                   DB_C_GET_PREV );
+                 AssignParameter( keyRef, key );
+                 DoJsonToRecord( valRef.id, jsonString );
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -2278,14 +2465,26 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
-                key,
-                jsonString,
-                DB_C_GET_PREV );
-           AssignParameter( keyRef, key );
-           DoJsonToArray( valRef.id, jsonString );
+           if not theFile.btree.isOpen then
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                 " is not open" );
+           else
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.btree_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.btree.session,
+                   theCurs.btree_cur.cursor,
+                   key,
+                   jsonString,
+                   DB_C_GET_PREV );
+                 AssignParameter( keyRef, key );
+                 DoJsonToArray( valRef.id, jsonString );
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -2299,14 +2498,26 @@ begin
            data : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.btree.session,
-                theCurs.btree_cur,
-                key,
-                data,
-                DB_C_GET_PREV );
-           AssignParameter( keyRef, key );
-           AssignParameter( valRef, data );
+           if not theFile.btree.isOpen then
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                 " is not open" );
+           else
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.btree_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.btree.session,
+                   theCurs.btree_cur.cursor,
+                   key,
+                   data,
+                   DB_C_GET_PREV );
+                 AssignParameter( keyRef, key );
+                 AssignParameter( valRef, data );
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -2339,7 +2550,13 @@ begin
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        result := to_bush_boolean( will_raise( theFile.btree.session ) );
+        if not theFile.btree.isOpen then
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              " is not open" );
+        else
+           result := to_bush_boolean( will_raise( theFile.btree.session ) );
+        end if;
      exception when berkeley_error =>
         result := to_bush_boolean( false );
      end;
@@ -2368,7 +2585,13 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-       result := to_unbounded_string( db_error'image( last_error( theFile.btree.session ) ) );
+       if not theFile.btree.isOpen then
+          err( "file " &
+             optional_bold( to_string( identifiers( fileId ).name ) ) &
+             " is not open" );
+       else
+          result := to_unbounded_string( db_error'image( last_error( theFile.btree.session ) ) );
+       end if;
      exception when msg: berkeley_error =>
         err( exception_message( msg ) );
      end;
@@ -2402,7 +2625,13 @@ begin
        raise_them : boolean := boolExpr = to_unbounded_string( "1" );
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        raise_exceptions( theFile.btree.session, raise_them, boolean( traceOpt ) );
+        if not theFile.btree.isOpen then
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              " is not open" );
+        else
+           raise_exceptions( theFile.btree.session, raise_them, boolean( traceOpt ) );
+        end if;
      exception when msg: berkeley_error =>
         err( exception_message( msg ) );
      end;

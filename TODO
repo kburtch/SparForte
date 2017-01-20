@@ -1,11 +1,11 @@
 LOTS TO WORK ON
 ---------------
-Languages are complicated.
+Languages are complicated...
 
 
 UNSORTED NEW ISSUES
 
-- GitHub "badges" (see also shields)
+- GitHub readme.md "badges" (see also shields)
   - you need to be able to point at Jenkins.  A URL to the shields.io site
     containing an embedded URL to your Jenkings to get the data for the
     badge
@@ -13,31 +13,54 @@ UNSORTED NEW ISSUES
   - example - https://github.com/seiyria/c
 
 - btree_io
-  - all commands must check for isOpen or risk STORAGE_ERROR
-  - some updated, not all
-  - none tested
-  - first vs getfirst
-  - there are todo's in btree_io
-  - unclosed cursors
-  - also hash_io
+  - severe
+     - all commands must check for isOpen or risk STORAGE_ERROR . left off around
+        BTreeFirst.
+     - unclosed cursors should be handled like unclosed files
+     - cursors need an isOpen flag like files have in scanner_res so unopened cursors
+       can be gracefully handled
+     - also hash_io
+  - warning
+    - first vs getfirst - inconsistent naming
+    - there are todo's still in btree_io
+    - files.is_directory on a file...confirm no exception is thrown
+    - files.is_writable didn't work on CMS
+    - include file name in not open errors
+  - large change!
+     - when doing a syntax check, btree_io needs new_file to occur earlier in the
+       source code to determine what the data type is for the file (as a
+       syntax check scans from top-to-bottom.  However, since new_file is an
+       executable command, this will fail if the function is located lower
+       in the source code.
+       - I require a new num_gen_param field in identifiers table
+       - if non-zero, require the generic type to be parameterized at variable
+         declaration
+       - deprecate all new_file, new_list, etc. as they are run-time and not
+         suitable to specify generic type parameters.
 
-- built-in cache - memory or disk?
+- other
+  - severe
+    - can't declare two licences or software_models.  This is a problem for a
+      redistributable library
+    - constant check fails if assignment is in `..` (compiled after main program is
+      compiled)
+    - when tracing, shows main script name, not template name
+  - warning
+    - docs say strings.trim - trim end is optional, but is required.
+    - change pegasock to use bdb format exceptions with filename in message?
+    - exceptions that propogate to the top aren't formatted properly in the
+      Apache log (single chars means single lines)
+  - feature
+    - safety check that a file cannot include itself
 
-- misspelling template name gives an error but throws a storage exception when
-  it shouldn't
-- change pegasock to use bdb format exceptions with filename in message?
-- constant check fails if assignment is in `..` (compiled after main program is
-  compiled)
-- safety check that a file cannot include itself
-- files.is_directory on a file...confirm no exception is thrown
-- files.is_writable didn't work on skiffmouse
-- exceptions that propogate to the top aren't formatted properly in the
-  Apache log (single chars)
-  - some error messages may not appear in log or on screen - need to confirm
-- when tracing, shows main script name, not template name
-
-- a pragma to check for the version of SparForte?  Is it a doc pragma,
-  executable or both?
+  - features
+    - built-in cache - memory or disk?
+    - a pragma to check for the version of SparForte?  Is it a doc pragma,
+      executable or both?
+    - redesign is_writable, etc. so works better.
+    - % should be usable in more contexts
+  - examples
+    - example program of ramdisk cache
 
 Teamwork Improvments
 
