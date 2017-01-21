@@ -187,6 +187,7 @@ procedure ParseBTreeNewFile is
   resId : resHandleId;
   ref : reference;
   genKindId : identifier;
+  theFile  : resPtr;
 begin
   expect( btree_new_file_t );
   ParseFirstOutParameter( ref, btree_file_t );
@@ -211,6 +212,8 @@ begin
      -- TODO: this won't work if the cursor is in an array or other
      -- aggregate type
      identifiers( ref.id ).wasWritten := true;
+     findResource( resId, theFile );
+     theFile.btree.isOpen := false;
   end if;
 end ParseBtreeNewFile;
 
@@ -383,7 +386,6 @@ begin
               theFile.btree.env,
               keyLen,
               valLen );
-           theFile.btree.isOpen := false;
            begin
               create( theFile.btree.session, filename, "", DB_BTREE, 0, 0 );
            exception when msg: berkeley_error =>
@@ -574,21 +576,23 @@ begin
                  err( exception_message( msg ) & " on opening the environment" );
               end;
 
-           -- Create the file
-           new_berkeley_session(
-              theFile.btree.session,
-              theFile.btree.env,
-              keyLen,
-              valLen );
+           if not error_found then
+              -- Create the file
+              new_berkeley_session(
+                 theFile.btree.session,
+                 theFile.btree.env,
+                 keyLen,
+                 valLen );
 
-           theFile.btree.isOpen := false;
-           begin
-              open( theFile.btree.session, filename, "", DB_BTREE, 0, 0 );
-              theFile.btree.isOpen := true;
-              theFile.btree.name := fname_val;
-           exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on opening the data file"  );
-           end;
+              begin
+                 open( theFile.btree.session, filename, "", DB_BTREE, 0, 0 );
+                 theFile.btree.isOpen := true;
+                 theFile.btree.name := fname_val;
+              exception when msg: berkeley_error =>
+                 err( exception_message( msg ) & " on opening the data file"  );
+              end;
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           end if;
         end if;
      end;
   end if;

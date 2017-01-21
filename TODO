@@ -14,18 +14,14 @@ UNSORTED NEW ISSUES
 
 - btree_io
   - severe
-     - all commands must check for isOpen or risk STORAGE_ERROR . left off around
-        BTreeFirst.
-     - unclosed cursors should be handled like unclosed files
-     - cursors need an isOpen flag like files have in scanner_res so unopened cursors
-       can be gracefully handled
      - also hash_io
   - warning
+    - relative paths not working with bdb environments...research
     - first vs getfirst - inconsistent naming
     - there are todo's still in btree_io
     - files.is_directory on a file...confirm no exception is thrown
     - files.is_writable didn't work on CMS
-    - include file name in not open errors
+    - wasWritten on arrays and records
   - large change!
      - when doing a syntax check, btree_io needs new_file to occur earlier in the
        source code to determine what the data type is for the file (as a
