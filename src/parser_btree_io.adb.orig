@@ -434,20 +434,22 @@ begin
   expect( btree_close_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
-     begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if theFile.btree.isOpen then
-           close( theFile.btree.session );
-           close( theFile.btree.env );
-           theFile.btree.isOpen := false;
-        else
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-               " is not open" );
-        end if;
-      exception when msg: berkeley_error =>
-        err( exception_message( msg ) );
-     end;
+     if identifiers( fileId ).svalue /= "" then
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           if theFile.btree.isOpen then
+              close( theFile.btree.session );
+              close( theFile.btree.env );
+              theFile.btree.isOpen := false;
+           else
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                  " is not open" );
+           end if;
+         exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        end;
+     end if;
   end if;
 end ParseBTreeClose;
 
@@ -591,7 +593,6 @@ begin
               exception when msg: berkeley_error =>
                  err( exception_message( msg ) & " on opening the data file"  );
               end;
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            end if;
         end if;
      end;
@@ -618,12 +619,14 @@ begin
   expect( btree_is_open_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
-     begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        result := to_bush_boolean( theFile.btree.isOpen );
-     exception when berkeley_error =>
-        result := to_bush_boolean( false );
-     end;
+     if identifiers( fileId ).svalue /= "" then
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           result := to_bush_boolean( theFile.btree.isOpen );
+        exception when berkeley_error =>
+           result := to_bush_boolean( false );
+        end;
+     end if;
   end if;
 end ParseBTreeIsOpen;
 
@@ -1877,26 +1880,29 @@ begin
   ParseFirstFileParameter( fileId );
   ParseLastCursorParameter( cursId );
   if isExecutingCommand then
-     begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if not theFile.btree.isOpen then
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-               " is not open" );
-        else
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           if not theCurs.btree_cur.isOpen then
-              err( "cursor " &
-                 optional_bold( to_string( identifiers( cursId ).name ) ) &
-                " is not open" );
+     if identifiers( fileId ).svalue /= "" and
+        identifiers( cursId ).svalue /= "" then
+        begin
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           if not theFile.btree.isOpen then
+              err( "file " &
+                 optional_bold( to_string( identifiers( fileId ).name ) ) &
+                  " is not open" );
            else
-              close( theFile.btree.session, theCurs.btree_cur.cursor );
-              theCurs.btree_cur.isOpen := false;
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.btree_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                   " is not open" );
+              else
+                 close( theFile.btree.session, theCurs.btree_cur.cursor );
+                 theCurs.btree_cur.isOpen := false;
+              end if;
            end if;
-        end if;
-     exception when msg: berkeley_error =>
-        err( exception_message( msg ) );
-     end;
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        end;
+     end if;
   end if;
 end ParseBTreeCloseCursor;
 

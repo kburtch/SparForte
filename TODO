@@ -14,6 +14,10 @@ UNSORTED NEW ISSUES
 
 - btree_io
   - severe
+     - all functions should check for a valid resource.  This issue only happens
+       when exceptions are thrown but result in a constraint_error when they occur.
+       (e.g. i(i).svalue /= null before findResource.
+       - this is true of all resource-using packages...can findResource be updated?
      - also hash_io
   - warning
     - relative paths not working with bdb environments...research
@@ -21,7 +25,7 @@ UNSORTED NEW ISSUES
     - there are todo's still in btree_io
     - files.is_directory on a file...confirm no exception is thrown
     - files.is_writable didn't work on CMS
-    - wasWritten on arrays and records
+      - if not possible, appropriate error
   - large change!
      - when doing a syntax check, btree_io needs new_file to occur earlier in the
        source code to determine what the data type is for the file (as a
@@ -33,9 +37,15 @@ UNSORTED NEW ISSUES
          declaration
        - deprecate all new_file, new_list, etc. as they are run-time and not
          suitable to specify generic type parameters.
+    - nice to haves
+       - arrays of files / files in records are not implemented but are possible
+         - update FirstFileParam, etc., to work with references
+         - wasWritten on arrays and records
+         - rewrite references to .value to look use utility functions
 
 - other
   - severe
+    - raising a custom exception in my test app isn't being caught...why?
     - can't declare two licences or software_models.  This is a problem for a
       redistributable library
     - constant check fails if assignment is in `..` (compiled after main program is
