@@ -28,3 +28,5 @@ CHANGES SINCE 2.0.1
 
 12. Fix: btree_io files no longer raise storage_error if the file was in wrong open/close state.  Appropriate error message given.
 
+13. Fix: btree_io, doubly lists, dht's (and unfinished vectors package) no longer raise a constraint error if the generic is not initialized with a "new_" function.
+
