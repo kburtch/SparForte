@@ -53,7 +53,13 @@ package body parser_vectors is
 procedure CheckVectorIsInitialized( vectorId : identifier ) is
 begin
   if identifiers( vectorId ).genKind = eof_t then
-     err( "new_vector has not been called to initialize the vector" );
+     err( optional_bold( "new_vector" ) & "  has not been called to initialize " &
+       optional_bold( to_string( identifiers( vectorId ).name ) ) );
+  elsif isExecutingCommand then
+     if identifiers( vectorId ).svalue = "" then
+        err( optional_bold( "new_vector" ) & "  has not been called to initialize " &
+          optional_bold( to_string( identifiers( vectorId ).name ) ) );
+     end if;
   end if;
 end CheckVectorIsInitialized;
 

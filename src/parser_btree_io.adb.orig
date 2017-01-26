@@ -112,11 +112,22 @@ btree_get_previous_t  : identifier;
 -- Utility subprograms
 ------------------------------------------------------------------------------
 
+-- CHECK FILE IS INITIALIZED
+--
+-- Check to see if a type is defined for the generic tree elements.
+-- If actually running, check to see if a resource has been associated
+-- with this file.  This only occurs at run-time.
+
 procedure CheckFileIsInitialized( fileId : identifier ) is
 begin
   if identifiers( fileId ).genKind = eof_t then
-     err( "new_file has not been called to initialize " &
+     err( optional_bold( "new_file" ) & " has not been called to initialize " &
           optional_bold( to_string( identifiers( fileId ).name ) ) );
+  elsif isExecutingCommand then
+     if identifiers( fileId ).svalue /= "" then
+        err( optional_bold( "new_file" ) & " has not been called to initialize " &
+          optional_bold( to_string( identifiers( fileId ).name ) ) );
+     end if;
   end if;
 end CheckFileIsInitialized;
 
@@ -144,10 +155,24 @@ begin
   CheckFileIsInitialized( fileId );
 end ParseLastFileParameter;
 
+------------------------------------------------------------------------------
+
+-- CHECK CURSOR IS INITIALIZED
+--
+-- Check to see if a type is defined for the generic cursor elements.
+-- If actually running, check to see if a resource has been associated
+-- with this cursor.  This only occurs at run-time.
+
 procedure CheckCursorIsInitialized( cursId : identifier ) is
 begin
   if identifiers( cursId ).genKind = eof_t then
-     err( "new_cursor has not been called to initialize the cursor" );
+     err( optional_bold( "new_cursor" ) & " has not been called to initialize " &
+        optional_bold( to_string( identifiers( cursId ).name ) ) );
+  elsif isExecutingCommand then
+     if identifiers( cursId ).svalue = "" then
+        err( optional_bold( "new_cursor" ) & " has not been called to initialize " &
+          optional_bold( to_string( identifiers( cursId ).name ) ) );
+     end if;
   end if;
 end CheckCursorIsInitialized;
 
@@ -434,22 +459,20 @@ begin
   expect( btree_close_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
-     if identifiers( fileId ).svalue /= "" then
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if theFile.btree.isOpen then
-              close( theFile.btree.session );
-              close( theFile.btree.env );
-              theFile.btree.isOpen := false;
-           else
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                  " is not open" );
-           end if;
-         exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
-        end;
-     end if;
+     begin
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if theFile.btree.isOpen then
+           close( theFile.btree.session );
+           close( theFile.btree.env );
+           theFile.btree.isOpen := false;
+        else
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+               " is not open" );
+        end if;
+      exception when msg: berkeley_error =>
+        err( exception_message( msg ) );
+     end;
   end if;
 end ParseBTreeClose;
 
@@ -619,14 +642,12 @@ begin
   expect( btree_is_open_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
-     if identifiers( fileId ).svalue /= "" then
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           result := to_bush_boolean( theFile.btree.isOpen );
-        exception when berkeley_error =>
-           result := to_bush_boolean( false );
-        end;
-     end if;
+     begin
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        result := to_bush_boolean( theFile.btree.isOpen );
+     exception when berkeley_error =>
+        result := to_bush_boolean( false );
+     end;
   end if;
 end ParseBTreeIsOpen;
 
@@ -1880,29 +1901,26 @@ begin
   ParseFirstFileParameter( fileId );
   ParseLastCursorParameter( cursId );
   if isExecutingCommand then
-     if identifiers( fileId ).svalue /= "" and
-        identifiers( cursId ).svalue /= "" then
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if not theFile.btree.isOpen then
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                  " is not open" );
+     begin
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if not theFile.btree.isOpen then
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+               " is not open" );
+        else
+           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+           if not theCurs.btree_cur.isOpen then
+              err( "cursor " &
+                 optional_bold( to_string( identifiers( cursId ).name ) ) &
+                " is not open" );
            else
-              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-              if not theCurs.btree_cur.isOpen then
-                 err( "cursor " &
-                    optional_bold( to_string( identifiers( cursId ).name ) ) &
-                   " is not open" );
-              else
-                 close( theFile.btree.session, theCurs.btree_cur.cursor );
-                 theCurs.btree_cur.isOpen := false;
-              end if;
+              close( theFile.btree.session, theCurs.btree_cur.cursor );
+              theCurs.btree_cur.isOpen := false;
            end if;
-        exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
-        end;
-     end if;
+        end if;
+     exception when msg: berkeley_error =>
+        err( exception_message( msg ) );
+     end;
   end if;
 end ParseBTreeCloseCursor;
 

@@ -21,31 +21,32 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with bush_os.exec;
-use  bush_os.exec;
-
 with text_io;use text_io;
 with
     Ada.Containers,
+    bush_os.exec,
     world,
+    user_io,
     scanner,
     scanner_res,
     string_util,
     parser,
     parser_aux,
     parser_containers,
-    parser_params,
-    bush_os;
+    parser_params;
 use
+    bush_os,
+    bush_os.exec,
     world,
+    user_io,
+    scanner,
     scanner,
     scanner_res,
     string_util,
     parser,
     parser_aux,
     parser_params,
-    parser_containers,
-    bush_os;
+    parser_containers;
 
 package body parser_doubly is
 
@@ -100,7 +101,13 @@ doubly_disassemble_t   : identifier;
 procedure CheckListIsInitialized( listId : identifier ) is
 begin
   if identifiers( listId ).genKind = eof_t then
-     err( "new_list has not been called to initialize the list" );
+     err( "new_list has not been called to initialize " &
+       optional_bold( to_string( identifiers( listId ).name ) ) );
+  elsif isExecutingCommand then
+     if identifiers( listId ).svalue = "" then
+        err( "new_list has not been called to initialize " &
+          optional_bold( to_string( identifiers( listId ).name ) ) );
+     end if;
   end if;
 end CheckListIsInitialized;
 
@@ -133,7 +140,13 @@ end ParseLastListParameter;
 procedure CheckCursorIsInitialized( cursId : identifier ) is
 begin
   if identifiers( cursId ).genKind = eof_t then
-     err( "new_cursor has not been called to initialize the cursor" );
+     err( "new_cursor has not been called to initialize " &
+          optional_bold( to_string( identifiers( cursId ).name ) ) );
+  elsif isExecutingCommand then
+     if identifiers( cursId ).svalue = "" then
+        err( "new_cursor has not been called to initialize " &
+          optional_bold( to_string( identifiers( cursId ).name ) ) );
+     end if;
   end if;
 end CheckCursorIsInitialized;
 

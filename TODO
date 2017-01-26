@@ -14,10 +14,6 @@ UNSORTED NEW ISSUES
 
 - btree_io
   - severe
-     - all functions should check for a valid resource.  This issue only happens
-       when exceptions are thrown but result in a constraint_error when they occur.
-       (e.g. i(i).svalue /= null before findResource.
-       - this is true of all resource-using packages...can findResource be updated?
      - also hash_io
   - warning
     - relative paths not working with bdb environments...research
