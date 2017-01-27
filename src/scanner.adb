@@ -3660,18 +3660,19 @@ begin
      loop
         exit when j > stringEnd-1;
         ch := element( jsonString, j );
+        if not inBackslash then
+           if ch = '"' then
+              item := item & ch;
+              j := j + 1;
+              exit;
+           end if;
+        end if;
         if inBackslash then
-           item := item & ch;
            inBackslash := false;
-        elsif ch = '"' then
-           item := item & ch;
-           j := j + 1;
-           exit;
         elsif ch = '\' then
            inBackslash := true;
-        else
-           item := item & ch;
         end if;
+        item := item & ch;
         j := j + 1;
      end loop;
 
