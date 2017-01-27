@@ -5416,9 +5416,14 @@ begin
               with_text := unbounded_slice( identifiers( id ).value.all, 2, length( identifiers( id ).value.all ) );
            end if;
         end if;
-        -- record the exception id
+        -- Record the exception id
+        -- Pull the declaration out of the symbol table.  Mark as not deleted.
+        -- Redirect storage pointer to point to local storage, not to the
+        -- symbol table svalue which could get disappear when a block is
+        -- deallocated.
         err_exception := identifiers( id );
         err_exception.deleted := false;
+        err_exception.value := err_exception.svalue'access;
         if length( with_text ) > 0 then
            raise_exception( "raised " &
                 optional_bold( to_string( identifiers( id ).name ) ) &
@@ -5630,7 +5635,8 @@ begin
           if not handled_exception then
              found_exception := true;
              if trace then
-                put_trace( "exception handler applying default case" );
+                put_trace( "exception handler applying default case for '" &
+                   to_string( occurrence_exception.name ) & "'" );
              end if;
           end if;
        end if;
@@ -5734,7 +5740,6 @@ begin
   -- Check the parameter mode
 
   if token = out_t then
-        -- DEBUG
      expect( out_t );
      passingMode := out_mode;
      -- err( "out parameters not yet supported" );
@@ -8073,6 +8078,7 @@ begin
   itself_type := token;
   itself_question := false;
 
+--put( "PGS: " ); -- DEBUG
 --put_token; -- DEBUG
 
   if Token = command_t then

@@ -124,7 +124,7 @@ begin
      err( optional_bold( "new_file" ) & " has not been called to initialize " &
           optional_bold( to_string( identifiers( fileId ).name ) ) );
   elsif isExecutingCommand then
-     if identifiers( fileId ).svalue /= "" then
+     if identifiers( fileId ).svalue = "" then
         err( optional_bold( "new_file" ) & " has not been called to initialize " &
           optional_bold( to_string( identifiers( fileId ).name ) ) );
      end if;

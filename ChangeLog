@@ -30,3 +30,7 @@ CHANGES SINCE 2.0.1
 
 13. Fix: btree_io, doubly lists, dht's (and unfinished vectors package) no longer raise a constraint error if the generic is not initialized with a "new_" function.
 
+14. Fix: exceptions raised in subprograms no longer vanish when the subprogram ends.
+
+15. Fix: JSON decoding now handles backslash escaping correctly.
+

@@ -1207,7 +1207,8 @@ begin
   end if;
 
   -- Show that this is an exception, not an error.  Do not erase
-  -- err_exception_name.
+  -- err_exception.name.  The ParseRaise, etc. procedure will set
+  -- err_exception.
 
   error_found := true;                                          -- flag error
 
@@ -3659,15 +3660,18 @@ begin
      loop
         exit when j > stringEnd-1;
         ch := element( jsonString, j );
-        if not inBackslash and ch = '"' then
+        if inBackslash then
+           item := item & ch;
+           inBackslash := false;
+        elsif ch = '"' then
            item := item & ch;
            j := j + 1;
            exit;
+        elsif ch = '\' then
+           inBackslash := true;
+        else
+           item := item & ch;
         end if;
-        if ch = '\' then
-           inBackslash := not inBackslash;
-        end if;
-        item := item & ch;
         j := j + 1;
      end loop;
 
@@ -5117,9 +5121,13 @@ begin
   itself_type := scannerState.itself_type;
   last_output := scannerState.last_output;
   last_output_type := scannerState.last_output_type;
-  err_exception := scannerState.err_exception;
-  -- because value is now a pointer
-  err_exception.value := err_exception.svalue'access;
+  -- If an exception occurred, do not erase it from a previous state
+  -- because value is now a pointer, make sure it points to the right
+  -- stoarge.
+  if length( err_exception.name ) = 0 then
+     err_exception := scannerState.err_exception;
+     err_exception.value := err_exception.svalue'access;
+  end if;
   if token = symbol_t or token = strlit_t or token = charlit_t or token = number_t or token = word_t then
      identifiers( token ).value.all := scannerState.value;
   end if;

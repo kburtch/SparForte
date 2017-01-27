@@ -16,6 +16,8 @@ UNSORTED NEW ISSUES
   - severe
      - also hash_io
   - warning
+    - negative test to ensure subprogram exceptions are not lost to parent
+    - json decode backslash good regression tests
     - relative paths not working with bdb environments...research
     - first vs getfirst - inconsistent naming
     - there are todo's still in btree_io
