@@ -2002,8 +2002,10 @@ begin
                    key,
                    jsonString,
                    DB_C_GET_FIRST );
-                 AssignParameter( keyRef, key );
-                 DoJsonToRecord( valRef.id, jsonString );
+                 if last_error( theFile.btree.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    DoJsonToRecord( valRef.id, jsonString );
+                 end if;
               end if;
            exception when msg: berkeley_error =>
               err( exception_message( msg ) );
@@ -2035,8 +2037,10 @@ begin
                    key,
                    jsonString,
                    DB_C_GET_FIRST );
-                 AssignParameter( keyRef, key );
-                 DoJsonToArray( valRef.id, jsonString );
+                 if last_error( theFile.btree.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    DoJsonToArray( valRef.id, jsonString );
+                 end if;
               end if;
            exception when msg: berkeley_error =>
               err( exception_message( msg ) );
@@ -2068,8 +2072,10 @@ begin
                    key,
                    data,
                    DB_C_GET_FIRST );
-                 AssignParameter( keyRef, key );
-                 AssignParameter( valRef, data );
+                 if last_error( theFile.btree.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    AssignParameter( valRef, data );
+                 end if;
               end if;
            exception when msg: berkeley_error =>
               err( exception_message( msg ) );
@@ -2160,8 +2166,10 @@ begin
                    key,
                    jsonString,
                    DB_C_GET_NEXT );
-                 AssignParameter( keyRef, key );
-                 DoJsonToRecord( valRef.id, jsonString );
+                 if last_error( theFile.btree.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    DoJsonToRecord( valRef.id, jsonString );
+                 end if;
               end if;
            end if;
         exception when msg: berkeley_error =>
@@ -2193,8 +2201,10 @@ begin
                    key,
                    jsonString,
                    DB_C_GET_NEXT );
-                 AssignParameter( keyRef, key );
-                 DoJsonToArray( valRef.id, jsonString );
+                 if last_error( theFile.btree.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    DoJsonToArray( valRef.id, jsonString );
+                 end if;
               end if;
            end if;
         exception when msg: berkeley_error =>
@@ -2226,8 +2236,10 @@ begin
                    key,
                    data,
                    DB_C_GET_NEXT );
-                 AssignParameter( keyRef, key );
-                 AssignParameter( valRef, data );
+                 if last_error( theFile.btree.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    AssignParameter( valRef, data );
+                 end if;
               end if;
            end if;
         exception when msg: berkeley_error =>
@@ -2318,8 +2330,10 @@ begin
                    key,
                    jsonString,
                    DB_C_GET_LAST );
-                 AssignParameter( keyRef, key );
-                 DoJsonToRecord( valRef.id, jsonString );
+                 if last_error( theFile.btree.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    DoJsonToRecord( valRef.id, jsonString );
+                 end if;
               end if;
            end if;
         exception when msg: berkeley_error =>
@@ -2351,8 +2365,10 @@ begin
                    key,
                    jsonString,
                    DB_C_GET_LAST );
-                 AssignParameter( keyRef, key );
-                 DoJsonToArray( valRef.id, jsonString );
+                 if last_error( theFile.btree.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    DoJsonToArray( valRef.id, jsonString );
+                 end if;
               end if;
            end if;
         exception when msg: berkeley_error =>
@@ -2384,8 +2400,10 @@ begin
                    key,
                    data,
                    DB_C_GET_LAST );
-                 AssignParameter( keyRef, key );
-                 AssignParameter( valRef, data );
+                 if last_error( theFile.btree.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    AssignParameter( valRef, data );
+                 end if;
               end if;
            end if;
         exception when msg: berkeley_error =>
@@ -2476,8 +2494,10 @@ begin
                    key,
                    jsonString,
                    DB_C_GET_PREV );
-                 AssignParameter( keyRef, key );
-                 DoJsonToRecord( valRef.id, jsonString );
+                 if last_error( theFile.btree.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    DoJsonToRecord( valRef.id, jsonString );
+                 end if;
               end if;
            end if;
         exception when msg: berkeley_error =>
@@ -2509,8 +2529,10 @@ begin
                    key,
                    jsonString,
                    DB_C_GET_PREV );
-                 AssignParameter( keyRef, key );
-                 DoJsonToArray( valRef.id, jsonString );
+                 if last_error( theFile.btree.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    DoJsonToArray( valRef.id, jsonString );
+                 end if;
               end if;
            end if;
         exception when msg: berkeley_error =>
@@ -2542,8 +2564,10 @@ begin
                    key,
                    data,
                    DB_C_GET_PREV );
-                 AssignParameter( keyRef, key );
-                 AssignParameter( valRef, data );
+                 if last_error( theFile.btree.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    AssignParameter( valRef, data );
+                 end if;
               end if;
            end if;
         exception when msg: berkeley_error =>

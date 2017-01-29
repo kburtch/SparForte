@@ -6508,6 +6508,7 @@ procedure DoUserDefinedProcedure( s : unbounded_string ) is
   last_in_chain: boolean := false;
   contextName  : unbounded_string;
   errorOnEntry : boolean := error_found;
+  exitBlockOnEntry : boolean := exit_block;
 begin
   proc_id := token;
   if syntax_check then
@@ -6647,7 +6648,7 @@ begin
      -- TODO: Not pretty, but will work.  This should be improved.
      if exit_block and done_sub and not error_found and not syntax_check then
         done_sub := false;
-        exit_block := false;
+        exit_block := exitBlockOnEntry;  -- is this right?
         done := false;
      end if;
      expect( end_t );
@@ -6657,7 +6658,7 @@ begin
          expect( eof_t );                  -- should be nothing else
      end if;
      restoreScript( scriptState );               -- restore original script
-  elsif syntax_check then
+  elsif syntax_check or exit_block then
      -- at this point, we are still looking at call
      if length( s ) = 0 then
         err( "(forward) procedure declaration not completed" );
@@ -6691,6 +6692,7 @@ procedure DoUserDefinedFunction( s : unbounded_string; result : out unbounded_st
   resultName  : unbounded_string;
   results     : unbounded_string;
   errorOnEntry : boolean := error_found;
+  exitBlockOnEntry : boolean := exit_block;
 begin
   -- Get the name of the function being called
   func_id := token;
@@ -6727,7 +6729,7 @@ begin
      -- TODO: Not pretty, but will work.  This should be improved.
      if exit_block and done_sub and not error_found and not syntax_check then
         done_sub := false;
-        exit_block := false;
+        exit_block := exitBlockOnEntry;
         done := false;
      end if;
      expect( end_t );                         -- end
@@ -6740,7 +6742,7 @@ begin
      findIdent( to_unbounded_string( "return value" ), return_id );
      result := identifiers( return_id ).value.all;
      restoreScript( scriptState );            -- restore original script
-  elsif syntax_check then
+  elsif syntax_check or exit_block then
      -- at this point, we are still looking at call
      if length( s ) = 0 then
         err( "(forward) function declaration not completed" );

@@ -4030,6 +4030,29 @@ end;
 
 end;
 
+-- user-define subprograms during an exit...ensure syntax
+-- checked correctly
+
+declare
+  function user_f( b : boolean ) return boolean is
+  begin
+    return b;
+  end user_f;
+  procedure user_p( b : boolean ) is
+  begin
+    null;
+  end user_p;
+
+  b : boolean := false;
+begin
+  loop
+    exit when true;
+    b := user_f( true );
+    user_p( true );
+  end loop;
+  pragma assert( b = false );
+end;
+
 -- Pragma ada_95 tests
 
 pragma ada_95;

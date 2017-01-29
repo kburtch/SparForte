@@ -34,3 +34,8 @@ CHANGES SINCE 2.0.1
 
 15. Fix: JSON decoding now handles backslash escaping correctly.
 
+16. Fix: btreee_io.get_next, get_first, get_list, get_previous, no longer run JSON decoding or a result if raise_exceptions is false and the get failed.
+
+17. Fix: user-defined procedures and functions no longer report semi-colon expected while exiting a block.
+
+ 

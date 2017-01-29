@@ -14,8 +14,12 @@ UNSORTED NEW ISSUES
 
 - btree_io
   - severe
+     - re-raise doesn't work unless it is in the main body of an exception
+       handler.  This includes if statements.  Being in an exception handler
+       must be a global scanner flag.
      - also hash_io
   - warning
+    - error messages may benefit from having the file path names
     - negative test to ensure subprogram exceptions are not lost to parent
     - json decode backslash good regression tests
     - relative paths not working with bdb environments...research
@@ -43,7 +47,6 @@ UNSORTED NEW ISSUES
 
 - other
   - severe
-    - raising a custom exception in my test app isn't being caught...why?
     - can't declare two licences or software_models.  This is a problem for a
       redistributable library
     - constant check fails if assignment is in `..` (compiled after main program is
@@ -56,6 +59,12 @@ UNSORTED NEW ISSUES
       Apache log (single chars means single lines)
   - feature
     - safety check that a file cannot include itself
+    - more separation of concerns
+      - with configuration
+      - with policy
+      - with project
+      - project block
+      - QA concerns?
 
   - features
     - built-in cache - memory or disk?
@@ -63,6 +72,7 @@ UNSORTED NEW ISSUES
       executable or both?
     - redesign is_writable, etc. so works better.
     - % should be usable in more contexts
+    - return [when] , raise [when]
   - examples
     - example program of ramdisk cache
 
