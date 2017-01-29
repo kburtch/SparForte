@@ -14,9 +14,6 @@ UNSORTED NEW ISSUES
 
 - btree_io
   - severe
-     - re-raise doesn't work unless it is in the main body of an exception
-       handler.  This includes if statements.  Being in an exception handler
-       must be a global scanner flag.
      - also hash_io
   - warning
     - error messages may benefit from having the file path names
@@ -47,6 +44,9 @@ UNSORTED NEW ISSUES
 
 - other
   - severe
+     - re-raise doesn't work unless it is in the main body of an exception
+       handler.  This includes if statements.  Being in an exception handler
+       must be a global scanner flag.
     - can't declare two licences or software_models.  This is a problem for a
       redistributable library
     - constant check fails if assignment is in `..` (compiled after main program is
