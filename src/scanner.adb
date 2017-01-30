@@ -5321,66 +5321,112 @@ begin
      -- 255 is one byte minus 0, which is reserved
      err( optional_inverse( "too many include files and subunits" ) );
   else                                                     -- new file
-     workingPaths := libraryPath;                          -- use -L paths
-     if length( workingPaths ) = 0 then                    -- none?
-        workingPaths := to_unbounded_string( "." );        -- use current
-     end if;                                               -- check env var
-     findIdent( to_unbounded_string( "SPAR_LIBRARY_PATH" ), temp_id );
-     if temp_id /= eof_t then                              -- exists?
-        if length( identifiers( temp_id ).value.all ) > 0 then  -- non-blank?
-           workingPaths := workingPaths & ":" & identifiers( temp_id ).value.all;
-        end if;
-     end if;
+     -- Absolute Paths
 
-     includeFileOpened := false;                           -- assume failure
-     libraryPrefixNumber := 1;                             -- prefix one
-     loop                                                  -- get next prefix
-        libraryPrefix := stringField( workingPaths, ':', libraryPrefixNumber );
-      exit when length( libraryPrefix ) = 0;               -- quit if none
-        if element( libraryPrefix, length( libraryPrefix ) ) /= directory_delimiter then
-           libraryPrefix := libraryPrefix & directory_delimiter;
-        end if;
+     if element( includeName, 1 ) = '/' then
 
-        declare
-          path : string := to_string( libraryPrefix & includeName );
-          include_file : file_type;
-        begin
-          if C_is_includable_file( path & ASCII.NUL ) then
-             open( include_file, in_file, path );
-             -- TODO: trace may not exist at this point
-             if trace or verboseOpt = true then
-                put_trace( "Including " & path );
-             end if;
-             while not end_of_file( include_file ) loop
-               includeText := includeText & ada.strings.unbounded.text_io.get_line( include_file ) & ASCII.LF;
-             end loop;
-             close( include_file );
-             includeFileOpened := true;
-             exit;
-          else
-             err( "include file " & optional_bold( to_string( includeName ) ) & " is not readable, is world writable, is not a file or is empty" );
-          end if;
-        exception
-            when STATUS_ERROR =>
-              err( "cannot open include file" & optional_bold( to_string( includeName ) ) &
-                 " - file may be locked" );
-              return;
-            when NAME_ERROR =>
-                if traceOpt then
-                   put_trace( to_string( "Cannot open " & libraryPrefix & includeName ) );
+           declare
+             path : string := to_string( includeName );
+             include_file : file_type;
+           begin
+             if C_is_includable_file( path & ASCII.NUL ) then
+                open( include_file, in_file, path );
+                -- TODO: trace may not exist at this point
+                if trace or verboseOpt = true then
+                   put_trace( "Including " & path );
                 end if;
-            when MODE_ERROR =>
-                err( "interal error: mode error on include file " & optional_bold( to_string( includeName ) ) );
+                while not end_of_file( include_file ) loop
+                  includeText := includeText & ada.strings.unbounded.text_io.get_line( include_file ) & ASCII.LF;
+                end loop;
+                close( include_file );
+                includeFileOpened := true;
+             else
+                err( "include file " & optional_bold( to_string( includeName ) ) & " is not readable, is world writable, is not a file or is empty" );
+             end if;
+           exception
+               when STATUS_ERROR =>
+                 err( "cannot open include file" & optional_bold( to_string( includeName ) ) &
+                    " - file may be locked" );
                  return;
+               when NAME_ERROR =>
+                   if traceOpt then
+                      put_trace( to_string( "Cannot open " & libraryPrefix & includeName ) );
+                   end if;
+               when MODE_ERROR =>
+                   err( "interal error: mode error on include file " & optional_bold( to_string( includeName ) ) );
+                    return;
                when END_ERROR =>
                  err( "interal error: end of file reached on include file " & optional_bold( to_string( includeName ) ) );
                return;
-            when others =>
-               err( "interal error: unexpected error reading " & optional_bold( to_string( includeName ) ) );
+               when others =>
+                  err( "interal error: unexpected error reading " & optional_bold( to_string( includeName ) ) );
+                  return;
+           end;
+
+     else
+     -- Relative Paths
+
+        workingPaths := libraryPath;                          -- use -L paths
+        if length( workingPaths ) = 0 then                    -- none?
+           workingPaths := to_unbounded_string( "." );        -- use current
+        end if;                                               -- check env var
+        findIdent( to_unbounded_string( "SPAR_LIBRARY_PATH" ), temp_id );
+        if temp_id /= eof_t then                              -- exists?
+           if length( identifiers( temp_id ).value.all ) > 0 then  -- non-blank?
+              workingPaths := workingPaths & ":" & identifiers( temp_id ).value.all;
+           end if;
+        end if;
+
+        includeFileOpened := false;                           -- assume failure
+        libraryPrefixNumber := 1;                             -- prefix one
+        loop                                                  -- get next prefix
+           libraryPrefix := stringField( workingPaths, ':', libraryPrefixNumber );
+         exit when length( libraryPrefix ) = 0;               -- quit if none
+           if element( libraryPrefix, length( libraryPrefix ) ) /= directory_delimiter then
+              libraryPrefix := libraryPrefix & directory_delimiter;
+           end if;
+
+           declare
+             path : string := to_string( libraryPrefix & includeName );
+             include_file : file_type;
+           begin
+             if C_is_includable_file( path & ASCII.NUL ) then
+                open( include_file, in_file, path );
+                -- TODO: trace may not exist at this point
+                if trace or verboseOpt = true then
+                   put_trace( "Including " & path );
+                end if;
+                while not end_of_file( include_file ) loop
+                  includeText := includeText & ada.strings.unbounded.text_io.get_line( include_file ) & ASCII.LF;
+                end loop;
+                close( include_file );
+                includeFileOpened := true;
+                exit;
+             else
+                err( "include file " & optional_bold( to_string( includeName ) ) & " is not readable, is world writable, is not a file or is empty" );
+             end if;
+           exception
+               when STATUS_ERROR =>
+                 err( "cannot open include file" & optional_bold( to_string( includeName ) ) &
+                    " - file may be locked" );
+                 return;
+               when NAME_ERROR =>
+                   if traceOpt then
+                      put_trace( to_string( "Cannot open " & libraryPrefix & includeName ) );
+                   end if;
+               when MODE_ERROR =>
+                   err( "interal error: mode error on include file " & optional_bold( to_string( includeName ) ) );
+                    return;
+               when END_ERROR =>
+                 err( "interal error: end of file reached on include file " & optional_bold( to_string( includeName ) ) );
                return;
-        end;
-        libraryPrefixNumber := libraryPrefixNumber + 1;  -- next prefix
-     end loop;
+               when others =>
+                  err( "interal error: unexpected error reading " & optional_bold( to_string( includeName ) ) );
+                  return;
+           end;
+           libraryPrefixNumber := libraryPrefixNumber + 1;  -- next prefix
+        end loop;
+     end if;
 
      if not includeFileOpened then
         err( "include file " & optional_bold( to_string( includeName ) ) &
