@@ -390,6 +390,7 @@ begin
         if theFile.btree.isOpen then
            err( "file " &
               optional_bold( to_string( identifiers( fileId ).name ) ) &
+              "(" & ASCII.Quotation & to_string( theFile.btree.name ) & ASCII.Quotation & ") " &
               " is already open" );
         else
            begin
@@ -468,6 +469,7 @@ begin
         else
            err( "file " &
               optional_bold( to_string( identifiers( fileId ).name ) ) &
+              "(" & ASCII.Quotation & to_string( theFile.btree.name ) & ASCII.Quotation & ") " &
                " is not open" );
         end if;
       exception when msg: berkeley_error =>
@@ -586,6 +588,7 @@ begin
         if theFile.btree.isOpen then
            err( "file " &
               optional_bold( to_string( identifiers( fileId ).name ) ) &
+              "(" & ASCII.Quotation & to_string( theFile.btree.name ) & ASCII.Quotation & ") " &
               " is already open" );
         else
            begin
@@ -1934,7 +1937,7 @@ end ParseBTreeCloseCursor;
 #end if;
 #if BDB
 
-procedure ParseBTreeFirst is
+procedure ParseBTreeGetFirst is
   -- Syntax: btree_io.get_first( f, c, k, v );
   -- Ada:    bdb.get_first( f, ... );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
@@ -2087,20 +2090,20 @@ begin
         end if;
      end if;
   end if;
-end ParseBTreeFirst;
+end ParseBTreeGetFirst;
 
 #else
 
-procedure ParseBTreeFirst is
+procedure ParseBTreeGetFirst is
 begin
   err( "bdb support not configured" );
-end ParseBTreeFirst;
+end ParseBTreeGetFirst;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeNext is
-  -- Syntax: btree_io.next( f, c, k, v );
+procedure ParseBTreeGetNext is
+  -- Syntax: btree_io.get_next( f, c, k, v );
   -- Ada:    bdb.get( f );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
@@ -2251,20 +2254,20 @@ begin
         end;
      end if;
   end if;
-end ParseBTreeNext;
+end ParseBTreeGetNext;
 
 #else
 
-procedure ParseBTreeNext is
+procedure ParseBTreeGetNext is
 begin
   err( "bdb support not configured" );
-end ParseBTreeNext;
+end ParseBTreeGetNext;
 
 #end if;
 #if BDB
 
-procedure ParseBTreeLast is
-  -- Syntax: btree_io.last( f, c, k, v );
+procedure ParseBTreeGetLast is
+  -- Syntax: btree_io.get_last( f, c, k, v );
   -- Ada:    bdb.get( f );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
@@ -2415,20 +2418,20 @@ begin
         end;
      end if;
   end if;
-end ParseBTreeLast;
+end ParseBTreeGetLast;
 
 #else
 
-procedure ParseBTreeLast is
+procedure ParseBTreeGetLast is
 begin
   err( "bdb support not configured" );
-end ParseBTreeLast;
+end ParseBTreeGetLast;
 
 #end if;
 #if BDB
 
-procedure ParseBTreePrevious is
-  -- Syntax: btree_io.previous( f, c, k, v );
+procedure ParseBTreeGetPrevious is
+  -- Syntax: btree_io.get_previous( f, c, k, v );
   -- Ada:    bdb.get( f );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
@@ -2579,13 +2582,13 @@ begin
         end;
      end if;
   end if;
-end ParseBTreePrevious;
+end ParseBTreeGetPrevious;
 #else
 
-procedure ParseBTreePrevious is
+procedure ParseBTreeGetPrevious is
 begin
   err( "bdb support not configured" );
-end ParseBTreePrevious;
+end ParseBTreeGetPrevious;
 
 #end if;
 #if BDB
@@ -2735,10 +2738,10 @@ begin
   declareProcedure( btree_new_cursor_t,  "btree_io.new_cursor", ParseBTreeNewCursor'access );
   declareProcedure( btree_open_cursor_t,  "btree_io.open_cursor", ParseBTreeOpenCursor'access );
   declareProcedure( btree_close_cursor_t,  "btree_io.close_cursor", ParseBTreeCloseCursor'access );
-  declareProcedure( btree_get_first_t,     "btree_io.get_first", ParseBTreeFirst'access );
-  declareProcedure( btree_get_next_t,      "btree_io.get_next", ParseBTreeNext'access );
-  declareProcedure( btree_get_previous_t,  "btree_io.get_previous", ParseBTreePrevious'access );
-  declareProcedure( btree_get_last_t,      "btree_io.get_last", ParseBTreeLast'access );
+  declareProcedure( btree_get_first_t,     "btree_io.get_first", ParseBTreeGetFirst'access );
+  declareProcedure( btree_get_next_t,      "btree_io.get_next", ParseBTreeGetNext'access );
+  declareProcedure( btree_get_previous_t,  "btree_io.get_previous", ParseBTreeGetPrevious'access );
+  declareProcedure( btree_get_last_t,      "btree_io.get_last", ParseBTreeGetLast'access );
 
   declareFunction( btree_will_raise_t, "btree_io.will_raise",  ParseBTreeWillRaise'access );
   declareFunction( btree_last_error_t, "btree_io.last_error",  ParseBTreeLastError'access );

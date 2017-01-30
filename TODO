@@ -16,11 +16,9 @@ UNSORTED NEW ISSUES
   - severe
      - also hash_io
   - warning
-    - error messages may benefit from having the file path names
     - negative test to ensure subprogram exceptions are not lost to parent
     - json decode backslash good regression tests
     - relative paths not working with bdb environments...research
-    - first vs getfirst - inconsistent naming
     - there are todo's still in btree_io
     - files.is_directory on a file...confirm no exception is thrown
     - files.is_writable didn't work on CMS
@@ -44,6 +42,7 @@ UNSORTED NEW ISSUES
 
 - other
   - severe
+     - absolute path not allowed with "with include" in rsh
      - re-raise doesn't work unless it is in the main body of an exception
        handler.  This includes if statements.  Being in an exception handler
        must be a global scanner flag.
