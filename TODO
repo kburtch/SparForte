@@ -14,6 +14,7 @@ UNSORTED NEW ISSUES
 
 - btree_io
   - severe
+     - test btree_io.replace with cursor (positive and negative)
      - also hash_io
   - warning
     - negative test to ensure subprogram exceptions are not lost to parent
@@ -42,7 +43,6 @@ UNSORTED NEW ISSUES
 
 - other
   - severe
-     - absolute path not allowed with "with include" in rsh
      - re-raise doesn't work unless it is in the main body of an exception
        handler.  This includes if statements.  Being in an exception handler
        must be a global scanner flag.

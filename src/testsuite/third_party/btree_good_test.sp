@@ -8,6 +8,7 @@ pragma annotate( summary, "Run good tests of btree_io library" )
               @( author, "Ken O. Burtch" );
 
 procedure btree_good_test is
+pragma annotate( todo, "should really test each of arrays, strings, records" );
 
 type person_type is record
    first_name : string;
@@ -100,6 +101,23 @@ exception when others =>
   btree_io.close_cursor( f, c );
 end;
 pragma assert( i = 3 );
+
+-- replace by cursor
+declare
+  c : btree_io.cursor;
+  key : string;
+  new_person : person_type;
+begin
+  btree_io.new_cursor( c, person_type );
+  btree_io.open_cursor( f, c );
+  btree_io.get_first( f, c, key, person );
+  new_person.first_name := "Abc";
+  new_person.age  := 44;
+  btree_io.replace( f, c, new_person );
+  btree_io.get_first( f, c, key, person );
+  pragma assert( person.first_name = "Abc" );
+  pragma assert( person.age = 44 );
+end;
 
 btree_io.close( f );
 pragma assert( not btree_io.is_open( f ) );

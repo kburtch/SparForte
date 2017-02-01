@@ -1441,7 +1441,6 @@ procedure ParseBtreeReplace is
   -- Syntax: btree.replace( f, c | k, v );
   -- Ada:    N/A
   -- Note: the key will not be overwritten if a cursor is used
--- TODO: option to throw an exception on missing values (including replace, get, add (existing value)
   fileId     : identifier;
   theFile  : resPtr;
   keyExpr  : unbounded_string;
@@ -1497,15 +1496,24 @@ begin
                  " is not open" );
            else
               declare
+                 temp_key    : unbounded_string;
+                 temp_string : unbounded_string;
                  jsonString : unbounded_string;
               begin
                 findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-                DoRecordToJson( jsonString, itemId );
-                put( theFile.btree.session,
-                     theCurs.btree_cur.cursor,
-                     keyExpr, -- this is ignored
-                     jsonString,
-                     DB_C_PUT_CURRENT );
+                get( theFile.btree.session,
+                   theCurs.btree_cur.cursor,
+                   temp_key,
+                   temp_string,
+                   DB_C_GET_CURRENT );
+                if last_error( theFile.btree.session ) = DB_OK then
+                   DoRecordToJson( jsonString, itemId );
+                   put( theFile.btree.session,
+                      theCurs.btree_cur.cursor,
+                      keyExpr, -- this is ignored
+                      jsonString,
+                      DB_C_PUT_CURRENT );
+                end if;
               exception when msg: berkeley_error =>
                 err( exception_message( msg ) );
               end;
@@ -1518,15 +1526,24 @@ begin
                  " is not open" );
            else
               declare
+                 temp_key    : unbounded_string;
+                 temp_string : unbounded_string;
                  jsonString : unbounded_string;
               begin
                 findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-                DoArrayToJson( jsonString, itemId );
-                put( theFile.btree.session,
-                     theCurs.btree_cur.cursor,
-                     keyExpr, -- this is ignored
-                     jsonString,
-                     DB_C_PUT_CURRENT );
+                get( theFile.btree.session,
+                   theCurs.btree_cur.cursor,
+                   temp_key,
+                   temp_string,
+                   DB_C_GET_CURRENT );
+                if last_error( theFile.btree.session ) = DB_OK then
+                   DoArrayToJson( jsonString, itemId );
+                   put( theFile.btree.session,
+                        theCurs.btree_cur.cursor,
+                        keyExpr, -- this is ignored
+                        jsonString,
+                        DB_C_PUT_CURRENT );
+                end if;
               exception when msg: berkeley_error =>
                 err( exception_message( msg ) );
               end;
@@ -1538,13 +1555,23 @@ begin
                  optional_bold( to_string( identifiers( fileId ).name ) ) &
                  " is not open" );
            else
+             declare
+               temp_key    : unbounded_string;
+               temp_string : unbounded_string;
              begin
                findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-               put( theFile.btree.session,
-                    theCurs.btree_cur.cursor,
-                    keyExpr, -- this is ignored
-                    itemExpr,
-                    DB_C_PUT_CURRENT );
+               get( theFile.btree.session,
+                  theCurs.btree_cur.cursor,
+                  temp_key,
+                  temp_string,
+                  DB_C_GET_CURRENT );
+               if last_error( theFile.btree.session ) = DB_OK then
+                  put( theFile.btree.session,
+                       theCurs.btree_cur.cursor,
+                       keyExpr, -- this is ignored
+                       itemExpr,
+                       DB_C_PUT_CURRENT );
+               end if;
              exception when msg: berkeley_error =>
                err( exception_message( msg ) );
              end;
@@ -1834,7 +1861,7 @@ begin
      identifiers( ref.id ).resource := true;
      declareResource( resId, btree_cursor, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
-     -- TODO: this won't work if the cursor is in an array or other
+     -- Note: this won't work if the cursor is in an array or other
      -- aggregate type
      identifiers( ref.id ).wasWritten := true;
   end if;
@@ -1858,7 +1885,6 @@ procedure ParseBTreeOpenCursor is
   cursId     : identifier;
   theCurs    : resPtr;
 begin
--- TODO: fold into btree.open
   expect( btree_open_cursor_t );
   ParseFirstFileParameter( fileId );
   ParseLastCursorParameter( cursId );
@@ -1942,7 +1968,6 @@ procedure ParseBTreeGetFirst is
   -- Ada:    bdb.get_first( f, ... );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
-  -- TODO: open cursor check would prevent storage error messages
   fileId     : identifier;
   theFile    : resPtr;
   cursId     : identifier;
@@ -2749,7 +2774,6 @@ begin
 
 -- TODO: assemble and disassemble - are they helpful for potentially huge trees?
 -- TODO: clear (cursor) - just for consistency
--- TODO: truncate
 -- TODO: reset?  are in_file, etc. helpful to define here?
 
   declareNamespaceClosed( "btree_io" );

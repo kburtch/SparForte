@@ -39,4 +39,6 @@ CHANGES SINCE 2.0.1
 17. Fix: user-defined procedures and functions no longer report semi-colon expected while exiting a block.
 
 18. Fix: "with separate" now works with absolute paths.
- 
+
+19. Fix: btree_io.replace with cursor checks to ensure item exists before writing. 
+
