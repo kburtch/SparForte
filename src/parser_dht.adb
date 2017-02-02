@@ -79,11 +79,15 @@ procedure CheckTableIsInitialized( tableId : identifier ) is
 begin
   if identifiers( tableId ).genKind = eof_t then
      err( optional_bold( "new_table" ) & " has not been called to initialize " &
-        optional_bold( to_string( identifiers( tableId ).name ) ) );
+        optional_bold( to_string( identifiers( tableId ).name ) ) &
+       "; Note: a bug in this version of SparForte requires 'new' " &
+       "to be located just after the variable's declaration." );
   elsif isExecutingCommand then
      if identifiers( tableId ).svalue = "" then
         err( optional_bold( "new_table" ) & " has not been called to initialize " &
-           optional_bold( to_string( identifiers( tableId ).name ) ) );
+           optional_bold( to_string( identifiers( tableId ).name ) ) &
+           "; Note: a bug in this version of SparForte requires 'new' " &
+           "to be located just after the variable's declaration." );
      end if;
   end if;
 end CheckTableIsInitialized;

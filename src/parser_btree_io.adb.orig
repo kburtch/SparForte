@@ -122,11 +122,15 @@ procedure CheckFileIsInitialized( fileId : identifier ) is
 begin
   if identifiers( fileId ).genKind = eof_t then
      err( optional_bold( "new_file" ) & " has not been called to initialize " &
-          optional_bold( to_string( identifiers( fileId ).name ) ) );
+          optional_bold( to_string( identifiers( fileId ).name ) ) &
+          "; Note: a bug in this version of SparForte requires 'new' " &
+          "to be located just after the variable's declaration) " );
   elsif isExecutingCommand then
      if identifiers( fileId ).svalue = "" then
         err( optional_bold( "new_file" ) & " has not been called to initialize " &
-          optional_bold( to_string( identifiers( fileId ).name ) ) );
+          optional_bold( to_string( identifiers( fileId ).name ) ) &
+          "; Note: a bug in this version of SparForte requires 'new' " &
+          "to be located just after the variable's declaration) " );
      end if;
   end if;
 end CheckFileIsInitialized;

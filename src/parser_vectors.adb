@@ -54,11 +54,15 @@ procedure CheckVectorIsInitialized( vectorId : identifier ) is
 begin
   if identifiers( vectorId ).genKind = eof_t then
      err( optional_bold( "new_vector" ) & "  has not been called to initialize " &
-       optional_bold( to_string( identifiers( vectorId ).name ) ) );
+       optional_bold( to_string( identifiers( vectorId ).name ) ) &
+       "; Note: a bug in this version of SparForte requires 'new' " &
+       "to be located just after the variable's declaration." );
   elsif isExecutingCommand then
      if identifiers( vectorId ).svalue = "" then
         err( optional_bold( "new_vector" ) & "  has not been called to initialize " &
-          optional_bold( to_string( identifiers( vectorId ).name ) ) );
+          optional_bold( to_string( identifiers( vectorId ).name ) ) &
+          "; Note: a bug in this version of SparForte requires 'new' " &
+          "to be located just after the variable's declaration." );
      end if;
   end if;
 end CheckVectorIsInitialized;

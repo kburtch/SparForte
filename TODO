@@ -14,13 +14,12 @@ UNSORTED NEW ISSUES
 
 - btree_io
   - severe
-     - test btree_io.replace with cursor (positive and negative)
      - also hash_io
   - warning
+     - negative test btree_io.replace with cursor
     - negative test to ensure subprogram exceptions are not lost to parent
     - json decode backslash good regression tests
     - relative paths not working with bdb environments...research
-    - there are todo's still in btree_io
     - files.is_directory on a file...confirm no exception is thrown
     - files.is_writable didn't work on CMS
       - if not possible, appropriate error
@@ -50,7 +49,6 @@ UNSORTED NEW ISSUES
       redistributable library
     - constant check fails if assignment is in `..` (compiled after main program is
       compiled)
-    - when tracing, shows main script name, not template name
   - warning
     - docs say strings.trim - trim end is optional, but is required.
     - change pegasock to use bdb format exceptions with filename in message?
@@ -83,23 +81,7 @@ Teamwork Improvments
   * Generating burndown charts?
 * xUnit support for tests (pragma test_result - output in JUNIT format?)
 
-Web System
-
-* cms library requirements(ideas only)
-  - get_content (page [, section [, user]] )
-  - set_content( page [, section [, user]][, template] )
-  - get_static_content( file ) - must supply id/class/both
-  - set_static_content( file )
-  - get_content_param( name )
-  - set_content_param( name, value )
-  - login system
-  - content as page content (articles, blogs, comments, etc.)
-  - name for cms library
-
-- base64 encoding (for csrf token)
-  - Cmp. http://www.adapower.com/adapower1/alg/base64.html
-
-* REPL needs to run in a chroot environment
+* REPL example needs to run in a chroot environment
 
 Lanaguage
 

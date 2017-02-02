@@ -102,11 +102,15 @@ procedure CheckListIsInitialized( listId : identifier ) is
 begin
   if identifiers( listId ).genKind = eof_t then
      err( "new_list has not been called to initialize " &
-       optional_bold( to_string( identifiers( listId ).name ) ) );
+       optional_bold( to_string( identifiers( listId ).name ) ) &
+       "; Note: a bug in this version of SparForte requires 'new' " &
+       "to be located just after the variable's declaration." );
   elsif isExecutingCommand then
      if identifiers( listId ).svalue = "" then
         err( "new_list has not been called to initialize " &
-          optional_bold( to_string( identifiers( listId ).name ) ) );
+          optional_bold( to_string( identifiers( listId ).name ) ) &
+          "; Note: a bug in this version of SparForte requires 'new' " &
+          "to be located just after the variable's declaration." );
      end if;
   end if;
 end CheckListIsInitialized;

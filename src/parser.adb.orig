@@ -5387,7 +5387,7 @@ procedure ParseRestOfRaise is
 begin
   -- re-raise?
   if token = symbol_t and identifiers( token ).value.all = to_unbounded_string( ";" ) then
-     err( "re-raise is not in an exception handler" );
+     err( "re-raise is not in the body of an exception handler" );
   else
      if identifiers( token ).class /= exceptionClass then
         err( optional_bold( to_string( identifiers( token ).name ) ) & " is a " & getIdentifierClassImage( identifiers( token ).class ) & " not an exception" );

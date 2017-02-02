@@ -9,6 +9,7 @@ pragma annotate( summary, "Run good tests of btree_io library" )
 
 procedure btree_good_test is
 pragma annotate( todo, "should really test each of arrays, strings, records" );
+pragma annotate( todo, "should loop to test for memory leaks" );
 
 type person_type is record
    first_name : string;
@@ -115,8 +116,11 @@ begin
   new_person.age  := 44;
   btree_io.replace( f, c, new_person );
   btree_io.get_first( f, c, key, person );
+  btree_io.close_cursor( f, c );
   pragma assert( person.first_name = "Abc" );
   pragma assert( person.age = 44 );
+exception when others =>
+  btree_io.close_cursor( f, c );
 end;
 
 btree_io.close( f );
