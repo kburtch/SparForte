@@ -1,4 +1,48 @@
-For the latest news, visit the Linux Cafe at the PegaSoft web site. 
+For the latest news, visit the SparForte website.
+
+SparForte 2.0.2's focus was bug fixes for SparForte 2.0.1
+
+CHANGES SINCE 2.0.1
+
+1. Fix: When the verbose option is used, Berkeley DB verbose options are enabled for DB_VERB_BACKUP, DB_VERB_DEADLOCK, DB_VERB_FILEOPS, DB_VERB_WAITSFOR.
+
+2. Fix: If btree_io.create fails to create a file, an exception is no longer raised when truncate is attempted.
+
+3. Fix: Dynamic memory within resource handles is freed and files closed prior to deallocation the resource handle.  Fixed order of deallocation to eliminate storage_error for btree freed handles.
+
+4. Fix: In web templates, scripts tags are no longer run if a previous error occurred.  The error flag is not reset either, so errors will appear in the browser window.
+
+5. Fix: btree_io.remove no longer throws an exception when a cursor isn't used (uninitialized variable).  It no longer tries to remove the environment.
+
+6. Fix: btree_io cursors and files no longer give a constant expected message in test phase mode.
+
+7. Change: text templates no longer show error messages on a single line.  Other templates remain unchanged.
+
+8. New: third party tests added to "make releasetest".  First is btree_io positive tests.
+
+9. Fix: exception handlers in inner blocks no longer run when an error occurs in the outer block.
+
+10. Fix: strings.trim end parameter is now optional, as in the documentation.
+
+11. Fix: btree_io cursors no longer raise storage_error if the cursor was in wrong open/close state.  Appropriate error message given.
+
+12. Fix: btree_io files no longer raise storage_error if the file was in wrong open/close state.  Appropriate error message given.
+
+13. Fix: btree_io, doubly lists, dht's (and unfinished vectors package) no longer raise a constraint error if the generic is not initialized with a "new_" function.
+
+14. Fix: exceptions raised in subprograms no longer vanish when the subprogram ends.
+
+15. Fix: JSON decoding now handles backslash escaping correctly.
+
+16. Fix: btreee_io.get_next, get_first, get_list, get_previous, no longer run JSON decoding or a result if raise_exceptions is false and the get failed.
+
+17. Fix: user-defined procedures and functions no longer report semi-colon expected while exiting a block.
+
+18. Fix: "with separate" now works with absolute paths.
+
+19. Fix: btree_io.replace with cursor checks to ensure item exists before writing. 
+
+
 
 SparForte 2.0.1's focus was bug fixes for SparForte 2.0
 
@@ -37,5 +81,4 @@ CHANGES SINCE 2.0
 16. Fix: constant test works correctly with user function out, in out parameters.
 
 17. New: pragma assumption( used, var ) / assumption( written, var ) as a workaround when the language guesses incorrectly if a variable is unused or is not written to.
-
 

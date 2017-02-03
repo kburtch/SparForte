@@ -723,7 +723,7 @@ procedure Set_Cookie_Position(Key_Number : in Positive;
   -- Given a Key number and a datum of the form key=value
   -- assign the Cookie_Data(Key_Number) the values of key and value.
 begin
-  start_cgi; -- KB: DEFERRED START
+  --start_cgi; -- KB: DEFERRED START
     Cookie_Data.all(Key_Number).Key :=
        To_Unbounded_String(Slice(Datum, 1, Last));
     Cookie_Data.all(Key_Number).Value :=
@@ -742,7 +742,7 @@ procedure Set_Cookie_Data(Raw_Data : in Unbounded_String) is
   Last : Natural;
   -- Parse through the cookie raw data and put in the cookie data array
 begin
-  start_cgi; -- KB: DEFERRED START
+  --start_cgi; -- KB: DEFERRED START
   while Character_Position <= Length(Raw_Data) loop
     Last := Field_End(Raw_Data, ';', Character_Position);
     Set_Cookie_Position(Key_Number,
@@ -803,7 +803,7 @@ function Cookie_Value(Key : in Unbounded_String; Index : in Positive := 1;
                       Required : in Boolean := False) return String is
 begin
   start_cgi; -- KB: DEFERRED START
-  return To_String(Value(Key, Index, Required));
+  return To_String(Cookie_Value(Key, Index, Required));
 end Cookie_Value;
 
 function Cookie_Value(Position : in Positive) return Unbounded_String is
