@@ -6,3 +6,5 @@ CHANGES SINCE 2.0.2
 
 1. Fix: cgi.cookie_value default position no longer throws an exception.
 
+2. Fix: fixed adacgi 1.6 error that prevented cookies from being read.
+
