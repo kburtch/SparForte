@@ -63,7 +63,12 @@ The following software packages are required for SparForte:
 
   These may not be installed on your operating system, or some components
   may be missing.  How you install these depends on your operating system.
-  For example:
+
+  The provision.sh script will attempt to identify your version of Linux and
+  install all the required software.
+
+  Alternatively, you may want to install the requirements manually, selecting
+  which software you want.  For example:
 
    - Fedora/Red Hat Linux - yum install package-name (or use add/remove
      software in the menus)

@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2016 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -20,6 +20,7 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
+--with ada.text_io;use ada.text_io;
 
 with gnat.regexp,
     gnat.regpat,
@@ -754,7 +755,7 @@ procedure ParseCookie_Value( result : out unbounded_string; kind : out identifie
 -- return Unbounded_String is
   expr_val  : unbounded_string;
   expr_type : identifier;
-  pos_val  : unbounded_string := ' ' & to_unbounded_string( 1 );
+  pos_val  : unbounded_string := to_unbounded_string( " 1" );
   pos_type : identifier;
   bool_val  : unbounded_string := identifiers( false_t ).value.all;
   bool_type : identifier;
