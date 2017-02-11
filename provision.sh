@@ -56,17 +56,17 @@ redhat )
    ;;
 suse)
    set -e
-   sudo -u root zypper "--non-interactive" mlocate
-   sudo -u root zypper "--non-interactive" gcc-ada
-   sudo -u root zypper "--non-interactive" git
-   sudo -u root zypper "--non-interactive" gstreamer-0_10-devel 
-   sudo -u root zypper "--non-interactive" ibopenssl-devel
-   sudo -u root zypper "--non-interactive" libSDL-devel
-   sudo -u root zypper "--non-interactive" libSDL_image-devel
-   sudo -u root zypper "--non-interactive" libmysqlclient-devel
-   sudo -u root zypper "--non-interactive" postgresql
-   sudo -u root zypper "--non-interactive" postgresql-devel
-   sudo -u root zypper "--non-interactive" rpmlint
+   sudo -u root zypper "--non-interactive" install mlocate
+   sudo -u root zypper "--non-interactive" install gcc-ada
+   sudo -u root zypper "--non-interactive" install git
+   sudo -u root zypper "--non-interactive" install gstreamer-0_10-devel
+   sudo -u root zypper "--non-interactive" install libopenssl-devel
+   sudo -u root zypper "--non-interactive" install libSDL-devel
+   sudo -u root zypper "--non-interactive" install libSDL_image-devel
+   sudo -u root zypper "--non-interactive" install libmysqlclient-devel
+   sudo -u root zypper "--non-interactive" install postgresql
+   sudo -u root zypper "--non-interactive" install postgresql-devel
+   sudo -u root zypper "--non-interactive" install rpmlint
    set +e
    ;;
 ubuntu )
