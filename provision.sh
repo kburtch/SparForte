@@ -44,7 +44,6 @@ redhat )
    sudo -u root yum install -q -y mariadb-devel
    sudo -u root yum install -q -y mariadb-server
    sudo -u root yum install -q -y mlocate
-   sudo -u root yum install -q -y php
    sudo -u root yum install -q -y postgresql
    sudo -u root yum install -q -y postgresql-devel
    sudo -u root yum install -q -y postgresql-server
@@ -57,22 +56,21 @@ redhat )
    ;;
 suse)
    set -e
-   sudo -u root yast -i mlocate
-   sudo -u root yast -i gcc-ada
-   sudo -u root yast -i git
-   sudo -u root yast -i postgresql
-   sudo -u root yast -i postgresl-client
-   sudo -u root yast -i libopenssl-devel
-   sudo -u root yast -i libSDL-devel
-   sudo -u root yast -i libSDL_image-devel
-   sudo -u root yast -i libSDL_image
-   sudo -u root yast -i libmysqlclient-devel
-   sudo -u root yast -i postgresql-devel
+   sudo -u root zypper "--non-interactive" mlocate
+   sudo -u root zypper "--non-interactive" gcc-ada
+   sudo -u root zypper "--non-interactive" git
+   sudo -u root zypper "--non-interactive" gstreamer-0_10-devel 
+   sudo -u root zypper "--non-interactive" ibopenssl-devel
+   sudo -u root zypper "--non-interactive" libSDL-devel
+   sudo -u root zypper "--non-interactive" libSDL_image-devel
+   sudo -u root zypper "--non-interactive" libmysqlclient-devel
+   sudo -u root zypper "--non-interactive" postgresql
+   sudo -u root zypper "--non-interactive" postgresql-devel
+   sudo -u root zypper "--non-interactive" rpmlint
    set +e
    ;;
 ubuntu )
    set -e
-   sudo -u root apt-get -q -y install alpine
    sudo -u root apt-get -q -y install bzip2
    sudo -u root apt-get -q -y install gnat
    sudo -u root apt-get -q -y install git
@@ -87,7 +85,6 @@ ubuntu )
    sudo -u root apt-get -q -y install libsdl-image1.2-dev
    sudo -u root apt-get -q -y install wget
    sudo -u root apt-get -q -y install bc
-   sudo -u root apt-get -q -y install apache2
    set +e
    ;;
 *)
