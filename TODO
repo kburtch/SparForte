@@ -40,8 +40,18 @@ UNSORTED NEW ISSUES
          - wasWritten on arrays and records
          - rewrite references to .value to look use utility functions
 
+- memcache
+  - severe
+  - warning
+    - memcache not upgraded to use resources
+
 - other
   - severe
+ - session scripts must not be allowed in a restricted shell...or imports...verify
+     - an early return from the main program doesn't pull the final block,
+       even if the template isn't parsed.
+     - cgi third_party test
+     - memcache third_party test
      - re-raise doesn't work unless it is in the main body of an exception
        handler.  This includes if statements.  Being in an exception handler
        must be a global scanner flag.
@@ -50,6 +60,8 @@ UNSORTED NEW ISSUES
     - constant check fails if assignment is in `..` (compiled after main program is
       compiled)
   - warning
+    - semantics of throwing an exception in a subscript `...`
+    - function f(p), p should not be 'already exists' if there is a p in scope
     - docs say strings.trim - trim end is optional, but is required.
     - change pegasock to use bdb format exceptions with filename in message?
     - exceptions that propogate to the top aren't formatted properly in the

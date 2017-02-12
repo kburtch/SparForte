@@ -3405,6 +3405,7 @@ function deleteIdent( id : identifier ) return boolean is
            err( "session export script not defined" );
         else
            declare
+             old_rshOpt : commandLineOption := rshOpt;
              temp1_t : identifier;
              temp2_t : identifier;
              -- b : boolean;
@@ -3432,9 +3433,14 @@ function deleteIdent( id : identifier ) return boolean is
              -- else
              --    declareStandardConstant( temp2_t, "session_variable_value", string_t, to_string( identifiers( id ).value ) );
              -- end if;
+             --
+             -- Session scripts must run without restricted shell so values can
+             -- be saved.
+             rshOpt := false;
              CompileAndRun( sessionExportScript, 1, false );
              -- b := deleteIdent( temp2_t );  -- recursion, ignore result
              -- b := deleteIdent( temp1_t );  -- recursion, ignore result
+             rshOpt := old_rshOpt;
            end;
         end if;
     when shell =>

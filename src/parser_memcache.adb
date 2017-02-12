@@ -162,6 +162,8 @@ begin
    return left.id >= right.id;
 end "=";
 
+-- TODO: KB: 17/02/12: rewrite to use resources
+
 package memcacheDualClusterList is new gen_list( aMemcacheDualClusterEntry, "=", ">=" );
 
 memcacheDualCluster : memcacheDualClusterList.List;
