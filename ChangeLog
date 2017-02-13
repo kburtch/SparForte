@@ -8,3 +8,7 @@ CHANGES SINCE 2.0.2
 
 2. Fix: fixed adacgi 1.6 error that prevented cookies from being read.
 
+3. Fix: reading an empty value in memcache/get no longer raises no servers configured.
+
+4. New: added memcache good test cases to release tests.
+

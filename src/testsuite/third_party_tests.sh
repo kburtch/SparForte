@@ -29,6 +29,23 @@ else
    echo "OK - $TESTSET"
 fi
 
+TESTSET="memcache_good_test.sp"
+if [ ! -f "$TESTSET" ] ; then
+   echo "Failed - $TESTSET is missing"
+fi
+RESULT=`../../spar --test --debug ./$TESTSET 2>&1`
+if [ $? -ne 0 ] ; then
+   echo "Failed - $TESTSET Failed"
+   echo "$RESULT"
+   exit 192
+elif [ -n "$RESULT" ] ; then
+   echo "Failed - $TESTSET Failed"
+   echo "$RESULT"
+   exit 192
+else
+   echo "OK - $TESTSET"
+fi
+
 # ---------------------------------------------------------------------------
 
 echo "$0: "`date`

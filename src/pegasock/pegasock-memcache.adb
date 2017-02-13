@@ -806,7 +806,9 @@ begin
             p := p - 1;
           end loop;
           sizeToRead := integer'value( slice( primaryResult, p, length( primaryResult ) ) );
-          get( primaryPtr.fd, sizeToRead, value );
+          if sizeToRead > 0 then
+             get( primaryPtr.fd, sizeToRead, value );
+          end if;
           get( primaryPtr.fd, 2, primaryResult );  -- read EOL
           get( primaryPtr.fd, primaryResult );
           result := primaryResult;
@@ -832,7 +834,9 @@ begin
                  p := p - 1;
                end loop;
                sizeToRead := integer'value( slice( secondaryResult, p, length( secondaryResult ) ) );
-               get( secondaryPtr.fd, sizeToRead, value );
+               if sizeToRead > 0 then
+                  get( secondaryPtr.fd, sizeToRead, value );
+               end if;
                get( secondaryPtr.fd, 2, secondaryResult );  -- read EOL
                get( secondaryPtr.fd, secondaryResult );
             end if;

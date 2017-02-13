@@ -2,8 +2,9 @@ LOTS TO WORK ON
 ---------------
 Languages are complicated...
 
-
-UNSORTED NEW ISSUES
+-----------------------------------------------------------------------------
+NEW ISSUES BEING WORKED ON OR NEEDING SORTING INTO OUTSTANDING BUG LIST
+-----------------------------------------------------------------------------
 
 - GitHub readme.md "badges" (see also shields)
   - you need to be able to point at Jenkins.  A URL to the shields.io site
@@ -16,7 +17,7 @@ UNSORTED NEW ISSUES
   - severe
      - also hash_io
   - warning
-     - negative test btree_io.replace with cursor
+    - negative test btree_io.replace with cursor
     - negative test to ensure subprogram exceptions are not lost to parent
     - json decode backslash good regression tests
     - relative paths not working with bdb environments...research
@@ -44,6 +45,10 @@ UNSORTED NEW ISSUES
   - severe
   - warning
     - memcache not upgraded to use resources
+  - nice to haves
+    - update design to use new resource system
+    - update functionality to handle records, arrays, etc. like btree_io
+    - update functionality to
 
 - other
   - severe
@@ -127,6 +132,9 @@ Built System
 
 [David B wants shared library but didn't get it added in time]
 
+-------------------------------------------------------------------------------
+KNOWN ISSUES/IDEAS
+-----------------------------------------------------------------------------
 
 ISSUES (SparForte Environment)
 
