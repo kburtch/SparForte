@@ -12,3 +12,5 @@ CHANGES SINCE 2.0.2
 
 4. New: added memcache good test cases to release tests.
 
+5. Fix: areadline library patched so command prompt history doesn't remember blank lines, to match up with the history command and normal shell behavior.
+

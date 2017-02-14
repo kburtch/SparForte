@@ -58,7 +58,11 @@ package body Readline is
       declare
          Result : constant String := Value (C_Line);
       begin
-         Add_History (C_Line);
+         -- KB: 17/12/14 - Patch - Don't add empty lines to history.
+         -- A shell doesn't remember blank lines.
+         if Strlen( C_Line ) > 0 then
+            Add_History (C_Line);
+         end if;
          Free (C_Line);
          return Result;
       end;
