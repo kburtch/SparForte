@@ -15,7 +15,7 @@ NEW ISSUES BEING WORKED ON OR NEEDING SORTING INTO OUTSTANDING BUG LIST
 
 - btree_io
   - severe
-     - also hash_io
+    - pwd is wrong for btree_io/hash_io on ../spar redirect
   - warning
     - negative test btree_io.replace with cursor
     - negative test to ensure subprogram exceptions are not lost to parent
@@ -24,6 +24,8 @@ NEW ISSUES BEING WORKED ON OR NEEDING SORTING INTO OUTSTANDING BUG LIST
     - files.is_directory on a file...confirm no exception is thrown
     - files.is_writable didn't work on CMS
       - if not possible, appropriate error
+    - option to throw an exception on missing values (including replace, get, add (existing value)
+
   - large change!
      - when doing a syntax check, btree_io needs new_file to occur earlier in the
        source code to determine what the data type is for the file (as a

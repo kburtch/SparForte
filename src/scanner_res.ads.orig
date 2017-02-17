@@ -153,7 +153,10 @@ type hash_file_type is record
     envhome : unbounded_string;
 end record;
 
--- TODO: hash_cursor_type
+type hash_cursor_type is record
+     cursor : bdb.berkeley_cursor;
+     isOpen : boolean := false;
+end record;
 
 type recno_file_type is record
     session : bdb.berkeley_session;
@@ -254,7 +257,7 @@ type resHandle( rt : aResourceType ) is record
 #end if;
      when hash_cursor =>
 #if BDB
-          hash_cur : bdb.berkeley_cursor;
+          hash_cur : hash_cursor_type;
 #else
           null; -- no Berkeley DB
 #end if;

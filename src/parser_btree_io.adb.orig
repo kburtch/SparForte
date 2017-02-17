@@ -204,6 +204,25 @@ begin
   CheckCursorIsInitialized( cursId );
 end ParseLastCursorParameter;
 
+#if BDB
+-- IS VERIFIED OPEN FILE
+--
+-- True if the file is open, otherwise an error occurs and false is returned.
+------------------------------------------------------------------------------
+
+function isVerifiedOpenFile( fileId : identifier; theFile : resPtr ) return boolean is
+  result : boolean := true;
+begin
+   if not theFile.btree.isOpen then
+      err( "file " &
+      optional_bold( to_string( identifiers( fileId ).name ) ) &
+      " is not open" );
+      result := false;
+   end if;
+   return result;
+end isVerifiedOpenFile;
+#end if;
+
 ------------------------------------------------------------------------------
 -- Parser subprograms
 ------------------------------------------------------------------------------
@@ -251,10 +270,17 @@ end ParseBtreeNewFile;
 pragma warnings( off );
 -- Hide unused parameters warnings
 
-procedure ParseBtreeNewFile is
+procedure not_configured is
 begin
-  err( "bdb support not configured" );
-end ParseBtreeNewFile;
+  err( "Berkeley DB support not configured" );
+end not_configured;
+
+procedure not_configured( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "Berkeley DB support not configured" );
+end not_configured;
+
+procedure ParseBtreeNewFile renames not_configured;
 
 #end if;
 #if BDB
@@ -285,10 +311,7 @@ end ParseBTreeClear;
 
 #else
 
-procedure ParseBTreeClear is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeClear;
+procedure ParseBTreeClear renames not_configured;
 
 #end if;
 #if BDB
@@ -447,10 +470,7 @@ end ParseBTreeCreate;
 
 #else
 
-procedure ParseBTreeCreate is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeCreate;
+procedure ParseBTreeCreate renames not_configured;
 
 #end if;
 #if BDB
@@ -484,10 +504,7 @@ end ParseBTreeClose;
 
 #else
 
-procedure ParseBTreeClose is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeClose;
+procedure ParseBTreeClose renames not_configured;
 
 #end if;
 #if BDB
@@ -631,10 +648,7 @@ end ParseBTreeOpen;
 
 #else
 
-procedure ParseBTreeOpen is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeOpen;
+procedure ParseBTreeOpen renames not_configured;
 
 #end if;
 #if BDB
@@ -660,10 +674,7 @@ end ParseBTreeIsOpen;
 
 #else
 
-procedure ParseBTreeIsOpen( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeIsOpen;
+procedure ParseBTreeIsOpen( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -687,10 +698,7 @@ end ParseBTreeName;
 
 #else
 
-procedure ParseBTreeName( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeName;
+procedure ParseBTreeName( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -827,10 +835,7 @@ end ParseBTreeDelete;
 
 #else
 
-procedure ParseBTreeDelete is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeDelete;
+procedure ParseBTreeDelete renames not_configured;
 
 #end if;
 #if BDB
@@ -876,11 +881,7 @@ begin
   if isExecutingCommand then
      if isRecord then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if not theFile.btree.isOpen then
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-              " is not open" );
-        else
+        if isVerifiedOpenFile( fileId, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -892,11 +893,7 @@ begin
         end if;
      elsif isArray then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if not theFile.btree.isOpen then
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-              " is not open" );
-        else
+        if isVerifiedOpenFile( fileId, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -909,11 +906,7 @@ begin
      else
         -- normal scalar expression
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if not theFile.btree.isOpen then
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-              " is not open" );
-        else
+        if isVerifiedOpenFile( fileId, theFile ) then
            begin
               put( theFile.btree.session, to_string( keyExpr ), to_string( valExpr ) );
            exception when msg: berkeley_error =>
@@ -928,10 +921,7 @@ end ParseBTreeSet;
 
 #else
 
-procedure ParseBTreeSet is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeSet;
+procedure ParseBTreeSet renames not_configured;
 
 #end if;
 #if BDB
@@ -995,11 +985,7 @@ begin
   if isExecutingCommand then
      if isRecord then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if not theFile.btree.isOpen then
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-              " is not open" );
-        else
+        if isVerifiedOpenFile( fileId, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -1017,11 +1003,7 @@ begin
         end if;
      elsif isArray then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if not theFile.btree.isOpen then
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-              " is not open" );
-        else
+        if isVerifiedOpenFile( fileId, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -1039,11 +1021,7 @@ begin
         end if;
      else
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if not theFile.btree.isOpen then
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-              " is not open" );
-        else
+        if isVerifiedOpenFile( fileId, theFile ) then
            declare
               result : unbounded_string;
            begin
@@ -1065,10 +1043,7 @@ end ParseBTreeGet;
 
 #else
 
-procedure ParseBTreeGet is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeGet;
+procedure ParseBTreeGet renames not_configured;
 
 #end if;
 #if BDB
@@ -1087,11 +1062,7 @@ begin
   ParseLastStringParameter( keyExpr, keyType, string_t );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if not theFile.btree.isOpen then
-        err( "file " &
-           optional_bold( to_string( identifiers( fileId ).name ) ) &
-           " is not open" );
-     else
+     if isVerifiedOpenFile( fileId, theFile ) then
         begin
            exists( theFile.btree.session, to_string( keyExpr ) );
            result := to_bush_boolean( true );
@@ -1106,10 +1077,7 @@ end ParseBTreeHasElement;
 
 #else
 
-procedure ParseBTreeHasElement( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeHasElement;
+procedure ParseBTreeHasElement( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -1140,39 +1108,34 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if not theFile.btree.isOpen then
-        err( "file " &
-           optional_bold( to_string( identifiers( fileId ).name ) ) &
-           " is not open" );
-     elsif cursId /= eof_t then
-        begin
-          findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-          delete( theFile.btree.session, theCurs.btree_cur.cursor );
-        exception when msg: berkeley_error =>
-            err( exception_message( msg ) );
-        end;
-     else
-        begin
-           delete( theFile.btree.session, to_string( keyExpr ) );
-        exception when msg: berkeley_error =>
-           if last_error( theFile.btree.session ) = DB_NOTFOUND then
-              err( "key not found" );
-           else
-              err( exception_message( msg ) );
-           end if;
-        when STORAGE_ERROR =>
-           err( "internal error: unable to reference BDB session" );
-        end;
+     if isVerifiedOpenFile( fileId, theFile ) then
+        if cursId /= eof_t then
+           begin
+             findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+             delete( theFile.btree.session, theCurs.btree_cur.cursor );
+           exception when msg: berkeley_error =>
+               err( exception_message( msg ) );
+           end;
+        else
+           begin
+              delete( theFile.btree.session, to_string( keyExpr ) );
+           exception when msg: berkeley_error =>
+              if last_error( theFile.btree.session ) = DB_NOTFOUND then
+                 err( "key not found" );
+              else
+                 err( exception_message( msg ) );
+              end if;
+           when STORAGE_ERROR =>
+              err( "internal error: unable to reference BDB session" );
+           end;
+        end if;
      end if;
   end if;
 end ParseBTreeRemove;
 
 #else
 
-procedure ParseBTreeRemove is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeRemove;
+procedure ParseBTreeRemove renames not_configured;
 
 #end if;
 #if BDB
@@ -1209,11 +1172,7 @@ begin
   end if;
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if not theFile.btree.isOpen then
-        err( "file " &
-           optional_bold( to_string( identifiers( fileId ).name ) ) &
-           " is not open" );
-     else
+     if isVerifiedOpenFile( fileId, theFile ) then
         begin
           get( theFile.btree.session, to_string( keyExpr ), oldItem );
           -- berkeley throws exception on not found
@@ -1242,10 +1201,7 @@ end ParseBTreeIncrement;
 
 #else
 
-procedure ParseBTreeIncrement is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeIncrement;
+procedure ParseBTreeIncrement renames not_configured;
 
 #end if;
 #if BDB
@@ -1282,11 +1238,7 @@ begin
   end if;
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if not theFile.btree.isOpen then
-        err( "file " &
-           optional_bold( to_string( identifiers( fileId ).name ) ) &
-           " is not open" );
-     else
+     if isVerifiedOpenFile( fileId, theFile ) then
        begin
          get( theFile.btree.session, to_string( keyExpr ), oldItem );
          -- berkeley throws exception on not found
@@ -1315,10 +1267,7 @@ end ParseBTreeDecrement;
 
 #else
 
-procedure ParseBTreeDecrement is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeDecrement;
+procedure ParseBTreeDecrement renames not_configured;
 
 #end if;
 #if BDB
@@ -1364,11 +1313,7 @@ begin
   if isExecutingCommand then
      if isRecord then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if not theFile.btree.isOpen then
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-              " is not open" );
-        else
+        if isVerifiedOpenFile( fileId, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -1387,11 +1332,7 @@ begin
         end if;
      elsif isArray then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if not theFile.btree.isOpen then
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-              " is not open" );
-        else
+        if isVerifiedOpenFile( fileId, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -1410,11 +1351,7 @@ begin
      else
         -- normal scalar expression
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if not theFile.btree.isOpen then
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-              " is not open" );
-        else
+        if isVerifiedOpenFile( fileId, theFile ) then
            begin
               exists( theFile.btree.session, to_string( keyExpr ) );
            exception when storage_error =>
@@ -1433,10 +1370,7 @@ end ParseBTreeAdd;
 
 #else
 
-procedure ParseBTreeAdd is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeAdd;
+procedure ParseBTreeAdd renames not_configured;
 
 #end if;
 #if BDB
@@ -1494,15 +1428,11 @@ begin
         -- put where the cursor is
         if isRecord then
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if not theFile.btree.isOpen then
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                 " is not open" );
-           else
+           if isVerifiedOpenFile( fileId, theFile ) then
               declare
+                 jsonString : unbounded_string;
                  temp_key    : unbounded_string;
                  temp_string : unbounded_string;
-                 jsonString : unbounded_string;
               begin
                 findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
                 get( theFile.btree.session,
@@ -1524,11 +1454,7 @@ begin
            end if;
         elsif isArray then
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if not theFile.btree.isOpen then
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                 " is not open" );
-           else
+           if isVerifiedOpenFile( fileId, theFile ) then
               declare
                  temp_key    : unbounded_string;
                  temp_string : unbounded_string;
@@ -1554,11 +1480,7 @@ begin
            end if;
         else
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if not theFile.btree.isOpen then
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                 " is not open" );
-           else
+           if isVerifiedOpenFile( fileId, theFile ) then
              declare
                temp_key    : unbounded_string;
                temp_string : unbounded_string;
@@ -1585,11 +1507,7 @@ begin
        -- put, but only if the target exists
         if isRecord then
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if not theFile.btree.isOpen then
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                 " is not open" );
-           else
+           if isVerifiedOpenFile( fileId, theFile ) then
               declare
                  jsonString : unbounded_string;
               begin
@@ -1605,15 +1523,11 @@ begin
               end;
            end if;
         elsif isArray then
-           if not theFile.btree.isOpen then
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                 " is not open" );
-           else
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           if isVerifiedOpenFile( fileId, theFile ) then
               declare
                  jsonString : unbounded_string;
               begin
-                findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
                 exists( theFile.btree.session, to_string( keyExpr ) );
                 DoArrayToJson( jsonString, itemId );
                 put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
@@ -1627,11 +1541,7 @@ begin
            end if;
         else
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if not theFile.btree.isOpen then
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                 " is not open" );
-           else
+           if isVerifiedOpenFile( fileId, theFile ) then
              begin
                exists( theFile.btree.session, to_string( keyExpr ) );
                put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
@@ -1650,10 +1560,7 @@ end ParseBTreeReplace;
 
 #else
 
-procedure ParseBTreeReplace is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeReplace;
+procedure ParseBTreeReplace renames not_configured;
 
 #end if;
 #if BDB
@@ -1681,11 +1588,7 @@ begin
   ParseLastGenItemParameter( itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if not theFile.btree.isOpen then
-        err( "file " &
-           optional_bold( to_string( identifiers( fileId ).name ) ) &
-            " is not open" );
-     else
+     if isVerifiedOpenFile( fileId, theFile ) then
         begin
           get( theFile.btree.session, to_string( keyExpr ), oldItem );
           put( theFile.btree.session, to_string( keyExpr ), to_string( oldItem & itemExpr ) );
@@ -1702,10 +1605,7 @@ end ParseBTreeAppend;
 
 #else
 
-procedure ParseBTreeAppend is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeAppend;
+procedure ParseBTreeAppend renames not_configured;
 
 #end if;
 #if BDB
@@ -1733,11 +1633,7 @@ begin
   ParseLastGenItemParameter( itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if not theFile.btree.isOpen then
-        err( "file " &
-           optional_bold( to_string( identifiers( fileId ).name ) ) &
-            " is not open" );
-     else
+     if isVerifiedOpenFile( fileId, theFile ) then
         begin
           get( theFile.btree.session, to_string( keyExpr ), oldItem );
           put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr & oldItem ) );
@@ -1754,10 +1650,7 @@ end ParseBTreePrepend;
 
 #else
 
-procedure ParseBTreePrepend is
-begin
-  err( "bdb support not configured" );
-end ParseBTreePrepend;
+procedure ParseBTreePrepend renames not_configured;
 
 #end if;
 #if BDB
@@ -1772,11 +1665,7 @@ begin
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if not theFile.btree.isOpen then
-        err( "file " &
-           optional_bold( to_string( identifiers( fileId ).name ) ) &
-            " is not open" );
-     else
+     if isVerifiedOpenFile( fileId, theFile ) then
         begin
            sync( theFile.btree.session );
         exception when msg: berkeley_error =>
@@ -1788,10 +1677,7 @@ end ParseBTreeFlush;
 
 #else
 
-procedure ParseBTreeFlush is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeFlush;
+procedure ParseBTreeFlush renames not_configured;
 
 #end if;
 #if BDB
@@ -1809,11 +1695,7 @@ begin
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if not theFile.btree.isOpen then
-        err( "file " &
-           optional_bold( to_string( identifiers( fileId ).name ) ) &
-            " is not open" );
-     else
+     if isVerifiedOpenFile( fileId, theFile ) then
         declare
            cnt : natural;
         begin
@@ -1830,10 +1712,7 @@ end ParseBTreeTruncate;
 
 #else
 
-procedure ParseBTreeTruncate is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeTruncate;
+procedure ParseBTreeTruncate renames not_configured;
 
 #end if;
 #if BDB
@@ -1873,10 +1752,7 @@ end ParseBtreeNewCursor;
 
 #else
 
-procedure ParseBtreeNewCursor is
-begin
-  err( "bdb support not configured" );
-end ParseBtreeNewCursor;
+procedure ParseBtreeNewCursor renames not_configured;
 
 #end if;
 #if BDB
@@ -1894,11 +1770,7 @@ begin
   ParseLastCursorParameter( cursId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if not theFile.btree.isOpen then
-        err( "file " &
-           optional_bold( to_string( identifiers( fileId ).name ) ) &
-            " is not open" );
-     else
+     if isVerifiedOpenFile( fileId, theFile ) then
         findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
         if theCurs.btree_cur.isOpen then
            err( "cursor " &
@@ -1914,10 +1786,7 @@ end ParseBtreeOpenCursor;
 
 #else
 
-procedure ParseBTreeOpenCursor is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeOpenCursor;
+procedure ParseBTreeOpenCursor renames not_configured;
 
 #end if;
 #if BDB
@@ -1936,11 +1805,7 @@ begin
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if not theFile.btree.isOpen then
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-               " is not open" );
-        else
+        if isVerifiedOpenFile( fileId, theFile ) then
            findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
            if not theCurs.btree_cur.isOpen then
               err( "cursor " &
@@ -1959,10 +1824,7 @@ end ParseBTreeCloseCursor;
 
 #else
 
-procedure ParseBTreeCloseCursor is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeCloseCursor;
+procedure ParseBTreeCloseCursor renames not_configured;
 
 #end if;
 #if BDB
@@ -2014,11 +1876,7 @@ begin
   if isExecutingCommand then
      if isRecord then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if not theFile.btree.isOpen then
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-               " is not open" );
-        else
+        if isVerifiedOpenFile( fileId, theFile ) then
            declare
               key : unbounded_string;
               jsonString : unbounded_string;
@@ -2049,11 +1907,7 @@ begin
         end if;
      elsif isArray then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if not theFile.btree.isOpen then
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-               " is not open" );
-        else
+        if isVerifiedOpenFile( fileId, theFile ) then
            declare
               key : unbounded_string;
               jsonString : unbounded_string;
@@ -2084,11 +1938,7 @@ begin
         end if;
      else
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if not theFile.btree.isOpen then
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-              " is not open" );
-        else
+        if isVerifiedOpenFile( fileId, theFile ) then
            declare
               key : unbounded_string;
               data : unbounded_string;
@@ -2123,10 +1973,7 @@ end ParseBTreeGetFirst;
 
 #else
 
-procedure ParseBTreeGetFirst is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeGetFirst;
+procedure ParseBTreeGetFirst renames not_configured;
 
 #end if;
 #if BDB
@@ -2182,11 +2029,7 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if not theFile.btree.isOpen then
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                 " is not open" );
-           else
+           if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
@@ -2217,11 +2060,7 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if not theFile.btree.isOpen then
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                 " is not open" );
-           else
+           if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
@@ -2252,11 +2091,7 @@ begin
            data : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if not theFile.btree.isOpen then
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                 " is not open" );
-           else
+           if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
@@ -2287,10 +2122,7 @@ end ParseBTreeGetNext;
 
 #else
 
-procedure ParseBTreeGetNext is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeGetNext;
+procedure ParseBTreeGetNext renames not_configured;
 
 #end if;
 #if BDB
@@ -2346,11 +2178,7 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if not theFile.btree.isOpen then
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                 " is not open" );
-           else
+           if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
@@ -2381,11 +2209,7 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if not theFile.btree.isOpen then
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                 " is not open" );
-           else
+           if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
@@ -2416,11 +2240,7 @@ begin
            data : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if not theFile.btree.isOpen then
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                 " is not open" );
-           else
+           if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
@@ -2451,10 +2271,7 @@ end ParseBTreeGetLast;
 
 #else
 
-procedure ParseBTreeGetLast is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeGetLast;
+procedure ParseBTreeGetLast renames not_configured;
 
 #end if;
 #if BDB
@@ -2510,11 +2327,7 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if not theFile.btree.isOpen then
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                 " is not open" );
-           else
+           if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
@@ -2545,11 +2358,7 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if not theFile.btree.isOpen then
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                 " is not open" );
-           else
+           if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
@@ -2580,11 +2389,7 @@ begin
            data : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if not theFile.btree.isOpen then
-              err( "file " &
-                 optional_bold( to_string( identifiers( fileId ).name ) ) &
-                 " is not open" );
-           else
+           if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
@@ -2614,10 +2419,7 @@ begin
 end ParseBTreeGetPrevious;
 #else
 
-procedure ParseBTreeGetPrevious is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeGetPrevious;
+procedure ParseBTreeGetPrevious renames not_configured;
 
 #end if;
 #if BDB
@@ -2634,11 +2436,7 @@ begin
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if not theFile.btree.isOpen then
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-              " is not open" );
-        else
+        if isVerifiedOpenFile( fileId, theFile ) then
            result := to_bush_boolean( will_raise( theFile.btree.session ) );
         end if;
      exception when berkeley_error =>
@@ -2649,10 +2447,7 @@ end ParseBTreeWillRaise;
 
 #else
 
-procedure ParseBTreeWillRaise( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeWillRaise;
+procedure ParseBTreeWillRaise( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -2669,11 +2464,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-       if not theFile.btree.isOpen then
-          err( "file " &
-             optional_bold( to_string( identifiers( fileId ).name ) ) &
-             " is not open" );
-       else
+       if isVerifiedOpenFile( fileId, theFile ) then
           result := to_unbounded_string( db_error'image( last_error( theFile.btree.session ) ) );
        end if;
      exception when msg: berkeley_error =>
@@ -2684,10 +2475,7 @@ end ParseBTreeLastError;
 
 #else
 
-procedure ParseBTreeLastError( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeLastError;
+procedure ParseBTreeLastError( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -2709,11 +2497,7 @@ begin
        raise_them : boolean := boolExpr = to_unbounded_string( "1" );
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if not theFile.btree.isOpen then
-           err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
-              " is not open" );
-        else
+        if isVerifiedOpenFile( fileId, theFile ) then
            raise_exceptions( theFile.btree.session, raise_them, boolean( traceOpt ) );
         end if;
      exception when msg: berkeley_error =>
@@ -2724,10 +2508,7 @@ end ParseBtreeRaiseExceptions;
 
 #else
 
-procedure ParseBTreeRaiseExceptions is
-begin
-  err( "bdb support not configured" );
-end ParseBTreeRaiseExceptions;
+procedure ParseBTreeRaiseExceptions renames not_configured;
 
 #end if;
 

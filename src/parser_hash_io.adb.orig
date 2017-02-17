@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2016 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -71,12 +71,10 @@ package body parser_hash_io is
 
 hash_file_t          : identifier;
 hash_cursor_t        : identifier;
-hash_db_error_t      : identifier;
 
 hash_new_file_t      : identifier;
 hash_clear_t         : identifier;
 
--- TODO
 hash_will_raise_t    : identifier;
 hash_last_error_t    : identifier;
 hash_raise_exceptions_t : identifier;
@@ -113,10 +111,27 @@ hash_get_previous_t  : identifier;
 -- Utility subprograms
 ------------------------------------------------------------------------------
 
+
+-- CHECK FILE IS INITIALIZED
+--
+-- Check to see if a type is defined for the generic tree elements.
+-- If actually running, check to see if a resource has been associated
+-- with this file.  This only occurs at run-time.
+
 procedure CheckFileIsInitialized( fileId : identifier ) is
 begin
   if identifiers( fileId ).genKind = eof_t then
-     err( "new_file has not been called to initialize the file" );
+     err( optional_bold( "new_file" ) & " has not been called to initialize " &
+          optional_bold( to_string( identifiers( fileId ).name ) ) &
+          "; Note: a bug in this version of SparForte requires 'new' " &
+          "to be located just after the variable's declaration) " );
+  elsif isExecutingCommand then
+     if identifiers( fileId ).svalue = "" then
+        err( optional_bold( "new_file" ) & " has not been called to initialize " &
+          optional_bold( to_string( identifiers( fileId ).name ) ) &
+          "; Note: a bug in this version of SparForte requires 'new' " &
+          "to be located just after the variable's declaration) " );
+     end if;
   end if;
 end CheckFileIsInitialized;
 
@@ -144,10 +159,22 @@ begin
   CheckFileIsInitialized( fileId );
 end ParseLastFileParameter;
 
+-- CHECK CURSOR IS INITIALIZED
+--
+-- Check to see if a type is defined for the generic cursor elements.
+-- If actually running, check to see if a resource has been associated
+-- with this cursor.  This only occurs at run-time.
+
 procedure CheckCursorIsInitialized( cursId : identifier ) is
 begin
   if identifiers( cursId ).genKind = eof_t then
-     err( "new_cursor has not been called to initialize the cursor" );
+     err( optional_bold( "new_cursor" ) & " has not been called to initialize " &
+        optional_bold( to_string( identifiers( cursId ).name ) ) );
+  elsif isExecutingCommand then
+     if identifiers( cursId ).svalue = "" then
+        err( optional_bold( "new_cursor" ) & " has not been called to initialize " &
+          optional_bold( to_string( identifiers( cursId ).name ) ) );
+     end if;
   end if;
 end CheckCursorIsInitialized;
 
@@ -175,6 +202,24 @@ begin
   CheckCursorIsInitialized( cursId );
 end ParseLastCursorParameter;
 
+#if BDB
+-- IS VERIFIED OPEN FILE
+--
+-- True if the file is open, otherwise an error occurs and false is returned.
+------------------------------------------------------------------------------
+
+function isVerifiedOpenFile( fileId : identifier; theFile : resPtr ) return boolean is
+  result : boolean := true;
+begin
+   if not theFile.hash.isOpen then
+      err( "file " &
+      optional_bold( to_string( identifiers( fileId ).name ) ) &
+      " is not open" );
+      result := false;
+   end if;
+   return result;
+end isVerifiedOpenFile;
+#end if;
 
 ------------------------------------------------------------------------------
 -- Parser subprograms
@@ -188,6 +233,7 @@ procedure ParseHashNewFile is
   resId : resHandleId;
   ref : reference;
   genKindId : identifier;
+  theFile : resPtr;
 begin
   expect( hash_new_file_t );
   ParseFirstOutParameter( ref, hash_file_t );
@@ -209,6 +255,11 @@ begin
      identifiers( ref.id ).resource := true;
      declareResource( resId, hash_file, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
+     -- TODO: this won't work if the cursor is in an array or other
+     -- aggregate type
+     identifiers( ref.id ).wasWritten := true;
+     findResource( resId, theFile );
+     theFile.hash.isOpen := false;
   end if;
 end ParseHashNewFile;
 
@@ -217,10 +268,17 @@ end ParseHashNewFile;
 pragma warnings( off );
 -- Hide unused parameters warnings
 
-procedure ParseHashNewFile is
+procedure not_configured is
 begin
-  err( "bdb support not configured" );
-end ParseHashNewFile;
+  err( "Berkeley DB support not configured" );
+end not_configured;
+
+procedure not_configured( result : out unbounded_string; kind : out identifier ) is
+begin
+  err( "Berkeley DB support not configured" );
+end not_configured;
+
+procedure ParseHashNewFile renames not_configured;
 
 #end if;
 #if BDB
@@ -251,10 +309,7 @@ end ParseHashClear;
 
 #else
 
-procedure ParseHashClear is
-begin
-  err( "bdb support not configured" );
-end ParseHashClear;
+procedure ParseHashClear renames not_configured;
 
 #end if;
 #if BDB
@@ -345,10 +400,10 @@ begin
            end;
            begin
               if verboseOpt then
-                 set_verbose( theFile.btree.env, DB_VERB_BACKUP, 1 );
-                 set_verbose( theFile.btree.env, DB_VERB_DEADLOCK, 1 );
-                 set_verbose( theFile.btree.env, DB_VERB_FILEOPS_ALL, 1 );
-                 set_verbose( theFile.btree.env, DB_VERB_WAITSFOR, 1 );
+                 set_verbose( theFile.hash.env, DB_VERB_BACKUP, 1 );
+                 set_verbose( theFile.hash.env, DB_VERB_DEADLOCK, 1 );
+                 set_verbose( theFile.hash.env, DB_VERB_FILEOPS_ALL, 1 );
+                 set_verbose( theFile.hash.env, DB_VERB_WAITSFOR, 1 );
               end if;
            exception when msg: berkeley_error =>
               err( exception_message( msg ) & " on changing verbose setting"  );
@@ -357,43 +412,54 @@ begin
 
         -- Create an environment
 
-        begin
-           create( theFile.hash.env,
-                to_string( dirname2 ),
-                -- I assume we don't need logging or transactions but
-                -- they could be implemented.
-                DB_E_OPEN_INIT_LOCK OR
-                DB_E_OPEN_INIT_MPOOL,
-                0 );
-           theFile.hash.envhome := dirname2;
+        if theFile.hash.isOpen then
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              "(" & ASCII.Quotation & to_string( theFile.hash.name ) & ASCII.Quotation & ") " &
+              " is already open" );
+        else
+           begin
+              create( theFile.hash.env,
+                   to_string( dirname2 ),
+                   -- I assume we don't need logging or transactions but
+                   -- they could be implemented.
+                   DB_E_OPEN_INIT_LOCK OR
+                   DB_E_OPEN_INIT_MPOOL,
+                   0 );
+              theFile.hash.envhome := dirname2;
+              exception when msg: berkeley_error =>
+                 err( exception_message( msg ) & " on creating the environment" );
+              end;
+
+           -- Create the file
+           new_berkeley_session(
+              theFile.hash.session,
+              theFile.hash.env,
+              keyLen,
+              valLen );
+           begin
+              create( theFile.hash.session, filename, "", DB_HASH, 0, 0 );
            exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on creating the environment" );
+              err( exception_message( msg ) & " on creating the data file"  );
            end;
 
-        -- Create the file
-        new_berkeley_session(
-           theFile.hash.session,
-           theFile.hash.env,
-           keyLen,
-           valLen );
-        begin
-           create( theFile.hash.session, filename, "", DB_HASH, 0, 0 );
-        exception when msg: berkeley_error =>
-           err( exception_message( msg ) & " on creating the data file"  );
-        end;
-        theFile.hash.isOpen := true;
-        theFile.hash.name := fname_val;
+           -- Do not truncate if create failed
 
-        declare
-           cnt : natural;
-        begin
-           truncate( theFile.hash.session, cnt );
-           if trace and cnt > 0 then
-              put_trace( cnt'img & " records were erased" );
+           if not error_found then
+              theFile.hash.isOpen := true;
+              theFile.hash.name := fname_val;
+              declare
+                 cnt : natural;
+              begin
+                 truncate( theFile.hash.session, cnt );
+                 if trace and cnt > 0 then
+                    put_trace( cnt'img & " records were erased" );
+                 end if;
+              exception when msg: berkeley_error =>
+                 err( exception_message( msg ) & " on truncating the data file"  );
+              end;
            end if;
-        exception when msg: berkeley_error =>
-           err( exception_message( msg ) & " on truncating the data file"  );
-        end;
+       end if;
      --exception when berkeley_error:s =>
      --   err( to_string( last_error( theFile.hash.session ) );
      end;
@@ -402,10 +468,7 @@ end ParseHashCreate;
 
 #else
 
-procedure ParseHashCreate is
-begin
-  err( "bdb support not configured" );
-end ParseHashCreate;
+procedure ParseHashCreate renames not_configured;
 
 #end if;
 #if BDB
@@ -421,9 +484,16 @@ begin
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        close( theFile.hash.session );
-        close( theFile.hash.env );
-        theFile.hash.isOpen := false;
+        if theFile.hash.isOpen then
+           close( theFile.hash.session );
+           close( theFile.hash.env );
+           theFile.hash.isOpen := false;
+        else
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              "(" & ASCII.Quotation & to_string( theFile.hash.name ) & ASCII.Quotation & ") " &
+               " is not open" );
+        end if;
       exception when msg: berkeley_error =>
         err( exception_message( msg ) );
      end;
@@ -432,10 +502,7 @@ end ParseHashClose;
 
 #else
 
-procedure ParseHashClose is
-begin
-  err( "bdb support not configured" );
-end ParseHashClose;
+procedure ParseHashClose renames not_configured;
 
 #end if;
 #if BDB
@@ -537,43 +604,49 @@ begin
            end;
         end if;
 
-        begin
-           open( theFile.hash.env,
-                to_string( dirname2 ),
-                -- I assume we don't need logging or transactions but
-                -- they could be implemented.
-                DB_E_OPEN_INIT_LOCK OR
-                DB_E_OPEN_INIT_MPOOL,
-                0 );
-           theFile.hash.envhome := dirname2;
-           exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on opening the environment" );
-           end;
+        if theFile.hash.isOpen then
+           err( "file " &
+              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              "(" & ASCII.Quotation & to_string( theFile.hash.name ) & ASCII.Quotation & ") " &
+              " is already open" );
+        else
+           begin
+              open( theFile.hash.env,
+                   to_string( dirname2 ),
+                   -- I assume we don't need logging or transactions but
+                   -- they could be implemented.
+                   DB_E_OPEN_INIT_LOCK OR
+                   DB_E_OPEN_INIT_MPOOL,
+                   0 );
+              theFile.hash.envhome := dirname2;
+              exception when msg: berkeley_error =>
+                 err( exception_message( msg ) & " on opening the environment" );
+              end;
 
-        -- Create the file
-        new_berkeley_session(
-           theFile.hash.session,
-           theFile.hash.env,
-           keyLen,
-           valLen );
+           if not error_found then
+              -- Create the file
+              new_berkeley_session(
+                 theFile.hash.session,
+                 theFile.hash.env,
+                 keyLen,
+                 valLen );
 
-        begin
-           open( theFile.hash.session, filename, "", DB_HASH, 0, 0 );
-        exception when msg: berkeley_error =>
-           err( exception_message( msg ) & " on opening the data file"  );
-        end;
-        theFile.hash.isOpen := true;
-        theFile.hash.name := fname_val;
+              begin
+                 open( theFile.hash.session, filename, "", DB_HASH, 0, 0 );
+                 theFile.hash.isOpen := true;
+                 theFile.hash.name := fname_val;
+              exception when msg: berkeley_error =>
+                 err( exception_message( msg ) & " on opening the data file"  );
+              end;
+           end if;
+        end if;
      end;
   end if;
 end ParseHashOpen;
 
 #else
 
-procedure ParseHashOpen is
-begin
-  err( "bdb support not configured" );
-end ParseHashOpen;
+procedure ParseHashOpen renames not_configured;
 
 #end if;
 #if BDB
@@ -599,10 +672,7 @@ end ParseHashIsOpen;
 
 #else
 
-procedure ParseHashIsOpen( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "bdb support not configured" );
-end ParseHashIsOpen;
+procedure ParseHashIsOpen( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -626,10 +696,7 @@ end ParseHashName;
 
 #else
 
-procedure ParseHashName( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "bdb support not configured" );
-end ParseHashName;
+procedure ParseHashName( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -640,6 +707,7 @@ procedure ParseHashDelete is
   -- TODO:   option to the keep environment in case other files use it
   fileId     : identifier;
   theFile    : resPtr;
+  dirname2   : unbounded_string;
 begin
   if rshOpt then
      err( "delete not allowed in a " & optional_bold( "restricted shell" ) );
@@ -657,28 +725,97 @@ begin
            end;
         end if;
 
+        -- Close closes the environment.  We need to reopen it.
+
+        declare
+           filename : string := base_name( to_string( theFile.hash.name ) );
+           dirname  : string := dir_name( to_string( theFile.hash.name ) );
+           pwdId : identifier;
+        begin
+           -- TODO: pathname handling
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+
+           -- Create an environment
+           init( theFile.hash.env );
+
+           -- berkeley db paths must be absolute paths when creating (opening
+           -- an exisiting data file is OK for relative paths).  We're doing this
+           -- here to be consistent with create but it shouldn't be necessary
+
+           dirname2 := to_unbounded_string( dirname );
+           if dirname = "." then
+              dirname2 := null_unbounded_string;
+           elsif rshOpt then
+              -- TODO: probably could be in directories in current PATH as well
+              err( "file must be in current directory in a " & optional_bold( "restricted shell" ) );
+           elsif element( dirname2, 1 ) /= '/' then
+              findIdent( to_unbounded_string( "PWD" ), pwdId );
+              dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
+           end if;
+           if trace then
+              put_trace( "Base directory is '" & to_string( dirname2 ) & "'" );
+           end if;
+
+           -- Berkeley puts the files in the current directory, though you can
+           -- move the env because it is shared.  To put the project in a specific
+           -- directory, you have you configure it.  A sophisiticated setup would
+           -- place all of these in different directories.
+           --
+           -- For our purposes (simple files), keep everything in one directory
+
+           if length( dirname2 ) > 0 then
+              begin
+                 set_data_dir( theFile.hash.env, to_string( dirname2 ) );
+              exception when msg: berkeley_error =>
+                 err( exception_message( msg ) & " on setting the data directory" );
+              end;
+              begin
+                 set_tmp_dir( theFile.hash.env, to_string( dirname2 ) );
+              exception when msg: berkeley_error =>
+                 err( exception_message( msg ) & " on setting the temp directory"  );
+              end;
+              begin
+                 set_lg_dir( theFile.hash.env, to_string( dirname2 ) );
+              exception when msg: berkeley_error =>
+                 err( exception_message( msg ) & " on setting the logging directory"  );
+              end;
+              begin
+                 if verboseOpt then
+                    set_verbose( theFile.hash.env, 1, 1 );
+                 end if;
+              exception when msg: berkeley_error =>
+                 err( exception_message( msg ) & " on changing verbose setting"  );
+              end;
+           end if;
+        end;
+        begin
+           open( theFile.hash.env,
+                to_string( dirname2 ),
+                -- I assume we don't need logging or transactions but
+                -- they could be implemented.
+                DB_E_OPEN_INIT_LOCK OR
+                DB_E_OPEN_INIT_MPOOL,
+                0 );
+           theFile.hash.envhome := dirname2;
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) & " on opening the environment" );
+        end;
+
         begin
            dbremove( theFile.hash.env,
-             to_string( theFile.hash.name ),
+             --to_string( theFile.hash.name ),
+             --TODO: this is calculated above
+             base_name( to_string( theFile.hash.name ) ),
              "",
              0 );
         exception when msg: berkeley_error =>
             err( exception_message( msg ) & " on removing the data file"  );
         end;
 
-        -- keep the environment
-        if theFile.hash.isOpen then
-           begin
-              close( theFile.hash.env );
-           exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on closing the environment"  );
-           end;
-          -- remove( theFile.hash.env, dbhome )
-        end if;
-
         begin
-           init( theFile.hash.env );
-           remove( theFile.hash.env, to_string( theFile.hash.envhome ) );
+           --init( theFile.hash.env );
+           close( theFile.hash.env );
+           --remove( theFile.hash.env, to_string( theFile.hash.envhome ) );
         exception when msg: berkeley_error =>
            err( exception_message( msg ) & " on removing the environment"  );
         end;
@@ -695,10 +832,7 @@ end ParseHashDelete;
 
 #else
 
-procedure ParseHashDelete is
-begin
-  err( "bdb support not configured" );
-end ParseHashDelete;
+procedure ParseHashDelete renames not_configured;
 
 #end if;
 #if BDB
@@ -743,43 +877,48 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        declare
-           jsonString : unbounded_string;
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           DoRecordToJson( jsonString, valId );
-           put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
-        exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
-        end;
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if isVerifiedOpenFile( fileId, theFile ) then
+           declare
+              jsonString : unbounded_string;
+           begin
+              DoRecordToJson( jsonString, valId );
+              put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) );
+           end;
+        end if;
      elsif isArray then
-        declare
-           jsonString : unbounded_string;
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           DoArrayToJson( jsonString, valId );
-           put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
-        exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
-        end;
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if isVerifiedOpenFile( fileId, theFile ) then
+           declare
+              jsonString : unbounded_string;
+           begin
+              DoArrayToJson( jsonString, valId );
+              put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) );
+           end;
+        end if;
      else
         -- normal scalar expression
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           put( theFile.hash.session, to_string( keyExpr ), to_string( valExpr ) );
-        exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
-        end;
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if isVerifiedOpenFile( fileId, theFile ) then
+           begin
+              put( theFile.hash.session, to_string( keyExpr ), to_string( valExpr ) );
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) );
+           when STORAGE_ERROR =>
+              err( "internal error: unable to reference BDB session" );
+           end;
+        end if;
      end if;
   end if;
 end ParseHashSet;
 
 #else
 
-procedure ParseHashSet is
-begin
-  err( "bdb support not configured" );
-end ParseHashSet;
+procedure ParseHashSet renames not_configured;
 
 #end if;
 #if BDB
@@ -812,6 +951,14 @@ begin
      isRecord := true;
      ParseIdentifier( itemRef.id );
      genTypesOk( identifiers( itemRef.id ).kind, genKindId );
+     -- Mark the variable as having been written for future tests.
+     if syntax_check and then not error_found then
+        if identifiers( itemRef.id ).field_of /= eof_t then
+           identifiers( identifiers( itemRef.id ).field_of ).wasWritten := true;
+        else
+           identifiers( itemRef.id ).wasWritten := true;
+        end if;
+     end if;
   -- array?
   elsif identifiers( genKindId ).list then
      -- ParseOutParam doesn't handle full records or arrays
@@ -819,6 +966,14 @@ begin
      ParseIdentifier( itemRef.id );
      genTypesOk( identifiers( itemRef.id ).kind, genKindId );
      --ParseLastOutParameter(  itemRef, genKindId );
+     -- Mark the variable as having been written for future tests.
+     if syntax_check and then not error_found then
+        if identifiers( itemRef.id ).field_of /= eof_t then
+           identifiers( identifiers( itemRef.id ).field_of ).wasWritten := true;
+        else
+           identifiers( itemRef.id ).wasWritten := true;
+        end if;
+     end if;
   else
      -- This will still auto-declare scalars
      ParseOutParameter(  itemRef, genKindId );
@@ -826,57 +981,66 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        declare
-           jsonString : unbounded_string;
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           get( theFile.hash.session, to_string( keyExpr ), jsonString );
-           DoJsonToRecord( itemRef.id, jsonString );
-        exception when msg: berkeley_error =>
-           if last_error( theFile.hash.session ) = DB_NOTFOUND then
-              err( "key not found" );
-           else
-               err( exception_message( msg ) );
-           end if;
-        end;
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if isVerifiedOpenFile( fileId, theFile ) then
+           declare
+              jsonString : unbounded_string;
+           begin
+              get( theFile.hash.session, to_string( keyExpr ), jsonString );
+              DoJsonToRecord( itemRef.id, jsonString );
+           exception when msg: berkeley_error =>
+              if last_error( theFile.hash.session ) = DB_NOTFOUND then
+                 err( "key not found" );
+              else
+                  err( exception_message( msg ) );
+              end if;
+           when STORAGE_ERROR =>
+              err( "internal error: unable to reference BDB session" );
+           end;
+        end if;
      elsif isArray then
-        declare
-           jsonString : unbounded_string;
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           get( theFile.hash.session, to_string( keyExpr ), jsonString );
-           DoJsonToArray( itemRef.id, jsonString );
-        exception when msg: berkeley_error =>
-           if last_error( theFile.hash.session ) = DB_NOTFOUND then
-              err( "key not found" );
-           else
-               err( exception_message( msg ) );
-           end if;
-        end;
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if isVerifiedOpenFile( fileId, theFile ) then
+           declare
+              jsonString : unbounded_string;
+           begin
+              get( theFile.hash.session, to_string( keyExpr ), jsonString );
+              DoJsonToArray( itemRef.id, jsonString );
+           exception when msg: berkeley_error =>
+              if last_error( theFile.hash.session ) = DB_NOTFOUND then
+                 err( "key not found" );
+              else
+                  err( exception_message( msg ) );
+              end if;
+           when STORAGE_ERROR =>
+              err( "internal error: unable to reference BDB session" );
+           end;
+        end if;
      else
-        declare
-           result : unbounded_string;
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           get( theFile.hash.session, to_string( keyExpr ), result );
-           AssignParameter( itemRef, result );
-        exception when msg: berkeley_error =>
-           if last_error( theFile.hash.session ) = DB_NOTFOUND then
-              err( "key not found" );
-           else
-               err( exception_message( msg ) );
-           end if;
-        end;
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if isVerifiedOpenFile( fileId, theFile ) then
+           declare
+              result : unbounded_string;
+           begin
+              get( theFile.hash.session, to_string( keyExpr ), result );
+              AssignParameter( itemRef, result );
+           exception when msg: berkeley_error =>
+              if last_error( theFile.hash.session ) = DB_NOTFOUND then
+                 err( "key not found" );
+              else
+                  err( exception_message( msg ) );
+              end if;
+           when STORAGE_ERROR =>
+              err( "internal error: unable to reference BDB session" );
+           end;
+        end if;
      end if;
   end if;
 end ParseHashGet;
 
 #else
 
-procedure ParseHashGet is
-begin
-  err( "bdb support not configured" );
-end ParseHashGet;
+procedure ParseHashGet renames not_configured;
 
 #end if;
 #if BDB
@@ -894,22 +1058,23 @@ begin
   ParseFirstFileParameter( fileId );
   ParseLastStringParameter( keyExpr, keyType, string_t );
   if isExecutingCommand then
-     begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        exists( theFile.hash.session, to_string( keyExpr ) );
-        result := to_bush_boolean( true );
-     exception when berkeley_error =>
-        result := to_bush_boolean( false );
-     end;
+     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     if isVerifiedOpenFile( fileId, theFile ) then
+        begin
+           exists( theFile.hash.session, to_string( keyExpr ) );
+           result := to_bush_boolean( true );
+        exception when berkeley_error =>
+           result := to_bush_boolean( false );
+        when STORAGE_ERROR =>
+           err( "internal error: unable to reference BDB session" );
+        end;
+     end if;
   end if;
 end ParseHashHasElement;
 
 #else
 
-procedure ParseHashHasElement( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "bdb support not configured" );
-end ParseHashHasElement;
+procedure ParseHashHasElement( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -919,7 +1084,7 @@ procedure ParseHashRemove is
   -- Ada:    bdb.delete( f, k | c );
   fileId     : identifier;
   theFile    : resPtr;
-  cursId     : identifier;
+  cursId     : identifier := eof_t;
   theCurs    : resPtr;
   keyExpr    : unbounded_string;
   keyType    : identifier;
@@ -940,33 +1105,34 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if cursId /= eof_t then
-        begin
-          findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-          delete( theFile.hash.session, theCurs.hash_cur );
-        exception when msg: berkeley_error =>
-            err( exception_message( msg ) );
-        end;
-     else
-        begin
-           delete( theFile.hash.session, to_string( keyExpr ) );
-        exception when msg: berkeley_error =>
-           if last_error( theFile.hash.session ) = DB_NOTFOUND then
-              err( "key not found" );
-           else
-              err( exception_message( msg ) );
-           end if;
-        end;
+     if isVerifiedOpenFile( fileId, theFile ) then
+        if cursId /= eof_t then
+           begin
+             findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+             delete( theFile.hash.session, theCurs.hash_cur.cursor );
+           exception when msg: berkeley_error =>
+               err( exception_message( msg ) );
+           end;
+        else
+           begin
+              delete( theFile.hash.session, to_string( keyExpr ) );
+           exception when msg: berkeley_error =>
+              if last_error( theFile.hash.session ) = DB_NOTFOUND then
+                 err( "key not found" );
+              else
+                 err( exception_message( msg ) );
+              end if;
+           when STORAGE_ERROR =>
+              err( "internal error: unable to reference BDB session" );
+           end;
+        end if;
      end if;
   end if;
 end ParseHashRemove;
 
 #else
 
-procedure ParseHashRemove is
-begin
-  err( "bdb support not configured" );
-end ParseHashRemove;
+procedure ParseHashRemove renames not_configured;
 
 #end if;
 #if BDB
@@ -1002,39 +1168,38 @@ begin
      err( ", or ) expected" );
   end if;
   if isExecutingCommand then
-     begin
-       findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     if isVerifiedOpenFile( fileId, theFile ) then
+        begin
+          get( theFile.hash.session, to_string( keyExpr ), oldItem );
 
-       get( theFile.hash.session, to_string( keyExpr ), oldItem );
-       -- berkeley throws exception on not found
-       --if oldItem /= null_unbounded_string then
+          -- berkeley throws exception on not found
+          --if oldItem /= null_unbounded_string then
           oldItemValue := to_numeric( oldItem );
           if hasAmt then
              put( theFile.hash.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue + long_float( natural( to_numeric( amtExpr ) ) ) ) ) );
           else
              put( theFile.hash.session, to_string( keyExpr ), to_string( to_unbounded_string( oldItemValue + 1.0 ) ) );
           end if;
-       --end if;
-     exception when storage_error =>
-       err( "storage error raised" );
-     when constraint_error =>
-       err( "constraint error raised" );
-     when msg: berkeley_error =>
-       if last_error( theFile.hash.session ) = DB_NOTFOUND then
-          err( "key not found" );
-       else
-          err( exception_message( msg ) );
-       end if;
-     end;
+          --end if;
+        exception when storage_error =>
+          err( "storage error raised" );
+        when constraint_error =>
+          err( "constraint error raised" );
+        when msg: berkeley_error =>
+          if last_error( theFile.hash.session ) = DB_NOTFOUND then
+             err( "key not found" );
+          else
+             err( exception_message( msg ) );
+          end if;
+        end;
+     end if;
   end if;
 end ParseHashIncrement;
 
 #else
 
-procedure ParseHashIncrement is
-begin
-  err( "bdb support not configured" );
-end ParseHashIncrement;
+procedure ParseHashIncrement renames not_configured;
 
 #end if;
 #if BDB
@@ -1070,39 +1235,37 @@ begin
      err( ", or ) expected" );
   end if;
   if isExecutingCommand then
-     begin
-       findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-
-       get( theFile.hash.session, to_string( keyExpr ), oldItem );
-       -- berkeley throws exception on not found
-       --if oldItem /= null_unbounded_string then
-          oldItemValue := to_numeric( oldItem );
-          if hasAmt then
-             put( theFile.hash.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue - long_float( natural( to_numeric( amtExpr ) ) ) ) ) );
+     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     if isVerifiedOpenFile( fileId, theFile ) then
+       begin
+         get( theFile.hash.session, to_string( keyExpr ), oldItem );
+         -- berkeley throws exception on not found
+         --if oldItem /= null_unbounded_string then
+         oldItemValue := to_numeric( oldItem );
+         if hasAmt then
+            put( theFile.hash.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue - long_float( natural( to_numeric( amtExpr ) ) ) ) ) );
+         else
+            put( theFile.hash.session, to_string( keyExpr ), to_string( to_unbounded_string( oldItemValue - 1.0 ) ) );
+         end if;
+         --end if;
+       exception when storage_error =>
+          err( "storage error raised" );
+       when constraint_error =>
+          err( "constraint error raised" );
+       when msg: berkeley_error =>
+          if last_error( theFile.hash.session ) = DB_NOTFOUND then
+             err( "key not found" );
           else
-             put( theFile.hash.session, to_string( keyExpr ), to_string( to_unbounded_string( oldItemValue - 1.0 ) ) );
+             err( exception_message( msg ) );
           end if;
-       --end if;
-     exception when storage_error =>
-       err( "storage error raised" );
-     when constraint_error =>
-       err( "constraint error raised" );
-     when msg: berkeley_error =>
-       if last_error( theFile.hash.session ) = DB_NOTFOUND then
-          err( "key not found" );
-       else
-          err( exception_message( msg ) );
-       end if;
-     end;
+       end;
+     end if;
   end if;
 end ParseHashDecrement;
 
 #else
 
-procedure ParseHashDecrement is
-begin
-  err( "bdb support not configured" );
-end ParseHashDecrement;
+procedure ParseHashDecrement renames not_configured;
 
 #end if;
 #if BDB
@@ -1147,61 +1310,65 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        declare
-           jsonString : unbounded_string;
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           exists( theFile.hash.session, to_string( keyExpr ) );
-        exception when storage_error =>
-          err( "storage error raised" );
-        when msg: berkeley_error =>
-          if last_error( theFile.hash.session ) = DB_NOTFOUND then
-             DoRecordToJson( jsonString, itemId );
-             put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
-          else
-             err( exception_message( msg ) );
-          end if;
-        end;
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if isVerifiedOpenFile( fileId, theFile ) then
+           declare
+              jsonString : unbounded_string;
+           begin
+              findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+              exists( theFile.hash.session, to_string( keyExpr ) );
+           exception when storage_error =>
+             err( "storage error raised" );
+           when msg: berkeley_error =>
+             if last_error( theFile.hash.session ) = DB_NOTFOUND then
+                DoRecordToJson( jsonString, itemId );
+                put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
+             else
+                err( exception_message( msg ) );
+             end if;
+           end;
+        end if;
      elsif isArray then
-        declare
-           jsonString : unbounded_string;
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           exists( theFile.hash.session, to_string( keyExpr ) );
-        exception when storage_error =>
-          err( "storage error raised" );
-        when msg: berkeley_error =>
-          if last_error( theFile.hash.session ) = DB_NOTFOUND then
-             DoArrayToJson( jsonString, itemId );
-             put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
-          else
-             err( exception_message( msg ) );
-          end if;
-        end;
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if isVerifiedOpenFile( fileId, theFile ) then
+           declare
+              jsonString : unbounded_string;
+           begin
+              exists( theFile.hash.session, to_string( keyExpr ) );
+           exception when storage_error =>
+             err( "storage error raised" );
+           when msg: berkeley_error =>
+             if last_error( theFile.hash.session ) = DB_NOTFOUND then
+                DoArrayToJson( jsonString, itemId );
+                put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
+             else
+                err( exception_message( msg ) );
+             end if;
+           end;
+        end if;
      else
         -- normal scalar expression
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           exists( theFile.hash.session, to_string( keyExpr ) );
-        exception when storage_error =>
-          err( "storage error raised" );
-        when msg: berkeley_error =>
-          if last_error( theFile.hash.session ) = DB_NOTFOUND then
-             put( theFile.hash.session, to_string( keyExpr ), to_string( itemExpr ) );
-          else
-             err( exception_message( msg ) );
-          end if;
-        end;
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if isVerifiedOpenFile( fileId, theFile ) then
+           begin
+              exists( theFile.hash.session, to_string( keyExpr ) );
+           exception when storage_error =>
+             err( "storage error raised" );
+           when msg: berkeley_error =>
+             if last_error( theFile.hash.session ) = DB_NOTFOUND then
+                put( theFile.hash.session, to_string( keyExpr ), to_string( itemExpr ) );
+             else
+                err( exception_message( msg ) );
+             end if;
+           end;
+        end if;
      end if;
   end if;
 end ParseHashAdd;
 
 #else
 
-procedure ParseHashAdd is
-begin
-  err( "bdb support not configured" );
-end ParseHashAdd;
+procedure ParseHashAdd renames not_configured;
 
 #end if;
 #if BDB
@@ -1210,7 +1377,6 @@ procedure ParseHashReplace is
   -- Syntax: hash.replace( f, c | k, v );
   -- Ada:    N/A
   -- Note: the key will not be overwritten if a cursor is used
--- TODO: option to throw an exception on missing values (including replace, get, add (existing value)
   fileId     : identifier;
   theFile  : resPtr;
   keyExpr  : unbounded_string;
@@ -1259,92 +1425,132 @@ begin
      if cursId /= eof_t then
         -- put where the cursor is
         if isRecord then
-           declare
-              jsonString : unbounded_string;
-           begin
-             findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-             findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-             DoRecordToJson( jsonString, itemId );
-             put( theFile.hash.session,
-                  theCurs.hash_cur,
-                  keyExpr, -- this is ignored
-                  jsonString,
-                  DB_C_PUT_CURRENT );
-           exception when msg: berkeley_error =>
-             err( exception_message( msg ) );
-           end;
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           if isVerifiedOpenFile( fileId, theFile ) then
+              declare
+                 jsonString : unbounded_string;
+                 temp_key    : unbounded_string;
+                 temp_string : unbounded_string;
+              begin
+                findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+                get( theFile.hash.session,
+                   theCurs.hash_cur.cursor,
+                   temp_key,
+                   temp_string,
+                   DB_C_GET_CURRENT );
+                if last_error( theFile.hash.session ) = DB_OK then
+                   DoRecordToJson( jsonString, itemId );
+                   put( theFile.hash.session,
+                        theCurs.hash_cur.cursor,
+                        keyExpr, -- this is ignored
+                        jsonString,
+                        DB_C_PUT_CURRENT );
+                end if;
+              exception when msg: berkeley_error =>
+                err( exception_message( msg ) );
+              end;
+           end if;
         elsif isArray then
-           declare
-              jsonString : unbounded_string;
-           begin
-             findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-             findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-             DoArrayToJson( jsonString, itemId );
-             put( theFile.hash.session,
-                  theCurs.hash_cur,
-                  keyExpr, -- this is ignored
-                  jsonString,
-                  DB_C_PUT_CURRENT );
-           exception when msg: berkeley_error =>
-             err( exception_message( msg ) );
-           end;
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           if isVerifiedOpenFile( fileId, theFile ) then
+              declare
+                 temp_key    : unbounded_string;
+                 temp_string : unbounded_string;
+                 jsonString : unbounded_string;
+              begin
+                findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+                get( theFile.hash.session,
+                   theCurs.hash_cur.cursor,
+                   temp_key,
+                   temp_string,
+                   DB_C_GET_CURRENT );
+                if last_error( theFile.hash.session ) = DB_OK then
+                   DoArrayToJson( jsonString, itemId );
+                   put( theFile.hash.session,
+                        theCurs.hash_cur.cursor,
+                        keyExpr, -- this is ignored
+                        jsonString,
+                        DB_C_PUT_CURRENT );
+                end if;
+              exception when msg: berkeley_error =>
+                err( exception_message( msg ) );
+              end;
+           end if;
         else
-           begin
-             findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-             findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-             put( theFile.hash.session,
-                  theCurs.hash_cur,
-                  keyExpr, -- this is ignored
-                  itemExpr,
-                  DB_C_PUT_CURRENT );
-           exception when msg: berkeley_error =>
-             err( exception_message( msg ) );
-           end;
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           if isVerifiedOpenFile( fileId, theFile ) then
+             declare
+               temp_key    : unbounded_string;
+               temp_string : unbounded_string;
+             begin
+               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+               get( theFile.hash.session,
+                  theCurs.hash_cur.cursor,
+                  temp_key,
+                  temp_string,
+                  DB_C_GET_CURRENT );
+               if last_error( theFile.hash.session ) = DB_OK then
+                  put( theFile.hash.session,
+                       theCurs.hash_cur.cursor,
+                       keyExpr, -- this is ignored
+                       itemExpr,
+                       DB_C_PUT_CURRENT );
+               end if;
+             exception when msg: berkeley_error =>
+               err( exception_message( msg ) );
+             end;
+           end if;
         end if;
      else
        -- put, but only if the target exists
         if isRecord then
-           declare
-              jsonString : unbounded_string;
-           begin
-             findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-             exists( theFile.hash.session, to_string( keyExpr ) );
-             DoRecordToJson( jsonString, itemId );
-             put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
-           exception when storage_error =>
-             err( "storage error raised" );
-           when msg: berkeley_error =>
-              if last_error( theFile.hash.session ) /= DB_NOTFOUND then
-                 err( exception_message( msg ) );
-              end if;
-           end;
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           if isVerifiedOpenFile( fileId, theFile ) then
+              declare
+                 jsonString : unbounded_string;
+              begin
+                exists( theFile.hash.session, to_string( keyExpr ) );
+                DoRecordToJson( jsonString, itemId );
+                put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
+              exception when storage_error =>
+                err( "storage error raised" );
+              when msg: berkeley_error =>
+                 if last_error( theFile.hash.session ) /= DB_NOTFOUND then
+                    err( exception_message( msg ) );
+                 end if;
+              end;
+           end if;
         elsif isArray then
-           declare
-              jsonString : unbounded_string;
-           begin
-             findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-             exists( theFile.hash.session, to_string( keyExpr ) );
-             DoArrayToJson( jsonString, itemId );
-             put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
-           exception when storage_error =>
-             err( "storage error raised" );
-           when msg: berkeley_error =>
-              if last_error( theFile.hash.session ) /= DB_NOTFOUND then
-                 err( exception_message( msg ) );
-              end if;
-           end;
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           if isVerifiedOpenFile( fileId, theFile ) then
+              declare
+                 jsonString : unbounded_string;
+              begin
+                exists( theFile.hash.session, to_string( keyExpr ) );
+                DoArrayToJson( jsonString, itemId );
+                put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
+              exception when storage_error =>
+                err( "storage error raised" );
+              when msg: berkeley_error =>
+                 if last_error( theFile.hash.session ) /= DB_NOTFOUND then
+                    err( exception_message( msg ) );
+                 end if;
+              end;
+           end if;
         else
-           begin
-             findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-             exists( theFile.hash.session, to_string( keyExpr ) );
-             put( theFile.hash.session, to_string( keyExpr ), to_string( itemExpr ) );
-           exception when storage_error =>
-             err( "storage error raised" );
-           when msg: berkeley_error =>
-              if last_error( theFile.hash.session ) /= DB_NOTFOUND then
-                 err( exception_message( msg ) );
-              end if;
-           end;
+           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           if isVerifiedOpenFile( fileId, theFile ) then
+             begin
+                exists( theFile.hash.session, to_string( keyExpr ) );
+                put( theFile.hash.session, to_string( keyExpr ), to_string( itemExpr ) );
+              exception when storage_error =>
+                err( "storage error raised" );
+              when msg: berkeley_error =>
+                 if last_error( theFile.hash.session ) /= DB_NOTFOUND then
+                    err( exception_message( msg ) );
+                 end if;
+              end;
+           end if;
         end if;
      end if;
   end if;
@@ -1352,10 +1558,7 @@ end ParseHashReplace;
 
 #else
 
-procedure ParseHashReplace is
-begin
-  err( "bdb support not configured" );
-end ParseHashReplace;
+procedure ParseHashReplace renames not_configured;
 
 #end if;
 #if BDB
@@ -1382,26 +1585,25 @@ begin
   ParseNextStringParameter( keyExpr, keyType, uni_string_t );
   ParseLastGenItemParameter( itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
-     begin
-       findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-       get( theFile.hash.session, to_string( keyExpr ), oldItem );
-       put( theFile.hash.session, to_string( keyExpr ), to_string( oldItem & itemExpr ) );
-     exception when storage_error =>
-       err( "storage error raised" );
-     when msg: berkeley_error =>
-       if last_error( theFile.hash.session ) /= DB_NOTFOUND then
-           err( exception_message( msg ) );
-       end if;
-     end;
+     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     if isVerifiedOpenFile( fileId, theFile ) then
+        begin
+          get( theFile.hash.session, to_string( keyExpr ), oldItem );
+          put( theFile.hash.session, to_string( keyExpr ), to_string( oldItem & itemExpr ) );
+        exception when storage_error =>
+          err( "storage error raised" );
+        when msg: berkeley_error =>
+          if last_error( theFile.hash.session ) /= DB_NOTFOUND then
+              err( exception_message( msg ) );
+          end if;
+        end;
+     end if;
   end if;
 end ParseHashAppend;
 
 #else
 
-procedure ParseHashAppend is
-begin
-  err( "bdb support not configured" );
-end ParseHashAppend;
+procedure ParseHashAppend renames not_configured;
 
 #end if;
 #if BDB
@@ -1428,26 +1630,25 @@ begin
   ParseNextStringParameter( keyExpr, keyType, uni_string_t );
   ParseLastGenItemParameter( itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
-     begin
-       findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-       get( theFile.hash.session, to_string( keyExpr ), oldItem );
-       put( theFile.hash.session, to_string( keyExpr ), to_string( itemExpr & oldItem ) );
-     exception when storage_error =>
-       err( "storage error raised" );
-     when msg: berkeley_error =>
-       if last_error( theFile.hash.session ) /= DB_NOTFOUND then
-           err( exception_message( msg ) );
-       end if;
-     end;
+     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     if isVerifiedOpenFile( fileId, theFile ) then
+        begin
+          get( theFile.hash.session, to_string( keyExpr ), oldItem );
+          put( theFile.hash.session, to_string( keyExpr ), to_string( itemExpr & oldItem ) );
+        exception when storage_error =>
+          err( "storage error raised" );
+        when msg: berkeley_error =>
+          if last_error( theFile.hash.session ) /= DB_NOTFOUND then
+              err( exception_message( msg ) );
+          end if;
+        end;
+     end if;
   end if;
 end ParseHashPrepend;
 
 #else
 
-procedure ParseHashPrepend is
-begin
-  err( "bdb support not configured" );
-end ParseHashPrepend;
+procedure ParseHashPrepend renames not_configured;
 
 #end if;
 #if BDB
@@ -1461,21 +1662,20 @@ begin
   expect( hash_flush_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
-     begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        sync( theFile.hash.session );
-     exception when msg: berkeley_error =>
-        err( exception_message( msg ) );
-     end;
+     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     if isVerifiedOpenFile( fileId, theFile ) then
+        begin
+           sync( theFile.hash.session );
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        end;
+     end if;
   end if;
 end ParseHashFlush;
 
 #else
 
-procedure ParseHashFlush is
-begin
-  err( "bdb support not configured" );
-end ParseHashFlush;
+procedure ParseHashFlush renames not_configured;
 
 #end if;
 #if BDB
@@ -1492,26 +1692,25 @@ begin
   expect( hash_truncate_t );
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
-     declare
-        cnt : natural;
-     begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        truncate( theFile.hash.session, cnt );
-        if trace and cnt > 0 then
-           put_trace( cnt'img & " records were erased" );
-        end if;
-     exception when msg: berkeley_error =>
-        err( exception_message( msg ) );
-     end;
+     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     if isVerifiedOpenFile( fileId, theFile ) then
+        declare
+           cnt : natural;
+        begin
+           truncate( theFile.hash.session, cnt );
+           if trace and cnt > 0 then
+              put_trace( cnt'img & " records were erased" );
+           end if;
+        exception when msg: berkeley_error =>
+           err( exception_message( msg ) );
+        end;
+     end if;
   end if;
 end ParseHashTruncate;
 
 #else
 
-procedure ParseHashTruncate is
-begin
-  err( "bdb support not configured" );
-end ParseHashTruncate;
+procedure ParseHashTruncate renames not_configured;
 
 #end if;
 #if BDB
@@ -1543,15 +1742,15 @@ begin
      identifiers( ref.id ).resource := true;
      declareResource( resId, hash_cursor, getIdentifierBlock( ref.id ) );
      AssignParameter( ref, to_unbounded_string( resId ) );
+     -- Note: this won't work if the cursor is in an array or other
+     -- aggregate type
+     identifiers( ref.id ).wasWritten := true;
   end if;
 end ParseHashNewCursor;
 
 #else
 
-procedure ParseHashNewCursor is
-begin
-  err( "bdb support not configured" );
-end ParseHashNewCursor;
+procedure ParseHashNewCursor renames not_configured;
 
 #end if;
 #if BDB
@@ -1564,23 +1763,28 @@ procedure ParseHashOpenCursor is
   cursId     : identifier;
   theCurs    : resPtr;
 begin
--- TODO: fold into hash.open
   expect( hash_open_cursor_t );
   ParseFirstFileParameter( fileId );
   ParseLastCursorParameter( cursId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-     new_berkeley_cursor( theFile.hash.session, theCurs.hash_cur );
+     if isVerifiedOpenFile( fileId, theFile ) then
+        findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+        if theCurs.hash_cur.isOpen then
+           err( "cursor " &
+              optional_bold( to_string( identifiers( cursId ).name ) ) &
+              " is already open" );
+        else
+           new_berkeley_cursor( theFile.hash.session, theCurs.hash_cur.cursor );
+           theCurs.hash_cur.isOpen := true;
+        end if;
+     end if;
   end if;
 end ParseHashOpenCursor;
 
 #else
 
-procedure ParseHashOpenCursor is
-begin
-  err( "bdb support not configured" );
-end ParseHashOpenCursor;
+procedure ParseHashOpenCursor renames not_configured;
 
 #end if;
 #if BDB
@@ -1599,8 +1803,18 @@ begin
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-        close( theFile.hash.session, theCurs.hash_cur );
+        if isVerifiedOpenFile( fileId, theFile ) then
+           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+           if not theCurs.hash_cur.isOpen then
+              err( "cursor " &
+                 optional_bold( to_string( identifiers( cursId ).name ) ) &
+                " is not open" );
+           else
+              close( theFile.hash.session, theCurs.hash_cur.cursor );
+              theCurs.hash_cur.isOpen := false;
+           end if;
+
+        end if;
      exception when msg: berkeley_error =>
         err( exception_message( msg ) );
      end;
@@ -1609,20 +1823,16 @@ end ParseHashCloseCursor;
 
 #else
 
-procedure ParseHashCloseCursor is
-begin
-  err( "bdb support not configured" );
-end ParseHashCloseCursor;
+procedure ParseHashCloseCursor renames not_configured;
 
 #end if;
 #if BDB
 
-procedure ParseHashFirst is
-  -- Syntax: hash_io.first( f, c, k, v );
-  -- Ada:    bdb.get( f );
+procedure ParseHashGetFirst is
+  -- Syntax: hash_io.get_first( f, c, k, v );
+  -- Ada:    bdb.get_first( f );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
-  -- TODO: open cursor check would prevent storage error messages
   fileId     : identifier;
   theFile    : resPtr;
   cursId     : identifier;
@@ -1664,84 +1874,111 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        declare
-           key : unbounded_string;
-           jsonString : unbounded_string;
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.hash.session,
-                theCurs.hash_cur,
-                key,
-                jsonString,
-                DB_C_GET_FIRST );
-           AssignParameter( keyRef, key );
-           DoJsonToRecord( valRef.id, jsonString );
-        exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
-        when STORAGE_ERROR =>
-           err( "storage_error raised" );
-        when others =>
-           raise;
-        end;
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if isVerifiedOpenFile( fileId, theFile ) then
+           declare
+              key : unbounded_string;
+              jsonString : unbounded_string;
+           begin
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.hash_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                   " is not open" );
+              else
+                 get( theFile.hash.session,
+                      theCurs.hash_cur.cursor,
+                      key,
+                      jsonString,
+                      DB_C_GET_FIRST );
+                 if last_error( theFile.hash.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    DoJsonToRecord( valRef.id, jsonString );
+                 end if;
+              end if;
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) );
+           when STORAGE_ERROR =>
+              err( "storage_error raised" );
+           when others =>
+              raise;
+           end;
+        end if;
      elsif isArray then
-        declare
-           key : unbounded_string;
-           jsonString : unbounded_string;
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.hash.session,
-                theCurs.hash_cur,
-                key,
-                jsonString,
-                DB_C_GET_FIRST );
-           AssignParameter( keyRef, key );
-           DoJsonToArray( valRef.id, jsonString );
-        exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
-        when STORAGE_ERROR =>
-           err( "storage_error raised" );
-        when others =>
-           raise;
-        end;
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if isVerifiedOpenFile( fileId, theFile ) then
+           declare
+              key : unbounded_string;
+              jsonString : unbounded_string;
+           begin
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.hash_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                   " is not open" );
+              else
+                 get( theFile.hash.session,
+                      theCurs.hash_cur.cursor,
+                      key,
+                      jsonString,
+                      DB_C_GET_FIRST );
+                 if last_error( theFile.hash.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    DoJsonToArray( valRef.id, jsonString );
+                 end if;
+              end if;
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) );
+           when STORAGE_ERROR =>
+              err( "storage_error raised" );
+           when others =>
+              raise;
+           end;
+        end if;
      else
-        declare
-           key : unbounded_string;
-           data : unbounded_string;
-        begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.hash.session,
-                theCurs.hash_cur,
-                key,
-                data,
-                DB_C_GET_FIRST );
-           AssignParameter( keyRef, key );
-           AssignParameter( valRef, data );
-        exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
-        when STORAGE_ERROR =>
-           err( "storage_error raised" );
-        when others =>
-           raise;
-        end;
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        if isVerifiedOpenFile( fileId, theFile ) then
+           declare
+              key : unbounded_string;
+              data : unbounded_string;
+           begin
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.hash_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                   " is not open" );
+              else
+                 get( theFile.hash.session,
+                      theCurs.hash_cur.cursor,
+                      key,
+                      data,
+                      DB_C_GET_FIRST );
+                 if last_error( theFile.hash.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    AssignParameter( valRef, data );
+                 end if;
+              end if;
+           exception when msg: berkeley_error =>
+              err( exception_message( msg ) );
+           when STORAGE_ERROR =>
+              err( "storage_error raised" );
+           when others =>
+              raise;
+           end;
+        end if;
      end if;
   end if;
-end ParseHashFirst;
+end ParseHashGetFirst;
 
 #else
 
-procedure ParseHashFirst is
-begin
-  err( "bdb support not configured" );
-end ParseHashFirst;
+procedure ParseHashGetFirst renames not_configured;
 
 #end if;
 #if BDB
 
-procedure ParseHashNext is
-  -- Syntax: hash_io.next( f, c, k, v );
+procedure ParseHashGetNext is
+  -- Syntax: hash_io.get_next( f, c, k, v );
   -- Ada:    bdb.get( f );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
@@ -1791,14 +2028,24 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.hash.session,
-                theCurs.hash_cur,
-                key,
-                jsonString,
-                DB_C_GET_NEXT );
-           AssignParameter( keyRef, key );
-           DoJsonToRecord( valRef.id, jsonString );
+           if isVerifiedOpenFile( fileId, theFile ) then
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.hash_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.hash.session,
+                      theCurs.hash_cur.cursor,
+                      key,
+                      jsonString,
+                      DB_C_GET_NEXT );
+                 if last_error( theFile.hash.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    DoJsonToRecord( valRef.id, jsonString );
+                 end if;
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -1812,14 +2059,24 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.hash.session,
-                theCurs.hash_cur,
-                key,
-                jsonString,
-                DB_C_GET_NEXT );
-           AssignParameter( keyRef, key );
-           DoJsonToArray( valRef.id, jsonString );
+           if isVerifiedOpenFile( fileId, theFile ) then
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.hash_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.hash.session,
+                      theCurs.hash_cur.cursor,
+                      key,
+                      jsonString,
+                      DB_C_GET_NEXT );
+                if last_error( theFile.hash.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    DoJsonToArray( valRef.id, jsonString );
+                 end if;
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -1833,14 +2090,24 @@ begin
            data : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.hash.session,
-                theCurs.hash_cur,
-                key,
-                data,
-                DB_C_GET_NEXT );
-           AssignParameter( keyRef, key );
-           AssignParameter( valRef, data );
+           if isVerifiedOpenFile( fileId, theFile ) then
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.hash_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.hash.session,
+                      theCurs.hash_cur.cursor,
+                      key,
+                      data,
+                      DB_C_GET_NEXT );
+                 if last_error( theFile.hash.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    AssignParameter( valRef, data );
+                 end if;
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -1850,20 +2117,17 @@ begin
         end;
      end if;
   end if;
-end ParseHashNext;
+end ParseHashGetNext;
 
 #else
 
-procedure ParseHashNext is
-begin
-  err( "bdb support not configured" );
-end ParseHashNext;
+procedure ParseHashGetNext renames not_configured;
 
 #end if;
 #if BDB
 
-procedure ParseHashLast is
-  -- Syntax: hash_io.last( f, c, k, v );
+procedure ParseHashGetLast is
+  -- Syntax: hash_io.get_last( f, c, k, v );
   -- Ada:    bdb.get( f );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
@@ -1913,14 +2177,24 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.hash.session,
-                theCurs.hash_cur,
-                key,
-                jsonString,
-                DB_C_GET_LAST );
-           AssignParameter( keyRef, key );
-           DoJsonToRecord( valRef.id, jsonString );
+           if isVerifiedOpenFile( fileId, theFile ) then
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.hash_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.hash.session,
+                      theCurs.hash_cur.cursor,
+                      key,
+                      jsonString,
+                      DB_C_GET_LAST );
+                 if last_error( theFile.hash.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    DoJsonToRecord( valRef.id, jsonString );
+                 end if;
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -1934,14 +2208,24 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.hash.session,
-                theCurs.hash_cur,
-                key,
-                jsonString,
-                DB_C_GET_LAST );
-           AssignParameter( keyRef, key );
-           DoJsonToArray( valRef.id, jsonString );
+           if isVerifiedOpenFile( fileId, theFile ) then
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.hash_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.hash.session,
+                      theCurs.hash_cur.cursor,
+                      key,
+                      jsonString,
+                      DB_C_GET_LAST );
+                 if last_error( theFile.hash.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    DoJsonToArray( valRef.id, jsonString );
+                 end if;
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -1955,14 +2239,24 @@ begin
            data : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.hash.session,
-                theCurs.hash_cur,
-                key,
-                data,
-                DB_C_GET_LAST );
-           AssignParameter( keyRef, key );
-           AssignParameter( valRef, data );
+           if isVerifiedOpenFile( fileId, theFile ) then
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.hash_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.hash.session,
+                      theCurs.hash_cur.cursor,
+                      key,
+                      data,
+                      DB_C_GET_LAST );
+                 if last_error( theFile.hash.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    AssignParameter( valRef, data );
+                 end if;
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -1972,20 +2266,17 @@ begin
         end;
      end if;
   end if;
-end ParseHashLast;
+end ParseHashGetLast;
 
 #else
 
-procedure ParseHashLast is
-begin
-  err( "bdb support not configured" );
-end ParseHashLast;
+procedure ParseHashGetLast renames not_configured;
 
 #end if;
 #if BDB
 
-procedure ParseHashPrevious is
-  -- Syntax: hash_io.previous( f, c, k, v );
+procedure ParseHashGetPrevious is
+  -- Syntax: hash_io.get_previous( f, c, k, v );
   -- Ada:    bdb.get( f );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
@@ -2035,14 +2326,24 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.hash.session,
-                theCurs.hash_cur,
-                key,
-                jsonString,
-                DB_C_GET_PREV );
-           AssignParameter( keyRef, key );
-           DoJsonToRecord( valRef.id, jsonString );
+           if isVerifiedOpenFile( fileId, theFile ) then
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.hash_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.hash.session,
+                      theCurs.hash_cur.cursor,
+                      key,
+                      jsonString,
+                      DB_C_GET_PREV );
+                 if last_error( theFile.hash.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    DoJsonToRecord( valRef.id, jsonString );
+                 end if;
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -2056,14 +2357,24 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.hash.session,
-                theCurs.hash_cur,
-                key,
-                jsonString,
-                DB_C_GET_PREV );
-           AssignParameter( keyRef, key );
-           DoJsonToArray( valRef.id, jsonString );
+           if isVerifiedOpenFile( fileId, theFile ) then
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.hash_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.hash.session,
+                      theCurs.hash_cur.cursor,
+                      key,
+                      jsonString,
+                      DB_C_GET_PREV );
+                 if last_error( theFile.hash.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    DoJsonToArray( valRef.id, jsonString );
+                 end if;
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -2077,14 +2388,24 @@ begin
            data : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
-           get( theFile.hash.session,
-                theCurs.hash_cur,
-                key,
-                data,
-                DB_C_GET_PREV );
-           AssignParameter( keyRef, key );
-           AssignParameter( valRef, data );
+           if isVerifiedOpenFile( fileId, theFile ) then
+              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              if not theCurs.hash_cur.isOpen then
+                 err( "cursor " &
+                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    " is not open" );
+              else
+                 get( theFile.hash.session,
+                      theCurs.hash_cur.cursor,
+                      key,
+                      data,
+                      DB_C_GET_PREV );
+                 if last_error( theFile.hash.session ) = DB_OK then
+                    AssignParameter( keyRef, key );
+                    AssignParameter( valRef, data );
+                 end if;
+              end if;
+           end if;
         exception when msg: berkeley_error =>
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
@@ -2094,13 +2415,10 @@ begin
         end;
      end if;
   end if;
-end ParseHashPrevious;
+end ParseHashGetPrevious;
 #else
 
-procedure ParseHashPrevious is
-begin
-  err( "bdb support not configured" );
-end ParseHashPrevious;
+procedure ParseHashGetPrevious renames not_configured;
 
 #end if;
 #if BDB
@@ -2117,7 +2435,9 @@ begin
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        result := to_bush_boolean( will_raise( theFile.hash.session ) );
+        if isVerifiedOpenFile( fileId, theFile ) then
+           result := to_bush_boolean( will_raise( theFile.hash.session ) );
+        end if;
      exception when berkeley_error =>
         result := to_bush_boolean( false );
      end;
@@ -2126,10 +2446,7 @@ end ParseHashWillRaise;
 
 #else
 
-procedure ParseHashWillRaise( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "bdb support not configured" );
-end ParseHashWillRaise;
+procedure ParseHashWillRaise( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -2145,8 +2462,10 @@ begin
   ParseSingleFileParameter( fileId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        result := to_unbounded_string( db_error'image( last_error( theFile.hash.session ) ) );
+       findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+       if isVerifiedOpenFile( fileId, theFile ) then
+          result := to_unbounded_string( db_error'image( last_error( theFile.hash.session ) ) );
+       end if;
      exception when msg: berkeley_error =>
         err( exception_message( msg ) );
      end;
@@ -2155,10 +2474,7 @@ end ParseHashLastError;
 
 #else
 
-procedure ParseHashLastError( result : out unbounded_string; kind : out identifier ) is
-begin
-  err( "bdb support not configured" );
-end ParseHashLastError;
+procedure ParseHashLastError( result : out unbounded_string; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -2180,7 +2496,9 @@ begin
        raise_them : boolean := boolExpr = to_unbounded_string( "1" );
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        raise_exceptions( theFile.hash.session, raise_them, boolean( traceOpt ) );
+        if isVerifiedOpenFile( fileId, theFile ) then
+           raise_exceptions( theFile.hash.session, raise_them, boolean( traceOpt ) );
+        end if;
      exception when msg: berkeley_error =>
         err( exception_message( msg ) );
      end;
@@ -2189,10 +2507,7 @@ end ParseHashRaiseExceptions;
 
 #else
 
-procedure ParseHashRaiseExceptions is
-begin
-  err( "bdb support not configured" );
-end ParseHashRaiseExceptions;
+procedure ParseHashRaiseExceptions renames not_configured;
 
 #end if;
 
@@ -2204,7 +2519,6 @@ begin
 
   declareIdent( hash_file_t,   "hash_io.file", positive_t, typeClass );
   declareIdent( hash_cursor_t, "hash_io.cursor", positive_t, typeClass );
-  declareIdent( hash_db_error_t, "hash_io.db_error", natural_t, typeClass );
 
   declareProcedure( hash_new_file_t,  "hash_io.new_file", ParseHashNewFile'access );
   declareProcedure( hash_clear_t,     "hash_io.clear",    ParseHashClear'access );
@@ -2232,10 +2546,10 @@ begin
   declareProcedure( hash_new_cursor_t,  "hash_io.new_cursor", ParseHashNewCursor'access );
   declareProcedure( hash_open_cursor_t,  "hash_io.open_cursor", ParseHashOpenCursor'access );
   declareProcedure( hash_close_cursor_t,  "hash_io.close_cursor", ParseHashCloseCursor'access );
-  declareProcedure( hash_get_first_t,     "hash_io.get_first", ParseHashFirst'access );
-  declareProcedure( hash_get_next_t,      "hash_io.get_next", ParseHashNext'access );
-  declareProcedure( hash_get_previous_t,  "hash_io.get_previous", ParseHashPrevious'access );
-  declareProcedure( hash_get_last_t,      "hash_io.get_last", ParseHashLast'access );
+  declareProcedure( hash_get_first_t,     "hash_io.get_first", ParseHashGetFirst'access );
+  declareProcedure( hash_get_next_t,      "hash_io.get_next", ParseHashGetNext'access );
+  declareProcedure( hash_get_previous_t,  "hash_io.get_previous", ParseHashGetPrevious'access );
+  declareProcedure( hash_get_last_t,      "hash_io.get_last", ParseHashGetLast'access );
 
   declareFunction( hash_will_raise_t, "hash_io.will_raise",  ParseHashWillRaise'access );
   declareFunction( hash_last_error_t, "hash_io.last_error",  ParseHashLastError'access );

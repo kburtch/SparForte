@@ -1,6 +1,6 @@
 For the latest news, visit the SparForte web site.
 
-SparForte 2.0.3's focus was bug fixes for SparForte 2.0.1
+SparForte 2.0.3's focus was bug fixes for SparForte 2.0
 
 CHANGES SINCE 2.0.2
 
@@ -13,4 +13,6 @@ CHANGES SINCE 2.0.2
 4. New: added memcache good test cases to release tests.
 
 5. Fix: areadline library patched so command prompt history doesn't remember blank lines, to match up with the history command and normal shell behavior.
+
+6. Fix: hash_io updated to include changes to btree_io.  new hash_io good test cases added to release test.
 
