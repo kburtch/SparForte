@@ -33,6 +33,7 @@ with
     world,
     scanner,
     scanner_res,
+    scanner_restypes,
     string_util,
     parser,
     parser_aux,
@@ -52,6 +53,7 @@ use
     user_io,
     scanner,
     scanner_res,
+    scanner_restypes,
     string_util,
     parser,
     parser_aux,
@@ -70,10 +72,10 @@ package body parser_btree_io is
 -- BTree package identifiers
 ------------------------------------------------------------------------------
 
-btree_file_t          : identifier;
-btree_cursor_t        : identifier;
+--btree_file_t          : identifier;
+--btree_cursor_t        : identifier;
 
-btree_new_file_t      : identifier;
+--btree_new_file_t      : identifier;
 btree_clear_t         : identifier;
 
 btree_will_raise_t    : identifier;
@@ -100,7 +102,7 @@ btree_replace_t       : identifier;
 btree_append_t        : identifier;
 btree_prepend_t       : identifier;
 
-btree_new_cursor_t    : identifier;
+--btree_new_cursor_t    : identifier;
 btree_open_cursor_t   : identifier;
 btree_close_cursor_t  : identifier;
 btree_get_first_t     : identifier;
@@ -118,45 +120,45 @@ btree_get_previous_t  : identifier;
 -- If actually running, check to see if a resource has been associated
 -- with this file.  This only occurs at run-time.
 
-procedure CheckFileIsInitialized( fileId : identifier ) is
-begin
-  if identifiers( fileId ).genKind = eof_t then
-     err( optional_bold( "new_file" ) & " has not been called to initialize " &
-          optional_bold( to_string( identifiers( fileId ).name ) ) &
-          "; Note: a bug in this version of SparForte requires 'new' " &
-          "to be located just after the variable's declaration) " );
-  elsif isExecutingCommand then
-     if identifiers( fileId ).svalue = "" then
-        err( optional_bold( "new_file" ) & " has not been called to initialize " &
-          optional_bold( to_string( identifiers( fileId ).name ) ) &
-          "; Note: a bug in this version of SparForte requires 'new' " &
-          "to be located just after the variable's declaration) " );
-     end if;
-  end if;
-end CheckFileIsInitialized;
+--procedure CheckFileIsInitialized( fileId : identifier ) is
+--begin
+--  if identifiers( fileId ).genKind = eof_t then
+--     err( optional_bold( "new_file" ) & " has not been called to initialize " &
+--          optional_bold( to_string( identifiers( fileId ).name ) ) &
+--          "; Note: a bug in this version of SparForte requires 'new' " &
+--          "to be located just after the variable's declaration) " );
+--  elsif isExecutingCommand then
+--     if identifiers( fileId ).svalue = "" then
+--        err( optional_bold( "new_file" ) & " has not been called to initialize " &
+--          optional_bold( to_string( identifiers( fileId ).name ) ) &
+--          "; Note: a bug in this version of SparForte requires 'new' " &
+--          "to be located just after the variable's declaration) " );
+--     end if;
+--  end if;
+--end CheckFileIsInitialized;
 
 procedure ParseSingleFileParameter( fileId : out identifier ) is
 begin
   ParseSingleInOutParameter( fileId, btree_file_t );
-  CheckFileIsInitialized( fileId );
+  --CheckFileIsInitialized( fileId );
 end ParseSingleFileParameter;
 
 procedure ParseFirstFileParameter( fileId : out identifier ) is
 begin
   ParseFirstInOutParameter( fileId, btree_file_t );
-  CheckFileIsInitialized( fileId );
+  --CheckFileIsInitialized( fileId );
 end ParseFirstFileParameter;
 
 procedure ParseNextFileParameter( fileId : out identifier ) is
 begin
   ParseNextInOutParameter( fileId, btree_file_t );
-  CheckFileIsInitialized( fileId );
+  --CheckFileIsInitialized( fileId );
 end ParseNextFileParameter;
 
 procedure ParseLastFileParameter( fileId : out identifier ) is
 begin
   ParseLastInOutParameter( fileId, btree_file_t );
-  CheckFileIsInitialized( fileId );
+  --CheckFileIsInitialized( fileId );
 end ParseLastFileParameter;
 
 ------------------------------------------------------------------------------
@@ -167,41 +169,41 @@ end ParseLastFileParameter;
 -- If actually running, check to see if a resource has been associated
 -- with this cursor.  This only occurs at run-time.
 
-procedure CheckCursorIsInitialized( cursId : identifier ) is
-begin
-  if identifiers( cursId ).genKind = eof_t then
-     err( optional_bold( "new_cursor" ) & " has not been called to initialize " &
-        optional_bold( to_string( identifiers( cursId ).name ) ) );
-  elsif isExecutingCommand then
-     if identifiers( cursId ).svalue = "" then
-        err( optional_bold( "new_cursor" ) & " has not been called to initialize " &
-          optional_bold( to_string( identifiers( cursId ).name ) ) );
-     end if;
-  end if;
-end CheckCursorIsInitialized;
+--procedure CheckCursorIsInitialized( cursId : identifier ) is
+--begin
+--  if identifiers( cursId ).genKind = eof_t then
+--     err( optional_bold( "new_cursor" ) & " has not been called to initialize " &
+--        optional_bold( to_string( identifiers( cursId ).name ) ) );
+--  elsif isExecutingCommand then
+--     if identifiers( cursId ).svalue = "" then
+--        err( optional_bold( "new_cursor" ) & " has not been called to initialize " &
+--          optional_bold( to_string( identifiers( cursId ).name ) ) );
+--     end if;
+--  end if;
+--end CheckCursorIsInitialized;
 
 procedure ParseSingleCursorParameter( cursId : out identifier ) is
 begin
   ParseSingleInOutParameter( cursId, btree_cursor_t );
-  CheckCursorIsInitialized( cursId );
+  --CheckCursorIsInitialized( cursId );
 end ParseSingleCursorParameter;
 
 procedure ParseFirstCursorParameter( cursId : out identifier ) is
 begin
   ParseFirstInOutParameter( cursId, btree_cursor_t );
-  CheckCursorIsInitialized( cursId );
+  --CheckCursorIsInitialized( cursId );
 end ParseFirstCursorParameter;
 
 procedure ParseNextCursorParameter( cursId : out identifier ) is
 begin
   ParseNextInOutParameter( cursId, btree_cursor_t );
-  CheckCursorIsInitialized( cursId );
+  --CheckCursorIsInitialized( cursId );
 end ParseNextCursorParameter;
 
 procedure ParseLastCursorParameter( cursId : out identifier ) is
 begin
   ParseLastInOutParameter( cursId, btree_cursor_t );
-  CheckCursorIsInitialized( cursId );
+  --CheckCursorIsInitialized( cursId );
 end ParseLastCursorParameter;
 
 #if BDB
@@ -229,41 +231,41 @@ end isVerifiedOpenFile;
 
 #if BDB
 
-procedure ParseBTreeNewFile is
-  -- Syntax: btree.new_file( f, t );
-  -- Ada:    N/A
-  resId : resHandleId;
-  ref : reference;
-  genKindId : identifier;
-  theFile  : resPtr;
-begin
-  expect( btree_new_file_t );
-  ParseFirstOutParameter( ref, btree_file_t );
-  baseTypesOK( ref.kind, btree_file_t );
-  expect( symbol_t, "," );
-  ParseIdentifier( genKindId );
-  if class_ok( genKindId, typeClass, subClass ) then
-     -- DEBUG: trying aggregates
-     null;
-     --if identifiers( genKindId ).list then
-     --   err( "element type should be a scalar type" );
-     -- elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-     --    err( "element type should be a scalar type" );
-     --end if;
-  end if;
-  identifiers( ref.id ).genKind := genKindId;
-  expect( symbol_t, ")" );
-  if isExecutingCommand then
-     identifiers( ref.id ).resource := true;
-     declareResource( resId, btree_file, getIdentifierBlock( ref.id ) );
-     AssignParameter( ref, to_unbounded_string( resId ) );
-     -- TODO: this won't work if the cursor is in an array or other
-     -- aggregate type
-     identifiers( ref.id ).wasWritten := true;
-     findResource( resId, theFile );
-     theFile.btree.isOpen := false;
-  end if;
-end ParseBtreeNewFile;
+--procedure ParseBTreeNewFile is
+--  -- Syntax: btree.new_file( f, t );
+--  -- Ada:    N/A
+--  resId : resHandleId;
+--  ref : reference;
+--  genKindId : identifier;
+--  theFile  : resPtr;
+--begin
+--  expect( btree_new_file_t );
+--  ParseFirstOutParameter( ref, btree_file_t );
+--  baseTypesOK( ref.kind, btree_file_t );
+--  expect( symbol_t, "," );
+--  ParseIdentifier( genKindId );
+--  if class_ok( genKindId, typeClass, subClass ) then
+--     -- DEBUG: trying aggregates
+--     null;
+--     --if identifiers( genKindId ).list then
+--     --   err( "element type should be a scalar type" );
+--     -- elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+--     --    err( "element type should be a scalar type" );
+--     --end if;
+--  end if;
+--  identifiers( ref.id ).genKind := genKindId;
+--  expect( symbol_t, ")" );
+--  if isExecutingCommand then
+--     identifiers( ref.id ).resource := true;
+--     declareResource( resId, btree_file, getIdentifierBlock( ref.id ) );
+--     AssignParameter( ref, to_unbounded_string( resId ) );
+--     -- TODO: this won't work if the cursor is in an array or other
+--     -- aggregate type
+--     identifiers( ref.id ).wasWritten := true;
+--     findResource( resId, theFile );
+--     theFile.btree.isOpen := false;
+--  end if;
+--end ParseBtreeNewFile;
 
 #else
 
@@ -280,7 +282,7 @@ begin
   err( "Berkeley DB support not configured" );
 end not_configured;
 
-procedure ParseBtreeNewFile renames not_configured;
+--procedure ParseBtreeNewFile renames not_configured;
 
 #end if;
 #if BDB
@@ -1717,42 +1719,42 @@ procedure ParseBTreeTruncate renames not_configured;
 #end if;
 #if BDB
 
-procedure ParseBTreeNewCursor is
-  -- Syntax: btree.new_cursor( c, t );
-  -- Ada:    N/A
-  resId : resHandleId;
-  ref : reference;
-  genKindId : identifier;
-begin
-  expect( btree_new_cursor_t );
-  ParseFirstOutParameter( ref, btree_cursor_t );
-  baseTypesOK( ref.kind, btree_cursor_t );
-  expect( symbol_t, "," );
-  ParseIdentifier( genKindId );
-  if class_ok( genKindId, typeClass, subClass ) then
-     --DEBUG
-     null;
-     --if identifiers( genKindId ).list then
-     --   err( "element type should be a scalar type" );
-     --elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-     --   err( "element type should be a scalar type" );
-     --end if;
-  end if;
-  identifiers( ref.id ).genKind := genKindId;
-  expect( symbol_t, ")" );
-  if isExecutingCommand then
-     identifiers( ref.id ).resource := true;
-     declareResource( resId, btree_cursor, getIdentifierBlock( ref.id ) );
-     AssignParameter( ref, to_unbounded_string( resId ) );
-     -- Note: this won't work if the cursor is in an array or other
-     -- aggregate type
-     identifiers( ref.id ).wasWritten := true;
-  end if;
-end ParseBtreeNewCursor;
+--procedure ParseBTreeNewCursor is
+--  -- Syntax: btree.new_cursor( c, t );
+--  -- Ada:    N/A
+--  resId : resHandleId;
+--  ref : reference;
+--  genKindId : identifier;
+--begin
+--  expect( btree_new_cursor_t );
+--  ParseFirstOutParameter( ref, btree_cursor_t );
+--  baseTypesOK( ref.kind, btree_cursor_t );
+--  expect( symbol_t, "," );
+--  ParseIdentifier( genKindId );
+--  if class_ok( genKindId, typeClass, subClass ) then
+--     --DEBUG
+--     null;
+--     --if identifiers( genKindId ).list then
+--     --   err( "element type should be a scalar type" );
+--     --elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+--     --   err( "element type should be a scalar type" );
+--     --end if;
+--  end if;
+--  identifiers( ref.id ).genKind := genKindId;
+--  expect( symbol_t, ")" );
+--  if isExecutingCommand then
+--     identifiers( ref.id ).resource := true;
+--     declareResource( resId, btree_cursor, getIdentifierBlock( ref.id ) );
+--     AssignParameter( ref, to_unbounded_string( resId ) );
+--     -- Note: this won't work if the cursor is in an array or other
+--     -- aggregate type
+--     identifiers( ref.id ).wasWritten := true;
+--  end if;
+--end ParseBtreeNewCursor;
 
 #else
 
-procedure ParseBtreeNewCursor renames not_configured;
+--procedure ParseBtreeNewCursor renames not_configured;
 
 #end if;
 #if BDB
@@ -2522,7 +2524,7 @@ begin
   declareIdent( btree_file_t,   "btree_io.file", positive_t, typeClass );
   declareIdent( btree_cursor_t, "btree_io.cursor", positive_t, typeClass );
 
-  declareProcedure( btree_new_file_t,  "btree_io.new_file", ParseBTreeNewFile'access );
+  --declareProcedure( btree_new_file_t,  "btree_io.new_file", ParseBTreeNewFile'access );
   declareProcedure( btree_clear_t,     "btree_io.clear",    ParseBTreeClear'access );
 
   declareProcedure( btree_create_t,    "btree_io.create",   ParseBTreeCreate'access );
@@ -2545,7 +2547,7 @@ begin
   declareProcedure( btree_append_t,    "btree_io.append", ParseBTreeAppend'access );
   declareProcedure( btree_prepend_t,   "btree_io.prepend", ParseBTreePrepend'access );
 
-  declareProcedure( btree_new_cursor_t,  "btree_io.new_cursor", ParseBTreeNewCursor'access );
+  --declareProcedure( btree_new_cursor_t,  "btree_io.new_cursor", ParseBTreeNewCursor'access );
   declareProcedure( btree_open_cursor_t,  "btree_io.open_cursor", ParseBTreeOpenCursor'access );
   declareProcedure( btree_close_cursor_t,  "btree_io.close_cursor", ParseBTreeCloseCursor'access );
   declareProcedure( btree_get_first_t,     "btree_io.get_first", ParseBTreeGetFirst'access );

@@ -46,6 +46,8 @@ with system,
     signal_flags,
     compiler,
     scanner,
+    scanner_res,
+    scanner_restypes,
     parser_params,
     parser_pragmas,
     parser_tio,
@@ -70,6 +72,8 @@ use ada.text_io,
     signal_flags,
     compiler,
     scanner,
+    scanner_res,
+    scanner_restypes,
     parser_params,
     parser_pragmas,
     parser_tio,
@@ -2474,6 +2478,29 @@ end ParseStaticExpression;
 -- Declarations
 -----------------------------------------------------------------------------
 
+procedure ParseGenericParametersPart( varId : identifier ) is
+-- Syntax: ...( gen1 [,gen2] )
+-- SparForte is currently limited to two generic parameters for a built-in
+-- type which takes them.
+  genKind : identifier;
+begin
+  expect( symbol_t, "(" );
+  ParseIdentifier( genKind );
+  if class_ok( genKind, typeClass, subClass ) then
+     identifiers( varId ).genKind := genKind;
+     if token = symbol_t and identifiers( token ).svalue = "," then
+        expect( symbol_t, "," );
+        ParseIdentifier( genKind );
+        if class_ok( genKind, typeClass, subClass ) then
+           identifiers( varId ).genKind2 := genKind;
+        end if;
+     else
+        identifiers( varId ).genKind2 := eof_t;
+     end if;
+  end if;
+  expect( symbol_t, ")" );
+end ParseGenericParametersPart;
+
 procedure ParseRenamesPart( canonicalRef : out renamingReference;
   new_id, new_type_id : identifier ) is
   -- Syntax: ... renames ident ...
@@ -3191,10 +3218,58 @@ begin
      end if;
   end if;
 
+  -- Generic Parameters
+  --
+  -- These only apply to built-in types and they are not arrays or records.
+  -- It excludes assignment and renaming (only because renaming requires
+  -- modification to check the generic parameters).
+
+  if token = symbol_t and identifiers( token ).svalue = "(" then
+     ParseGenericParametersPart( id  );
+     if isExecutingCommand then
+        -- create and attach a resource to the variable
+        declare
+           -- TODO: this won't work for new types, only subtypes
+           baseType  : identifier := getBaseType( type_token );
+           resId     : resHandleId;
+           genKindId : identifier;
+        begin
+           if baseType = doubly_list_t then
+              declareResource( resId, doubly_linked_string_list, getIdentifierBlock( id ) );
+           elsif baseType = doubly_cursor_t then
+              declareResource( resId, doubly_linked_string_list_cursor, getIdentifierBlock( id ) );
+           elsif baseType = btree_file_t then
+              declareResource( resId, btree_file, getIdentifierBlock( id ) );
+           elsif baseType = btree_cursor_t then
+              declareResource( resId, btree_cursor, getIdentifierBlock( id ) );
+           elsif baseType = dht_table_t then
+              genKindId := identifiers( id ).genKind;
+              if class_ok( genKindId, typeClass, subClass ) then
+                 if identifiers( genKindId ).list then
+                    err( "element type should be a scalar type" );
+                 elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+                    err( "element type should be a scalar type" );
+                 end if;
+              end if;
+              declareResource( resId, dynamic_string_hash_table, getIdentifierBlock( id ) );
+           else
+              -- TODO: implement generic types
+              err( "expected a generic type" );
+           end if;
+           if isExecutingCommand then
+              identifiers( id ).svalue := to_unbounded_string( resId );
+              identifiers( id ).value := identifiers( id ).svalue'access;
+              identifiers( id ).resource := true;
+           end if;
+        end;
+     end if;
+     identifiers( id ).kind := type_token;
+
+
   -- Renames clause
   -- if it appears, one can only rename...cannot assign.
 
-  if token = renames_t then
+  elsif token = renames_t then
 
      declare
         -- the class will change when parsing the rename

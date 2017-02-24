@@ -16,3 +16,13 @@ CHANGES SINCE 2.0.2
 
 6. Fix: hash_io updated to include changes to btree_io.  new hash_io good test cases added to release test.
 
+7. Change: doubly_linked_list.new_list and new_cursor removed.  Declare the generic type parameter in the declaration using "doubly_linked_lists.list( type )" or "doubly_linked_lists.cursor( type )".
+
+8. Change: btree_io.new_file and new_cursor removed.  Declare the generic type parameter in the declaration using "btree_io.file( type )" or "btree_io.cursor( type )".
+
+9. Change: dynamic_hash_tables.new_table removed.  Declare the generic type parameter in the declaration using "dynamic_hash_tables.table( type )".
+
+10. Change: hash_io.new_file and new_cursor removed.  Declare the generic type parameter in the declaration using "hash_io.file( type )" or "hash_io.cursor( type )".
+
+11. New: SHA hash functions: strings.sha256_hash_of, strings.sha256_hash_of, strings.sha256_hash_of. [tests needed] [docs needed]
+

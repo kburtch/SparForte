@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2016 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -29,6 +29,7 @@ with
     user_io,
     scanner,
     scanner_res,
+    scanner_restypes,
     string_util,
     parser,
     parser_aux,
@@ -42,6 +43,7 @@ use
     scanner,
     scanner,
     scanner_res,
+    scanner_restypes,
     string_util,
     parser,
     parser_aux,
@@ -54,10 +56,10 @@ package body parser_doubly is
 -- Doubly Linked Lists package identifiers
 ------------------------------------------------------------------------------
 
-doubly_list_t          : identifier;
-doubly_cursor_t        : identifier;
+-- doubly_list_t          : identifier;
+-- doubly_cursor_t        : identifier;
 
-doubly_new_list_t      : identifier;
+--doubly_new_list_t      : identifier;
 doubly_clear_t         : identifier;
 doubly_is_empty_t      : identifier;
 doubly_length_t        : identifier;
@@ -68,7 +70,7 @@ doubly_last_element_t  : identifier;
 doubly_delete_first_t  : identifier;
 doubly_delete_last_t   : identifier;
 
-doubly_new_cursor_t    : identifier;
+--doubly_new_cursor_t    : identifier;
 doubly_first_t         : identifier;
 doubly_last_t          : identifier;
 doubly_next_t          : identifier;
@@ -98,84 +100,84 @@ doubly_disassemble_t   : identifier;
 -- Utility subprograms
 ------------------------------------------------------------------------------
 
-procedure CheckListIsInitialized( listId : identifier ) is
-begin
-  if identifiers( listId ).genKind = eof_t then
-     err( "new_list has not been called to initialize " &
-       optional_bold( to_string( identifiers( listId ).name ) ) &
-       "; Note: a bug in this version of SparForte requires 'new' " &
-       "to be located just after the variable's declaration." );
-  elsif isExecutingCommand then
-     if identifiers( listId ).svalue = "" then
-        err( "new_list has not been called to initialize " &
-          optional_bold( to_string( identifiers( listId ).name ) ) &
-          "; Note: a bug in this version of SparForte requires 'new' " &
-          "to be located just after the variable's declaration." );
-     end if;
-  end if;
-end CheckListIsInitialized;
+--procedure CheckListIsInitialized( listId : identifier ) is
+--begin
+--  if identifiers( listId ).genKind = eof_t then
+--     err( "new_list has not been called to initialize " &
+--       optional_bold( to_string( identifiers( listId ).name ) ) &
+--       "; Note: a bug in this version of SparForte requires 'new' " &
+--       "to be located just after the variable's declaration." );
+--  elsif isExecutingCommand then
+--     if identifiers( listId ).svalue = "" then
+--        err( "new_list has not been called to initialize " &
+--          optional_bold( to_string( identifiers( listId ).name ) ) &
+--          "; Note: a bug in this version of SparForte requires 'new' " &
+--          "to be located just after the variable's declaration." );
+--     end if;
+--  end if;
+--end CheckListIsInitialized;
 
 procedure ParseSingleListParameter( listId : out identifier ) is
 begin
   ParseSingleInOutParameter( listId, doubly_list_t );
-  CheckListIsInitialized( listId );
+  --CheckListIsInitialized( listId );
 end ParseSingleListParameter;
 
 procedure ParseFirstListParameter( listId : out identifier ) is
 begin
   ParseFirstInOutParameter( listId, doubly_list_t );
-  CheckListIsInitialized( listId );
+  --CheckListIsInitialized( listId );
 end ParseFirstListParameter;
 
 procedure ParseNextListParameter( listId : out identifier ) is
 begin
   ParseNextInOutParameter( listId, doubly_list_t );
-  CheckListIsInitialized( listId );
+  --CheckListIsInitialized( listId );
 end ParseNextListParameter;
 
 procedure ParseLastListParameter( listId : out identifier ) is
 begin
   ParseLastInOutParameter( listId, doubly_list_t );
-  CheckListIsInitialized( listId );
+  --CheckListIsInitialized( listId );
 end ParseLastListParameter;
 
 ------------------------------------------------------------------------------
 
-procedure CheckCursorIsInitialized( cursId : identifier ) is
-begin
-  if identifiers( cursId ).genKind = eof_t then
-     err( "new_cursor has not been called to initialize " &
-          optional_bold( to_string( identifiers( cursId ).name ) ) );
-  elsif isExecutingCommand then
-     if identifiers( cursId ).svalue = "" then
-        err( "new_cursor has not been called to initialize " &
-          optional_bold( to_string( identifiers( cursId ).name ) ) );
-     end if;
-  end if;
-end CheckCursorIsInitialized;
+--procedure CheckCursorIsInitialized( cursId : identifier ) is
+--begin
+--  if identifiers( cursId ).genKind = eof_t then
+--     err( "new_cursor has not been called to initialize " &
+--          optional_bold( to_string( identifiers( cursId ).name ) ) );
+--  elsif isExecutingCommand then
+--     if identifiers( cursId ).svalue = "" then
+--        err( "new_cursor has not been called to initialize " &
+--          optional_bold( to_string( identifiers( cursId ).name ) ) );
+--     end if;
+--  end if;
+--end CheckCursorIsInitialized;
 
 procedure ParseSingleCursorParameter( cursId : out identifier ) is
 begin
   ParseSingleInOutParameter( cursId, doubly_cursor_t );
-  CheckCursorIsInitialized( cursId );
+  --CheckCursorIsInitialized( cursId );
 end ParseSingleCursorParameter;
 
 procedure ParseFirstCursorParameter( cursId : out identifier ) is
 begin
   ParseFirstInOutParameter( cursId, doubly_cursor_t );
-  CheckCursorIsInitialized( cursId );
+  --CheckCursorIsInitialized( cursId );
 end ParseFirstCursorParameter;
 
 procedure ParseNextCursorParameter( cursId : out identifier ) is
 begin
   ParseNextInOutParameter( cursId, doubly_cursor_t );
-  CheckCursorIsInitialized( cursId );
+  --CheckCursorIsInitialized( cursId );
 end ParseNextCursorParameter;
 
 procedure ParseLastCursorParameter( cursId : out identifier ) is
 begin
   ParseLastInOutParameter( cursId, doubly_cursor_t );
-  CheckCursorIsInitialized( cursId );
+  --CheckCursorIsInitialized( cursId );
 end ParseLastCursorParameter;
 
 ------------------------------------------------------------------------------
@@ -230,33 +232,33 @@ end insertTypesOk;
 ------------------------------------------------------------------------------
 
 
-procedure ParseDoublyNewList is
-  -- Syntax: doubly_linked_list.new_list( l, t );
-  -- Ada:    N/A
-  resId : resHandleId;
-  ref : reference;
-  genKindId : identifier;
-begin
-  expect( doubly_new_list_t );
-  ParseFirstOutParameter( ref, doubly_list_t );
-  baseTypesOK( ref.kind, doubly_list_t );
-  expect( symbol_t, "," );
-  ParseIdentifier( genKindId );
-  if class_ok( genKindId, typeClass, subClass ) then
-     if identifiers( genKindId ).list then
-        err( "element type should be a scalar type" );
-     elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-        err( "element type should be a scalar type" );
-     end if;
-  end if;
-  identifiers( ref.id ).genKind := genKindId;
-  expect( symbol_t, ")" );
-  if isExecutingCommand then
-     identifiers( ref.id ).resource := true;
-     declareResource( resId, doubly_linked_string_list, getIdentifierBlock( ref.id ) );
-     AssignParameter( ref, to_unbounded_string( resId ) );
-  end if;
-end ParseDoublyNewList;
+--procedure ParseDoublyNewList is
+--  -- Syntax: doubly_linked_list.new_list( l, t );
+--  -- Ada:    N/A
+--  resId : resHandleId;
+--  ref : reference;
+--  genKindId : identifier;
+--begin
+--  expect( doubly_new_list_t );
+--  ParseFirstOutParameter( ref, doubly_list_t );
+--  baseTypesOK( ref.kind, doubly_list_t );
+--  expect( symbol_t, "," );
+--  ParseIdentifier( genKindId );
+--  if class_ok( genKindId, typeClass, subClass ) then
+--     if identifiers( genKindId ).list then
+--        err( "element type should be a scalar type" );
+--     elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+--        err( "element type should be a scalar type" );
+--     end if;
+--  end if;
+--  identifiers( ref.id ).genKind := genKindId;
+--  expect( symbol_t, ")" );
+--  if isExecutingCommand then
+--     identifiers( ref.id ).resource := true;
+--     declareResource( resId, doubly_linked_string_list, getIdentifierBlock( ref.id ) );
+--     AssignParameter( ref, to_unbounded_string( resId ) );
+--  end if;
+--end ParseDoublyNewList;
 
 procedure ParseDoublyClear is
   -- Syntax: doubly_linked_list.clear( l );
@@ -498,29 +500,29 @@ begin
   end if;
 end ParseDoublyDeleteLast;
 
-procedure ParseDoublyNewCursor is
-  -- Syntax: doubly_linked_list.new_cursor( c, t );
-  -- Ada:    N/A
-  resId : resHandleId;
-  ref : reference;
-  genKindId : identifier;
-begin
-  expect( doubly_new_cursor_t );
-  ParseFirstOutParameter( ref, doubly_cursor_t );
-  baseTypesOK( ref.kind, doubly_cursor_t );
-  expect( symbol_t, "," );
-  ParseIdentifier( genKindId );
-  if class_ok( genKindId, typeClass, subClass ) then
-      null;
-  end if;
-  identifiers( ref.id ).genKind := genKindId;
-  expect( symbol_t, ")" );
-  if isExecutingCommand then
-     identifiers( ref.id ).resource := true;
-     declareResource( resId, doubly_linked_string_list_cursor, getIdentifierBlock( ref.id ) );
-     AssignParameter( ref, to_unbounded_string( resId ) );
-  end if;
-end ParseDoublyNewCursor;
+--procedure ParseDoublyNewCursor is
+--  -- Syntax: doubly_linked_list.new_cursor( c, t );
+--  -- Ada:    N/A
+--  resId : resHandleId;
+--  ref : reference;
+--  genKindId : identifier;
+--begin
+--  expect( doubly_new_cursor_t );
+--  ParseFirstOutParameter( ref, doubly_cursor_t );
+--  baseTypesOK( ref.kind, doubly_cursor_t );
+--  expect( symbol_t, "," );
+--  ParseIdentifier( genKindId );
+--  if class_ok( genKindId, typeClass, subClass ) then
+--      null;
+--  end if;
+--  identifiers( ref.id ).genKind := genKindId;
+--  expect( symbol_t, ")" );
+--  if isExecutingCommand then
+--     identifiers( ref.id ).resource := true;
+--     declareResource( resId, doubly_linked_string_list_cursor, getIdentifierBlock( ref.id ) );
+--     AssignParameter( ref, to_unbounded_string( resId ) );
+--  end if;
+--end ParseDoublyNewCursor;
 
 procedure ParseDoublyFirst is
   -- Syntax: doubly_linked_list.first( l, c );
@@ -1376,7 +1378,7 @@ begin
   declareIdent( doubly_list_t,   "doubly_linked_lists.list", positive_t, typeClass );
   declareIdent( doubly_cursor_t, "doubly_linked_lists.cursor", positive_t, typeClass );
 
-  declareProcedure( doubly_new_list_t,  "doubly_linked_lists.new_list", ParseDoublyNewList'access );
+  --declareProcedure( doubly_new_list_t,  "doubly_linked_lists.new_list", ParseDoublyNewList'access );
   declareProcedure( doubly_clear_t,     "doubly_linked_lists.clear",    ParseDoublyClear'access );
   declareFunction(  doubly_is_empty_t,  "doubly_linked_lists.is_empty", ParseDoublyIsEmpty'access );
   declareFunction(  doubly_length_t,    "doubly_linked_lists.length",   ParseDoublyLength'access );
@@ -1387,7 +1389,7 @@ begin
   declareProcedure( doubly_delete_first_t,  "doubly_linked_lists.delete_first",  ParseDoublyDeleteFirst'access );
   declareProcedure( doubly_delete_last_t,   "doubly_linked_lists.delete_last",  ParseDoublyDeleteLast'access );
 
-  declareProcedure( doubly_new_cursor_t, "doubly_linked_lists.new_cursor", ParseDoublyNewCursor'access );
+  --declareProcedure( doubly_new_cursor_t, "doubly_linked_lists.new_cursor", ParseDoublyNewCursor'access );
   declareProcedure( doubly_first_t,     "doubly_linked_lists.first",    ParseDoublyFirst'access );
   declareProcedure( doubly_last_t,      "doubly_linked_lists.last",     ParseDoublyLast'access );
   declareProcedure( doubly_next_t,      "doubly_linked_lists.next",     ParseDoublyNext'access );

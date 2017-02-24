@@ -33,6 +33,8 @@ NEW ISSUES BEING WORKED ON OR NEEDING SORTING INTO OUTSTANDING BUG LIST
        executable command, this will fail if the function is located lower
        in the source code.
        - I require a new num_gen_param field in identifiers table
+       - remove initialization tests since will be always initialized
+       - show generic params in attribute comment for env
        - if non-zero, require the generic type to be parameterized at variable
          declaration
        - deprecate all new_file, new_list, etc. as they are run-time and not
@@ -74,6 +76,9 @@ NEW ISSUES BEING WORKED ON OR NEEDING SORTING INTO OUTSTANDING BUG LIST
     - exceptions that propogate to the top aren't formatted properly in the
       Apache log (single chars means single lines)
   - feature
+    - element as an alias for "get" in memcache, etc.
+    - update dynamic_hash_table functionality to handle records, arrays, etc. like btree_io
+    - standardize get_first as first, etc.
     - safety check that a file cannot include itself
     - more separation of concerns
       - with configuration

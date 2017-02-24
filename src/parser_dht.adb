@@ -28,6 +28,7 @@ with
     world,
     scanner,
     scanner_res,
+    scanner_restypes,
     string_util,
     parser,
     parser_aux,
@@ -38,6 +39,7 @@ use
     user_io,
     scanner,
     scanner_res,
+    scanner_restypes,
     string_util,
     parser,
     parser_aux,
@@ -50,9 +52,9 @@ package body parser_dht is
 -- Dynmaic Hash Tables package identifiers
 ------------------------------------------------------------------------------
 
-dht_table_t         : identifier;
+--dht_table_t         : identifier;
 
-dht_new_table_t     : identifier;
+--dht_new_table_t     : identifier;
 dht_set_t           : identifier;
 dht_reset_t         : identifier;
 dht_get_t           : identifier;
@@ -75,45 +77,45 @@ dht_decrement_t     : identifier;
 -- Utility subprograms
 ------------------------------------------------------------------------------
 
-procedure CheckTableIsInitialized( tableId : identifier ) is
-begin
-  if identifiers( tableId ).genKind = eof_t then
-     err( optional_bold( "new_table" ) & " has not been called to initialize " &
-        optional_bold( to_string( identifiers( tableId ).name ) ) &
-       "; Note: a bug in this version of SparForte requires 'new' " &
-       "to be located just after the variable's declaration." );
-  elsif isExecutingCommand then
-     if identifiers( tableId ).svalue = "" then
-        err( optional_bold( "new_table" ) & " has not been called to initialize " &
-           optional_bold( to_string( identifiers( tableId ).name ) ) &
-           "; Note: a bug in this version of SparForte requires 'new' " &
-           "to be located just after the variable's declaration." );
-     end if;
-  end if;
-end CheckTableIsInitialized;
+--procedure CheckTableIsInitialized( tableId : identifier ) is
+--begin
+--  if identifiers( tableId ).genKind = eof_t then
+--     err( optional_bold( "new_table" ) & " has not been called to initialize " &
+--        optional_bold( to_string( identifiers( tableId ).name ) ) &
+--       "; Note: a bug in this version of SparForte requires 'new' " &
+--       "to be located just after the variable's declaration." );
+--  elsif isExecutingCommand then
+--     if identifiers( tableId ).svalue = "" then
+--        err( optional_bold( "new_table" ) & " has not been called to initialize " &
+--           optional_bold( to_string( identifiers( tableId ).name ) ) &
+--           "; Note: a bug in this version of SparForte requires 'new' " &
+--           "to be located just after the variable's declaration." );
+--     end if;
+--  end if;
+--end CheckTableIsInitialized;
 
 procedure ParseSingleTableParameter( tableId : out identifier ) is
 begin
   ParseSingleInOutParameter( tableId, dht_table_t );
-  CheckTableIsInitialized( tableId );
+  --CheckTableIsInitialized( tableId );
 end ParseSingleTableParameter;
 
 procedure ParseFirstTableParameter( tableId : out identifier ) is
 begin
   ParseFirstInOutParameter( tableId, dht_table_t );
-  CheckTableIsInitialized( tableId );
+  --CheckTableIsInitialized( tableId );
 end ParseFirstTableParameter;
 
 procedure ParseNextTableParameter( tableId : out identifier ) is
 begin
   ParseNextInOutParameter( tableId, dht_table_t );
-  CheckTableIsInitialized( tableId );
+  --CheckTableIsInitialized( tableId );
 end ParseNextTableParameter;
 
 procedure ParseLastTableParameter( tableId : out identifier ) is
 begin
   ParseLastInOutParameter( tableId, dht_table_t );
-  CheckTableIsInitialized( tableId );
+  --CheckTableIsInitialized( tableId );
 end ParseLastTableParameter;
 
 ------------------------------------------------------------------------------
@@ -121,33 +123,33 @@ end ParseLastTableParameter;
 ------------------------------------------------------------------------------
 
 
-procedure ParseDHTNewTable is
-  -- Syntax: dynamic_hash_tables.new_table( t, ty );
-  -- Ada:    N/A
-  resId : resHandleId;
-  ref   : reference;
-  genKindId : identifier;
-begin
-  expect( dht_new_table_t );
-  ParseFirstOutParameter( ref, dht_table_t );
-  baseTypesOK( ref.kind, dht_table_t );
-  expect( symbol_t, "," );
-  ParseIdentifier( genKindId );
-  if class_ok( genKindId, typeClass, subClass ) then
-     if identifiers( genKindId ).list then
-        err( "element type should be a scalar type" );
-     elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-        err( "element type should be a scalar type" );
-     end if;
-  end if;
-  identifiers( ref.id ).genKind := genKindId;
-  expect( symbol_t, ")" );
-  if isExecutingCommand then
-     identifiers( ref.id ).resource := true;
-     declareResource( resId, dynamic_string_hash_table, getIdentifierBlock( ref.id ) );
-     AssignParameter( ref, to_unbounded_string( resId ) );
-  end if;
-end ParseDHTNewTable;
+--procedure ParseDHTNewTable is
+--  -- Syntax: dynamic_hash_tables.new_table( t, ty );
+--  -- Ada:    N/A
+--  resId : resHandleId;
+--  ref   : reference;
+--  genKindId : identifier;
+--begin
+--  expect( dht_new_table_t );
+--  ParseFirstOutParameter( ref, dht_table_t );
+--  baseTypesOK( ref.kind, dht_table_t );
+--  expect( symbol_t, "," );
+--  ParseIdentifier( genKindId );
+--  if class_ok( genKindId, typeClass, subClass ) then
+--     if identifiers( genKindId ).list then
+--        err( "element type should be a scalar type" );
+--     elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+--        err( "element type should be a scalar type" );
+--     end if;
+--  end if;
+--  identifiers( ref.id ).genKind := genKindId;
+--  expect( symbol_t, ")" );
+--  if isExecutingCommand then
+--     identifiers( ref.id ).resource := true;
+--     declareResource( resId, dynamic_string_hash_table, getIdentifierBlock( ref.id ) );
+--     AssignParameter( ref, to_unbounded_string( resId ) );
+--  end if;
+--end ParseDHTNewTable;
 
 procedure ParseDHTReset is
   -- Syntax: dynamic_hash_tables.reset( t );
@@ -551,7 +553,7 @@ begin
   declareNamespace( "dynamic_hash_tables" );
   declareIdent( dht_table_t,   "dynamic_hash_tables.table", positive_t, typeClass );
 
-  declareProcedure( dht_new_table_t, "dynamic_hash_tables.new_table", ParseDHTNewTable'access );
+  --declareProcedure( dht_new_table_t, "dynamic_hash_tables.new_table", ParseDHTNewTable'access );
   declareProcedure( dht_set_t, "dynamic_hash_tables.set", ParseDHTSet'access );
   declareProcedure( dht_reset_t, "dynamic_hash_tables.reset", ParseDHTReset'access );
   declareFunction(  dht_get_t, "dynamic_hash_tables.get", ParseDHTGet'access );
