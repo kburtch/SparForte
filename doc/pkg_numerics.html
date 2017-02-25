@@ -66,9 +66,11 @@ numeric values.</p>
   <a href="#numerics.pos">p := pos( c )</a>               <a href="#numerics.random">f := random</a>                  <a href="#numerics.remainder">f := remainder( x, y )</a>
   <a href="#numerics.rnd">r := rnd( p )</a>               <a href="#numerics.rotate_left">i := rotate_left( e, b )</a>     <a href="#numerics.rotate_right">i := rotate_right( e, b )</a>
   <a href="#numerics.rounding">f := rounding( e )</a>          <a href="#numerics.scaling">f := scaling( x, y )</a>         <a href="#numerics.sdbm_hash_of">f := sdbm_hash_of( s, l )</a>
-  <a href="#numerics.serial">f := serial</a>                 <a href="#numerics.shift_left">i := shift_left( e, b )</a>      <a href="#numerics.shift_right">i := shift_right( e, b )</a>
-  <a href="#numerics.shift_right_arithmetic">i := shift_right_arithmetic( x, b )</a> <a href="#numerics.sqrt">f := sqrt( e )</a>       <a href="#numerics.sturges">f := sturges( l, h, t )</a>
-  <a href="#numerics.truncation">f := truncation( e )</a>        <a href="#numerics.unbiased_rounding">f := unbiased_rounding( e )</a>  <a href="#numerics.value">f := value( s )</a>
+  <a href="#numerics.serial">f := serial</a>                 <a href="#numerics.sha1_digest_of">d := sha1_digest_of( s )</a>     <a href="#numerics.sha224_digest_of">d := sha224_digest_of( s )</a>
+  <a href="#numerics.sha256_digest_of">d := sha256_digest_of( s )</a>  <a href="#numerics.sha512_digest_of">d := sha512_digest_of( s )</a>   <a href="#numerics.shift_left">i := shift_left( e, b )</a>
+  <a href="#numerics.shift_right">i := shift_right( e, b )</a> <a href="#numerics.shift_right_arithmetic">i := shift_right_arithmetic( x, b )</a>
+  <a href="#numerics.sqrt">f := sqrt( e )</a>              <a href="#numerics.sturges">f := sturges( l, h, t )</a>      <a href="#numerics.truncation">f := truncation( e )</a>
+  <a href="#numerics.unbiased_rounding">f := unbiased_rounding( e )</a> <a href="#numerics.value">f := value( s )</a>
 
 <b>Trig</b>
 
@@ -2068,6 +2070,195 @@ will round to 7.</p></td>
 <td><p>-</p></td>
 </tr>
 </table>
+
+<a name="numerics.sha1_digest_of"></a><h3>d := numerics.sha1_digest_of( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the NSA Secure Hash Algorithm SHA-1 digest (hash value) of string s.  It is 40 characters long.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">? numerics.sha1_digest_of( "abc" );<br>
+-- outputs a9993e364706816aba3e25717850c26c9cd0d89d</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string to create the digest for</span></td>
+</tr><tr>
+<td><span>d</span></td>
+<td><span>return value</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the digest</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#numerics.md5">numerics.md5</a><br></p>
+<p><a href="#numerics.sha224_digest_of">numerics.sha224_digest_of</a></p>
+<p><a href="#numerics.sha256_digest_of">numerics.sha256_digest_of</a></p>
+<p><a href="#numerics.sha512_digest_of">numerics.sha512_digest_of</a></p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.SHA1.Digest<br>PHP: sha1/hash</p></td>
+</tr>
+</table>
+
+<a name="numerics.sha224_digest_of"></a><h3>d := numerics.sha224_digest_of( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the NSA Secure Hash Algorithm SHA-2 224 digest (hash value) of string s.  It is 56 characters long.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">? numerics.sha224_digest_of( "abc" );<br>
+-- outputs 23097d223405d8228642a477bda255b32aadbce4bda0b3f7e36c9da7</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string to create the digest for</span></td>
+</tr><tr>
+<td><span>d</span></td>
+<td><span>return value</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the digest</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#numerics.md5">numerics.md5</a><br></p>
+<p><a href="#numerics.sha1_digest_of">numerics.sha1_digest_of</a></p>
+<p><a href="#numerics.sha256_digest_of">numerics.sha256_digest_of</a></p>
+<p><a href="#numerics.sha512_digest_of">numerics.sha512_digest_of</a></p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.SHA224.Digest<br>PHP: sha1</p></td>
+</tr>
+</table>
+
+<a name="numerics.sha256_digest_of"></a><h3>d := numerics.sha256_digest_of( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the NSA Secure Hash Algorithm SHA-2 256 digest (hash value) of string s.  It is 64 characters long.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">? numerics.sha256_digest_of( "abc" );<br>
+-- outputs ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string to create the digest for</span></td>
+</tr><tr>
+<td><span>d</span></td>
+<td><span>return value</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the digest</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#numerics.md5">numerics.md5</a><br></p>
+<p><a href="#numerics.sha1_digest_of">numerics.sha1_digest_of</a></p>
+<p><a href="#numerics.sha224_digest_of">numerics.sha224_digest_of</a></p>
+<p><a href="#numerics.sha512_digest_of">numerics.sha512_digest_of</a></p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.SHA256.Digest<br>PHP: hash</p></td>
+</tr>
+</table>
+
+<a name="numerics.sha512_digest_of"></a><h3>d := numerics.sha512_digest_of( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the NSA Secure Hash Algorithm SHA-2 512 digest (hash value) of string s.  It is 128 characters long.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">? numerics.sha512_digest_of( "abc" );<br>
+-- outputs ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a<br>2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f</span></p>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string to create the digest for</span></td>
+</tr><tr>
+<td><span>d</span></td>
+<td><span>return value</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the digest</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p><span class="code">-</span></p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#numerics.md5">numerics.md5</a><br></p>
+<p><a href="#numerics.sha1_digest_of">numerics.sha1_digest_of</a></p>
+<p><a href="#numerics.sha224_digest_of">numerics.sha224_digest_of</a></p>
+<p><a href="#numerics.sha256_digest_of">numerics.sha256_digest_of</a></p>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.SHA512.Digest<br>PHP: hash</p></td>
+</tr>
+</table>
+
 
 <a name="numerics.shift_left"></a><h3>i := numerics.shift_left( e, b )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">

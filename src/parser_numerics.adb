@@ -29,6 +29,10 @@ with ada.numerics.long_elementary_functions,
     ada.numerics.long_complex_elementary_functions,
     ada.strings.unbounded,
     interfaces,
+    gnat.sha1,
+    gnat.sha224,
+    gnat.sha256,
+    gnat.sha512,
     world,
     scanner,
     parser_aux,
@@ -129,6 +133,12 @@ hash_of_t         : identifier;
 sdbm_hash_of_t    : identifier;
 fnv_hash_of_t     : identifier;
 murmur_hash_of_t  : identifier;
+sha1_digest_of_t   : identifier;
+sha224_digest_of_t : identifier;
+sha256_digest_of_t : identifier;
+sha512_digest_of_t : identifier;
+
+
 
 -----------------------------------------------------------------------------
 
@@ -1632,6 +1642,62 @@ begin
   end;
 end ParseNumericsMurmurHashOf;
 
+procedure ParseNumericsSHA1DigestOf( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: numerics.sha1_digest_of( s );
+  -- Source: GNAT.SHA1.Digest
+  src_val  : unbounded_string;
+  src_type : identifier;
+begin
+  expect( sha1_digest_of_t );
+  ParseSingleStringParameter( src_val, src_type );
+  kind := src_type;
+  if isExecutingCommand then
+     result := to_unbounded_string( Gnat.SHA1.Digest( to_string( src_val ) ) );
+  end if;
+end ParseNumericsSHA1DigestOf;
+
+procedure ParseNumericsSHA224DigestOf( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: numerics.sha224_digest_of( s );
+  -- Source: GNAT.SHA224.Digest
+  src_val  : unbounded_string;
+  src_type : identifier;
+begin
+  expect( sha224_digest_of_t );
+  ParseSingleStringParameter( src_val, src_type );
+  kind := src_type;
+  if isExecutingCommand then
+     result := to_unbounded_string( Gnat.SHA224.Digest( to_string( src_val ) ) );
+  end if;
+end ParseNumericsSHA224DigestOf;
+
+procedure ParseNumericsSHA256DigestOf( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: numerics.sha256_digest_of( s );
+  -- Source: GNAT.SHA256.Digest
+  src_val  : unbounded_string;
+  src_type : identifier;
+begin
+  expect( sha256_digest_of_t );
+  ParseSingleStringParameter( src_val, src_type );
+  kind := src_type;
+  if isExecutingCommand then
+     result := to_unbounded_string( Gnat.SHA256.Digest( to_string( src_val ) ) );
+  end if;
+end ParseNumericsSHA256DigestOf;
+
+procedure ParseNumericsSHA512DigestOf( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: numerics.sha512_digest_of( s );
+  -- Source: GNAT.SHA512.Digest
+  src_val  : unbounded_string;
+  src_type : identifier;
+begin
+  expect( sha512_digest_of_t );
+  ParseSingleStringParameter( src_val, src_type );
+  kind := src_type;
+  if isExecutingCommand then
+     result := to_unbounded_string( Gnat.SHA512.Digest( to_string( src_val ) ) );
+  end if;
+end ParseNumericsSHA512DigestOf;
+
 procedure StartupNumerics is
 begin
 
@@ -1696,6 +1762,10 @@ begin
   declareFunction( sdbm_hash_of_t, "numerics.sdbm_hash_of", ParseNumericsSdbmHashOf'access );
   declareFunction( fnv_hash_of_t, "numerics.fnv_hash_of", ParseNumericsFnvHashOf'access );
   declareFunction( murmur_hash_of_t, "numerics.murmur_hash_of", ParseNumericsMurmurHashOf'access );
+  declareFunction( sha1_digest_of_t,  "numerics.sha1_digest_of", ParseNumericsSHA1DigestOf'access );
+  declareFunction( sha224_digest_of_t,  "numerics.sha224_digest_of", ParseNumericsSHA224DigestOf'access );
+  declareFunction( sha256_digest_of_t,  "numerics.sha256_digest_of", ParseNumericsSHA256DigestOf'access );
+  declareFunction( sha512_digest_of_t,  "numerics.sha512_digest_of", ParseNumericsSHA512DigestOf'access );
 
   -- Numerics package constants
   -- There's are derived from the GNU standard C library math constants

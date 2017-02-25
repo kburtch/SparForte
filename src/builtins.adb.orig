@@ -1719,9 +1719,11 @@ begin
      Put_line( "  p := pos( c )               f := random                  f := remainder( x, y )" );
      Put_line( "  r := rnd( p )               i := rotate_left( e, b )     i := rotate_right( e, b )" );
      Put_line( "  f := rounding( e )          f := scaling( x, y )         f := sdbm_hash_of( s, l )" );
-     Put_line( "  f := serial                 i := shift_left( e, b )      i := shift_right( e, b )" );
-     Put_line( "  i := shift_right_arithmetic( x, b ) f := sqrt( e )       f := sturges( l, h, t )" );
-     Put_line( "  f := truncation( e )        f := unbiased_rounding( e )  f := value( s )" );
+     Put_Line( "  f := serial                 d := sha1_digest_of( s )     d := sha224_digest_of( s )" );
+     Put_Line( "  d := sha256_digest_of( s )  d := sha512_digest_of( s )   i := shift_left( e, b )" );
+     Put_Line( "  i := shift_right( e, b ) i := shift_right_arithmetic( x, b )" );
+     Put_Line( "  f := sqrt( e )              f := sturges( l, h, t )      f := truncation( e )" );
+     Put_Line( "  f := unbiased_rounding( e ) f := value( s )" );
      New_Line;
      Put_line( "Trig" );
      New_Line;
