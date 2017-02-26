@@ -1375,8 +1375,8 @@ procedure StartupDoubly is
 begin
   declareNamespace( "doubly_linked_lists" );
 
-  declareIdent( doubly_list_t,   "doubly_linked_lists.list", positive_t, typeClass );
-  declareIdent( doubly_cursor_t, "doubly_linked_lists.cursor", positive_t, typeClass );
+  declareIdent( doubly_list_t,   "doubly_linked_lists.list", positive_t, genericTypeClass );
+  declareIdent( doubly_cursor_t, "doubly_linked_lists.cursor", positive_t, genericTypeClass );
 
   --declareProcedure( doubly_new_list_t,  "doubly_linked_lists.new_list", ParseDoublyNewList'access );
   declareProcedure( doubly_clear_t,     "doubly_linked_lists.clear",    ParseDoublyClear'access );

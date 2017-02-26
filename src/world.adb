@@ -1720,6 +1720,7 @@ begin
   when enumClass        => return "enumerated item";
   when policyClass      => return "policy block";
   when configurationClass => return "configuration block";
+  when genericTypeClass => return "generic type";
   when otherClass       => return "other class";
   end case;
 end getIdentifierClassImage;

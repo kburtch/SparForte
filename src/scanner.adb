@@ -367,6 +367,8 @@ begin
         put( "policy block " );
      when configurationClass =>
         put( "configuration block " );
+     when genericTypeClass =>
+        put( "generic type of " );
      when others =>
         put( "identifier of the type " );
      end case;
@@ -1521,7 +1523,9 @@ begin
          else
         -- in design mode, only check types
            if designOpt then
-              if identifiers( i ).class = typeClass and identifiers( i ).class = subClass then
+              if identifiers( i ).class = typeClass or
+                 identifiers( i ).class = subClass or
+                 identifiers( i ).class = genericTypeClass then
                  err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
                end if;
         -- when testing or maintenance, check all identifiers, even
@@ -1830,8 +1834,8 @@ end dumpSymbolTable;
 -----------------------------------------------------------------------------
 -- SHUTDOWN SCANNER
 --
--- Shutdown the scanner.  Run shutdown for the various BUSH packages.  Clear
--- the symbol table and block (scope) table.
+-- Shutdown the scanner.  Run shutdown for the various SparForte packages.
+-- Clear the symbol table and block (scope) table.
 -----------------------------------------------------------------------------
 
 procedure shutdownScanner is
@@ -2531,7 +2535,7 @@ begin
   importEnvironment;
 
   -- Declare any standard shell variables that are not
-  -- yet declared.  PATH, PWD, OLDPWD, HOME are necessary for BUSH
+  -- yet declared.  PATH, PWD, OLDPWD, HOME are necessary for SparForte
   -- to function: if they weren't imported, declare them locally.
 
   findIdent( to_unbounded_string( "PATH" ), temp_id );        -- PATH
@@ -2629,7 +2633,7 @@ end resetScanner;
 -- START SCANNER
 --
 -- Set up symbol table, declaring all keywords, constants, and environment
--- variables.  This should be executed once when BUSH is started, or to
+-- variables.  This should be executed once when SparForte is started, or to
 -- restart the scanner after it has been shut down.  Run resetScanner.
 -----------------------------------------------------------------------------
 
@@ -2824,7 +2828,7 @@ begin
   -- will be the universal type the type is derived from.
   -- If there are more than 100 dereferences, assume this
   -- is a circular relationship (this should only occur in
-  -- an internal error in BUSH).
+  -- an internal error in SparForte).
 
   temp_id := original;
   while identifiers( temp_id ).kind /= variable_t loop
@@ -2876,7 +2880,7 @@ begin
   -- until a non-subtype (that is, the base type) is found.
   -- If there are more than 100 dereferences, assume this
   -- is a circular relationship (this should only occur in
-  -- an internal error in BUSH).
+  -- an internal error in SparForte).
 
   temp_id := original;
   while identifiers( temp_id ).class = subClass loop
@@ -3010,9 +3014,9 @@ begin
 
   if leftType = exception_t or rightType = exception_t then
      null;
-  elsif not class_ok( leftType, typeClass, subClass ) then
+  elsif not class_ok( leftType, typeClass, subClass, genericTypeClass ) then
      return false;
-  elsif not class_ok( rightType, typeClass, subClass ) then
+  elsif not class_ok( rightType, typeClass, subClass, genericTypeClass ) then
      return false;
   elsif leftType = variable_t or rightType = variable_t then
      return true;
@@ -5177,13 +5181,13 @@ end restoreScript;
 ------------------------------------------------------
 -- "BYTE CODE" GENERATION
 --
--- BUSH only runs compressed scripts.  The compression
+-- SparForte only runs compressed scripts.  The compression
 -- process checks for certain syntax errors and makes
 -- the following changes:
 --
 -- * EOL characters are replaced by ASCII nul's.
 -- * leading indentation is a single byte at the start
---   of a line, allowing BUSH to ignore indentation
+--   of a line, allowing SparForte to ignore indentation
 --   unless the line is being printed to the screen.
 --   The actual value is +1 (so that 1 is no
 --   indentation, 2 is one space, ...) so that the

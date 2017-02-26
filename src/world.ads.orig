@@ -272,7 +272,7 @@ libraryPath : Unbounded_String;
 type anIdentifierClass is ( constClass, subClass, typeClass, funcClass,
   userFuncClass, procClass, userProcClass, taskClass, mainProgramClass,
   exceptionClass, varClass, namespaceClass, enumClass, policyClass,
-  configurationClass, otherClass );
+  configurationClass, genericTypeClass, otherClass );
 
 function getIdentifierClassImage( c : anIdentifierClass ) return string;
 

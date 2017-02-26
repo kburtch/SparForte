@@ -551,7 +551,7 @@ end ParseDHTDecrement;
 procedure StartupDHT is
 begin
   declareNamespace( "dynamic_hash_tables" );
-  declareIdent( dht_table_t,   "dynamic_hash_tables.table", positive_t, typeClass );
+  declareIdent( dht_table_t,   "dynamic_hash_tables.table", positive_t, genericTypeClass );
 
   --declareProcedure( dht_new_table_t, "dynamic_hash_tables.new_table", ParseDHTNewTable'access );
   declareProcedure( dht_set_t, "dynamic_hash_tables.set", ParseDHTSet'access );

@@ -2973,40 +2973,34 @@ env js;
 -- Basic Assign (GCC Ada 4.7/8+)
 
 declare
-  l1 : doubly_linked_lists.list;
-  l2 : doubly_linked_lists.list;
+  l1 : doubly_linked_lists.list( integer );
+  l2 : doubly_linked_lists.list( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
-  doubly_linked_lists.new_list( l2, integer );
   doubly_linked_lists.assign( l1, l2 );
 end;
 
 -- Basic Append
 
 declare
-  l1 : doubly_linked_lists.list;
+  l1 : doubly_linked_lists.list( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
 end;
 
 -- Basic Move
 
 declare
-  l1 : doubly_linked_lists.list;
-  l2 : doubly_linked_lists.list;
+  l1 : doubly_linked_lists.list( integer );
+  l2 : doubly_linked_lists.list( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
-  doubly_linked_lists.new_list( l2, integer );
   doubly_linked_lists.move( l1, l2 );
 end;
 
 -- Basic Is_Empty
 
 declare
-  l1 : doubly_linked_lists.list;
+  l1 : doubly_linked_lists.list( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   pragma assert( doubly_linked_lists.is_empty( l1 ) );
   doubly_linked_lists.append( l1, 1234 );
   pragma assert( not doubly_linked_lists.is_empty( l1 ) );
@@ -3015,9 +3009,8 @@ end;
 -- Clear
 
 declare
-  l1 : doubly_linked_lists.list;
+  l1 : doubly_linked_lists.list( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
   doubly_linked_lists.clear( l1 );
   pragma assert( doubly_linked_lists.is_empty( l1 ) );
@@ -3026,10 +3019,9 @@ end;
 -- Basic Length
 
 declare
-  l1 : doubly_linked_lists.list;
+  l1 : doubly_linked_lists.list( integer );
   c : containers.count_type;
 begin
-  doubly_linked_lists.new_list( l1, integer );
   c := doubly_linked_lists.length( l1 );
   pragma assert( c = 0 );
   doubly_linked_lists.append( l1, 1234 );
@@ -3040,9 +3032,8 @@ end;
 -- First_Element
 
 declare
-  l1 : doubly_linked_lists.list;
+  l1 : doubly_linked_lists.list( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
   doubly_linked_lists.append( l1, 2345 );
   pragma assert( doubly_linked_lists.first_element( l1 ) = 1234 );
@@ -3051,9 +3042,8 @@ end;
 -- Last_Element
 
 declare
-  l1 : doubly_linked_lists.list;
+  l1 : doubly_linked_lists.list( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
   doubly_linked_lists.append( l1, 2345 );
   pragma assert( doubly_linked_lists.last_element( l1 ) = 2345 );
@@ -3062,9 +3052,8 @@ end;
 -- Delete_First
 
 declare
-  l1 : doubly_linked_lists.list;
+  l1 : doubly_linked_lists.list( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
   doubly_linked_lists.append( l1, 2345 );
   doubly_linked_lists.delete_first( l1 );
@@ -3078,13 +3067,11 @@ end;
 -- First / Element
 
 declare
-  l1 : doubly_linked_lists.list;
-  c1 : doubly_linked_lists.cursor;
+  l1 : doubly_linked_lists.list( integer );
+  c1 : doubly_linked_lists.cursor( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
   doubly_linked_lists.append( l1, 2345 );
-  doubly_linked_lists.new_cursor( c1, integer );
   doubly_linked_lists.first( l1, c1 );
   pragma assert( doubly_linked_lists.element( c1 ) = 1234 );
 end;
@@ -3092,13 +3079,11 @@ end;
 -- Last
 
 declare
-  l1 : doubly_linked_lists.list;
-  c1 : doubly_linked_lists.cursor;
+  l1 : doubly_linked_lists.list( integer );
+  c1 : doubly_linked_lists.cursor( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
   doubly_linked_lists.append( l1, 2345 );
-  doubly_linked_lists.new_cursor( c1, integer );
   doubly_linked_lists.last( l1, c1 );
   pragma assert( doubly_linked_lists.element( c1 ) = 2345 );
 end;
@@ -3106,13 +3091,11 @@ end;
 -- Next / Previous
 
 declare
-  l1 : doubly_linked_lists.list;
-  c1 : doubly_linked_lists.cursor;
+  l1 : doubly_linked_lists.list( integer );
+  c1 : doubly_linked_lists.cursor( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
   doubly_linked_lists.append( l1, 2345 );
-  doubly_linked_lists.new_cursor( c1, integer );
   doubly_linked_lists.last( l1, c1 );
   doubly_linked_lists.previous( c1 );
   pragma assert( doubly_linked_lists.element( c1 ) = 1234 );
@@ -3124,13 +3107,11 @@ end;
 -- Replace_Element
 
 declare
-  l1 : doubly_linked_lists.list;
-  c1 : doubly_linked_lists.cursor;
+  l1 : doubly_linked_lists.list( integer );
+  c1 : doubly_linked_lists.cursor( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
   doubly_linked_lists.append( l1, 2345 );
-  doubly_linked_lists.new_cursor( c1, integer );
   doubly_linked_lists.last( l1, c1 );
   doubly_linked_lists.replace_element( l1, c1, 3456 );
   doubly_linked_lists.last( l1, c1 );
@@ -3140,13 +3121,11 @@ end;
 -- Delete / Multi-append
 
 declare
-  l1 : doubly_linked_lists.list;
-  c1 : doubly_linked_lists.cursor;
+  l1 : doubly_linked_lists.list( integer );
+  c1 : doubly_linked_lists.cursor( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234, 4 );
   pragma assert( doubly_linked_lists.length( l1 ) = 4 );
-  doubly_linked_lists.new_cursor( c1, integer );
   doubly_linked_lists.first( l1, c1 );
   doubly_linked_lists.delete( l1, c1 );
   pragma assert( doubly_linked_lists.length( l1 ) = 3 );
@@ -3159,16 +3138,14 @@ end;
 -- Contains / Find / Hash_Element
 
 declare
-  l1 : doubly_linked_lists.list;
-  c1 : doubly_linked_lists.cursor;
+  l1 : doubly_linked_lists.list( integer );
+  c1 : doubly_linked_lists.cursor( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
   doubly_linked_lists.append( l1, 2345 );
   doubly_linked_lists.append( l1, 3456 );
   pragma assert( doubly_linked_lists.contains( l1, 1234 ) );
   pragma assert( not doubly_linked_lists.contains( l1, 7890 ) );
-  doubly_linked_lists.new_cursor( c1, integer );
   doubly_linked_lists.find( l1, 2345, c1 );
   pragma assert( doubly_linked_lists.has_element( c1 ) );
   doubly_linked_lists.find( l1, 7890, c1 );
@@ -3182,15 +3159,13 @@ end;
 -- Reverse_Elements / Flip
 
 declare
-  l1 : doubly_linked_lists.list;
-  c1 : doubly_linked_lists.cursor;
+  l1 : doubly_linked_lists.list( integer );
+  c1 : doubly_linked_lists.cursor( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
   doubly_linked_lists.append( l1, 2345 );
   doubly_linked_lists.append( l1, 3456 );
   doubly_linked_lists.reverse_elements( l1 );
-  doubly_linked_lists.new_cursor( c1, integer );
   doubly_linked_lists.first( l1, c1 );
   pragma assert( doubly_linked_lists.element( c1 ) = 3456 );
   doubly_linked_lists.flip( l1 );
@@ -3201,17 +3176,14 @@ end;
 -- Swap
 
 declare
-  l1 : doubly_linked_lists.list;
-  c1 : doubly_linked_lists.cursor;
-  c2 : doubly_linked_lists.cursor;
+  l1 : doubly_linked_lists.list( integer );
+  c1 : doubly_linked_lists.cursor( integer );
+  c2 : doubly_linked_lists.cursor( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
   doubly_linked_lists.append( l1, 2345 );
   doubly_linked_lists.append( l1, 3456 );
-  doubly_linked_lists.new_cursor( c1, integer );
   doubly_linked_lists.first( l1, c1 );
-  doubly_linked_lists.new_cursor( c2, integer );
   doubly_linked_lists.last( l1, c2 );
   doubly_linked_lists.swap( l1, c1, c2 );
   pragma assert( doubly_linked_lists.element( c1 ) = 3456 );
@@ -3226,14 +3198,12 @@ end;
 -- Insert_Before
 
 declare
-  l1 : doubly_linked_lists.list;
-  c1 : doubly_linked_lists.cursor;
+  l1 : doubly_linked_lists.list( integer );
+  c1 : doubly_linked_lists.cursor( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
   doubly_linked_lists.append( l1, 2345 );
   doubly_linked_lists.append( l1, 3456 );
-  doubly_linked_lists.new_cursor( c1, integer );
 
   -- Variation 1
 
@@ -3259,15 +3229,13 @@ end;
 -- Insert_Before_And_Mark (Version 3)
 
 declare
-  l1 : doubly_linked_lists.list;
-  c1 : doubly_linked_lists.cursor;
-  c2 : doubly_linked_lists.cursor;
+  l1 : doubly_linked_lists.list( integer );
+  c1 : doubly_linked_lists.cursor( integer );
+  c2 : doubly_linked_lists.cursor( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
   doubly_linked_lists.append( l1, 2345 );
   doubly_linked_lists.append( l1, 3456 );
-  doubly_linked_lists.new_cursor( c1, integer );
 
   doubly_linked_lists.first( l1, c1 );
   doubly_linked_lists.insert_before_and_mark( l1, c1, 4567, c2 );
@@ -3282,15 +3250,13 @@ end;
 -- Insert_Before_And_Mark (Version 4)
 
 declare
-  l1 : doubly_linked_lists.list;
-  c1 : doubly_linked_lists.cursor;
-  c2 : doubly_linked_lists.cursor;
+  l1 : doubly_linked_lists.list( integer );
+  c1 : doubly_linked_lists.cursor( integer );
+  c2 : doubly_linked_lists.cursor( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
   doubly_linked_lists.append( l1, 2345 );
   doubly_linked_lists.append( l1, 3456 );
-  doubly_linked_lists.new_cursor( c1, integer );
 
   doubly_linked_lists.first( l1, c1 );
   doubly_linked_lists.insert_before_and_mark( l1, c1, 4567, c2, 2 );
@@ -3307,15 +3273,13 @@ end;
 -- Insert_Before_And_Mark (Version 5)
 
 declare
-  l1 : doubly_linked_lists.list;
-  c1 : doubly_linked_lists.cursor;
-  c2 : doubly_linked_lists.cursor;
+  l1 : doubly_linked_lists.list( integer );
+  c1 : doubly_linked_lists.cursor( integer );
+  c2 : doubly_linked_lists.cursor( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
   doubly_linked_lists.append( l1, 2345 );
   doubly_linked_lists.append( l1, 3456 );
-  doubly_linked_lists.new_cursor( c1, integer );
 
   doubly_linked_lists.first( l1, c1 );
   doubly_linked_lists.insert_before_and_mark( l1, c1, c2 );
@@ -3330,15 +3294,13 @@ end;
 -- Insert_Before_And_Mark (Version 6)
 
 declare
-  l1 : doubly_linked_lists.list;
-  c1 : doubly_linked_lists.cursor;
-  c2 : doubly_linked_lists.cursor;
+  l1 : doubly_linked_lists.list( integer );
+  c1 : doubly_linked_lists.cursor( integer );
+  c2 : doubly_linked_lists.cursor( integer );
 begin
-  doubly_linked_lists.new_list( l1, integer );
   doubly_linked_lists.append( l1, 1234 );
   doubly_linked_lists.append( l1, 2345 );
   doubly_linked_lists.append( l1, 3456 );
-  doubly_linked_lists.new_cursor( c1, integer );
 
   doubly_linked_lists.first( l1, c1 );
   doubly_linked_lists.insert_before_and_mark( l1, c1, c2, 1+1 );
@@ -3357,17 +3319,13 @@ end;
 -- Splice Variation 1: copying one list to another
 
 declare
-  l1 : doubly_linked_lists.list;
-  l2 : doubly_linked_lists.list;
-  c1 : doubly_linked_lists.cursor;
+  l1 : doubly_linked_lists.list( string );
+  l2 : doubly_linked_lists.list( string );
+  c1 : doubly_linked_lists.cursor( string );
 begin
-  doubly_linked_lists.new_list( l1, string );
   doubly_linked_lists.append( l1, "apple" ) @ ( l1, "banana" ) @ ( l1, "cherry" );
-
-  doubly_linked_lists.new_list( l2, string );
   doubly_linked_lists.append( l2, "donut" ) @ ( l2, "eclair" ) @ (l2, "gelato" );
 
-  doubly_linked_lists.new_cursor( c1, string );
   doubly_linked_lists.first( l1, c1 );
   doubly_linked_lists.next( c1 );
 
@@ -3391,18 +3349,14 @@ end;
 -- Splice Variation 2: copying one element from one list to another
 
 declare
-  l1 : doubly_linked_lists.list;
-  l2 : doubly_linked_lists.list;
-  c1 : doubly_linked_lists.cursor;
-  c2 : doubly_linked_lists.cursor;
+  l1 : doubly_linked_lists.list( string );
+  l2 : doubly_linked_lists.list( string );
+  c1 : doubly_linked_lists.cursor( string );
+  c2 : doubly_linked_lists.cursor( string );
 begin
-  doubly_linked_lists.new_list( l1, string );
   doubly_linked_lists.append( l1, "apple" ) @ ( l1, "banana" ) @ ( l1, "cherry" );
-
-  doubly_linked_lists.new_list( l2, string );
   doubly_linked_lists.append( l2, "donut" ) @ ( l2, "eclair" ) @ (l2, "gelato" );
 
-  doubly_linked_lists.new_cursor( c1, string ) @ ( c2, string );
   doubly_linked_lists.last( l1, c1 );
   doubly_linked_lists.first( l2, c2 );
   doubly_linked_lists.next( c2 );
@@ -3423,14 +3377,12 @@ end;
 -- Splice Variation 3: a single list
 
 declare
-  l1 : doubly_linked_lists.list;
-  c1 : doubly_linked_lists.cursor;
-  c2 : doubly_linked_lists.cursor;
+  l1 : doubly_linked_lists.list( string );
+  c1 : doubly_linked_lists.cursor( string );
+  c2 : doubly_linked_lists.cursor( string );
 begin
-  doubly_linked_lists.new_list( l1, string );
   doubly_linked_lists.append( l1, "apple" ) @ ( l1, "banana" ) @ ( l1, "cherry" );
 
-  doubly_linked_lists.new_cursor( c1, string ) @ ( c2, string );
   doubly_linked_lists.first( l1, c1 );
   doubly_linked_lists.last( l1, c2 );
 
@@ -3448,15 +3400,14 @@ end;
 -- dynamic hash tables
 
 declare
-  t   : dynamic_hash_tables.table;
-  t2  : dynamic_hash_tables.table;
+  t   : dynamic_hash_tables.table( string );
+  t2  : dynamic_hash_tables.table( integer );
   s   : string;
   eof : boolean;
 begin
 
   -- dynamic hash gets /sets
 
-  dynamic_hash_tables.new_table( t, string );
   dynamic_hash_tables.set( t, "foo", "bar" );
   dynamic_hash_tables.reset( t );
   dynamic_hash_tables.set( t, "foo", "bar" );
@@ -3485,8 +3436,6 @@ begin
   pragma assert( dynamic_hash_tables.get( t, "foo4" ) = "" );
 
   -- dynamic hash increment / decrement
-
-  dynamic_hash_tables.new_table( t2, integer );
 
   dynamic_hash_tables.set( t2, "counter", 0 );
   dynamic_hash_tables.increment( t2, "counter" );
@@ -3520,9 +3469,8 @@ end;
 
 declare
   s : string;
-  sl : doubly_linked_lists.list;
+  sl : doubly_linked_lists.list( string );
 begin
-  doubly_linked_lists.new_list( sl, string );
   doubly_linked_lists.clear( sl );
   doubly_linked_lists.append( sl, "ABC" );
   doubly_linked_lists.append( sl, "DEF" );
@@ -3551,12 +3499,9 @@ end;
 
 declare
   s : string;
-  sl : doubly_linked_lists.list;
-  sc : doubly_linked_lists.cursor;
+  sl : doubly_linked_lists.list( string );
+  sc : doubly_linked_lists.cursor( string );
 begin
-  doubly_linked_lists.new_list( sl, string );
-  doubly_linked_lists.new_cursor( sc, string );
-
   s := "ABC" & ASCII.LF & "DEF" & ASCII.LF & "GHI";
   doubly_linked_lists.disassemble( s, sl, ASCII.LF, "GHI" );
   doubly_linked_lists.first( sl, sc );

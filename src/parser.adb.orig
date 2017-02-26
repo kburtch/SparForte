@@ -2484,6 +2484,9 @@ procedure ParseGenericParametersPart( varId : identifier ) is
 -- type which takes them.
   genKind : identifier;
 begin
+  if token /= symbol_t or identifiers( token ).svalue /= "(" then
+     err( "generic types must have element type parameters" );
+  end if;
   expect( symbol_t, "(" );
   ParseIdentifier( genKind );
   if class_ok( genKind, typeClass, subClass ) then
@@ -3204,7 +3207,7 @@ begin
   -- Verify that the type token is a type and check for types
   -- not allowed with certain pragmas.
 
-  if not class_ok( type_token, typeClass, subClass ) then
+  if not class_ok( type_token, typeClass, subClass, genericTypeClass ) then
      null;
   elsif onlyAda95 and (type_token = uni_string_t or type_token =
      uni_numeric_t or type_token = universal_t) then
@@ -3224,24 +3227,48 @@ begin
   -- It excludes assignment and renaming (only because renaming requires
   -- modification to check the generic parameters).
 
-  if token = symbol_t and identifiers( token ).svalue = "(" then
+  if identifiers( type_token ).class = genericTypeClass then
      ParseGenericParametersPart( id  );
      if isExecutingCommand then
         -- create and attach a resource to the variable
+        --
+        -- TODO: As a temporary situation, the generic type checks are hard-
+        -- coded here.  There is no field in an identifier to set the number
+        -- of expected parameters to a generic type.
+        --
+        -- TODO: I am permitting subtypes of generic types, but there's no
+        -- function currently in the scanner to track down type derived type of
+        -- generic type.  If I allowed new types from a generic type, the
+        -- hard-coded functionality will break.
         declare
-           -- TODO: this won't work for new types, only subtypes
            baseType  : identifier := getBaseType( type_token );
            resId     : resHandleId;
            genKindId : identifier;
         begin
            if baseType = doubly_list_t then
-              declareResource( resId, doubly_linked_string_list, getIdentifierBlock( id ) );
+              if identifiers( id ).genKind2 /= eof_t then
+                 err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+              else
+                 declareResource( resId, doubly_linked_string_list, getIdentifierBlock( id ) );
+              end if;
            elsif baseType = doubly_cursor_t then
-              declareResource( resId, doubly_linked_string_list_cursor, getIdentifierBlock( id ) );
+              if identifiers( id ).genKind2 /= eof_t then
+                 err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+              else
+                 declareResource( resId, doubly_linked_string_list_cursor, getIdentifierBlock( id ) );
+              end if;
            elsif baseType = btree_file_t then
-              declareResource( resId, btree_file, getIdentifierBlock( id ) );
+              if identifiers( id ).genKind2 /= eof_t then
+                 err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+              else
+                 declareResource( resId, btree_file, getIdentifierBlock( id ) );
+              end if;
            elsif baseType = btree_cursor_t then
-              declareResource( resId, btree_cursor, getIdentifierBlock( id ) );
+              if identifiers( id ).genKind2 /= eof_t then
+                 err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+              else
+                 declareResource( resId, btree_cursor, getIdentifierBlock( id ) );
+              end if;
            elsif baseType = dht_table_t then
               genKindId := identifiers( id ).genKind;
               if class_ok( genKindId, typeClass, subClass ) then
@@ -3264,7 +3291,8 @@ begin
         end;
      end if;
      identifiers( id ).kind := type_token;
-
+  elsif token = symbol_t and identifiers( token ).svalue = "(" then
+     err( optional_bold( to_string( identifiers( type_token ).name ) ) & " is not a generic type" );
 
   -- Renames clause
   -- if it appears, one can only rename...cannot assign.
