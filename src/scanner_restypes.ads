@@ -45,5 +45,8 @@ dht_table_t           : identifier;
 doubly_list_t         : identifier;
 doubly_cursor_t       : identifier;
 
+hash_file_t          : identifier;
+hash_cursor_t        : identifier;
+
 end scanner_restypes;
 

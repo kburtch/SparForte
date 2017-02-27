@@ -2521,8 +2521,8 @@ begin
 
   declareNamespace( "btree_io" );
 
-  declareIdent( btree_file_t,   "btree_io.file", positive_t, typeClass );
-  declareIdent( btree_cursor_t, "btree_io.cursor", positive_t, typeClass );
+  declareIdent( btree_file_t,   "btree_io.file", positive_t, genericTypeClass );
+  declareIdent( btree_cursor_t, "btree_io.cursor", positive_t, genericTypeClass );
 
   --declareProcedure( btree_new_file_t,  "btree_io.new_file", ParseBTreeNewFile'access );
   declareProcedure( btree_clear_t,     "btree_io.clear",    ParseBTreeClear'access );

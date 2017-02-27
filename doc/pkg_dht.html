@@ -57,9 +57,9 @@ to create and manage simple hash tables.</p>
 <a href="#dynamic_hash_tables.decrement">decrement( t, k [,n] )</a>          <a href="#dynamic_hash_tables.get">v := get( t, k )</a>
 <a href="#dynamic_hash_tables.get_first">get_first( t, v, f )</a>            <a href="#dynamic_hash_tables.get_next">get_next( t, v, f )</a>
 <a href="#dynamic_hash_tables.has_element">b := has_element( t, k )</a>        <a href="#dynamic_hash_tables.increment">increment( t, k [,n] )</a>
-<a href="#dynamic_hash_tables.new_table">new_table( t, y )</a>               <a href="#dynamic_hash_tables.prepend">prepend( t, k, v )</a>
-<a href="#dynamic_hash_tables.remove">remove( t, k )</a>                  <a href="#dynamic_hash_tables.replace">replace( t, k, v )</a>
-<a href="#dynamic_hash_tables.reset">reset( t )</a>                      <a href="#dynamic_hash_tables.set">set( t, k, v )</a>
+<a href="#dynamic_hash_tables.prepend">prepend( t, k, v )</a>              <a href="#dynamic_hash_tables.remove">remove( t, k )</a>
+<a href="#dynamic_hash_tables.replace">replace( t, k, v )</a>              <a href="#dynamic_hash_tables.reset">reset( t )</a>
+<a href="#dynamic_hash_tables.set">set( t, k, v )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -71,18 +71,17 @@ to create and manage simple hash tables.</p>
 <p>A hash table is a lookup table containing key-value pairs.  Keys are unique
 in the table.</p>
 
-<p>This package includes a new type:</p>
+<p>This package includes a new generic type:</p>
 
 <ul>
-<li><b>dynamic_hash_tables.table</b></li>
+<li><b>dynamic_hash_tables.table( <i>type</i> )</b></li>
 </ul>
 
         <center>
         <div class="code">
 <pre>
 <b>=&gt;</b> type url_string is new string
-<b>=&gt;</b> dynamic_hash_tables.new_table( urls, url_string )
-=&gt; (Assuming urls is a new dynamic_hash_tables.table variable)
+<b>=&gt;</b> urls : dynamic_hash_tables.new_table( url_string )
 <b>=&gt;</b> u : url_string
 <b>=&gt;</b> dynamic_hash_tables.get_first( urls, u, eof )
 =&gt; (Assuming eof is a new boolean variable)
@@ -550,7 +549,7 @@ An exception is raised if the value type is not numeric</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Initialize a new hash table, assigning the type for the values in the table.  The value type must be a scalar type, and it may be a universal type.</p>
+<td><p>(No longer available) Initialize a new hash table, assigning the type for the values in the table.  The value type must be a scalar type, and it may be a universal type.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.new_table( fruit, natural );</span></p></td>
 </tr><tr>
@@ -576,6 +575,9 @@ An exception is raised if the value type is not numeric</p></td>
 <td><span>the type of values</span></td>
 </tr>
 </table></td>
+</tr><tr>
+<td><p class="pkg_label">Removed</p></td>
+<td><p>This function was removed in SparForte 2.0.4 because of the new generic type feature.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
 <td><p>An exception is raised if out of memory</p></td>

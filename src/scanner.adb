@@ -368,7 +368,7 @@ begin
      when configurationClass =>
         put( "configuration block " );
      when genericTypeClass =>
-        put( "generic type of " );
+        put( "generic type using " );
      when others =>
         put( "identifier of the type " );
      end case;
@@ -396,6 +396,8 @@ begin
      elsif ident.class = namespaceClass then
         null;
      elsif ident.class = policyClass then
+        null;
+     elsif ident.class = genericTypeClass then
         null;
      else
         if kind.name = "an anonymous array" then
@@ -475,6 +477,20 @@ begin
               put( " unknown" );
            else
               put( kind.name );
+              -- If it's a generic type, show the instantiated types
+              declare
+                 baseType : identifier := getBaseType( ident.kind );
+              begin
+                 if identifiers( baseType ).class = genericTypeClass then
+                    put( "(" );
+                    put( to_string( identifiers( ident.genKind ).name ) );
+                    if ident.genKind2 /= eof_t then
+                       put( ", " );
+                       put( to_string( identifiers( ident.genKind2 ).name ) );
+                    end if;
+                    put( ")" );
+                 end if;
+              end;
            end if;
         end if;
         --if identifiers( ident.kind ).kind = root_enumerated_t then

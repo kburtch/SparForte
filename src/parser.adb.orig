@@ -3269,6 +3269,18 @@ begin
               else
                  declareResource( resId, btree_cursor, getIdentifierBlock( id ) );
               end if;
+           elsif baseType = hash_file_t then
+              if identifiers( id ).genKind2 /= eof_t then
+                 err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+              else
+                 declareResource( resId, hash_file, getIdentifierBlock( id ) );
+              end if;
+           elsif baseType = hash_cursor_t then
+              if identifiers( id ).genKind2 /= eof_t then
+                 err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+              else
+                 declareResource( resId, hash_cursor, getIdentifierBlock( id ) );
+              end if;
            elsif baseType = dht_table_t then
               genKindId := identifiers( id ).genKind;
               if class_ok( genKindId, typeClass, subClass ) then

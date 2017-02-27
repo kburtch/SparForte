@@ -58,18 +58,15 @@ to create and manage ordered data files.</p>
   <a href="#btree_io.clear">clear( f )</a>                       <a href="#btree_io.increment">increment( f, k [,n] )</a>
   <a href="#btree_io.close">close( f )</a>                       <a href="#btree_io.is_open">b := is_open( f )</a>
   <a href="#btree_io.close_cursor">close_cursor( f, c )</a>             <a href="#btree_io.last_error">e := last_error( f )</a>
-  <a href="#btree_io.create">create( f, p, kl, vl )</a>           <a href="#btree_io.new_cursor">new_cursor( c, t )</a>
-  <a href="#btree_io.decrement">decrement( f, k [,n] )</a>           <a href="#btree_io.new_file">new_file( f, t )</a>
+  <a href="#btree_io.create">create( f, p, kl, vl )</a>           <a href="#btree_io.open">open( f, p, kl, vl )</a>
+  <a href="#btree_io.decrement">decrement( f, k [,n] )</a>           <a href="#btree_io.open_cursor">open_cursor( f, c )</a>
   <a href="#btree_io.delete">delete( f )</a>                      <a href="#btree_io.prepend">prepend( f, k, v )</a>
   <a href="#btree_io.flush">flush( f )</a>                       <a href="#btree_io.raise_exceptions">raise_exceptions( f, b )</a>
   <a href="#btree_io.get">v := get( f, k )</a>                 <a href="#btree_io.remove">remove( f, k )</a>
   <a href="#btree_io.get_first">get_first( f, c, k, v )</a>          <a href="#btree_io.replace">replace( f, k, v )</a>
   <a href="#btree_io.get_last">get_last( f, c, k, v )</a>           <a href="#btree_io.set">set( f, k, v )</a>
   <a href="#btree_io.get_next">get_next( f, c, k, v )</a>           <a href="#btree_io.will_raise">b := will_raise( f )</a>
-
-
-  <a href="#btree_io.open">open( f, p, kl, vl )</a> <a href="#btree_io.open_cursor">open_cursor( f, c )</a>
-  <a href="#btree_io.truncate">truncate( f )</a></a>
+                                   <a href="#btree_io.truncate">truncate( f )</a></a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -90,11 +87,11 @@ reverse through the file.  File positions are designated by cursors.</p>
 file will also create several auxillary files in the same directory.
 The files in one directory will share the same Berkeley environment.</p>
 
-<p>This package includes three new types:</p>
+<p>This package includes two generic types:</p>
 
 <ul>
-<li><b>btree_io.file</b> - a B-tree file</li>
-<li><b>btree_io.cursor</b> - a B-tree cursor</li>
+<li><b>btree_io.file( <i>type</i> )</b> - a B-tree file</li>
+<li><b>btree_io.cursor( <i>type</i> )</b> - a B-tree file cursor</li>
 </ul>
 
 <p>bdb.db_error constants are also defined (e.g. bdb.DB_OK ), though
@@ -109,8 +106,7 @@ data type but this is not recommended.</p>
         <div class="code">
 <pre>
 <b>=&gt;</b> type clouds is (fog, cumulus, stratus, cirrus, cumulonimbus )
-<b>=&gt;</b> btree_io.new_file( f, clouds )
-<b>=&gt;</b> (Assuming f is a new btree_io.file variable)
+<b>=&gt;</b> f : btree_io.file( clouds )
 <b>=&gt;</b> btree_io.create( f, "clouds.btree", 80, 80 )
 <b>=&gt;</b> ? btree_io.is_open( f )
 true
@@ -119,8 +115,7 @@ clouds.btree
 <b>=&gt;</b> ls
 clouds.btree  __db.001	__db.002  __db.003  __db.004
 <b>=&gt;</b> btree_io.set( f, "Toronto", fog )
-<b>=&gt;</b> btree_io.set( f, "New York", cirrus )
-<b>=&gt;</b> btree_io.set( f, "Moscow", cumulonimbus )
+<b>=&gt;</b> btree_io.set( f, "New York", cirrus ) @ (f, "Moscow", cumulonimbus ) 
 <b>=&gt;</b> ? btree_io.has_element( f, "Tokyo" )
 false
 <b>=&gt;</b> btree_io.get( f, "New York", c )
@@ -129,10 +124,9 @@ false
 cirrus
 <b>=&gt;</b> btree_io.add( f, "New York", cumulus )
 <b>=&gt;</b> btree_io.get( f, "New York", c )
-<b>=&gt;</b> (Assuming c is a new clouds variable)
 <b>=&gt;</b> ? c
 cirrus
-<b>=&gt;</b> btree_io.close( f )
+<b>=&gt;</b> btree_io.close ( f )
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -151,9 +145,8 @@ cirrus
 
 person : person_type;
 
-f : btree_io.file;
+f : btree_io.file( person_type );
 
-btree_io.new_file( f, person_type );
 btree_io.create( f, "person.btree", 80, 80 );
 
 person.first_name := "John";
@@ -169,10 +162,9 @@ person.age  := 42;
 btree_io.add( f, person.first_name, person );
 
 <b>declare</b>
-  c : btree_io.cursor;
+  c : btree_io.cursor( person_type );
   key : string;
 <b>begin</b>
-  btree_io.new_cursor( c, person_type );
   btree_io.open_cursor( f, c );
   btree_io.get_first( f, c, key, person );
   put( person.first_name ) @ ( " /" ) @ (person.age);
@@ -402,7 +394,7 @@ PHP: dba_close</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Close the cursor c associated with file f.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">btree_io.close( fruit );</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.close_cursor( fruit );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -428,8 +420,7 @@ PHP: dba_close</p></td>
 <td><p>-</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#btree_io.create">btree_io.create</a><br>
-<a href="#btree_io.increment">btree_io.open</a></p></td>
+<td><p><a href="#btree_io.open_cursor">btree_io.open_cursor</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: N/A (AdaScript extension)<br>
@@ -1128,7 +1119,7 @@ An exception is raised if the value type is not numeric</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Initialize a new cursor, assigning the type for the values in the file.  The type may be an array, record, scalar or a unversal type.</p>
+<td><p>(No longer available)Initialize a new cursor, assigning the type for the values in the file.  The type may be an array, record, scalar or a unversal type.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</td><td><span class="code">btree_io.new_cursor( fruit, natural );</span></p></td>
 </tr><tr>
@@ -1155,6 +1146,9 @@ An exception is raised if the value type is not numeric</p></td>
 </tr>
 </table></td>
 </tr><tr>
+<td><p class="pkg_label">Removed</p></td>
+<td><p>This function was removed in SparForte 2.0.4 because of the new generic type feature.</p></td>
+</tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
 <td><p>An exception is raised if out of memory</p></td>
 </tr><tr>
@@ -1170,7 +1164,7 @@ An exception is raised if the value type is not numeric</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Initialize a new file, assigning the type for the values in the file.  The type may be an array, record, scalar or a unversal type.</p>
+<td><p>(No longer available) Initialize a new file, assigning the type for the values in the file.  The type may be an array, record, scalar or a unversal type.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</td><td><span class="code">btree_io.new_file( fruit, natural );</span></p></td>
 </tr><tr>
@@ -1196,6 +1190,9 @@ An exception is raised if the value type is not numeric</p></td>
 <td><span>the type of values</span></td>
 </tr>
 </table></td>
+</tr><tr>
+<td><p class="pkg_label">Removed</p></td>
+<td><p>This function was removed in SparForte 2.0.4 because of the new generic type feature.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
 <td><p>An exception is raised if out of memory</p></td>
@@ -1269,6 +1266,48 @@ PHP: dba_open</p></td>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>This maximum lengths are for allocating space to convert SparForte strings into the C strings used by Berkeley DB.</p></td>
 </tr>
+</tr>
+</table>
+
+<a name="btree_io.open_cursor"></a><h3>btree_io.open_cursor( f, c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Associate cursor c with file f and ready the cursor for use.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">btree_io.open_cursor( customer_file, position )</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>btree_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>btree_io.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element type does not match</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#btree_io.close_cursor">btree_io.close_cursor</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
 </tr>
 </table>
 

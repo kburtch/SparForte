@@ -18,7 +18,7 @@ end record;
 
 person : person_type;
 
-f : btree_io.file;
+f : btree_io.file( person_type );
 i : integer;
 b : boolean;
 e : bdb.db_error;
@@ -33,7 +33,6 @@ else
    rm -f btree_test/* ;
 end if;
 
-btree_io.new_file( f, person_type );
 pragma assert( not btree_io.is_open( f ) );
 
 btree_io.create( f, "btree_test/person.btree", 80, 80 );
@@ -82,10 +81,9 @@ pragma assert( b = false );
 btree_io.flush( f );
 
 declare
-  c : btree_io.cursor;
+  c : btree_io.cursor( person_type );
   key : string;
 begin
-  btree_io.new_cursor( c, person_type );
   btree_io.open_cursor( f, c );
   btree_io.get_last( f, c, key, person );
   pragma assert( key = "Sue" );
@@ -105,11 +103,10 @@ pragma assert( i = 3 );
 
 -- replace by cursor
 declare
-  c : btree_io.cursor;
+  c : btree_io.cursor( person_type );
   key : string;
   new_person : person_type;
 begin
-  btree_io.new_cursor( c, person_type );
   btree_io.open_cursor( f, c );
   btree_io.get_first( f, c, key, person );
   new_person.first_name := "Abc";

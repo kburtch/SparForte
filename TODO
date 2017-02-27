@@ -27,18 +27,8 @@ NEW ISSUES BEING WORKED ON OR NEEDING SORTING INTO OUTSTANDING BUG LIST
     - option to throw an exception on missing values (including replace, get, add (existing value)
 
   - large change!
-     - when doing a syntax check, btree_io needs new_file to occur earlier in the
-       source code to determine what the data type is for the file (as a
-       syntax check scans from top-to-bottom.  However, since new_file is an
-       executable command, this will fail if the function is located lower
-       in the source code.
-       - I require a new num_gen_param field in identifiers table
-       - remove initialization tests since will be always initialized
-       - show generic params in attribute comment for env
-       - if non-zero, require the generic type to be parameterized at variable
-         declaration
-       - deprecate all new_file, new_list, etc. as they are run-time and not
-         suitable to specify generic type parameters.
+       - subtype tests for generic types
+       - negative tests for generic types
     - nice to haves
        - arrays of files / files in records are not implemented but are possible
          - update FirstFileParam, etc., to work with references

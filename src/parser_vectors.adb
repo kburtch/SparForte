@@ -1069,8 +1069,8 @@ end ParseVectorsDelete;
 procedure StartupVectors is
 begin
   declareNamespace( "vectors" );
-  declareIdent( vectors_vector_t, "vectors.vector", positive_t, typeClass );
-  declareIdent( vectors_cursor_t, "vectors.cursor", positive_t, typeClass );
+  declareIdent( vectors_vector_t, "vectors.vector", positive_t, genericTypeClass );
+  declareIdent( vectors_cursor_t, "vectors.cursor", positive_t, genericTypeClass );
 
   declareProcedure( vectors_new_vector_t,  "vectors.new_vector", ParseVectorsNewVector'access );
   declareProcedure( vectors_clear_t,     "vectors.clear",    ParseVectorsClear'access );

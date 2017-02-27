@@ -65,8 +65,7 @@ to create and manage ordered, unindexed, linked lists.</p>
   <a href="#doubly_linked_lists.insert_before_and_mark">insert_before_and_mark( l, c, c2 [, n] ) | ( l, c, e, c2 [, n] )</a>
   <a href="#doubly_linked_lists.is_empty">b := is_empty( l )</a>
   <a href="#doubly_linked_lists.last_element">e := last_element( l )</a>                                 <a href="#doubly_linked_lists.length">n := length( l )</a>
-  <a href="#doubly_linked_lists.move">move( l1, l2 )</a>                                         <a href="#doubly_linked_lists.new_cursor">new_cursor( c, t )</a>
-  <a href="#doubly_linked_lists.new_list">new_list( l, t )</a>                                       <a href="#doubly_linked_lists.next">next( c )</a>
+  <a href="#doubly_linked_lists.move">move( l1, l2 )</a>                                         <a href="#doubly_linked_lists.next">next( c )</a>
   <a href="#doubly_linked_lists.prepend">prepend( l, e )</a>                                        <a href="#doubly_linked_lists.previous">previous( c )</a>
   <a href="#doubly_linked_lists.replace_element">replace_element( l, c, e )</a>                             <a href="#doubly_linked_lists.reverse_elements">reverse_elements( l )</a>
   <a href="#doubly_linked_lists.reverse_find">reverse_find( l, e, c )</a>
@@ -90,27 +89,24 @@ through the list.  List positions are designated by cursors.</p>
 <ul>
 <li><b>containers.count_type</b></li>
 <li><b>containers.hash_type</b></li>
-<li><b>doubly_linked_lists.list</b></li>
-<li><b>doubly_linked_lists.cursor</b></li>
+<li><b>doubly_linked_lists.list( <i>type</i> )</b></li>
+<li><b>doubly_linked_lists.cursor( <i>type</i> )</b></li>
 </ul>
 
         <center>
         <div class="code">
 <pre>
 <b>=&gt;</b> type fruit_string is new string
-<b>=&gt;</b> doubly_linked_lists.new_list( fruit, fruit_string )
-=&gt; (Assuming fruit is a new doubly_linked_lists.list variable)
+<b>=&gt;</b> fruit : doubly_linked_lists.list( fruit_string )
 <b>=&gt;</b> doubly_linked_lists.append( fruit, "apple" );
-<b>=&gt;</b> doubly_linked_lists.append( fruit, "blueberry" )
-<b>=&gt;</b> doubly_linked_lists.append( fruit, "cherry" )
+<b>=&gt;</b> doubly_linked_lists.append( fruit, "blueberry" ) @ ( fruit, "cherry" )
 <b>=&gt;</b> ? doubly_linked_lists.length( fruit )
  3
 <b>=&gt;</b> ? doubly_linked_lists.first_element( fruit )
 apple
 <b>=&gt;</b> ? doubly_linked_lists.contains( fruit, "pineapple" )
 false
-<b>=&gt;</b> doubly_linked_lists.new_cursor( c, fruit_string )
-=&gt; (Assuming c is a new doubly_linked_lists.cursor variable)
+<b>=&gt;</b> c : doubly_linked_lists.cursor( fruit_string )
 <b>=&gt;</b> doubly_linked_lists.first( fruit, c )
 <b>=&gt;</b> doubly_linked_lists.next( c )
 <b>=&gt;</b> ? doubly_linked_lists.element( c )
@@ -1137,7 +1133,7 @@ An exception is raised if out of memory</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Initialize a new cursor, assigning the element type for the cursor.  The element type must be a scalar type, and it may be a universal type.</p>
+<td><p>(No longer available) Initialize a new cursor, assigning the element type for the cursor.  The element type must be a scalar type, and it may be a universal type.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.new_cursor( animal_position, string );</span></p></td>
 </tr><tr>
@@ -1164,6 +1160,9 @@ An exception is raised if out of memory</p></td>
 </tr>
 </table></td>
 </tr><tr>
+<td><p class="pkg_label">Removed</p></td>
+<td><p>This function was removed in SparForte 2.0.4 because of the new generic type feature.</p></td>
+</tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
 <td><p>-</p></td>
 </tr><tr>
@@ -1182,7 +1181,7 @@ An exception is raised if out of memory</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Initialize a new list, assigning the element type for the list.  The element type must be a scalar type, and it may be a universal type.</p>
+<td><p>(No longer available) Initialize a new list, assigning the element type for the list.  The element type must be a scalar type, and it may be a universal type.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.new_list( animal_position, string );</span></p></td>
 </tr><tr>
@@ -1208,6 +1207,9 @@ An exception is raised if out of memory</p></td>
 <td><span>the type of element</span></td>
 </tr>
 </table></td>
+</tr><tr>
+<td><p class="pkg_label">Removed</p></td>
+<td><p>This function was removed in SparForte 2.0.4 because of the new generic type feature.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
 <td><p>-</p></td>

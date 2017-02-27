@@ -18,7 +18,7 @@ end record;
 
 person : person_type;
 
-f : hash_io.file;
+f : hash_io.file( person_type );
 i : integer;
 b : boolean;
 e : bdb.db_error;
@@ -33,7 +33,6 @@ else
    rm -f btree_test/* ;
 end if;
 
-hash_io.new_file( f, person_type );
 pragma assert( not hash_io.is_open( f ) );
 
 hash_io.create( f, "btree_test/person.hash", 80, 80 );
@@ -82,10 +81,9 @@ pragma assert( b = false );
 hash_io.flush( f );
 
 declare
-  c : hash_io.cursor;
+  c : hash_io.cursor( person_type );
   key : string;
 begin
-  hash_io.new_cursor( c, person_type );
   hash_io.open_cursor( f, c );
   hash_io.get_last( f, c, key, person );
   pragma assert( key = "Sue" );
@@ -105,11 +103,10 @@ pragma assert( i = 3 );
 
 -- replace by cursor
 declare
-  c : hash_io.cursor;
+  c : hash_io.cursor( person_type );
   key : string;
   new_person : person_type;
 begin
-  hash_io.new_cursor( c, person_type );
   hash_io.open_cursor( f, c );
   hash_io.get_first( f, c, key, person );
   new_person.first_name := "Abc";

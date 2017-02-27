@@ -60,18 +60,15 @@ with very large amount of data.</p>
   <a href="#hash_io.clear">clear( f )</a>                       <a href="#hash_io.increment">increment( f, k [,n] )</a>
   <a href="#hash_io.close">close( f )</a>                       <a href="#hash_io.is_open">b := is_open( f )</a>
   <a href="#hash_io.close_cursor">close_cursor( f, c )</a>             <a href="#hash_io.last_error">e := last_error( f )</a>
-  <a href="#hash_io.create">create( f, p, kl, vl )</a>           <a href="#hash_io.new_cursor">new_cursor( c, t )</a>
-  <a href="#hash_io.decrement">decrement( f, k [,n] )</a>           <a href="#hash_io.new_file">new_file( f, t )</a>
+  <a href="#hash_io.create">create( f, p, kl, vl )</a>           <a href="#hash_io.open">open( f, p, kl, vl )</a>
+  <a href="#hash_io.decrement">decrement( f, k [,n] )</a>           <a href="#hash_io.open_cursor">open_cursor( f, c )</a>
   <a href="#hash_io.delete">delete( f )</a>                      <a href="#hash_io.prepend">prepend( f, k, v )</a>
   <a href="#hash_io.flush">flush( f )</a>                       <a href="#hash_io.raise_exceptions">raise_exceptions( f, b )</a>
   <a href="#hash_io.get">v := get( f, k )</a>                 <a href="#hash_io.remove">remove( f, k )</a>
   <a href="#hash_io.get_first">get_first( f, c, k, v )</a>          <a href="#hash_io.replace">replace( f, k, v )</a>
   <a href="#hash_io.get_last">get_last( f, c, k, v )</a>           <a href="#hash_io.set">set( f, k, v )</a>
-  <a href="#hash_io.get_next">get_next( f, c, k, v )</a>           <a href="#hash_io.will_raise">b := will_raise( f )</a>
-
-
-  <a href="#hash_io.open">open( f, p, kl, vl )</a> <a href="#hash_io.open_cursor">open_cursor( f, c )</a>
-  <a href="#hash_io.truncate">truncate( f )</a></a>
+  <a href="#hash_io.get_next">get_next( f, c, k, v )</a>           <a href="#hash_io.truncate">truncate( f )</a></a>
+                                   <a href="#hash_io.will_raise">b := will_raise( f )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -92,11 +89,11 @@ reverse through the file.  File positions are designated by cursors.</p>
 file will also create several auxillary files in the same directory.
 The files in one directory will share the same Berkeley environment.</p>
 
-<p>This package includes three new types:</p>
+<p>This package includes two generic types:</p>
 
 <ul>
-<li><b>hash_io.file</b> - a B-tree file</li>
-<li><b>hash_io.cursor</b> - a B-tree cursor</li>
+<li><b>hash_io.file( <i>type</i> ) </b> - a hash file</li>
+<li><b>hash_io.cursor( <i>type</i> ) </b> - a hash file cursor</li>
 </ul>
 
 <p>bdb.db_error constants are also defined (e.g. bdb.DB_OK ), though
@@ -106,98 +103,6 @@ returned.</p>
 
 <p>It is possible to open the file with the wrong (or a different) file
 data type but this is not recommended.</p>
-
-        <center>
-        <div class="code">
-<pre>
-<b>=&gt;</b> type clouds is (fog, cumulus, stratus, cirrus, cumulonimbus )
-<b>=&gt;</b> hash_io.new_file( f, clouds )
-<b>=&gt;</b> (Assuming f is a new hash_io.file variable)
-<b>=&gt;</b> hash_io.create( f, "clouds.hash", 80, 80 )
-<b>=&gt;</b> ? hash_io.is_open( f )
-true
-<b>=&gt;</b> ? hash_io.name( f )
-clouds.hash
-<b>=&gt;</b> ls
-clouds.hash  __db.001	__db.002  __db.003  __db.004
-<b>=&gt;</b> hash_io.set( f, "Toronto", fog )
-<b>=&gt;</b> hash_io.set( f, "New York", cirrus )
-<b>=&gt;</b> hash_io.set( f, "Moscow", cumulonimbus )
-<b>=&gt;</b> ? hash_io.has_element( f, "Tokyo" )
-false
-<b>=&gt;</b> hash_io.get( f, "New York", c )
-<b>=&gt;</b> (Assuming c is a new clouds variable)
-<b>=&gt;</b> ? c
-cirrus
-<b>=&gt;</b> hash_io.add( f, "New York", cumulus )
-<b>=&gt;</b> hash_io.get( f, "New York", c )
-<b>=&gt;</b> (Assuming c is a new clouds variable)
-<b>=&gt;</b> ? c
-cirrus
-<b>=&gt;</b> hash_io.close( f )
-</pre>
-        &nbsp;<br>
-        <div class="code_caption">
-        <b>Example</b>: Using hash_io to create a file of cities and their clouds</span>
-        </div>
-        </div>
-        </center>
-
-        <center>
-        <div class="code">
-<pre>
-<b>type</b> person_type <b>is</b> <b>record</b>
-   first_name : string;
-   age  : natural;
-<b>end</b> <b>record</b>;
-
-person : person_type;
-
-f : hash_io.file;
-
-hash_io.new_file( f, person_type );
-hash_io.create( f, "person.hash", 80, 80 );
-
-person.first_name := "John";
-person.age  := 18;
-hash_io.add( f, person.first_name, person );
-
-person.first_name := "Sue";
-person.age  := 21;
-hash_io.add( f, person.first_name, person );
-
-person.first_name := "Al";
-person.age  := 42;
-hash_io.add( f, person.first_name, person );
-
-<b>declare</b>
-  c : hash_io.cursor;
-  key : string;
-<b>begin</b>
-  hash_io.new_cursor( c, person_type );
-  hash_io.open_cursor( f, c );
-  hash_io.get_first( f, c, key, person );
-  put( person.first_name ) @ ( " /" ) @ (person.age);
-  new_line;
-
-  <b>loop</b>
-    hash_io.get_next( f, c, key, person );
-    put( person.first_name ) @ ( " /" ) @ (person.age);
-    new_line;
-  <b>end</b> <b>loop</b>;
-<b>exception</b> <b>when</b> <b>others</b> =&gt;
-  hash_io.close_cursor( f, c );
-  put_line( "no more people" );
-<b>end</b>;
-
-hash_io.close( f );
-</pre>
-        &nbsp;<br>
-        <div class="code_caption">
-        <b>Example</b>: Using hash_io to sort records</span>
-        </div>
-        </div>
-        </center>
 
 <a name="hash_io.add"></a><h3>hash_io.add( f, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
@@ -430,8 +335,7 @@ PHP: dba_close</p></td>
 <td><p>-</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hash_io.create">hash_io.create</a><br>
-<a href="#hash_io.increment">hash_io.open</a></p></td>
+<td><p><a href="#hash_io.open_cursor">hash_io.open_cursor</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: N/A (AdaScript extension)<br>
@@ -1268,6 +1172,48 @@ PHP: dba_open</p></td>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>This maximum lengths are for allocating space to convert SparForte strings into the C strings used by Berkeley DB.</p></td>
 </tr>
+</tr>
+</table>
+
+<a name="hash_io.open_cursor"></a><h3>hash_io.open_cursor( f, c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Associate cursor c with file f and ready the cursor for use.</p> 
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">hash_io.open_cursor( customer_file, position )</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>hash_io.file</span></td>
+<td><span>required</span></td>
+<td><span>the file</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>hash_io.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element type does not match</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#hash_io.close_cursor">hash_io.close_cursor</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
 </tr>
 </table>
 

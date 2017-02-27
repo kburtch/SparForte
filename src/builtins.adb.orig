@@ -1525,16 +1525,15 @@ begin
      Put_Line( "clear( f )                       increment( f, k [,n] )" );
      Put_Line( "close( f )                       b := is_open( f )" );
      Put_Line( "close_cursor( f, c )             e := last_error( f )" );
-     Put_Line( "create( f, p, kl, vl )           new_cursor( c, t )" );
-     Put_Line( "decrement( f, k [,n] )           new_file( f, t )" );
+     Put_Line( "create( f, p, kl, vl )           open( f, p, kl, vl )" );
+     Put_Line( "decrement( f, k [,n] )           open_cursor( f, c )" );
      Put_Line( "delete( f )                      prepend( f, k, v )" );
      Put_Line( "flush( f )                       raise_exceptions( f, b )" );
      Put_Line( "v := get( f, k )                 remove( f, k )" );
      Put_Line( "get_first( f, c, k, v )          replace( f, k, v )" );
      Put_Line( "get_last( f, c, k, v )           set( f, k, v )" );
-     Put_Line( "get_next( f, c, k, v )           b := will_raise( f )" );
-     Put_Line( "open( f, p, kl, vl ) open_cursor( f, c )" );
-     Put_Line( "truncate( f )" );
+     Put_Line( "get_next( f, c, k, v )           truncate( f )" );
+     Put_Line( "                                 b := will_raise( f )" );
 end helpBtreeIO;
 
 procedure helpDb is
@@ -1604,16 +1603,15 @@ begin
      Put_Line( "clear( f )                       increment( f, k [,n] )" );
      Put_Line( "close( f )                       b := is_open( f )" );
      Put_Line( "close_cursor( f, c )             e := last_error( f )" );
-     Put_Line( "create( f, p, kl, vl )           new_cursor( c, t )" );
-     Put_Line( "decrement( f, k [,n] )           new_file( f, t )" );
+     Put_Line( "create( f, p, kl, vl )           open( f, p, kl, vl )" );
+     Put_Line( "decrement( f, k [,n] )           open_cursor( f, c )" );
      Put_Line( "delete( f )                      prepend( f, k, v )" );
      Put_Line( "flush( f )                       raise_exceptions( f, b )" );
      Put_Line( "v := get( f, k )                 remove( f, k )" );
      Put_Line( "get_first( f, c, k, v )          replace( f, k, v )" );
      Put_Line( "get_last( f, c, k, v )           set( f, k, v )" );
-     Put_Line( "get_next( f, c, k, v )           b := will_raise( f )" );
-     Put_Line( "open( f, p, kl, vl ) open_cursor( f, c )" );
-     Put_Line( "truncate( f )" );
+     Put_Line( "get_next( f, c, k, v )           truncate( f )" );
+     Put_Line( "                                 b := will_raise( f )" );
 end helpHashIO;
 
 procedure helpMySQL is
@@ -2019,8 +2017,7 @@ begin
      Put_Line( "insert_before_and_mark( l, c, c2 [, n] ) | ( l, c, e, c2 [, n] )" );
      Put_Line( "b := is_empty( l )" );
      Put_Line( "e := last_element( l )                                 n := length( l )" );
-     Put_Line( "move( l1, l2 )                                         new_cursor( c, t )" );
-     Put_Line( "new_list( l, t )                                       next( c )" );
+     Put_Line( "move( l1, l2 )                                         next( c )" );
      Put_Line( "prepend( l, e )                                        previous( c )" );
      Put_Line( "replace_element( l, c, e )                             reverse_elements( l )" );
      Put_Line( "reverse_find( l, e, c )" );
@@ -2033,9 +2030,9 @@ begin
      Put_Line( "decrement( t, k [,n] )          v := get( t, k )" );
      Put_Line( "get_first( t, v, f )            get_next( t, v, f )" );
      Put_Line( "b := has_element( t, k )        increment( t, k [,n] )" );
-     Put_Line( "new_table( t, y )               prepend( t, k, v )" );
-     Put_Line( "remove( t, k )                  replace( t, k, v )" );
-     Put_Line( "reset( t )                      set( t, k, v )" );
+     Put_Line( "prepend( t, k, v )              remove( t, k )" );
+     Put_Line( "replace( t, k, v )              reset( t )" );
+     Put_Line( "set( t, k, v )" );
   elsif helpTopic = "enums" then
      Put_Line( "enums (package) - enumerated types" );
      New_Line;
