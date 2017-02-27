@@ -5,7 +5,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2013 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -200,7 +200,7 @@ begin
   if isatty( stdout ) = 1 then
      Put( "SparForte version " );
      Put_Line( version );
-     Put_Line( "Copyright (c)2001-2013 Free Software Foundation");
+     Put_Line( copyright );
      Put_Line( "This is free software; see the source for copying conditions." );
      Put_Line( "There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE." );
   end if;

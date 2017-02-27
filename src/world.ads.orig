@@ -46,7 +46,7 @@ package world is
 ------------------------------------------------------------------------------
 
 version   : constant string := "2.0.3";
-copyright : constant string :=  " Copyright (c)2001-2016 Free Software Foundation";
+copyright : constant string :=  " Copyright (c)2001-2017 Free Software Foundation";
 
 random_generator : ada.numerics.float_random.generator;
 
