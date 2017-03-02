@@ -1753,6 +1753,8 @@ begin
      Put_Line( "  " & bold( "pragma" ) & " " &
        "assert( condition ) - with --debug/--test, terminate program on condition fail" );
      Put_Line( "  " & bold( "pragma" ) & " " &
+       "assumption( used, written, var ) - assume a variable was read or written to when testing" );
+     Put_Line( "  " & bold( "pragma" ) & " " &
        "blocked( from, message ) - announce programmer progress blocked" );
      Put_Line( "  " & bold( "pragma" ) & " " &
        "clarify( from, to, message ) - request programmer clarification" );
