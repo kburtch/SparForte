@@ -3249,6 +3249,16 @@ begin
               if identifiers( id ).genKind2 /= eof_t then
                  err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
               else
+                 genKindId := identifiers( id ).genKind;
+                 if class_ok( genKindId, typeClass, subClass ) then
+                    if identifiers( genKindId ).list then
+                       err( "element type should be a scalar type" );
+                    elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+                       err( "element type should be a scalar type" );
+                    end if;
+                 end if;
+              end if;
+              if not error_found then
                  declareResource( resId, doubly_linked_string_list, getIdentifierBlock( id ) );
               end if;
            elsif baseType = doubly_cursor_t then
@@ -3290,7 +3300,9 @@ begin
                     err( "element type should be a scalar type" );
                  end if;
               end if;
-              declareResource( resId, dynamic_string_hash_table, getIdentifierBlock( id ) );
+              if not error_found then
+                 declareResource( resId, dynamic_string_hash_table, getIdentifierBlock( id ) );
+              end if;
            else
               -- TODO: implement generic types
               err( "expected a generic type" );

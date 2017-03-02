@@ -1,5 +1,4 @@
-  l1 : doubly_linked_lists.list;
+  l1 : doubly_linked_lists.list( integer );
   i : integer := 1;
-  doubly_linked_lists.new_list( l1, integer );
   i := doubly_linked_lists.first_element( i );
 

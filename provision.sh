@@ -1,16 +1,44 @@
-#!/bin/bash
+#!/bin/sh
 # A script to install SparForte build dependences.
 # by Ken O. Burtch
 #
 # This Bourne shell script was written on Bash but should support most
 # Bourne shell variants, including ksh.  FreeBSD will fail using the
 # default tcsh (which is based on csh and is not Bourne shell compatible).
+# ----------------------------------------------------------------------------
 #set -eu
 
 DISTRO=""
 TMP=""
 
+# Show help
+
+if [ $# -ne 0 ] ; then
+   echo "A simple script to attempt to identify your operating system and"
+   echo "install all SparForte dependences needed to enable all packages."
+   echo "It is especially useful for deploying virtualized or cloud instances."
+   echo "You may be prompted for the administrator password."
+   exit 1
+fi
+
+
 # Detect the Linux distribution
+# ----------------------------------------------------------------------------
+
+# CentOS/Red hat
+
+if test -f "/etc/redhat-release" ; then
+   DISTRO="redhat"
+fi
+
+# SuSE
+
+TMP=`fgrep SUSE /etc/issue`
+if [ "$TMP" != "" ] ; then
+   DISTRO="suse"
+fi
+
+# Mint/Ubuntu
 
 TMP=`fgrep Ubuntu /etc/issue`
 if [ "$TMP" != "" ] ; then
@@ -20,15 +48,10 @@ TMP=`fgrep Mint /etc/issue`
 if [ "$TMP" != "" ] ; then
    DISTRO="ubuntu"
 fi
-TMP=`fgrep SUSE /etc/issue`
-if [ "$TMP" != "" ] ; then
-   DISTRO="suse"
-fi
-if test -f "/etc/redhat-release" ; then
-   DISTRO="redhat"
-fi
+
 
 # Install software dependences
+# ----------------------------------------------------------------------------
 
 case "$DISTRO" in
 redhat )
@@ -92,7 +115,17 @@ ubuntu )
    exit 192
 esac
 echo "Dependencies installed"
+
+
+# Update locate database
+# ----------------------------------------------------------------------------
+
 echo "Updating locate database..."
 sudo -u root updatedb
+
+
+# Done
+# ----------------------------------------------------------------------------
+
 echo "OK"
 

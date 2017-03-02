@@ -1,5 +1,5 @@
-l1 : doubly_linked_lists.list;
-c1 : doubly_linked_lists.cursor;
+l1 : doubly_linked_lists.list( integer );
+c1 : doubly_linked_lists.cursor( integer );
 i  : integer := 1;
 doubly_linked_lists.new_list( l1, integer );
 doubly_linked_lists.append( l1, 1234 );

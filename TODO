@@ -3,19 +3,15 @@ LOTS TO WORK ON
 Languages are complicated...
 
 -----------------------------------------------------------------------------
-NEW ISSUES BEING WORKED ON OR NEEDING SORTING INTO OUTSTANDING BUG LIST
------------------------------------------------------------------------------
+NEW ISSUES
 
-- GitHub readme.md "badges" (see also shields)
-  - you need to be able to point at Jenkins.  A URL to the shields.io site
-    containing an embedded URL to your Jenkings to get the data for the
-    badge
-  - http://shields.io/
-  - example - https://github.com/seiyria/c
+These are new issues identified but not entered into the outstanding bug list
+-----------------------------------------------------------------------------
 
 - btree_io
   - severe
     - pwd is wrong for btree_io/hash_io on ../spar redirect
+      or is this normal? if so, document.
   - warning
     - negative test btree_io.replace with cursor
     - negative test to ensure subprogram exceptions are not lost to parent
@@ -27,26 +23,29 @@ NEW ISSUES BEING WORKED ON OR NEEDING SORTING INTO OUTSTANDING BUG LIST
     - option to throw an exception on missing values (including replace, get, add (existing value)
 
   - large change!
-       - subtype tests for generic types
-       - negative tests for generic types
+       - generic types
+         - subtype tests for generic types
+         - negative tests for generic types
+       - test coverage
+         - make test -> -fprofile-arcs -ftest-coverage
+         - make clean -> .gcda 
     - nice to haves
        - arrays of files / files in records are not implemented but are possible
          - update FirstFileParam, etc., to work with references
          - wasWritten on arrays and records
          - rewrite references to .value to look use utility functions
+       - change or alias for consistency: set -> assign, get -> element
 
 - memcache
   - severe
   - warning
-    - memcache not upgraded to use resources
-  - nice to haves
     - update design to use new resource system
+  - nice to haves
     - update functionality to handle records, arrays, etc. like btree_io
-    - update functionality to
 
-- other
+- misc issues
   - severe
- - session scripts must not be allowed in a restricted shell...or imports...verify
+     - session scripts must not be allowed in a restricted shell...or imports...verify
      - an early return from the main program doesn't pull the final block,
        even if the template isn't parsed.
      - cgi third_party test
@@ -65,7 +64,8 @@ NEW ISSUES BEING WORKED ON OR NEEDING SORTING INTO OUTSTANDING BUG LIST
     - change pegasock to use bdb format exceptions with filename in message?
     - exceptions that propogate to the top aren't formatted properly in the
       Apache log (single chars means single lines)
-  - feature
+  - nice to haves
+    - control-z handling
     - element as an alias for "get" in memcache, etc.
     - update dynamic_hash_table functionality to handle records, arrays, etc. like btree_io
     - standardize get_first as first, etc.
@@ -76,16 +76,22 @@ NEW ISSUES BEING WORKED ON OR NEEDING SORTING INTO OUTSTANDING BUG LIST
       - with project
       - project block
       - QA concerns?
-
-  - features
     - built-in cache - memory or disk?
     - a pragma to check for the version of SparForte?  Is it a doc pragma,
       executable or both?
     - redesign is_writable, etc. so works better.
     - % should be usable in more contexts
+       - should % chain objects methods?
     - return [when] , raise [when]
-  - examples
-    - example program of ramdisk cache
+    - new examples
+       - example program of ramdisk cache
+    - GitHub readme.md "badges" (see also shields)
+      - you need to be able to point at Jenkins.  A URL to the shields.io site
+        containing an embedded URL to your Jenkins to get the data for the
+        badge
+      - http://shields.io/
+      - example - https://github.com/seiyria/c
+
 
 Teamwork Improvments
 

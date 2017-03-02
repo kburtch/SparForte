@@ -1,6 +1,5 @@
-t : dynamic_hash_tables.table;
+t : dynamic_hash_tables.table( string );
 i : integer := 1;
 b : boolean;
-dynamic_hash_tables.new_table( t, string );
 b := dynamic_hash_tables.has_element( i, "foo" ); -- should be table
 
