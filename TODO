@@ -22,19 +22,10 @@ These are new issues identified but not entered into the outstanding bug list
       - if not possible, appropriate error
     - option to throw an exception on missing values (including replace, get, add (existing value)
 
-  - large change!
-       - generic types
-         - subtype tests for generic types
-         - negative tests for generic types
-       - test coverage
-         - make test -> -fprofile-arcs -ftest-coverage
-         - make clean -> .gcda 
-    - nice to haves
-       - arrays of files / files in records are not implemented but are possible
-         - update FirstFileParam, etc., to work with references
-         - wasWritten on arrays and records
-         - rewrite references to .value to look use utility functions
-       - change or alias for consistency: set -> assign, get -> element
+   - test coverage
+     - make test  should add -fprofile-arcs -ftest-coverage
+     - make clean should remove .gcda files
+     - see https://gcc.gnu.org/onlinedocs/gcc/Invoking-Gcov.html#Invoking-Gcov
 
 - memcache
   - severe
@@ -91,6 +82,12 @@ These are new issues identified but not entered into the outstanding bug list
         badge
       - http://shields.io/
       - example - https://github.com/seiyria/c
+    - arrays of files / files in records are not implemented but are possible
+       - update FirstFileParam, etc., to work with references
+       - wasWritten on arrays and records
+       - rewrite references to .value to look use utility functions
+     - change or alias for consistency: set -> assign, get -> element
+     - subtypes of generic types
 
 
 Teamwork Improvments

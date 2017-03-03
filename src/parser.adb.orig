@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2016 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -2839,6 +2839,8 @@ begin
      if token = symbol_t and identifiers( token ).value.all = ":=" then
         --ParseArrayAssignPart( id, array_id );
         ParseArrayAssignPart( id );
+     elsif token = symbol_t and identifiers( token ).svalue = "(" then
+         err( optional_bold( to_string( identifiers( arrayType ).name ) ) & " is not a generic type but has parameters" );
      end if;
   end if;
 end ParseArrayDeclaration;
@@ -3073,6 +3075,8 @@ begin
      if canAssign then
         ParseRecordAssignPart( id, recType );
      end if;
+  elsif token = symbol_t and identifiers( token ).svalue = "(" then
+     err( optional_bold( to_string( identifiers( recType ).name ) ) & " is not a generic type but has parameters" );
   end if;
 
 end ParseRecordDeclaration;
@@ -3316,7 +3320,7 @@ begin
      end if;
      identifiers( id ).kind := type_token;
   elsif token = symbol_t and identifiers( token ).svalue = "(" then
-     err( optional_bold( to_string( identifiers( type_token ).name ) ) & " is not a generic type" );
+     err( optional_bold( to_string( identifiers( type_token ).name ) ) & " is not a generic type but has parameters" );
 
   -- Renames clause
   -- if it appears, one can only rename...cannot assign.
@@ -3717,7 +3721,8 @@ begin
    ParseNewIdentifier( newtype_id );                       -- type name
    expect( is_t );                                         -- "is"
    ParseIdentifier( parent_id );                           -- old type
-   if class_ok( parent_id, typeClass, subClass ) then      -- not a type?
+   if class_ok( parent_id, genericTypeClass, typeClass,
+               subClass ) then                             -- not a type?
       if isExecutingCommand then                           -- OK to execute?
          identifiers( newtype_id ).kind := parent_id;      -- assign subtype
          identifiers( newtype_id ).class := subClass;      -- subtype class
