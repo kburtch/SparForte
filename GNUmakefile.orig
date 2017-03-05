@@ -20,6 +20,9 @@ distclean:
 test:
 	$(MAKE) test -C src
 
+releasetest:
+	$(MAKE) releasetest -C src
+
 max:
 	$(MAKE) -C src max
 

@@ -22,11 +22,6 @@ These are new issues identified but not entered into the outstanding bug list
       - if not possible, appropriate error
     - option to throw an exception on missing values (including replace, get, add (existing value)
 
-   - test coverage
-     - make test  should add -fprofile-arcs -ftest-coverage
-     - make clean should remove .gcda files
-     - see https://gcc.gnu.org/onlinedocs/gcc/Invoking-Gcov.html#Invoking-Gcov
-
 - memcache
   - severe
   - warning
@@ -56,11 +51,18 @@ These are new issues identified but not entered into the outstanding bug list
     - exceptions that propogate to the top aren't formatted properly in the
       Apache log (single chars means single lines)
   - nice to haves
+    - alternatives to ParseGeneralStatement more appropriate for executable bodies
     - control-z handling
     - element as an alias for "get" in memcache, etc.
+    - configuration/policy/project <name> ... is separate (not with separate, which isn't
+      as specific)
+    - some way to determine if a configuration/policy/project should have been loaded.
+      perhaps an architectural pragma for same.
     - update dynamic_hash_table functionality to handle records, arrays, etc. like btree_io
     - standardize get_first as first, etc.
     - safety check that a file cannot include itself
+    - distinguish types of pragmas, to later separate by block or context
+    - redundancy and ways of handing command line option
     - more separation of concerns
       - with configuration
       - with policy

@@ -233,7 +233,7 @@ By default, SparForte will install under /usr/local.
    settings, such as "SDL_config", "pg_config" or "mysql_config".
 
 3. (Optional) "gmake test" to run the SparForte regression tests.  This make take
-   several minutes.
+   several minutes.  The test coverage report requires gcov and lcov.
 
 4. (Optional) "gmake install" will copy the spar executable to the
    /usr/local/bin/ directory so that other users can access it.  Alteratively,
