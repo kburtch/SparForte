@@ -1,0 +1,2 @@
+pragma license( artistic );
+null;

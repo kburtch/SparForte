@@ -1,0 +1,2 @@
+pragma license( gpl );
+null;

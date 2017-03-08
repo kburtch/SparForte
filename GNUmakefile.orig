@@ -20,6 +20,9 @@ distclean:
 test:
 	$(MAKE) test -C src
 
+coverage:
+	$(MAKE) coverage -C src
+
 releasetest:
 	$(MAKE) releasetest -C src
 

@@ -31,6 +31,11 @@ These are new issues identified but not entered into the outstanding bug list
 
 - misc issues
   - severe
+     - STILL getting DEVICE_ERROR / interrupted syscall randomly on pipelines, even
+       after repeated audits of all syscalls for handling this error.
+       Possibly raised internally by Ada.Text_IO and needs to be caught and handled?
+       - echo "test" | head; --raised it
+       - echo  | sort | head; -- raised it
      - session scripts must not be allowed in a restricted shell...or imports...verify
      - an early return from the main program doesn't pull the final block,
        even if the template isn't parsed.
@@ -63,6 +68,7 @@ These are new issues identified but not entered into the outstanding bug list
     - safety check that a file cannot include itself
     - distinguish types of pragmas, to later separate by block or context
     - redundancy and ways of handing command line option
+    - enums.last is slow...should be updated for namespaces to improve speed
     - more separation of concerns
       - with configuration
       - with policy
@@ -70,6 +76,9 @@ These are new issues identified but not entered into the outstanding bug list
       - project block
       - QA concerns?
     - built-in cache - memory or disk?
+    - arch pragmas should be scopable to software model...at least, software_model must
+      be exposed through System, or the pragmas registered for different types of
+      projects and applied later.
     - a pragma to check for the version of SparForte?  Is it a doc pragma,
       executable or both?
     - redesign is_writable, etc. so works better.

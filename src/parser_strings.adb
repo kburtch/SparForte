@@ -25,9 +25,6 @@ with text_io;use text_io;
 with interfaces.c,
     gnat.regexp,
     gnat.regpat,
-    gnat.sha224,
-    gnat.sha256,
-    gnat.sha512,
     base64,
     scanner,
     string_util,
@@ -125,9 +122,6 @@ is_typo_of_t : identifier;
 set_unbounded_string_t  : identifier;
 unbounded_slice_t  : identifier;
 strings_to_json_t : identifier;
-strings_sha224_hash_of_t : identifier;
-strings_sha256_hash_of_t : identifier;
-strings_sha512_hash_of_t : identifier;
 
 procedure ParseSingleStringExpression( expr_val : out unbounded_string;
   expr_type : out identifier ) is
@@ -1368,48 +1362,6 @@ begin
   end;
 end ParseStringsToJSON;
 
-procedure ParseStringsSHA224HashOf( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.sha224_hash_of( s );
-  -- Source: GNAT.SHA224
-  src_val  : unbounded_string;
-  src_type : identifier;
-begin
-  expect( strings_sha224_hash_of_t );
-  ParseSingleStringParameter( src_val, src_type );
-  kind := src_type;
-  if isExecutingCommand then
-     result := to_unbounded_string( Gnat.SHA224.Digest( to_string( src_val ) ) );
-  end if;
-end ParseStringsSHA224HashOf;
-
-procedure ParseStringsSHA256HashOf( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.sha256_hash_of( s );
-  -- Source: GNAT.SHA256
-  src_val  : unbounded_string;
-  src_type : identifier;
-begin
-  expect( strings_sha256_hash_of_t );
-  ParseSingleStringParameter( src_val, src_type );
-  kind := src_type;
-  if isExecutingCommand then
-     result := to_unbounded_string( Gnat.SHA256.Digest( to_string( src_val ) ) );
-  end if;
-end ParseStringsSHA256HashOf;
-
-procedure ParseStringsSHA512HashOf( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.sha512_hash_of( s );
-  -- Source: GNAT.SHA512
-  src_val  : unbounded_string;
-  src_type : identifier;
-begin
-  expect( strings_sha512_hash_of_t );
-  ParseSingleStringParameter( src_val, src_type );
-  kind := src_type;
-  if isExecutingCommand then
-     result := to_unbounded_string( Gnat.SHA512.Digest( to_string( src_val ) ) );
-  end if;
-end ParseStringsSHA512HashOf;
-
 procedure StartupStrings is
 begin
   declareNamespace( "strings" );
@@ -1460,9 +1412,6 @@ begin
   declareProcedure( set_unbounded_string_t, "strings.set_unbounded_string", ParseStringsSetUnboundedString'access );
   declareFunction( unbounded_slice_t, "strings.unbounded_slice", ParseStringsUnboundedSlice'access );
   declareFunction( strings_to_json_t, "strings.to_json", ParseStringsToJSON'access );
-  declareFunction( strings_sha224_hash_of_t,  "strings.sha224_hash_of", ParseStringsSHA224HashOf'access );
-  declareFunction( strings_sha256_hash_of_t,  "strings.sha256_hash_of", ParseStringsSHA256HashOf'access );
-  declareFunction( strings_sha512_hash_of_t,  "strings.sha512_hash_of", ParseStringsSHA512HashOf'access );
 
   -- enumerateds - values defined below
   declareIdent( strings_alignment_t, "strings.alignment",

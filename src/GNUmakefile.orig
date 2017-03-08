@@ -213,7 +213,13 @@ distclean:
 	-rm -f bush_os.ads bush_os.adb bush_os-sdl.ads parser.adb parser_db.adb parser_dbm.adb parser_mysql.adb parser_mysqlm.adb parser_sound.adb world.ads builtins.adb parser_gnat_cgi.adb scanner_res.adb scanner_res.ads parser_btree_io.adb
 
 
-test: c_os.o c_scanner.o c_gstreamer.o
+test: all
+	@echo "---------------------------------------------------------------"
+	@echo "  RUNNING REGRESSION TEST SUITE"
+	@echo "---------------------------------------------------------------"
+	(cd testsuite; sh runtests.sh)
+
+coverage: c_os.o c_scanner.o c_gstreamer.o
 	@echo
 	@echo "==============================================================="
 	@echo "  SparForte - Business Shell"
@@ -265,19 +271,21 @@ endif
 	@echo "   http://www.sparforte.com"
 	@echo "---------------------------------------------------------------"
 	@echo
+	# Remove old test results (keep .gcno - notes files)
+	-rm -f *.gcda *.gcov coverage.info
 	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -we -gnat05 -gnatfaoN -gnatybdh -fstack-check -fstack-protector -fprofile-arcs -ftest-coverage -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS) -lgcov
 	@echo
 	@echo "---------------------------------------------------------------"
-	@echo "  Thanks for choosing SparForte"
-	@echo "---------------------------------------------------------------"
-	@echo
-
-	@echo "---------------------------------------------------------------"
 	@echo "  RUNNING REGRESSION TEST SUITE"
 	@echo "---------------------------------------------------------------"
 	(cd testsuite; sh runtests.sh)
+	@echo
+	@echo "---------------------------------------------------------------"
+	@echo "  RUNNING THIRD PARTY TEST SUITE"
+	@echo "---------------------------------------------------------------"
+	(cd testsuite; sh third_party_tests.sh)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "  Generating Code Coverage Reports (gcov and lcov)"
@@ -292,8 +300,10 @@ endif
 	lcov '--capture' '--directory' . '--output-file' coverage.info
 	genhtml coverage.info '--output-directory' coverage
 	@echo
+	@echo "---------------------------------------------------------------"
 	@echo "Code coverage report located at src/coverage/index.html"
-	@echo "Remember code coverage is enabled for this build"
+	@echo "Remember code coverage is still enabled for this build"
+	@echo "---------------------------------------------------------------"
 
 releasetest: test
 	@echo "---------------------------------------------------------------"

@@ -26,3 +26,7 @@ CHANGES SINCE 2.0.2
 
 11. New: SHA digest functions: numerics.sha1_digest_of, numerics.sha256_digest_of, numerics.sha256_digest_of, numerics.sha512_digest_of. [tests needed]
 
+12. New: code coverage added to "make test".
+
+13. Fix: lock_files.lock( file ... ) variation now handles wait and retry correctly.
+

@@ -1,4 +1,4 @@
-#!/bin/bush
+#!/usr/local/bin/spar
 trace true;
 
 -- This is a comment
@@ -37,6 +37,7 @@ fm  : file_mode;
 j,k : integer;
 js  : json_string;
 ft  : file_type;
+unbs : unbounded_string;
 -- st will be reported as an unused variable.  Unfortunately, there's no way
 -- to use it without opening a socket because it is limited.
 -- st  : socket_type;
@@ -467,6 +468,14 @@ i  := numerics.value( "65" );
 pragma assert( i = 65 );
 p  := numerics.rnd( 5 );
 pragma assert( p > 0 and p < 6 );
+b := numerics.odd( 1 );
+pragma assert( b );
+b := numerics.odd( 2 );
+pragma assert( not b );
+b := numerics.even( 1 );
+pragma assert( not b );
+b := numerics.even( 2 );
+pragma assert( b );
 n  := numerics.serial;
 pragma assert( n = 0 );
 n  := numerics.serial;
@@ -479,6 +488,16 @@ n := numerics.murmur_hash_of( "apple", 100);
 pragma assert( n = 96 );
 n := numerics.sdbm_hash_of( "apple", 100);
 pragma assert( n = 59 );
+s := numerics.md5( "abc" );
+pragma assert( s = "900150983cd24fb0d6963f7d28e17f72" );
+s := numerics.sha1_digest_of( "abc" );
+pragma assert( s = "a9993e364706816aba3e25717850c26c9cd0d89d" );
+s := numerics.sha224_digest_of( "abc" );
+pragma assert( s = "23097d223405d8228642a477bda255b32aadbce4bda0b3f7e36c9da7" );
+s := numerics.sha256_digest_of( "abc" );
+pragma assert( s = "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad" );
+s := numerics.sha512_digest_of( "abc" );
+pragma assert( s = "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f" );
 
 -- match and glob functions
 
@@ -792,6 +811,22 @@ b := strings.is_fixed( "0.0" );
 pragma assert( b = true );
 b := strings.is_fixed( "999.999" );
 pragma assert( b = true );
+unbs := strings.to_unbounded_string( "bar" );
+pragma assert( unbs = "bar" );
+s := strings.to_string( unbs );
+pragma assert( s = "bar" );
+b := strings.is_typo_of( "foob", "fozb" );
+pragma assert( b = true );
+b := strings.is_typo_of( "foobs", "fobs" );
+pragma assert( b = true );
+b := strings.is_typo_of( "foob", "ffoob" );
+pragma assert( b = true );
+b := strings.is_typo_of( "ofob", "foob" );
+pragma assert( b = true );
+strings.set_unbounded_string( unbs, "foo" );
+pragma assert( unbs = "foo" );
+unbs := strings.unbounded_slice( "foobar", 2, 4 );
+pragma assert( unbs = "oob" );
 
 s := strings.mktemp( "test" );
 pragma assert( s /= "./test" );
@@ -824,31 +859,79 @@ b := files.is_directory( "" );
 pragma assert( b = false );
 b := files.is_readable_file( "goodtest.sp" );
 pragma assert( b = true );
+b := files.is_readable_file( "write_only.txt" );
+pragma assert( b = false );
+b := files.is_readable_file( "exec_only.txt" );
+pragma assert( b = false );
 b := files.is_readable_file( "cdtest" );
 pragma assert( b = false );
 b := files.is_readable_file( "xyzzy.foobar" );
 pragma assert( b = false );
 b := files.is_readable_file( "" );
 pragma assert( b = false );
+b := files.is_readable( "goodtest.sp" );
+pragma assert( b = true );
+b := files.is_readable( "write_only.txt" );
+pragma assert( b = false );
+b := files.is_readable( "exec_only.txt" );
+pragma assert( b = false );
+b := files.is_readable( "cdtest" );
+pragma assert( b = true );
+b := files.is_readable( "xyzzy.foobar" );
+pragma assert( b = false );
+b := files.is_readable( "" );
+pragma assert( b = false );
 b := files.is_writable_file( "goodtest.sp" );
 pragma assert( b = false );
 b := files.is_writable_file( "write_only.txt" );
 pragma assert( b = true );
+b := files.is_writable_file( "exec_only.txt" );
+pragma assert( b = false );
 b := files.is_writable_file( "cdtest" );
 pragma assert( b = false );
 b := files.is_writable_file( "xyzzy.foobar" );
 pragma assert( b = false );
 b := files.is_writable_file( "" );
 pragma assert( b = false );
+b := files.is_writable( "goodtest.sp" );
+pragma assert( b = false );
+b := files.is_writable( "write_only.txt" );
+pragma assert( b = true );
+b := files.is_writable( "exec_only.txt" );
+pragma assert( b = false );
+b := files.is_writable( "cdtest" );
+pragma assert( b = true );
+b := files.is_writable( "xyzzy.foobar" );
+pragma assert( b = false );
+b := files.is_writable( "" );
+pragma assert( b = false );
 b := files.is_executable_file( "goodtest.sp" );
 pragma assert( b = false );
 b := files.is_executable_file( "cdtest" );
+pragma assert( b = false );
+b := files.is_executable_file( "write_only.txt" );
 pragma assert( b = false );
 b := files.is_executable_file( "exec_only.txt" );
 pragma assert( b = true );
 b := files.is_executable_file( "xyzzy.foobar" );
 pragma assert( b = false );
 b := files.is_executable_file( "" );
+pragma assert( b = false );
+b := files.is_executable( "goodtest.sp" );
+pragma assert( b = false );
+b := files.is_executable( "cdtest" );
+pragma assert( b = true );
+b := files.is_executable( "write_only.txt" );
+pragma assert( b = false );
+b := files.is_executable( "exec_only.txt" );
+pragma assert( b = true );
+b := files.is_executable( "xyzzy.foobar" );
+pragma assert( b = false );
+b := files.is_executable_file( "" );
+pragma assert( b = false );
+b := files.is_waiting_file( "goodtest.sp" );
+pragma assert( b = true );
+b := files.is_waiting_file( "write_only.txt" );
 pragma assert( b = false );
 s := files.basename( "dir/file" );
 pragma assert( s = "file" );
@@ -862,6 +945,11 @@ s := files.dirname( "file" );
 pragma assert( s = "." );
 s := files.dirname( "" );
 pragma assert( s = "." );
+li := files.size( "write_only.txt" );
+pragma assert( li = 0 );
+li := files.size( "goodtest.sp" );
+pragma assert( li > 0 );
+-- last_modified/last_changed under calendar section
 
 -- built-in shell functions
 
@@ -878,6 +966,14 @@ pragma assert( n = 3 );
 s := command_line.command_name;
 s := command_line.argument( 1 );
 pragma assert( s = "a" );
+n := command_line.environment.environment_count;
+pragma assert( n > 0 ); -- can't know exactly how many
+s := command_line.environment.environment_value( 1 );
+pragma assert( strings.length( s ) > 0 ); -- can't know exactly what
+
+os.system( "cd ." );
+i := os.status;
+pragma assert( i = 0 );
 
 s1 := PWD;
 cd .;
@@ -2519,6 +2615,26 @@ pragma assert( cy = cy2 );
 pragma assert( cm = cm2 );
 pragma assert( cd1 = cd2 );
 pragma assert( cs = cs2 );
+another_time := calendar.time_of( 2016, 3, 15, 0 );
+li := calendar.to_julian( another_time );
+pragma assert( li = 2457463 );
+another_time2 : calendar.time := calendar.to_time( li );
+calendar.split( another_time2, cy, cm, cd1, cs );
+pragma assert( cy = 2016 );
+pragma assert( cm = 3 );
+pragma assert( cd1 = 15 );
+pragma assert( cs = 0 );
+i := calendar.day_of_week( another_time );
+pragma assert( i = 3 );
+another_time := files.last_modified( "goodtest.sp" );
+calendar.split( another_time, cy, cm, cd1, cs );
+pragma assert( cy > 2000 ); -- test not exact
+another_time := files.last_changed( "goodtest.sp" );
+calendar.split( another_time, cy, cm, cd1, cs );
+pragma assert( cy > 2000 ); -- test not exact
+another_time := files.last_accessed( "goodtest.sp" );
+calendar.split( another_time, cy, cm, cd1, cs );
+pragma assert( cy > 2000 ); -- test not exact
 
 -- calendar arithmetic
 
@@ -3062,6 +3178,21 @@ begin
   doubly_linked_lists.append( l1, 4567 );
   doubly_linked_lists.delete_first( l1, 2 );
   pragma assert( doubly_linked_lists.first_element( l1 ) = 4567 );
+end;
+
+-- Delete_Last
+
+declare
+  l1 : doubly_linked_lists.list( integer );
+begin
+  doubly_linked_lists.append( l1, 1234 );
+  doubly_linked_lists.append( l1, 2345 );
+  doubly_linked_lists.delete_last( l1 );
+  pragma assert( doubly_linked_lists.last_element( l1 ) = 1234 );
+  doubly_linked_lists.append( l1, 3456 );
+  doubly_linked_lists.append( l1, 4567 );
+  doubly_linked_lists.delete_last( l1, 2 );
+  pragma assert( doubly_linked_lists.last_element( l1 ) = 1234 );
 end;
 
 -- First / Element
@@ -3997,6 +4128,35 @@ begin
   end loop;
   pragma assert( b = false );
 end;
+
+-- Other packages: Lock_Files
+
+rm -f "_test.lck" ; -- delete if exists
+lock_files.lock_file( "_test.lck" );
+lock_files.unlock_file( "_test.lck" );
+lock_files.lock_file( "cdtest", "_test.lck" );
+lock_files.unlock_file( "cdtest", "_test.lck" );
+lock_files.lock_file( "_test.lck", 5 );
+lock_files.unlock_file( "_test.lck" );
+lock_files.lock_file( "_test.lck", 5, 1 );
+lock_files.unlock_file( "_test.lck" );
+lock_files.lock_file( "cdtest", "_test.lck", 5 );
+lock_files.unlock_file( "cdtest", "_test.lck" );
+lock_files.lock_file( "cdtest", "_test.lck", 5, 1 );
+lock_files.unlock_file( "cdtest", "_test.lck" );
+
+-- Other packages: gnat.crc32
+
+crc : gnat.crc32.crc32;
+gnat.crc32.initialize( crc );
+gnat.crc32.update( crc, "abc" );
+i := gnat.crc32.get_value( crc );
+pragma assert( i = 3403398717 );
+
+-- Pragmas
+
+pragma assumption( used, i );
+pragma assumption( written, i );
 
 -- Pragma ada_95 tests
 
