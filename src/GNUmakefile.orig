@@ -221,6 +221,13 @@ test: all
 
 coverage: c_os.o c_scanner.o c_gstreamer.o
 	@echo
+	@echo "Coverage will require:"
+	@echo
+	@echo " - 2nd memcache (memcached -l 127.0.0.1 -p 11212 &)"
+	@echo " - gcov and lcov installed"
+	@echo
+	@echo "Continuing in 3 secs..."
+	@sleep 3
 	@echo "==============================================================="
 	@echo "  SparForte - Business Shell"
 	@echo "    Need help? Type make help"

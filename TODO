@@ -10,6 +10,7 @@ These are new issues identified but not entered into the outstanding bug list
 
 - btree_io
   - severe
+    - are record components marked as writtent o?
     - pwd is wrong for btree_io/hash_io on ../spar redirect
       or is this normal? if so, document.
   - warning

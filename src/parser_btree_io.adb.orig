@@ -1864,12 +1864,14 @@ begin
      isRecord := true;
      ParseIdentifier( valRef.id );
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
+     identifiers( valRef.id ).wasWritten := true;
   -- array?
   elsif identifiers( genKindId ).list then
      -- ParseOutParam doesn't handle full records or arrays
      isArray := true;
      ParseIdentifier( valRef.id );
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
+     identifiers( valRef.id ).wasWritten := true;
   else
      -- This will still auto-declare scalar values
      ParseOutParameter(  valRef, genKindId );
@@ -2013,12 +2015,14 @@ begin
      isRecord := true;
      ParseIdentifier( valRef.id );
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
+     identifiers( valRef.id ).wasWritten := true;
   -- array?
   elsif identifiers( genKindId ).list then
      -- ParseOutParam doesn't handle full records or arrays
      isArray := true;
      ParseIdentifier( valRef.id );
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
+     identifiers( valRef.id ).wasWritten := true;
   else
      -- This will still auto-declare scalar values
      ParseOutParameter(  valRef, genKindId );
@@ -2162,12 +2166,14 @@ begin
      isRecord := true;
      ParseIdentifier( valRef.id );
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
+     identifiers( valRef.id ).wasWritten := true;
   -- array?
   elsif identifiers( genKindId ).list then
      -- ParseOutParam doesn't handle full records or arrays
      isArray := true;
      ParseIdentifier( valRef.id );
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
+     identifiers( valRef.id ).wasWritten := true;
   else
      -- This will still auto-declare scalar values
      ParseOutParameter(  valRef, genKindId );
@@ -2311,12 +2317,14 @@ begin
      isRecord := true;
      ParseIdentifier( valRef.id );
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
+     identifiers( valRef.id ).wasWritten := true;
   -- array?
   elsif identifiers( genKindId ).list then
      -- ParseOutParam doesn't handle full records or arrays
      isArray := true;
      ParseIdentifier( valRef.id );
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
+     identifiers( valRef.id ).wasWritten := true;
   else
      -- This will still auto-declare scalar values
      ParseOutParameter(  valRef, genKindId );
@@ -2521,8 +2529,8 @@ begin
 
   declareNamespace( "btree_io" );
 
-  declareIdent( btree_file_t,   "btree_io.file", positive_t, genericTypeClass );
-  declareIdent( btree_cursor_t, "btree_io.cursor", positive_t, genericTypeClass );
+  declareIdent( btree_file_t,   "btree_io.file", variable_t, genericTypeClass );
+  declareIdent( btree_cursor_t, "btree_io.cursor", variable_t, genericTypeClass );
 
   --declareProcedure( btree_new_file_t,  "btree_io.new_file", ParseBTreeNewFile'access );
   declareProcedure( btree_clear_t,     "btree_io.clear",    ParseBTreeClear'access );

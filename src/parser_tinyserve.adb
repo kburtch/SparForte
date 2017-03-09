@@ -293,7 +293,7 @@ procedure StartupTinyserve is
 begin
   declareNamespace( "tinyserve" );
 
-  declareIdent( tinyserve_socket_server_t,   "tinyserve.socket_server", positive_t, typeClass );
+  declareIdent( tinyserve_socket_server_t,   "tinyserve.socket_server", variable_t, typeClass );
   declareIdent( tinyserve_client_id_t, "tinyserve.client_id", integer_t, typeClass );
 
   -- TODO: allow multiple listeners

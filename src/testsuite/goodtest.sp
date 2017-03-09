@@ -1307,6 +1307,25 @@ arrays.rotate_right( nularr );
 arrays.shift_left( nularr );
 arrays.shift_right( nularr );
 arrays.shuffle( nularr );
+la1(aenum1) := 1;
+la1(aenum2) := 2;
+la1(aenum3) := 3;
+arrays.bubble_sort( la1 );
+pragma assert( la1(aenum1) = 1 );
+pragma assert( la1(aenum2) = 2 );
+pragma assert( la1(aenum3) = 3 );
+arrays.bubble_sort_descending( la1 );
+pragma assert( la1(aenum1) = 3 );
+pragma assert( la1(aenum2) = 2 );
+pragma assert( la1(aenum3) = 1 );
+arrays.heap_sort( la1 );
+pragma assert( la1(aenum1) = 1 );
+pragma assert( la1(aenum2) = 2 );
+pragma assert( la1(aenum3) = 3 );
+arrays.heap_sort_descending( la1 );
+pragma assert( la1(aenum1) = 3 );
+pragma assert( la1(aenum2) = 2 );
+pragma assert( la1(aenum3) = 1 );
 
 -- stats
 

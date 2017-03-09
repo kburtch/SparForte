@@ -30,3 +30,5 @@ CHANGES SINCE 2.0.2
 
 13. Fix: lock_files.lock( file ... ) variation now handles wait and retry correctly.
 
+14. Fix: btree_io.get_first, etc. with array or record type no longer report the variable wasn't written to. [record fields todo]
+
