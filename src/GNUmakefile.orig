@@ -377,18 +377,19 @@ help:
 	@echo "Run configure first, if you have not already done so."
 	@echo "Then you can make these:"
 	@echo "  all       - (default) normal build"
-	@echo "  max       - maximum performance, minimum error checks"
+	@echo "  max       - optimize performance, minimum error checks"
 	@echo "  install   - install sparforte binary file in /usr/local/bin"
 	@echo "  uninstall - remove sparforte binary file in /usr/local/bin"
 	@echo "  clean     - remove temporary and binary files"
 	@echo "  distclean - clean and remove operating system choice"
 	@echo "  test      - make all, then run regression tests"
-	@echo "  releasetest - make all, then run regression and built tests"
+	@echo "  coverage  - make all, regressions, third-party tests and code coverage"
+	@echo "  releasetest - make all, regressions, third-party and built tests"
 	@echo "  zip       - create a .zip source archive with important files"
 	@echo "  srczip    - create a .zip source archive to share with others"
 	@echo "  srctar    - create a .tgz source archive to share with others"
 	@echo "  bintar    - create a tgz of binary files to share with others"
 	@echo "  rpm       - build an rpm (must have spec file)"
 
-.PHONY: all max install uninstall clean distclean test zip srczip srctar bintar rpm help
+.PHONY: all max install uninstall clean distclean test coverage releasetest zip srczip srctar bintar rpm help
 
