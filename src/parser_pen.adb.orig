@@ -20,38 +20,38 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
-    with interfaces.C;
-    use  interfaces.C;
 
 with text_io;use text_io;
+
 with system,
     interfaces.c,
     pen,
-    bush_os.sdl,
-    bush_os.opengl,
+    spar_os.sdl,
+    spar_os.opengl,
     user_io,
     world,
     scanner,
     scanner_res,
-    string_util,
+    --string_util,
     -- scanner_arrays,
-    parser_aux,
+    --parser_aux,
     parser_params,
     parser;
-use pen,
-    bush_os,
-    bush_os.sdl,
-    bush_os.opengl,
+use interfaces.c,
+    pen,
+    spar_os,
+    spar_os.sdl,
+    spar_os.opengl,
     user_io,
     world,
     scanner,
     scanner_res,
-    string_util,
+    --string_util,
     -- scanner_arrays,
-    parser_aux,
+    --parser_aux,
     parser_params,
     parser,
-    bush_os;
+    spar_os;
 
 package body parser_pen is
 
@@ -2385,7 +2385,7 @@ end ParsePenPut;
 
 procedure ParsePenglClearIndex is
   -- Syntax: glClearIndex( c : GLfloat );
-  -- Source: bush_os.opengl.glClearIndex
+  -- Source: spar_os.opengl.glClearIndex
   c_val  : unbounded_string;
   c_type : identifier;
 begin
@@ -2413,7 +2413,7 @@ end ParsePenglClearIndex;
 
 procedure ParsePenglClearColor is
   -- Syntax: glClearColor( red, green, blue, alpha: GLclampf );
-  -- Source: bush_os.opengl.glClearColor
+  -- Source: spar_os.opengl.glClearColor
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -2453,7 +2453,7 @@ end ParsePenglClearColor;
 
 procedure ParsePenglClear is
   -- Syntax: glClear( mask: GLbitfield );
-  -- Source: bush_os.opengl.glClear
+  -- Source: spar_os.opengl.glClear
   mask_val  : unbounded_string;
   mask_type : identifier;
 begin
@@ -2484,7 +2484,7 @@ end ParsePenglClear;
 
 procedure ParsePenglIndexMask is
   -- Syntax: glIndexMask( mask : GLuint );
-  -- Source: bush_os.opengl.glIndexMask
+  -- Source: spar_os.opengl.glIndexMask
   mask_val  : unbounded_string;
   mask_type : identifier;
 begin
@@ -2512,7 +2512,7 @@ end ParsePenglIndexMask;
 
 procedure ParsePenglColorMask is
   -- Syntax: glColorMask( red, green, blue, alpha : GLboolean );
-  -- Source: bush_os.opengl.glColorMask
+  -- Source: spar_os.opengl.glColorMask
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -2549,7 +2549,7 @@ end ParsePenglColorMask;
 
 procedure ParsePenglAlphaFunc is
   -- Syntax: glAlphaFunc( func : GLalphacompare; ref : GLclampf );
-  -- Source: bush_os.opengl.glAlphaFunc
+  -- Source: spar_os.opengl.glAlphaFunc
   func_val  : unbounded_string;
   func_type : identifier;
   ref_val  : unbounded_string;
@@ -2580,7 +2580,7 @@ end ParsePenglAlphaFunc;
 
 procedure ParsePenglBlendFunc is
   -- Syntax: glBlendFunc( sfactor, dfactor : GLblending );
-  -- Source: bush_os.opengl.glBlendFunc
+  -- Source: spar_os.opengl.glBlendFunc
   sfactor_val  : unbounded_string;
   sfactor_type : identifier;
   dfactor_val  : unbounded_string;
@@ -2614,7 +2614,7 @@ end ParsePenglBlendFunc;
 
 procedure ParsePenglLogicOp is
   -- Syntax: glLogicOp( opcode : GLlogicops );
-  -- Source: bush_os.opengl.glLogicOp
+  -- Source: spar_os.opengl.glLogicOp
   opcode_val  : unbounded_string;
   opcode_type : identifier;
 begin
@@ -2642,7 +2642,7 @@ end ParsePenglLogicOp;
 
 procedure ParsePenglCullFace is
   -- Syntax: glCullFace( mode : GLbuffers );
-  -- Source: bush_os.opengl.glCullFace
+  -- Source: spar_os.opengl.glCullFace
   mode_val  : unbounded_string;
   mode_type : identifier;
 begin
@@ -2670,7 +2670,7 @@ end ParsePenglCullFace;
 
 procedure ParsePenglFrontFace is
   -- Syntax: glFrontFace( mode : GLpolygons );
-  -- Source: bush_os.opengl.glFrontFace
+  -- Source: spar_os.opengl.glFrontFace
   mode_val  : unbounded_string;
   mode_type : identifier;
 begin
@@ -2698,7 +2698,7 @@ end ParsePenglFrontFace;
 
 procedure ParsePenglPointSize is
   -- Syntax: glPointSize( size : GLfloat );
-  -- Source: bush_os.opengl.glPointSize
+  -- Source: spar_os.opengl.glPointSize
   size_val  : unbounded_string;
   size_type : identifier;
 begin
@@ -2726,7 +2726,7 @@ end ParsePenglPointSize;
 
 procedure ParsePenglLineWidth is
   -- Syntax: glLineWidth( width : GLfloat );
-  -- Source: bush_os.opengl.glLineWidth
+  -- Source: spar_os.opengl.glLineWidth
   width_val  : unbounded_string;
   width_type : identifier;
 begin
@@ -2754,7 +2754,7 @@ end ParsePenglLineWidth;
 
 procedure ParsePenglLineStipple is
   -- Syntax: glLineStipple( factor : GLint; pattern : GLushort );
-  -- Source: bush_os.opengl.glLineStipple
+  -- Source: spar_os.opengl.glLineStipple
   factor_val  : unbounded_string;
   factor_type : identifier;
   pattern_val  : unbounded_string;
@@ -2785,7 +2785,7 @@ end ParsePenglLineStipple;
 
 procedure ParsePenglPolygonMode is
   -- Syntax: glPolygonMode( face : GLbuffers; mode : GLpolygons );
-  -- Source: bush_os.opengl.glPolygonMode
+  -- Source: spar_os.opengl.glPolygonMode
   face_val  : unbounded_string;
   face_type : identifier;
   mode_val  : unbounded_string;
@@ -2816,7 +2816,7 @@ end ParsePenglPolygonMode;
 
 procedure ParsePenglPolygonOffset is
   -- Syntax: glPolygonOffset( factor : GLfloat; units : GLfloat );
-  -- Source: bush_os.opengl.glPolygonOffset
+  -- Source: spar_os.opengl.glPolygonOffset
   factor_val  : unbounded_string;
   factor_type : identifier;
   units_val  : unbounded_string;
@@ -2847,7 +2847,7 @@ end ParsePenglPolygonOffset;
 
 procedure ParsePenglPolygonStipple is
   -- Syntax: glPolygonStipple( mask : in out GLubyte );
-  -- Source: bush_os.opengl.glPolygonStipple
+  -- Source: spar_os.opengl.glPolygonStipple
   mask_id : identifier;
 begin
   expect( pen_glpolygonstipple_t );
@@ -2876,7 +2876,7 @@ end ParsePenglPolygonStipple;
 
 procedure ParsePenglGetPolygonStipple is
   -- Syntax: glGetPolygonStipple( mask : GLubyte );
-  -- Source: bush_os.opengl.glGetPolygonStipple
+  -- Source: spar_os.opengl.glGetPolygonStipple
   mask_val  : unbounded_string;
   mask_type : identifier;
 begin
@@ -2904,7 +2904,7 @@ end ParsePenglGetPolygonStipple;
 
 procedure ParsePenglEdgeFlag is
   -- Syntax: glEdgeFlag( flag : GLboolean );
-  -- Source: bush_os.opengl.glEdgeFlag
+  -- Source: spar_os.opengl.glEdgeFlag
   flag_val  : unbounded_string;
   flag_type : identifier;
 begin
@@ -2932,7 +2932,7 @@ end ParsePenglEdgeFlag;
 
 procedure ParsePenglEdgeFlagv is
   -- Syntax: glEdgeFlagv( flag : in out GLboolean );
-  -- Source: bush_os.opengl.glEdgeFlagv
+  -- Source: spar_os.opengl.glEdgeFlagv
   flag_id : identifier;
 begin
   expect( pen_gledgeflagv_t );
@@ -2961,7 +2961,7 @@ end ParsePenglEdgeFlagv;
 
 procedure ParsePenglScissor is
   -- Syntax: glScissor( x, y : GLint; width, height : GLsizei );
-  -- Source: bush_os.opengl.glScissor
+  -- Source: spar_os.opengl.glScissor
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -2988,7 +2988,7 @@ end ParsePenglScissor;
 -- TODO: to return array
 --procedure ParsePenglClipPlane is
 --  -- Syntax: glClipPlane( plane : GLusercplane; equation : in out GLdouble );
---  -- Source: bush_os.opengl.glClipPlane
+--  -- Source: spar_os.opengl.glClipPlane
 --  plane_val  : unbounded_string;
 --  plane_type : identifier;
 --  equation_val  : unbounded_string;
@@ -3011,7 +3011,7 @@ end ParsePenglScissor;
 -- TODO: to return array
 --procedure ParsePenglGetClipPlane is
 --  -- Syntax: glGetClipPlane( plane : GLusercplane; equation : in out GLdouble );
---  -- Source: bush_os.opengl.glGetClipPlane
+--  -- Source: spar_os.opengl.glGetClipPlane
 --  plane_val  : unbounded_string;
 --  plane_type : identifier;
 --  equation_val  : unbounded_string;
@@ -3042,7 +3042,7 @@ end ParsePenglScissor;
 
 procedure ParsePenglDrawBuffer is
   -- Syntax: glDrawBuffer( mode : GLbuffers );
-  -- Source: bush_os.opengl.glDrawBuffer
+  -- Source: spar_os.opengl.glDrawBuffer
   mode_val  : unbounded_string;
   mode_type : identifier;
 begin
@@ -3070,7 +3070,7 @@ end ParsePenglDrawBuffer;
 
 procedure ParsePenglReadBuffer is
   -- Syntax: glReadBuffer( mode : GLbuffers );
-  -- Source: bush_os.opengl.glReadBuffer
+  -- Source: spar_os.opengl.glReadBuffer
   mode_val  : unbounded_string;
   mode_type : identifier;
 begin
@@ -3100,7 +3100,7 @@ procedure ParsePenglEnable is
   -- Syntax: glEnable( cap : GLenum ); -- left as GLenum
   --         glEnable( cap : GLdbuffer );
   --         glEnable( cap : GLblending );
-  -- Source: bush_os.opengl.glEnable
+  -- Source: spar_os.opengl.glEnable
   cap_val  : unbounded_string;
   cap_type : identifier;
   baseType : identifier;
@@ -3140,7 +3140,7 @@ end ParsePenglEnable;
 
 procedure ParsePenglDisable is
   -- Syntax: glDisable( cap : GLenum ); -- left as GLenum
-  -- Source: bush_os.opengl.glDisable
+  -- Source: spar_os.opengl.glDisable
   cap_val  : unbounded_string;
   cap_type : identifier;
 begin
@@ -3171,7 +3171,7 @@ end ParsePenglDisable;
 
 procedure ParsePenglIsEnabled( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: glIsEnabled( cap : GLenum ) return GLboolean; -- left as GLenum
-  -- Source: bush_os.opengl.glIsEnabled
+  -- Source: spar_os.opengl.glIsEnabled
   cap_val  : unbounded_string;
   cap_type : identifier;
 begin
@@ -3203,7 +3203,7 @@ end ParsePenglIsEnabled;
 
 procedure ParsePenglEnableClientState is
   -- Syntax: glEnableClientState( cap : GLenum ); -- /* 1.1 */
-  -- Source: bush_os.opengl.glEnableClientState
+  -- Source: spar_os.opengl.glEnableClientState
   cap_val  : unbounded_string;
   cap_type : identifier;
 begin
@@ -3234,7 +3234,7 @@ end ParsePenglEnableClientState;
 #if OPENGL
 procedure ParsePenglDisableClientState is
   -- Syntax: glDisableClientState( cap : GLenum ); -- /* 1.1 */
-  -- Source: bush_os.opengl.glDisableClientState
+  -- Source: spar_os.opengl.glDisableClientState
   cap_val  : unbounded_string;
   cap_type : identifier;
 begin
@@ -3264,7 +3264,7 @@ end ParsePenglDisableClientState;
 -- TODO: this is a buffer overflow risk: the return size depends on the first param
 --procedure ParsePenglGetBooleanv is
 --  -- Syntax: glGetBooleanv( pname : GLenum; params : in out GLboolean );
---  -- Source: bush_os.opengl.glGetBooleanv
+--  -- Source: spar_os.opengl.glGetBooleanv
 --  pname_val  : unbounded_string;
 --  pname_type : identifier;
 --  params_id  : unbounded_string;
@@ -3286,7 +3286,7 @@ end ParsePenglDisableClientState;
 -- TODO: this is a buffer overflow risk: the return size depends on the first param
 --procedure ParsePenglGetDoublev is
 --  -- Syntax: glGetDoublev( pname : GLenum; params : in out GLdouble );
---  -- Source: bush_os.opengl.glGetDoublev
+--  -- Source: spar_os.opengl.glGetDoublev
 --  pname_val  : unbounded_string;
 --  pname_type : identifier;
 --  params_val  : unbounded_string;
@@ -3307,7 +3307,7 @@ end ParsePenglDisableClientState;
 -- TODO: this is a buffer overflow risk: the return size depends on the first param
 --procedure ParsePenglGetFloatv is
 --  -- Syntax: glGetFloatv( pname : GLenum; params : in out GLfloat );
---  -- Source: bush_os.opengl.glGetFloatv
+--  -- Source: spar_os.opengl.glGetFloatv
 --  pname_val  : unbounded_string;
 --  pname_type : identifier;
 --  params_val  : unbounded_string;
@@ -3328,7 +3328,7 @@ end ParsePenglDisableClientState;
 -- TODO: this is a buffer overflow risk: the return size depends on the first param
 --procedure ParsePenglGetIntegerv is
 --  -- Syntax: glGetIntegerv( pname : GLenum; params : in out GLint );
---  -- Source: bush_os.opengl.glGetIntegerv
+--  -- Source: spar_os.opengl.glGetIntegerv
 --  pname_val  : unbounded_string;
 --  pname_type : identifier;
 --  params_val  : unbounded_string;
@@ -3350,7 +3350,7 @@ end ParsePenglDisableClientState;
 
 procedure ParsePenglPushAttrib is
   -- Syntax: glPushAttrib( mask : GLbitfield );
-  -- Source: bush_os.opengl.glPushAttrib
+  -- Source: spar_os.opengl.glPushAttrib
   mask_val  : unbounded_string;
   mask_type : identifier;
 begin
@@ -3381,7 +3381,7 @@ end ParsePenglPushAttrib;
 
 procedure ParsePenglPopAttrib is
   -- Syntax: glPopAttrib;
-  -- Source: bush_os.opengl.glPopAttrib
+  -- Source: spar_os.opengl.glPopAttrib
 begin
   expect( pen_glpopattrib_t );
   if isExecutingCommand then
@@ -3409,7 +3409,7 @@ end ParsePenglPopAttrib;
 
 procedure ParsePenglPushClientAttrib is
   -- Syntax: glPushClientAttrib( mask : GLbitfield ); -- /* 1.1 */
-  -- Source: bush_os.opengl.glPushClientAttrib
+  -- Source: spar_os.opengl.glPushClientAttrib
   mask_val  : unbounded_string;
   mask_type : identifier;
 begin
@@ -3437,7 +3437,7 @@ end ParsePenglPushClientAttrib;
 
 procedure ParsePenglPopClientAttrib is
   -- Syntax: glPopClientAttrib; -- /* 1.1 */
-  -- Source: bush_os.opengl.glPopClientAttrib
+  -- Source: spar_os.opengl.glPopClientAttrib
 begin
   expect( pen_glpopclientattrib_t );
   if isExecutingCommand then
@@ -3462,7 +3462,7 @@ end ParsePenglPopClientAttrib;
 
 procedure ParsePenglRenderMode( result : out unbounded_string ) is
   -- Syntax: glRenderMode( mode : GLrendermodes ) return GLint;
-  -- Source: bush_os.opengl.glRenderMode
+  -- Source: spar_os.opengl.glRenderMode
   mode_val  : unbounded_string;
   mode_type : identifier;
 begin
@@ -3490,7 +3490,7 @@ end ParsePenglRenderMode;
 
 procedure ParsePenglGetError( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: glGetError return GLenum;
-  -- Source: bush_os.opengl.glGetError
+  -- Source: spar_os.opengl.glGetError
 begin
   kind := pen_glerrors_t;
   expect( pen_glgeterror_t );
@@ -3518,7 +3518,7 @@ end ParsePenglGetError;
 
 procedure ParsePenglGetString( result : out unbounded_string ) is
   -- Syntax: glGetString( name : GLenum ) return system.address; -- GLUbyte*
-  -- Source: bush_os.opengl.glGetString
+  -- Source: spar_os.opengl.glGetString
   name_val  : unbounded_string;
   name_type : identifier;
 begin
@@ -3550,7 +3550,7 @@ end ParsePenglGetString;
 
 procedure ParsePenglFinish is
   -- Syntax: glFinish;
-  -- Source: bush_os.opengl.glFinish
+  -- Source: spar_os.opengl.glFinish
 begin
   expect( pen_glfinish_t );
   if isExecutingCommand then
@@ -3578,7 +3578,7 @@ end ParsePenglFinish;
 
 procedure ParsePenglFlush is
   -- Syntax: glFlush;
-  -- Source: bush_os.opengl.glFlush
+  -- Source: spar_os.opengl.glFlush
 begin
   expect( pen_glflush_t );
   if isExecutingCommand then
@@ -3606,7 +3606,7 @@ end ParsePenglFlush;
 
 procedure ParsePenglHint is
   -- Syntax: glHint( target : GLhints; mode : GLhintmodes );
-  -- Source: bush_os.opengl.glHint
+  -- Source: spar_os.opengl.glHint
   target_val  : unbounded_string;
   target_type : identifier;
   mode_val  : unbounded_string;
@@ -3640,7 +3640,7 @@ end ParsePenglHint;
 
 procedure ParsePenglClearDepth is
   -- Syntax: glClearDepth( depth : GLclampd );
-  -- Source: bush_os.opengl.glClearDepth
+  -- Source: spar_os.opengl.glClearDepth
   depth_val  : unbounded_string;
   depth_type : identifier;
 begin
@@ -3671,7 +3671,7 @@ end ParsePenglClearDepth;
 
 procedure ParsePenglDepthFunc is
   -- Syntax: glDepthFunc( func : GLalphacompare );
-  -- Source: bush_os.opengl.glDepthFunc
+  -- Source: spar_os.opengl.glDepthFunc
   func_val  : unbounded_string;
   func_type : identifier;
 begin
@@ -3702,7 +3702,7 @@ end ParsePenglDepthFunc;
 
 procedure ParsePenglDepthMask is
   -- Syntax: glDepthMask( flag : GLboolean );
-  -- Source: bush_os.opengl.glDepthMask
+  -- Source: spar_os.opengl.glDepthMask
   flag_val  : unbounded_string;
   flag_type : identifier;
 begin
@@ -3733,7 +3733,7 @@ end ParsePenglDepthMask;
 
 procedure ParsePenglDepthRange is
   -- Syntax: glDepthRange( near_val, far_val : GLclampd );
-  -- Source: bush_os.opengl.glDepthRange
+  -- Source: spar_os.opengl.glDepthRange
   near_val_val  : unbounded_string;
   near_val_type : identifier;
   far_val_val  : unbounded_string;
@@ -3767,7 +3767,7 @@ end ParsePenglDepthRange;
 
 procedure ParsePenglClearAccum is
   -- Syntax: glClearAccum( red, green, blue, alpha : GLfloat );
-  -- Source: bush_os.opengl.glClearAccum
+  -- Source: spar_os.opengl.glClearAccum
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -3804,7 +3804,7 @@ end ParsePenglClearAccum;
 
 procedure ParsePenglAccum is
   -- Syntax: glAccum( op : GLenum; value : GLfloat );
-  -- Source: bush_os.opengl.glAccum
+  -- Source: spar_os.opengl.glAccum
   op_val  : unbounded_string;
   op_type : identifier;
   value_val  : unbounded_string;
@@ -3835,7 +3835,7 @@ end ParsePenglAccum;
 
 procedure ParsePenglMatrixMode is
   -- Syntax: glMatrixMode( mode : GLmodes );
-  -- Source: bush_os.opengl.glMatrixMode
+  -- Source: spar_os.opengl.glMatrixMode
   mode_val  : unbounded_string;
   mode_type : identifier;
 begin
@@ -3866,7 +3866,7 @@ end ParsePenglMatrixMode;
 
 procedure ParsePenglOrtho is
   -- Syntax: glOrtho( left, right, bottom, top, near_val, far_val : GLdouble );
-  -- Source: bush_os.opengl.glOrtho
+  -- Source: spar_os.opengl.glOrtho
   left_val  : unbounded_string;
   left_type : identifier;
   right_val  : unbounded_string;
@@ -3912,7 +3912,7 @@ end ParsePenglOrtho;
 
 procedure ParsePenglFrustum is
   -- Syntax: glFrustum( left, right, bottom, top, near_val, far_val : GLdouble );
-  -- Source: bush_os.opengl.glFrustum
+  -- Source: spar_os.opengl.glFrustum
   left_val  : unbounded_string;
   left_type : identifier;
   right_val  : unbounded_string;
@@ -3955,7 +3955,7 @@ end ParsePenglFrustum;
 
 procedure ParsePenglViewport is
   -- Syntax: glViewport( x, y : GLint; width, height : GLsizei );
-  -- Source: bush_os.opengl.glViewport
+  -- Source: spar_os.opengl.glViewport
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -3995,7 +3995,7 @@ end ParsePenglViewport;
 
 procedure ParsePenglPushMatrix is
   -- Syntax: glPushMatrix;
-  -- Source: bush_os.opengl.glPushMatrix
+  -- Source: spar_os.opengl.glPushMatrix
 begin
   expect( pen_glpushmatrix_t );
   if isExecutingCommand then
@@ -4023,7 +4023,7 @@ end ParsePenglPushMatrix;
 
 procedure ParsePenglPopMatrix is
   -- Syntax: glPopMatrix;
-  -- Source: bush_os.opengl.glPopMatrix
+  -- Source: spar_os.opengl.glPopMatrix
 begin
   expect( pen_glpopmatrix_t );
   if isExecutingCommand then
@@ -4051,7 +4051,7 @@ end ParsePenglPopMatrix;
 
 procedure ParsePenglLoadIdentity is
   -- Syntax: glLoadIdentity;
-  -- Source: bush_os.opengl.glLoadIdentity
+  -- Source: spar_os.opengl.glLoadIdentity
 begin
   expect( pen_glloadidentity_t );
   if isExecutingCommand then
@@ -4079,7 +4079,7 @@ end ParsePenglLoadIdentity;
 
 procedure ParsePenglLoadMatrixd is
   -- Syntax: glLoadMatrixd( m : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glLoadMatrixd
+  -- Source: spar_os.opengl.glLoadMatrixd
   m_val  : unbounded_string;
   -- m_type : identifier;
 begin
@@ -4114,7 +4114,7 @@ end ParsePenglLoadMatrixd;
 
 procedure ParsePenglLoadMatrixf is
   -- Syntax: glLoadMatrixf( m : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glLoadMatrixf
+  -- Source: spar_os.opengl.glLoadMatrixf
   m_val  : unbounded_string;
 --  m_type : identifier;
 begin
@@ -4149,7 +4149,7 @@ end ParsePenglLoadMatrixf;
 
 procedure ParsePenglMultMatrixd is
   -- Syntax: glMultMatrixd( m : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glMultMatrixd
+  -- Source: spar_os.opengl.glMultMatrixd
   m_val  : unbounded_string;
 --  m_type : identifier;
 begin
@@ -4184,7 +4184,7 @@ end ParsePenglMultMatrixd;
 
 procedure ParsePenglMultMatrixf is
   -- Syntax: glMultMatrixf( m : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glMultMatrixf
+  -- Source: spar_os.opengl.glMultMatrixf
   m_val  : unbounded_string;
 --  m_type : identifier;
 begin
@@ -4219,7 +4219,7 @@ end ParsePenglMultMatrixf;
 
 procedure ParsePenglRotated is
   -- Syntax: glRotated( angle, x, y, z : GLdouble );
-  -- Source: bush_os.opengl.glRotated
+  -- Source: spar_os.opengl.glRotated
   angle_val  : unbounded_string;
   angle_type : identifier;
   x_val  : unbounded_string;
@@ -4259,7 +4259,7 @@ end ParsePenglRotated;
 
 procedure ParsePenglRotatef is
   -- Syntax: glRotatef( angle, x, y, z : GLfloat );
-  -- Source: bush_os.opengl.glRotatef
+  -- Source: spar_os.opengl.glRotatef
   angle_val  : unbounded_string;
   angle_type : identifier;
   x_val  : unbounded_string;
@@ -4299,7 +4299,7 @@ end ParsePenglRotatef;
 
 procedure ParsePenglScaled is
   -- Syntax: glScaled( x, y, z : GLdouble );
-  -- Source: bush_os.opengl.glScaled
+  -- Source: spar_os.opengl.glScaled
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -4336,7 +4336,7 @@ end ParsePenglScaled;
 
 procedure ParsePenglScalef is
   -- Syntax: glScalef( x, y, z : GLfloat );
-  -- Source: bush_os.opengl.glScalef
+  -- Source: spar_os.opengl.glScalef
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -4370,7 +4370,7 @@ end ParsePenglScalef;
 
 procedure ParsePenglTranslated is
   -- Syntax: glTranslated( x, y, z : GLdouble );
-  -- Source: bush_os.opengl.glTranslated
+  -- Source: spar_os.opengl.glTranslated
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -4407,7 +4407,7 @@ end ParsePenglTranslated;
 
 procedure ParsePenglTranslatef is
   -- Syntax: glTranslatef( x, y,z : GLfloat );
-  -- Source: bush_os.opengl.glTranslatef
+  -- Source: spar_os.opengl.glTranslatef
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -4444,7 +4444,7 @@ end ParsePenglTranslatef;
 
 procedure ParsePenglIsList( result : out unbounded_string ) is
   -- Syntax: glIsList( list : GLuint ) return GLboolean;
-  -- Source: bush_os.opengl.glIsList
+  -- Source: spar_os.opengl.glIsList
   list_val  : unbounded_string;
   list_type : identifier;
 begin
@@ -4472,7 +4472,7 @@ end ParsePenglIsList;
 
 procedure ParsePenglDeleteLists is
   -- Syntax: glDeleteLists( list : GLuint; rng : GLsizei );
-  -- Source: bush_os.opengl.glDeleteLists
+  -- Source: spar_os.opengl.glDeleteLists
   list_val  : unbounded_string;
   list_type : identifier;
   rng_val  : unbounded_string;
@@ -4503,7 +4503,7 @@ end ParsePenglDeleteLists;
 
 procedure ParsePenglGenLists( result : out unbounded_string ) is
   -- Syntax: glGenLists( rng : GLsizei ) return GLuint;
-  -- Source: bush_os.opengl.glGenLists
+  -- Source: spar_os.opengl.glGenLists
   rng_val  : unbounded_string;
   rng_type : identifier;
 begin
@@ -4531,7 +4531,7 @@ end ParsePenglGenLists;
 
 procedure ParsePenglNewList is
   -- Syntax: glNewList( list : GLuint; mode : GLdlists );
-  -- Source: bush_os.opengl.glNewList
+  -- Source: spar_os.opengl.glNewList
   list_val  : unbounded_string;
   list_type : identifier;
   mode_val  : unbounded_string;
@@ -4562,7 +4562,7 @@ end ParsePenglNewList;
 
 procedure ParsePenglEndList is
   -- Syntax: glEndList;
-  -- Source: bush_os.opengl.glEndList
+  -- Source: spar_os.opengl.glEndList
 begin
   expect( pen_glendlist_t );
   if isExecutingCommand then
@@ -4587,7 +4587,7 @@ end ParsePenglEndList;
 
 procedure ParsePenglCallList is
   -- Syntax: glCallList( list : GLuint );
-  -- Source: bush_os.opengl.glCallList
+  -- Source: spar_os.opengl.glCallList
   list_val  : unbounded_string;
   list_type : identifier;
 begin
@@ -4615,7 +4615,7 @@ end ParsePenglCallList;
 
 procedure ParsePenglCallLists is
   -- Syntax: glCallLists( n : GLsizei; kind : GLtypes; lists : System.address );
-  -- Source: bush_os.opengl.glCallLists
+  -- Source: spar_os.opengl.glCallLists
   n_val  : unbounded_string;
   n_type : identifier;
   kind_val  : unbounded_string;
@@ -4654,7 +4654,7 @@ end ParsePenglCallLists;
 
 procedure ParsePenglListBase is
   -- Syntax: glListBase( base : GLuint );
-  -- Source: bush_os.opengl.glListBase
+  -- Source: spar_os.opengl.glListBase
   base_val  : unbounded_string;
   base_type : identifier;
 begin
@@ -4682,7 +4682,7 @@ end ParsePenglListBase;
 
 procedure ParsePenglBegin is
   -- Syntax: glBegin( mode : GLprimitives );
-  -- Source: bush_os.opengl.glBegin
+  -- Source: spar_os.opengl.glBegin
   mode_val  : unbounded_string;
   mode_type : identifier;
 begin
@@ -4711,7 +4711,7 @@ end ParsePenglBegin;
 
 procedure ParsePenglEnd is
   -- Syntax: glEnd;
-  -- Source: bush_os.opengl.glEnd
+  -- Source: spar_os.opengl.glEnd
 begin
   expect( pen_glend_t );
   if isExecutingCommand then
@@ -4739,7 +4739,7 @@ end ParsePenglEnd;
 
 procedure ParsePenglVertex2d is
   -- Syntax: glVertex2d( x, y : GLdouble );
-  -- Source: bush_os.opengl.glVertex2d
+  -- Source: spar_os.opengl.glVertex2d
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -4770,7 +4770,7 @@ end ParsePenglVertex2d;
 
 procedure ParsePenglVertex2f is
   -- Syntax: glVertex2f( x, y : GLfloat );
-  -- Source: bush_os.opengl.glVertex2f
+  -- Source: spar_os.opengl.glVertex2f
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -4801,7 +4801,7 @@ end ParsePenglVertex2f;
 
 procedure ParsePenglVertex2i is
   -- Syntax: glVertex2i( x, y : GLint );
-  -- Source: bush_os.opengl.glVertex2i
+  -- Source: spar_os.opengl.glVertex2i
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -4832,7 +4832,7 @@ end ParsePenglVertex2i;
 
 procedure ParsePenglVertex2s is
   -- Syntax: glVertex2s( x, y : GLshort );
-  -- Source: bush_os.opengl.glVertex2s
+  -- Source: spar_os.opengl.glVertex2s
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -4863,7 +4863,7 @@ end ParsePenglVertex2s;
 
 procedure ParsePenglVertex3d is
   -- Syntax: glVertex3d( x, y, z : GLdouble );
-  -- Source: bush_os.opengl.glVertex3d
+  -- Source: spar_os.opengl.glVertex3d
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -4898,7 +4898,7 @@ end ParsePenglVertex3d;
 
 procedure ParsePenglVertex3f is
   -- Syntax: glVertex3f( x, y, z : GLfloat );
-  -- Source: bush_os.opengl.glVertex3f
+  -- Source: spar_os.opengl.glVertex3f
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -4933,7 +4933,7 @@ end ParsePenglVertex3f;
 
 procedure ParsePenglVertex3i is
   -- Syntax: glVertex3i( x, y, z : GLint );
-  -- Source: bush_os.opengl.glVertex3i
+  -- Source: spar_os.opengl.glVertex3i
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -4968,7 +4968,7 @@ end ParsePenglVertex3i;
 
 procedure ParsePenglVertex3s is
   -- Syntax: glVertex3s( x, y, z : GLshort );
-  -- Source: bush_os.opengl.glVertex3s
+  -- Source: spar_os.opengl.glVertex3s
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -5003,7 +5003,7 @@ end ParsePenglVertex3s;
 
 procedure ParsePenglVertex4d is
   -- Syntax: glVertex4d( x, y, z, w : GLdouble );
-  -- Source: bush_os.opengl.glVertex4d
+  -- Source: spar_os.opengl.glVertex4d
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -5041,7 +5041,7 @@ end ParsePenglVertex4d;
 
 procedure ParsePenglVertex4f is
   -- Syntax: glVertex4f( x, y, z, w : GLfloat );
-  -- Source: bush_os.opengl.glVertex4f
+  -- Source: spar_os.opengl.glVertex4f
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -5078,7 +5078,7 @@ end ParsePenglVertex4f;
 
 procedure ParsePenglVertex4i is
   -- Syntax: glVertex4i( x, y, z, w : GLint );
-  -- Source: bush_os.opengl.glVertex4i
+  -- Source: spar_os.opengl.glVertex4i
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -5115,7 +5115,7 @@ end ParsePenglVertex4i;
 
 procedure ParsePenglVertex4s is
   -- Syntax: glVertex4s( x, y, z, w : GLshort );
-  -- Source: bush_os.opengl.glVertex4s
+  -- Source: spar_os.opengl.glVertex4s
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -5152,7 +5152,7 @@ end ParsePenglVertex4s;
 
 procedure ParsePenglVertex2dv is
   -- Syntax: glVertex2dv( v : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glVertex2dv
+  -- Source: spar_os.opengl.glVertex2dv
   id       : identifier;
   theArray : resPtr;
 begin
@@ -5186,7 +5186,7 @@ end ParsePenglVertex2dv;
 
 procedure ParsePenglVertex2fv is
   -- Syntax: glVertex2fv( v : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glVertex2fv
+  -- Source: spar_os.opengl.glVertex2fv
   id       : identifier;
   theArray : resPtr;
 begin
@@ -5220,7 +5220,7 @@ end ParsePenglVertex2fv;
 
 procedure ParsePenglVertex2iv is
   -- Syntax: glVertex2iv( v : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glVertex2iv
+  -- Source: spar_os.opengl.glVertex2iv
   id       : identifier;
   theArray : resPtr;
 begin
@@ -5254,7 +5254,7 @@ end ParsePenglVertex2iv;
 
 procedure ParsePenglVertex2sv is
   -- Syntax: glVertex2sv( v : GL_Short_Array_Ptr );
-  -- Source: bush_os.opengl.glVertex2sv
+  -- Source: spar_os.opengl.glVertex2sv
   id       : identifier;
   theArray : resPtr;
 begin
@@ -5288,7 +5288,7 @@ end ParsePenglVertex2sv;
 
 procedure ParsePenglVertex3dv is
   -- Syntax: glVertex3dv( v : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glVertex3dv
+  -- Source: spar_os.opengl.glVertex3dv
   id       : identifier;
   theArray : resPtr;
 begin
@@ -5322,7 +5322,7 @@ end ParsePenglVertex3dv;
 
 procedure ParsePenglVertex3fv is
   -- Syntax: glVertex3fv( v : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glVertex3fv
+  -- Source: spar_os.opengl.glVertex3fv
   id       : identifier;
   theArray : resPtr;
 begin
@@ -5356,7 +5356,7 @@ end ParsePenglVertex3fv;
 
 procedure ParsePenglVertex3iv is
   -- Syntax: glVertex3iv( v : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glVertex3iv
+  -- Source: spar_os.opengl.glVertex3iv
   id       : identifier;
   theArray : resPtr;
 begin
@@ -5390,7 +5390,7 @@ end ParsePenglVertex3iv;
 
 procedure ParsePenglVertex3sv is
   -- Syntax: glVertex3sv( v : GL_Short_Array_Ptr );
-  -- Source: bush_os.opengl.glVertex3sv
+  -- Source: spar_os.opengl.glVertex3sv
   id       : identifier;
   theArray : resPtr;
 begin
@@ -5424,7 +5424,7 @@ end ParsePenglVertex3sv;
 
 procedure ParsePenglVertex4dv is
   -- Syntax: glVertex4dv( v : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glVertex4dv
+  -- Source: spar_os.opengl.glVertex4dv
   id       : identifier;
   theArray : resPtr;
 begin
@@ -5458,7 +5458,7 @@ end ParsePenglVertex4dv;
 
 procedure ParsePenglVertex4fv is
   -- Syntax: glVertex4fv( v : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glVertex4fv
+  -- Source: spar_os.opengl.glVertex4fv
   id       : identifier;
   theArray : resPtr;
 begin
@@ -5492,7 +5492,7 @@ end ParsePenglVertex4fv;
 
 procedure ParsePenglVertex4iv is
   -- Syntax: glVertex4iv( v : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glVertex4iv
+  -- Source: spar_os.opengl.glVertex4iv
   id       : identifier;
   theArray : resPtr;
 begin
@@ -5526,7 +5526,7 @@ end ParsePenglVertex4iv;
 
 procedure ParsePenglVertex4sv is
   -- Syntax: glVertex4sv( v : GL_Short_Array_Ptr );
-  -- Source: bush_os.opengl.glVertex4sv
+  -- Source: spar_os.opengl.glVertex4sv
   id       : identifier;
   theArray : resPtr;
 begin
@@ -5560,7 +5560,7 @@ end ParsePenglVertex4sv;
 
 procedure ParsePenglNormal3b is
   -- Syntax: glNormal3b( nx, ny, nz : GLbyte );
-  -- Source: bush_os.opengl.glNormal3b
+  -- Source: spar_os.opengl.glNormal3b
   nx_val  : unbounded_string;
   nx_type : identifier;
   ny_val  : unbounded_string;
@@ -5594,7 +5594,7 @@ end ParsePenglNormal3b;
 
 procedure ParsePenglNormal3d is
   -- Syntax: glNormal3d( nx, ny, nz : GLdouble );
-  -- Source: bush_os.opengl.glNormal3d
+  -- Source: spar_os.opengl.glNormal3d
   nx_val  : unbounded_string;
   nx_type : identifier;
   ny_val  : unbounded_string;
@@ -5628,7 +5628,7 @@ end ParsePenglNormal3d;
 
 procedure ParsePenglNormal3f is
   -- Syntax: glNormal3f( nx, ny, nz : GLfloat );
-  -- Source: bush_os.opengl.glNormal3f
+  -- Source: spar_os.opengl.glNormal3f
   nx_val  : unbounded_string;
   nx_type : identifier;
   ny_val  : unbounded_string;
@@ -5662,7 +5662,7 @@ end ParsePenglNormal3f;
 
 procedure ParsePenglNormal3i is
   -- Syntax: glNormal3i( nx, ny, nz : GLint );
-  -- Source: bush_os.opengl.glNormal3i
+  -- Source: spar_os.opengl.glNormal3i
   nx_val  : unbounded_string;
   nx_type : identifier;
   ny_val  : unbounded_string;
@@ -5696,7 +5696,7 @@ end ParsePenglNormal3i;
 
 procedure ParsePenglNormal3s is
   -- Syntax: glNormal3s( nx, ny, nz : GLshort );
-  -- Source: bush_os.opengl.glNormal3s
+  -- Source: spar_os.opengl.glNormal3s
   nx_val  : unbounded_string;
   nx_type : identifier;
   ny_val  : unbounded_string;
@@ -5730,7 +5730,7 @@ end ParsePenglNormal3s;
 
 procedure ParsePenglNormal3bv is
   -- Syntax: glNormal3bv( v : GL_Byte_Array_Ptr );
-  -- Source: bush_os.opengl.glNormal3bv
+  -- Source: spar_os.opengl.glNormal3bv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -5764,7 +5764,7 @@ end ParsePenglNormal3bv;
 
 procedure ParsePenglNormal3dv is
   -- Syntax: glNormal3dv( v : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glNormal3dv
+  -- Source: spar_os.opengl.glNormal3dv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -5798,7 +5798,7 @@ end ParsePenglNormal3dv;
 
 procedure ParsePenglNormal3fv is
   -- Syntax: glNormal3fv( v : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glNormal3fv
+  -- Source: spar_os.opengl.glNormal3fv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -5832,7 +5832,7 @@ end ParsePenglNormal3fv;
 
 procedure ParsePenglNormal3iv is
   -- Syntax: glNormal3iv( v : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glNormal3iv
+  -- Source: spar_os.opengl.glNormal3iv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -5866,7 +5866,7 @@ end ParsePenglNormal3iv;
 
 procedure ParsePenglNormal3sv is
   -- Syntax: glNormal3sv( v : GL_Short_Array_Ptr );
-  -- Source: bush_os.opengl.glNormal3sv
+  -- Source: spar_os.opengl.glNormal3sv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -5900,7 +5900,7 @@ end ParsePenglNormal3sv;
 
 procedure ParsePenglIndexd is
   -- Syntax: glIndexd( c : GLdouble );
-  -- Source: bush_os.opengl.glIndexd
+  -- Source: spar_os.opengl.glIndexd
   c_val  : unbounded_string;
   c_type : identifier;
 begin
@@ -5928,7 +5928,7 @@ end ParsePenglIndexd;
 
 procedure ParsePenglIndexf is
   -- Syntax: glIndexf( c : GLfloat );
-  -- Source: bush_os.opengl.glIndexf
+  -- Source: spar_os.opengl.glIndexf
   c_val  : unbounded_string;
   c_type : identifier;
 begin
@@ -5956,7 +5956,7 @@ end ParsePenglIndexf;
 
 procedure ParsePenglIndexi is
   -- Syntax: glIndexi( c : GLint );
-  -- Source: bush_os.opengl.glIndexi
+  -- Source: spar_os.opengl.glIndexi
   c_val  : unbounded_string;
   c_type : identifier;
 begin
@@ -5984,7 +5984,7 @@ end ParsePenglIndexi;
 
 procedure ParsePenglIndexs is
   -- Syntax: glIndexs( c : GLshort );
-  -- Source: bush_os.opengl.glIndexs
+  -- Source: spar_os.opengl.glIndexs
   c_val  : unbounded_string;
   c_type : identifier;
 begin
@@ -6012,7 +6012,7 @@ end ParsePenglIndexs;
 
 procedure ParsePenglIndexub is
   -- Syntax: glIndexub( c : GLubyte ); -- /* 1.1 */
-  -- Source: bush_os.opengl.glIndexub
+  -- Source: spar_os.opengl.glIndexub
   c_val  : unbounded_string;
   c_type : identifier;
 begin
@@ -6040,7 +6040,7 @@ end ParsePenglIndexub;
 
 procedure ParsePenglIndexdv is
   -- Syntax: glIndexdv( c : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glIndexdv
+  -- Source: spar_os.opengl.glIndexdv
   c_val  : unbounded_string;
 --  c_type : identifier;
 begin
@@ -6074,7 +6074,7 @@ end ParsePenglIndexdv;
 
 procedure ParsePenglIndexfv is
   -- Syntax: glIndexfv( c : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glIndexfv
+  -- Source: spar_os.opengl.glIndexfv
   c_val  : unbounded_string;
 --  c_type : identifier;
 begin
@@ -6108,7 +6108,7 @@ end ParsePenglIndexfv;
 
 procedure ParsePenglIndexiv is
   -- Syntax: glIndexiv( c : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glIndexiv
+  -- Source: spar_os.opengl.glIndexiv
   c_val  : unbounded_string;
 --  c_type : identifier;
 begin
@@ -6142,7 +6142,7 @@ end ParsePenglIndexiv;
 
 procedure ParsePenglIndexsv is
   -- Syntax: glIndexsv( c : GL_Short_Array_Ptr );
-  -- Source: bush_os.opengl.glIndexsv
+  -- Source: spar_os.opengl.glIndexsv
   c_val  : unbounded_string;
 --  c_type : identifier;
 begin
@@ -6176,7 +6176,7 @@ end ParsePenglIndexsv;
 
 procedure ParsePenglIndexubv is
   -- Syntax: glIndexubv( c : GL_UByte_Array_Ptr ); -- /* 1.1 */
-  -- Source: bush_os.opengl.glIndexubv
+  -- Source: spar_os.opengl.glIndexubv
   c_val  : unbounded_string;
 --  c_type : identifier;
 begin
@@ -6244,7 +6244,7 @@ end ParsePenglColor3;
 
 procedure ParsePenglColor3b is
   -- Syntax: glColor3b( red, green, blue : GLbyte );
-  -- Source: bush_os.opengl.glColor3b
+  -- Source: spar_os.opengl.glColor3b
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -6280,7 +6280,7 @@ end ParsePenglColor3b;
 
 procedure ParsePenglColor3d is
   -- Syntax: glColor3d( red, green, blue : GLdouble );
-  -- Source: bush_os.opengl.glColor3d
+  -- Source: spar_os.opengl.glColor3d
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -6316,7 +6316,7 @@ end ParsePenglColor3d;
 
 procedure ParsePenglColor3f is
   -- Syntax: glColor3f( red, green, blue : GLfloat );
-  -- Source: bush_os.opengl.glColor3f
+  -- Source: spar_os.opengl.glColor3f
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -6352,7 +6352,7 @@ end ParsePenglColor3f;
 
 procedure ParsePenglColor3i is
   -- Syntax: glColor3i( red, green, blue : GLint );
-  -- Source: bush_os.opengl.glColor3i
+  -- Source: spar_os.opengl.glColor3i
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -6388,7 +6388,7 @@ end ParsePenglColor3i;
 
 procedure ParsePenglColor3s is
   -- Syntax: glColor3s( red, green, blue : GLshort );
-  -- Source: bush_os.opengl.glColor3s
+  -- Source: spar_os.opengl.glColor3s
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -6424,7 +6424,7 @@ end ParsePenglColor3s;
 
 procedure ParsePenglColor3ub is
   -- Syntax: glColor3ub( red, green, blue : GLubyte );
-  -- Source: bush_os.opengl.glColor3ub
+  -- Source: spar_os.opengl.glColor3ub
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -6460,7 +6460,7 @@ end ParsePenglColor3ub;
 
 procedure ParsePenglColor3ui is
   -- Syntax: glColor3ui( red, green, blue : GLuint );
-  -- Source: bush_os.opengl.glColor3ui
+  -- Source: spar_os.opengl.glColor3ui
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -6496,7 +6496,7 @@ end ParsePenglColor3ui;
 
 procedure ParsePenglColor3us is
   -- Syntax: glColor3us( red, green, blue : GLushort );
-  -- Source: bush_os.opengl.glColor3us
+  -- Source: spar_os.opengl.glColor3us
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -6571,7 +6571,7 @@ end ParsePenglColor4;
 
 procedure ParsePenglColor4b is
   -- Syntax: glColor4b( red, green, blue, alpha : GLbyte );
-  -- Source: bush_os.opengl.glColor4b
+  -- Source: spar_os.opengl.glColor4b
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -6610,7 +6610,7 @@ end ParsePenglColor4b;
 
 procedure ParsePenglColor4d is
   -- Syntax: glColor4d( red, green, blue, alpha : GLdouble );
-  -- Source: bush_os.opengl.glColor4d
+  -- Source: spar_os.opengl.glColor4d
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -6649,7 +6649,7 @@ end ParsePenglColor4d;
 
 procedure ParsePenglColor4f is
   -- Syntax: glColor4f( red, green, blue, alpha : GLfloat );
-  -- Source: bush_os.opengl.glColor4f
+  -- Source: spar_os.opengl.glColor4f
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -6688,7 +6688,7 @@ end ParsePenglColor4f;
 
 procedure ParsePenglColor4i is
   -- Syntax: glColor4i( red, green, blue, alpha : GLint );
-  -- Source: bush_os.opengl.glColor4i
+  -- Source: spar_os.opengl.glColor4i
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -6727,7 +6727,7 @@ end ParsePenglColor4i;
 
 procedure ParsePenglColor4s is
   -- Syntax: glColor4s( red, green, blue, alpha : GLshort );
-  -- Source: bush_os.opengl.glColor4s
+  -- Source: spar_os.opengl.glColor4s
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -6766,7 +6766,7 @@ end ParsePenglColor4s;
 
 procedure ParsePenglColor4ub is
   -- Syntax: glColor4ub( red, green, blue, alpha : GLubyte );
-  -- Source: bush_os.opengl.glColor4ub
+  -- Source: spar_os.opengl.glColor4ub
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -6805,7 +6805,7 @@ end ParsePenglColor4ub;
 
 procedure ParsePenglColor4ui is
   -- Syntax: glColor4ui( red, green, blue, alpha : GLuint );
-  -- Source: bush_os.opengl.glColor4ui
+  -- Source: spar_os.opengl.glColor4ui
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -6844,7 +6844,7 @@ end ParsePenglColor4ui;
 
 procedure ParsePenglColor4us is
   -- Syntax: glColor4us( red, green, blue, alpha : GLushort );
-  -- Source: bush_os.opengl.glColor4us
+  -- Source: spar_os.opengl.glColor4us
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -6883,7 +6883,7 @@ end ParsePenglColor4us;
 
 procedure ParsePenglColor3bv is
   -- Syntax: glColor3bv( v : GL_Byte_Array_Ptr );
-  -- Source: bush_os.opengl.glColor3bv
+  -- Source: spar_os.opengl.glColor3bv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -6917,7 +6917,7 @@ end ParsePenglColor3bv;
 
 procedure ParsePenglColor3dv is
   -- Syntax: glColor3dv( v : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glColor3dv
+  -- Source: spar_os.opengl.glColor3dv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -6951,7 +6951,7 @@ end ParsePenglColor3dv;
 
 procedure ParsePenglColor3fv is
   -- Syntax: glColor3fv( v : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glColor3fv
+  -- Source: spar_os.opengl.glColor3fv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -6985,7 +6985,7 @@ end ParsePenglColor3fv;
 
 procedure ParsePenglColor3iv is
   -- Syntax: glColor3iv( v : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glColor3iv
+  -- Source: spar_os.opengl.glColor3iv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -7019,7 +7019,7 @@ end ParsePenglColor3iv;
 
 procedure ParsePenglColor3sv is
   -- Syntax: glColor3sv( v : GL_Short_Array_Ptr );
-  -- Source: bush_os.opengl.glColor3sv
+  -- Source: spar_os.opengl.glColor3sv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -7053,7 +7053,7 @@ end ParsePenglColor3sv;
 
 procedure ParsePenglColor3ubv is
   -- Syntax: glColor3ubv( v : GL_UByte_Array_Ptr );
-  -- Source: bush_os.opengl.glColor3ubv
+  -- Source: spar_os.opengl.glColor3ubv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -7087,7 +7087,7 @@ end ParsePenglColor3ubv;
 
 procedure ParsePenglColor3uiv is
   -- Syntax: glColor3uiv( v : GL_UInt_Array_Ptr );
-  -- Source: bush_os.opengl.glColor3uiv
+  -- Source: spar_os.opengl.glColor3uiv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -7121,7 +7121,7 @@ end ParsePenglColor3uiv;
 
 procedure ParsePenglColor3usv is
   -- Syntax: glColor3usv( v : GL_UShort_Array_Ptr );
-  -- Source: bush_os.opengl.glColor3usv
+  -- Source: spar_os.opengl.glColor3usv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -7155,7 +7155,7 @@ end ParsePenglColor3usv;
 
 procedure ParsePenglColor4bv is
   -- Syntax: glColor4bv( v : GL_Byte_Array_Ptr );
-  -- Source: bush_os.opengl.glColor4bv
+  -- Source: spar_os.opengl.glColor4bv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -7189,7 +7189,7 @@ end ParsePenglColor4bv;
 
 procedure ParsePenglColor4dv is
   -- Syntax: glColor4dv( v : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glColor4dv
+  -- Source: spar_os.opengl.glColor4dv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -7223,7 +7223,7 @@ end ParsePenglColor4dv;
 
 procedure ParsePenglColor4fv is
   -- Syntax: glColor4fv( v : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glColor4fv
+  -- Source: spar_os.opengl.glColor4fv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -7257,7 +7257,7 @@ end ParsePenglColor4fv;
 
 procedure ParsePenglColor4iv is
   -- Syntax: glColor4iv( v : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glColor4iv
+  -- Source: spar_os.opengl.glColor4iv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -7291,7 +7291,7 @@ end ParsePenglColor4iv;
 
 procedure ParsePenglColor4sv is
   -- Syntax: glColor4sv( v : GL_Short_Array_Ptr );
-  -- Source: bush_os.opengl.glColor4sv
+  -- Source: spar_os.opengl.glColor4sv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -7325,7 +7325,7 @@ end ParsePenglColor4sv;
 
 procedure ParsePenglColor4ubv is
   -- Syntax: glColor4ubv( v : GL_UByte_Array_Ptr );
-  -- Source: bush_os.opengl.glColor4ubv
+  -- Source: spar_os.opengl.glColor4ubv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -7359,7 +7359,7 @@ end ParsePenglColor4ubv;
 
 procedure ParsePenglColor4uiv is
   -- Syntax: glColor4uiv( v : GL_UInt_Array_Ptr );
-  -- Source: bush_os.opengl.glColor4uiv
+  -- Source: spar_os.opengl.glColor4uiv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -7393,7 +7393,7 @@ end ParsePenglColor4uiv;
 
 procedure ParsePenglColor4usv is
   -- Syntax: glColor4usv( v : GL_UShort_Array_Ptr );
-  -- Source: bush_os.opengl.glColor4usv
+  -- Source: spar_os.opengl.glColor4usv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -7427,7 +7427,7 @@ end ParsePenglColor4usv;
 
 procedure ParsePenglTexCoord1d is
   -- Syntax: glTexCoord1d( s : GLdouble );
-  -- Source: bush_os.opengl.glTexCoord1d
+  -- Source: spar_os.opengl.glTexCoord1d
   s_val  : unbounded_string;
   s_type : identifier;
 begin
@@ -7455,7 +7455,7 @@ end ParsePenglTexCoord1d;
 
 procedure ParsePenglTexCoord1f is
   -- Syntax: glTexCoord1f( s : GLfloat );
-  -- Source: bush_os.opengl.glTexCoord1f
+  -- Source: spar_os.opengl.glTexCoord1f
   s_val  : unbounded_string;
   s_type : identifier;
 begin
@@ -7483,7 +7483,7 @@ end ParsePenglTexCoord1f;
 
 procedure ParsePenglTexCoord1i is
   -- Syntax: glTexCoord1i( s : GLint );
-  -- Source: bush_os.opengl.glTexCoord1i
+  -- Source: spar_os.opengl.glTexCoord1i
   s_val  : unbounded_string;
   s_type : identifier;
 begin
@@ -7511,7 +7511,7 @@ end ParsePenglTexCoord1i;
 
 procedure ParsePenglTexCoord1s is
   -- Syntax: glTexCoord1s( s : GLshort );
-  -- Source: bush_os.opengl.glTexCoord1s
+  -- Source: spar_os.opengl.glTexCoord1s
   s_val  : unbounded_string;
   s_type : identifier;
 begin
@@ -7539,7 +7539,7 @@ end ParsePenglTexCoord1s;
 
 procedure ParsePenglTexCoord2d is
   -- Syntax: glTexCoord2d( s, t : GLdouble );
-  -- Source: bush_os.opengl.glTexCoord2d
+  -- Source: spar_os.opengl.glTexCoord2d
   s_val  : unbounded_string;
   s_type : identifier;
   t_val  : unbounded_string;
@@ -7570,7 +7570,7 @@ end ParsePenglTexCoord2d;
 
 procedure ParsePenglTexCoord2f is
   -- Syntax: glTexCoord2f( s, t : GLfloat );
-  -- Source: bush_os.opengl.glTexCoord2f
+  -- Source: spar_os.opengl.glTexCoord2f
   s_val  : unbounded_string;
   s_type : identifier;
   t_val  : unbounded_string;
@@ -7601,7 +7601,7 @@ end ParsePenglTexCoord2f;
 
 procedure ParsePenglTexCoord2i is
   -- Syntax: glTexCoord2i( s, t : GLint );
-  -- Source: bush_os.opengl.glTexCoord2i
+  -- Source: spar_os.opengl.glTexCoord2i
   s_val  : unbounded_string;
   s_type : identifier;
   t_val  : unbounded_string;
@@ -7632,7 +7632,7 @@ end ParsePenglTexCoord2i;
 
 procedure ParsePenglTexCoord2s is
   -- Syntax: glTexCoord2s( s, t : GLshort );
-  -- Source: bush_os.opengl.glTexCoord2s
+  -- Source: spar_os.opengl.glTexCoord2s
   s_val  : unbounded_string;
   s_type : identifier;
   t_val  : unbounded_string;
@@ -7663,7 +7663,7 @@ end ParsePenglTexCoord2s;
 
 procedure ParsePenglTexCoord3d is
   -- Syntax: glTexCoord3d( s, t, r : GLdouble );
-  -- Source: bush_os.opengl.glTexCoord3d
+  -- Source: spar_os.opengl.glTexCoord3d
   s_val  : unbounded_string;
   s_type : identifier;
   t_val  : unbounded_string;
@@ -7697,7 +7697,7 @@ end ParsePenglTexCoord3d;
 
 procedure ParsePenglTexCoord3f is
   -- Syntax: glTexCoord3f( s, t, r : GLfloat );
-  -- Source: bush_os.opengl.glTexCoord3f
+  -- Source: spar_os.opengl.glTexCoord3f
   s_val  : unbounded_string;
   s_type : identifier;
   t_val  : unbounded_string;
@@ -7731,7 +7731,7 @@ end ParsePenglTexCoord3f;
 
 procedure ParsePenglTexCoord3i is
   -- Syntax: glTexCoord3i( s, t, r : GLint );
-  -- Source: bush_os.opengl.glTexCoord3i
+  -- Source: spar_os.opengl.glTexCoord3i
   s_val  : unbounded_string;
   s_type : identifier;
   t_val  : unbounded_string;
@@ -7765,7 +7765,7 @@ end ParsePenglTexCoord3i;
 
 procedure ParsePenglTexCoord3s is
   -- Syntax: glTexCoord3s( s, t, r : GLshort );
-  -- Source: bush_os.opengl.glTexCoord3s
+  -- Source: spar_os.opengl.glTexCoord3s
   s_val  : unbounded_string;
   s_type : identifier;
   t_val  : unbounded_string;
@@ -7799,7 +7799,7 @@ end ParsePenglTexCoord3s;
 
 procedure ParsePenglTexCoord4d is
   -- Syntax: glTexCoord4d( s, t, r, q : GLdouble );
-  -- Source: bush_os.opengl.glTexCoord4d
+  -- Source: spar_os.opengl.glTexCoord4d
   s_val  : unbounded_string;
   s_type : identifier;
   t_val  : unbounded_string;
@@ -7836,7 +7836,7 @@ end ParsePenglTexCoord4d;
 
 procedure ParsePenglTexCoord4f is
   -- Syntax: glTexCoord4f( s, t, r, q : GLfloat );
-  -- Source: bush_os.opengl.glTexCoord4f
+  -- Source: spar_os.opengl.glTexCoord4f
   s_val  : unbounded_string;
   s_type : identifier;
   t_val  : unbounded_string;
@@ -7873,7 +7873,7 @@ end ParsePenglTexCoord4f;
 
 procedure ParsePenglTexCoord4i is
   -- Syntax: glTexCoord4i( s, t, r, q : GLint );
-  -- Source: bush_os.opengl.glTexCoord4i
+  -- Source: spar_os.opengl.glTexCoord4i
   s_val  : unbounded_string;
   s_type : identifier;
   t_val  : unbounded_string;
@@ -7910,7 +7910,7 @@ end ParsePenglTexCoord4i;
 
 procedure ParsePenglTexCoord4s is
   -- Syntax: glTexCoord4s( s, t, r, q : GLshort );
-  -- Source: bush_os.opengl.glTexCoord4s
+  -- Source: spar_os.opengl.glTexCoord4s
   s_val  : unbounded_string;
   s_type : identifier;
   t_val  : unbounded_string;
@@ -7947,7 +7947,7 @@ end ParsePenglTexCoord4s;
 
 procedure ParsePenglTexCoord1dv is
   -- Syntax: glTexCoord1dv( v : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glTexCoord1dv
+  -- Source: spar_os.opengl.glTexCoord1dv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -7981,7 +7981,7 @@ end ParsePenglTexCoord1dv;
 
 procedure ParsePenglTexCoord1fv is
   -- Syntax: glTexCoord1fv( v : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glTexCoord1fv
+  -- Source: spar_os.opengl.glTexCoord1fv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -8015,7 +8015,7 @@ end ParsePenglTexCoord1fv;
 
 procedure ParsePenglTexCoord1iv is
   -- Syntax: glTexCoord1iv( v : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glTexCoord1iv
+  -- Source: spar_os.opengl.glTexCoord1iv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -8049,7 +8049,7 @@ end ParsePenglTexCoord1iv;
 
 procedure ParsePenglTexCoord1sv is
   -- Syntax: glTexCoord1sv( v : GL_Short_Array_Ptr );
-  -- Source: bush_os.opengl.glTexCoord1sv
+  -- Source: spar_os.opengl.glTexCoord1sv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -8083,7 +8083,7 @@ end ParsePenglTexCoord1sv;
 
 procedure ParsePenglTexCoord2dv is
   -- Syntax: glTexCoord2dv( v : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glTexCoord2dv
+  -- Source: spar_os.opengl.glTexCoord2dv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -8117,7 +8117,7 @@ end ParsePenglTexCoord2dv;
 
 procedure ParsePenglTexCoord2fv is
   -- Syntax: glTexCoord2fv( v : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glTexCoord2fv
+  -- Source: spar_os.opengl.glTexCoord2fv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -8151,7 +8151,7 @@ end ParsePenglTexCoord2fv;
 
 procedure ParsePenglTexCoord2iv is
   -- Syntax: glTexCoord2iv( v : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glTexCoord2iv
+  -- Source: spar_os.opengl.glTexCoord2iv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -8185,7 +8185,7 @@ end ParsePenglTexCoord2iv;
 
 procedure ParsePenglTexCoord2sv is
   -- Syntax: glTexCoord2sv( v : GL_Short_Array_Ptr );
-  -- Source: bush_os.opengl.glTexCoord2sv
+  -- Source: spar_os.opengl.glTexCoord2sv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -8219,7 +8219,7 @@ end ParsePenglTexCoord2sv;
 
 procedure ParsePenglTexCoord3dv is
   -- Syntax: glTexCoord3dv( v : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glTexCoord3dv
+  -- Source: spar_os.opengl.glTexCoord3dv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -8253,7 +8253,7 @@ end ParsePenglTexCoord3dv;
 
 procedure ParsePenglTexCoord3fv is
   -- Syntax: glTexCoord3fv( v : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glTexCoord3fv
+  -- Source: spar_os.opengl.glTexCoord3fv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -8287,7 +8287,7 @@ end ParsePenglTexCoord3fv;
 
 procedure ParsePenglTexCoord3iv is
   -- Syntax: glTexCoord3iv( v : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glTexCoord3iv
+  -- Source: spar_os.opengl.glTexCoord3iv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -8321,7 +8321,7 @@ end ParsePenglTexCoord3iv;
 
 procedure ParsePenglTexCoord3sv is
   -- Syntax: glTexCoord3sv( v : GL_Short_Array_Ptr );
-  -- Source: bush_os.opengl.glTexCoord3sv
+  -- Source: spar_os.opengl.glTexCoord3sv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -8355,7 +8355,7 @@ end ParsePenglTexCoord3sv;
 
 procedure ParsePenglTexCoord4dv is
   -- Syntax: glTexCoord4dv( v : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glTexCoord4dv
+  -- Source: spar_os.opengl.glTexCoord4dv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -8389,7 +8389,7 @@ end ParsePenglTexCoord4dv;
 
 procedure ParsePenglTexCoord4fv is
   -- Syntax: glTexCoord4fv( v : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glTexCoord4fv
+  -- Source: spar_os.opengl.glTexCoord4fv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -8423,7 +8423,7 @@ end ParsePenglTexCoord4fv;
 
 procedure ParsePenglTexCoord4iv is
   -- Syntax: glTexCoord4iv( v : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glTexCoord4iv
+  -- Source: spar_os.opengl.glTexCoord4iv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -8457,7 +8457,7 @@ end ParsePenglTexCoord4iv;
 
 procedure ParsePenglTexCoord4sv is
   -- Syntax: glTexCoord4sv( v : GL_Short_Array_Ptr );
-  -- Source: bush_os.opengl.glTexCoord4sv
+  -- Source: spar_os.opengl.glTexCoord4sv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -8491,7 +8491,7 @@ end ParsePenglTexCoord4sv;
 
 procedure ParsePenglRasterPos2d is
   -- Syntax: glRasterPos2d( x, y : GLdouble );
-  -- Source: bush_os.opengl.glRasterPos2d
+  -- Source: spar_os.opengl.glRasterPos2d
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -8525,7 +8525,7 @@ end ParsePenglRasterPos2d;
 
 procedure ParsePenglRasterPos2f is
   -- Syntax: glRasterPos2f( x, y : GLfloat );
-  -- Source: bush_os.opengl.glRasterPos2f
+  -- Source: spar_os.opengl.glRasterPos2f
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -8559,7 +8559,7 @@ end ParsePenglRasterPos2f;
 
 procedure ParsePenglRasterPos2i is
   -- Syntax: glRasterPos2i( x, y : GLint );
-  -- Source: bush_os.opengl.glRasterPos2i
+  -- Source: spar_os.opengl.glRasterPos2i
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -8593,7 +8593,7 @@ end ParsePenglRasterPos2i;
 
 procedure ParsePenglRasterPos2s is
   -- Syntax: glRasterPos2s( x, y : GLshort );
-  -- Source: bush_os.opengl.glRasterPos2s
+  -- Source: spar_os.opengl.glRasterPos2s
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -8627,7 +8627,7 @@ end ParsePenglRasterPos2s;
 
 procedure ParsePenglRasterPos3d is
   -- Syntax: glRasterPos3d( x, y, z : GLdouble );
-  -- Source: bush_os.opengl.glRasterPos3d
+  -- Source: spar_os.opengl.glRasterPos3d
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -8664,7 +8664,7 @@ end ParsePenglRasterPos3d;
 
 procedure ParsePenglRasterPos3f is
   -- Syntax: glRasterPos3f( x, y, z : GLfloat );
-  -- Source: bush_os.opengl.glRasterPos3f
+  -- Source: spar_os.opengl.glRasterPos3f
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -8701,7 +8701,7 @@ end ParsePenglRasterPos3f;
 
 procedure ParsePenglRasterPos3i is
   -- Syntax: glRasterPos3i( x, y, z : GLint );
-  -- Source: bush_os.opengl.glRasterPos3i
+  -- Source: spar_os.opengl.glRasterPos3i
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -8738,7 +8738,7 @@ end ParsePenglRasterPos3i;
 
 procedure ParsePenglRasterPos3s is
   -- Syntax: glRasterPos3s( x, y, z : GLshort );
-  -- Source: bush_os.opengl.glRasterPos3s
+  -- Source: spar_os.opengl.glRasterPos3s
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -8775,7 +8775,7 @@ end ParsePenglRasterPos3s;
 
 procedure ParsePenglRasterPos4d is
   -- Syntax: glRasterPos4d( x, y, z, w : GLdouble );
-  -- Source: bush_os.opengl.glRasterPos4d
+  -- Source: spar_os.opengl.glRasterPos4d
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -8815,7 +8815,7 @@ end ParsePenglRasterPos4d;
 
 procedure ParsePenglRasterPos4f is
   -- Syntax: glRasterPos4f( x, y, z, w : GLfloat );
-  -- Source: bush_os.opengl.glRasterPos4f
+  -- Source: spar_os.opengl.glRasterPos4f
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -8855,7 +8855,7 @@ end ParsePenglRasterPos4f;
 
 procedure ParsePenglRasterPos4i is
   -- Syntax: glRasterPos4i( x, y, z, w : GLint );
-  -- Source: bush_os.opengl.glRasterPos4i
+  -- Source: spar_os.opengl.glRasterPos4i
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -8895,7 +8895,7 @@ end ParsePenglRasterPos4i;
 
 procedure ParsePenglRasterPos4s is
   -- Syntax: glRasterPos4s( x, y, z, w : GLshort );
-  -- Source: bush_os.opengl.glRasterPos4s
+  -- Source: spar_os.opengl.glRasterPos4s
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -8935,7 +8935,7 @@ end ParsePenglRasterPos4s;
 
 procedure ParsePenglRasterPos2dv is
   -- Syntax: glRasterPos2dv( v : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glRasterPos2dv
+  -- Source: spar_os.opengl.glRasterPos2dv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -8969,7 +8969,7 @@ end ParsePenglRasterPos2dv;
 
 procedure ParsePenglRasterPos2fv is
   -- Syntax: glRasterPos2fv( v : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glRasterPos2fv
+  -- Source: spar_os.opengl.glRasterPos2fv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -9003,7 +9003,7 @@ end ParsePenglRasterPos2fv;
 
 procedure ParsePenglRasterPos2iv is
   -- Syntax: glRasterPos2iv( v : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glRasterPos2iv
+  -- Source: spar_os.opengl.glRasterPos2iv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -9037,7 +9037,7 @@ end ParsePenglRasterPos2iv;
 
 procedure ParsePenglRasterPos2sv is
   -- Syntax: glRasterPos2sv( v : GL_Short_Array_Ptr );
-  -- Source: bush_os.opengl.glRasterPos2sv
+  -- Source: spar_os.opengl.glRasterPos2sv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -9071,7 +9071,7 @@ end ParsePenglRasterPos2sv;
 
 procedure ParsePenglRasterPos3dv is
   -- Syntax: glRasterPos3dv( v : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glRasterPos3dv
+  -- Source: spar_os.opengl.glRasterPos3dv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -9105,7 +9105,7 @@ end ParsePenglRasterPos3dv;
 
 procedure ParsePenglRasterPos3fv is
   -- Syntax: glRasterPos3fv( v : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glRasterPos3fv
+  -- Source: spar_os.opengl.glRasterPos3fv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -9139,7 +9139,7 @@ end ParsePenglRasterPos3fv;
 
 procedure ParsePenglRasterPos3iv is
   -- Syntax: glRasterPos3iv( v : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glRasterPos3iv
+  -- Source: spar_os.opengl.glRasterPos3iv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -9173,7 +9173,7 @@ end ParsePenglRasterPos3iv;
 
 procedure ParsePenglRasterPos3sv is
   -- Syntax: glRasterPos3sv( v : GL_Short_Array_Ptr );
-  -- Source: bush_os.opengl.glRasterPos3sv
+  -- Source: spar_os.opengl.glRasterPos3sv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -9207,7 +9207,7 @@ end ParsePenglRasterPos3sv;
 
 procedure ParsePenglRasterPos4dv is
   -- Syntax: glRasterPos4dv( v : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glRasterPos4dv
+  -- Source: spar_os.opengl.glRasterPos4dv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -9241,7 +9241,7 @@ end ParsePenglRasterPos4dv;
 
 procedure ParsePenglRasterPos4fv is
   -- Syntax: glRasterPos4fv( v : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glRasterPos4fv
+  -- Source: spar_os.opengl.glRasterPos4fv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -9275,7 +9275,7 @@ end ParsePenglRasterPos4fv;
 
 procedure ParsePenglRasterPos4iv is
   -- Syntax: glRasterPos4iv( v : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glRasterPos4iv
+  -- Source: spar_os.opengl.glRasterPos4iv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -9309,7 +9309,7 @@ end ParsePenglRasterPos4iv;
 
 procedure ParsePenglRasterPos4sv is
   -- Syntax: glRasterPos4sv( v : GL_Short_Array_Ptr );
-  -- Source: bush_os.opengl.glRasterPos4sv
+  -- Source: spar_os.opengl.glRasterPos4sv
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
@@ -9343,7 +9343,7 @@ end ParsePenglRasterPos4sv;
 
 procedure ParsePenglRectd is
   -- Syntax: glRectd( x1, y1, x2, y2 : GLdouble );
-  -- Source: bush_os.opengl.glRectd
+  -- Source: spar_os.opengl.glRectd
   x1_val  : unbounded_string;
   x1_type : identifier;
   y1_val  : unbounded_string;
@@ -9380,7 +9380,7 @@ end ParsePenglRectd;
 
 procedure ParsePenglRectf is
   -- Syntax: glRectf( x1, y1, x2, y2 : GLfloat );
-  -- Source: bush_os.opengl.glRectf
+  -- Source: spar_os.opengl.glRectf
   x1_val  : unbounded_string;
   x1_type : identifier;
   y1_val  : unbounded_string;
@@ -9417,7 +9417,7 @@ end ParsePenglRectf;
 
 procedure ParsePenglRecti is
   -- Syntax: glRecti( x1, y1, x2, y2 : GLint );
-  -- Source: bush_os.opengl.glRecti
+  -- Source: spar_os.opengl.glRecti
   x1_val  : unbounded_string;
   x1_type : identifier;
   y1_val  : unbounded_string;
@@ -9454,7 +9454,7 @@ end ParsePenglRecti;
 
 procedure ParsePenglRects is
   -- Syntax: glRects( x1, y1, x2, y2 : GLshort );
-  -- Source: bush_os.opengl.glRects
+  -- Source: spar_os.opengl.glRects
   x1_val  : unbounded_string;
   x1_type : identifier;
   y1_val  : unbounded_string;
@@ -9491,7 +9491,7 @@ end ParsePenglRects;
 
 procedure ParsePenglRectdv is
   -- Syntax: glRectdv( v1, v2 : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glRectdv
+  -- Source: spar_os.opengl.glRectdv
   v1_val  : unbounded_string;
 --  v1_type : identifier;
   v2_val  : unbounded_string;
@@ -9530,7 +9530,7 @@ end ParsePenglRectdv;
 
 procedure ParsePenglRectfv is
   -- Syntax: glRectfv( v1, v2 : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glRectfv
+  -- Source: spar_os.opengl.glRectfv
   v1_val  : unbounded_string;
 --  v1_type : identifier;
   v2_val  : unbounded_string;
@@ -9569,7 +9569,7 @@ end ParsePenglRectfv;
 
 procedure ParsePenglRectiv is
   -- Syntax: glRectiv( v1, v2 : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glRectiv
+  -- Source: spar_os.opengl.glRectiv
   v1_val  : unbounded_string;
 --  v1_type : identifier;
   v2_val  : unbounded_string;
@@ -9608,7 +9608,7 @@ end ParsePenglRectiv;
 
 procedure ParsePenglRectsv is
   -- Syntax: glRectsv( v1, v2 : GL_Short_Array_Ptr );
-  -- Source: bush_os.opengl.glRectsv
+  -- Source: spar_os.opengl.glRectsv
   v1_val  : unbounded_string;
 --  v1_type : identifier;
   v2_val  : unbounded_string;
@@ -9647,7 +9647,7 @@ end ParsePenglRectsv;
 
 procedure ParsePenglVertexPointer is
   -- Syntax: glVertexPointer( size : GLint; kind : GLtypes; stride : GLsizei; ptr : System.address );
-  -- Source: bush_os.opengl.glVertexPointer
+  -- Source: spar_os.opengl.glVertexPointer
   size_val  : unbounded_string;
   size_type : identifier;
   kind_val  : unbounded_string;
@@ -9689,7 +9689,7 @@ end ParsePenglVertexPointer;
 
 procedure ParsePenglNormalPointer is
   -- Syntax: glNormalPointer( kind : GLtypes; stride : GLsizei; ptr : System.address );
-  -- Source: bush_os.opengl.glNormalPointer
+  -- Source: spar_os.opengl.glNormalPointer
   kind_val  : unbounded_string;
   kind_type : identifier;
   stride_val  : unbounded_string;
@@ -9728,7 +9728,7 @@ end ParsePenglNormalPointer;
 
 procedure ParsePenglColorPointer is
   -- Syntax: glColorPointer( size : GLint; kind : GLtypes; stride : GLsizei; ptr : System.address );
-  -- Source: bush_os.opengl.glColorPointer
+  -- Source: spar_os.opengl.glColorPointer
   size_val  : unbounded_string;
   size_type : identifier;
   kind_val  : unbounded_string;
@@ -9770,7 +9770,7 @@ end ParsePenglColorPointer;
 
 procedure ParsePenglIndexPointer is
   -- Syntax: glIndexPointer( kind : GLtypes; stride : GLsizei; ptr : System.address );
-  -- Source: bush_os.opengl.glIndexPointer
+  -- Source: spar_os.opengl.glIndexPointer
   kind_val  : unbounded_string;
   kind_type : identifier;
   stride_val  : unbounded_string;
@@ -9809,7 +9809,7 @@ end ParsePenglIndexPointer;
 
 procedure ParsePenglTexCoordPointer is
   -- Syntax: glTexCoordPointer( size : GLint; kind : GLtypes; stride : GLsizei; ptr : System.address );
-  -- Source: bush_os.opengl.glTexCoordPointer
+  -- Source: spar_os.opengl.glTexCoordPointer
   size_val  : unbounded_string;
   size_type : identifier;
   kind_val  : unbounded_string;
@@ -9851,7 +9851,7 @@ end ParsePenglTexCoordPointer;
 
 procedure ParsePenglEdgeFlagPointer is
   -- Syntax: glEdgeFlagPointer( stride : GLsizei; ptr : System.address );
-  -- Source: bush_os.opengl.glEdgeFlagPointer
+  -- Source: spar_os.opengl.glEdgeFlagPointer
   stride_val  : unbounded_string;
   stride_type : identifier;
   ptr_val  : unbounded_string;
@@ -9887,7 +9887,7 @@ end ParsePenglEdgeFlagPointer;
 
 procedure ParsePenglGetPointerv is
   -- Syntax: glGetPointerv( pname : GLvertexarrays; params : in out System.address );
-  -- Source: bush_os.opengl.glGetPointerv
+  -- Source: spar_os.opengl.glGetPointerv
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
@@ -9924,7 +9924,7 @@ end ParsePenglGetPointerv;
 
 procedure ParsePenglArrayElement is
   -- Syntax: glArrayElement( i : GLint );
-  -- Source: bush_os.opengl.glArrayElement
+  -- Source: spar_os.opengl.glArrayElement
   i_val  : unbounded_string;
   i_type : identifier;
 begin
@@ -9952,7 +9952,7 @@ end ParsePenglArrayElement;
 
 procedure ParsePenglDrawArrays is
   -- Syntax: glDrawArrays( mode : GLprimitives; first : GLint; count : GLsizei );
-  -- Source: bush_os.opengl.glDrawArrays
+  -- Source: spar_os.opengl.glDrawArrays
   mode_val  : unbounded_string;
   mode_type : identifier;
   first_val  : unbounded_string;
@@ -9986,7 +9986,7 @@ end ParsePenglDrawArrays;
 
 procedure ParsePenglDrawElements is
   -- Syntax: glDrawElements( mode : GLtypes; count : GLsizei; kind : GLprimitives; indices : System.address );
-  -- Source: bush_os.opengl.glDrawElements
+  -- Source: spar_os.opengl.glDrawElements
   mode_val  : unbounded_string;
   mode_type : identifier;
   count_val  : unbounded_string;
@@ -10029,7 +10029,7 @@ end ParsePenglDrawElements;
 
 procedure ParsePenglInterleavedArrays is
   -- Syntax: glInterleavedArrays( format : GLvertexarrays; stride : GLsizei; pointer : System.address );
-  -- Source: bush_os.opengl.glInterleavedArrays
+  -- Source: spar_os.opengl.glInterleavedArrays
   format_val  : unbounded_string;
   format_type : identifier;
   stride_val  : unbounded_string;
@@ -10069,7 +10069,7 @@ end ParsePenglInterleavedArrays;
 
 procedure ParsePenglShadeModel is
   -- Syntax: glShadeModel( mode : GLlighting );
-  -- Source: bush_os.opengl.glShadeModel
+  -- Source: spar_os.opengl.glShadeModel
   mode_val  : unbounded_string;
   mode_type : identifier;
 begin
@@ -10100,7 +10100,7 @@ end ParsePenglShadeModel;
 
 procedure ParsePenglLightf is
   -- Syntax: glLightf( light : GLenum; pname : GLlighting; param : GLfloat );
-  -- Source: bush_os.opengl.glLightf
+  -- Source: spar_os.opengl.glLightf
   light_val  : unbounded_string;
   light_type : identifier;
   pname_val  : unbounded_string;
@@ -10137,7 +10137,7 @@ end ParsePenglLightf;
 
 procedure ParsePenglLighti is
   -- Syntax: glLighti( light : GLenum; pname : GLlighting; param : GLint );
-  -- Source: bush_os.opengl.glLighti
+  -- Source: spar_os.opengl.glLighti
   light_val  : unbounded_string;
   light_type : identifier;
   pname_val  : unbounded_string;
@@ -10174,7 +10174,7 @@ end ParsePenglLighti;
 
 procedure ParsePenglLightfv is
   -- Syntax: glLightfv( light : GLenum; pname : GLlighting; params : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glLightfv
+  -- Source: spar_os.opengl.glLightfv
   light_val  : unbounded_string;
   light_type : identifier;
   pname_val  : unbounded_string;
@@ -10215,7 +10215,7 @@ end ParsePenglLightfv;
 
 procedure ParsePenglLightiv is
   -- Syntax: glLightiv( light : GLenum; pname : GLlighting; params : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glLightiv
+  -- Source: spar_os.opengl.glLightiv
   light_val  : unbounded_string;
   light_type : identifier;
   pname_val  : unbounded_string;
@@ -10256,7 +10256,7 @@ end ParsePenglLightiv;
 
 procedure ParsePenglGetLightfv is
   -- Syntax: glGetLightfv( light : GLenum; pname : GLlighting; params : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glGetLightfv
+  -- Source: spar_os.opengl.glGetLightfv
   light_val  : unbounded_string;
   light_type : identifier;
   pname_val  : unbounded_string;
@@ -10295,7 +10295,7 @@ end ParsePenglGetLightfv;
 
 procedure ParsePenglGetLightiv is
   -- Syntax: glGetLightiv( light : GLenum; pname : GLlighting; params : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glGetLightiv
+  -- Source: spar_os.opengl.glGetLightiv
   light_val  : unbounded_string;
   light_type : identifier;
   pname_val  : unbounded_string;
@@ -10334,7 +10334,7 @@ end ParsePenglGetLightiv;
 
 procedure ParsePenglLightModelf is
   -- Syntax: glLightModelf( pname : GLenum; param : GLfloat );
-  -- Source: bush_os.opengl.glLightModelf
+  -- Source: spar_os.opengl.glLightModelf
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
@@ -10368,7 +10368,7 @@ end ParsePenglLightModelf;
 
 procedure ParsePenglLightModeli is
   -- Syntax: glLightModeli( pname : GLenum; param : GLint );
-  -- Source: bush_os.opengl.glLightModeli
+  -- Source: spar_os.opengl.glLightModeli
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
@@ -10402,7 +10402,7 @@ end ParsePenglLightModeli;
 
 procedure ParsePenglLightModelfv is
   -- Syntax: glLightModelfv( pname : GLenum; params : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glLightModelfv
+  -- Source: spar_os.opengl.glLightModelfv
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
@@ -10440,7 +10440,7 @@ end ParsePenglLightModelfv;
 
 procedure ParsePenglLightModeliv is
   -- Syntax: glLightModeliv( pname : GLenum; params : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glLightModeliv
+  -- Source: spar_os.opengl.glLightModeliv
   pname_val  : unbounded_string;
   pname_type : identifier;
   params_val  : unbounded_string;
@@ -10478,7 +10478,7 @@ end ParsePenglLightModeliv;
 
 procedure ParsePenglMaterialf is
   -- Syntax: glMaterialf( face : GLbuffers; pname : GLlighting; param : GLfloat );
-  -- Source: bush_os.opengl.glMaterialf
+  -- Source: spar_os.opengl.glMaterialf
   face_val  : unbounded_string;
   face_type : identifier;
   pname_val  : unbounded_string;
@@ -10515,7 +10515,7 @@ end ParsePenglMaterialf;
 
 procedure ParsePenglMateriali is
   -- Syntax: glMateriali( face : GLbuffers; pname : GLlighting; param : GLint );
-  -- Source: bush_os.opengl.glMateriali
+  -- Source: spar_os.opengl.glMateriali
   face_val  : unbounded_string;
   face_type : identifier;
   pname_val  : unbounded_string;
@@ -10552,7 +10552,7 @@ end ParsePenglMateriali;
 
 procedure ParsePenglMaterialfv is
   -- Syntax: glMaterialfv( face : GLbuffers; pname : GLlighting; param : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glMaterialfv
+  -- Source: spar_os.opengl.glMaterialfv
   face_val  : unbounded_string;
   face_type : identifier;
   pname_val  : unbounded_string;
@@ -10593,7 +10593,7 @@ end ParsePenglMaterialfv;
 
 procedure ParsePenglMaterialiv is
   -- Syntax: glMaterialiv( face : GLbuffers; pname : GLlighting; param : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glMaterialiv
+  -- Source: spar_os.opengl.glMaterialiv
   face_val  : unbounded_string;
   face_type : identifier;
   pname_val  : unbounded_string;
@@ -10634,7 +10634,7 @@ end ParsePenglMaterialiv;
 
 procedure ParsePenglGetMaterialfv is
   -- Syntax: glGetMaterialfv( face : GLbuffers; pname : GLlighting; param : in out GLfloat );
-  -- Source: bush_os.opengl.glGetMaterialfv
+  -- Source: spar_os.opengl.glGetMaterialfv
   face_val  : unbounded_string;
   face_type : identifier;
   pname_val  : unbounded_string;
@@ -10675,7 +10675,7 @@ end ParsePenglGetMaterialfv;
 
 procedure ParsePenglGetMaterialiv is
   -- Syntax: glGetMaterialiv( face : GLbuffers; pname : GLlighting; param : in out GLint );
-  -- Source: bush_os.opengl.glGetMaterialiv
+  -- Source: spar_os.opengl.glGetMaterialiv
   face_val  : unbounded_string;
   face_type : identifier;
   pname_val  : unbounded_string;
@@ -10716,7 +10716,7 @@ end ParsePenglGetMaterialiv;
 
 procedure ParsePenglColorMaterial is
   -- Syntax: glColorMaterial( face : GLbuffers; mode : GLlighting );
-  -- Source: bush_os.opengl.glColorMaterial
+  -- Source: spar_os.opengl.glColorMaterial
   face_val  : unbounded_string;
   face_type : identifier;
   mode_val  : unbounded_string;
@@ -10750,7 +10750,7 @@ end ParsePenglColorMaterial;
 
 procedure ParsePenglPixelZoom is
   -- Syntax: glPixelZoom( xfactor, yfactor : GLfloat );
-  -- Source: bush_os.opengl.glPixelZoom
+  -- Source: spar_os.opengl.glPixelZoom
   xfactor_val  : unbounded_string;
   xfactor_type : identifier;
   yfactor_val  : unbounded_string;
@@ -10784,7 +10784,7 @@ end ParsePenglPixelZoom;
 
 procedure ParsePenglPixelStoref is
   -- Syntax: glPixelStoref( pname : GLpixelmode; param : GLfloat );
-  -- Source: bush_os.opengl.glPixelStoref
+  -- Source: spar_os.opengl.glPixelStoref
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
@@ -10818,7 +10818,7 @@ end ParsePenglPixelStoref;
 
 procedure ParsePenglPixelStorei is
   -- Syntax: glPixelStorei( pname : GLpixelmode; param : GLint );
-  -- Source: bush_os.opengl.glPixelStorei
+  -- Source: spar_os.opengl.glPixelStorei
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
@@ -10852,7 +10852,7 @@ end ParsePenglPixelStorei;
 
 procedure ParsePenglPixelTransferf is
   -- Syntax: glPixelTransferf( pname : GLpixelmode; param : GLfloat );
-  -- Source: bush_os.opengl.glPixelTransferf
+  -- Source: spar_os.opengl.glPixelTransferf
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
@@ -10886,7 +10886,7 @@ end ParsePenglPixelTransferf;
 
 procedure ParsePenglPixelTransferi is
   -- Syntax: glPixelTransferi( pname : GLpixelmode; param : GLint );
-  -- Source: bush_os.opengl.glPixelTransferi
+  -- Source: spar_os.opengl.glPixelTransferi
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
@@ -10920,7 +10920,7 @@ end ParsePenglPixelTransferi;
 
 procedure ParsePenglPixelMapfv is
   -- Syntax: glPixelMapfv( map : GLpixelmode; mapsize : GLsizei; values : in out GLfloat );
-  -- Source: bush_os.opengl.glPixelMapfv
+  -- Source: spar_os.opengl.glPixelMapfv
   map_val  : unbounded_string;
   map_type : identifier;
   mapsize_val  : unbounded_string;
@@ -10960,7 +10960,7 @@ end ParsePenglPixelMapfv;
 
 procedure ParsePenglPixelMapuiv is
   -- Syntax: glPixelMapuiv( map : GLpixelmode; mapsize : GLsizei; values : in out GLuint );
-  -- Source: bush_os.opengl.glPixelMapuiv
+  -- Source: spar_os.opengl.glPixelMapuiv
   map_val  : unbounded_string;
   map_type : identifier;
   mapsize_val  : unbounded_string;
@@ -11000,7 +11000,7 @@ end ParsePenglPixelMapuiv;
 
 procedure ParsePenglPixelMapusv is
   -- Syntax: glPixelMapusv( map : GLpixelmode; mapsize : GLsizei; values : in out GLushort );
-  -- Source: bush_os.opengl.glPixelMapusv
+  -- Source: spar_os.opengl.glPixelMapusv
   map_val  : unbounded_string;
   map_type : identifier;
   mapsize_val  : unbounded_string;
@@ -11040,7 +11040,7 @@ end ParsePenglPixelMapusv;
 
 procedure ParsePenglGetPixelMapfv is
   -- Syntax: glGetPixelMapfv( map : GLpixelmode; values : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glGetPixelMapfv
+  -- Source: spar_os.opengl.glGetPixelMapfv
   map_val  : unbounded_string;
   map_type : identifier;
   values_val  : unbounded_string;
@@ -11077,7 +11077,7 @@ end ParsePenglGetPixelMapfv;
 
 procedure ParsePenglGetPixelMapuiv is
   -- Syntax: glGetPixelMapuiv( map : GLpixelmode; values : GL_UInt_Array_Ptr );
-  -- Source: bush_os.opengl.glGetPixelMapuiv
+  -- Source: spar_os.opengl.glGetPixelMapuiv
   map_val  : unbounded_string;
   map_type : identifier;
   values_val  : unbounded_string;
@@ -11114,7 +11114,7 @@ end ParsePenglGetPixelMapuiv;
 
 procedure ParsePenglGetPixelMapusv is
   -- Syntax: glGetPixelMapusv( map : GLpixelmode; values : GL_UShort_Array_Ptr );
-  -- Source: bush_os.opengl.glGetPixelMapusv
+  -- Source: spar_os.opengl.glGetPixelMapusv
   map_val  : unbounded_string;
   map_type : identifier;
   values_val  : unbounded_string;
@@ -11151,7 +11151,7 @@ end ParsePenglGetPixelMapusv;
 
 procedure ParsePenglBitmap is
   -- Syntax: glBitmap( width, height : GLsizei; xorig, yorig : GLfloat; xmove, ymove : GLfloat; bitmap : GL_UByte_Array_Ptr );
-  -- Source: bush_os.opengl.glBitmap
+  -- Source: spar_os.opengl.glBitmap
   width_val  : unbounded_string;
   width_type : identifier;
   height_val  : unbounded_string;
@@ -11203,7 +11203,7 @@ end ParsePenglBitmap;
 
 procedure ParsePenglReadPixels is
   -- Syntax: glReadPixels( x, y : GLint; width, height : GLsizei; format : GLenum; kind : GLtypes; pixels : System.address );
-  -- Source: bush_os.opengl.glReadPixels
+  -- Source: spar_os.opengl.glReadPixels
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -11254,7 +11254,7 @@ end ParsePenglReadPixels;
 
 procedure ParsePenglDrawPixels is
   -- Syntax: glDrawPixels( width, height : GLsizei; format : GLbuffers; kind : GLtypes; pixels : System.address );
-  -- Source: bush_os.opengl.glDrawPixels
+  -- Source: spar_os.opengl.glDrawPixels
   width_val  : unbounded_string;
   width_type : identifier;
   height_val  : unbounded_string;
@@ -11299,7 +11299,7 @@ end ParsePenglDrawPixels;
 
 procedure ParsePenglCopyPixels is
   -- Syntax: glCopyPixels( x, y : GLint; width, height : GLsizei; kind : GLbuffers );
-  -- Source: bush_os.opengl.glCopyPixels
+  -- Source: spar_os.opengl.glCopyPixels
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -11339,7 +11339,7 @@ end ParsePenglCopyPixels;
 
 procedure ParsePenglStencilFunc is
   -- Syntax: glStencilFunc( func : GLenum; ref : GLint; mask : GLuint );
-  -- Source: bush_os.opengl.glStencilFunc
+  -- Source: spar_os.opengl.glStencilFunc
   func_val  : unbounded_string;
   func_type : identifier;
   ref_val  : unbounded_string;
@@ -11376,7 +11376,7 @@ end ParsePenglStencilFunc;
 
 procedure ParsePenglStencilMask is
   -- Syntax: glStencilMask( mask : GLuint );
-  -- Source: bush_os.opengl.glStencilMask
+  -- Source: spar_os.opengl.glStencilMask
   mask_val  : unbounded_string;
   mask_type : identifier;
 begin
@@ -11407,7 +11407,7 @@ end ParsePenglStencilMask;
 
 procedure ParsePenglStencilOp is
   -- Syntax: glStencilOp( fail : GLstencil; zfail : GLstencil; zpass : GLstencil );
-  -- Source: bush_os.opengl.glStencilOp
+  -- Source: spar_os.opengl.glStencilOp
   fail_val  : unbounded_string;
   fail_type : identifier;
   zfail_val  : unbounded_string;
@@ -11444,7 +11444,7 @@ end ParsePenglStencilOp;
 
 procedure ParsePenglClearStencil is
   -- Syntax: glClearStencil( s : GLint );
-  -- Source: bush_os.opengl.glClearStencil
+  -- Source: spar_os.opengl.glClearStencil
   s_val  : unbounded_string;
   s_type : identifier;
 begin
@@ -11475,7 +11475,7 @@ end ParsePenglClearStencil;
 
 procedure ParsePenglTexGend is
   -- Syntax: glTexGend( coord : GLtexturemapping; pname : GLtexturemapping; param : GLdouble );
-  -- Source: bush_os.opengl.glTexGend
+  -- Source: spar_os.opengl.glTexGend
   coord_val  : unbounded_string;
   coord_type : identifier;
   pname_val  : unbounded_string;
@@ -11512,7 +11512,7 @@ end ParsePenglTexGend;
 
 procedure ParsePenglTexGenf is
   -- Syntax: glTexGenf( coord : GLtexturemapping; pname : GLtexturemapping; param : GLfloat );
-  -- Source: bush_os.opengl.glTexGenf
+  -- Source: spar_os.opengl.glTexGenf
   coord_val  : unbounded_string;
   coord_type : identifier;
   pname_val  : unbounded_string;
@@ -11549,7 +11549,7 @@ end ParsePenglTexGenf;
 
 procedure ParsePenglTexGeni is
   -- Syntax: glTexGeni( coord : GLtexturemapping; pname : GLtexturemapping; param : GLint );
-  -- Source: bush_os.opengl.glTexGeni
+  -- Source: spar_os.opengl.glTexGeni
   coord_val  : unbounded_string;
   coord_type : identifier;
   pname_val  : unbounded_string;
@@ -11586,7 +11586,7 @@ end ParsePenglTexGeni;
 
 procedure ParsePenglTexGendv is
   -- Syntax: glTexGendv( coord : GLtexturemapping; pname : GLtexturemapping; params : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glTexGendv
+  -- Source: spar_os.opengl.glTexGendv
   coord_val  : unbounded_string;
   coord_type : identifier;
   pname_val  : unbounded_string;
@@ -11626,7 +11626,7 @@ end ParsePenglTexGendv;
 
 procedure ParsePenglTexGenfv is
   -- Syntax: glTexGenfv( coord : GLtexturemapping; pname : GLtexturemapping; params : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glTexGenfv
+  -- Source: spar_os.opengl.glTexGenfv
   coord_val  : unbounded_string;
   coord_type : identifier;
   pname_val  : unbounded_string;
@@ -11666,7 +11666,7 @@ end ParsePenglTexGenfv;
 
 procedure ParsePenglTexGeniv is
   -- Syntax: glTexGeniv( coord : GLtexturemapping; pname : GLtexturemapping; params : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glTexGeniv
+  -- Source: spar_os.opengl.glTexGeniv
   coord_val  : unbounded_string;
   coord_type : identifier;
   pname_val  : unbounded_string;
@@ -11706,7 +11706,7 @@ end ParsePenglTexGeniv;
 
 procedure ParsePenglGetTexGendv is
   -- Syntax: glGetTexGendv( coord : GLtexturemapping; pname : GLtexturemapping; params : in out GLdouble );
-  -- Source: bush_os.opengl.glGetTexGendv
+  -- Source: spar_os.opengl.glGetTexGendv
   coord_val  : unbounded_string;
   coord_type : identifier;
   pname_val  : unbounded_string;
@@ -11746,7 +11746,7 @@ end ParsePenglGetTexGendv;
 
 procedure ParsePenglGetTexGenfv is
   -- Syntax: glGetTexGenfv( coord : GLtexturemapping; pname : GLtexturemapping; params : in out GLfloat );
-  -- Source: bush_os.opengl.glGetTexGenfv
+  -- Source: spar_os.opengl.glGetTexGenfv
   coord_val  : unbounded_string;
   coord_type : identifier;
   pname_val  : unbounded_string;
@@ -11786,7 +11786,7 @@ end ParsePenglGetTexGenfv;
 
 procedure ParsePenglGetTexGeniv is
   -- Syntax: glGetTexGeniv( coord : GLtexturemapping; pname : GLtexturemapping; params : in out GLint );
-  -- Source: bush_os.opengl.glGetTexGeniv
+  -- Source: spar_os.opengl.glGetTexGeniv
   coord_val  : unbounded_string;
   coord_type : identifier;
   pname_val  : unbounded_string;
@@ -11826,7 +11826,7 @@ end ParsePenglGetTexGeniv;
 
 procedure ParsePenglTexEnvf is
   -- Syntax: glTexEnvf( target : GLtexturemapping; pname : GLtexturemapping; param : GLfloat );
-  -- Source: bush_os.opengl.glTexEnvf
+  -- Source: spar_os.opengl.glTexEnvf
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -11863,7 +11863,7 @@ end ParsePenglTexEnvf;
 
 procedure ParsePenglTexEnvi is
   -- Syntax: glTexEnvi( target : GLtexturemapping; pname : GLtexturemapping; param : GLint );
-  -- Source: bush_os.opengl.glTexEnvi
+  -- Source: spar_os.opengl.glTexEnvi
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -11900,7 +11900,7 @@ end ParsePenglTexEnvi;
 
 procedure ParsePenglTexEnvfv is
   -- Syntax: glTexEnvfv( target : GLtexturemapping; pname : GLtexturemapping; param : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glTexEnvfv
+  -- Source: spar_os.opengl.glTexEnvfv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -11940,7 +11940,7 @@ end ParsePenglTexEnvfv;
 
 procedure ParsePenglTexEnviv is
   -- Syntax: glTexEnviv( target : GLtexturemapping; pname : GLtexturemapping; param : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glTexEnviv
+  -- Source: spar_os.opengl.glTexEnviv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -11980,7 +11980,7 @@ end ParsePenglTexEnviv;
 
 procedure ParsePenglGetTexEnvfv is
   -- Syntax: glGetTexEnvfv( target : GLtexturemapping; pname : GLtexturemapping; param : in out GLfloat );
-  -- Source: bush_os.opengl.glGetTexEnvfv
+  -- Source: spar_os.opengl.glGetTexEnvfv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -12020,7 +12020,7 @@ end ParsePenglGetTexEnvfv;
 
 procedure ParsePenglGetTexEnviv is
   -- Syntax: glGetTexEnviv( target : GLtexturemapping; pname : GLtexturemapping; param : in out GLint );
-  -- Source: bush_os.opengl.glGetTexEnviv
+  -- Source: spar_os.opengl.glGetTexEnviv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -12060,7 +12060,7 @@ end ParsePenglGetTexEnviv;
 
 procedure ParsePenglTexParameterf is
   -- Syntax: glTexParameterf( target : GLtexturemapping; pname : GLtexturemapping; param : GLfloat );
-  -- Source: bush_os.opengl.glTexParameterf
+  -- Source: spar_os.opengl.glTexParameterf
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -12097,7 +12097,7 @@ end ParsePenglTexParameterf;
 
 procedure ParsePenglTexParameteri is
   -- Syntax: glTexParameteri( target : GLtexturemapping; pname : GLtexturemapping; param : GLint );
-  -- Source: bush_os.opengl.glTexParameteri
+  -- Source: spar_os.opengl.glTexParameteri
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -12134,7 +12134,7 @@ end ParsePenglTexParameteri;
 
 procedure ParsePenglTexParameterfv is
   -- Syntax: glTexParameterfv( target : GLtexturemapping; pname : GLtexturemapping; params : in out GLfloat );
-  -- Source: bush_os.opengl.glTexParameterfv
+  -- Source: spar_os.opengl.glTexParameterfv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -12174,7 +12174,7 @@ end ParsePenglTexParameterfv;
 
 procedure ParsePenglTexParameteriv is
   -- Syntax: glTexParameteriv( target : GLtexturemapping; pname : GLtexturemapping; params : in out GLint );
-  -- Source: bush_os.opengl.glTexParameteriv
+  -- Source: spar_os.opengl.glTexParameteriv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -12214,7 +12214,7 @@ end ParsePenglTexParameteriv;
 
 procedure ParsePenglGetTexParameterfv is
   -- Syntax: glGetTexParameterfv( target : GLtexturemapping; pname : GLtexturemapping; params : in out GLfloat );
-  -- Source: bush_os.opengl.glGetTexParameterfv
+  -- Source: spar_os.opengl.glGetTexParameterfv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -12254,7 +12254,7 @@ end ParsePenglGetTexParameterfv;
 
 procedure ParsePenglGetTexParameteriv is
   -- Syntax: glGetTexParameteriv( target : GLtexturemapping; pname : GLtexturemapping; params : in out GLint );
-  -- Source: bush_os.opengl.glGetTexParameteriv
+  -- Source: spar_os.opengl.glGetTexParameteriv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -12294,7 +12294,7 @@ end ParsePenglGetTexParameteriv;
 
 procedure ParsePenglGetTexLevelParameterfv is
   -- Syntax: glGetTexLevelParameterfv( target : GLtexturemapping; level : GLint; pname : GLenum; params : in out GLfloat );
-  -- Source: bush_os.opengl.glGetTexLevelParameterfv
+  -- Source: spar_os.opengl.glGetTexLevelParameterfv
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -12337,7 +12337,7 @@ end ParsePenglGetTexLevelParameterfv;
 
 procedure ParsePenglGetTexLevelParameteriv is
   -- Syntax: glGetTexLevelParameteriv( target : GLtexturemapping; level : GLint; pname : GLenum; params : in out GLint );
-  -- Source: bush_os.opengl.glGetTexLevelParameteriv
+  -- Source: spar_os.opengl.glGetTexLevelParameteriv
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -12380,7 +12380,7 @@ end ParsePenglGetTexLevelParameteriv;
 
 procedure ParsePenglTexImage1D is
   -- Syntax: glTexImage1D( target : GLtexturemapping; level : GLint; internalFormat : GLint; width : GLsizei; border : GLint; format : GLbuffers; kind : GLtypes; pixels : System.address );
-  -- Source: bush_os.opengl.glTexImage1D
+  -- Source: spar_os.opengl.glTexImage1D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -12434,7 +12434,7 @@ end ParsePenglTexImage1D;
 
 procedure ParsePenglTexImage2D is
   -- Syntax: glTexImage2D( target : GLenum; level : GLint; internalFormat : GLint; width : GLsizei; height : GLsizei; border : GLint; format : GLenum; kind : GLenum; pixels : System.address );
-  -- Source: bush_os.opengl.glTexImage2D
+  -- Source: spar_os.opengl.glTexImage2D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -12492,7 +12492,7 @@ end ParsePenglTexImage2D;
 
 procedure ParsePenglGetTexImage is
   -- Syntax: glGetTexImage( target : GLtexturemapping; level : GLint; format : GLbuffers; kind : GLtypes; pixels : System.address );
-  -- Source: bush_os.opengl.glGetTexImage
+  -- Source: spar_os.opengl.glGetTexImage
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -12537,7 +12537,7 @@ end ParsePenglGetTexImage;
 
 procedure ParsePenglGenTextures is
   -- Syntax: glGenTextures( n : GLsizei; textures : GL_UInt_Array_Ptr );
-  -- Source: bush_os.opengl.glGenTextures
+  -- Source: spar_os.opengl.glGenTextures
   n_val  : unbounded_string;
   n_type : identifier;
   textures_val  : unbounded_string;
@@ -12574,7 +12574,7 @@ end ParsePenglGenTextures;
 
 procedure ParsePenglDeleteTextures is
   -- Syntax: glDeleteTextures( n : GLsizei; textures : GL_UInt_Array_Ptr );
-  -- Source: bush_os.opengl.glDeleteTextures
+  -- Source: spar_os.opengl.glDeleteTextures
   n_val  : unbounded_string;
   n_type : identifier;
   textures_val  : unbounded_string;
@@ -12611,7 +12611,7 @@ end ParsePenglDeleteTextures;
 
 procedure ParsePenglBindTexture is
   -- Syntax: glBindTexture( target : GLtexturemapping; texture : GLuint );
-  -- Source: bush_os.opengl.glBindTexture
+  -- Source: spar_os.opengl.glBindTexture
   target_val  : unbounded_string;
   target_type : identifier;
   texture_val  : unbounded_string;
@@ -12645,7 +12645,7 @@ end ParsePenglBindTexture;
 
 procedure ParsePenglPrioritizeTextures is
   -- Syntax: glPrioritizeTextures( n : GLsizei; textures : GL_UInt_Array_Ptr; priorities : GL_Clampf_Array_Ptr );
-  -- Source: bush_os.opengl.glPrioritizeTextures
+  -- Source: spar_os.opengl.glPrioritizeTextures
   n_val  : unbounded_string;
   n_type : identifier;
   textures_val  : unbounded_string;
@@ -12686,7 +12686,7 @@ end ParsePenglPrioritizeTextures;
 
 procedure ParsePenglAreTexturesResident( result : out unbounded_string ) is
   -- Syntax: glAreTexturesResident( n : GLsizei; textures : GL_UInt_Array_Ptr; residences : GL_Boolean_Array_Ptr ) return GLboolean;
-  -- Source: bush_os.opengl.glAreTexturesResident
+  -- Source: spar_os.opengl.glAreTexturesResident
   n_val  : unbounded_string;
   n_type : identifier;
   textures_val  : unbounded_string;
@@ -12728,7 +12728,7 @@ end ParsePenglAreTexturesResident;
 
 procedure ParsePenglIsTexture( result : out unbounded_string ) is
   -- Syntax: glIsTexture( texture : GL_UInt_Array_Ptr ) return GLboolean;
-  -- Source: bush_os.opengl.glIsTexture
+  -- Source: spar_os.opengl.glIsTexture
   texture_val  : unbounded_string;
   texture_type : identifier;
 begin
@@ -12756,7 +12756,7 @@ end ParsePenglIsTexture;
 
 procedure ParsePenglTexSubImage1D is
   -- Syntax: glTexSubImage1D( target : GLtexturemapping; level : GLint; xoffset : GLint; width : GLsizei; format : GLbuffers; kind : GLtypes; pixels : System.address );
-  -- Source: bush_os.opengl.glTexSubImage1D
+  -- Source: spar_os.opengl.glTexSubImage1D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -12807,7 +12807,7 @@ end ParsePenglTexSubImage1D;
 
 procedure ParsePenglTexSubImage2D is
   -- Syntax: glTexSubImage2D( target : GLtexturemapping; level : GLint; xoffset, yoffset : GLint; width, height : GLsizei; format : GLbuffers; kind : GLtypes; pixels : System.address );
-  -- Source: bush_os.opengl.glTexSubImage2D
+  -- Source: spar_os.opengl.glTexSubImage2D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -12864,7 +12864,7 @@ end ParsePenglTexSubImage2D;
 
 procedure ParsePenglCopyTexImage1D is
   -- Syntax: glCopyTexImage1D( target : GLtexturemapping; level : GLint; internalformat : GLenum; x, y : GLint; width : GLsizei; border : GLint );
-  -- Source: bush_os.opengl.glCopyTexImage1D
+  -- Source: spar_os.opengl.glCopyTexImage1D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -12910,7 +12910,7 @@ end ParsePenglCopyTexImage1D;
 
 procedure ParsePenglCopyTexImage2D is
   -- Syntax: glCopyTexImage2D( target : GLtexturemapping; level : GLint; internalformat : GLenum; x, y : GLint; width, height : GLsizei; border : GLint );
-  -- Source: bush_os.opengl.glCopyTexImage2D
+  -- Source: spar_os.opengl.glCopyTexImage2D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -12959,7 +12959,7 @@ end ParsePenglCopyTexImage2D;
 
 procedure ParsePenglCopyTexSubImage1D is
   -- Syntax: glCopyTexSubImage1D( target : GLtexturemapping; level : GLint; xoffset : GLint; x, y : GLint; width : GLsizei );
-  -- Source: bush_os.opengl.glCopyTexSubImage1D
+  -- Source: spar_os.opengl.glCopyTexSubImage1D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -13002,7 +13002,7 @@ end ParsePenglCopyTexSubImage1D;
 
 procedure ParsePenglCopyTexSubImage2D is
   -- Syntax: glCopyTexSubImage2D( target : GLtexturemapping; level : GLint; xoffset, yoffset : GLint; x, y : GLint; width, height : GLsizei );
-  -- Source: bush_os.opengl.glCopyTexSubImage2D
+  -- Source: spar_os.opengl.glCopyTexSubImage2D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -13051,7 +13051,7 @@ end ParsePenglCopyTexSubImage2D;
 
 procedure ParsePenglMap1d is
   -- Syntax: glMap1d( target : GLevaluators; u1, u2 : GLdouble; stride : GLint; order : GLint; points : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glMap1d
+  -- Source: spar_os.opengl.glMap1d
   target_val  : unbounded_string;
   target_type : identifier;
   u1_val  : unbounded_string;
@@ -13100,7 +13100,7 @@ end ParsePenglMap1d;
 
 procedure ParsePenglMap1f is
   -- Syntax: glMap1f( target : GLevaluators; u1, u2 : GLfloat; stride : GLint; order : GLint; points : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glMap1f
+  -- Source: spar_os.opengl.glMap1f
   target_val  : unbounded_string;
   target_type : identifier;
   u1_val  : unbounded_string;
@@ -13149,7 +13149,7 @@ end ParsePenglMap1f;
 
 procedure ParsePenglMap2d is
   -- Syntax: glMap2d( target : GLevaluators; u1, u2 : GLdouble; ustride : GLint; uorder : GLint; v1, v2 : GLdouble; vstride : GLint; vorder : GLint; points : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glMap2d
+  -- Source: spar_os.opengl.glMap2d
   target_val  : unbounded_string;
   target_type : identifier;
   u1_val  : unbounded_string;
@@ -13210,7 +13210,7 @@ end ParsePenglMap2d;
 
 procedure ParsePenglMap2f is
   -- Syntax: glMap2f( target : GLevaluators; u1, u2 : GLfloat; ustride : GLint; uorder : GLint; v1, v2 : GLfloat; vstride : GLint; vorder : GLint; points : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glMap2f
+  -- Source: spar_os.opengl.glMap2f
   target_val  : unbounded_string;
   target_type : identifier;
   u1_val  : unbounded_string;
@@ -13271,7 +13271,7 @@ end ParsePenglMap2f;
 
 procedure ParsePenglGetMapdv is
   -- Syntax: glGetMapdv( target, query : GLevaluators; v : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glGetMapdv
+  -- Source: spar_os.opengl.glGetMapdv
   target_val  : unbounded_string;
   target_type : identifier;
   query_val  : unbounded_string;
@@ -13311,7 +13311,7 @@ end ParsePenglGetMapdv;
 
 procedure ParsePenglGetMapfv is
   -- Syntax: glGetMapfv( target, query : GLevaluators; v : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glGetMapfv
+  -- Source: spar_os.opengl.glGetMapfv
   target_val  : unbounded_string;
   target_type : identifier;
   query_val  : unbounded_string;
@@ -13351,7 +13351,7 @@ end ParsePenglGetMapfv;
 
 procedure ParsePenglGetMapiv is
   -- Syntax: glGetMapiv( target, query : GLevaluators; v : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glGetMapiv
+  -- Source: spar_os.opengl.glGetMapiv
   target_val  : unbounded_string;
   target_type : identifier;
   query_val  : unbounded_string;
@@ -13391,7 +13391,7 @@ end ParsePenglGetMapiv;
 
 procedure ParsePenglEvalCoord1d is
   -- Syntax: glEvalCoord1d( u : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glEvalCoord1d
+  -- Source: spar_os.opengl.glEvalCoord1d
   u_val  : unbounded_string;
 --  u_type : identifier;
 begin
@@ -13425,7 +13425,7 @@ end ParsePenglEvalCoord1d;
 
 procedure ParsePenglEvalCoord1f is
   -- Syntax: glEvalCoord1f( u : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glEvalCoord1f
+  -- Source: spar_os.opengl.glEvalCoord1f
   u_val  : unbounded_string;
 --  u_type : identifier;
 begin
@@ -13459,7 +13459,7 @@ end ParsePenglEvalCoord1f;
 
 procedure ParsePenglEvalCoord1dv is
   -- Syntax: glEvalCoord1dv( u : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glEvalCoord1dv
+  -- Source: spar_os.opengl.glEvalCoord1dv
   u_val  : unbounded_string;
 --  u_type : identifier;
 begin
@@ -13493,7 +13493,7 @@ end ParsePenglEvalCoord1dv;
 
 procedure ParsePenglEvalCoord1fv is
   -- Syntax: glEvalCoord1fv( u : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glEvalCoord1fv
+  -- Source: spar_os.opengl.glEvalCoord1fv
   u_val  : unbounded_string;
 --  u_type : identifier;
 begin
@@ -13527,7 +13527,7 @@ end ParsePenglEvalCoord1fv;
 
 procedure ParsePenglEvalCoord2d is
   -- Syntax: glEvalCoord2d( u, v : GLdouble );
-  -- Source: bush_os.opengl.glEvalCoord2d
+  -- Source: spar_os.opengl.glEvalCoord2d
   u_val  : unbounded_string;
   u_type : identifier;
   v_val  : unbounded_string;
@@ -13558,7 +13558,7 @@ end ParsePenglEvalCoord2d;
 
 procedure ParsePenglEvalCoord2f is
   -- Syntax: glEvalCoord2f( u, v : GLfloat );
-  -- Source: bush_os.opengl.glEvalCoord2f
+  -- Source: spar_os.opengl.glEvalCoord2f
   u_val  : unbounded_string;
   u_type : identifier;
   v_val  : unbounded_string;
@@ -13589,7 +13589,7 @@ end ParsePenglEvalCoord2f;
 
 procedure ParsePenglEvalCoord2dv is
   -- Syntax: glEvalCoord2dv( u : GL_Double_Array_Ptr );
-  -- Source: bush_os.opengl.glEvalCoord2dv
+  -- Source: spar_os.opengl.glEvalCoord2dv
   u_val  : unbounded_string;
 --  u_type : identifier;
 begin
@@ -13623,7 +13623,7 @@ end ParsePenglEvalCoord2dv;
 
 procedure ParsePenglEvalCoord2fv is
   -- Syntax: glEvalCoord2fv( u : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glEvalCoord2fv
+  -- Source: spar_os.opengl.glEvalCoord2fv
   u_val  : unbounded_string;
 --  u_type : identifier;
 begin
@@ -13657,7 +13657,7 @@ end ParsePenglEvalCoord2fv;
 
 procedure ParsePenglMapGrid1d is
   -- Syntax: glMapGrid1d( un : GLint; u1, u2 : GLdouble );
-  -- Source: bush_os.opengl.glMapGrid1d
+  -- Source: spar_os.opengl.glMapGrid1d
   un_val  : unbounded_string;
   un_type : identifier;
   u1_val  : unbounded_string;
@@ -13691,7 +13691,7 @@ end ParsePenglMapGrid1d;
 
 procedure ParsePenglMapGrid1f is
   -- Syntax: glMapGrid1f( un : GLint; u1, u2 : GLfloat );
-  -- Source: bush_os.opengl.glMapGrid1f
+  -- Source: spar_os.opengl.glMapGrid1f
   un_val  : unbounded_string;
   un_type : identifier;
   u1_val  : unbounded_string;
@@ -13725,7 +13725,7 @@ end ParsePenglMapGrid1f;
 
 procedure ParsePenglMapGrid2d is
   -- Syntax: glMapGrid2d( un : GLint; u1, u2 : GLdouble; vn : GLint; v1, v2 : GLdouble );
-  -- Source: bush_os.opengl.glMapGrid2d
+  -- Source: spar_os.opengl.glMapGrid2d
   un_val  : unbounded_string;
   un_type : identifier;
   u1_val  : unbounded_string;
@@ -13768,7 +13768,7 @@ end ParsePenglMapGrid2d;
 
 procedure ParsePenglMapGrid2f is
   -- Syntax: glMapGrid2f( un : GLint; u1, u2 : GLfloat; vn : GLint; v1, v2 : GLfloat );
-  -- Source: bush_os.opengl.glMapGrid2f
+  -- Source: spar_os.opengl.glMapGrid2f
   un_val  : unbounded_string;
   un_type : identifier;
   u1_val  : unbounded_string;
@@ -13811,7 +13811,7 @@ end ParsePenglMapGrid2f;
 
 procedure ParsePenglEvalPoint1 is
   -- Syntax: glEvalPoint1( i : GLint );
-  -- Source: bush_os.opengl.glEvalPoint1
+  -- Source: spar_os.opengl.glEvalPoint1
   i_val  : unbounded_string;
   i_type : identifier;
 begin
@@ -13839,7 +13839,7 @@ end ParsePenglEvalPoint1;
 
 procedure ParsePenglEvalPoint2 is
   -- Syntax: glEvalPoint2( i, j : GLint );
-  -- Source: bush_os.opengl.glEvalPoint2
+  -- Source: spar_os.opengl.glEvalPoint2
   i_val  : unbounded_string;
   i_type : identifier;
   j_val  : unbounded_string;
@@ -13870,7 +13870,7 @@ end ParsePenglEvalPoint2;
 
 procedure ParsePenglEvalMesh1 is
   -- Syntax: glEvalMesh1( mode : GLpolygons; i1, i2 : GLint );
-  -- Source: bush_os.opengl.glEvalMesh1
+  -- Source: spar_os.opengl.glEvalMesh1
   mode_val  : unbounded_string;
   mode_type : identifier;
   i1_val  : unbounded_string;
@@ -13904,7 +13904,7 @@ end ParsePenglEvalMesh1;
 
 procedure ParsePenglEvalMesh2 is
   -- Syntax: glEvalMesh2( mode : GLpolygons; i1, i2 :GLint; j1, j2 : GLint );
-  -- Source: bush_os.opengl.glEvalMesh2
+  -- Source: spar_os.opengl.glEvalMesh2
   mode_val  : unbounded_string;
   mode_type : identifier;
   i1_val  : unbounded_string;
@@ -13944,7 +13944,7 @@ end ParsePenglEvalMesh2;
 
 procedure ParsePenglFogf is
   -- Syntax: glFogf( pname : GLfog; param : GLfloat );
-  -- Source: bush_os.opengl.glFogf
+  -- Source: spar_os.opengl.glFogf
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
@@ -13978,7 +13978,7 @@ end ParsePenglFogf;
 
 procedure ParsePenglFogi is
   -- Syntax: glFogi( pname : GLfog; param : GLint );
-  -- Source: bush_os.opengl.glFogi
+  -- Source: spar_os.opengl.glFogi
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
@@ -14012,7 +14012,7 @@ end ParsePenglFogi;
 
 procedure ParsePenglFogfv is
   -- Syntax: glFogfv( pname : GLfog; param : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glFogfv
+  -- Source: spar_os.opengl.glFogfv
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
@@ -14049,7 +14049,7 @@ end ParsePenglFogfv;
 
 procedure ParsePenglFogiv is
   -- Syntax: glFogiv( pname : GLfog; param : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glFogiv
+  -- Source: spar_os.opengl.glFogiv
   pname_val  : unbounded_string;
   pname_type : identifier;
   param_val  : unbounded_string;
@@ -14086,7 +14086,7 @@ end ParsePenglFogiv;
 
 procedure ParsePenglFeedbackBuffer is
   -- Syntax: glFeedbackBuffer( size : GLsizei; kind : GLfeedback; buffer : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glFeedbackBuffer
+  -- Source: spar_os.opengl.glFeedbackBuffer
   size_val  : unbounded_string;
   size_type : identifier;
   kind_val  : unbounded_string;
@@ -14126,7 +14126,7 @@ end ParsePenglFeedbackBuffer;
 
 procedure ParsePenglPassThrough is
   -- Syntax: glPassThrough( token : GLfloat );
-  -- Source: bush_os.opengl.glPassThrough
+  -- Source: spar_os.opengl.glPassThrough
   token_val  : unbounded_string;
   token_type : identifier;
 begin
@@ -14157,7 +14157,7 @@ end ParsePenglPassThrough;
 
 procedure ParsePenglSelectBuffer is
   -- Syntax: glSelectBuffer( kind : GLsizei; buffer : GL_UInt_Array_Ptr );
-  -- Source: bush_os.opengl.glSelectBuffer
+  -- Source: spar_os.opengl.glSelectBuffer
   kind_val  : unbounded_string;
   kind_type : identifier;
   buffer_val  : unbounded_string;
@@ -14194,7 +14194,7 @@ end ParsePenglSelectBuffer;
 
 procedure ParsePenglInitNames is
   -- Syntax: glInitNames;
-  -- Source: bush_os.opengl.glInitNames
+  -- Source: spar_os.opengl.glInitNames
 begin
   expect( pen_glinitnames_t );
   if isExecutingCommand then
@@ -14222,7 +14222,7 @@ end ParsePenglInitNames;
 
 procedure ParsePenglLoadName is
   -- Syntax: glLoadName( name : GLuint );
-  -- Source: bush_os.opengl.glLoadName
+  -- Source: spar_os.opengl.glLoadName
   name_val  : unbounded_string;
   name_type : identifier;
 begin
@@ -14253,7 +14253,7 @@ end ParsePenglLoadName;
 
 procedure ParsePenglPushName is
   -- Syntax: glPushName( name : GLuint );
-  -- Source: bush_os.opengl.glPushName
+  -- Source: spar_os.opengl.glPushName
   name_val  : unbounded_string;
   name_type : identifier;
 begin
@@ -14284,7 +14284,7 @@ end ParsePenglPushName;
 
 procedure ParsePenglPopName is
   -- Syntax: glPopName;
-  -- Source: bush_os.opengl.glPopName
+  -- Source: spar_os.opengl.glPopName
 begin
   expect( pen_glpopname_t );
   if isExecutingCommand then
@@ -14312,7 +14312,7 @@ end ParsePenglPopName;
 
 procedure ParsePenglDrawRangeElements is
   -- Syntax: glDrawRangeElements( mode : GLprimitives; start : GLuint; done : GLuint; count : GLsizei; kind : GLtypes; indices : System.address );
-  -- Source: bush_os.opengl.glDrawRangeElements
+  -- Source: spar_os.opengl.glDrawRangeElements
   mode_val  : unbounded_string;
   mode_type : identifier;
   start_val  : unbounded_string;
@@ -14360,7 +14360,7 @@ end ParsePenglDrawRangeElements;
 
 procedure ParsePenglTexImage3D is
   -- Syntax: glTexImage3D( target : GLenum; level : GLint; internalFormat : GLint; width, height, depth : GLsizei; border : GLint; format : GLbuffers; kind : GLtypes; pixels : System.address );
-  -- Source: bush_os.opengl.glTexImage3D
+  -- Source: spar_os.opengl.glTexImage3D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -14420,7 +14420,7 @@ end ParsePenglTexImage3D;
 
 procedure ParsePenglTexSubImage3D is
   -- Syntax: glTexSubImage3D( target : GLenum; level : GLint; xoffset, yoffset, zoffset : GLint; width, height, depth : GLsizei; format : GLbuffers; kind : GLtypes; pixels : System.address );
-  -- Source: bush_os.opengl.glTexSubImage3D
+  -- Source: spar_os.opengl.glTexSubImage3D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -14483,7 +14483,7 @@ end ParsePenglTexSubImage3D;
 
 procedure ParsePenglCopyTexSubImage3D is
   -- Syntax: glCopyTexSubImage3D( target : GLenum; level : GLint; xoffset, yoffset, zoffset : GLint; x, y : GLint; width, height : GLsizei );
-  -- Source: bush_os.opengl.glCopyTexSubImage3D
+  -- Source: spar_os.opengl.glCopyTexSubImage3D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -14535,7 +14535,7 @@ end ParsePenglCopyTexSubImage3D;
 
 procedure ParsePenglColorTable is
   -- Syntax: glColorTable( target : GLenum; internalformat : GLenum; width : GLsizei; format : GLenum; kind : GLenum; table : System.address );
-  -- Source: bush_os.opengl.glColorTable
+  -- Source: spar_os.opengl.glColorTable
   target_val  : unbounded_string;
   target_type : identifier;
   internalformat_val  : unbounded_string;
@@ -14583,7 +14583,7 @@ end ParsePenglColorTable;
 
 procedure ParsePenglColorSubTable is
   -- Syntax: glColorSubTable( target : GLarbmapping; start : GLsizei; count : GLsizei; format : GLbuffers; kind : GLtypes; data : System.address );
-  -- Source: bush_os.opengl.glColorSubTable
+  -- Source: spar_os.opengl.glColorSubTable
   target_val  : unbounded_string;
   target_type : identifier;
   start_val  : unbounded_string;
@@ -14631,7 +14631,7 @@ end ParsePenglColorSubTable;
 
 procedure ParsePenglColorTableParameteriv is
   -- Syntax: glColorTableParameteriv( target : GLarbmapping; pname : GLarbmapping; params : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glColorTableParameteriv
+  -- Source: spar_os.opengl.glColorTableParameteriv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -14671,7 +14671,7 @@ end ParsePenglColorTableParameteriv;
 
 procedure ParsePenglColorTableParameterfv is
   -- Syntax: glColorTableParameterfv( target : GLarbmapping; pname : GLarbmapping; params : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glColorTableParameterfv
+  -- Source: spar_os.opengl.glColorTableParameterfv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -14711,7 +14711,7 @@ end ParsePenglColorTableParameterfv;
 
 procedure ParsePenglCopyColorSubTable is
   -- Syntax: glCopyColorSubTable( target : GLarbmapping; start : GLsizei; x, y : GLint; width : GLsizei );
-  -- Source: bush_os.opengl.glCopyColorSubTable
+  -- Source: spar_os.opengl.glCopyColorSubTable
   target_val  : unbounded_string;
   target_type : identifier;
   start_val  : unbounded_string;
@@ -14751,7 +14751,7 @@ end ParsePenglCopyColorSubTable;
 
 procedure ParsePenglCopyColorTable is
   -- Syntax: glCopyColorTable( target : GLarbmapping; internalformat : GLenum; x, y : GLint; width : GLsizei );
-  -- Source: bush_os.opengl.glCopyColorTable
+  -- Source: spar_os.opengl.glCopyColorTable
   target_val  : unbounded_string;
   target_type : identifier;
   internalformat_val  : unbounded_string;
@@ -14791,7 +14791,7 @@ end ParsePenglCopyColorTable;
 
 procedure ParsePenglGetColorTable is
   -- Syntax: glGetColorTable( target : GLarbmapping; format : GLbuffers; kind : GLtypes; table : System.address );
-  -- Source: bush_os.opengl.glGetColorTable
+  -- Source: spar_os.opengl.glGetColorTable
   target_val  : unbounded_string;
   target_type : identifier;
   format_val  : unbounded_string;
@@ -14833,7 +14833,7 @@ end ParsePenglGetColorTable;
 
 procedure ParsePenglGetColorTableParameterfv is
   -- Syntax: glGetColorTableParameterfv( target : GLarbmapping; pname : GLarbmapping; params : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.glGetColorTableParameterfv
+  -- Source: spar_os.opengl.glGetColorTableParameterfv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -14873,7 +14873,7 @@ end ParsePenglGetColorTableParameterfv;
 
 procedure ParsePenglGetColorTableParameteriv is
   -- Syntax: glGetColorTableParameteriv( target : GLarbmapping; pname : GLarbmapping; params : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.glGetColorTableParameteriv
+  -- Source: spar_os.opengl.glGetColorTableParameteriv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -14913,7 +14913,7 @@ end ParsePenglGetColorTableParameteriv;
 
 procedure ParsePenglBlendEquation is
   -- Syntax: glBlendEquation( mode : GLarbmapping );
-  -- Source: bush_os.opengl.glBlendEquation
+  -- Source: spar_os.opengl.glBlendEquation
   mode_val  : unbounded_string;
   mode_type : identifier;
 begin
@@ -14941,7 +14941,7 @@ end ParsePenglBlendEquation;
 
 procedure ParsePenglBlendColor is
   -- Syntax: glBlendColor( red, green, blue, alpha : GLclampf );
-  -- Source: bush_os.opengl.glBlendColor
+  -- Source: spar_os.opengl.glBlendColor
   red_val  : unbounded_string;
   red_type : identifier;
   green_val  : unbounded_string;
@@ -14978,7 +14978,7 @@ end ParsePenglBlendColor;
 
 procedure ParsePenglHistogram is
   -- Syntax: glHistogram( target : GLarbmapping; width : GLsizei; internalformat : GLenum; sink : GLboolean );
-  -- Source: bush_os.opengl.glHistogram
+  -- Source: spar_os.opengl.glHistogram
   target_val  : unbounded_string;
   target_type : identifier;
   width_val  : unbounded_string;
@@ -15015,7 +15015,7 @@ end ParsePenglHistogram;
 
 procedure ParsePenglResetHistogram is
   -- Syntax: glResetHistogram( target : GLarbmapping );
-  -- Source: bush_os.opengl.glResetHistogram
+  -- Source: spar_os.opengl.glResetHistogram
   target_val  : unbounded_string;
   target_type : identifier;
 begin
@@ -15043,7 +15043,7 @@ end ParsePenglResetHistogram;
 
 procedure ParsePenglGetHistogram is
   -- Syntax: glGetHistogram( target : GLarbmapping; reset : GLboolean; format : GLbuffers; kind : GLtypes; values : System.address );
-  -- Source: bush_os.opengl.glGetHistogram
+  -- Source: spar_os.opengl.glGetHistogram
   target_val  : unbounded_string;
   target_type : identifier;
   reset_val  : unbounded_string;
@@ -15088,7 +15088,7 @@ end ParsePenglGetHistogram;
 
 procedure ParsePenglGetHistogramParameterfv( result : out unbounded_string ) is
   -- Syntax: glGetHistogramParameterfv( target : GLarbmapping; pname : GLarbmapping; params : in out GLfloat );
-  -- Source: bush_os.opengl.glGetHistogramParameterfv
+  -- Source: spar_os.opengl.glGetHistogramParameterfv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -15125,7 +15125,7 @@ end ParsePenglGetHistogramParameterfv;
 
 procedure ParsePenglGetHistogramParameteriv( result : out unbounded_string ) is
   -- Syntax: glGetHistogramParameteriv( target : GLarbmapping; pname : GLarbmapping; params : in out GLint );
-  -- Source: bush_os.opengl.glGetHistogramParameteriv
+  -- Source: spar_os.opengl.glGetHistogramParameteriv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -15162,7 +15162,7 @@ end ParsePenglGetHistogramParameteriv;
 
 procedure ParsePenglMinmax is
   -- Syntax: glMinmax( target : GLarbmapping; internalformat : GLenum; sink : GLboolean );
-  -- Source: bush_os.opengl.glMinmax
+  -- Source: spar_os.opengl.glMinmax
   target_val  : unbounded_string;
   target_type : identifier;
   internalformat_val  : unbounded_string;
@@ -15196,7 +15196,7 @@ end ParsePenglMinmax;
 
 procedure ParsePenglResetMinmax is
   -- Syntax: glResetMinmax( target : GLarbmapping );
-  -- Source: bush_os.opengl.glResetMinmax
+  -- Source: spar_os.opengl.glResetMinmax
   target_val  : unbounded_string;
   target_type : identifier;
 begin
@@ -15224,7 +15224,7 @@ end ParsePenglResetMinmax;
 
 procedure ParsePenglGetMinmax is
   -- Syntax: glGetMinmax( target : GLarbmapping; reset : GLboolean; format : GLbuffers; kind : GLtypes; values : System.address );
-  -- Source: bush_os.opengl.glGetMinmax
+  -- Source: spar_os.opengl.glGetMinmax
   target_val  : unbounded_string;
   target_type : identifier;
   reset_val  : unbounded_string;
@@ -15269,7 +15269,7 @@ end ParsePenglGetMinmax;
 
 procedure ParsePenglGetMinmaxParameterfv is
   -- Syntax: glGetMinmaxParameterfv( target : GLarbmapping; pname : GLarbmapping; params : in out GLfloat );
-  -- Source: bush_os.opengl.glGetMinmaxParameterfv
+  -- Source: spar_os.opengl.glGetMinmaxParameterfv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -15309,7 +15309,7 @@ end ParsePenglGetMinmaxParameterfv;
 
 procedure ParsePenglGetMinmaxParameteriv is
   -- Syntax: glGetMinmaxParameteriv( target : GLarbmapping; pname : GLarbmapping; params : in out GLint );
-  -- Source: bush_os.opengl.glGetMinmaxParameteriv
+  -- Source: spar_os.opengl.glGetMinmaxParameteriv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -15349,7 +15349,7 @@ end ParsePenglGetMinmaxParameteriv;
 
 procedure ParsePenglConvolutionFilter1D is
   -- Syntax: glConvolutionFilter1D( target : GLbuffers; internalformat : GLbuffers; width : GLsizei; format : GLbuffers; kind : GLtypes; image : System.address );
-  -- Source: bush_os.opengl.glConvolutionFilter1D
+  -- Source: spar_os.opengl.glConvolutionFilter1D
   target_val  : unbounded_string;
   target_type : identifier;
   internalformat_val  : unbounded_string;
@@ -15397,7 +15397,7 @@ end ParsePenglConvolutionFilter1D;
 
 procedure ParsePenglConvolutionFilter2D is
   -- Syntax: glConvolutionFilter2D( target : GLbuffers; internalformat : GLbuffers; width, height : GLsizei; format : GLbuffers; kind : GLtypes; image : System.address );
-  -- Source: bush_os.opengl.glConvolutionFilter2D
+  -- Source: spar_os.opengl.glConvolutionFilter2D
   target_val  : unbounded_string;
   target_type : identifier;
   internalformat_val  : unbounded_string;
@@ -15448,7 +15448,7 @@ end ParsePenglConvolutionFilter2D;
 
 procedure ParsePenglConvolutionParameterf is
   -- Syntax: glConvolutionParameterf( target : GLarbmapping; pname : GLarbmapping; params : GLfloat );
-  -- Source: bush_os.opengl.glConvolutionParameterf
+  -- Source: spar_os.opengl.glConvolutionParameterf
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -15482,7 +15482,7 @@ end ParsePenglConvolutionParameterf;
 
 procedure ParsePenglConvolutionParameterfv( result : out unbounded_string ) is
   -- Syntax: glConvolutionParameterfv( target : GLarbmapping; pname : GLarbmapping; params : in out GLfloat );
-  -- Source: bush_os.opengl.glConvolutionParameterfv
+  -- Source: spar_os.opengl.glConvolutionParameterfv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -15520,7 +15520,7 @@ end ParsePenglConvolutionParameterfv;
 
 procedure ParsePenglConvolutionParameteri( result : out unbounded_string ) is
   -- Syntax: glConvolutionParameteri( target : GLarbmapping; pname : GLarbmapping; params : GLint );
-  -- Source: bush_os.opengl.glConvolutionParameteri
+  -- Source: spar_os.opengl.glConvolutionParameteri
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -15558,7 +15558,7 @@ end ParsePenglConvolutionParameteri;
 
 procedure ParsePenglCopyConvolutionFilter1D is
   -- Syntax: glCopyConvolutionFilter1D( target : GLarbmapping; internalformat : GLarbmapping; x, y : GLint; width : GLsizei );
-  -- Source: bush_os.opengl.glCopyConvolutionFilter1D
+  -- Source: spar_os.opengl.glCopyConvolutionFilter1D
   target_val  : unbounded_string;
   target_type : identifier;
   internalformat_val  : unbounded_string;
@@ -15598,7 +15598,7 @@ end ParsePenglCopyConvolutionFilter1D;
 
 procedure ParsePenglCopyConvolutionFilter2D is
   -- Syntax: glCopyConvolutionFilter2D( target : GLarbmapping; internalformat : GLarbmapping; x, y : GLint; width, height : GLsizei );
-  -- Source: bush_os.opengl.glCopyConvolutionFilter2D
+  -- Source: spar_os.opengl.glCopyConvolutionFilter2D
   target_val  : unbounded_string;
   target_type : identifier;
   internalformat_val  : unbounded_string;
@@ -15641,7 +15641,7 @@ end ParsePenglCopyConvolutionFilter2D;
 
 procedure ParsePenglGetConvolutionFilter is
   -- Syntax: glGetConvolutionFilter( target : GLarbmapping; format : GLbuffers; kind : GLtypes; image : System.address );
-  -- Source: bush_os.opengl.glGetConvolutionFilter
+  -- Source: spar_os.opengl.glGetConvolutionFilter
   target_val  : unbounded_string;
   target_type : identifier;
   format_val  : unbounded_string;
@@ -15683,7 +15683,7 @@ end ParsePenglGetConvolutionFilter;
 
 procedure ParsePenglGetConvolutionParameterfv( result : out unbounded_string ) is
   -- Syntax: glGetConvolutionParameterfv( target : GLarbmapping; pname : GLarbmapping; params : in out GLfloat );
-  -- Source: bush_os.opengl.glGetConvolutionParameterfv
+  -- Source: spar_os.opengl.glGetConvolutionParameterfv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -15720,7 +15720,7 @@ end ParsePenglGetConvolutionParameterfv;
 
 procedure ParsePenglGetConvolutionParameteriv( result : out unbounded_string ) is
   -- Syntax: glGetConvolutionParameteriv( target : GLarbmapping; pname : GLarbmapping; params : in out GLint );
-  -- Source: bush_os.opengl.glGetConvolutionParameteriv
+  -- Source: spar_os.opengl.glGetConvolutionParameteriv
   target_val  : unbounded_string;
   target_type : identifier;
   pname_val  : unbounded_string;
@@ -15757,7 +15757,7 @@ end ParsePenglGetConvolutionParameteriv;
 
 procedure ParsePenglSeparableFilter2D is
   -- Syntax: glSeparableFilter2D( target : GLarbmapping; internalformat : GLbuffers; width, height : GLsizei; format : GLbuffers; kind : GLtypes; row, column : System.address );
-  -- Source: bush_os.opengl.glSeparableFilter2D
+  -- Source: spar_os.opengl.glSeparableFilter2D
   target_val  : unbounded_string;
   target_type : identifier;
   internalformat_val  : unbounded_string;
@@ -15814,7 +15814,7 @@ end ParsePenglSeparableFilter2D;
 
 procedure ParsePenglGetSeparableFilter is
   -- Syntax: glGetSeparableFilter( target : GLarbmapping; format : GLbuffers; kind : GLtypes; row, column, span : System.address );
-  -- Source: bush_os.opengl.glGetSeparableFilter
+  -- Source: spar_os.opengl.glGetSeparableFilter
   target_val  : unbounded_string;
   target_type : identifier;
   format_val  : unbounded_string;
@@ -15867,7 +15867,7 @@ end ParsePenglGetSeparableFilter;
 
 procedure ParsePenglActiveTexture is
   -- Syntax: glActiveTexture( texture : GLenum );
-  -- Source: bush_os.opengl.glActiveTexture
+  -- Source: spar_os.opengl.glActiveTexture
   texture_val  : unbounded_string;
   texture_type : identifier;
 begin
@@ -15895,7 +15895,7 @@ end ParsePenglActiveTexture;
 
 procedure ParsePenglClientActiveTexture is
   -- Syntax: glClientActiveTexture( texture : GLenum );
-  -- Source: bush_os.opengl.glClientActiveTexture
+  -- Source: spar_os.opengl.glClientActiveTexture
   texture_val  : unbounded_string;
   texture_type : identifier;
 begin
@@ -15923,7 +15923,7 @@ end ParsePenglClientActiveTexture;
 
 procedure ParsePenglCompressedTexImage1D is
   -- Syntax: glCompressedTexImage1D( target : GLenum; level : GLint; internalformat : GLbuffers; width : GLsizei; border : GLint; imageSize : GLsizei; data : System.address );
-  -- Source: bush_os.opengl.glCompressedTexImage1D
+  -- Source: spar_os.opengl.glCompressedTexImage1D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -15971,7 +15971,7 @@ end ParsePenglCompressedTexImage1D;
 
 procedure ParsePenglCompressedTexImage2D is
   -- Syntax: glCompressedTexImage2D( target : GLenum; level : GLint; internalformat : GLbuffers; width, height : GLsizei; border : GLint; imageSize : GLsizei; data : System.address );
-  -- Source: bush_os.opengl.glCompressedTexImage2D
+  -- Source: spar_os.opengl.glCompressedTexImage2D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -16022,7 +16022,7 @@ end ParsePenglCompressedTexImage2D;
 
 procedure ParsePenglCompressedTexImage3D is
   -- Syntax: glCompressedTexImage3D( target : GLenum; level : GLint; internalformat : GLbuffers; width, height, depth : GLsizei; border : GLint; imageSize : GLsizei; data : System.address );
-  -- Source: bush_os.opengl.glCompressedTexImage3D
+  -- Source: spar_os.opengl.glCompressedTexImage3D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -16076,7 +16076,7 @@ end ParsePenglCompressedTexImage3D;
 
 procedure ParsePenglCompressedTexSubImage1D is
   -- Syntax: glCompressedTexSubImage1D( target : GLenum; level : GLint; xoffset : GLint; width : GLsizei; format : GLbuffers; imageSize : GLsizei; data : System.address );
-  -- Source: bush_os.opengl.glCompressedTexSubImage1D
+  -- Source: spar_os.opengl.glCompressedTexSubImage1D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -16124,7 +16124,7 @@ end ParsePenglCompressedTexSubImage1D;
 
 procedure ParsePenglCompressedTexSubImage2D is
   -- Syntax: glCompressedTexSubImage2D( target : GLenum; level : GLint; xoffset, yoffset : GLint; width, height : GLsizei; format : GLbuffers; imageSize : GLsizei; data : System.address );
-  -- Source: bush_os.opengl.glCompressedTexSubImage2D
+  -- Source: spar_os.opengl.glCompressedTexSubImage2D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -16177,7 +16177,7 @@ end ParsePenglCompressedTexSubImage2D;
 
 procedure ParsePenglCompressedTexSubImage3D is
   -- Syntax: glCompressedTexSubImage3D( target : GLenum; level : GLint; xoffset, yoffset, zoffset : GLint; width, height, depth : GLsizei; format : GLbuffers; imageSize : GLsizei; data : System.address );
-  -- Source: bush_os.opengl.glCompressedTexSubImage3D
+  -- Source: spar_os.opengl.glCompressedTexSubImage3D
   target_val  : unbounded_string;
   target_type : identifier;
   level_val  : unbounded_string;
@@ -16237,7 +16237,7 @@ end ParsePenglCompressedTexSubImage3D;
 
 procedure ParsePenglGetCompressedTexImage is
   -- Syntax: glGetCompressedTexImage( target : GLenum; lod : GLint; img : System.address );
-  -- Source: bush_os.opengl.glGetCompressedTexImage
+  -- Source: spar_os.opengl.glGetCompressedTexImage
   target_val  : unbounded_string;
   target_type : identifier;
   lod_val  : unbounded_string;
@@ -16273,7 +16273,7 @@ end ParsePenglGetCompressedTexImage;
 
 procedure ParsePenglMultiTexCoord1d is
   -- Syntax: glMultiTexCoord1d( target : GLenum; s : GLdouble );
-  -- Source: bush_os.opengl.glMultiTexCoord1d
+  -- Source: spar_os.opengl.glMultiTexCoord1d
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -16304,7 +16304,7 @@ end ParsePenglMultiTexCoord1d;
 
 procedure ParsePenglMultiTexCoord1dv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord1dv( target : GLenum; v : in out GLdouble );
-  -- Source: bush_os.opengl.glMultiTexCoord1dv
+  -- Source: spar_os.opengl.glMultiTexCoord1dv
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -16340,7 +16340,7 @@ end ParsePenglMultiTexCoord1dv;
 
 procedure ParsePenglMultiTexCoord1f is
   -- Syntax: glMultiTexCoord1f( target : GLenum; s : GLfloat );
-  -- Source: bush_os.opengl.glMultiTexCoord1f
+  -- Source: spar_os.opengl.glMultiTexCoord1f
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -16371,7 +16371,7 @@ end ParsePenglMultiTexCoord1f;
 
 procedure ParsePenglMultiTexCoord1fv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord1fv( target : GLenum; v : in out GLfloat );
-  -- Source: bush_os.opengl.glMultiTexCoord1fv
+  -- Source: spar_os.opengl.glMultiTexCoord1fv
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -16407,7 +16407,7 @@ end ParsePenglMultiTexCoord1fv;
 
 procedure ParsePenglMultiTexCoord1i is
   -- Syntax: glMultiTexCoord1i( target : GLenum; s : GLint );
-  -- Source: bush_os.opengl.glMultiTexCoord1i
+  -- Source: spar_os.opengl.glMultiTexCoord1i
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -16438,7 +16438,7 @@ end ParsePenglMultiTexCoord1i;
 
 procedure ParsePenglMultiTexCoord1iv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord1iv( target : GLenum; v : in out GLint );
-  -- Source: bush_os.opengl.glMultiTexCoord1iv
+  -- Source: spar_os.opengl.glMultiTexCoord1iv
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -16474,7 +16474,7 @@ end ParsePenglMultiTexCoord1iv;
 
 procedure ParsePenglMultiTexCoord1s is
   -- Syntax: glMultiTexCoord1s( target : GLenum; s : GLshort );
-  -- Source: bush_os.opengl.glMultiTexCoord1s
+  -- Source: spar_os.opengl.glMultiTexCoord1s
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -16505,7 +16505,7 @@ end ParsePenglMultiTexCoord1s;
 
 procedure ParsePenglMultiTexCoord1sv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord1sv( target : GLenum; v : in out GLshort );
-  -- Source: bush_os.opengl.glMultiTexCoord1sv
+  -- Source: spar_os.opengl.glMultiTexCoord1sv
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -16541,7 +16541,7 @@ end ParsePenglMultiTexCoord1sv;
 
 procedure ParsePenglMultiTexCoord2d is
   -- Syntax: glMultiTexCoord2d( target : GLenum; s, t : GLdouble );
-  -- Source: bush_os.opengl.glMultiTexCoord2d
+  -- Source: spar_os.opengl.glMultiTexCoord2d
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -16575,7 +16575,7 @@ end ParsePenglMultiTexCoord2d;
 
 procedure ParsePenglMultiTexCoord2dv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord2dv( target : GLenum; v : in out GLdouble );
-  -- Source: bush_os.opengl.glMultiTexCoord2dv
+  -- Source: spar_os.opengl.glMultiTexCoord2dv
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -16612,7 +16612,7 @@ end ParsePenglMultiTexCoord2dv;
 
 procedure ParsePenglMultiTexCoord2f is
   -- Syntax: glMultiTexCoord2f( target : GLenum; s, t : GLfloat );
-  -- Source: bush_os.opengl.glMultiTexCoord2f
+  -- Source: spar_os.opengl.glMultiTexCoord2f
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -16646,7 +16646,7 @@ end ParsePenglMultiTexCoord2f;
 
 procedure ParsePenglMultiTexCoord2fv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord2fv( target : GLenum; v : in out GLfloat );
-  -- Source: bush_os.opengl.glMultiTexCoord2fv
+  -- Source: spar_os.opengl.glMultiTexCoord2fv
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -16683,7 +16683,7 @@ end ParsePenglMultiTexCoord2fv;
 
 procedure ParsePenglMultiTexCoord2i is
   -- Syntax: glMultiTexCoord2i( target : GLenum; s, t : GLint );
-  -- Source: bush_os.opengl.glMultiTexCoord2i
+  -- Source: spar_os.opengl.glMultiTexCoord2i
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -16717,7 +16717,7 @@ end ParsePenglMultiTexCoord2i;
 
 procedure ParsePenglMultiTexCoord2iv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord2iv( target : GLenum; v : in out GLint );
-  -- Source: bush_os.opengl.glMultiTexCoord2iv
+  -- Source: spar_os.opengl.glMultiTexCoord2iv
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -16754,7 +16754,7 @@ end ParsePenglMultiTexCoord2iv;
 
 procedure ParsePenglMultiTexCoord2s is
   -- Syntax: glMultiTexCoord2s( target : GLenum; s, t : GLshort );
-  -- Source: bush_os.opengl.glMultiTexCoord2s
+  -- Source: spar_os.opengl.glMultiTexCoord2s
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -16788,7 +16788,7 @@ end ParsePenglMultiTexCoord2s;
 
 procedure ParsePenglMultiTexCoord2sv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord2sv( target : GLenum; v : in out GLshort );
-  -- Source: bush_os.opengl.glMultiTexCoord2sv
+  -- Source: spar_os.opengl.glMultiTexCoord2sv
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -16825,7 +16825,7 @@ end ParsePenglMultiTexCoord2sv;
 
 procedure ParsePenglMultiTexCoord3d is
   -- Syntax: glMultiTexCoord3d( target : GLenum; s, t, r : GLdouble );
-  -- Source: bush_os.opengl.glMultiTexCoord3d
+  -- Source: spar_os.opengl.glMultiTexCoord3d
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -16862,7 +16862,7 @@ end ParsePenglMultiTexCoord3d;
 
 procedure ParsePenglMultiTexCoord3dv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord3dv( target : GLenum; v : in out GLdouble );
-  -- Source: bush_os.opengl.glMultiTexCoord3dv
+  -- Source: spar_os.opengl.glMultiTexCoord3dv
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -16899,7 +16899,7 @@ end ParsePenglMultiTexCoord3dv;
 
 procedure ParsePenglMultiTexCoord3f is
   -- Syntax: glMultiTexCoord3f( target : GLenum; s, t, r : GLfloat );
-  -- Source: bush_os.opengl.glMultiTexCoord3f
+  -- Source: spar_os.opengl.glMultiTexCoord3f
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -16936,7 +16936,7 @@ end ParsePenglMultiTexCoord3f;
 
 procedure ParsePenglMultiTexCoord3fv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord3fv( target : GLenum; v : in out GLfloat );
-  -- Source: bush_os.opengl.glMultiTexCoord3fv
+  -- Source: spar_os.opengl.glMultiTexCoord3fv
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -16973,7 +16973,7 @@ end ParsePenglMultiTexCoord3fv;
 
 procedure ParsePenglMultiTexCoord3i is
   -- Syntax: glMultiTexCoord3i( target : GLenum; s, t, r : GLint );
-  -- Source: bush_os.opengl.glMultiTexCoord3i
+  -- Source: spar_os.opengl.glMultiTexCoord3i
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -17010,7 +17010,7 @@ end ParsePenglMultiTexCoord3i;
 
 procedure ParsePenglMultiTexCoord3iv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord3iv( target : GLenum; v : in out GLint );
-  -- Source: bush_os.opengl.glMultiTexCoord3iv
+  -- Source: spar_os.opengl.glMultiTexCoord3iv
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -17047,7 +17047,7 @@ end ParsePenglMultiTexCoord3iv;
 
 procedure ParsePenglMultiTexCoord3s is
   -- Syntax: glMultiTexCoord3s( target : GLenum; s, t, r : GLshort );
-  -- Source: bush_os.opengl.glMultiTexCoord3s
+  -- Source: spar_os.opengl.glMultiTexCoord3s
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -17084,7 +17084,7 @@ end ParsePenglMultiTexCoord3s;
 
 procedure ParsePenglMultiTexCoord3sv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord3sv( target : GLenum; v : in out GLshort );
-  -- Source: bush_os.opengl.glMultiTexCoord3sv
+  -- Source: spar_os.opengl.glMultiTexCoord3sv
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -17121,7 +17121,7 @@ end ParsePenglMultiTexCoord3sv;
 
 procedure ParsePenglMultiTexCoord4d is
   -- Syntax: glMultiTexCoord4d( target : GLenum; s, t, r, q : GLdouble );
-  -- Source: bush_os.opengl.glMultiTexCoord4d
+  -- Source: spar_os.opengl.glMultiTexCoord4d
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -17161,7 +17161,7 @@ end ParsePenglMultiTexCoord4d;
 
 procedure ParsePenglMultiTexCoord4dv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord4dv( target : GLenum; v : in out GLdouble );
-  -- Source: bush_os.opengl.glMultiTexCoord4dv
+  -- Source: spar_os.opengl.glMultiTexCoord4dv
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -17198,7 +17198,7 @@ end ParsePenglMultiTexCoord4dv;
 
 procedure ParsePenglMultiTexCoord4f is
   -- Syntax: glMultiTexCoord4f( target : GLenum; s, t, r, q : GLfloat );
-  -- Source: bush_os.opengl.glMultiTexCoord4f
+  -- Source: spar_os.opengl.glMultiTexCoord4f
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -17238,7 +17238,7 @@ end ParsePenglMultiTexCoord4f;
 
 procedure ParsePenglMultiTexCoord4fv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord4fv( target : GLenum; v : in out GLfloat );
-  -- Source: bush_os.opengl.glMultiTexCoord4fv
+  -- Source: spar_os.opengl.glMultiTexCoord4fv
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -17275,7 +17275,7 @@ end ParsePenglMultiTexCoord4fv;
 
 procedure ParsePenglMultiTexCoord4i is
   -- Syntax: glMultiTexCoord4i( target : GLenum; s, t, r, q : GLint );
-  -- Source: bush_os.opengl.glMultiTexCoord4i
+  -- Source: spar_os.opengl.glMultiTexCoord4i
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -17315,7 +17315,7 @@ end ParsePenglMultiTexCoord4i;
 
 procedure ParsePenglMultiTexCoord4iv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord4iv( target : GLenum; v : in out GLint );
-  -- Source: bush_os.opengl.glMultiTexCoord4iv
+  -- Source: spar_os.opengl.glMultiTexCoord4iv
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -17352,7 +17352,7 @@ end ParsePenglMultiTexCoord4iv;
 
 procedure ParsePenglMultiTexCoord4s is
   -- Syntax: glMultiTexCoord4s( target : GLenum; s, t, r, q : GLshort );
-  -- Source: bush_os.opengl.glMultiTexCoord4s
+  -- Source: spar_os.opengl.glMultiTexCoord4s
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -17392,7 +17392,7 @@ end ParsePenglMultiTexCoord4s;
 
 procedure ParsePenglMultiTexCoord4sv( result : out unbounded_string ) is
   -- Syntax: glMultiTexCoord4sv( target : GLenum; v : in out GLshort );
-  -- Source: bush_os.opengl.glMultiTexCoord4sv
+  -- Source: spar_os.opengl.glMultiTexCoord4sv
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -17430,7 +17430,7 @@ end ParsePenglMultiTexCoord4sv;
 procedure ParsePenglLoadTransposeMatrixd is
   -- TODO: matrix operations not implemented
   -- Syntax: --glLoadTransposeMatrixd( GLdouble m[16] );
-  -- Source: bush_os.opengl.glLoadTransposeMatrixd
+  -- Source: spar_os.opengl.glLoadTransposeMatrixd
   --GLdoublem[16]_val  : unbounded_string;
   --GLdoublem[16]_type : identifier;
 begin
@@ -17460,7 +17460,7 @@ end ParsePenglLoadTransposeMatrixd;
 procedure ParsePenglLoadTransposeMatrixf is
   -- TODO: matrix operations not implemented
   -- Syntax: --glLoadTransposeMatrixf( GLfloat m[16] );
-  -- Source: bush_os.opengl.glLoadTransposeMatrixf
+  -- Source: spar_os.opengl.glLoadTransposeMatrixf
   --GLfloatm[16]_val  : unbounded_string;
   --GLfloatm[16]_type : identifier;
 begin
@@ -17490,7 +17490,7 @@ end ParsePenglLoadTransposeMatrixf;
 procedure ParsePenglMultTransposeMatrixd is
   -- TODO: matrix operations not implemented
   -- Syntax: --glMultTransposeMatrixd( GLdouble m[16] );
-  -- Source: bush_os.opengl.glMultTransposeMatrixd
+  -- Source: spar_os.opengl.glMultTransposeMatrixd
   --GLdoublem[16]_val  : unbounded_string;
   --GLdoublem[16]_type : identifier;
 begin
@@ -17520,7 +17520,7 @@ end ParsePenglMultTransposeMatrixd;
 procedure ParsePenglMultTransposeMatrixf is
   -- TODO: matrix operations not implemented
   -- Syntax: --glMultTransposeMatrixf( GLfloat m[16] );
-  -- Source: bush_os.opengl.glMultTransposeMatrixf
+  -- Source: spar_os.opengl.glMultTransposeMatrixf
   --GLfloatm[16]_val  : unbounded_string;
   --GLfloatm[16]_type : identifier;
 begin
@@ -17549,7 +17549,7 @@ end ParsePenglMultTransposeMatrixf;
 
 procedure ParsePenglSampleCoverage is
   -- Syntax: glSampleCoverage( value : GLclampf; invert : GLboolean );
-  -- Source: bush_os.opengl.glSampleCoverage
+  -- Source: spar_os.opengl.glSampleCoverage
   value_val  : unbounded_string;
   value_type : identifier;
   invert_val  : unbounded_string;
@@ -17580,7 +17580,7 @@ end ParsePenglSampleCoverage;
 
 procedure ParsePenglActiveTextureARB is
   -- Syntax: glActiveTextureARB( texture : GLenum );
-  -- Source: bush_os.opengl.glActiveTextureARB
+  -- Source: spar_os.opengl.glActiveTextureARB
   texture_val  : unbounded_string;
   texture_type : identifier;
 begin
@@ -17608,7 +17608,7 @@ end ParsePenglActiveTextureARB;
 
 procedure ParsePenglClientActiveTextureARB is
   -- Syntax: glClientActiveTextureARB( texture : GLenum );
-  -- Source: bush_os.opengl.glClientActiveTextureARB
+  -- Source: spar_os.opengl.glClientActiveTextureARB
   texture_val  : unbounded_string;
   texture_type : identifier;
 begin
@@ -17636,7 +17636,7 @@ end ParsePenglClientActiveTextureARB;
 
 procedure ParsePenglMultiTexCoord1dARB is
   -- Syntax: glMultiTexCoord1dARB( target : GLenum; s : GLdouble );
-  -- Source: bush_os.opengl.glMultiTexCoord1dARB
+  -- Source: spar_os.opengl.glMultiTexCoord1dARB
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -17667,7 +17667,7 @@ end ParsePenglMultiTexCoord1dARB;
 
 procedure ParsePenglMultiTexCoord1dvARB is
   -- Syntax: glMultiTexCoord1dvARB( target : GLenum; v : in out GLdouble );
-  -- Source: bush_os.opengl.glMultiTexCoord1dvARB
+  -- Source: spar_os.opengl.glMultiTexCoord1dvARB
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -17700,7 +17700,7 @@ end ParsePenglMultiTexCoord1dvARB;
 
 procedure ParsePenglMultiTexCoord1fARB is
   -- Syntax: glMultiTexCoord1fARB( target : GLenum; s : GLfloat );
-  -- Source: bush_os.opengl.glMultiTexCoord1fARB
+  -- Source: spar_os.opengl.glMultiTexCoord1fARB
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -17731,7 +17731,7 @@ end ParsePenglMultiTexCoord1fARB;
 
 procedure ParsePenglMultiTexCoord1fvARB is
   -- Syntax: glMultiTexCoord1fvARB( target : GLenum; v : in out GLfloat );
-  -- Source: bush_os.opengl.glMultiTexCoord1fvARB
+  -- Source: spar_os.opengl.glMultiTexCoord1fvARB
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -17764,7 +17764,7 @@ end ParsePenglMultiTexCoord1fvARB;
 
 procedure ParsePenglMultiTexCoord1iARB is
   -- Syntax: glMultiTexCoord1iARB( target : GLenum; s : GLint );
-  -- Source: bush_os.opengl.glMultiTexCoord1iARB
+  -- Source: spar_os.opengl.glMultiTexCoord1iARB
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -17795,7 +17795,7 @@ end ParsePenglMultiTexCoord1iARB;
 
 procedure ParsePenglMultiTexCoord1ivARB is
   -- Syntax: glMultiTexCoord1ivARB( target : GLenum; v : in out GLint );
-  -- Source: bush_os.opengl.glMultiTexCoord1ivARB
+  -- Source: spar_os.opengl.glMultiTexCoord1ivARB
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -17828,7 +17828,7 @@ end ParsePenglMultiTexCoord1ivARB;
 
 procedure ParsePenglMultiTexCoord1sARB is
   -- Syntax: glMultiTexCoord1sARB( target : GLenum; s : GLshort );
-  -- Source: bush_os.opengl.glMultiTexCoord1sARB
+  -- Source: spar_os.opengl.glMultiTexCoord1sARB
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -17859,7 +17859,7 @@ end ParsePenglMultiTexCoord1sARB;
 
 procedure ParsePenglMultiTexCoord1svARB is
   -- Syntax: glMultiTexCoord1svARB( target : GLenum; v : in out GLshort );
-  -- Source: bush_os.opengl.glMultiTexCoord1svARB
+  -- Source: spar_os.opengl.glMultiTexCoord1svARB
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -17892,7 +17892,7 @@ end ParsePenglMultiTexCoord1svARB;
 
 procedure ParsePenglMultiTexCoord2dARB is
   -- Syntax: glMultiTexCoord2dARB( target : GLenum; s, t : GLdouble );
-  -- Source: bush_os.opengl.glMultiTexCoord2dARB
+  -- Source: spar_os.opengl.glMultiTexCoord2dARB
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -17926,7 +17926,7 @@ end ParsePenglMultiTexCoord2dARB;
 
 procedure ParsePenglMultiTexCoord2dvARB is
   -- Syntax: glMultiTexCoord2dvARB( target : GLenum; v : in out GLdouble );
-  -- Source: bush_os.opengl.glMultiTexCoord2dvARB
+  -- Source: spar_os.opengl.glMultiTexCoord2dvARB
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -17959,7 +17959,7 @@ end ParsePenglMultiTexCoord2dvARB;
 
 procedure ParsePenglMultiTexCoord2fARB is
   -- Syntax: glMultiTexCoord2fARB( target : GLenum; s, t : GLfloat );
-  -- Source: bush_os.opengl.glMultiTexCoord2fARB
+  -- Source: spar_os.opengl.glMultiTexCoord2fARB
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -17993,7 +17993,7 @@ end ParsePenglMultiTexCoord2fARB;
 
 procedure ParsePenglMultiTexCoord2fvARB is
   -- Syntax: glMultiTexCoord2fvARB( target : GLenum; v : in out GLfloat );
-  -- Source: bush_os.opengl.glMultiTexCoord2fvARB
+  -- Source: spar_os.opengl.glMultiTexCoord2fvARB
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -18026,7 +18026,7 @@ end ParsePenglMultiTexCoord2fvARB;
 
 procedure ParsePenglMultiTexCoord2iARB is
   -- Syntax: glMultiTexCoord2iARB( target : GLenum; s, t : GLint );
-  -- Source: bush_os.opengl.glMultiTexCoord2iARB
+  -- Source: spar_os.opengl.glMultiTexCoord2iARB
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -18060,7 +18060,7 @@ end ParsePenglMultiTexCoord2iARB;
 
 procedure ParsePenglMultiTexCoord2ivARB is
   -- Syntax: glMultiTexCoord2ivARB( target : GLenum; v : in out GLint );
-  -- Source: bush_os.opengl.glMultiTexCoord2ivARB
+  -- Source: spar_os.opengl.glMultiTexCoord2ivARB
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -18093,7 +18093,7 @@ end ParsePenglMultiTexCoord2ivARB;
 
 procedure ParsePenglMultiTexCoord2sARB is
   -- Syntax: glMultiTexCoord2sARB( target : GLenum; s, t : GLshort );
-  -- Source: bush_os.opengl.glMultiTexCoord2sARB
+  -- Source: spar_os.opengl.glMultiTexCoord2sARB
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -18127,7 +18127,7 @@ end ParsePenglMultiTexCoord2sARB;
 
 procedure ParsePenglMultiTexCoord2svARB is
   -- Syntax: glMultiTexCoord2svARB( target : GLenum; v : in out GLshort );
-  -- Source: bush_os.opengl.glMultiTexCoord2svARB
+  -- Source: spar_os.opengl.glMultiTexCoord2svARB
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -18160,7 +18160,7 @@ end ParsePenglMultiTexCoord2svARB;
 
 procedure ParsePenglMultiTexCoord3dARB is
   -- Syntax: glMultiTexCoord3dARB( target : GLenum; s, t, r : GLdouble );
-  -- Source: bush_os.opengl.glMultiTexCoord3dARB
+  -- Source: spar_os.opengl.glMultiTexCoord3dARB
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -18197,7 +18197,7 @@ end ParsePenglMultiTexCoord3dARB;
 
 procedure ParsePenglMultiTexCoord3dvARB is
   -- Syntax: glMultiTexCoord3dvARB( target : GLenum; v : in out GLdouble );
-  -- Source: bush_os.opengl.glMultiTexCoord3dvARB
+  -- Source: spar_os.opengl.glMultiTexCoord3dvARB
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -18230,7 +18230,7 @@ end ParsePenglMultiTexCoord3dvARB;
 
 procedure ParsePenglMultiTexCoord3fARB is
   -- Syntax: glMultiTexCoord3fARB( target : GLenum; s, t, r : GLfloat );
-  -- Source: bush_os.opengl.glMultiTexCoord3fARB
+  -- Source: spar_os.opengl.glMultiTexCoord3fARB
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -18267,7 +18267,7 @@ end ParsePenglMultiTexCoord3fARB;
 
 procedure ParsePenglMultiTexCoord3fvARB is
   -- Syntax: glMultiTexCoord3fvARB( target : GLenum; v : in out GLfloat );
-  -- Source: bush_os.opengl.glMultiTexCoord3fvARB
+  -- Source: spar_os.opengl.glMultiTexCoord3fvARB
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -18300,7 +18300,7 @@ end ParsePenglMultiTexCoord3fvARB;
 
 procedure ParsePenglMultiTexCoord3iARB is
   -- Syntax: glMultiTexCoord3iARB( target : GLenum; s, t, r : GLint );
-  -- Source: bush_os.opengl.glMultiTexCoord3iARB
+  -- Source: spar_os.opengl.glMultiTexCoord3iARB
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -18337,7 +18337,7 @@ end ParsePenglMultiTexCoord3iARB;
 
 procedure ParsePenglMultiTexCoord3ivARB is
   -- Syntax: glMultiTexCoord3ivARB( target : GLenum; v : in out GLint );
-  -- Source: bush_os.opengl.glMultiTexCoord3ivARB
+  -- Source: spar_os.opengl.glMultiTexCoord3ivARB
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -18370,7 +18370,7 @@ end ParsePenglMultiTexCoord3ivARB;
 
 procedure ParsePenglMultiTexCoord3sARB is
   -- Syntax: glMultiTexCoord3sARB( target : GLenum; s, t, r : GLshort );
-  -- Source: bush_os.opengl.glMultiTexCoord3sARB
+  -- Source: spar_os.opengl.glMultiTexCoord3sARB
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -18407,7 +18407,7 @@ end ParsePenglMultiTexCoord3sARB;
 
 procedure ParsePenglMultiTexCoord3svARB is
   -- Syntax: glMultiTexCoord3svARB( target : GLenum; v : in out GLshort );
-  -- Source: bush_os.opengl.glMultiTexCoord3svARB
+  -- Source: spar_os.opengl.glMultiTexCoord3svARB
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -18440,7 +18440,7 @@ end ParsePenglMultiTexCoord3svARB;
 
 procedure ParsePenglMultiTexCoord4dARB is
   -- Syntax: glMultiTexCoord4dARB( target : GLenum; s, t, r, q : GLdouble );
-  -- Source: bush_os.opengl.glMultiTexCoord4dARB
+  -- Source: spar_os.opengl.glMultiTexCoord4dARB
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -18480,7 +18480,7 @@ end ParsePenglMultiTexCoord4dARB;
 
 procedure ParsePenglMultiTexCoord4dvARB is
   -- Syntax: glMultiTexCoord4dvARB( target : GLenum; v : in out GLdouble );
-  -- Source: bush_os.opengl.glMultiTexCoord4dvARB
+  -- Source: spar_os.opengl.glMultiTexCoord4dvARB
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -18513,7 +18513,7 @@ end ParsePenglMultiTexCoord4dvARB;
 
 procedure ParsePenglMultiTexCoord4fARB is
   -- Syntax: glMultiTexCoord4fARB( target : GLenum; s, t, r, q : GLfloat );
-  -- Source: bush_os.opengl.glMultiTexCoord4fARB
+  -- Source: spar_os.opengl.glMultiTexCoord4fARB
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -18553,7 +18553,7 @@ end ParsePenglMultiTexCoord4fARB;
 
 procedure ParsePenglMultiTexCoord4fvARB is
   -- Syntax: glMultiTexCoord4fvARB( target : GLenum; v : in out GLfloat );
-  -- Source: bush_os.opengl.glMultiTexCoord4fvARB
+  -- Source: spar_os.opengl.glMultiTexCoord4fvARB
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -18586,7 +18586,7 @@ end ParsePenglMultiTexCoord4fvARB;
 
 procedure ParsePenglMultiTexCoord4iARB is
   -- Syntax: glMultiTexCoord4iARB( target : GLenum; s, t, r, q : GLint );
-  -- Source: bush_os.opengl.glMultiTexCoord4iARB
+  -- Source: spar_os.opengl.glMultiTexCoord4iARB
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -18626,7 +18626,7 @@ end ParsePenglMultiTexCoord4iARB;
 
 procedure ParsePenglMultiTexCoord4ivARB is
   -- Syntax: glMultiTexCoord4ivARB( target : GLenum; v : in out GLint );
-  -- Source: bush_os.opengl.glMultiTexCoord4ivARB
+  -- Source: spar_os.opengl.glMultiTexCoord4ivARB
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -18659,7 +18659,7 @@ end ParsePenglMultiTexCoord4ivARB;
 
 procedure ParsePenglMultiTexCoord4sARB is
   -- Syntax: glMultiTexCoord4sARB( target : GLenum; s, t, r, q : GLshort );
-  -- Source: bush_os.opengl.glMultiTexCoord4sARB
+  -- Source: spar_os.opengl.glMultiTexCoord4sARB
   target_val  : unbounded_string;
   target_type : identifier;
   s_val  : unbounded_string;
@@ -18699,7 +18699,7 @@ end ParsePenglMultiTexCoord4sARB;
 
 procedure ParsePenglMultiTexCoord4svARB is
   -- Syntax: glMultiTexCoord4svARB( target : GLenum; v : in out GLshort );
-  -- Source: bush_os.opengl.glMultiTexCoord4svARB
+  -- Source: spar_os.opengl.glMultiTexCoord4svARB
   target_val  : unbounded_string;
   target_type : identifier;
   v_val  : unbounded_string;
@@ -18733,7 +18733,7 @@ end ParsePenglMultiTexCoord4svARB;
 procedure ParsePenglCreateDebugObjectMESA is
 -- ParsePenglCreateDebugObjectMESA( result : out unbounded_string ) is
   -- Syntax: --glCreateDebugObjectMESA return GLhandleARB;
-  -- Source: bush_os.opengl.glCreateDebugObjectMESA
+  -- Source: spar_os.opengl.glCreateDebugObjectMESA
 begin
   err( "not yet complete" );
   expect( pen_glcreatedebugobjectmesa_t );
@@ -18760,7 +18760,7 @@ end ParsePenglCreateDebugObjectMESA;
 
 procedure ParsePenglClearDebugLogMESA is
   -- Syntax: --glClearDebugLogMESA( obj : GLhandleARB; logType : GLenum; shaderType : GLenum);
-  -- Source: bush_os.opengl.glClearDebugLogMESA
+  -- Source: spar_os.opengl.glClearDebugLogMESA
   obj_val  : unbounded_string;
 --  obj_type : identifier;
   logType_val  : unbounded_string;
@@ -18797,7 +18797,7 @@ end ParsePenglClearDebugLogMESA;
 
 procedure ParsePenglGetDebugLogMESA is
   -- Syntax: --glGetDebugLogMESA( obj : GLhandleARB; logType : GLenum; shaderType : GLenum; maxLength : GLsizei; length : in out GLsizei; debugLog : in out GLcharARB );
-  -- Source: bush_os.opengl.glGetDebugLogMESA
+  -- Source: spar_os.opengl.glGetDebugLogMESA
   obj_val  : unbounded_string;
 --  obj_type : identifier;
   logType_val  : unbounded_string;
@@ -18845,7 +18845,7 @@ end ParsePenglGetDebugLogMESA;
 procedure ParsePenglGetDebugLogLengthMESA is
 --procedure ParsePenglGetDebugLogLengthMESA( result : out unbounded_string ) is
   -- Syntax: --glGetDebugLogLengthMESA ( obj : GLhandleARB; logType : GLenum; shaderType : GLenum ) return GLsizei;
-  -- Source: bush_os.opengl.glGetDebugLogLengthMESA
+  -- Source: spar_os.opengl.glGetDebugLogLengthMESA
   obj_val  : unbounded_string;
 --  obj_type : identifier;
   logType_val  : unbounded_string;
@@ -18882,7 +18882,7 @@ end ParsePenglGetDebugLogLengthMESA;
 
 procedure ParsePenglProgramCallbackMESA is
   -- Syntax: --glProgramCallbackMESA( target : GLenum; callback : GLprogramcallbackMESA; data : System.address );
-  -- Source: bush_os.opengl.glProgramCallbackMESA
+  -- Source: spar_os.opengl.glProgramCallbackMESA
   target_val  : unbounded_string;
   target_type : identifier;
   callback_val  : unbounded_string;
@@ -18919,7 +18919,7 @@ end ParsePenglProgramCallbackMESA;
 
 procedure ParsePenglGetProgramRegisterfvMESA is
   -- Syntax: --glGetProgramRegisterfvMESA( target : GLenum; len : GLsizei; name : in out GLubyte; v : in out GLfloat );
-  -- Source: bush_os.opengl.glGetProgramRegisterfvMESA
+  -- Source: spar_os.opengl.glGetProgramRegisterfvMESA
   target_val  : unbounded_string;
   target_type : identifier;
   len_val  : unbounded_string;
@@ -18958,7 +18958,7 @@ end ParsePenglGetProgramRegisterfvMESA;
 
 procedure ParsePenglFramebufferTextureLayerEXT is
   -- Syntax: --glFramebufferTextureLayerEXT( target : GLenum; attachment : GLenum; texture : GLuint; level : GLint; layer : GLint );
-  -- Source: bush_os.opengl.glFramebufferTextureLayerEXT
+  -- Source: spar_os.opengl.glFramebufferTextureLayerEXT
   target_val  : unbounded_string;
   target_type : identifier;
   attachment_val  : unbounded_string;
@@ -19000,7 +19000,7 @@ end ParsePenglFramebufferTextureLayerEXT;
 
 procedure ParsePenglBlendEquationSeparateATI is
   -- Syntax: --glBlendEquationSeparateATI( modeRGB, modeA : GLenum );
-  -- Source: bush_os.opengl.glBlendEquationSeparateATI
+  -- Source: spar_os.opengl.glBlendEquationSeparateATI
   modeRGB_val  : unbounded_string;
   modeRGB_type : identifier;
   modeA_val  : unbounded_string;
@@ -19033,7 +19033,7 @@ end ParsePenglBlendEquationSeparateATI;
 
 procedure ParsePenglEGLImageTargetTexture2DOES is
   -- Syntax: --glEGLImageTargetTexture2DOES ( target : GLenum; image : GLeglImageOES );
-  -- Source: bush_os.opengl.glEGLImageTargetTexture2DOES
+  -- Source: spar_os.opengl.glEGLImageTargetTexture2DOES
   target_val  : unbounded_string;
   target_type : identifier;
   image_val  : unbounded_string;
@@ -19067,7 +19067,7 @@ end ParsePenglEGLImageTargetTexture2DOES;
 
 procedure ParsePenglEGLImageTargetRenderbufferStorageOES is
   -- Syntax: --glEGLImageTargetRenderbufferStorageOES (target : GLenum; image : GLeglImageOES );
-  -- Source: bush_os.opengl.glEGLImageTargetRenderbufferStorageOES
+  -- Source: spar_os.opengl.glEGLImageTargetRenderbufferStorageOES
   target_val  : unbounded_string;
   target_type : identifier;
   image_val  : unbounded_string;
@@ -19101,7 +19101,7 @@ end ParsePenglEGLImageTargetRenderbufferStorageOES;
 
 procedure ParsePengluBeginCurve is
   -- Syntax: gluBeginCurve ( nurb : GLUnurbs_Ptr );
-  -- Source: bush_os.opengl.gluBeginCurve
+  -- Source: spar_os.opengl.gluBeginCurve
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
 begin
@@ -19131,7 +19131,7 @@ end ParsePengluBeginCurve;
 
 procedure ParsePengluBeginPolygon is
   -- Syntax: gluBeginPolygon ( tess : GLUtessellator_Ptr);
-  -- Source: bush_os.opengl.gluBeginPolygon
+  -- Source: spar_os.opengl.gluBeginPolygon
   tess_val  : unbounded_string;
 --  tess_type : identifier;
 begin
@@ -19161,7 +19161,7 @@ end ParsePengluBeginPolygon;
 
 procedure ParsePengluBeginSurface is
   -- Syntax: gluBeginSurface ( nurb : GLUnurbs_Ptr );
-  -- Source: bush_os.opengl.gluBeginSurface
+  -- Source: spar_os.opengl.gluBeginSurface
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
 begin
@@ -19191,7 +19191,7 @@ end ParsePengluBeginSurface;
 
 procedure ParsePengluBeginTrim is
   -- Syntax: gluBeginTrim ( nurb : GLUnurbs_Ptr);
-  -- Source: bush_os.opengl.gluBeginTrim
+  -- Source: spar_os.opengl.gluBeginTrim
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
 begin
@@ -19221,7 +19221,7 @@ end ParsePengluBeginTrim;
 
 procedure ParsePengluBuild1DMipmapLevels( result : out unbounded_string ) is
   -- Syntax: gluBuild1DMipmapLevels ( target : GLenum; internalFormat : GLbuffers; width : GLsizei; format : GLbuffers; kind : GLtypes; level, base, max : GLint; data : System.address) return GLint;
-  -- Source: bush_os.opengl.gluBuild1DMipmapLevels
+  -- Source: spar_os.opengl.gluBuild1DMipmapLevels
   target_val  : unbounded_string;
   target_type : identifier;
   internalFormat_val  : unbounded_string;
@@ -19279,7 +19279,7 @@ end ParsePengluBuild1DMipmapLevels;
 
 procedure ParsePengluBuild1DMipmaps( result : out unbounded_string ) is
   -- Syntax: gluBuild1DMipmaps ( target : GLenum; internalFormat : GLbuffers; width : GLsizei; format : GLbuffers; kind : GLtypes; data : System.address) return GLint;
-  -- Source: bush_os.opengl.gluBuild1DMipmaps
+  -- Source: spar_os.opengl.gluBuild1DMipmaps
   target_val  : unbounded_string;
   target_type : identifier;
   internalFormat_val  : unbounded_string;
@@ -19327,7 +19327,7 @@ end ParsePengluBuild1DMipmaps;
 
 procedure ParsePengluBuild2DMipmapLevels( result : out unbounded_string ) is
   -- Syntax: gluBuild2DMipmapLevels ( target : GLenum; internalFormat : GLbuffers; width, height : GLsizei; format : GLbuffers; kind : GLtypes; level, base, max : GLint; data : System.address) return GLint;
-  -- Source: bush_os.opengl.gluBuild2DMipmapLevels
+  -- Source: spar_os.opengl.gluBuild2DMipmapLevels
   target_val  : unbounded_string;
   target_type : identifier;
   internalFormat_val  : unbounded_string;
@@ -19387,7 +19387,7 @@ end ParsePengluBuild2DMipmapLevels;
 
 procedure ParsePengluBuild2DMipmaps( result : out unbounded_string ) is
   -- Syntax: gluBuild2DMipmaps ( target : GLenum; internalFormat : GLbuffers; width, height : GLsizei; format : GLbuffers; kind : GLtypes; data : System.address) return GLint;
-  -- Source: bush_os.opengl.gluBuild2DMipmaps
+  -- Source: spar_os.opengl.gluBuild2DMipmaps
   target_val  : unbounded_string;
   target_type : identifier;
   internalFormat_val  : unbounded_string;
@@ -19438,7 +19438,7 @@ end ParsePengluBuild2DMipmaps;
 
 procedure ParsePengluBuild3DMipmapLevels( result : out unbounded_string ) is
   -- Syntax: gluBuild3DMipmapLevels ( taraget : GLenum; internalFormat : GLbuffers; width, height, depth : GLsizei; format : GLbuffers; kind : GLtypes; level, base, max : GLint; data : System.address) return GLint;
-  -- Source: bush_os.opengl.gluBuild3DMipmapLevels
+  -- Source: spar_os.opengl.gluBuild3DMipmapLevels
   taraget_val  : unbounded_string;
   taraget_type : identifier;
   internalFormat_val  : unbounded_string;
@@ -19501,7 +19501,7 @@ end ParsePengluBuild3DMipmapLevels;
 
 procedure ParsePengluBuild3DMipmaps( result : out unbounded_string ) is
   -- Syntax: gluBuild3DMipmaps ( target : GLenum; internalFormat : GLbuffers; width, height, depth : GLsizei; format : GLbuffers; kind : GLtypes; data : System.address ) return GLint;
-  -- Source: bush_os.opengl.gluBuild3DMipmaps
+  -- Source: spar_os.opengl.gluBuild3DMipmaps
   target_val  : unbounded_string;
   target_type : identifier;
   internalFormat_val  : unbounded_string;
@@ -19556,7 +19556,7 @@ end ParsePengluBuild3DMipmaps;
 procedure ParsePengluCheckExtension  is
 --procedure ParsePengluCheckExtension( result : out unbounded_string ) is
   -- Syntax: gluCheckExtension ( extName, extString : char_array) return GLboolean;
-  -- Source: bush_os.opengl.gluCheckExtension
+  -- Source: spar_os.opengl.gluCheckExtension
   extName_val  : unbounded_string;
 --  extName_type : identifier;
   extString_val  : unbounded_string;
@@ -19589,7 +19589,7 @@ end ParsePengluCheckExtension;
 
 procedure ParsePengluCylinder is
   -- Syntax: gluCylinder (quad : GLUquadratic_Ptr; base, top, height : GLdouble; slices : GLint; stacks : GLint);
-  -- Source: bush_os.opengl.gluCylinder
+  -- Source: spar_os.opengl.gluCylinder
   quad_val  : unbounded_string;
 --  quad_type : identifier;
   base_val  : unbounded_string;
@@ -19634,7 +19634,7 @@ end ParsePengluCylinder;
 
 procedure ParsePengluDeleteNurbsRenderer is
   -- Syntax: gluDeleteNurbsRenderer ( nurb : GLUnurbs_Ptr );
-  -- Source: bush_os.opengl.gluDeleteNurbsRenderer
+  -- Source: spar_os.opengl.gluDeleteNurbsRenderer
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
 begin
@@ -19664,7 +19664,7 @@ end ParsePengluDeleteNurbsRenderer;
 
 procedure ParsePengluDeleteQuadric is
   -- Syntax: gluDeleteQuadric ( quad : GLUquadratic_Ptr );
-  -- Source: bush_os.opengl.gluDeleteQuadric
+  -- Source: spar_os.opengl.gluDeleteQuadric
   quad_val  : unbounded_string;
 --  quad_type : identifier;
 begin
@@ -19694,7 +19694,7 @@ end ParsePengluDeleteQuadric;
 
 procedure ParsePengluDeleteTess is
   -- Syntax: gluDeleteTess ( tess : GLUtessellator_Ptr );
-  -- Source: bush_os.opengl.gluDeleteTess
+  -- Source: spar_os.opengl.gluDeleteTess
   tess_val  : unbounded_string;
 --  tess_type : identifier;
 begin
@@ -19724,7 +19724,7 @@ end ParsePengluDeleteTess;
 
 procedure ParsePengluDisk is
   -- Syntax: gluDisk ( quad : GLUquadratic_Ptr; inner, outer : GLdouble; slices : GLint; loops : GLint );
-  -- Source: bush_os.opengl.gluDisk
+  -- Source: spar_os.opengl.gluDisk
   quad_val  : unbounded_string;
 --  quad_type : identifier;
   inner_val  : unbounded_string;
@@ -19766,7 +19766,7 @@ end ParsePengluDisk;
 
 procedure ParsePengluEndCurve is
   -- Syntax: gluEndCurve ( nurb : GLUnurbs_Ptr );
-  -- Source: bush_os.opengl.gluEndCurve
+  -- Source: spar_os.opengl.gluEndCurve
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
 begin
@@ -19796,7 +19796,7 @@ end ParsePengluEndCurve;
 
 procedure ParsePengluEndPolygon is
   -- Syntax: gluEndPolygon ( tess : GLUtessellator_Ptr );
-  -- Source: bush_os.opengl.gluEndPolygon
+  -- Source: spar_os.opengl.gluEndPolygon
   tess_val  : unbounded_string;
 --  tess_type : identifier;
 begin
@@ -19826,7 +19826,7 @@ end ParsePengluEndPolygon;
 
 procedure ParsePengluEndSurface is
   -- Syntax: gluEndSurface ( nurb : GLUnurbs_Ptr );
-  -- Source: bush_os.opengl.gluEndSurface
+  -- Source: spar_os.opengl.gluEndSurface
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
 begin
@@ -19856,7 +19856,7 @@ end ParsePengluEndSurface;
 
 procedure ParsePengluEndTrim is
   -- Syntax: gluEndTrim ( nurb : GLUnurbs_Ptr );
-  -- Source: bush_os.opengl.gluEndTrim
+  -- Source: spar_os.opengl.gluEndTrim
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
 begin
@@ -19887,7 +19887,7 @@ end ParsePengluEndTrim;
 procedure ParsePengluErrorString is
 --procedure ParsePengluErrorString( result : out unbounded_string ) is
   -- Syntax: gluErrorString ( error : GLenum ) return char_array_ptr;
-  -- Source: bush_os.opengl.gluErrorString
+  -- Source: spar_os.opengl.gluErrorString
   error_val  : unbounded_string;
   error_type : identifier;
 begin
@@ -19918,7 +19918,7 @@ end ParsePengluErrorString;
 
 procedure ParsePengluGetNurbsProperty is
   -- Syntax: gluGetNurbsProperty ( nurb : GLUnurbs_Ptr; property : GLUnurbsproperties; data : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.gluGetNurbsProperty
+  -- Source: spar_os.opengl.gluGetNurbsProperty
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
   property_val  : unbounded_string;
@@ -19956,7 +19956,7 @@ end ParsePengluGetNurbsProperty;
 procedure ParsePengluGetString is
 --procedure ParsePengluGetString( result : out unbounded_string ) is
   -- Syntax: gluGetString ( name : GLenum ) return char_array_ptr;
-  -- Source: bush_os.opengl.gluGetString
+  -- Source: spar_os.opengl.gluGetString
   name_val  : unbounded_string;
   name_type : identifier;
 begin
@@ -19987,7 +19987,7 @@ end ParsePengluGetString;
 
 procedure ParsePengluGetTessProperty is
   -- Syntax: gluGetTessProperty (tess : GLUtessellator_Ptr; which : GLUtessproperties; data : GL_Float_Array_Ptr );
-  -- Source: bush_os.opengl.gluGetTessProperty
+  -- Source: spar_os.opengl.gluGetTessProperty
   tess_val  : unbounded_string;
 --  tess_type : identifier;
   which_val  : unbounded_string;
@@ -20024,7 +20024,7 @@ end ParsePengluGetTessProperty;
 
 procedure ParsePengluLoadSamplingMatrices is
   -- Syntax: gluLoadSamplingMatrices ( nurb : GLUnurbs_Ptr; model : GL_Float_Array_Ptr; perspective : GL_Float_Array_Ptr; view : GL_Int_Array_Ptr );
-  -- Source: bush_os.opengl.gluLoadSamplingMatrices
+  -- Source: spar_os.opengl.gluLoadSamplingMatrices
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
   model_val  : unbounded_string;
@@ -20064,7 +20064,7 @@ end ParsePengluLoadSamplingMatrices;
 
 procedure ParsePengluLookAt is
   -- Syntax: gluLookAt ( eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ : GLdouble );
-  -- Source: bush_os.opengl.gluLookAt
+  -- Source: spar_os.opengl.gluLookAt
   eyeX_val  : unbounded_string;
   eyeX_type : identifier;
   eyeY_val  : unbounded_string;
@@ -20117,7 +20117,7 @@ end ParsePengluLookAt;
 procedure ParsePengluNewNurbsRenderer is
 --procedure ParsePengluNewNurbsRenderer( result : out unbounded_string ) is
   -- Syntax: gluNewNurbsRenderer return GLUnurbs_Ptr;
-  -- Source: bush_os.opengl.gluNewNurbsRenderer
+  -- Source: spar_os.opengl.gluNewNurbsRenderer
 begin
   err( "not yet complete" );
   expect( pen_glunewnurbsrenderer_t );
@@ -20145,7 +20145,7 @@ end ParsePengluNewNurbsRenderer;
 procedure ParsePengluNewQuadric is
 --procedure ParsePengluNewQuadric( result : out unbounded_string ) is
   -- Syntax: gluNewQuadric return GLUquadratic_Ptr;
-  -- Source: bush_os.opengl.gluNewQuadric
+  -- Source: spar_os.opengl.gluNewQuadric
 begin
   err( "not yet complete" );
   expect( pen_glunewquadric_t );
@@ -20173,7 +20173,7 @@ end ParsePengluNewQuadric;
 procedure ParsePengluNewTess is
 --procedure ParsePengluNewTess( result : out unbounded_string ) is
   -- Syntax: gluNewTess return GLUtessellator_Ptr;
-  -- Source: bush_os.opengl.gluNewTess
+  -- Source: spar_os.opengl.gluNewTess
 begin
   err( "not yet complete" );
   expect( pen_glunewtess_t );
@@ -20200,7 +20200,7 @@ end ParsePengluNewTess;
 
 procedure ParsePengluNextContour is
   -- Syntax: gluNextContour ( tess : GLUtessellator_Ptr; kind : GLUtesscontour );
-  -- Source: bush_os.opengl.gluNextContour
+  -- Source: spar_os.opengl.gluNextContour
   tess_val  : unbounded_string;
 --  tess_type : identifier;
   kind_val  : unbounded_string;
@@ -20233,7 +20233,7 @@ end ParsePengluNextContour;
 
 procedure ParsePengluNurbsCallback is
   -- Syntax: gluNurbsCallback ( nurb : GLUnurbs_Ptr; which : GLUnurbscallbacks; CallBackFunc : System.address );
-  -- Source: bush_os.opengl.gluNurbsCallback
+  -- Source: spar_os.opengl.gluNurbsCallback
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
   which_val  : unbounded_string;
@@ -20270,7 +20270,7 @@ end ParsePengluNurbsCallback;
 
 procedure ParsePengluNurbsCallbackData is
   -- Syntax: gluNurbsCallbackData ( nurb : GLUnurbs_Ptr; userData : System.address );
-  -- Source: bush_os.opengl.gluNurbsCallbackData
+  -- Source: spar_os.opengl.gluNurbsCallbackData
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
   userData_val  : unbounded_string;
@@ -20304,7 +20304,7 @@ end ParsePengluNurbsCallbackData;
 
 procedure ParsePengluNurbsCallbackDataEXT is
   -- Syntax: gluNurbsCallbackDataEXT ( nurb : GLUnurbs_Ptr; userData : System.address );
-  -- Source: bush_os.opengl.gluNurbsCallbackDataEXT
+  -- Source: spar_os.opengl.gluNurbsCallbackDataEXT
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
   userData_val  : unbounded_string;
@@ -20338,7 +20338,7 @@ end ParsePengluNurbsCallbackDataEXT;
 
 procedure ParsePengluNurbsCurve is
   -- Syntax: gluNurbsCurve ( nurb : GLUnurbs_Ptr; knotCount : GLint; knots : GL_Float_Array_Ptr; stride : GLint; control : GL_Float_Array_Ptr; order : GLint; kind : GLevaluators );
-  -- Source: bush_os.opengl.gluNurbsCurve
+  -- Source: spar_os.opengl.gluNurbsCurve
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
   knotCount_val  : unbounded_string;
@@ -20386,7 +20386,7 @@ end ParsePengluNurbsCurve;
 
 procedure ParsePengluNurbsProperty is
   -- Syntax: gluNurbsProperty ( nurb : GLUnurbs_Ptr; property : GLUnurbsproperties; value : GLfloat );
-  -- Source: bush_os.opengl.gluNurbsProperty
+  -- Source: spar_os.opengl.gluNurbsProperty
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
   property_val  : unbounded_string;
@@ -20422,7 +20422,7 @@ end ParsePengluNurbsProperty;
 
 procedure ParsePengluNurbsSurface is
   -- Syntax: gluNurbsSurface ( nurb : GLUnurbs_Ptr; sKnotCount : GLint; sKnots : GL_Float_Array_Ptr; tKnotCount : GLint; tKnots : GL_Float_Array_Ptr; sStride, tStride : GLint; control : GL_Float_Array_Ptr; sOrder, tOrder : GLint; kind : GLenum );
-  -- Source: bush_os.opengl.gluNurbsSurface
+  -- Source: spar_os.opengl.gluNurbsSurface
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
   sKnotCount_val  : unbounded_string;
@@ -20482,7 +20482,7 @@ end ParsePengluNurbsSurface;
 
 procedure ParsePengluOrtho2D is
   -- Syntax: gluOrtho2D ( left, right, bottom, top : GLdouble );
-  -- Source: bush_os.opengl.gluOrtho2D
+  -- Source: spar_os.opengl.gluOrtho2D
   left_val  : unbounded_string;
   left_type : identifier;
   right_val  : unbounded_string;
@@ -20519,7 +20519,7 @@ end ParsePengluOrtho2D;
 
 procedure ParsePengluPartialDisk is
   -- Syntax: gluPartialDisk ( quad : GLUquadratic_Ptr; inner, outer : GLdouble; slices : GLint; loops : GLint; start : GLdouble; sweep : GLdouble );
-  -- Source: bush_os.opengl.gluPartialDisk
+  -- Source: spar_os.opengl.gluPartialDisk
   quad_val  : unbounded_string;
 --  quad_type : identifier;
   inner_val  : unbounded_string;
@@ -20567,7 +20567,7 @@ end ParsePengluPartialDisk;
 
 procedure ParsePengluPerspective is
   -- Syntax: gluPerspective ( fovy, aspect, zNear, zFar : GLdouble );
-  -- Source: bush_os.opengl.gluPerspective
+  -- Source: spar_os.opengl.gluPerspective
   fovy_val  : unbounded_string;
   fovy_type : identifier;
   aspect_val  : unbounded_string;
@@ -20607,7 +20607,7 @@ end ParsePengluPerspective;
 
 procedure ParsePengluPickMatrix( result : out unbounded_string ) is
   -- Syntax: gluPickMatrix ( x, y : GLdouble; delX, delY : GLdouble; viewport : in out GLint );
-  -- Source: bush_os.opengl.gluPickMatrix
+  -- Source: spar_os.opengl.gluPickMatrix
   x_val  : unbounded_string;
   x_type : identifier;
   y_val  : unbounded_string;
@@ -20651,7 +20651,7 @@ end ParsePengluPickMatrix;
 procedure ParsePengluProject is
 --procedure ParsePengluProject( result : out unbounded_string ) is
   -- Syntax: gluProject ( objX, objY, objZ : GLdouble; model, proj : GL_Double_Array_Ptr; view : GL_Int_Array_Ptr; winX, winY, winZ : GL_Double_Array_Ptr ) return GLint;
-  -- Source: bush_os.opengl.gluProject
+  -- Source: spar_os.opengl.gluProject
   objX_val  : unbounded_string;
   objX_type : identifier;
   objY_val  : unbounded_string;
@@ -20719,7 +20719,7 @@ end ParsePengluProject;
 
 procedure ParsePengluPwlCurve is
   -- Syntax: gluPwlCurve ( nurb : GLUnurbs_Ptr; count : GLint; data : GL_Float_Array_Ptr; stride : GLint; kind : GLevaluators );
-  -- Source: bush_os.opengl.gluPwlCurve
+  -- Source: spar_os.opengl.gluPwlCurve
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
   count_val  : unbounded_string;
@@ -20761,7 +20761,7 @@ end ParsePengluPwlCurve;
 
 procedure ParsePengluQuadricCallback is
   -- Syntax: gluQuadricCallback ( quad : GLUquadratic_Ptr; which : GLUnurbscallbacks; CallBackFunc : System.address );
-  -- Source: bush_os.opengl.gluQuadricCallback
+  -- Source: spar_os.opengl.gluQuadricCallback
   quad_val  : unbounded_string;
 --  quad_type : identifier;
   which_val  : unbounded_string;
@@ -20798,7 +20798,7 @@ end ParsePengluQuadricCallback;
 
 procedure ParsePengluQuadricDrawStyle is
   -- Syntax: gluQuadricDrawStyle ( quad : GLUquadratic_Ptr; draw : GLUquaddrawstyle );
-  -- Source: bush_os.opengl.gluQuadricDrawStyle
+  -- Source: spar_os.opengl.gluQuadricDrawStyle
   quad_val  : unbounded_string;
 --  quad_type : identifier;
   draw_val  : unbounded_string;
@@ -20831,7 +20831,7 @@ end ParsePengluQuadricDrawStyle;
 
 procedure ParsePengluQuadricNormals is
   -- Syntax: gluQuadricNormals ( quad : GLUquadratic_Ptr; normal : GLUquadricnormal );
-  -- Source: bush_os.opengl.gluQuadricNormals
+  -- Source: spar_os.opengl.gluQuadricNormals
   quad_val  : unbounded_string;
 --  quad_type : identifier;
   normal_val  : unbounded_string;
@@ -20864,7 +20864,7 @@ end ParsePengluQuadricNormals;
 
 procedure ParsePengluQuadricOrientation is
   -- Syntax: gluQuadricOrientation ( quad : GLUquadratic_Ptr; orientation : GLUquadorientation );
-  -- Source: bush_os.opengl.gluQuadricOrientation
+  -- Source: spar_os.opengl.gluQuadricOrientation
   quad_val  : unbounded_string;
 --  quad_type : identifier;
   orientation_val  : unbounded_string;
@@ -20897,7 +20897,7 @@ end ParsePengluQuadricOrientation;
 
 procedure ParsePengluQuadricTexture is
   -- Syntax: gluQuadricTexture ( quad : GLUquadratic_Ptr; texture : GLboolean );
-  -- Source: bush_os.opengl.gluQuadricTexture
+  -- Source: spar_os.opengl.gluQuadricTexture
   quad_val  : unbounded_string;
 --  quad_type : identifier;
   texture_val  : unbounded_string;
@@ -20930,7 +20930,7 @@ end ParsePengluQuadricTexture;
 
 procedure ParsePengluScaleImage( result : out unbounded_string ) is
   -- Syntax: gluScaleImage ( format : GLbuffers; wIn, hIn : GLsizei; typeIn : GLtypes; dataIn : System.address; wOut, hOut : GLsizei; typeOut : GLtypes; dataOut : System.address ) return GLint;
-  -- Source: bush_os.opengl.gluScaleImage
+  -- Source: spar_os.opengl.gluScaleImage
   format_val  : unbounded_string;
   format_type : identifier;
   wIn_val  : unbounded_string;
@@ -20990,7 +20990,7 @@ end ParsePengluScaleImage;
 
 procedure ParsePengluSphere is
   -- Syntax: gluSphere ( quad : GLUquadratic_Ptr; radius : GLdouble; slices : GLint; stacks : GLint );
-  -- Source: bush_os.opengl.gluSphere
+  -- Source: spar_os.opengl.gluSphere
   quad_val  : unbounded_string;
 --  quad_type : identifier;
   radius_val  : unbounded_string;
@@ -21029,7 +21029,7 @@ end ParsePengluSphere;
 
 procedure ParsePengluTessBeginContour is
   -- Syntax: gluTessBeginContour ( tess : GLUtessellator_Ptr );
-  -- Source: bush_os.opengl.gluTessBeginContour
+  -- Source: spar_os.opengl.gluTessBeginContour
   tess_val  : unbounded_string;
 --  tess_type : identifier;
 begin
@@ -21059,7 +21059,7 @@ end ParsePengluTessBeginContour;
 
 procedure ParsePengluTessBeginPolygon is
   -- Syntax: gluTessBeginPolygon ( tess : GLUtessellator_Ptr; data : System.address );
-  -- Source: bush_os.opengl.gluTessBeginPolygon
+  -- Source: spar_os.opengl.gluTessBeginPolygon
   tess_val  : unbounded_string;
 --  tess_type : identifier;
   data_val  : unbounded_string;
@@ -21092,7 +21092,7 @@ end ParsePengluTessBeginPolygon;
 
 procedure ParsePengluTessCallback is
   -- Syntax: gluTessCallback (tess : GLUtessellator_Ptr; which : GLUtesscallbacks; CallBackFunc : System.address );
-  -- Source: bush_os.opengl.gluTessCallback
+  -- Source: spar_os.opengl.gluTessCallback
   tess_val  : unbounded_string;
 --  tess_type : identifier;
   which_val  : unbounded_string;
@@ -21128,7 +21128,7 @@ end ParsePengluTessCallback;
 
 procedure ParsePengluTessEndContour is
   -- Syntax: gluTessEndContour ( tess : GLUtessellator_Ptr );
-  -- Source: bush_os.opengl.gluTessEndContour
+  -- Source: spar_os.opengl.gluTessEndContour
   tess_val  : unbounded_string;
 --  tess_type : identifier;
 begin
@@ -21158,7 +21158,7 @@ end ParsePengluTessEndContour;
 
 procedure ParsePengluTessEndPolygon is
   -- Syntax: gluTessEndPolygon ( tess : GLUtessellator_Ptr );
-  -- Source: bush_os.opengl.gluTessEndPolygon
+  -- Source: spar_os.opengl.gluTessEndPolygon
   tess_val  : unbounded_string;
 --  tess_type : identifier;
 begin
@@ -21188,7 +21188,7 @@ end ParsePengluTessEndPolygon;
 
 procedure ParsePengluTessNormal is
   -- Syntax: gluTessNormal ( tess : GLUtessellator_Ptr; valueX, valueY, valueZ : GLdouble );
-  -- Source: bush_os.opengl.gluTessNormal
+  -- Source: spar_os.opengl.gluTessNormal
   tess_val  : unbounded_string;
 --  tess_type : identifier;
   valueX_val  : unbounded_string;
@@ -21227,7 +21227,7 @@ end ParsePengluTessNormal;
 
 procedure ParsePengluTessProperty is
   -- Syntax: gluTessProperty ( tess : GLUtessellator_Ptr; which : GLUtessproperties; data : GLdouble );
-  -- Source: bush_os.opengl.gluTessProperty
+  -- Source: spar_os.opengl.gluTessProperty
   tess_val  : unbounded_string;
   -- tess_type : identifier;
   which_val  : unbounded_string;
@@ -21263,7 +21263,7 @@ end ParsePengluTessProperty;
 
 procedure ParsePengluTessVertex is
   -- Syntax: gluTessVertex ( tess : GLUtessellator_Ptr; location : in out GLdouble; data : System.address );
-  -- Source: bush_os.opengl.gluTessVertex
+  -- Source: spar_os.opengl.gluTessVertex
   tess_val  : unbounded_string;
   -- tess_type : identifier;
   location_val  : unbounded_string;
@@ -21300,7 +21300,7 @@ end ParsePengluTessVertex;
 procedure ParsePengluUnProject is
 -- procedure ParsePengluUnProject( result : out unbounded_string ) is
   -- Syntax: gluUnProject ( winX, winY, winZ : GLdouble; model : GL_Double_Array_Ptr; proj : GL_Double_Array_Ptr; view : GL_Int_Array_Ptr; objX, objY, objZ : GL_Double_Array_Ptr) return GLint;
-  -- Source: bush_os.opengl.gluUnProject
+  -- Source: spar_os.opengl.gluUnProject
   winX_val  : unbounded_string;
   winX_type : identifier;
   winY_val  : unbounded_string;
@@ -21355,7 +21355,7 @@ end ParsePengluUnProject;
 procedure ParsePengluUnProject4 is
 -- procedure ParsePengluUnProject4( result : out unbounded_string ) is
   -- Syntax: gluUnProject4 ( winX, winY, winZ : GLdouble; clipW : GLdouble; model : GL_Double_Array_Ptr; proj : GL_Double_Array_Ptr; view : GL_Int_Array_Ptr; nearVal, farVal : GLdouble; objX, objY, objZ, objW : GL_Double_Array_Ptr ) return GLint;
-  -- Source: bush_os.opengl.gluUnProject4
+  -- Source: spar_os.opengl.gluUnProject4
   winX_val  : unbounded_string;
   winX_type : identifier;
   winY_val  : unbounded_string;

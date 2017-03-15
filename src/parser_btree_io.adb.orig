@@ -22,21 +22,20 @@
 ------------------------------------------------------------------------------
 pragma ada_2005;
 
-with text_io;use text_io;
+--with text_io;use text_io;
 
 with
     Interfaces.C,
     ada.exceptions,
+    ada.strings.unbounded,
     gnat.directory_operations,
-    bush_os,
-    user_io,
+    spar_os,
     world,
+    user_io,
     scanner,
     scanner_res,
     scanner_restypes,
-    string_util,
     parser,
-    parser_aux,
     parser_params,
     parser_bdb;
 
@@ -48,15 +47,14 @@ with
 
 use
     ada.exceptions,
+    ada.strings.unbounded,
     gnat.directory_operations,
     world,
     user_io,
     scanner,
     scanner_res,
     scanner_restypes,
-    string_util,
     parser,
-    parser_aux,
     parser_params,
     parser_bdb;
 

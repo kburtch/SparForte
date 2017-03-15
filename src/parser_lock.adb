@@ -21,21 +21,18 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io;use text_io;
+--with text_io;use text_io;
+
 with gnat.lock_files,
+    ada.strings.unbounded,
     world,
     scanner,
-    string_util,
-    parser_aux,
-    parser,
-    bush_os;
+    parser;
 use gnat.lock_files,
+    ada.strings.unbounded,
     world,
     scanner,
-    string_util,
-    parser_aux,
-    parser,
-    bush_os;
+    parser;
 
 package body parser_lock is
 

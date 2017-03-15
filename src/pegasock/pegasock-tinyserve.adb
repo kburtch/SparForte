@@ -4,9 +4,9 @@
 -----------------------------------------------------------------------------
 
 with ada.text_io,
-     bush_os;
+     spar_os;
 use  ada.text_io,
-     bush_os;
+     spar_os;
 
 package body pegasock.tinyserve is
 

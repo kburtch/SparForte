@@ -21,14 +21,14 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io;use text_io;
 with ada.io_exceptions,
      ada.strings.unbounded,
+     ada.text_io,
 #if MYSQL
      APQ.MySQL.Client,
      utils_mysql,
 #end if;
-     bush_os.tty,
+     spar_os.tty,
      world,
      signal_flags,
      string_util,
@@ -41,13 +41,14 @@ with ada.io_exceptions,
      parser_db;
 use  ada.io_exceptions,
      ada.strings.unbounded,
+     ada.text_io,
 #if MYSQL
      APQ,
      APQ.MySQL,
      APQ.MySQL.Client,
      utils_mysql,
 #end if;
-     bush_os.tty,
+     spar_os.tty,
      world,
      signal_flags,
      string_util,

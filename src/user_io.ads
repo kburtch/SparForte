@@ -22,8 +22,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with system, ada.calendar, ada.strings.unbounded, bush_os;
-use ada.strings.unbounded, bush_os;
+with system, ada.calendar, ada.strings.unbounded, spar_os;
+use ada.strings.unbounded, spar_os;
 
 
 package user_io is

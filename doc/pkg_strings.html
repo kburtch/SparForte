@@ -52,20 +52,21 @@ and character values. (The character positions are numbered from 1.)</p>
 <pre>
   <a href="#strings.count">n := count( s, p )</a>             <a href="#strings.csv_field">r := csv_field( s, c [, d] )</a>  <a href="#strings.csv_replace">r := csv_replace( s, f, t, [, d] )</a>
   <a href="#strings.delete">r := delete( s, l, h )</a>         <a href="#strings.element">c := element( s, p )</a>          <a href="#strings.field">r := field( s, c [, d] )</a>
-  <a href="#strings.glob">b := glob( e, s )</a>              <a href="#strings.head">r := head( s, c [, p] )</a>       <a href="#strings.image">r := strings.image( n )</a>
-  <a href="#strings.index">n := index( s, p [, d] )</a>       <a href="#strings.index_non_blank">n := index_non_blank( s [,d] )</a> <a href="#strings.insert">r := insert( s, b, n )</a>
-  <a href="#strings.is_alphanumeric">r := is_alphanumeric( s )</a>      <a href="#strings.is_basic">r := is_basic( s )</a>            <a href="#strings.is_control">r := is_control( s )</a>
-  <a href="#strings.is_digit">r := is_digit( s )</a>             <a href="#strings.is_fixed">r := is_fixed( s )</a>            <a href="#strings.is_graphic">r := is_graphic( s )</a>          
-  <a href="#strings.is_hexadecimal_digit">r := is_hexadecimal_digit( s )</a> <a href="#strings.is_letter">r := is_letter( s )</a>           <a href="#strings.is_lower">r := is_lower( s )</a>
-  <a href="#strings.is_slashed_date">r := is_slashed_date( s )</a>      <a href="#strings.is_special">r := is_special( s )</a>          <a href="#strings.is_typo_of">b := is_typo_of( s1, s2 )</a>
-  <a href="#strings.is_upper">r := is_upper( s )</a>             <a href="#strings.length">n := length( s )</a>              <a href="#strings.lookup">r := lookup( s, k [, d] )</a>
-  <a href="#strings.match">b := match( e, s )</a>             <a href="#strings.mktemp">r := mktemp( p )</a>              <a href="#strings.overwrite">r := overwrite( s, p, n )</a>
-  <a href="#strings.replace">replace( s, f, t [, d] )</a>       <a href="#strings.replace_slice">replace_slice( s, l, h, b )</a>   <a href="#strings.set_unbounded_string">set_unbounded_string( u, s )</a>
-  <a href="#strings.slice">r := slice( s, l, h )</a>          <a href="#strings.split">split( s, l, r , p )</a>          <a href="#strings.tail">r := tail( s, c [, p] )</a>
-  <a href="#strings.to_basic">r := to_basic( s )</a>             <a href="#strings.to_escaped">r := to_escaped( s )</a>          <a href="#strings.to_json">r := to_json( s )</a>
-  <a href="#strings.to_lower">r := to_lower( s )</a>             <a href="#strings.to_proper">r := to_proper( s )</a>           <a href="#strings.to_string">r := to_string( s )</a>
-  <a href="#strings.to_upper">r := to_upper( s )</a>             <a href="#strings.to_unbounded_string">u := to_unbounded_string( s )</a> <a href="#strings.trim">r := trim( s [, e] )</a>
-  <a href="#strings.unbounded_slice">r := unbounded_slice( s, l, h )</a> <a href="#strings.val">c := val( n )</a> 
+  <a href="#strings.glob">b := glob( e, s )</a>              <a href="#strings.head">r := head( s, c [, p] )</a>
+  <a href="#strings.image">r := strings.image( n )</a>        <a href="#strings.index">n := index( s, p [, d] )</a>      <a href="#strings.index_non_blank">n := index_non_blank( s [,d] )</a>
+  <a href="#strings.insert">r := insert( s, b, n )</a>         <a href="#strings.is_alphanumeric">r := is_alphanumeric( s )</a>     <a href="#strings.is_basic">r := is_basic( s )</a>
+  <a href="#strings.is_control">r := is_control( s )</a>           <a href="#strings.is_digit">r := is_digit( s )</a>            <a href="#strings.is_fixed">r := is_fixed( s )</a>
+  <a href="#strings.is_graphic">r := is_graphic( s )</a>           <a href="#strings.is_hexadecimal_digit">r := is_hexadecimal_digit(s)</a>  <a href="#strings.is_letter">r := is_letter( s )</a>
+  <a href="#strings.is_lower">r := is_lower( s )</a>             <a href="#strings.is_slashed_date">r := is_slashed_date( s )</a>     <a href="#strings.is_special">r := is_special( s )</a>
+  <a href="#strings.is_typo_of">b := is_typo_of( s1, s2 )</a>      <a href="#strings.is_upper">r := is_upper( s )</a>            <a href="#strings.length">n := length( s )</a>
+  <a href="#strings.lookup">r := lookup( s, k [, d] )</a>      <a href="#strings.match">b := match( e, s )</a>            <a href="#strings.mktemp">r := mktemp( p )</a>
+  <a href="#strings.overwrite">r := overwrite( s, p, n )</a>      <a href="#strings.replace">replace( s, f, t [, d] )</a>      <a href="#strings.replace_slice">replace_slice( s, l, h, b )</a>
+  <a href="#strings.set_unbounded_string">set_unbounded_string( u, s )</a>   <a href="#strings.slice">r := slice( s, l, h )</a>         <a href="#strings.split">split( s, l, r , p )</a>
+  <a href="#strings.tail">r := tail( s, c [, p] )</a>        <a href="#strings.to_base64">r := strings.to_base64( s )</a>   <a href="#strings.to_basic">r := to_basic( s )</a>
+  <a href="#strings.to_escaped">r := to_escaped( s )</a>           <a href="#strings.to_json">r := to_json( s )</a>             <a href="#strings.to_lower">r := to_lower( s )</a>
+  <a href="#strings.to_proper">r := to_proper( s )</a>            <a href="#strings.to_string">r := to_string( s )</a>           <a href="#strings.to_upper">r := to_upper( s )</a>
+  <a href="#strings.to_unbounded_string">u := to_unbounded_string( s )</a>  <a href="#strings.trim">r := trim( s [, e] )</a>          <a href="#strings.unbounded_slice">r := unbounded_slice(s, l, h)</a>
+  <a href="#strings.val">c := val( n )</a> 
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -97,6 +98,9 @@ and to_string functions should be used.
 <li><b>strings.direction</b> - direction.forward or direction.backward</li>
 <li><b>strings.trim_end</b> - trim_end.left, trim_end.right or trim_end.both</li>
 </ul>
+
+<p>There is also a string type, <b>strings.base64_string</b>, for use with
+Base 64 encoded strings.</p>
 
 <a name="strings.count"></a><h3>n := strings.count( s, p )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
@@ -1963,6 +1967,53 @@ padded using character p</p></td>
 </tr>
 </table>
 
+<a name="strings.to_base64"></a><h3>r := strings.to_base64( s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Encode to arbitrary (possibly binary) string to base 64 characters.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">r := strings.to_base64( "foobar" &amp; ASCII.FF ); -- retuns "Zm9vcmJhcgw="</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string or character type</span></td>
+<td><span>required</span></td>
+<td><span>the string to encode</span></td>
+</tr>
+<tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>string or character type</span></td>
+<td><span>required</span></td>
+<td><span>the encoded string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#strings.to_string">strings.to_string</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>SparForte 2.0.3</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td>-</td>
+</tr>
+</table>
+
 <a name="strings.to_basic"></a><h3>r := strings.to_basic( s )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
@@ -2187,10 +2238,15 @@ padded using character p</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Convert unbounded string s to string s. If u is a json_string, convert JSON encoding of a string into the original string. Encoding arbitrary control characters with \u is not yet supported, though carriage returns, line feeds, etc. are supported. universal_string types (including string literals) are not accepted.</p></td>
+<td><p>The function depends on the string type.</p>
+<ol>
+<li>If s is an <b>unbounded_string</b>, convert unbounded string s to string r.  For compatibility with Ada 95.</li>
+<li>If s is a <b>json_string</b>, convert JSON encoding of a string into the original string r. Encoding arbitrary control characters with \u is not yet supported, though carriage returns, line feeds, etc. are supported. universal_string types (including string literals) are not accepted.</li>
+<li> If s is a <b>strings.base64_string</b>, return an arbitrary (possibly binary) string r as decoded from the base 64 characters s.</li></td>
+
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">s := strings.to_string( some_unbounded_string );<br>r := strings.to_string( json_string( ASCII.Quotation &amp; "foobar\ntest" &amp; ASCII.Quotation ) ); -- returns a string with foobar, a line feed, and test</span></td>
+<td><span class="code">s := strings.to_string( some_unbounded_string );<br>r := strings.to_string( json_string( ASCII.Quotation &amp; "foobar\ntest" &amp; ASCII.Quotation ) ); -- returns a string with foobar, a line feed, and test<br>r := strings.to_string( strings.base64_string( "Zm9vcmJhcgw=" ) ); -- retuns "foobar" and a form feed</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -2205,22 +2261,25 @@ padded using character p</p></td>
 <td><span>in</span></td>
 <td><span>string</span></td>
 <td><span>required</span></td>
-<td><span>the string expression to encode</span></td>
+<td><span>the string expression to decode</span></td>
 </tr>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
 <td><span>string</span></td>
 <td><span>required</span></td>
-<td><span>the JSON string</span></td>
+<td><span>the converted/decoded string</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>Bad JSON data can raise exceptions</p></td>
+<td><p>Bad JSON data can raise exceptions<br>NAME_ERROR, STATUS_ERROR, DATA_ERROR, END_ERROR possible with Base64 strings</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="pkg_arrays.html#arrays.to_array">arrays.to_array</a><br><a href="pkg_records.html#records.to_record">records.to_record</a><br><a href="#strings.to_string">strings.to_string</a></p></td>
+<td><p><a href="pkg_arrays.html#arrays.to_array">arrays.to_array</a><br><a href="pkg_records.html#records.to_record">records.to_record</a><br><a href="#strings.to_base64">strings.to_base64</a><br><a href="#strings.to_json">strings.to_json</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>Base 64 introduced with SparForte 2.0.3</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Strings.Unbounded.To_String<br>PHP: json_decode</p></td>

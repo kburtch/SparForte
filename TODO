@@ -8,12 +8,39 @@ NEW ISSUES
 These are new issues identified but not entered into the outstanding bug list
 -----------------------------------------------------------------------------
 
-- btree_io
-  - severe
-    - are record components marked as writtent o?
-    - pwd is wrong for btree_io/hash_io on ../spar redirect
+Severe Issues (Fix These First)
+-------------------------------
+
+- btree_io/hash_io
+    - pwd may wrong for btree_io/hash_io on ../spar redirect
       or is this normal? if so, document.
-  - warning
+- exceptions
+    - re-raise doesn't work unless it is in the main body of an exception
+      handler.  This includes if statements.  Being in an exception handler
+      must be a global scanner flag.
+- pragmas
+    - session scripts must not be allowed in a restricted shell...or imports...verify
+      - is this for security?  don't remember now
+- regression tests
+    - cgi third_party test
+- unsorted/misc
+    - STILL getting DEVICE_ERROR / interrupted syscall randomly on pipelines, even
+      after repeated audits of all syscalls for handling this error.
+      Possibly raised internally by Ada.Text_IO and needs to be caught and handled?
+      If so, where?
+       - echo "test" | head; --raised it
+       - echo  | sort | head; -- raised it
+    - parseidentifier can throw an invalid data error when setting wasReferenced on
+      certain circumstances.
+    - an early return from the main program doesn't pull the final block,
+      even if the template isn't parsed.
+    - constant check fails if assignment is in `..` (compiled after main program is
+      compiled)
+
+Annoyances / Bugs with Workarounds / Updates
+--------------------------------------------
+
+- btree_io/hash_io
     - negative test btree_io.replace with cursor
     - negative test to ensure subprogram exceptions are not lost to parent
     - json decode backslash good regression tests
@@ -22,69 +49,88 @@ These are new issues identified but not entered into the outstanding bug list
     - files.is_writable didn't work on CMS
       - if not possible, appropriate error
     - option to throw an exception on missing values (including replace, get, add (existing value)
-
-- memcache
-  - severe
-  - warning
+- memcache/memcache.highread
     - update design to use new resource system
-  - nice to haves
-    - update functionality to handle records, arrays, etc. like btree_io
-
-- misc issues
-  - severe
-     - STILL getting DEVICE_ERROR / interrupted syscall randomly on pipelines, even
-       after repeated audits of all syscalls for handling this error.
-       Possibly raised internally by Ada.Text_IO and needs to be caught and handled?
-       - echo "test" | head; --raised it
-       - echo  | sort | head; -- raised it
-     - session scripts must not be allowed in a restricted shell...or imports...verify
-     - an early return from the main program doesn't pull the final block,
-       even if the template isn't parsed.
-     - cgi third_party test
-     - memcache third_party test
-     - re-raise doesn't work unless it is in the main body of an exception
-       handler.  This includes if statements.  Being in an exception handler
-       must be a global scanner flag.
+- exceptions
+    - what are semantics of throwing an exception in a subscript `...`
+    - exceptions that propogate to the top aren't formatted properly in the
+      Apache log (single chars means single lines)
+- pragmas
     - can't declare two licences or software_models.  This is a problem for a
       redistributable library
-    - constant check fails if assignment is in `..` (compiled after main program is
-      compiled)
-  - warning
-    - semantics of throwing an exception in a subscript `...`
+    - check double pragma import - test case
+- unit testing and teamwork
+    - xUnit support for tests (pragma test_result - output in JUNIT format?)
+- graphics and sound
+  - SDL - hardware accelleration not working with SDL...why not?
+  - SDL needs to be upgraded for version 2.0
+- type system
+  - constant records are permitted but the fields are variables...the fields should all be constants
+- build system
+  - David B wants me to bring back SparForte shared library
+    - shared library calling mechanism and integration with other languages
+- unsorted/misc
+
+    - control-z handling - fork, send a sleep signal and reset scanner
+    - REPL example needs to run in a chroot environment
+    - get_line on an out mode file gives bad file descriptor but needs a better
+      error message
     - function f(p), p should not be 'already exists' if there is a p in scope
     - docs say strings.trim - trim end is optional, but is required.
     - change pegasock to use bdb format exceptions with filename in message?
-    - exceptions that propogate to the top aren't formatted properly in the
-      Apache log (single chars means single lines)
-  - nice to haves
-    - alternatives to ParseGeneralStatement more appropriate for executable bodies
-    - control-z handling
+    - check pragma block with @ 
+    - ParseGeneralStatement allows declarations.  For body and user role blocks,
+      we need more restrictive variations of PGS.
+
+Nice to Haves / Missing Functionality
+-------------------------------------
+
+- memcache/memcache.highread
+    - update functionality to handle records, arrays, etc. like btree_io
     - element as an alias for "get" in memcache, etc.
+- generic types
+    - subtypes of generic types
+- pragmas
+    - distinguish types of pragmas, to later separate by block or context
+    - a pragma to check for the version of SparForte?  Is it a doc pragma,
+      executable or both?
+- user role blocks
     - configuration/policy/project <name> ... is separate (not with separate, which isn't
       as specific)
-    - some way to determine if a configuration/policy/project should have been loaded.
-      perhaps an architectural pragma for same.
-    - update dynamic_hash_table functionality to handle records, arrays, etc. like btree_io
-    - standardize get_first as first, etc.
-    - safety check that a file cannot include itself
-    - distinguish types of pragmas, to later separate by block or context
-    - redundancy and ways of handing command line option
-    - enums.last is slow...should be updated for namespaces to improve speed
     - more separation of concerns
       - with configuration
       - with policy
       - with project
       - project block
       - QA concerns?
+    - some way to determine if a configuration/policy/project should have been loaded.
+      perhaps an architectural pragma for same.
+- unit testing and teamwork
+    - "status board" generation option for oustanding/in-progress work
+    - burndown charts option?
+    - review Test concept...what other requirements are missing?
+- vectors
+  - complete vectors package
+- tinyserve
+  - close tinyserve if open
+  - complete tinyserve package
+- types and expressions
+  - return arrays and records in expressions (requires records revamp)
+  - allow users to create their own universal types
+  - record system refactor (in prep for aggregate expressions)
+- templates
+  - need template package to set return HTTP status
+- build system
+  - dynamic loadable built-in packages
+- unsorted/misc
+    - alternatives to ParseGeneralStatement more appropriate for executable bodies
+    - update dynamic_hash_table functionality to handle records, arrays, etc. like btree_io
+    - standardize get_first as first, etc.
+    - safety check that a file cannot include itself
+    - redundancy and ways of handing command line option
+    - enums.last is slow...should be updated for namespaces to improve speed
     - built-in cache - memory or disk?
-    - arch pragmas should be scopable to software model...at least, software_model must
-      be exposed through System, or the pragmas registered for different types of
-      projects and applied later.
-    - a pragma to check for the version of SparForte?  Is it a doc pragma,
-      executable or both?
     - redesign is_writable, etc. so works better.
-    - % should be usable in more contexts
-       - should % chain objects methods?
     - return [when] , raise [when]
     - new examples
        - example program of ramdisk cache
@@ -99,54 +145,36 @@ These are new issues identified but not entered into the outstanding bug list
        - wasWritten on arrays and records
        - rewrite references to .value to look use utility functions
      - change or alias for consistency: set -> assign, get -> element
-     - subtypes of generic types
+     - with include doesn't work on the command because it is loaded at syntax check
+       time and the command line has no syntax check...but it would be good to load
+       libraries at the command line so can I come up with a strategy to make it work?
 
+New Unique Concepts
+-------------------
 
-Teamwork Improvments
+  - SELinux-like ability to control who access what.
+    - for any function, restrict it to a list of parent functions which
+      may call it.
+    - for any command, restrict it to a list of parent functions which
+      may call it.
+    - objects more complicated but not an issue now.
+    - have an option for open access
+    - how to you lock the list and enforce it?
+    - % should be usable in more contexts
+       - chould % chain objects methods?  That is, % equals @ + first param?
+  - sofware model + archecture
+    - allow architects to apply architecture policy to groups of software by the
+      software model system.  Explore what needs to be involved.  should the
+      software model be exposed through System?  Currently pragmas are applied
+      directly to the current program, rather than triggered by pragma
+      software_model and applied through some kind of architecture system.
 
-* Test concept...what is missing?
-* JIRA features
-  * status board?
-  * Generating burndown charts?
-* xUnit support for tests (pragma test_result - output in JUNIT format?)
-
-* REPL example needs to run in a chroot environment
-
-Lanaguage
-
-
-[check double import test case]
-[close tinyserve if open]
-[complete tinyserve package]
-[need template package to set return HTTP status]
-[check pragma block with @ ]
-[allow users to create their own universal types]
-[record system refactor (in prep for aggregate expressions)]
-[blocks still allow declarations in executable section, even in formal mode - see distance examples
-This is probably because blocks use ParseGeneralStatement.  We need a more restrictive form of
-ParseGeneralStatement]
-[constant records are permitted but the fields are variables...the fields should all be constants]
-[with include doesn't work on the command because it is loaded at syntax check time and the
-command line has no syntax check...but it would be good to load libraries at the command line
-so can I come up with a strategy to make it work?]
-- SELinux-like ability to control who access what.
-  - for any function, restrict it to a list of parent functions which
-    may call it.
-  - for any command, restrict it to a list of parent functions which
-    may call it.
-  - objects more complicated but not an issue now.
-  - have an option for open access
-  - how to you lock the list and enforce it?
-- SDL - hardware accelleration not working with SDL...why not?
-- SDL needs to be upgraded for version 2.0
-
-Built System
-
-[David B wants shared library but didn't get it added in time]
 
 -------------------------------------------------------------------------------
 KNOWN ISSUES/IDEAS
 -----------------------------------------------------------------------------
+- some of these issue may have been addressed but not removed from this list
+  so check if they are still a problem
 
 ISSUES (SparForte Environment)
 
@@ -164,10 +192,8 @@ ISSUES (SparForte Environment)
       restricted shells, -e, in / not in operator, unchecked_import tests in
       test suite
     - command line redirection tests in testsuite
-    - to_upper, to_lower, to_proper, to_basic, to_escaped, is_typo_of
-    - numerics.odd, numerics.even
     - files.is_executable, files.is_readable, files.is_writable,
-      files.last_modified need positive and negative tests
+      files.last_modified need negative tests
     - tests for large numbers of open/close to make sure we don't run out
       file descriptors because of improper closures
     - changes to allow for "i : integer := i" not tested for arrays...that is,
@@ -207,7 +233,7 @@ ISSUES (AdaScript)
 
   * assignments
     - naturals and positives compatibility (intTypesOK) not handled at
-      assignment
+      assignment...is this fixed?
 
   * pen package (AdaScript Issues)
     - pen package fails on AMD/Linux
@@ -280,9 +306,6 @@ ISSUES (AdaScript)
     - should it handle ~?
     - should restricted shell affect?
 
-  * calendar package (AdaScript Issues)
-    - to_julian / to_time not working
-
   * System package (AdaScript Issues)
     - System_Name should be enumerated
 
@@ -297,7 +320,6 @@ ISSUES (AdaScript)
       - functions should be able to return records and arrays
     - forward procedures broken (commented out in tests) - params are broke
       when expecting forward subprogram
-    - out and in out parameter types in user-defined procedures
 
   * command types (AdaScript Issues)
       - can command types be implemented using appropriate pragmas
@@ -305,8 +327,6 @@ ISSUES (AdaScript)
    - command vars should be &-able with backquotes.
 
   * Ada package bindings
-    - switch to Ada's CGI from David Wheeler's CGI package
-    - binding to: Gnat.Directory_Operations
     - thick binding to: Gnat.Os_Lib
     - binding to: Byte_IO (sequential)
 
@@ -325,19 +345,12 @@ ISSUES (AdaScript)
 
 ISSUES (Bourne Shell)
 
-  - broken pipes
-    - extra blank lines occurring with env if it is cut short on a broken pipe
-      env | head -1 (e.g. help | head -1 has no issue)
-
   - x/y command name relative paths
     - ./foobar works as expected
     - dir/foobar doesn't work - it must be quoted
     - foo-bar also doesn't work - it must be quoted
     - the byte code compiler could handle this, creating a shell word...but not break
       other things
-
-  - control-c sometimes leaves the command line in the wrong state (typing is invisible)
-     (i.e. repeatedly hitting control-c)
 
   - redirections (Shell Issues)
     - advanced job control (control-Z, fg, bg, etc.)

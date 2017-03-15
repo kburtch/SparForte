@@ -21,26 +21,29 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io; use text_io;
-with bush_os,
+--with text_io; use text_io;
+
+with gnat.io_aux,
+     gnat.os_lib,
+     ada.strings.unbounded,
+     spar_os,
      string_util,
      world,
      scanner.calendar,
-     parser,
      parser_aux,
-     parser_cal,
-     gnat.io_aux,
-     gnat.os_lib;
-use  bush_os,
+     parser,
+     parser_cal;
+use  gnat.io_aux,
+     gnat.os_lib,
+     ada.strings.unbounded,
+     spar_os,
      string_util,
      world,
      scanner,
      scanner.calendar,
-     parser,
      parser_aux,
-     parser_cal,
-     gnat.io_aux,
-     gnat.os_lib;
+     parser,
+     parser_cal;
 
 package body parser_files is
 
@@ -274,7 +277,7 @@ begin
      if filesize >= 0 then
         f := to_unbounded_string( long_integer'image( filesize ) );
      else
-        err( "unable to get file size: " & OSError( bush_os.C_errno ) );
+        err( "unable to get file size: " & OSError( spar_os.C_errno ) );
      end if;
   end if;
 end ParseFileSize;
@@ -356,7 +359,7 @@ begin
            err( "execption raised when getting file modified time" );
         end;
      else
-        err( "unable to get file modify time: " & OSError( bush_os.C_errno ) );
+        err( "unable to get file modify time: " & OSError( spar_os.C_errno ) );
      end if;
   end if;
 end ParseFileLastModified;
@@ -384,7 +387,7 @@ begin
            err( "execption raised when getting file modified time" );
         end;
      else
-        err( "unable to get file change time: " & OSError( bush_os.C_errno ) );
+        err( "unable to get file change time: " & OSError( spar_os.C_errno ) );
      end if;
   end if;
 end ParseFileLastChanged;
@@ -412,7 +415,7 @@ begin
            err( "execption raised when getting file modified time" );
         end;
      else
-        err( "unable to get file access time: " & OSError( bush_os.C_errno ) );
+        err( "unable to get file access time: " & OSError( spar_os.C_errno ) );
      end if;
   end if;
 end ParseFileLastAccessed;

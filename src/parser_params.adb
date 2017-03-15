@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2016 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,21 +21,19 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io;
-use ada.text_io;
+--with ada.text_io; use ada.text_io;
+
 with gen_list,
     ada.strings.unbounded,
     world,
     user_io,
     scanner,
-    parser_aux,
     parser;
 use ada.strings,
     ada.strings.unbounded,
     world,
     user_io,
     scanner,
-    parser_aux,
     parser;
 
 package body parser_params is

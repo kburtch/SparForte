@@ -1,11 +1,10 @@
 ------------------------------------------------------------------------------
--- BUSH OS.TTY- Terminal Emulation Information                              --
--- This version is for UNIX/Linux Commands                                  --
+-- GStreamer interface file                                                 --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -25,49 +24,40 @@
 with ada.strings.unbounded;
 use  ada.strings.unbounded;
 
-package bush_os.tty is
+package spar_os.sound is
 
+   -- GSTREAMER interface
+   --
+   -- g_streamer.c contains basic C function to start gstreamer
+   -- and play sounds.  Errors are returned in the gst_error
+   -- array.
 
--- Terminal Attributes
---
--- Character sequences to change the print style, clear the
--- screen, move the cursor, etc.
+   -- initialize gstreamer
+   procedure startup_gstreamer;
+   pragma import( C, startup_gstreamer );
 
-type termAttributes is (normal, bold, inverse, cleop, cleol, up,
-     right, bel, reset, clear, lines, cols);
+   -- shutdown gstreamer
+   procedure shutdown_gstreamer;
+   pragma import( C, shutdown_gstreamer );
 
-type termAttributesArray is array (termAttributes) of unbounded_string;
+   -- play the sound file referenced by the uri, 1 = success
+   -- and 0 = fail (see gst_error)
+   function play_uri( uri : string ) return integer;
+   pragma import( C, play_uri );
 
-type termMode is (normal, normal_noecho, nonblock_noecho );
--- how to read a character: block, don't block, echo or don't echo
+   -- last error message from gst_error
+   gst_error : array(0..255) of character;
+   pragma import( C, gst_error );
 
-term : termAttributesArray;
--- array containing the attribute strings
+------------------------------------------------------------------------------
 
-displayInfo : winsz_info;
--- dimensions of the terminal display
+  --procedure Play( soundFile : unbounded_string; priority : integer := 0 );
+  -- Play a WAV or AU sound using AdaVox
 
+  procedure PlayCD( altCdPath : unbounded_string );
+  -- Play a music CD
 
--- Attribute Procedures
+  procedure StopCD;
+  -- Stop music CD
 
-procedure updateTtyAttributes( thisTerm : unbounded_string );
--- update the term array with the attributes for the display.
--- Run this procedure on BUSH startup or when the reset/clear
--- commands are used (in case the TERM variable has changed).
-
-procedure updateDisplayInfo;
--- update the displayInfo record with the display dimensions.
--- Run this procedure at startup or when a SIGWINCH is
--- detected.
-
-
--- Basic TTY I/O
-
-procedure simpleGetKey( ch : out character; nonblock : boolean := false );
--- read a (raw) key from the keyboard without echoing to display
--- when non-blocking, ASCII.EOT is returned if there is no character
-
-procedure simpleBeep;
--- ring the bell on the terminal (ie. send a control-G)
-
-end bush_os.tty;
+end spar_os.sound;

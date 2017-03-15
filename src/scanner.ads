@@ -6,7 +6,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -268,6 +268,10 @@ function castToType( val : unbounded_string; kind : identifier ) return unbounde
 
 function deleteIdent( id : identifier ) return boolean;
 -- delete an identifier, true if successful
+
+procedure discardUnusedIdentifier( id : identifier );
+-- if an identifier has been not been assigned a type,
+-- assume it's unused and discard it.
 
 -----------------------------------------------------------------------------
 -- JSON

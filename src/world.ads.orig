@@ -686,6 +686,12 @@ last_output_type : identifier;    -- type of last output
 --procedure resetTinyHashCache;
 --procedure getTinyHashCache( s : unbounded_string; id : out identifier ; h : out actualHash );
 
+function isExecutingCommand return boolean;
+-- True if OK to execute a statement that does work.
+-- That is, the parser isn't skipping the line because of
+-- an error or exiting a block.
+pragma inline( isExecutingCommand );
+
 ------------------------------------------------------------------------------
 -- Declarations
 ------------------------------------------------------------------------------

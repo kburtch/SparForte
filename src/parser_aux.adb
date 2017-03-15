@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2016 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -40,28 +40,7 @@ use  ada.text_io,
 
 package body parser_aux is
 
-use bush_os.HEptrs;
-
-function isExecutingCommand return boolean is
-  -- True if OK to execute a statement that does work.
-  -- That is, the parser isn't skipping the line because of
-  -- an error or exiting a block.
-begin
-  return not error_found and not exit_block and not syntax_check;
-end isExecutingCommand;
---pragma inline( isExecutingCommand );
-
-procedure discardUnusedIdentifier( id : identifier ) is
-  -- if an identifier has been not been assigned a type,
-  -- assume it's unused and discard it.
-  b : boolean;
-begin
-  if id /= eof_t then
-     if identifiers( id ).kind = new_t or identifiers( id ).kind = eof_t then
-        b := deleteIdent( id );
-     end if;
-  end if;
-end discardUnusedIdentifier;
+use spar_os.HEptrs;
 
 procedure makeTempFile( s : out unbounded_string ) is
   -- create a unique temporary filename

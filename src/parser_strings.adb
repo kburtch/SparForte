@@ -21,29 +21,38 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io;use text_io;
+--with text_io;use text_io;
+
 with interfaces.c,
+    ada.strings.unbounded.text_io,
+    ada.streams.stream_io,
+    ada.text_io,
     gnat.regexp,
     gnat.regpat,
     base64,
+    spar_os,
+    world,
     scanner,
     string_util,
     user_io,
     parser_aux,
     parser_params,
-    parser,
-    bush_os;
+    parser;
 use interfaces.c,
+    ada.strings.unbounded,
+    ada.strings.unbounded.text_io,
+    ada.streams.stream_io,
     gnat.regexp,
     gnat.regpat,
     base64,
+    spar_os,
+    world,
     scanner,
     string_util,
     user_io,
     parser_params,
     parser_aux,
-    parser,
-    bush_os;
+    parser;
 
 package body parser_strings is
 
@@ -55,6 +64,8 @@ defaultDelimiter : constant character := ASCII.CR;
 --
 -- These will eventually be moved to the Strings parser
 ------------------------------------------------------------------------------
+
+base64_string_t  : identifier;
 
 strings_alignment_t        : identifier; -- strings.alignment enumerated
 strings_alignment_left_t   : identifier;
@@ -122,6 +133,7 @@ is_typo_of_t : identifier;
 set_unbounded_string_t  : identifier;
 unbounded_slice_t  : identifier;
 strings_to_json_t : identifier;
+to_base64_t  : identifier;
 
 procedure ParseSingleStringExpression( expr_val : out unbounded_string;
   expr_type : out identifier ) is
@@ -762,20 +774,63 @@ procedure ParseStringsToString( result : out unbounded_string; kind : out identi
   expr_val   : unbounded_string;
   expr_type  : identifier;
   baseType   : identifier;
+
+  procedure DoBase64ToString( result : out unbounded_string; expr_val : unbounded_string ) is
+    rawFile : ada.streams.stream_io.file_type;
+    base64file : ada.text_io.file_type;
+  begin
+    -- The AdaPower base64 package requires streams and/or files.  It
+    -- doesn't do strings.
+    --
+    -- Barnes' documentation is a bit sketchy.  I am faking this.  There may
+    -- be a cleaner and more efficient way to do this.
+    ada.text_io.create( base64File );
+    ada.text_io.put( base64File, to_string( expr_val ) );
+    ada.text_io.reset( base64File, ada.text_io.in_file );
+    ada.streams.stream_io.create( rawFile );
+    Decode_Stream( From => base64File, To => rawFile  );
+    ada.streams.stream_io.reset( rawFile, ada.streams.stream_io.in_file );
+    declare
+       rawStream : ada.streams.stream_io.stream_access;
+       ch : character;
+    begin
+       rawStream := ada.streams.stream_io.Stream( rawFile );
+       while not ada.streams.stream_io.end_of_file( rawFile ) loop
+          character'read( rawStream, ch );
+          result := result & ch;
+       end loop;
+     end;
+     ada.streams.stream_io.delete( rawFile );
+     ada.text_io.delete( base64File );
+   exception when MODE_ERROR =>
+     err( "internal_error: file mode error" );
+   when status_error =>
+     err( "internal_error: status error - cannot open file" );
+   when name_error =>
+     err( "internal_error: name error - cannot open fie" );
+   when end_error =>
+     err( "internal_error: end error - end of file reached" );
+   when others =>
+     err_exception_raised;
+  end DoBase64ToString;
+
 begin
   kind := string_t;
   expect( to_string_t );
   ParseSingleStringParameter( expr_val, expr_type );
   baseType := getBaseType( expr_type );
-  if baseType /= unbounded_string_t and baseType /= json_string_t then
-     err( "unbounded_string or json_string expected" );
+  if baseType /= unbounded_string_t and baseType /= json_string_t and
+     baseType /= base64_string_t then
+     err( "unbounded_string, json_string or strings.base64_string expected" );
   end if;
   begin
     if isExecutingCommand then
        if baseType = unbounded_string_t then
           result := expr_val;
-       else
+       elsif baseType = json_string_t then
           DoJsonToString( result, expr_val );
+       else
+          DoBase64ToString( result, expr_val );
        end if;
     end if;
   exception when others =>
@@ -1245,33 +1300,55 @@ begin
   end;
 end ParseStringsIsFixed;
 
--- procedure ParseStringsToBase64( result : in out unbounded_string ) is
--- begin
---   expect( to_base64_t );
---   ParseSingleUniStringExpression( expr_val, expr_type );
---   begin
---     if isExecutingCommand then
---        Encode( to_string( expr_val ), Target, Last );
---        result := to_unbounded_string( Target );
---     end if;
---   exception when others =>
---     err_exception_raised;
---   end;
--- end ParseStringsToBase64;
-
--- procedure ParseStringsFromBase64( result : in out unbounded_string ) is
--- begin
---   expect( from_base64_t );
---   ParseSingleUniStringExpression( expr_val, expr_type );
---   begin
---     if isExecutingCommand then
---        Decode( to_string( expr_val ), Target, Last );
---        result := to_unbounded_string( Target );
---     end if;
---   exception when others =>
---     err_exception_raised;
---   end;
--- end ParseStringsFromBase64;
+procedure ParseStringsToBase64( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: strings.to_base64( s )
+  -- Source: base64.encode_stream
+  rawFile : ada.streams.stream_io.file_type;
+  base64file : ada.text_io.file_type;
+  expr_val : unbounded_string;
+  expr_type : identifier;
+begin
+  expect( to_base64_t );
+  kind := base64_string_t;
+  ParseSingleStringExpression( expr_val, expr_type );
+  begin
+    if isExecutingCommand then
+       -- The AdaPower base64 package requires streams and/or files.  It
+       -- doesn't do strings.
+       --
+       -- Barnes' documentation is a bit sketchy.  I am faking this.  There may
+       -- be a cleaner and more efficient way to do this.
+       ada.streams.stream_io.create( rawFile );
+       declare
+          rawStream : ada.streams.stream_io.stream_access;
+          s : string := to_string( expr_val );
+       begin
+          rawStream := ada.streams.stream_io.Stream( rawFile );
+          string'write( rawStream, s );
+       end;
+       ada.streams.stream_io.reset( rawFile, ada.streams.stream_io.in_file );
+       ada.text_io.create( base64File );
+       Encode_Stream( From => rawFile, To => base64File  );
+       ada.text_io.reset( base64File, ada.text_io.in_file );
+       -- TODO: loop
+       while not ada.text_io.end_of_file( base64File ) loop
+          result := result & get_line( base64File );
+       end loop;
+       ada.streams.stream_io.delete( rawFile );
+       ada.text_io.delete( base64file );
+    end if;
+  exception when MODE_ERROR =>
+    err( "internal_error: file mode error" );
+  when status_error =>
+    err( "internal_error: status error - cannot open file" );
+  when name_error =>
+    err( "internal_error: name error - cannot open fie" );
+  when end_error =>
+    err( "internal_error: end error - end of file reached" );
+  when others =>
+    err_exception_raised;
+  end;
+end ParseStringsToBase64;
 
 procedure ParseStringsIsTypoOf( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.is_typo_of( x, y );
@@ -1365,6 +1442,8 @@ end ParseStringsToJSON;
 procedure StartupStrings is
 begin
   declareNamespace( "strings" );
+  declareIdent( base64_string_t, "strings.base64_string", string_t, typeClass );
+
   declareFunction( glob_t, "strings.glob", ParseStringsGlob'access );
   declareFunction( match_t, "strings.match", ParseStringsMatch'access );
   declareFunction( element_t, "strings.element", ParseStringsElement'access );
@@ -1412,6 +1491,7 @@ begin
   declareProcedure( set_unbounded_string_t, "strings.set_unbounded_string", ParseStringsSetUnboundedString'access );
   declareFunction( unbounded_slice_t, "strings.unbounded_slice", ParseStringsUnboundedSlice'access );
   declareFunction( strings_to_json_t, "strings.to_json", ParseStringsToJSON'access );
+  declareFunction( to_base64_t, "strings.to_base64", ParseStringsToBase64'access );
 
   -- enumerateds - values defined below
   declareIdent( strings_alignment_t, "strings.alignment",

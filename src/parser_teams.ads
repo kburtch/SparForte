@@ -21,8 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.strings.unbounded, world, scanner;
-use  ada.strings.unbounded, world, scanner;
+with world;
+use  world;
 
 package parser_teams is
 
@@ -72,12 +72,5 @@ teams_work_priority_cvss_t    : identifier;
 
 procedure StartupTeams;
 procedure ShutdownTeams;
-
-------------------------------------------------------------------------------
--- PARSE THE RECORDS PACKAGE
-------------------------------------------------------------------------------
-
---procedure ParseRecordsToJson;
---procedure ParseRecordsToRecord;
 
 end parser_teams;

@@ -21,8 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.strings.unbounded, ada.numerics.float_random, world;
-use ada.strings.unbounded, world;
+with ada.strings.unbounded;
+use ada.strings.unbounded;
 
 package parser_numerics is
 

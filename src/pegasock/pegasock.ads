@@ -15,10 +15,10 @@ with ada.unchecked_deallocation,
      ada.IO_Exceptions,
      ada.strings.unbounded,
      interfaces.c,
-     bush_os;
+     spar_os;
 use  ada.strings.unbounded,
      interfaces.c,
-     bush_os;
+     spar_os;
 
 package pegasock is
 

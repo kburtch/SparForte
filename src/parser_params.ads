@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -24,13 +24,8 @@
 with ada.strings.unbounded,
      ada.numerics.float_random,
      world;
-     -- parser_aux;
 use  ada.strings.unbounded,
      world;
-     -- scanner_arrays;
-     -- parser_aux;
--- with scanner_arrays;
--- use  scanner_arrays;
 
 package parser_params is
 

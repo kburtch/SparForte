@@ -33,7 +33,7 @@
 pragma suppress( index_check );
 pragma suppress( range_check );
 
-with bush_os, Ada.Characters.Handling;
+with spar_os, Ada.Characters.Handling;
 use  Ada.Characters.Handling;
 
 package body string_util is
@@ -828,13 +828,13 @@ begin
      return to_unbounded_string( "." );
   end if;
   for i in reverse 2..length( s ) loop
-      if element( s, i ) = bush_os.directory_delimiter then
+      if element( s, i ) = spar_os.directory_delimiter then
          return to_unbounded_string( slice( s, 1, i-1 ) );
       end if;
   end loop;
   -- root directory
-  if element( s, 1 ) = bush_os.directory_delimiter then
-     return to_unbounded_string( bush_os.directory_delimiter & "" );
+  if element( s, 1 ) = spar_os.directory_delimiter then
+     return to_unbounded_string( spar_os.directory_delimiter & "" );
   end if;
   -- else current directory
   return to_unbounded_string( "." );
@@ -846,12 +846,12 @@ begin
      return null_unbounded_string;
   end if;
   for i in reverse 1..length( s )-1 loop
-      if element( s, i ) = bush_os.directory_delimiter then
+      if element( s, i ) = spar_os.directory_delimiter then
          return to_unbounded_string( slice( s, i+1, length( s ) ) );
       end if;
   end loop;
   -- root directory
-  if element( s, length( s ) ) = bush_os.directory_delimiter then
+  if element( s, length( s ) ) = spar_os.directory_delimiter then
      return to_unbounded_string( "." );
   end if;
   -- no directory

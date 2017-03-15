@@ -5,7 +5,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2016 Free Software Foundation            --
+--              Copyright (C) 2001-2017 Free Software Foundation            --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,6 +21,7 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
+pragma ada_2005;
 
 pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
@@ -32,7 +33,7 @@ with system,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
     gnat.source_info,
-    bush_os;
+    spar_os;
     -- scanner_arrays;
 use ada.text_io,
     ada.command_line,
@@ -41,7 +42,7 @@ use ada.text_io,
     ada.strings.unbounded,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
-    bush_os;
+    spar_os;
     -- scanner_arrays;
 
 pragma Optimize( time );
@@ -122,6 +123,20 @@ distributedMemcacheClusterInitialized : boolean := false;
 --    end if;
 --end getTinyHashCache;
 
+
+---> IS EXECUTING COMMAND
+--
+-- True if OK to execute a statement that does work.
+-- That is, the parser isn't skipping the line because of
+-- an error or exiting a block.
+-----------------------------------------------------------------------------
+
+function isExecutingCommand return boolean is
+begin
+  return not error_found and not exit_block and not syntax_check;
+end isExecutingCommand;
+
+
 -----------------------------------------------------------------------------
 -- STORAGE CACHE
 --
@@ -193,7 +208,8 @@ procedure declareKeyword( id : out identifier; s : string ) is
 -- Initialize a keyword / internal identifier in the symbol table
 begin
   if identifiers_top = identifier'last then                     -- no room?
-     raise symbol_table_overflow;                               -- raise error
+     raise symbol_table_overflow with Gnat.Source_Info.Source_Location &
+       ": too many identifiers";
   else                                                          -- else add
      id := identifiers_top;                                     -- return id
      identifiers_top := identifiers_top + 1;                    -- push stack
@@ -218,7 +234,8 @@ procedure declareFunction( id : out identifier; s : string; cb : aBuiltinFunctio
 -- Initialize a built-in function identifier in the symbol table
 begin
   if identifiers_top = identifier'last then                     -- no room?
-     raise symbol_table_overflow;                               -- raise error
+     raise symbol_table_overflow with Gnat.Source_Info.Source_Location &
+       ": too many identifiers";
   else                                                          -- else add
      id := identifiers_top;                                     -- return id
      identifiers_top := identifiers_top + 1;                    -- push stack
@@ -246,7 +263,8 @@ procedure declareProcedure( id : out identifier; s : string; cb : aBuiltinProced
 -- Initialize a built-in procedure identifier in the symbol table
 begin
   if identifiers_top = identifier'last then                     -- no room?
-     raise symbol_table_overflow;                               -- raise error
+     raise symbol_table_overflow with Gnat.Source_Info.Source_Location &
+       ": too many identifiers";
   else                                                          -- else add
      id := identifiers_top;                                     -- return id
      identifiers_top := identifiers_top + 1;                    -- push stack
@@ -484,7 +502,8 @@ procedure init_env_ident( s : string ) is
   eqpos : natural := 0; -- position of the '=' in s
 begin
   if identifiers_top = identifier'last then                     -- no room?
-     raise symbol_table_overflow;                               -- raise error
+     raise symbol_table_overflow with Gnat.Source_Info.Source_Location &
+       ": too many identifiers";
   else                                                          -- otherwise
      for i in 1..s'length loop                                  -- find '='
          if s(i) = '=' then                                     -- found?
@@ -543,7 +562,8 @@ procedure declareIdent( id : out identifier; name : unbounded_string;
 -- and (optionally) symbol class.  The id is returned.
 begin
   if identifiers_top = identifier'last then                     -- no room?
-     raise symbol_table_overflow;                               -- raise error
+     raise symbol_table_overflow with Gnat.Source_Info.Source_Location &
+       ": too many identifiers";
   else                                                          -- otherwise
      id := identifiers_top;                                     -- return id
      identifiers_top := identifiers_top+1;                      -- push stack
@@ -603,7 +623,8 @@ procedure declareStandardConstant( id : out identifier;
 -- returned since we don't change with constants once they are set.
 begin
   if identifiers_top = identifier'last then                     -- no room?
-     raise symbol_table_overflow;                               -- raise error
+     raise symbol_table_overflow with Gnat.Source_Info.Source_Location &
+       ": too many identifiers";
   else                                                          -- otherwise
      declare
        sc : declaration renames identifiers( identifiers_top );
@@ -641,7 +662,8 @@ procedure declareStandardEnum( id : out identifier;
 -- returned since we don't change with constants once they are set.
 begin
   if identifiers_top = identifier'last then                     -- no room?
-     raise symbol_table_overflow;                               -- raise error
+     raise symbol_table_overflow with Gnat.Source_Info.Source_Location &
+       ": too many identifiers";
   else                                                          -- otherwise
      declare
        sc : declaration renames identifiers( identifiers_top );
@@ -751,7 +773,8 @@ begin
   paramName := identifiers( i ).name;
   paramName := delete( paramName, 1, index( paramName, "." ));
   if identifiers_top = identifier'last then           -- no room?
-     raise symbol_table_overflow;                     -- raise error
+     raise symbol_table_overflow with Gnat.Source_Info.Source_Location &
+       ": too many identifiers";
   else                                                -- otherwise
      id := identifiers_top;                           -- return id
      identifiers_top := identifiers_top+1;            -- push stack
@@ -819,7 +842,8 @@ procedure declareReturnResult( id : out identifier; func_id : identifier ) is
 begin
   paramName := "return result for " & identifiers( func_id ).name;
   if identifiers_top = identifier'last then           -- no room?
-     raise symbol_table_overflow;                     -- raise error
+     raise symbol_table_overflow with Gnat.Source_Info.Source_Location &
+       ": too many identifiers";
   else                                                -- otherwise
      id := identifiers_top;                           -- return id
      identifiers_top := identifiers_top+1;            -- push stack
@@ -902,7 +926,8 @@ procedure declareException( id : out identifier; name : unbounded_string;
 -- Declare an exception.  Check for the existence first with findException.
 begin
   if identifiers_top = identifier'last then                     -- no room?
-     raise symbol_table_overflow;                               -- raise error
+     raise symbol_table_overflow with Gnat.Source_Info.Source_Location &
+       ": too many identifiers";
   else                                                          -- otherwise
      id := identifiers_top;                                  -- return id
      identifiers_top := identifiers_top+1;                   -- push stack
@@ -1141,7 +1166,8 @@ procedure declareNamespace( name : string ) is
 begin
 --put_line( "opening namespace " & name ); -- DEBUG
   if identifiers_top = Identifier'last then
-     raise symbol_table_overflow;
+     raise symbol_table_overflow with Gnat.Source_Info.Source_Location &
+       ": too many identifiers";
   else
      id := identifiers_top;                                  -- return id
      identifiers_top := identifiers_top+1;                   -- push stack
@@ -1266,7 +1292,8 @@ procedure declareNamespaceClosed( name : string ) is
 begin
 --put_line( "closing namespace " & name ); -- DEBUG
   if identifiers_top = Identifier'last then
-     raise symbol_table_overflow;
+     raise symbol_table_overflow with Gnat.Source_Info.Source_Location &
+       ": too many identifiers";
   else
      id := identifiers_top;                                  -- return id
      identifiers_top := identifiers_top+1;                   -- push stack

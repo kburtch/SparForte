@@ -5,7 +5,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -22,8 +22,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with system, ada.strings.unbounded, bush_os;
-use ada.strings.unbounded, bush_os;
+with system, ada.strings.unbounded, spar_os;
+use ada.strings.unbounded, spar_os;
 
 package script_io is
 

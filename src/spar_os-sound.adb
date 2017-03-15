@@ -32,7 +32,7 @@ use Ada.Text_IO;
 with world, scanner, parser_aux;
 use  world, scanner, parser_aux;
 
-package body bush_os.sound is
+package body spar_os.sound is
 
    Default_CDROM_Path : constant string := "/dev/cdrom";
 
@@ -413,5 +413,5 @@ begin
    cdrom_fd := -1;
 end StopCD;
 
-end bush_os.sound;
+end spar_os.sound;
 

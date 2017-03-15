@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -22,9 +22,9 @@
 ------------------------------------------------------------------------------
 
 with ada.text_io; use ada.text_io; -- debug
-package body bush_os.sdl is
+package body spar_os.sdl is
 
-use bush_os.sdl.SDL_Surface_Conv;
+use spar_os.sdl.SDL_Surface_Conv;
 
 function debug_sdl_error_char( i : integer ) return character;
 pragma import( C, debug_sdl_error_char, "debug_sdl_error_char" );
@@ -889,5 +889,5 @@ begin
 
 end SDL_EXT_Fill_Ellipse_Pattern;
 
-end bush_os.sdl;
+end spar_os.sdl;
 

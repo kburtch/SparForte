@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2014 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,23 +21,16 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with bush_os,
-     string_util,
+with ada.strings.unbounded,
      world,
      scanner,
-     parser,
-     parser_aux,
      parser_params;
-use  bush_os,
-     string_util,
+use  ada.strings.unbounded,
      world,
      scanner,
-     parser,
-     parser_aux,
      parser_params;
 
 package body parser_teams is
-
 
 ---------------------------------------------------------
 -- PARSE THE TEAMS PACKAGE

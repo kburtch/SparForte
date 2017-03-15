@@ -24,7 +24,7 @@
 with text_io;use text_io;
 with
     interfaces.c,
-    --bush_os,
+    --spar_os,
     pegasock.tinyserve,
     user_io,
     world,
@@ -35,7 +35,7 @@ with
     parser,
     parser_params;
 use
-    --bush_os,
+    --spar_os,
     pegasock,
     pegasock.tinyserve,
     world,

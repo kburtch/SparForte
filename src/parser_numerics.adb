@@ -21,8 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io;
-use ada.text_io;
+--with ada.text_io; use ada.text_io;
+
 with ada.numerics.long_elementary_functions,
     ada.numerics.float_random,
     ada.numerics.long_complex_types,
@@ -35,7 +35,6 @@ with ada.numerics.long_elementary_functions,
     gnat.sha512,
     world,
     scanner,
-    parser_aux,
     parser_params,
     parser,
     md5;
@@ -47,7 +46,6 @@ use ada.numerics.long_elementary_functions,
     interfaces,
     world,
     scanner,
-    parser_aux,
     parser_params,
     parser,
     md5;

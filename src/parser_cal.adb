@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,23 +21,47 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io;use text_io;
-with world, scanner.calendar,
+--with text_io;use text_io;
+
+with ada.strings.unbounded,
+    world,
+    scanner.calendar,
     string_util,
-    parser_aux,
     parser,
     parser_params,
-    bush_os;
-use world,
+    spar_os;
+use ada.strings.unbounded,
+    world,
     scanner,
     scanner.calendar,
     string_util,
-    parser_aux,
     parser,
     parser_params,
-    bush_os;
+    spar_os;
 
 package body parser_cal is
+
+------------------------------------------------------------------------------
+-- Calendar package identifiers
+--
+-- Calendar_time type (cal_time_t) is exposed for the main parser
+------------------------------------------------------------------------------
+
+cal_year_number_t  : identifier;
+cal_month_number_t : identifier;
+cal_day_number_t   : identifier;
+cal_day_duration_t : identifier;
+
+cal_clock_t        : identifier;
+cal_year_t         : identifier;
+cal_month_t        : identifier;
+cal_day_t          : identifier;
+cal_seconds_t      : identifier;
+cal_split_t        : identifier;
+cal_time_of_t      : identifier;
+cal_to_julian_t    : identifier;
+cal_to_time_t      : identifier;
+cal_day_of_week_t  : identifier;
 
 procedure ParseCalClock( result : out unbounded_string; kind : out identifier ) is
 begin

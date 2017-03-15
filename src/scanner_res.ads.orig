@@ -39,7 +39,7 @@ with gen_list,
 #if BDB
      bdb,
 #end if;
-     bush_os.opengl,
+     spar_os.opengl,
      pegasock.tinyserve,
      world;
 use  world,
@@ -47,7 +47,7 @@ use  world,
      Ada.Strings.Unbounded,
      Interfaces.C,
      Gnat.Directory_Operations,
-     bush_os.opengl,
+     spar_os.opengl,
      pegasock.tinyserve;
 
 package scanner_res is

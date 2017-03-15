@@ -387,10 +387,10 @@ slash or back slash).</li>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the file name without an extension from the pathname p.  This is equivalent to Base_Name with default extension value.</p></td>
+<td><p>Return the file name with an extension from the pathname p.  This is equivalent to Base_Name with default extension value.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">s := directory_operations.dir_name( "/tmp/myfile.txt" ); -- returns "myfile"</span></td>
+<td><span class="code">s := directory_operations.dir_name( "/tmp/myfile.txt" ); -- returns "myfile.txt"</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -412,7 +412,7 @@ slash or back slash).</li>
 <td><span>return value</span></td>
 <td><span>string</span></td>
 <td><span>required</span></td>
-<td><span>the file name without suffix</span></td>
+<td><span>the file name with suffix</span></td>
 </tr>
 </table></td>
 </tr><tr>

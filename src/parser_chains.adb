@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2016 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,21 +21,18 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io;use text_io;
+--with text_io;use text_io;
+
 with
+    ada.strings.unbounded,
     world,
     scanner,
-    string_util,
-    parser_aux,
-    parser,
-    bush_os;
+    parser;
 use
+    ada.strings.unbounded,
     world,
     scanner,
-    string_util,
-    parser_aux,
-    parser,
-    bush_os;
+    parser;
 
 package body parser_chains is
 

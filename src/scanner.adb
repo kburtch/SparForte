@@ -5,7 +5,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2016 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,6 +21,7 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
+pragma ada_2005;
 
 pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
@@ -34,8 +35,7 @@ with system,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
     gnat.source_info,
-    bush_os,
-    bush_os.tty,
+    spar_os.tty,
     signal_flags,
     pegasock.memcache,
     script_io,
@@ -43,8 +43,6 @@ with system,
     string_util,
     software_models,
     performance_monitoring,
-    -- scanner_arrays,
-    --compiler,
     --TODO: I need to fix this circular dependency between the scanner and
     -- parser.  That is, move start/shutdown to separate packages.
     parser,
@@ -93,8 +91,8 @@ use ada.text_io,
     ada.strings.unbounded,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
-    bush_os,
-    bush_os.tty,
+    spar_os,
+    spar_os.tty,
     signal_flags,
     pegasock.memcache,
     script_io,
@@ -102,8 +100,6 @@ use ada.text_io,
     string_util,
     software_models,
     performance_monitoring,
-    --compiler,
-    -- scanner_arrays,
     parser,
     parser_os,
     parser_arrays,
@@ -1630,7 +1626,8 @@ procedure pushBlock( newScope : boolean := false;
   newName : string := "" ) is
 begin
   if blocks_top = block'last then                               -- no room?
-     raise block_table_overflow;                                -- raise err
+     raise block_table_overflow with Gnat.Source_Info.Source_Location &
+         ": too many nested blocks";
   else
      -- start new scope by recording current
      declare
@@ -1665,7 +1662,8 @@ procedure pullBlock is
   b : boolean;
 begin
   if blocks_top = block'first then                              -- no blocks?
-     raise block_table_overflow;                                -- raise err
+     raise block_table_overflow with Gnat.Source_Info.Source_Location &
+         ": too many nested blocks";
   else
      if syntax_check and not error_found and not done then
         checkIdentifiersInCurrentBlock;
@@ -2566,7 +2564,7 @@ begin
      declareIdent( temp_id, "PWD", uni_string_t );            -- declare it
      declare
        -- lookup current working directory
-       -- perhaps a bush_os.pwd package is in order to share
+       -- perhaps a spar_os.pwd package is in order to share
        -- this with scanner and builtins?
        buffer : string( 1..4096 );
      begin
@@ -3579,6 +3577,23 @@ begin
   -- TODO: avalue not released on unset.  it is left to be released on reuse
   return true;                                                  -- delete ok
 end deleteIdent;
+
+
+---> DISCARD UNUSED IDENTIFIER
+--
+-- if an identifier has been not been assigned a type,
+-- assume it's unused and discard it.
+-----------------------------------------------------------------------------
+
+procedure discardUnusedIdentifier( id : identifier ) is
+  b : boolean;
+begin
+  if id /= eof_t then
+     if identifiers( id ).kind = new_t or identifiers( id ).kind = eof_t then
+        b := deleteIdent( id );
+     end if;
+  end if;
+end discardUnusedIdentifier;
 
 -----------------------------------------------------------------------------
 -- JSON
@@ -4607,7 +4622,7 @@ begin
      -- we don't know the exact numeric type here, not without the identifier
      -- being assigned to
      ch := element( jsonString, i );
-     if ch = '+' or ch = '=' or ( ch >= '0' and ch <= '9' ) then
+     if ch = '+' or ch = '-' or ( ch >= '0' and ch <= '9' ) then
         ch := element( jsonString, 1 );
         if ch /= '-' and ch /= ' ' and ch /= '+' then
            tempStr := ' ' & jsonString;

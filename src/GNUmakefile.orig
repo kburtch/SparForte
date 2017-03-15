@@ -210,7 +210,7 @@ distclean:
 	-rm -f *.o *.ali *~ t.t t.spar core spar.zip spar testsuite/write_only.txt testsuite/exec_only.txt
 	-rm -f *.gcda *.gcno *.gcov coverage.info
 	-rm -rf coverage/
-	-rm -f bush_os.ads bush_os.adb bush_os-sdl.ads parser.adb parser_db.adb parser_dbm.adb parser_mysql.adb parser_mysqlm.adb parser_sound.adb world.ads builtins.adb parser_gnat_cgi.adb scanner_res.adb scanner_res.ads parser_btree_io.adb
+	-rm -f spar_os.ads spar_os.adb spar_os-sdl.ads parser.adb parser_db.adb parser_dbm.adb parser_mysql.adb parser_mysqlm.adb parser_sound.adb world.ads builtins.adb parser_gnat_cgi.adb scanner_res.adb scanner_res.ads parser_btree_io.adb
 
 
 test: all
@@ -330,23 +330,23 @@ zip: distclean
 	(cd ..; zip -9r *; cd src)
 
 srczip: distclean
-	chmod 440 bush_alpha.ads
-	chmod 440 bush_freebsd.ads
-	chmod 440 bush_linux.ads
-	chmod 440 bush_hp.ads
-	chmod 440 bush_hp.adb
-	chmod 440 bush_os-sdl-32bit.ads
-	chmod 440 bush_os-sdl-64bit.ads
+	chmod 440 os_bindings/spar_alpha.ads
+	chmod 440 os_bindings/spar_freebsd.ads
+	chmod 440 os_bindings/spar_linux.ads
+	chmod 440 os_bindings/spar_hp.ads
+	chmod 440 os_bindings/spar_hp.adb
+	chmod 440 spar_os-sdl-32bit.ads
+	chmod 440 spar_os-sdl-64bit.ads
 	(cd ..; zip -9r *; cd src)
 
 srctar: distclean
-	chmod 440 bush_alpha.ads
-	chmod 440 bush_freebsd.ads
-	chmod 440 bush_linux.ads
-	chmod 440 bush_hp.ads
-	chmod 440 bush_hp.adb
-	chmod 440 bush_os-sdl-32bit.ads
-	chmod 440 bush_os-sdl-64bit.ads
+	chmod 440 os_bindings/spar_alpha.ads
+	chmod 440 os_bindings/spar_freebsd.ads
+	chmod 440 os_bindings/spar_linux.ads
+	chmod 440 os_bindings/spar_hp.ads
+	chmod 440 os_bindings/spar_hp.adb
+	chmod 440 spar_os-sdl-32bit.ads
+	chmod 440 spar_os-sdl-64bit.ads
 	(cd ..;  tar cfvz spar.tgz *; cd src)
 	@echo "Don't forget to unpack and repack under a descriptive directory"
 

@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2013 Free Software Foundation            --
+--              Copyright (C) 2001-2017 Free Software Foundation            --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,21 +21,21 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io; use ada.text_io;
+--with ada.text_io; use ada.text_io;
 
 #if GCGI
 with gnat.cgi,
      gnat.cgi.cookie,
      gnat.cgi.debug;
 #end if;
-with world,
+with ada.strings.unbounded,
+    world,
     scanner,
-    parser,
-    parser_aux;
-use world,
+    parser;
+use ada.strings.unbounded,
+    world,
     scanner,
-    parser,
-    parser_aux;
+    parser;
 
 package body parser_gnat_cgi is
 

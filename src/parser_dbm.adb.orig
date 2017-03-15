@@ -21,14 +21,14 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io;use text_io;
 with ada.io_exceptions,
      ada.strings.unbounded,
+     ada.text_io,
 #if POSTGRES
      APQ.PostgreSQL.Client,
      utils_pg,
 #end if;
-     bush_os.tty,
+     spar_os.tty,
      world,
      signal_flags,
      string_util,
@@ -36,18 +36,18 @@ with ada.io_exceptions,
      scanner,
      scanner_res,
      parser,
-     parser_aux,
      parser_params,
      parser_db;
 use  ada.io_exceptions,
      ada.strings.unbounded,
+     ada.text_io,
 #if POSTGRES
      APQ,
      APQ.PostgreSQL,
      APQ.PostgreSQL.Client,
      utils_pg,
 #end if;
-     bush_os.tty,
+     spar_os.tty,
      world,
      signal_flags,
      string_util,
@@ -55,7 +55,6 @@ use  ada.io_exceptions,
      scanner,
      scanner_res,
      parser,
-     parser_aux,
      parser_params,
      parser_db;
 

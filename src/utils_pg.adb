@@ -21,34 +21,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---with text_io;use text_io;
---with ada.io_exceptions,
---     ada.strings.unbounded,
---     APQ.PostgreSQL.Client,
---     bush_os.tty,
---     world,
---     signal_flags,
---     string_util,
---     user_io,
---     scanner,
---     parser,
---     parser_aux,
---     parser_params;
---use  ada.io_exceptions,
---     ada.strings.unbounded,
---     APQ,
---     APQ.PostgreSQL,
---     APQ.PostgreSQL.Client,
---     bush_os.tty,
---     world,
---     signal_flags,
---     string_util,
---     user_io,
---     scanner,
---     parser,
---     parser_aux,
---     parser_params;
-
 package body utils_pg is
 
 function pg_kind_to_string( kind : string ) return string is

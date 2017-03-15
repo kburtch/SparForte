@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -31,9 +31,10 @@ with interfaces.c,
     script_io,
     signal_flags,
     scanner.calendar,
+    parser_aux,
     parser_cal,
     parser,
-    parser_aux;
+    parser_params;
 use interfaces.c,
     ada.text_io,
     ada.text_io.editing,
@@ -43,10 +44,12 @@ use interfaces.c,
     script_io,
     string_util,
     signal_flags,
+    scanner,
     scanner.calendar,
+    parser_aux,
     parser_cal,
     parser,
-    parser_aux;
+    parser_params;
 
 package body parser_tio is
 
@@ -533,7 +536,7 @@ begin
    GetParameterValue( ref, fileInfo );
    fd := aFileDescriptor'value( to_string( stringField( fileInfo, recSep, fd_field ) ) );
 <<reread>> readchar( result, fd, ch, 1 );
- -- KB: 2012/02/15: see bush_os-tty for an explaination of this kludge
+ -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
      if result < 0 or result = size_t'last then
       if C_errno = EAGAIN  or C_errno = EINTR then
          goto reread;                   -- interrupted? try again
@@ -993,7 +996,7 @@ begin
       -- stdin (I don't like this)
      loop
         readchar( result, stdin, ch, 1 );
- -- KB: 2012/02/15: see bush_os-tty for an explaination of this kludge
+ -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
         if result < 0 or result = size_t'last then
            if C_errno /= EAGAIN and C_errno /= EINTR then
               err( "unable to read file:" & OSerror( C_errno ) );
@@ -1066,7 +1069,7 @@ begin
      else
         fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
    <<reread>> readchar( result, fd, ch, 1 );
- -- KB: 2012/02/15: see bush_os-tty for an explaination of this kludge
+ -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
          if result < 0 or result = size_t'last then
               if C_errno = EAGAIN  or C_errno = EINTR then
                  goto reread;
@@ -1644,7 +1647,7 @@ begin
         -- TODO: why no buffering here?
         fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
    <<reread>> readchar( result, fd, ch, 1 );
- -- KB: 2012/02/15: see bush_os-tty for an explaination of this kludge
+ -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
          if result < 0 or result = size_t'last then
               if C_errno = EAGAIN  or C_errno = EINTR then
                  goto reread;

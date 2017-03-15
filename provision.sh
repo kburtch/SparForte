@@ -94,6 +94,7 @@ suse)
    ;;
 ubuntu )
    set -e
+   sudo -u root apt-get -q -y install libselinux-dev
    sudo -u root apt-get -q -y install bzip2
    sudo -u root apt-get -q -y install gnat
    sudo -u root apt-get -q -y install git

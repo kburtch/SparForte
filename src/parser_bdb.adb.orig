@@ -22,16 +22,12 @@
 ------------------------------------------------------------------------------
 pragma ada_2005;
 
-with
-    world;
 #if BDB
 with
     bdb,
     bdb_constants;
 #end if;
 
-use
-    world;
 #if BDB
 use
     bdb,

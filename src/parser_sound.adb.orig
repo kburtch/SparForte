@@ -23,25 +23,23 @@
 
 with text_io;use text_io;
 with gnat.lock_files,
+    ada.strings.unbounded,
+    spar_os.sound,
     world,
     scanner,
-    string_util,
     user_io,
-    parser_aux,
     parser,
     parser_params,
-    bush_os.sound,
     builtins;
 use gnat.lock_files,
+    ada.strings.unbounded,
+    spar_os,
+    spar_os.sound,
     world,
     scanner,
-    string_util,
     user_io,
-    parser_aux,
     parser,
     parser_params,
-    bush_os,
-    bush_os.sound,
     builtins;
 
 package body parser_sound is

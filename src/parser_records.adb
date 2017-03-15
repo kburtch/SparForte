@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2016 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,19 +21,17 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with bush_os,
-     string_util,
+--with ada.text_io;use ada.text_io;
+
+with ada.strings.unbounded,
      world,
      scanner,
      parser,
-     parser_aux,
      parser_params;
-use  bush_os,
-     string_util,
+use  ada.strings.unbounded,
      world,
      scanner,
      parser,
-     parser_aux,
      parser_params;
 
 package body parser_records is
@@ -77,11 +75,13 @@ procedure ParseRecordsToRecord is
   target_var_id : identifier;
   sourceVal     : unbounded_string;
   sourceType    : identifier;
+  baseType      : identifier;
 begin
   expect( records_to_record_t );
   expect( symbol_t, "(" );
   ParseIdentifier( target_var_id );  --ParseInOutParameter( target_ref );
-  if identifiers( getBaseType( identifiers( target_var_id ).kind ) ).kind /= root_record_t then
+  baseType := getBaseType( identifiers( target_var_id ).kind );
+  if identifiers( baseType ).kind /= root_record_t then
      err( "Record type expected" );
   end if;
   expect( symbol_t, "," );

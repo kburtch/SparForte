@@ -20,6 +20,7 @@
 -- This is maintained at http://www.sparforte.com                           --
 --                                                                          --
 ------------------------------------------------------------------------------
+pragma ada_2005;
 
 pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
@@ -35,7 +36,7 @@ with system,
     gnat.directory_operations,
     gnat.source_info,
     cgi,
-    bush_os.exec,
+    spar_os.exec,
     string_util,
     user_io,
     user_io.getline,
@@ -61,8 +62,8 @@ use ada.text_io,
     ada.characters.handling,
     gnat.regexp,
     gnat.directory_operations,
-    bush_os,
-    bush_os.exec,
+    spar_os,
+    spar_os.exec,
     user_io,
     script_io,
     performance_monitoring,
@@ -7740,7 +7741,7 @@ begin
           readchar( chars, resultFile, ch, 1 );            -- slow (one char)
           if chars = 0 then                                -- read none?
              exit;                                         --   done
- -- KB: 2012/02/15: see bush_os-tty for an explaination of this kludge
+ -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
           elsif chars not in 0..Interfaces.C.size_t'Last-1 then
              if C_errno = EAGAIN or C_errno = EINTR then   -- retry?
                 goto reread;                               -- do so
@@ -9358,7 +9359,7 @@ begin
         interpretPolicy( path ); -- run policy script
      else
         err( "global policy file " & optional_bold( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
-        raise BAD_PROFILE;
+        raise BAD_PROFILE with "global policy file " & optional_bold( path ) & " is either not readable, is world writable, is not a regular file or is empty";
      end if;
   end if;
   if error_found then
@@ -9402,7 +9403,7 @@ begin
         interpretConfig( path ); -- run config script
      else
         err( "global config file " & optional_bold( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
-        raise BAD_PROFILE;
+        raise BAD_PROFILE with "global config file " & optional_bold( path ) & " is either not readable, is world writable, is not a regular file or is empty";
      end if;
   end if;
   if error_found then
@@ -9440,7 +9441,7 @@ begin
         interpretScript( path ); -- run login script
      else
         err( "global profile file " & optional_bold( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
-        raise BAD_PROFILE;
+        raise BAD_PROFILE with "global profile file " & optional_bold( path ) & " is either not readable, is world writable, is not a regular file or is empty";
      end if;
   end if;
   if error_found then
@@ -9486,7 +9487,7 @@ begin
            interpretScript( to_string( profilePath ) ); -- do profile
         else
            err( "local profile file " & optional_bold( to_string( profilePath ) ) & " is either not readable, is world writable, is not a regular file or is empty" );
-           raise BAD_PROFILE;
+           raise BAD_PROFILE with "local profile file " & optional_bold( to_string( profilePath ) ) & " is either not readable, is world writable, is not a regular file or is empty";
         end if;
      end if;
   end if;

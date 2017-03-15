@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -24,7 +24,7 @@
 with Ada.Strings.Unbounded, Interfaces.C, System.Address_To_Access_Conversions;
 use  Ada.Strings.Unbounded, Interfaces.C;
 
-package bush_os.sdl is
+package spar_os.sdl is
 
 ------------------------------------------------------------------------------
 -- Standard SDL Types ( from /usr/include/SDL/SDL_types.h)
@@ -883,5 +883,5 @@ pragma import( C, TTF_CloseFont, "TTF_CloseFont" );
 function TTF_RenderText_Solid(font : TTF_Font; text : string; fg : SDL_Generic_Pixel ) return system.address; -- returns a surface
 pragma import( C, TTF_RenderText_Solid, "TTF_RenderText_Solid" );
 
-end bush_os.sdl;
+end spar_os.sdl;
 

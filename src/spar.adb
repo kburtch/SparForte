@@ -24,7 +24,7 @@
 with ada.text_io,
      ada.strings.unbounded.text_io,
      ada.command_line,
-     bush_os,
+     spar_os,
      world,
      compiler,
      scanner,
@@ -36,7 +36,7 @@ use ada.text_io,
     ada.strings.unbounded,
     ada.strings.unbounded.text_io,
     ada.command_line,
-    bush_os,
+    spar_os,
     world,
     compiler,
     scanner,
@@ -44,7 +44,7 @@ use ada.text_io,
     parser,
     signal_flags;
 
-with string_util; use string_util;
+--with string_util; use string_util;
 
 --with spar_interface;
 

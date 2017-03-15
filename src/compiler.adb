@@ -5,7 +5,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,6 +21,7 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
+pragma ada_2005;
 
 pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
@@ -34,8 +35,7 @@ with system,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
     gnat.source_info,
-    bush_os,
-    bush_os.tty,
+    spar_os.tty,
     signal_flags,
     pegasock.memcache,
     script_io,
@@ -51,8 +51,8 @@ use ada.text_io,
     ada.strings.unbounded,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
-    bush_os,
-    bush_os.tty,
+    spar_os,
+    spar_os.tty,
     signal_flags,
     pegasock.memcache,
     script_io,
@@ -2687,8 +2687,8 @@ begin
   -- 128 but now is 8191 so we shouldn't be anywhere close to the limit.
 
   if reserved_top > 8191 then
-     put_line( standard_error, "Too many reserved words (limit 8191)" );
-     raise PROGRAM_ERROR;
+     raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
+       ": internal error: too many reserved words (limit 8191)";
   end if;
 
 end startCompiler;

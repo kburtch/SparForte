@@ -27,10 +27,10 @@
 with system.address_to_access_conversions;
 with ada.text_io; use ada.text_io;
 -- with ada.strings.unbounded; use ada.strings.unbounded;
-with bush_os.sdl; use bush_os.sdl;
+with spar_os.sdl; use spar_os.sdl;
 with interfaces; use interfaces;
 with interfaces.c; use interfaces.c;
-use bush_os.sdl.SDL_Surface_Conv;
+use spar_os.sdl.SDL_Surface_Conv;
 -- with gen_list;
 
 package body pen is

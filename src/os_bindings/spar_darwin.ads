@@ -1,11 +1,10 @@
-
 ------------------------------------------------------------------------------
--- Linux Imported kernel syscalls / standard C functions                    --
+-- Darwin Imported kernel syscalls / standard C functions                   --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2015 Free Software Foundation                   --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -18,15 +17,14 @@
 -- to  the Free Software Foundation,  59 Temple Place - Suite 330,  Boston, --
 -- MA 02111-1307, USA.                                                      --
 --                                                                          --
--- This is maintained at http://www.pegasoft.ca                             --
+-- This is maintained at http://www.sparforte.com                           --
 --                                                                          --
 ------------------------------------------------------------------------------
 
 with Interfaces.C, System.Address_To_Access_Conversions;
 use  Interfaces.C;
 
-package bush_os is
-
+package spar_os is
 
 ------------------------------------------------------------------------------
 -- General Operating System Declarations
@@ -34,9 +32,6 @@ package bush_os is
 
 directory_delimiter : constant character := '/';
 -- O/S pathname directory separator (O/S dependant)
-
-type unsigned32 is mod 2**32;
--- mod type allows boolean operations on bits
 
 type byte is new short_short_integer range -128..127;
 for byte'size use 8;
@@ -59,18 +54,17 @@ stdin  : constant aFileDescriptor := 0;
 stdout : constant aFileDescriptor := 1;
 stderr : constant aFileDescriptor := 2;
 
-type anOpenFlag is new integer;
+type anOpenFlag is new int;
 O_RDONLY   : constant anOpenFlag := 0;
 O_WRONLY   : constant anOpenFlag := 1;
-O_CREAT    : constant anOpenFLag := 8#100#;
-O_TRUNC    : constant anOpenFlag := 8#1000#;
-O_APPEND   : constant anOpenFlag := 8#2000#;
-O_NONBLOCK : constant anOpenFlag := 8#4000#;
-O_SYNC     : constant anOpenFlag := 8#10000#;
--- /usr/include/bits/fcntl.h
+O_CREAT    : constant anOpenFLag := 16#0200#;
+O_TRUNC    : constant anOpenFlag := 16#0400#;
+O_APPEND   : constant anOpenFlag := 16#0008#;
+O_NONBLOCK : constant anOpenFlag := 16#0004#;
+O_SYNC     : constant anOpenFlag := 16#0080#;
+-- /usr/include/fcntl.h
 
-type aModeType is new int;
--- Linux is int, FreeBSD is short
+type aModeType is new short;
 
 function getpid return aPID;
 pragma import( C, getpid );
@@ -95,13 +89,14 @@ pragma import_valued_procedure( writechar, "write" );
 
 function open( path : string; flags : anOpenFlag; mode : aModeType ) return aFileDescriptor;
 pragma import( C, open );
+-- Darwin is short_integer mode
 
 function close( fd : aFileDescriptor ) return int;
 pragma import( C, close );
 
 function fdatasync( fd : aFileDescriptor ) return int;
-pragma import( C, fdatasync );
--- some *NIXes can use fsync() instead
+pragma import( C, fdatasync, "fsync" );
+-- Darwin does not support fdatasync...use fsync instead.
 
 function unlink( s : string ) return int;
 pragma import( C, unlink );
@@ -109,10 +104,12 @@ pragma import( C, unlink );
 WHENCE_SEEK_SET : constant integer := 0;
 WHENCE_SEEK_CUR : constant integer := 1;
 WHENCE_SEEK_END : constant integer := 2;
+-- in stdio.h (no WHENCE in Darwin)
 
-function lseek( fd : aFileDescriptor; offset : long_integer; whence : integer )
-  return long_integer;
+function lseek( fd : aFileDescriptor; offset : long_long_integer; whence : integer )
+  return long_long_integer;
 pragma import( C, lseek );
+-- Darwin has long long offset and return
 
 function dup( oldfd : aFileDescriptor ) return aFileDescriptor;
 pragma import( C, dup );
@@ -122,10 +119,10 @@ pragma import( C, dup2 );
 
 
 ------------------------------------------------------------------------------
--- Terminal Control  
+-- Terminal Control
 ------------------------------------------------------------------------------
 
-tput_style : constant string := "terminfo";
+tput_style : constant string := "termcap";
 
 function isatty( fd : aFileDescriptor ) return integer;
 pragma import( C, isatty );
@@ -138,8 +135,10 @@ type winsz_info is record
   xpixel : short_integer;
   ypixel : short_integer;
 end record;
-type winsz_req is new integer;
-TIOCGWINSZ : constant winsz_req := 21523; -- Linux
+type winsz_req is new unsigned_long;
+TIOCGWINSZ : constant winsz_req := 16#40087468#; -- Darwin
+-- IOCTL codes are unsigned long in Darwin
+-- /usr/include/sys/ttycom.h
 
 procedure ioctl_TIOCGWINSZ(
   result : out integer;         -- -1 on failure
@@ -150,66 +149,59 @@ pragma import( C, ioctl_TIOCGWINSZ, "ioctl" );
 pragma import_valued_procedure( ioctl_TIOCGWINSZ );
 -- get window size
 
--- man 7 termio, /usr/include/bits/termios.h
+-- Darwin does it this way
+-- man 7 termio, /usr/include/sys/termios.h
 -- mod types can have binary bit operations
-type localflags is new unsigned32;
-type controlflags is new unsigned32;
-type inputflags is new unsigned32;
-type outputflags is new unsigned32;
-type resarray is array ( 1..15 ) of character;
-pragma pack( resarray );
 type termios is record
-     c_iflag : inputflags;   -- input modes
-     c_oflag : unsigned32;   -- output modes
-     c_cflag : controlflags; -- control modes
-     c_lflag : localflags;   -- local modes (including ICANON)
-     c_line  : character;    -- line discipline
-     cc_intr : character;    -- VINTR = 0
-     cc_quit : character;    -- VQUIT = 1
-     cc_erase: character;    -- VERASE = 2
-     cc_kill : character;    -- VKILL = 3
-     cc_eof  : character;    -- VEOF = 4
-     cc_time : character;    -- VTIME = 5
-     cc_min  : character;    -- VMIN = 6
-     cc_swtc : character;    -- VSWTC = 7
-     cc_start: character;    -- VSTART = 8
-     cc_stop : character;    -- VSTOP = 9
+     c_iflag : unsigned_long;   -- input modes
+     c_oflag : unsigned_long;   -- output modes
+     c_cflag : unsigned_long; -- control modes
+     c_lflag : unsigned_long;   -- local modes (including ICANON)
+     cc_eof  : character;    -- VEOF = 0
+     cc_eol  : character;    -- VEOL = 1
+     cc_eol2 : character;    -- VEOL2 = 2
+     cc_erase: character;    -- VERASE = 3
+     cc_weras: character;    -- VWERASE = 4
+     cc_kill : character;    -- VKILL = 5
+     cc_reprt: character;    -- VREPRINT = 6
+     cc_spare: character;    -- spare = 7
+     cc_intr : character;    -- VINTR = 8
+     cc_quit : character;    -- VQUIT = 9
      cc_susp : character;    -- VSUSP = 10
-     cc_eol  : character;    -- VEOL = 11
-     cc_reprt: character;    -- VREPRINT = 12
-     cc_disc : character;    -- VDISCARD = 13
-     cc_weras: character;    -- VWERASE = 14
-     cc_lnext: character;    -- VLNEXT = 15
-     cc_eol2 : character;    -- VEOL2 = 16
-     cc_res  : resarray;     -- 15 more, unused
-     c_ispd  : integer;      -- input speed
-     c_ospd  : integer;      -- output speed
-     c_line1 : character;    -- line discipline?
-     c_line2 : character;    -- line discipline?
-     c_line3 : character;    -- line discipline?
+     cc_dsusp: character;    -- VDSUSP = 11
+     cc_start: character;    -- VSTART = 12
+     cc_stop : character;    -- VSTOP = 13
+     cc_lnext: character;    -- VLNEXT = 14
+     cc_disc : character;    -- VDISCARD = 15
+     cc_min  : character;    -- VMIN = 16
+     cc_time : character;    -- VTIME = 17
+     cc_status: character;    -- VSTATUS = 18
+     cc_spare2: character;    -- spare = 19
+     c_ispd  : unsigned_long;   -- input speed
+     c_ospd  : unsigned_long;   -- output speed
 end record;
 pragma pack( termios );
 
-HUPCL  : constant controlflags := 8#0002000#; -- Hang up on last close
-ISIG   : constant localflags := 8#0000001#; -- Enable signals
-ICANON : constant localflags := 8#0000002#; -- Canonical input (erase and kill or suspend
-XCASE  : constant localflags := 8#0000004#; -- Canonical upper/lower presentation
-ECHO   : constant localflags := 8#0000010#; -- Enable echo
-ECHOE  : constant localflags := 8#0000020#; -- Echo ERASE as an error-correcting backspace
-ECHOK  : constant localflags := 8#0000040#; -- Echo KILL
-ECHONL : constant localflags := 8#0000100#; -- Echo '\n'
-NOFLSH : constant localflags := 8#0000200#; -- Disable flush after interrupt, quit
-TOSTOP : constant localflags := 8#0000400#; -- 
-ECHOCTL: constant localflags := 8#0001000#; -- Echo ctrl chars as char?
-IXON   : constant inputflags := 8#0002000#; -- Enable start/stop output control
-IXANY  : constant inputflags := 8#0004000#; -- Enable any character to restart output
-IXOFF  : constant inputflags := 8#0010000#; -- Enable start/stop input control
-INLCR  : constant inputflags := 8#0000100#; -- Map NL to CR on input
-IGNCR  : constant inputflags := 8#0000200#; -- Ignore CR
-ICRNL  : constant inputflags := 8#0000400#; -- Map CR to NL on input
+HUPCL  : constant unsigned_long := 16#4000#;   -- Hang up on last close
+ISIG   : constant unsigned_long := 16#0080#;     -- Enable signals
+ICANON : constant unsigned_long := 16#0100#;     -- Canonical input (erase and kill or suspend
+--XCASE  : constant unsigned_long := 8#0000004#; -- Canonical upper/lower presentation
+ECHO   : constant unsigned_long := 16#0008#;     -- Enable echo
+ECHOE  : constant unsigned_long := 16#0002#;     -- Echo ERASE as an error-correcting backspace
+ECHOK  : constant unsigned_long := 16#0004#;     -- Echo KILL (FreeBSD ECHOKE)
+ECHONL : constant unsigned_long := 16#0010#;     -- Echo '\n'
+NOFLSH : constant unsigned_long := 16#80000000#; -- Disable flush after interrupt, quit
+TOSTOP : constant unsigned_long := 16#00400000#; --
+ECHOCTL: constant unsigned_long := 16#0040#;     -- Echo ctrl chars as char?
+IXON   : constant unsigned_long := 16#0200#;    -- Enable start/stop output control
+IXANY  : constant unsigned_long := 16#0800#;    -- Enable any character to restart output
+IXOFF  : constant unsigned_long := 16#0400#; -- Enable start/stop input control
+INLCR  : constant unsigned_long := 16#0040#; -- Map NL to CR on input
+IGNCR  : constant unsigned_long := 16#0080#; -- Ignore CR
+ICRNL  : constant unsigned_long := 16#0100#; -- Map CR to NL on input
 
-type getattr_req is new integer;
-TCGETATTR : constant getattr_req := 21505; -- Linux TCGETS (= tcgetattr)
+type getattr_req is new unsigned_long;
+TCGETATTR : constant getattr_req := 16#40487413#; -- Darwin TIOCGETA
 
 procedure ioctl_getattr( result : out integer;
      fd : aFileDescriptor;
@@ -219,8 +211,8 @@ pragma import( C, ioctl_getattr, "ioctl" );
 pragma import_valued_procedure( ioctl_getattr );
 -- get the attributes of the current tty device
 
-type setattr_req is new integer;
-TCSETATTR : constant setattr_req := 21506; -- Linux TCSETS (= tcsetattr)
+type setattr_req is new unsigned_long;
+TCSETATTR : constant setattr_req := 16#80487414#; -- Darwin TIOCSETA
 
 procedure ioctl_setattr( result : out integer;
      fd : aFileDescriptor;
@@ -239,12 +231,11 @@ pragma import( C, tcdrain );
 -- Sound Hardware
 ------------------------------------------------------------------------------
 
--- various CDROM ioctl functions as mentioned in the
--- CDROM documentation in /usr/doc/kernel... and
--- /usr/include/linux/cdrom.h
+-- TODO: none of this works
+-- in Darwin, /opt/local/include/cdio/cdio.h (macports)
 
-type cdromplaytrkind_req is new integer;
-CDROMPLAYTRKIND : constant cdromplaytrkind_req := 16#5304#;
+type cdromplaytrkind_req is new long_integer;
+CDROMPLAYTRKIND : constant cdromplaytrkind_req := -2147196159; -- Darwin CDIOCPLAYTRACKS
 
 type cdrom_ti is record
      start_track, start_index : byte;
@@ -264,8 +255,8 @@ type aDummyParam is new integer;
 -- define this as a separate type to make sure nothing
 -- important is used as a third parameter to ioctl
 
-type cdromstop_req is new integer;
-CDROMSTOP   : constant cdromstop_req := 16#5307#;
+type cdromstop_req is new long_integer;
+CDROMSTOP   : constant cdromstop_req := 536896279; -- Darwin CDIOCSTOP
 
 procedure ioctl_cdromstop( result : out integer;
      fid : aFileDescriptor;
@@ -275,8 +266,8 @@ pragma import( C, ioctl_cdromstop, "ioctl" );
 pragma import_valued_procedure( ioctl_cdromstop );
 -- spin down an CD
 
-type cdromstart_req is new integer;
-CDROMSTART  : constant cdromstart_req := 16#5308#;
+type cdromstart_req is new long_integer;
+CDROMSTART  : constant cdromstart_req := 536896278; -- Darwin CDIOCSTART
 
 procedure ioctl_cdromstart( result : out integer;
      fid : aFileDescriptor;
@@ -324,7 +315,7 @@ pragma import( C, execv );
 -- null-terminated string.  C_args is a list of parameters, including
 -- the command name, ending with a null address.  This is similar
 -- to GNAT.OS_Lib spawn, but spawn doesn't like to be interrupted by
--- signals so we can't use it with Linux.
+-- signals so we can't use it with Unix.
 
 function fork return aPID;
 pragma import( C, fork );
@@ -354,48 +345,117 @@ pragma import_valued_procedure( waitpid );
 --errno : integer;
 --pragma import( C, errno );
 -- standard error number variable
--- Broken for GCC 3.x/GNAT 5.x.  See C_errno below.
+-- Broken for GCC 3.x/GNAT 5.x. See C_errno below.
 
-EPERM   : constant integer := 1;      -- Not super-user
-ENOENT  : constant integer := 2;      -- No such file or directory
-ESRCH   : constant integer := 3;      -- No such process
-EINTR   : constant integer := 4;      -- interrupted system call
-EIO     : constant integer := 5;      -- I/O error
-ENXIO   : constant integer := 6;      -- No such device or address
-E2BIG   : constant integer := 7;      -- Arg list too long
-ENOEXEC : constant integer := 8;      -- Exec format error
-EBADF   : constant integer := 9;      -- Bad file number
-ECHILD  : constant integer := 10;     -- No children
-EWOULDBLOCK : constant integer := 11;     -- Same as EAGAIN in Linux
-EAGAIN  : constant integer := 11;     -- No more processes
-ENOMEM  : constant integer := 12;     -- Not enough core
-EACCES  : constant integer := 13;     -- Permission denied
-EFAULT  : constant integer := 14;     -- Bad address
-EBUSY   : constant integer := 16;     -- Mount device busy
-EEXIST  : constant integer := 17;     -- File exists
-EXDEV   : constant integer := 18;     -- Cross-device link
-ENODEV  : constant integer := 19;     -- No such device
-ENOTDIR : constant integer := 20;     -- Not a directory
-EISDIR  : constant integer := 21;     -- Is a directory
-EINVAL  : constant integer := 22;     -- Invalid argument
-ENFILE  : constant integer := 23;     -- File table overflow
-EMFILE  : constant integer := 24;     -- Too many open files
-ENOTTY  : constant integer := 25;     -- Not a typewriter
-EFBIG   : constant integer := 27;     -- File too large
-ENOSPC  : constant integer := 28;     -- No space left on device
-ESPIPE  : constant integer := 29;     -- Illegal seek
-EROFS   : constant integer := 30;     -- Read only file system
-EMLINK  : constant integer := 31;     -- Too many links
-EPIPE   : constant integer := 32;     -- Broken pipe
-EDEADLK : constant integer := 45;     -- A deadlock would occur
-ENOLCK  : constant integer := 46;     -- System record lock table was full
-EILSEQ  : constant integer := 47;     -- Illegal byte sequence
-ELIBBAD : constant integer := 80;     -- Bad Library / Can't Run Interpreter
-EALREADY    : constant integer := 114;    -- socket busy
-EINPROGRESS : constant integer := 115;    -- socket busy
-ENOTEMPTY : constant integer := 247;    -- Directory not empty
-ENAMETOOLONG : constant integer := 248;    -- File name too long
-ENOSYS  : constant integer := 251;    -- Function not implemented
+EPERM          : constant integer :=  1; -- Operation not permitted
+ENOENT         : constant integer :=  2; -- No such file or directory
+ESRCH          : constant integer :=  3; -- No such process
+EINTR          : constant integer :=  4; -- Interrupted system call
+EIO            : constant integer :=  5; -- Input/output error
+ENXIO          : constant integer :=  6; -- Device not configured
+E2BIG          : constant integer :=  7; -- Argument list too long
+ENOEXEC        : constant integer :=  8; -- Exec format error
+EBADF          : constant integer :=  9; -- Bad file descriptor
+ECHILD         : constant integer := 10; -- No child processes
+EDEADLK        : constant integer := 11; -- Resource deadlock avoided
+ENOMEM         : constant integer := 12; -- Cannot allocate memory
+EACCES         : constant integer := 13; -- Permission denied
+EFAULT         : constant integer := 14; -- Bad address
+ENOTBLK        : constant integer := 15; -- Block device required
+EBUSY          : constant integer := 16; -- Device busy
+EEXIST         : constant integer := 17; -- File exists
+EXDEV          : constant integer := 18; -- Cross-device link
+ENODEV         : constant integer := 19; -- Operation not supported by device
+ENOTDIR        : constant integer := 20; -- Not a directory
+EISDIR         : constant integer := 21; -- Is a directory
+EINVAL         : constant integer := 22; -- Invalid argument
+ENFILE         : constant integer := 23; -- Too many open files in system
+EMFILE         : constant integer := 24; -- Too many open files
+ENOTTY         : constant integer := 25; -- Inappropriate ioctl for device
+ETXTBSY        : constant integer := 26; -- Text file busy
+EFBIG          : constant integer := 27; -- File too large
+ENOSPC         : constant integer := 28; -- No space left on device
+ESPIPE         : constant integer := 29; -- Illegal seek
+EROFS          : constant integer := 30; -- Read-only file system
+EMLINK         : constant integer := 31; -- Too many links
+EPIPE          : constant integer := 32; -- Broken pipe
+EDOM           : constant integer := 33; -- Numerical argument out of domain
+ERANGE         : constant integer := 34; -- Result too large
+EAGAIN         : constant integer := 35; -- Resource temporarily unavailable
+EWOULDBLOCK    : constant integer := 35; -- same as EAGAIN in FreeBSD
+EINPROGRESS    : constant integer := 36; -- Operation now in progress
+EALREADY       : constant integer := 37; -- Operation already in progress
+ENOTSOCK       : constant integer := 38; -- Socket operation on non-socket
+EDESTADDRREQ   : constant integer := 39; -- Destination address required
+EMSGSIZE       : constant integer := 40; -- Message too long
+EPROTOTYPE     : constant integer := 41; -- Protocol wrong type for socket
+ENOPROTOOPT    : constant integer := 42; -- Protocol not available
+EPROTONOSUPPORT: constant integer := 43; -- Protocol not supported
+ESOCKTNOSUPPORT: constant integer := 44; -- Socket type not supported
+EOPNOTSUPP     : constant integer := 45; -- Operation not supported
+EPFNOSUPPORT   : constant integer := 46; -- Protocol family not supported
+EAFNOSUPPORT   : constant integer := 47; -- Address family not supported
+EADDRINUSE     : constant integer := 48; -- Address already in use
+EADDRNOTAVAIL  : constant integer := 49; -- Can't assign requested address
+ENETDOWN       : constant integer := 50; -- Network is down
+ENETUNREACH    : constant integer := 51; -- Network is unreachable
+ENETRESET      : constant integer := 52; -- Network dropped connection on reset
+ECONNABORTED   : constant integer := 53; -- Software caused connection abort
+ECONNRESET     : constant integer := 54; -- Connection reset by peer
+ENOBUFS        : constant integer := 55; -- No buffer space available
+EISCONN        : constant integer := 56; -- Socket is already connected
+ENOTCONN       : constant integer := 57; -- Socket is not connected
+ESHUTDOWN      : constant integer := 58; -- Can't send after socket shutdown
+ETOOMANYREFS   : constant integer := 59; -- Too many references: can't splice
+ETIMEDOUT      : constant integer := 60; -- Operation timed out
+ECONNREFUSED   : constant integer := 61; -- Connection refused
+ELOOP          : constant integer := 62; -- Too many levels of symbolic links
+ENAMETOOLONG   : constant integer := 63; -- File name too long
+EHOSTDOWN      : constant integer := 64; -- Host is down
+EHOSTUNREACH   : constant integer := 65; -- No route to host
+ENOTEMPTY      : constant integer := 66; -- Directory not empty
+EPROCLIM       : constant integer := 67; -- Too many processes
+EUSERS         : constant integer := 68; -- Too many users
+EDQUOT         : constant integer := 69; -- Disc quota exceeded
+ESTALE         : constant integer := 70; -- Stale NFS file handle
+EREMOTE        : constant integer := 71; -- Too many levels of remote in path
+EBADRPC        : constant integer := 72; -- RPC struct is bad
+ERPCMISMATCH   : constant integer := 73; -- RPC version wrong
+EPROGUNAVAIL   : constant integer := 74; -- RPC prog. not avail
+EPROGMISMATCH  : constant integer := 75; -- Program version wrong
+EPROCUNAVAIL   : constant integer := 76; -- Bad procedure for program
+ENOLCK         : constant integer := 77; -- No locks available
+ENOSYS         : constant integer := 78; -- Function not implemented
+EFTYPE         : constant integer := 79; -- Inappropriate file type or format
+EAUTH          : constant integer := 80; -- Authentication error
+ENEEDAUTH      : constant integer := 81; -- Need authenticator
+EPWROFF        : constant integer := 82; -- Device power is off
+EDEVERR        : constant integer := 83; -- Device error
+EOVERFLOW      : constant integer := 84; -- Value too large to be stored in data type
+EBADEXEC       : constant integer := 85; -- Bad executable
+EBADARCH       : constant integer := 86; -- Bad CPU type in executable
+ESHLIBVERS     : constant integer := 87; -- Shared library version mismatch
+EBADMACHO      : constant integer := 88; -- Malformed Macho file
+ECANCELED      : constant integer := 89; -- Operation canceled
+EIDRM          : constant integer := 90; -- Identifier removed
+ENOMSG         : constant integer := 91; -- No message of desired type
+EILSEQ         : constant integer := 92; -- Illegal byte sequence
+ENOATTR        : constant integer := 93; -- Attribute not found
+EBADMSG        : constant integer := 94; -- Bad message
+EMULTIHOP      : constant integer := 95; -- Reserved
+ENODATA        : constant integer := 96; -- No message available on STREAM
+ENOLINK        : constant integer := 97; -- Reserved
+ENOSR          : constant integer := 98; -- No STREAM resources
+ENOSTR         : constant integer := 99; -- Not a STREAM
+EPROTO         : constant integer := 100; -- Protocol error
+ETIME          : constant integer := 101; -- STREAM ioctl timeout
+--EOPNOTSUPP     : constant integer := 102; -- Operation not supported on socket
+ENOPOLICY      : constant integer := 103; -- No such policy registered
+ENOTRECOVERABLE: constant integer := 104; -- State not recoverable
+EOWNERDEAD     : constant integer := 105; -- Previous owner died
+EQFULL         : constant integer := 106; -- Interface output queue is full
+ELAST          : constant integer := 106; -- Must be equal largest errno
+ELIBBAD        : constant integer := -1; -- Linux error (N/A on Darwin)
 
 type anErrorBuffer is new string( 1..256 );
 type anErrorPtr is access all anErrorBuffer;
@@ -417,11 +477,11 @@ pragma import( C, strerror );
 -- pragma convention will not override this message, so we'll resort to this:
 ------------------------------------------------------------------------------
 
-type aSocketFD is new integer;
+type aSocketFD is new int;
 -- a socket file descriptor is an integer -- man socket
 -- make this a new integer for strong typing purposes
 
-type aProtocolFamily is new unsigned_short;
+type aProtocolFamily is new unsigned_char;
 AF_INET : constant aProtocolFamily := 2;
 
 -- Internet protocol PF_Net defined as 2 in
@@ -430,7 +490,6 @@ AF_INET : constant aProtocolFamily := 2;
 
 type aSocketType is new int;
 SOCK_STREAM : constant aSocketType := 1;
-SOCK_NONBLOCK : constant aSocketType := 8#4000#;
 
 -- this is for a steady connection.  Defined as 1 in
 -- /usr/include/linux/socket.h
@@ -444,7 +503,7 @@ IPPROTO_TCP : constant aNetProtocol := 6;
 -- See man 5 protocols
 -- Make this a new integer for strong typing purposes
 
-type aNetDomain is new integer;
+type aNetDomain is new int;
 PF_INET : constant aNetDomain := 2;
 
 -- The number of the Internet domain
@@ -456,17 +515,17 @@ end record;
 pragma warnings( off ); -- hide warning about wasted bits
 for aInAddr'size use 96;
 pragma warnings( off );
--- A sockaddr_in record is defined as 16 bytes long (or 96 bits)
+-- A sockaddr record is defined as 16 bytes long (or 96 bits)
 -- Request Ada to use 16 bytes to represent this record
 
 type aSocketAddr is record
+     len    : unsigned_char;
      family : aProtocolFamily := AF_INET; -- protocol (AF_INET for TCP/IP)
-     port   : unsigned_short := 0;  -- the port number (eg 80 for web)
+     port   : unsigned_short := 0;  -- theport number (eg 80 for web)
      ip     : aInAddr;              -- IP number
 end record;
 -- an Internet socket address
--- defined in /usr/src/linux/include/linux/socket.h
--- and /usr/src/linux/include/linux/in.h
+-- defined in /usr/include/sys/socket.h
 
 function socket( domain   : aNetDomain;
                  stype    : aSocketType;
@@ -476,13 +535,13 @@ pragma import( C, socket );
 -- initialize a communication socket.  -1 if error
 
 procedure bind( result : out int; sockfd : aSocketFD;
-  sa : in out aSocketAddr; addrlen : int );
+  sa : in out aSocketAddr; addrlen : unsigned );
 pragma import( C, bind );
 pragma import_valued_procedure( bind );
 -- give socket a name. 0 if successful
 
-procedure Connect( result : out int; socket : aSocketFD;
-  sa : in out aSocketAddr; addrlen : int );
+procedure connect( result : out int; socket : aSocketFD;
+  sa : in out aSocketAddr; addrlen : unsigned );
 pragma import( C, connect );
 pragma import_valued_procedure( connect );
 -- connect to a (Internet) server.  0 if successful
@@ -513,7 +572,7 @@ use HEptrs;
 -- use makes = (equals) visible
 
 function getHostByName( cname : string ) return aHEptr;
-pragma import( C, getHostByName );
+pragma import( C, gethostbyname );
 -- look up a host by it's name, returning the IP number
 
 function htons( s : unsigned_short ) return unsigned_short;
@@ -616,7 +675,6 @@ pragma import( C, C_file_access_time, "C_file_access_time" );
 procedure C_day_of_week( wday : out integer; year, month, day : integer );
 pragma import( C, C_day_of_week, "C_day_of_week" );
 --  Return modify time of the file
-
 function C_install_sigint_handler( flag : system.address ) return boolean;
 pragma import( C, C_install_sigint_handler, "C_install_sigint_handler" );
 --  Mark an Ada boolean variable that will be TRUE if SIGINT occurs
@@ -633,5 +691,5 @@ function C_install_sigpipe_handler( flag : system.address ) return boolean;
 pragma import( C, C_install_sigpipe_handler, "C_install_sigpipe_handler" );
 --  Mark an Ada boolean variable that will be TRUE if SIGWINCH occurs
 
-end bush_os;
+end spar_os;
 

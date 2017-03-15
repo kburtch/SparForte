@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2016 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -24,21 +24,17 @@
 with gnat.regexp,
     gnat.regpat,
     ada.command_line,
+    ada.strings.unbounded,
     world,
     scanner,
-    string_util,
-    parser_aux,
-    parser,
-    bush_os;
+    parser;
 use gnat.regexp,
     gnat.regpat,
     ada.command_line,
+    ada.strings.unbounded,
     world,
     scanner,
-    string_util,
-    parser_aux,
-    parser,
-    bush_os;
+    parser;
 
 pragma warnings( off );               -- suppress GNAT interal package warning
 with  ada.command_line.environment;

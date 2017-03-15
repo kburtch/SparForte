@@ -1,11 +1,11 @@
 ------------------------------------------------------------------------------
--- BUSH OS/Exec - Fork off an Operating System Command                      --
+-- Spar OS/Exec - Fork off an Operating System Command                      --
 -- This version is for UNIX/Linux Commands                                  --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -28,7 +28,7 @@ use ada.text_io;
 with unchecked_deallocation;
 
 
-package body bush_os.exec is
+package body spar_os.exec is
 
 
 -- C String Version of Arguments
@@ -132,4 +132,4 @@ begin
 
 end spawn;
 
-end bush_os.exec;
+end spar_os.exec;

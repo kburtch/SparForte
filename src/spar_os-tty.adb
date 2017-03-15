@@ -1,11 +1,11 @@
 ------------------------------------------------------------------------------
--- BUSH OS/TTY - Terminal Emulation Information                             --
+-- Spar OS/TTY - Terminal Emulation Information                             --
 -- This version is for UNIX/Linux Commands                                  --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,20 +21,21 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
+pragma ada_2005;
 
 with unchecked_deallocation,
      interfaces.c,
      ada.text_io,
      gnat.source_info,
-     bush_os.exec,
+     spar_os.exec,
      signal_flags,
      world;
 use  ada.text_io,
-     bush_os.exec,
+     spar_os.exec,
      signal_flags,
      world;
 
-package body bush_os.tty is
+package body spar_os.tty is
 
 
 -- tput terminfo codes (ie. Linux)
@@ -373,7 +374,7 @@ begin
         ch := ASCII.EOT;                           -- return a control-d
 -- KB: 2012/02/15: for an explaination of the kludge, see below
      elsif amountRead < 0 or amountRead = size_t'last then -- error?
-        if bush_os.C_errno = EINTR and not wasSIGINT then
+        if spar_os.C_errno = EINTR and not wasSIGINT then
             -- interrupted by signal (other than SIGINT)
             goto read_notty;                       -- then try again
         end if;                                    -- otherwise
@@ -390,14 +391,15 @@ begin
         end if;
         put( standard_error, Gnat.Source_Info.Source_Location & ": unable to read keyboard settings - " );
         put( standard_error, "open /dev/tty failed - " );
-        put_line( standard_error, "error " & bush_os.C_errno'img );
-        raise CONSTRAINT_ERROR;                   -- for lack of a better error
+        put_line( standard_error, "error " & spar_os.C_errno'img );
+        raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
+           ": open /dev/tty failed: errno " & spar_os.C_errno'img;
      else
         ioctl_getattr( res, ttyFile, TCGETATTR, tio );
         if res /= 0 then
-           put( standard_error, Gnat.Source_Info.Source_Location & ": unable to load keyboard settings - " );
            put_line( standard_error, "ioctl /dev/tty TCGETATTR failed" );
-           raise CONSTRAINT_ERROR;                -- for lack of a better error
+           raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
+              ": unable to load keyboard settings - ioctl /dev/tty TCGETATTR failed";
         else
            oldtio := tio;
            -- these are based on "Linux Application Development"
@@ -438,7 +440,7 @@ begin
               if amountRead = 0 then               -- nothing read?
                  ch := ASCII.EOT;                  -- return a control-d
               elsif amountRead < 0 or amountRead = size_t'last  then -- error?
-                 if bush_os.C_errno = EINTR and not wasSIGINT then
+                 if spar_os.C_errno = EINTR and not wasSIGINT then
                     -- interrupted by signal (other than SIGINT)
                     goto retryread;                -- then try again
                  end if;                           -- otherwise
@@ -478,4 +480,4 @@ begin
   result := tcdrain( stderr );
 end simpleBeep;
 
-end bush_os.tty;
+end spar_os.tty;

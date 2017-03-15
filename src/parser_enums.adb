@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2016 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -20,21 +20,21 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
+pragma ada_2005;
+
+--with ada.text_io; use ada.text_io;
 
 with gnat.bubble_sort_a,
      gnat.heap_sort_a,
      ada.numerics.float_random,
-     bush_os,
-     string_util,
+     ada.strings.unbounded,
      world,
-     parser,
-     parser_aux;
-use  bush_os,
-     string_util,
+     scanner,
+     parser;
+use  ada.strings.unbounded,
      world,
-     parser,
-     parser_aux;
-with ada.text_io; use ada.text_io;
+     scanner,
+     parser;
 
 package body parser_enums is
 
@@ -200,7 +200,7 @@ begin
         end loop;
         -- if beyond end, raise exception
         if not ok then
-           raise CONSTRAINT_ERROR;
+           raise CONSTRAINT_ERROR with ": no successor";
         end if;
         -- convert to string and remove leading space
         declare

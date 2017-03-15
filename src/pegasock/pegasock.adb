@@ -7,7 +7,7 @@
 -----------------------------------------------------------------------------
 pragma ada_2005;
 
-with bush_os,
+with spar_os,
      gnat.source_info,
      system.address_to_access_conversions,
      ada.unchecked_conversion,
@@ -15,7 +15,7 @@ with bush_os,
      ada.characters.conversions,
      interfaces.c,
      ada.text_io;
-use  bush_os,
+use  spar_os,
      ada.strings.unbounded,
      interfaces.c,
      ada.text_io;
@@ -683,7 +683,7 @@ end Delete;
 -----------------------------------------------------------------------------
 
 procedure establish( fd : out aBufferedSocket; host : unbounded_string; port : integer ; mode : aSocketMode := blocking ) is
-  use bush_os.HEptrs;
+  use spar_os.HEptrs;
   mySocket    : aBufferedSocket;     -- the socket
   myAddress   : aSocketAddr;   -- where it goes
   myServer    : aHEptr;        -- IP number of server

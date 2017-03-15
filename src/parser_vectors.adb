@@ -22,29 +22,65 @@
 ------------------------------------------------------------------------------
 
 with text_io;use text_io;
+
 with
     Ada.Containers,
+    ada.strings.unbounded,
     user_io,
     world,
     scanner,
     scanner_res,
-    string_util,
     parser,
-    parser_aux,
     parser_params,
     parser_containers;
 use
+    ada.strings.unbounded,
     user_io,
     world,
     scanner,
     scanner_res,
-    string_util,
     parser,
-    parser_aux,
     parser_params,
     parser_containers;
 
 package body parser_vectors is
+
+------------------------------------------------------------------------------
+-- Vecotrs package identifiers
+------------------------------------------------------------------------------
+
+vectors_vector_t        : identifier;
+vectors_cursor_t        : identifier;
+
+vectors_new_vector_t    : identifier;
+vectors_clear_t         : identifier;
+vectors_to_vector_t     : identifier;
+vectors_capacity_t      : identifier;
+vectors_reserve_capacity_t : identifier;
+vectors_length_t        : identifier;
+vectors_set_length_t    : identifier;
+vectors_is_empty_t      : identifier;
+vectors_append_t        : identifier;
+vectors_prepend_t       : identifier;
+vectors_first_index_t   : identifier;
+vectors_last_index_t    : identifier;
+vectors_element_t       : identifier;
+vectors_first_element_t : identifier;
+vectors_last_element_t  : identifier;
+vectors_delete_first_t  : identifier;
+vectors_delete_last_t   : identifier;
+vectors_contains_t      : identifier;
+vectors_move_t          : identifier;
+vectors_copy_t          : identifier;
+vectors_reverse_elements_t : identifier;
+vectors_flip_t          : identifier;
+vectors_new_cursor_t    : identifier;
+vectors_first_t         : identifier;
+vectors_last_t          : identifier;
+vectors_next_t          : identifier;
+vectors_previous_t      : identifier;
+vectors_delete_t        : identifier;
+
 
 ------------------------------------------------------------------------------
 -- Utility subprograms

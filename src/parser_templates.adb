@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2016 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,25 +21,22 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io;use text_io;
+--with text_io;use text_io;
+
 with
     interfaces.c,
+    ada.strings.unbounded,
     pegasock,
     user_io,
     world,
     scanner,
-    scanner_res,
-    parser_aux,
-    parser,
     parser_params;
 use
     pegasock,
+    ada.strings.unbounded,
     world,
     user_io,
     scanner,
-    scanner_res,
-    parser_aux,
-    parser,
     parser_params;
 
 package body parser_templates is

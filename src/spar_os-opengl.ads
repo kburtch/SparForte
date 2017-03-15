@@ -28,7 +28,7 @@ with Ada.Strings.Unbounded,
 use  Ada.Strings.Unbounded,
      Interfaces.C;
 
-package bush_os.opengl is
+package spar_os.opengl is
 
 ------------------------------------------------------------------------------
 -- Standard OpenGL Types
@@ -2590,4 +2590,4 @@ pragma import( C, glVertex4sv, "glVertex4sv" );
 pragma import( C, glVertexPointer, "glVertexPointer" );
 pragma import( C, glViewport, "glViewport" );
 
-end bush_os.opengl;
+end spar_os.opengl;

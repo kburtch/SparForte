@@ -26,11 +26,11 @@
 
 with system,
      ada.strings.unbounded,
-     bush_os.sdl;
+     spar_os.sdl;
 with gen_list;
 
 use ada.strings.unbounded,
-    bush_os.sdl;
+    spar_os.sdl;
 
 package pen is
 

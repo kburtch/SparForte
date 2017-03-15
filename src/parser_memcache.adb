@@ -21,14 +21,14 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io;
-use ada.text_io;
+--with ada.text_io; use ada.text_io;
+
 with gen_list,
+    --ada.numerics.float_random,
     ada.strings.unbounded,
     user_io,
     world,
     scanner,
-    parser_aux,
     parser,
     parser_params,
     pegasock.memcache.highread;
@@ -37,7 +37,6 @@ use ada.strings,
     user_io,
     world,
     scanner,
-    parser_aux,
     parser,
     parser_params,
     pegasock,

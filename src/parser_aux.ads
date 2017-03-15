@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -22,31 +22,19 @@
 ------------------------------------------------------------------------------
 
 with ada.strings.unbounded,
-     bush_os,
+     spar_os,
      world,
      scanner,
-     -- scanner_arrays,
      parser_params;
 use  ada.strings.unbounded,
-     bush_os,
+     spar_os,
      world,
      scanner,
-     -- scanner_arrays,
      parser_params;
 
 package parser_aux is
 
 recSep : constant character := ASCII.NUL;  -- record field separator char
-
-function isExecutingCommand return boolean;
--- True if OK to execute a statement that does work.
--- That is, the parser isn't skipping the line because of
--- an error or exiting a block.
-pragma inline( isExecutingCommand );
-
-procedure discardUnusedIdentifier( id : identifier );
--- if an identifier has been not been assigned a type,
--- assume it's unused and discard it.
 
 procedure makeTempFile( s : out unbounded_string );
 -- create a unique temporary filename

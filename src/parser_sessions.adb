@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2016 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,19 +21,15 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with bush_os,
-     string_util,
+with ada.strings.unbounded,
+     spar_os,
      world,
      scanner,
-     parser,
-     parser_aux,
      parser_params;
-use  bush_os,
-     string_util,
+use  ada.strings.unbounded,
+     spar_os,
      world,
      scanner,
-     parser,
-     parser_aux,
      parser_params;
 
 package body parser_sessions is

@@ -21,8 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.strings.unbounded, world;
-use  ada.strings.unbounded, world;
+with ada.strings.unbounded;
+use  ada.strings.unbounded;
 
 package parser_mysql is
 

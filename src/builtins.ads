@@ -1,11 +1,10 @@
-
 ------------------------------------------------------------------------------
 -- Built-in Shell Commands                                                  --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -25,12 +24,12 @@
 with ada.strings.unbounded,
      world,
      scanner,
-     bush_os.exec;
+     spar_os.exec;
 use  ada.strings.unbounded,
      world,
      scanner,
-     bush_os,
-     bush_os.exec;
+     spar_os,
+     spar_os.exec;
 
 package builtins is
 

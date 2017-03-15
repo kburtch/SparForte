@@ -265,13 +265,13 @@ echo "yes"
 
 # Display the Operating System and the CPU Architecture
 #
-# These will determine which bush_os binding file to use.
+# These will determine which spar_os binding file to use.
 
 echo -n "making for... "
 # The ARCH comes from uname and indicates the version of Linux, not the
 # actual processor being used.  There's a lot of aliases for Intel
 # Pentium-4-ish processors.  Not all appear here.  CPU_ARCH is used to
-# determine the bush_os binding file...we don't necessarily have one for
+# determine the spar_os binding file...we don't necessarily have one for
 # every architecture.
 # Intel 32-bit Pentium
 if [ "$ARCH" = "i486" ] ; then
@@ -330,14 +330,14 @@ CPU_FLAG="-march"
 # Pi.  I've only tested it on the one using armv6l.
 if [ "$OS" = "Linux" -a "$CPU_ARCH" = "armv6" ] ; then
    echo -n "Linux/ARM6 (assuming Raspberry Pi)"
-   if test -r bush_os.ads ; then
+   if test -r spar_os.ads ; then
       echo " (cached, make distclean to remove)";
    else
       echo
       # The standard linux file works with the Pi
-      cp bush_linux.ads bush_os.ads
+      cp os_bindings/spar_linux.ads spar_os.ads
       if [ $? -ne 0 ] ; then
-         echo "Unable to find appropriate bush_os source files"
+         echo "Unable to find appropriate spar_os source files"
          exit 1
       fi
    fi
@@ -349,14 +349,14 @@ if [ "$OS" = "Linux" -a "$CPU_ARCH" = "armv6" ] ; then
    #GMCARGSSUB="-mfpu=vfp -mfloat-abi=hard"
 elif [ "$OS" = "Linux" -a "$CPU_ARCH" = "armv7" ] ; then
    echo -n "Linux/ARM7 (assuming Raspberry Pi 3)"
-   if test -r bush_os.ads ; then
+   if test -r spar_os.ads ; then
       echo " (cached, make distclean to remove)";
    else
       echo
       # The standard linux file works with the Pi
-      cp bush_linux.ads bush_os.ads
+      cp os_bindings/spar_linux.ads spar_os.ads
       if [ $? -ne 0 ] ; then
-         echo "Unable to find appropriate bush_os source files"
+         echo "Unable to find appropriate spar_os source files"
          exit 1
       fi
    fi
@@ -368,38 +368,38 @@ elif [ "$OS" = "Linux" -a "$CPU_ARCH" = "armv7" ] ; then
    #GMCARGSSUB="-mfpu=vfp -mfloat-abi=hard"
 elif [ "$OS" = "Linux" -a "$CPU_ARCH" = "i386" ] ; then
    echo -n "Linux/Intel/AMD"
-   if test -r bush_os.ads ; then
+   if test -r spar_os.ads ; then
       echo " (cached, make distclean to remove)";
    else
       echo
-      cp bush_linux.ads bush_os.ads
+      cp os_bindings/spar_linux.ads spar_os.ads
       if [ $? -ne 0 ] ; then
-         echo "Unable to find appropriate bush_os source files"
+         echo "Unable to find appropriate spar_os source files"
          exit 1
       fi
    fi
 elif [ "$OS" = "FreeBSD" -a "$CPU_ARCH" = "i386" ] ; then
    echo -n "FreeBSD/Intel/AMD"
-   if test -r bush_os.ads ; then
+   if test -r spar_os.ads ; then
       echo " (cached)";
    else
       echo
-      cp bush_freebsd.ads bush_os.ads
+      cp os_bindings/spar_freebsd.ads spar_os.ads
       if [ $? -ne 0 ] ; then
-         echo "Unable to find appropriate bush_os source files"
+         echo "Unable to find appropriate spar_os source files"
          exit 1
       fi
    fi
    CFLAGSTYPE="-DFREEBSD"
 elif [ "$OS" = "Linux" -a "$CPU_ARCH" = "alpha" ] ; then
    echo -n "Linux/Alpha"
-   if test -r bush_os.ads ; then
+   if test -r spar_os.ads ; then
       echo " (cached, make distclean to remove)";
    else
       echo
-      cp bush_alpha.ads bush_os.ads
+      cp os_bindings/spar_alpha.ads spar_os.ads
       if [ $? -ne 0 ] ; then
-         echo "Unable to find appropriate bush_os source files"
+         echo "Unable to find appropriate spar_os source files"
          exit 1
       fi
    fi
@@ -407,31 +407,31 @@ elif [ "$OS" = "Linux" -a "$CPU_ARCH" = "alpha" ] ; then
    CPU_FLAG="-mcpu"  # -march not supported on alpha
 elif [ "$OS" = "HPUX" ] ; then
    echo -n "HP-UX"
-   if test ! -w bush_os.ads ; then
+   if test ! -w spar_os.ads ; then
       echo " (cached)";
    else
       echo
-      cp bush_hp.ads bush_os.ads
+      cp os_bindings/spar_hp.ads spar_os.ads
       if [ $? -ne 0 ] ; then
-         echo "Unable to find appropriate bush_os source files"
+         echo "Unable to find appropriate spar_os source files"
          exit 1
       fi
-      cp bush_hp.adb bush_os.adb
+      cp os_bindings/spar_hp.adb spar_os.adb
       if [ $? -ne 0 ] ; then
-         echo "Unable to find appropriate bush_os source files"
+         echo "Unable to find appropriate spar_os source files"
          exit 1
       fi
    fi
    echo "  (Warning: SparForte HP-UX support is obsolete...you will need to edit bush_hp.ads/adb)"
 elif [ "$OS" = "cygwin" ] ; then
    echo -n "Cygwin"
-   if test -r bush_os.ads ; then
+   if test -r spar_os.ads ; then
       echo " (cached, make distclean to remove)";
    else
       echo
-      cp bush_cygwin.ads bush_os.ads
+      cp os_bindings/spar_cygwin.ads spar_os.ads
       if [ $? -ne 0 ] ; then
-         echo "Unable to find appropriate bush_os source files"
+         echo "Unable to find appropriate spar_os source files"
          exit 1
       fi
    fi
@@ -440,11 +440,11 @@ else
    echo
    echo "I couldn't identify your operating system."
    echo
-   echo "SparForte requires a bush_os.ads file to make operating system calls."
+   echo "SparForte requires a spar_os.ads file to make operating system calls."
    echo "If I made a mistake and your O/S is supported, manually copy"
-   echo "a bush_* file to bush_os.  If you're operating system isn't supported"
+   echo "a spar_* file to spar_os.  If you're operating system isn't supported"
    echo "and if you are experienced and have time, you can create a new"
-   echo "bush_os.ads for your operating system.  Consult the Hacker's Guide"
+   echo "spar_os.ads for your operating system.  Consult the Hacker's Guide"
    echo "in the documentation on how to port SparForte to a new operating system."
    exit 1
 fi
@@ -453,9 +453,9 @@ fi
 #
 # CC is set to the name of the compiler
 
-if test -f bush_os.ali ; then
-   if test ! -w bush_os.ali ; then
-      echo "bush_os.ali exists and is not writable...please remove it"
+if test -f spar_os.ali ; then
+   if test ! -w spar_os.ali ; then
+      echo "spar_os.ali exists and is not writable...please remove it"
       exit 1
    fi
 fi
@@ -469,7 +469,7 @@ else
    exit 1
 fi
 echo -n "checking for gcc w/Ada (with gcc)... "
-(exec $CC -c bush_os.ads >/dev/null 2>/dev/null)
+(exec $CC -c spar_os.ads >/dev/null 2>/dev/null)
 #FreeBSD requires exec in a subshell because a command not found error
 #is reported before the stderr redirect
 if [ $? -eq 0 ] ; then
@@ -478,21 +478,21 @@ else
    echo "no"
    echo -n "checking for gcc w/Ada (with gnatgcc)... "
    CC="gnatgcc"
-   (exec $CC -c bush_os.ads >/dev/null 2>/dev/null)
+   (exec $CC -c spar_os.ads >/dev/null 2>/dev/null)
    if [ $? -eq 0 ] ; then
       echo "yes"
    else
       echo "no"
       echo -n "checking for gcc w/Ada (with adagcc)... "
       CC="adagcc"
-      (exec $CC -c bush_os.ads >/dev/null 2>/dev/null)
+      (exec $CC -c spar_os.ads >/dev/null 2>/dev/null)
       if [ $? -eq 0 ] ; then
          echo "yes"
       else
          echo "no"
          echo -n "checking for gcc w/Ada (with gcc-gnat)... "
          CC="gcc-gnat"
-         $CC -c bush_os.ads >/dev/null 2>/dev/null
+         $CC -c spar_os.ads >/dev/null 2>/dev/null
          if [ $? -eq 0 ] ; then
             echo "yes"
          else
@@ -773,7 +773,7 @@ fi
 # Default to 64-bit else use 32-bit.
 
 echo -n "selecting SDL binding... "
-if test -r bush_os-sdl.ads ; then
+if test -r spar_os-sdl.ads ; then
    echo " (cached, make distclean to remove)";
 else
    cd ../test
@@ -783,12 +783,12 @@ else
    rm a.out
    cd ../src
    if [ "$TMP" = "32" ] ; then
-      cp bush_os-sdl-32bit.ads bush_os-sdl.ads
-      chmod u+w bush_os-sdl.ads
+      cp spar_os-sdl-32bit.ads spar_os-sdl.ads
+      chmod u+w spar_os-sdl.ads
       echo "32 bit"
    elif [ "$TMP" = "64" ] ; then
-      cp bush_os-sdl-64bit.ads bush_os-sdl.ads
-      chmod u+w bush_os-sdl.ads
+      cp spar_os-sdl-64bit.ads spar_os-sdl.ads
+      chmod u+w spar_os-sdl.ads
       echo "64 bit"
    else
       echo "unknown"

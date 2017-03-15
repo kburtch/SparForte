@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2016 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,30 +21,27 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io;use text_io;
+--with text_io;use text_io;
+
 with
     Gnat.Dynamic_HTables,
+    ada.strings.unbounded,
     user_io,
     world,
     scanner,
     scanner_res,
     scanner_restypes,
-    string_util,
     parser,
-    parser_aux,
-    parser_params,
-    bush_os;
+    parser_params;
 use
+    ada.strings.unbounded,
     world,
     user_io,
     scanner,
     scanner_res,
     scanner_restypes,
-    string_util,
     parser,
-    parser_aux,
-    parser_params,
-    bush_os;
+    parser_params;
 
 package body parser_dht is
 

@@ -827,9 +827,14 @@ strings.set_unbounded_string( unbs, "foo" );
 pragma assert( unbs = "foo" );
 unbs := strings.unbounded_slice( "foobar", 2, 4 );
 pragma assert( unbs = "oob" );
-
 s := strings.mktemp( "test" );
 pragma assert( s /= "./test" );
+
+sb64 : strings.base64_string;
+sb64 := strings.to_base64( "foobar" );
+pragma assert( sb64 = "Zm9vYmFy" );
+s := strings.to_string( sb64 );
+pragma assert( s = "foobar" );
 
 -- files package
 
@@ -4163,6 +4168,59 @@ lock_files.lock_file( "cdtest", "_test.lck", 5 );
 lock_files.unlock_file( "cdtest", "_test.lck" );
 lock_files.lock_file( "cdtest", "_test.lck", 5, 1 );
 lock_files.unlock_file( "cdtest", "_test.lck" );
+
+-- Other packages: dirops
+
+c := directory_operations.dir_separator;
+pragma assert( c = "/" or c = "\" or c = ":" );
+
+s := directory_operations.get_current_dir;
+pragma assert( s = PWD & "/" );
+s := @ & "foobar.txt";
+s1 := directory_operations.base_name( s );
+pragma assert( s1 = "foobar.txt" );
+s1 := directory_operations.base_name( s, ".txt" );
+pragma assert( s1 = "foobar" );
+s1 := directory_operations.file_name( s );
+pragma assert( s1 = "foobar.txt" );
+s1 := directory_operations.dir_name( s );
+pragma assert( s1 = PWD & "/" );
+s1 := directory_operations.file_extension( s );
+pragma assert( s1 = ".txt" );
+s1 := directory_operations.expand_path( "$PWD/foobar.txt" );
+pragma assert( s1 = s );
+s1 := directory_operations.expand_path( "$PWD/foobar.txt", environment_style.unix );
+pragma assert( s1 /= "" ); -- can't be sure of O/S
+s1 := directory_operations.format_pathname( s );
+pragma assert( s1 /= "" ); -- can't be sure of O/S
+s1 := directory_operations.format_pathname( s, path_style.unix );
+pragma assert( s1 /= "" ); -- can't be sure of O/S
+
+directory_operations.change_dir( "cdtest" );
+directory_operations.make_dir( "foo" );
+declare
+  d : directory_operations.dir_type_id;
+begin
+  pragma assert( not directory_operations.is_open( d ) );
+  directory_operations.open( d, "foo" );
+  pragma assert( directory_operations.is_open( d ) );
+  s := "x";
+  while strings.length( s ) > 0 loop
+    directory_operations.read( d, s );
+    pragma assert( s = "." or s = ".." or s = "" );
+  end loop;
+  directory_operations.close( d );
+  pragma assert( not directory_operations.is_open( d ) );
+end;
+directory_operations.remove_dir( "foo" );
+b := files.exists( "foo" );
+pragma assert( not b );
+directory_operations.make_dir( "foo" );
+directory_operations.make_dir( "foo/bar" );
+directory_operations.remove_dir( "foo", true );
+b := files.exists( "foo" );
+pragma assert( not b );
+cd ..;
 
 -- Other packages: gnat.crc32
 

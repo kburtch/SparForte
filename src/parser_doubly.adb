@@ -21,32 +21,30 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io;use text_io;
+--with text_io;use text_io;
+
 with
     Ada.Containers,
-    bush_os.exec,
+    ada.strings.unbounded,
+    spar_os.exec,
     world,
     user_io,
     scanner,
     scanner_res,
     scanner_restypes,
-    string_util,
     parser,
-    parser_aux,
-    parser_containers,
-    parser_params;
+    parser_params,
+    parser_containers;
 use
-    bush_os,
-    bush_os.exec,
+    ada.strings.unbounded,
+    spar_os,
+    spar_os.exec,
     world,
     user_io,
     scanner,
-    scanner,
     scanner_res,
     scanner_restypes,
-    string_util,
     parser,
-    parser_aux,
     parser_params,
     parser_containers;
 
@@ -1375,8 +1373,8 @@ procedure StartupDoubly is
 begin
   declareNamespace( "doubly_linked_lists" );
 
-  declareIdent( doubly_list_t,   "doubly_linked_lists.list", positive_t, genericTypeClass );
-  declareIdent( doubly_cursor_t, "doubly_linked_lists.cursor", positive_t, genericTypeClass );
+  declareIdent( doubly_list_t,   "doubly_linked_lists.list", variable_t, genericTypeClass );
+  declareIdent( doubly_cursor_t, "doubly_linked_lists.cursor", variable_t, genericTypeClass );
 
   --declareProcedure( doubly_new_list_t,  "doubly_linked_lists.new_list", ParseDoublyNewList'access );
   declareProcedure( doubly_clear_t,     "doubly_linked_lists.clear",    ParseDoublyClear'access );

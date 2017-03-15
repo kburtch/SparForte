@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,18 +21,74 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---with ada.text_io;
---use ada.text_io;
-with world, scanner,
-    parser_aux,
-    parser_params,
-    parser;
-use world, scanner,
-    parser_aux,
-    parser_params,
-    parser;
+--with ada.text_io;use ada.text_io;
+
+with ada.strings.unbounded,
+    world,
+    scanner,
+    parser_params;
+use ada.strings.unbounded,
+    world,
+    scanner,
+    parser_params;
 
 package body parser_units is
+
+------------------------------------------------------------------------------
+-- Units package identifiers
+------------------------------------------------------------------------------
+
+units_inches2mm_t  : identifier;
+units_feet2cm_t    : identifier;
+units_yards2m_t    : identifier;
+units_miles2km_t   : identifier;
+units_mm2inches_t  : identifier;
+units_cm2inches_t  : identifier;
+units_m2yards_t    : identifier;
+units_km2miles_t   : identifier;
+units_sqin2sqcm_t  : identifier;
+units_sqft2sqm_t   : identifier;
+units_sqyd2sqm_t   : identifier;
+units_acres2hectares_t : identifier;
+units_sqcm2sqin_t  : identifier;
+units_sqm2sqft_t   : identifier;
+units_sqm2sqyd_t   : identifier;
+units_sqkm2sqmiles_t : identifier;
+units_hectares2acres_t : identifier;
+units_oz2grams_t   : identifier;
+units_lb2kg_t      : identifier;
+units_tons2tonnes_t : identifier;
+units_grams2oz_t   : identifier;
+units_kg2lb_t      : identifier;
+units_tonnes2tons_t : identifier;
+units_ly2pc_t      : identifier;
+units_pc2ly_t      : identifier;
+units_floz2ml_t    : identifier;
+units_pints2l_t    : identifier;
+units_gal2l_t      : identifier;
+units_ml2floz_t    : identifier;
+units_l2quarts_t   : identifier;
+units_l2gal_t      : identifier;
+units_f2c_t        : identifier;
+units_c2f_t        : identifier;
+units_k2c_t        : identifier;
+units_c2k_t        : identifier;
+units_usfloz2ml_t  : identifier;
+units_usfloz2floz_t: identifier;
+units_ml2usfloz_t  : identifier;
+units_floz2usfloz_t: identifier;
+units_usdrygal2l_t : identifier;
+units_l2usdrygal_t : identifier;
+units_usliqgal2l_t : identifier;
+units_l2usliqgal_t : identifier;
+units_troz2g_t     : identifier;
+units_g2troz_t     : identifier;
+units_cucm2floz_t  : identifier;
+units_floz2cucm_t  : identifier;
+units_cucm2usfloz_t : identifier;
+units_usfloz2cucm_t : identifier;
+units_bytes2MB_t   : identifier;
+units_MB2bytes_t   : identifier;
 
 
 procedure ParseSimpleConversion( result : out unbounded_string;

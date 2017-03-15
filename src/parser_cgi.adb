@@ -20,27 +20,22 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
+
 --with ada.text_io;use ada.text_io;
 
-with gnat.regexp,
-    gnat.regpat,
+with
     ada.command_line,
+    ada.strings.unbounded,
+    cgi,
     world,
     scanner,
-    string_util,
-    parser_aux,
-    parser,
-    bush_os,
-    cgi;
-use gnat.regexp,
-    gnat.regpat,
+    parser;
+use
     ada.command_line,
+    ada.strings.unbounded,
     world,
     scanner,
-    string_util,
-    parser_aux,
-    parser,
-    bush_os;
+    parser;
 
 package body parser_cgi is
 

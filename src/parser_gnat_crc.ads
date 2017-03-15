@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
--- BUSH GNAT CRC Package Parser                                             --
+-- GNAT CRC Package Parser                                                  --
 --                                                                          --
--- Part of BUSH                                                             --
+-- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2016 Ken O. Burtch & FSF                 --
+--              Copyright (C) 2001-2017 Free Software Foundation            --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -17,12 +17,9 @@
 -- to  the Free Software Foundation,  59 Temple Place - Suite 330,  Boston, --
 -- MA 02111-1307, USA.                                                      --
 --                                                                          --
--- This is maintained at http://www.pegasoft.ca                             --
+-- This is maintained at http://www.sparforte.com                           --
 --                                                                          --
 ------------------------------------------------------------------------------
-
-with ada.strings.unbounded, world;
-use  ada.strings.unbounded, world;
 
 package parser_gnat_crc is
 

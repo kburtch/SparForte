@@ -1,11 +1,11 @@
 ------------------------------------------------------------------------------
--- BUSH OS.Exec - Fork off an Operating System Command                      --
+-- Spar OS.Exec - Fork off an Operating System Command                      --
 -- This version is for UNIX/Linux Commands                                  --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -27,7 +27,7 @@ with system,
      ada.strings.unbounded;
 use  ada.strings.unbounded;
 
-package bush_os.exec is
+package spar_os.exec is
 
 
 -- Arguments for the Program to Run
@@ -68,5 +68,5 @@ procedure spawn( fullPath : unbounded_string;
 -- is finished.  (That is, under UNIX/Linux, a new process is fork()'ed
 -- and the program wait()'s for the command to finish.)
 
-end bush_os.exec;
+end spar_os.exec;
 

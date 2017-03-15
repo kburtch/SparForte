@@ -1,4 +1,4 @@
-/* C code for functions not covered in bush_os.ads          */
+/* C code for functions not covered in spar_os.ads          */
 /* Part of SparForte                                        */
 /*                                                          */
 /* I didn't want to resort to C, but I need to use stat()   */

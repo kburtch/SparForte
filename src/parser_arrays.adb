@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2016 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -24,27 +24,15 @@
 with gnat.bubble_sort_a,
      gnat.heap_sort_a,
      ada.numerics.float_random,
-     bush_os,
-     string_util,
-     user_io,
      world,
      scanner,
-     -- scanner_arrays,
      parser,
-     parser_aux,
      parser_params;
-use  bush_os,
-     string_util,
-     user_io,
+use
      world,
      scanner,
-     -- scanner_arrays,
      parser,
-     parser_aux,
      parser_params;
-
-with ada.text_io;
-use  ada.text_io;
 
 package body parser_arrays is
 

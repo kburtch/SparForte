@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2014 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -33,15 +33,13 @@ with interfaces.c,
      APQ,
 #end if;
 #end if;
-     bush_os,
+     spar_os,
      string_util,
      world,
      user_io,
      script_io,
      jobs,
-     -- scanner_arrays,
      compiler,
-     parser_aux,
      parser_db,
      parser_mysql,
      parser_teams,
@@ -58,15 +56,13 @@ use  interfaces.c,
      APQ,
 #end if;
 #end if;
-     bush_os,
+     spar_os,
      string_util,
      world,
      jobs,
      user_io,
      script_io,
-     -- scanner_arrays,
      compiler,
-     parser_aux,
      parser_db,
      parser_mysql,
      parser_teams,
@@ -2455,22 +2451,23 @@ begin
   elsif helpTopic = "strings" then
      Put_Line( "strings - strings package functions" );
      New_Line;
-     Put_Line( "  n := count( s, p )             r := csv_field( s, c [, d] )  r := csv_replace( s, f, t, [, d] )" );
-     Put_Line( "  r := delete( s, l, h )         c := element( s, p )          r := field( s, c [, d] )" );
-     Put_Line( "  b := glob( e, s )              r := head( s, c [, p] )       r := strings.image( n )" );
-     Put_Line( "  n := index( s, p [, d] )       n := index_non_blank( s [,d] ) r := insert( s, b, n )" );
-     Put_Line( "  r := is_alphanumeric( s )      r := is_basic( s )            r := is_control( s )" );
-     Put_Line( "  r := is_digit( s )             r := is_fixed( s )            r := is_graphic( s )" );
-     Put_Line( "  r := is_hexadecimal_digit( s ) r := is_letter( s )           r := is_lower( s )" );
-     Put_Line( "  r := is_slashed_date( s )      r := is_special( s )          b := is_typo_of( s1, s2 )" );
-     Put_Line( "  r := is_upper( s )             n := length( s )              r := lookup( s, k [, d] )" );
-     Put_Line( "  b := match( e, s )             r := mktemp( p )              r := overwrite( s, p, n )" );
-     Put_Line( "  replace( s, f, t [, d] )       replace_slice( s, l, h, b )   set_unbounded_string( u, s )" );
-     Put_Line( "  r := slice( s, l, h )          split( s, l, r , p )          r := tail( s, c [, p] )" );
-     Put_Line( "  r := to_basic( s )             r := to_escaped( s )          r := to_json( s )" );
-     Put_Line( "  r := to_lower( s )             r := to_proper( s )           r := to_string( s )" );
-     Put_Line( "  r := to_upper( s )             u := to_unbounded_string( s ) r := trim( s [, e] )" );
-     Put_Line( "  r := unbounded_slice( s, l, h ) c := val( n ) " );
+     Put_Line("  n := count( s, p )             r := csv_field( s, c [, d] )  r := csv_replace( s, f, t, [, d] )" );
+     Put_Line("  r := delete( s, l, h )         c := element( s, p )          r := field( s, c [, d] )" );
+     Put_Line("  b := glob( e, s )              r := head( s, c [, p] )" );
+     Put_Line("  r := strings.image( n )        n := index( s, p [, d] )      n := index_non_blank( s [,d] )" );
+     Put_Line("  r := insert( s, b, n )         r := is_alphanumeric( s )     r := is_basic( s )" );
+     Put_Line("  r := is_control( s )           r := is_digit( s )            r := is_fixed( s )" );
+     Put_Line("  r := is_graphic( s )           r := is_hexadecimal_digit(s)  r := is_letter( s )" );
+     Put_Line("  r := is_lower( s )             r := is_slashed_date( s )     r := is_special( s )" );
+     Put_Line("  b := is_typo_of( s1, s2 )      r := is_upper( s )            n := length( s )" );
+     Put_Line("  r := lookup( s, k [, d] )      b := match( e, s )            r := mktemp( p )" );
+     Put_Line("  r := overwrite( s, p, n )      replace( s, f, t [, d] )      replace_slice( s, l, h, b )" );
+     Put_Line("  set_unbounded_string( u, s )   r := slice( s, l, h )         split( s, l, r , p )" );
+     Put_Line("  r := tail( s, c [, p] )        r := strings.to_base64( s )   r := to_basic( s )" );
+     Put_Line("  r := to_escaped( s )           r := to_json( s )             r := to_lower( s )" );
+     Put_Line("  r := to_proper( s )            r := to_string( s )           r := to_upper( s )" );
+     Put_Line("  u := to_unbounded_string( s )  r := trim( s [, e] )          r := unbounded_slice(s, l, h)" );
+     Put_Line("  c := val( n ) " );
      discardUnusedIdentifier( token );
   elsif helpTopic = "variables" then
      Put_Line( "Variables" );

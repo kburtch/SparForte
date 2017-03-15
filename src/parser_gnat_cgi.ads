@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2013 Free Software Foundation            --
+--              Copyright (C) 2001-2017 Free Software Foundation            --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -20,9 +20,6 @@
 -- This is maintained at http://www.sparforte.com                           --
 --                                                                          --
 ------------------------------------------------------------------------------
-
-with ada.strings.unbounded, world;
-use  ada.strings.unbounded, world;
 
 -- GCC Ada 4.3.1 will throw an exception if BUSH isn't running as a CGI program
 -- (This is, of course, a mistake in the design of Gnat.CGI, not BUSH.)
