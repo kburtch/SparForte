@@ -38,3 +38,5 @@ CHANGES SINCE 2.0.2
 
 17. Change: Updated directory_operations and created positive regression tests for it.
 
+18. Change: pragma session_import_script, session_export_script and prompt_script not allowed in a restricted shell (as a security precaution).
+

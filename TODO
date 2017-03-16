@@ -11,21 +11,16 @@ These are new issues identified but not entered into the outstanding bug list
 Severe Issues (Fix These First)
 -------------------------------
 
-- btree_io/hash_io
-    - pwd may wrong for btree_io/hash_io on ../spar redirect
-      or is this normal? if so, document.
 - exceptions
     - re-raise doesn't work unless it is in the main body of an exception
       handler.  This includes if statements.  Being in an exception handler
       must be a global scanner flag.
-- pragmas
-    - session scripts must not be allowed in a restricted shell...or imports...verify
-      - is this for security?  don't remember now
 - regression tests
     - cgi third_party test
 - unsorted/misc
-    - STILL getting DEVICE_ERROR / interrupted syscall randomly on pipelines, even
-      after repeated audits of all syscalls for handling this error.
+    - STILL getting DEVICE_ERROR / interrupted syscall randomly on pipelines with
+      my virtual machine, even after repeated audits of all syscalls for handling
+      this error.
       Possibly raised internally by Ada.Text_IO and needs to be caught and handled?
       If so, where?
        - echo "test" | head; --raised it
@@ -34,8 +29,9 @@ Severe Issues (Fix These First)
       certain circumstances.
     - an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
-    - constant check fails if assignment is in `..` (compiled after main program is
-      compiled)
+    - constant check fails if assignment is in `..` (subscripts are compiled after
+      main program is compiled, but are they syntax checked earlier?)  This may be
+      part of a greater issue: subscripts should be syntax checked at compile-time.
 
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
@@ -45,9 +41,6 @@ Annoyances / Bugs with Workarounds / Updates
     - negative test to ensure subprogram exceptions are not lost to parent
     - json decode backslash good regression tests
     - relative paths not working with bdb environments...research
-    - files.is_directory on a file...confirm no exception is thrown
-    - files.is_writable didn't work on CMS
-      - if not possible, appropriate error
     - option to throw an exception on missing values (including replace, get, add (existing value)
 - memcache/memcache.highread
     - update design to use new resource system

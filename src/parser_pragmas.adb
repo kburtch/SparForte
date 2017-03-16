@@ -685,8 +685,12 @@ begin
   when noCommandHash =>                      -- pragma no_command_hash
      null;
   when promptChange =>                       -- pragma prompt_script
-     expr_val := identifiers( token ).value.all;
-     expect( backlit_t );
+     if rshOpt then                          -- security precaution
+        err( "prompt scripts are not allowed in a restricted shell" );
+     else
+        expr_val := identifiers( token ).value.all;
+        expect( backlit_t );
+     end if;
   when propose =>                           -- pragma refactor
      ParseIdentifier( var_id );
      if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
@@ -760,9 +764,15 @@ begin
   when software_model =>                     -- pragma software_model
      ParseSoftwareModelName( expr_val );
   when session_export_script =>              -- pragma session_export_script
+     if rshOpt then                          -- security precaution
+        err( "session scripts cannot be defined in a " & optional_bold( "restricted shell" ) );
+     end if;
      expr_val := identifiers( token ).value.all;
      expect( backlit_t );
   when session_import_script =>              -- pragma session_import_script
+     if rshOpt then                          -- security precaution
+        err( "session scripts cannot be defined in a " & optional_bold( "restricted shell" ) );
+     end if;
      expr_val := identifiers( token ).value.all;
      expect( backlit_t );
   when suppress =>                           -- pragma restriction
@@ -1349,18 +1359,24 @@ begin
      when restriction_todos =>
         restriction_no_annotate_todos := true;
      when promptChange =>
-        promptScript := expr_val;
+        if not error_found then
+           promptScript := expr_val;
+        end if;
      when session_export_script =>
-        if length( sessionExportScript ) = 0 then
-           sessionExportScript := expr_val;
-        else
-           err( "session_export_script is already defined" );
+        if not error_found then
+           if length( sessionExportScript ) = 0 then
+              sessionExportScript := expr_val;
+           else
+              err( "session_export_script is already defined" );
+           end if;
         end if;
      when session_import_script =>
-        if length( sessionImportScript ) = 0 then
-           sessionImportScript := expr_val;
-        else
-           err( "session_import_script is already defined" );
+        if not error_found then
+           if length( sessionImportScript ) = 0 then
+              sessionImportScript := expr_val;
+           else
+              err( "session_import_script is already defined" );
+           end if;
         end if;
      when software_model =>
         if softwareModelSet then
